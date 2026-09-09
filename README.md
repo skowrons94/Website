@@ -40,9 +40,9 @@ caddy   :80 :443   TLS, static compression, routing
 
 ### The first build
 
-The AZURE2 image compiles the engine and Minuit2 from source; expect roughly ten
-minutes on a decent box. It is built once and left alone thereafter — publishing
-content rebuilds only the site:
+The AZURE2 image compiles the engine and Minuit2 from source; it took about
+three minutes on an 8-core machine, and the result is ~340 MB. It is built once
+and left alone thereafter — publishing content rebuilds only the site:
 
 ```sh
 git pull && make update
@@ -58,7 +58,7 @@ message. Put `BUILD_JOBS=2` in `.env` and it fits.
 
 | | |
 |---|---|
-| `AZURE2_MAX_SESSIONS` | how many evaluations may be open at once. Each is a worker process holding a model; budget a few hundred MB per slot for the larger ones. This is what bounds memory. |
+| `AZURE2_MAX_SESSIONS` | how many evaluations may be open at once. Each is a worker process holding a model. Measured: the API idles at ~45 MB and a session costs 35–80 MB depending on the model (`7Be`, the largest, is the 80), so the default of 8 fits in well under 600 MB. This is what bounds memory. |
 | `AZURE2_SESSION_TTL` | seconds before an abandoned session is reaped. |
 | `AZURE2_OMP_THREADS` | OpenMP threads per worker. Total load is sessions × threads, so `1` is the right default until the box is large. |
 | `AZURE2_THREADS` | Waitress' HTTP threads. Unrelated to the above — these serve requests, they do not run AZURE2. |

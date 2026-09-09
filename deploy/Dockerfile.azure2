@@ -18,9 +18,15 @@ FROM ubuntu:22.04 AS build
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Etc/UTC
 
+# readline is the CLI's line editor and nothing the Python module calls, but
+# AZURE2Core links it unconditionally: CMakeLists.txt sets NO_READLINE at line
+# 458, after `add_subdirectory(src)` at line 435, so src/ never sees it and
+# -DUSE_READLINE=OFF changes nothing.  Install it rather than depend on a switch
+# that does not work; drop this once the ordering is fixed upstream.
 RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential cmake git pkg-config ca-certificates \
-        libgsl-dev python3 python3-dev python3-pip python3-venv \
+        libgsl-dev libreadline-dev libncurses-dev \
+        python3 python3-dev python3-pip python3-venv \
  && rm -rf /var/lib/apt/lists/*
 
 # Everything Python lands in one prefix, so the runtime stage is a single COPY
@@ -70,7 +76,7 @@ ENV TZ=Etc/UTC
 # minor version as the venv was built against, which is what the base image
 # pinned to 22.04 guarantees.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        python3 libgsl27 libgomp1 curl ca-certificates \
+        python3 libgsl27 libgomp1 libreadline8 curl ca-certificates \
  && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /opt/venv /opt/venv
@@ -81,12 +87,20 @@ ENV PATH=/opt/venv/bin:$PATH
 # would then leave root-owned files in.
 RUN useradd --create-home --uid 1001 azure2
 
+# WORKDIR creates /app as root, and COPY --chown only touches what it copies,
+# so the directory itself has to be given away explicitly -- otherwise the
+# server cannot create anything beside its code.
+RUN mkdir -p /app && chown azure2:azure2 /app
 WORKDIR /app
 COPY --chown=azure2:azure2 server/ /app/
 
+# An empty AZURE2_LOG_FILE means the console alone, which is where a container's
+# logs belong: `docker compose logs azure2` reads it, and a file written inside
+# the container would go away with the container.
 ENV AZURE2_HOST=0.0.0.0 \
     AZURE2_PORT=5001 \
     AZURE2_EVALUATIONS_DIR=/app/evaluations \
+    AZURE2_LOG_FILE= \
     PYTHONUNBUFFERED=1
 
 USER azure2

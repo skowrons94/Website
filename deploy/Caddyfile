@@ -5,6 +5,14 @@
 	email {$ACME_EMAIL}
 }
 
+# One canonical host. Caddy asks for a certificate per name it is configured to
+# serve, so www needs a DNS record of its own (an A record, or a CNAME to the
+# apex) -- without one Caddy will retry the challenge for it and log the failure,
+# though the apex is unaffected. Delete this block if the domain has no www.
+www.{$SITE_DOMAIN} {
+	redir https://{$SITE_DOMAIN}{uri} permanent
+}
+
 {$SITE_DOMAIN} {
 	encode zstd gzip
 
