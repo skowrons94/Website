@@ -2,6 +2,7 @@
 
 import atexit
 import logging
+import os
 import signal
 import sys
 
@@ -65,6 +66,19 @@ def create_app(config=Config):
     from app.routes import bp
     app.register_blueprint(bp)
 
-    logging.getLogger(__name__).info(
-        "serving evaluations from %s", app.config["EVALUATIONS_DIR"])
+    root = app.config["EVALUATIONS_DIR"]
+    log = logging.getLogger(__name__)
+    log.info("serving evaluations from %s", root)
+
+    # A worker runs with the evaluation's directory as its working directory and
+    # caches the external-capture integrals there. Read-only, that fails deep
+    # inside AZURE2 with nothing pointing at the cause, so it is checked once
+    # here where the message can name it.
+    if os.path.isdir(root) and not os.access(root, os.W_OK | os.X_OK):
+        log.warning(
+            "%s is not writable by uid %s: AZURE2 caches its external-capture "
+            "integrals in each evaluation's directory, and will recompute them "
+            "on every open. Give the directory to this user (see AZURE2_UID in "
+            ".env).", root, os.getuid())
+
     return app

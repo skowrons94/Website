@@ -52,6 +52,11 @@ services:
         # compiling the engine at full width runs the box out of memory.
         BUILD_JOBS: ${BUILD_JOBS:-}
     restart: unless-stopped
+    # The image's own user is 1001. Override this when the bind-mounted
+    # evaluations below belong to someone else on the host -- a worker caches
+    # the external-capture integrals in the evaluation's own directory, so it
+    # needs to be able to write there. `id -u` / `id -g` is what to put in .env.
+    user: "${AZURE2_UID:-1001}:${AZURE2_GID:-1001}"
     expose:
       - "5001"
     environment:
