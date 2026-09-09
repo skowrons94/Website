@@ -38,6 +38,49 @@ caddy   :80 :443   TLS, static compression, routing
 `make` on its own lists the rest: `update` (rebuild the site alone), `check`,
 `logs`, `evaluations`, `restart`, `down`.
 
+### On OVH, concretely
+
+Two separate things, in two different parts of the control panel. They are easy
+to confuse, and the domain half is the one that must be done *first*.
+
+**1. The DNS zone** — Web Cloud → Domain names → *your domain* → DNS zone.
+
+| Type | Subdomain | Target |
+|---|---|---|
+| `A` | *(leave blank — this is the apex)* | the VPS' IPv4 |
+| `A` | `www` | the same IPv4 |
+| `AAAA` | blank, and `www` | the VPS' IPv6 — **only if it actually works** |
+
+A freshly bought OVH domain arrives with the zone already populated, pointing at
+OVH's parking page. **Delete those records**, or they will contend with yours.
+
+Both names are needed because Caddy asks for a certificate per hostname it
+serves, and `deploy/Caddyfile` serves the apex and redirects `www` to it. Drop
+the `www` block from the Caddyfile if you would rather not have one.
+
+On IPv6: several OVH VPS images ship without a working IPv6 route, and an `AAAA`
+record pointing at an address that does not answer makes the site unreachable
+for anyone whose connection prefers IPv6. Add it only once `curl -6 https://ifconfig.co`
+succeeds *from the VPS*.
+
+**2. The VPS** — install Docker and the Compose plugin, then clone and deploy.
+Only 80 and 443 need to be reachable; the site and the API are on `expose:`, not
+`ports:`, so neither 3000 nor 5001 is published to the host at all. If the OVH
+Network Firewall is switched on for the IP (it is off by default), allow TCP 80
+and 443 — and UDP 443 too, or HTTP/3 is simply skipped.
+
+**Wait for DNS before the first deploy.** Check it from the VPS itself:
+
+```sh
+dig +short jskowron.eu        # must return the VPS' own IPv4
+```
+
+Let's Encrypt validates by connecting to port 80 on whatever the name resolves
+to, so a deploy that runs before the record propagates will fail. Caddy retries
+with backoff, but Let's Encrypt rate-limits failed validations (5 per hostname
+per hour) — so fix the DNS and wait rather than re-running `make deploy` in a
+loop. `make logs` shows what it is doing.
+
 ### The first build
 
 The AZURE2 image compiles the engine and Minuit2 from source; it took about

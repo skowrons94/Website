@@ -1,6 +1,5 @@
 # Caddy obtains and renews the certificate itself; nothing else is needed for
 # HTTPS beyond pointing the domain's A/AAAA records at the VPS.
-
 {
 	email {$ACME_EMAIL}
 }
