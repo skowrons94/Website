@@ -1,0 +1,278 @@
+/**
+ * Client for the AZURE2 evaluation API.
+ *
+ * Opening an evaluation starts an AZURE2 process on the server and returns a
+ * session id; every subsequent call is scoped to that session, so two browser
+ * tabs never share (or overwrite) each other's parameters.
+ *
+ * The one convention worth knowing: an editable quantity is addressed by its
+ * `free_index` — its slot in the model's *free* parameter vector. Fixed
+ * quantities carry `free_index: null` and cannot be changed.
+ */
+
+/**
+ * Origin of the AZURE2 API, baked in at build time.
+ *
+ * An empty string is meaningful and must survive: in the deployed stack the
+ * reverse proxy serves the API under `/api` on the same origin as the site, so
+ * every path below becomes relative and no public hostname is compiled into the
+ * bundle. Only an *unset* variable falls back to a local development server.
+ */
+export const API_BASE =
+  process.env.API_BASE === undefined ? "http://localhost:5001" : process.env.API_BASE
+
+/* -- types ----------------------------------------------------------------- */
+
+export interface Evaluation {
+  id: string
+  title: string
+  channels: string[]
+  author: string | null
+  reference: string | null
+  filename: string
+  entrance: string | null
+}
+
+/** What a channel parameter physically is; the unit travels with the value. */
+export type ChannelQuantity =
+  | "width" // partial width, eV
+  | "anc" // bound state, fm^(-1/2)
+  | "moment_m1" // magnetic dipole moment, nm
+  | "moment_e2" // electric quadrupole moment, b
+  | "beta" // dimensionless
+
+export interface SchemeChannel {
+  pair: number
+  label: string
+  L: number
+  S: number
+  radiation_type: string | null
+  is_photon: boolean
+  quantity: ChannelQuantity
+  unit: string
+  width: number
+  initial_width: number
+  fixed: boolean
+  free_index: number | null
+  wigner_limit: number | null
+}
+
+export interface SchemeLevel {
+  jgroup: number
+  level: number
+  J: number
+  parity: number
+  jpi: string
+  energy: number
+  initial_energy: number
+  energy_fixed: boolean
+  energy_free_index: number | null
+  channels: SchemeChannel[]
+}
+
+export interface SchemePair {
+  number: number
+  label: string
+  is_photon: boolean
+  is_entrance: boolean
+  Z1: number
+  M1: number
+  Z2: number
+  M2: number
+  separation_energy: number
+  excitation: number
+  channel_radius: number
+}
+
+export interface Scheme {
+  pairs: SchemePair[]
+  levels: SchemeLevel[]
+  n_free: number
+  modified: boolean
+}
+
+export interface DataSegment {
+  index: number
+  key: number
+  name: string
+  active: boolean
+  entrance: string
+  exit: string
+  entrance_key: number
+  exit_key: number
+  observable: string
+  data_file: string
+  energy_min: number
+  energy_max: number
+  angle_min: number
+  angle_max: number
+  norm: number
+  vary_norm: boolean
+  norm_error: number
+  n_points: number
+  chi2: number | null
+  energies: number[] | null
+  angles: number[] | null
+  cross_sections: number[] | null
+  cross_sections_errors: number[] | null
+  sfactor: number[] | null
+  sfactor_errors: number[] | null
+  calculated: number[] | null
+  calculated_sfactor: number[] | null
+}
+
+export interface ExtrapSegment {
+  index: number
+  key: number
+  name: string
+  active: boolean
+  entrance: string
+  exit: string
+  entrance_key: number
+  exit_key: number
+  observable: string
+  energy_min: number
+  energy_max: number
+  energy_step: number
+  angle_min: number
+  angle_max: number
+  angle_step: number
+  is_angle_integrated: boolean
+  energies: number[] | null
+  angles: number[] | null
+  calculated: number[] | null
+  calculated_sfactor: number[] | null
+}
+
+export interface OpenedSession {
+  session_id: string
+  evaluation: Evaluation
+  scheme: Scheme
+  n_data_segments: number
+  n_extrapolations: number
+}
+
+export interface SchemeAndData {
+  scheme: Scheme
+  data: DataSegment[]
+}
+
+/** Thrown for any non-2xx response, carrying the server's message and status. */
+export class ApiError extends Error {
+  status: number
+  constructor(message: string, status: number) {
+    super(message)
+    this.name = "ApiError"
+    this.status = status
+  }
+  /** A 409 means the session expired and the evaluation must be reopened. */
+  get sessionExpired() {
+    return this.status === 409
+  }
+}
+
+/* -- plumbing -------------------------------------------------------------- */
+
+async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  let response: Response
+  try {
+    response = await fetch(`${API_BASE}${path}`, {
+      ...init,
+      headers: { "Content-Type": "application/json", ...(init?.headers || {}) },
+    })
+  } catch {
+    throw new ApiError(
+      `Cannot reach the AZURE2 server at ${API_BASE || "this origin"}. Is it running?`,
+      0,
+    )
+  }
+
+  if (!response.ok) {
+    let message = `Request failed (${response.status})`
+    try {
+      const body = await response.json()
+      if (body?.error) message = body.error
+    } catch {
+      /* keep the status-based message */
+    }
+    throw new ApiError(message, response.status)
+  }
+
+  return response.json() as Promise<T>
+}
+
+/* -- evaluations ----------------------------------------------------------- */
+
+export function listEvaluations(): Promise<Evaluation[]> {
+  return request<Evaluation[]>("/api/evaluations")
+}
+
+export function getEvaluation(id: string): Promise<Evaluation> {
+  return request<Evaluation>(`/api/evaluations/${encodeURIComponent(id)}`)
+}
+
+export function openEvaluation(id: string): Promise<OpenedSession> {
+  return request<OpenedSession>(
+    `/api/evaluations/${encodeURIComponent(id)}/open`,
+    { method: "POST" },
+  )
+}
+
+/** URL of the evaluation's .azr file, for a direct browser download. */
+export function evaluationDownloadUrl(id: string): string {
+  return `${API_BASE}/api/evaluations/${encodeURIComponent(id)}/download`
+}
+
+/* -- session --------------------------------------------------------------- */
+
+export function getScheme(sessionId: string): Promise<Scheme> {
+  return request<Scheme>(`/api/sessions/${sessionId}/scheme`)
+}
+
+export function getData(sessionId: string): Promise<DataSegment[]> {
+  return request<DataSegment[]>(`/api/sessions/${sessionId}/data`)
+}
+
+export function getExtrapolations(sessionId: string): Promise<ExtrapSegment[]> {
+  return request<ExtrapSegment[]>(`/api/sessions/${sessionId}/extrapolations`)
+}
+
+/**
+ * Apply parameter edits, keyed by free index, and get the recalculated curves
+ * back in the same response — one round trip, so concurrent edits cannot
+ * interleave into a stale plot.
+ */
+export function setParameters(
+  sessionId: string,
+  updates: Record<number, number>,
+): Promise<SchemeAndData> {
+  return request<SchemeAndData>(`/api/sessions/${sessionId}/parameters`, {
+    method: "POST",
+    body: JSON.stringify({ updates }),
+  })
+}
+
+export function resetParameters(sessionId: string): Promise<SchemeAndData> {
+  return request<SchemeAndData>(`/api/sessions/${sessionId}/reset`, {
+    method: "POST",
+  })
+}
+
+export function closeSession(sessionId: string): Promise<{ closed: boolean }> {
+  return request<{ closed: boolean }>(`/api/sessions/${sessionId}`, {
+    method: "DELETE",
+  })
+}
+
+export function schemeExportUrl(sessionId: string): string {
+  return `${API_BASE}/api/sessions/${sessionId}/scheme/export.txt`
+}
+
+export function extrapolationsCsvUrl(
+  sessionId: string,
+  segments?: number[],
+): string {
+  const query =
+    segments && segments.length > 0 ? `?segments=${segments.join(",")}` : ""
+  return `${API_BASE}/api/sessions/${sessionId}/extrapolations/download.csv${query}`
+}

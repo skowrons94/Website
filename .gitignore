@@ -1,0 +1,30 @@
+node_modules/
+.next/
+out/
+next-env.d.ts
+tsconfig.tsbuildinfo
+
+.env
+.env.local
+
+__pycache__/
+*.py[cod]
+server/access.log
+
+# AZURE2 writes these into an evaluation while it is being calculated. The
+# external-capture integrals under output/ are the exception -- they are slow to
+# recompute and are committed on purpose, so they are re-included below.
+server/evaluations/*/output/*
+!server/evaluations/*/output/intEC.dat
+!server/evaluations/*/output/intEC.extrap
+server/evaluations/*/checks/
+server/evaluations/*/.azure_history
+
+.DS_Store
+*.log
+
+# The raw CV and the development notes the published ones were derived from.
+# Not deployed (see .dockerignore) and not published: the notes under
+# content/notes/ are the public form of this material. Delete this line to track
+# it in a private repository.
+_source/

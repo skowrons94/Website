@@ -1,0 +1,8 @@
+# The HTTP layer.  pyazr is deliberately absent: it ships with AZURE2 and is
+# installed from that source tree (see deploy/Dockerfile.azure2), because the
+# Python package and the compiled _azure2 engine module must come from the same
+# build or the ABI will not match.
+flask
+flask-cors
+waitress
+numpy

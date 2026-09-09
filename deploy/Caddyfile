@@ -1,0 +1,43 @@
+# Caddy obtains and renews the certificate itself; nothing else is needed for
+# HTTPS beyond pointing the domain's A/AAAA records at the VPS.
+
+{
+	email {$ACME_EMAIL}
+}
+
+{$SITE_DOMAIN} {
+	encode zstd gzip
+
+	# The AZURE2 API, on the same origin as the site. The Flask blueprint is
+	# already mounted at /api, so the path is passed through unchanged and the
+	# browser never makes a cross-origin request.
+	handle /api/* {
+		reverse_proxy azure2:5001 {
+			# A fit or an extrapolation can take a while; the default read
+			# timeout would cut a long calculation off mid-flight.
+			transport http {
+				response_header_timeout 300s
+				read_timeout 300s
+			}
+		}
+	}
+
+	handle {
+		reverse_proxy web:3000
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		X-Frame-Options "SAMEORIGIN"
+		-Server
+	}
+
+	log {
+		output file /data/access.log {
+			roll_size 20MiB
+			roll_keep 5
+		}
+	}
+}

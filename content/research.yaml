@@ -1,0 +1,109 @@
+# Research threads, rendered in order on /research and summarised on the landing
+# page. `body` paragraphs are plain text; `highlights` become a bulleted list.
+
+threads:
+  - id: luna
+    title: LUNA — proton capture, deep underground
+    venue: Laboratori Nazionali del Gran Sasso, INFN
+    period: 2020 — present
+    role: Working Group Leader (¹⁹F + p) · DAQ Coordinator
+    summary: >-
+      Direct cross-section measurements at stellar energies, where the signal is
+      so faint that the experiment has to be buried to see it at all.
+    body:
+      - >-
+        The reactions that burn hydrogen in the CNO cycle have cross sections
+        that fall exponentially towards stellar energies — at the Gamow window
+        they can reach the picobarn scale, which at the surface of the Earth is
+        indistinguishable from cosmic-ray background. LUNA's answer is 1400 m of
+        dolomite overburden, which suppresses the muon flux by six orders of
+        magnitude and makes the measurement possible.
+      - >-
+        I led the measurement and analysis of ¹²C + p and ¹³C + p radiative
+        capture at LUNA and at Felsenkeller, which fixed the proton-capture rates
+        on both carbon isotopes and with them the astrophysical ¹²C/¹³C ratio. I
+        now lead the ¹⁹F + p working group at the new Bellotti Ion Beam Facility,
+        the 3.5 MV accelerator installed underground at Gran Sasso.
+      - >-
+        In parallel I am the collaboration's DAQ Coordinator: the acquisition and
+        slow-control infrastructure of every campaign, and of the MV facility, is
+        designed and operated by me. It is what lets shifts be taken remotely,
+        which for an experiment a kilometre underground is not a small thing.
+    highlights:
+      - ¹²C(p,γ)¹³N and ¹³C(p,γ)¹⁴N cross sections and their impact on the ¹²C/¹³C ratio
+      - Working Group Leader for ¹⁹F + p at the Bellotti Ion Beam Facility
+      - Calibration of the 3.5 MV Pelletron; Geant4 tuning for the BGO and HPGe setups
+      - R-matrix evaluations for ¹²C + p, ¹³C + p, ²⁰Ne + p and ²²Ne + p
+
+  - id: azure2
+    title: AZURE2 — the R-matrix code
+    venue: Open source · used worldwide
+    period: 2025 — present
+    role: Maintainer and Lead Developer
+    summary: >-
+      The reference R-matrix code for nuclear astrophysics, IAEA nuclear-data
+      evaluation and materials analysis.
+    body:
+      - >-
+        AZURE2 is where a set of measured points becomes a cross section: a
+        multi-level, multi-channel R-matrix model fitted to data across every
+        channel that shares a compound nucleus, then extrapolated to the energies
+        that stellar burning actually samples. It is used across academia,
+        national laboratories and the IAEA.
+      - >-
+        Since taking over as maintainer I have worked on the parts that decide
+        whether a modern analysis is feasible at all: analytic gradients and the
+        residual Jacobian computed inside the forward model, so a fit or an MCMC
+        no longer pays a factor of a few hundred for finite differences; a
+        tabulate-once reaction-rate integrator; polarization observables;
+        identical-particle scattering. Alongside that, the GUI, the documentation,
+        and support and training for the user community.
+      - >-
+        The evaluations section of this site runs that same code, on a server, on
+        real published analyses.
+    link:
+      label: Open the evaluations
+      href: /evaluations
+
+  - id: agata
+    title: AGATA — a sub-femtosecond lifetime in ¹⁵O
+    venue: Laboratori Nazionali di Legnaro, INFN
+    period: 2023 — present
+    role: Spokesperson
+    summary: >-
+      Measuring how long a nuclear state lives when the answer is a fraction of a
+      femtosecond, and what that says about the Sun.
+    body:
+      - >-
+        The 6.79 MeV state in ¹⁵O sits just above the proton threshold and
+        dominates the low-energy behaviour of ¹⁴N(p,γ)¹⁵O — the slowest step of
+        the CNO cycle, and therefore the reaction that sets the cycle's rate and
+        the CNO neutrino flux. Its lifetime enters that extrapolation directly,
+        and it is short enough that only a γ-ray tracking array can reach it.
+      - >-
+        I am spokesperson of the measurement performed with AGATA at Legnaro, and
+        led the full analysis pipeline: Doppler correction, kinematic
+        reconstruction, Geant4 simulation and the Bayesian extraction of the
+        lifetime itself. The analysis is complete and the manuscript is under
+        review at Nature Physics.
+
+  - id: cryring
+    title: CRYRING — electron screening in inverse kinematics
+    venue: GSI Helmholtzzentrum für Schwerionenforschung, Darmstadt
+    period: 2024 — present
+    role: Participant
+    summary: >-
+      Testing how atomic electrons distort a nuclear cross section measured in the
+      laboratory, in a regime where the effect is largest.
+    body:
+      - >-
+        Every laboratory measurement of a low-energy cross section is made with
+        atoms, not bare nuclei, and the electron cloud screens the Coulomb
+        barrier. The enhancement it produces grows as the energy falls — exactly
+        where astrophysics wants the number — and measured screening potentials
+        have persistently come out larger than theory allows.
+      - >-
+        At CRYRING the ¹⁵N + p reaction is studied in inverse kinematics with a
+        stored, cooled beam, which changes the atomic configuration of the
+        collision and so attacks the discrepancy from a direction a normal target
+        experiment cannot.

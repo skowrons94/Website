@@ -1,0 +1,75 @@
+# The whole site, in one stack, from one repository.
+#
+#   caddy   :80/:443  terminates TLS, routes /api to azure2 and everything else
+#                     to the site
+#   web     :3000     the Next.js site (internal only)
+#   azure2  :5001     Flask + the AZURE2 R-matrix engine (internal only)
+#
+# Neither application port is published to the host: everything reaches them
+# through Caddy, which is what makes /api same-origin and removes CORS from the
+# picture entirely.
+#
+#   cp .env.example .env   # set SITE_DOMAIN and ACME_EMAIL
+#   docker compose up -d --build
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:?set SITE_DOMAIN in .env}
+      ACME_EMAIL: ${ACME_EMAIL:?set ACME_EMAIL in .env}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+      - azure2
+
+  web:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.web
+      args:
+        # Empty: the client calls /api on its own origin, so no hostname is
+        # compiled into the bundle and the image is domain-agnostic.
+        API_BASE: ""
+    restart: unless-stopped
+    expose:
+      - "3000"
+
+  azure2:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.azure2
+      args:
+        # Empty means all cores. Set BUILD_JOBS=2 in .env on a small VPS, where
+        # compiling the engine at full width runs the box out of memory.
+        BUILD_JOBS: ${BUILD_JOBS:-}
+    restart: unless-stopped
+    expose:
+      - "5001"
+    environment:
+      # An open evaluation owns an AZURE2 worker process; these bound memory
+      # use and how hard the box is worked.
+      AZURE2_MAX_SESSIONS: ${AZURE2_MAX_SESSIONS:-8}
+      AZURE2_SESSION_TTL: ${AZURE2_SESSION_TTL:-1800}
+      AZURE2_THREADS: ${AZURE2_THREADS:-10}
+      AZURE2_OMP_THREADS: ${AZURE2_OMP_THREADS:-1}
+    volumes:
+      # The evaluations are baked into the image, but bind-mounting them over
+      # the top means adding or correcting one is a file copy and a
+      # `docker compose restart azure2` rather than a rebuild.
+      #
+      # Writable, not :ro -- a worker runs with the evaluation directory as its
+      # working directory and caches the external-capture integrals there.
+      - ./server/evaluations:/app/evaluations
+
+volumes:
+  caddy_data:
+  caddy_config:

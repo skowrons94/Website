@@ -1,0 +1,43 @@
+# Identity and the landing-page copy. Edit freely; nothing here is referenced by
+# name anywhere else, the pages just render whatever is present.
+
+name: Jakub Skowronski
+role: Postdoctoral Researcher, Experimental Nuclear Astrophysics
+affiliation: Università degli Studi di Padova
+department: Dipartimento di Fisica e Astronomia "G. Galilei"
+location: Padova, Italy
+email: jakub.skowronski@unipd.it
+orcid: 0000-0001-7292-6353
+
+tagline: Nuclear astrophysics, measured a kilometre underground.
+
+intro:
+  - >-
+    I measure the nuclear reactions that power stars, at the energies at which
+    stars actually run them. Most of that work happens at LUNA, under 1400 m of
+    Gran Sasso rock, where the cosmic-ray background is six orders of magnitude
+    lower than at the surface and cross sections of picobarns become reachable.
+  - >-
+    A measurement, though, is only ever a handful of points in a narrow window of
+    energy. Turning those points into the quantity astrophysics needs — a rate at
+    stellar temperatures, often far below anything measurable — is R-matrix
+    theory's job. Since 2025 I have been the maintainer and lead developer of
+    AZURE2, the reference R-matrix code for the field, and I sit on the IAEA
+    INDEN-LE committee that evaluates light-element cross sections.
+  - >-
+    This site collects both halves: notes on the theory, and evaluations you can
+    open and run yourself in the browser.
+
+links:
+  - label: ORCID
+    href: https://orcid.org/0000-0001-7292-6353
+  - label: INSPIRE
+    href: https://inspirehep.net/authors/
+  - label: GitHub
+    href: https://github.com/skowrons94
+  - label: AZURE2
+    href: https://azure.nd.edu
+
+cv:
+  label: Curriculum Vitae (PDF)
+  file: /IGNIS_B2_v4.pdf

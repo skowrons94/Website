@@ -1,0 +1,12 @@
+# Build products and local state. The server/ tree and content/ must NOT be
+# excluded: both images copy from them.
+node_modules
+.next
+.git
+.env
+_source
+npm-debug.log*
+.DS_Store
+**/.DS_Store
+**/__pycache__
+server/access.log

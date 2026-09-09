@@ -1,0 +1,7 @@
+{
+  "id": "13N",
+  "title": "^{13}\\text{N}",
+  "reference": "10.1103/PhysRevC.111.035802",
+  "author": "J. Skowronski",
+  "channels": ["p", "\\gamma", "\\gamma_{1}"]
+}

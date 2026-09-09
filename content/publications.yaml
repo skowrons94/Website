@@ -1,0 +1,249 @@
+# Add a paper by adding an entry. Sorted by `year` descending; within a year the
+# file order is kept, so put a new same-year paper where you want it to appear.
+#
+#   kind:      article | proceedings   (anything else becomes its own section)
+#   highlight: true                    marks it as a first-author / key paper
+#   status:    shown instead of the journal, for anything not yet out
+
+publications:
+  - kind: article
+    highlight: true
+    authors: E. Pilotto, J. Skowronski, et al.
+    title: The CNO Cycle in the Sun Constrained by a Novel Lifetime Measurement with AGATA
+    status: under review at Nature Physics
+    year: 2026
+
+  - kind: article
+    authors: D. Robb, et al.
+    title: Experimental determination of the ²³Na(p,p)²³Na excitation function from 2.1 to 4.1 MeV
+    status: under review at Physical Review Letters
+    year: 2026
+
+  - kind: article
+    authors: L. Barbieri, et al.
+    title: A new detection array for underground charged particle spectroscopy at LUNA-400
+    journal: Nucl. Instrum. Methods Phys. Res. A 1092, 171767
+    doi: 10.1016/j.nima.2026.171767
+    year: 2026
+
+  - kind: article
+    highlight: true
+    authors: J. Cruz, D. Neves, J. Skowronski, et al.
+    title: Experimental determination of the ²³Na(p,p)²³Na excitation function from 2.1 to 4.1 MeV
+    journal: Eur. Phys. J. A 62, 75
+    doi: 10.1140/epja/s10050-026-01847-y
+    year: 2026
+
+  - kind: article
+    authors: R. J. deBoer, et al.
+    title: Total cross section of ¹⁴N + n from 0.1 to 12 MeV
+    journal: Phys. Rev. C 112, 025805
+    doi: 10.1103/frgb-j5c3
+    year: 2025
+
+  - kind: article
+    authors: R. S. Sidhu, et al.
+    title: Improved direct measurement of low-energy resonances in the ²¹Ne(p,γ)²²Na reaction
+    journal: Phys. Rev. C 112, L052801
+    doi: 10.1103/vqt1-jxpw
+    year: 2025
+
+  - kind: article
+    authors: R. M. Gesuè, et al.
+    title: Detector characterization for a new ¹²C+¹²C reaction study at LUNA
+    journal: J. Phys. G, Nucl. Part. Phys. 52, 105103
+    doi: 10.1088/1361-6471/ade0dc
+    year: 2025
+
+  - kind: article
+    highlight: true
+    authors: K. Linkowski, R. S. Sidhu, J. Skowronski, et al.
+    title: Energy calibration of the 2.5 MV Pelletron at the Dalton Cumbrian Facility
+    journal: Eur. Phys. J. A 61, 155
+    doi: 10.1140/epja/s10050-025-01622-5
+    year: 2025
+
+  - kind: article
+    authors: A. Compagnucci, et al.
+    title: >-
+      Towards a comprehensive study of the ¹⁴N(p,γ)¹⁵O astrophysical key reaction:
+      description of the experimental technique including novel target preparation
+    journal: Eur. Phys. J. A 61, 191
+    doi: 10.1140/epja/s10050-025-01658-7
+    year: 2025
+
+  - kind: article
+    highlight: true
+    authors: E. Pilotto, F. J. Ferrer, J. Skowronski, et al.
+    title: Comparing He content in magnetron sputtered and implanted targets for nuclear studies
+    journal: Eur. Phys. J. A 61, 117
+    doi: 10.1140/epja/s10050-025-01590-w
+    year: 2025
+
+  - kind: article
+    highlight: true
+    authors: J. Skowronski, et al.
+    title: "A comparative analysis of R-matrix fitting: ¹²C(p,γ)¹³N as test case"
+    journal: Phys. Rev. C 111, 035802
+    doi: 10.1103/PhysRevC.111.035802
+    year: 2025
+
+  - kind: article
+    authors: E. Masha, et al.
+    title: A high-energy-resolution gas target setup to study selected NeNa cycle reactions
+    journal: Eur. Phys. J. A 61, 45
+    doi: 10.1140/epja/s10050-025-01512-w
+    year: 2025
+
+  - kind: article
+    authors: D. Rapagnani, et al.
+    title: "Revision of the CNO cycle: rate of ¹⁷O destruction in stars"
+    journal: Phys. Rev. C 111, 025805
+    doi: 10.1103/PhysRevC.111.025805
+    year: 2025
+
+  - kind: article
+    authors: K. Stöckel, et al.
+    title: >-
+      Novel approach to infer the ²H(p,γ)³He angular distribution: experimental
+      results and comparison with theoretical calculations
+    journal: Phys. Rev. C 110, L032801
+    doi: 10.1103/PhysRevC.110.L032801
+    year: 2024
+
+  - kind: article
+    authors: L. Csedreki, et al.
+    title: >-
+      Status and future directions for direct cross-section measurements of the
+      ¹³C(α,n)¹⁶O reaction for astrophysics
+    journal: J. Phys. G, Nucl. Part. Phys. 51, 105201
+    doi: 10.1088/1361-6471/ad6a2a
+    year: 2024
+
+  - kind: article
+    authors: R. M. Gesuè, et al.
+    title: First direct measurement of the 64.5 keV resonance strength in the ¹⁷O(p,γ)¹⁸F reaction
+    journal: Phys. Rev. Lett. 133, 052701
+    doi: 10.1103/PhysRevLett.133.052701
+    year: 2024
+
+  - kind: article
+    authors: M. P. Takács, et al.
+    title: Direct capture cross section and resonances in the ²²Ne(p,γ)²³Na reaction at low energy
+    journal: Phys. Rev. C 109, 064627
+    doi: 10.1103/PhysRevC.109.064627
+    year: 2024
+
+  - kind: article
+    authors: C. Ananna, et al.
+    title: "Detectors and shieldings: past and future at LUNA"
+    journal: Universe 10(5), 228
+    doi: 10.3390/universe10050228
+    year: 2024
+
+  - kind: article
+    authors: R. Buompane, et al.
+    title: Nuclear physics mid-term plan at LNGS
+    journal: Eur. Phys. J. Plus 139, 224
+    doi: 10.1140/epjp/s13360-023-04840-2
+    year: 2024
+
+  - kind: article
+    highlight: true
+    authors: J. Skowronski, et al.
+    title: Proton-capture rates on carbon isotopes and their impact on the astrophysical ¹²C/¹³C ratio
+    journal: Phys. Rev. Lett. 131, 162701
+    doi: 10.1103/PhysRevLett.131.162701
+    year: 2023
+
+  - kind: article
+    highlight: true
+    authors: J. Skowronski, et al.
+    title: Advances in radiative capture studies at LUNA with a segmented BGO detector
+    journal: J. Phys. G, Nucl. Part. Phys. 50, 045201
+    doi: 10.1088/1361-6471/acb961
+    year: 2023
+
+  - kind: article
+    highlight: true
+    authors: J. Skowronski, et al.
+    title: Improved S-factor of the ¹²C(p,γ)¹³N reaction at E = 320–620 keV and the 422 keV resonance
+    journal: Phys. Rev. C 107, L062801
+    doi: 10.1103/PhysRevC.107.L062801
+    year: 2023
+
+  - kind: article
+    highlight: true
+    authors: E. Masha, L. Barbieri, J. Skowronski, et al.
+    title: >-
+      First measurement of the low-energy direct capture in ²⁰Ne(p,γ)²¹Na and improved
+      energy and strength of the E_cm = 368 keV resonance
+    journal: Phys. Rev. C 108, L052801
+    doi: 10.1103/PhysRevC.108.L052801
+    year: 2023
+
+  - kind: article
+    authors: C. Ananna, et al.
+    title: Recent results and future perspectives with solid targets at LUNA
+    journal: Front. Astron. Space Sci. 10
+    doi: 10.3389/fspas.2023.1325053
+    year: 2023
+
+  - kind: article
+    authors: M. Ballan, et al.
+    title: Nuclear physics midterm plan at Legnaro National Laboratories (LNL)
+    journal: Eur. Phys. J. Plus 138, 8
+    doi: 10.1140/epjp/s13360-023-04249-x
+    year: 2023
+
+  - kind: article
+    authors: D. Piatti, et al.
+    title: First direct limit on the 334 keV resonance strength in the ²²Ne(α,γ)²⁶Mg reaction
+    journal: Eur. Phys. J. A 58, 194
+    doi: 10.1140/epja/s10050-022-00827-2
+    year: 2022
+
+  - kind: article
+    authors: C. Ananna, et al.
+    title: Underground measurements of nuclear reaction cross-sections relevant to AGB stars
+    journal: Universe 8, 4
+    doi: 10.3390/universe8010004
+    year: 2021
+
+  - kind: article
+    authors: S. Capra, et al.
+    title: First in-beam test of the GALTRACE innovative silicon detector array
+    journal: Il Nuovo Cimento C 34, 4
+    doi: 10.1393/ncc/i2021-21034-5
+    year: 2021
+
+  - kind: proceedings
+    highlight: true
+    authors: J. Skowronski, et al.
+    title: Low-energy cross section measurements of ¹²C(p,γ) deep underground at LUNA
+    journal: EPJ Web Conf. 279, 03002
+    doi: 10.1051/epjconf/202327903002
+    year: 2023
+
+  - kind: proceedings
+    highlight: true
+    authors: D. Rapagnani, J. Skowronski, et al.
+    title: Study of proton capture on carbon-13 isotope at LUNA
+    journal: J. Phys. Conf. Ser. 2586, 012103
+    doi: 10.1088/1742-6596/2586/1/012103
+    year: 2023
+
+  - kind: proceedings
+    highlight: true
+    authors: J. Skowronski, et al.
+    title: Measurement and analysis techniques for a study of ¹²C(p,γ) and ¹³C(p,γ) deep underground
+    journal: EPJ Web Conf. 260, 11008
+    doi: 10.1051/epjconf/202226011008
+    year: 2022
+
+  - kind: proceedings
+    authors: S. Capra, et al.
+    title: Validation and characterization of the GALTRACE silicon detector array demonstrator
+    journal: IEEE Nucl. Sci. Med. Im. Conf.
+    doi: 10.1109/NSS/MIC42101.2019.9059819
+    year: 2019

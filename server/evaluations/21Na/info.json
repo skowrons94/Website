@@ -1,0 +1,7 @@
+{
+  "id": "21Na",
+  "title": "^{21}\\text{Na}",
+  "reference": "10.1103/PhysRevC.108.L052801",
+  "author": "J. Skowronski",
+  "channels": ["p", "\\gamma_{0}", "\\gamma_{1}", "\\gamma_{2}"]
+}
