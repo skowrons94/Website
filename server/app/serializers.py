@@ -10,14 +10,20 @@ which includes fixed parameters and is a different, longer list.  Anything the
 user cannot edit carries ``free_index: null``.
 """
 
+import math
 from typing import Dict, List, Optional
 
 
 def _floats(values) -> Optional[List[float]]:
-    """A numpy array (or None) as a plain JSON list."""
+    """A numpy array (or None) as a plain JSON list.
+
+    A NaN or an infinity (AZURE2 returns them, e.g. for a few points of the 7Be
+    extrapolations) becomes null: Python would write them as bare NaN/Infinity,
+    which is not JSON, and the browser's parse of the whole response fails.
+    """
     if values is None:
         return None
-    return [float(v) for v in values]
+    return [f if math.isfinite(f) else None for f in map(float, values)]
 
 
 def _label_for(pair: int, labels) -> str:
@@ -183,7 +189,7 @@ def chi2_per_point(observed, errors, calculated, norm) -> Optional[float]:
         return None
     total, count = 0.0, 0
     for value, error, model in zip(observed, errors, calculated):
-        if error == 0:
+        if not error or value is None or model is None:
             continue
         total += (value * norm - model) ** 2 / (error * norm) ** 2
         count += 1
@@ -301,9 +307,10 @@ def extrapolations_to_csv(segments, selected=None) -> str:
                          f"{segment['angle_max']} deg")
         lines.append("energy_MeV,cross_section,s_factor")
         for j, energy in enumerate(energies):
-            c = cross[j] if j < len(cross) else ""
-            s = sfactor[j] if j < len(sfactor) else ""
-            lines.append(f"{energy!r},{c!r},{s!r}")
+            c = cross[j] if j < len(cross) else None
+            s = sfactor[j] if j < len(sfactor) else None
+            lines.append(",".join("" if v is None else repr(v)
+                                  for v in (energy, c, s)))
         lines.append("")
 
     return "\n".join(lines)
