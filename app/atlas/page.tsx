@@ -6,12 +6,12 @@ import { NetworkMap } from "@/components/atlas/network-map"
 import { LunaBadge } from "@/components/atlas/status-badge"
 import { Sci } from "@/components/sci"
 import { getAtlas, getMapData } from "@/lib/atlas"
+import { pageMetadata } from "@/lib/metadata"
 
-export const metadata: Metadata = {
-  title: "Reaction atlas",
-  description:
-    "The nuclear reactions that power stars and make the elements: where they sit on the chart of nuclides, how well each is known, and how it was measured.",
-}
+export const metadata: Metadata = pageMetadata(
+  "Reaction atlas",
+  "The nuclear reactions that power stars and make the elements: where they sit on the chart of nuclides, how well each is known, and how it was measured.",
+)
 
 /** `2004–2011`, `2006`, or nothing. */
 function span(years: number[]): string {
@@ -90,12 +90,14 @@ export default function AtlasPage() {
             <h2 id="luna-heading" className="font-serif text-2xl font-semibold tracking-tight">
               LUNA measurements
             </h2>
-            <Link
-              href="/atlas/timeline?only=luna"
-              className="text-sm text-link underline-offset-4 hover:underline"
-            >
-              LUNA on the timeline
-            </Link>
+            <span className="flex flex-wrap gap-x-5 gap-y-1 text-sm">
+              <Link href="/atlas/timeline?only=luna" className="text-link underline-offset-4 hover:underline">
+                LUNA on the timeline
+              </Link>
+              <Link href="/research#luna" className="text-link underline-offset-4 hover:underline">
+                My work at LUNA
+              </Link>
+            </span>
           </div>
           <p className="mt-3 max-w-3xl text-pretty leading-relaxed text-muted-foreground">
             Reactions in the atlas with at least one measurement published by the LUNA collaboration, with

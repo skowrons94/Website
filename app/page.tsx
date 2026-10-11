@@ -33,26 +33,32 @@ export default function HomePage() {
           ))}
 
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3 pt-5 text-sm">
-          <Link
-            href="/evaluations"
-            className="group inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2.5 font-medium text-primary-foreground transition-opacity hover:opacity-90"
-          >
-            Run an R-matrix evaluation
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-          </Link>
-          <Link
-            href="/notes"
-            className="text-link underline-offset-4 hover:underline"
-          >
-            Read the notes
-          </Link>
-          <a
-            href={profile.cv.file}
-            className="inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground"
-          >
-            <FileText className="h-3.5 w-3.5" />
-            CV
-          </a>
+            <Link
+              href="/evaluations"
+              className="group inline-flex min-h-10 items-center gap-2 rounded-md bg-primary px-4 py-2.5 font-medium text-primary-foreground transition-opacity hover:opacity-90"
+            >
+              Run an R-matrix evaluation
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+            <Link
+              href="/atlas"
+              className="inline-flex min-h-10 items-center text-link underline-offset-4 hover:underline"
+            >
+              Explore the reaction atlas
+            </Link>
+            <Link
+              href="/publications"
+              className="inline-flex min-h-10 items-center text-link underline-offset-4 hover:underline"
+            >
+              Publications
+            </Link>
+            <Link
+              href="/cv"
+              className="inline-flex min-h-10 items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <FileText className="h-3.5 w-3.5" />
+              CV
+            </Link>
           </div>
         </div>
       </section>
@@ -67,7 +73,7 @@ export default function HomePage() {
             href="/research"
             className="text-sm text-link underline-offset-4 hover:underline"
           >
-            All four threads
+            All research threads
           </Link>
         </div>
 
@@ -92,6 +98,50 @@ export default function HomePage() {
               </p>
             </Link>
           ))}
+        </div>
+      </section>
+
+      {/* -- the two things to open: the atlas and the evaluations ------- */}
+      {/* Side by side from lg, so neither sits at the very bottom of the page
+          and the outreach half of the site is as close to the top as the
+          specialist half. */}
+      <section className="grid gap-6 border-t border-border/70 py-16 lg:grid-cols-2">
+        <div className="flex flex-col rounded-lg border border-border bg-card p-6 sm:p-8 lg:p-10">
+          <h2 className="font-serif text-2xl font-semibold tracking-tight">
+            A reaction atlas
+          </h2>
+          <p className="mt-4 max-w-2xl text-pretty leading-relaxed text-muted-foreground">
+            The reactions of the pp chains, the CNO cycles, helium burning and
+            the Big Bang, drawn on the chart of nuclides. For each one: what it
+            does in a star, how well its rate is known, and who measured it,
+            where and how, with the references.
+          </p>
+          <Link
+            href="/atlas"
+            className="group mt-auto inline-flex min-h-10 items-center gap-2 self-start pt-6 text-sm font-medium text-link underline-offset-4 hover:underline"
+          >
+            Open the atlas
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </Link>
+        </div>
+        <div className="flex flex-col rounded-lg border border-border bg-card p-6 sm:p-8 lg:p-10">
+          <h2 className="font-serif text-2xl font-semibold tracking-tight">
+            R-matrix evaluations, live
+          </h2>
+          <p className="mt-4 max-w-2xl text-pretty leading-relaxed text-muted-foreground">
+            Published evaluations, running on a server against the real AZURE2
+            code. Open a compound nucleus, look at its level scheme and the data
+            it was fitted to, move a level energy or a reduced width, and watch
+            the cross section and the χ² respond. Nothing is installed, and the
+            input files can be downloaded and run locally.
+          </p>
+          <Link
+            href="/evaluations"
+            className="group mt-auto inline-flex min-h-10 items-center gap-2 self-start pt-6 text-sm font-medium text-link underline-offset-4 hover:underline"
+          >
+            Browse the evaluations
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </Link>
         </div>
       </section>
 
@@ -129,51 +179,6 @@ export default function HomePage() {
               </p>
             </Link>
           ))}
-        </div>
-      </section>
-
-      {/* -- atlas call-out ------------------------------------------------ */}
-      <section className="border-t border-border/70 py-16">
-        <div className="rounded-lg border border-border bg-card p-8 sm:p-10">
-          <h2 className="font-serif text-2xl font-semibold tracking-tight">
-            A reaction atlas
-          </h2>
-          <p className="mt-4 max-w-2xl text-pretty leading-relaxed text-muted-foreground">
-            The reactions of the pp chains, the CNO cycles, helium burning and
-            the Big Bang, drawn on the chart of nuclides. For each one: what it
-            does in a star, how well its rate is known, and who measured it,
-            where and how, with the references.
-          </p>
-          <Link
-            href="/atlas"
-            className="group mt-6 inline-flex items-center gap-2 text-sm font-medium text-link underline-offset-4 hover:underline"
-          >
-            Open the atlas
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-          </Link>
-        </div>
-      </section>
-
-      {/* -- evaluations call-out ------------------------------------------ */}
-      <section className="border-t border-border/70 py-16">
-        <div className="rounded-lg border border-border bg-card p-8 sm:p-10">
-          <h2 className="font-serif text-2xl font-semibold tracking-tight">
-            R-matrix evaluations, live
-          </h2>
-          <p className="mt-4 max-w-2xl text-pretty leading-relaxed text-muted-foreground">
-            Published evaluations, running on a server against the real AZURE2
-            code. Open a compound nucleus, look at its level scheme and the data
-            it was fitted to, move a level energy or a reduced width, and watch
-            the cross section and the χ² respond. Nothing is installed, and the
-            input files can be downloaded and run locally.
-          </p>
-          <Link
-            href="/evaluations"
-            className="group mt-6 inline-flex items-center gap-2 text-sm font-medium text-link underline-offset-4 hover:underline"
-          >
-            Browse the evaluations
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-          </Link>
         </div>
       </section>
     </div>

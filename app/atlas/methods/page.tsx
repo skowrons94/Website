@@ -7,12 +7,12 @@ import { Container, PageHeader } from "@/components/page-header"
 import { Sci } from "@/components/sci"
 import { getAtlas, type Facility, type Method, type Reaction } from "@/lib/atlas"
 import { referenceHref, shortCitation } from "@/lib/atlas-format"
+import { pageMetadata } from "@/lib/metadata"
 
-export const metadata: Metadata = {
-  title: "Methods and laboratories · Reaction atlas",
-  description:
-    "How cross sections at stellar energies are measured, directly and indirectly, and the laboratories that measure them.",
-}
+export const metadata: Metadata = pageMetadata(
+  "Methods and laboratories · Reaction atlas",
+  "How cross sections at stellar energies are measured, directly and indirectly, and the laboratories that measure them.",
+)
 
 const asList = (value: string | string[] | undefined) =>
   value === undefined ? [] : Array.isArray(value) ? value : [value]
@@ -242,10 +242,10 @@ export default function MethodsPage() {
     <Container wide>
       <Link
         href="/atlas"
-        className="mb-8 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        className="-mt-2.5 mb-[1.375rem] inline-flex py-2.5 items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" />
-        Atlas
+        Reaction atlas
       </Link>
       <PageHeader
         eyebrow="Reaction atlas"

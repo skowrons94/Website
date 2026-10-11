@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, ArrowRight } from "lucide-react"
 
 import {
   formatDate,
@@ -10,6 +10,7 @@ import {
   getNoteSlugs,
 } from "@/lib/content"
 import { Sci } from "@/components/sci"
+import { pageMetadata } from "@/lib/metadata"
 
 export function generateStaticParams() {
   return getNoteSlugs().map((slug) => ({ slug }))
@@ -23,7 +24,7 @@ export async function generateMetadata({
   const { slug } = await params
   if (!getNoteSlugs().includes(slug)) return {}
   const note = await getNote(slug)
-  return { title: note.title, description: note.summary }
+  return pageMetadata(note.title, note.summary)
 }
 
 export default async function NotePage({
@@ -42,10 +43,10 @@ export default async function NotePage({
     <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 xl:max-w-7xl">
       <Link
         href="/notes"
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        className="-my-2.5 inline-flex py-2.5 items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" />
-        Notes
+        All notes
       </Link>
 
       <div className="mt-8 lg:grid lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-14 xl:grid-cols-[minmax(0,1fr)_17rem]">
@@ -94,6 +95,34 @@ export default async function NotePage({
             </section>
           )}
 
+          {/* -- where to go from a note: the theory put to use --------------- */}
+          <section className="mt-16 grid gap-4 border-t border-border/70 pt-8 sm:grid-cols-2">
+            <Link
+              href="/evaluations"
+              className="group block rounded-lg border border-border bg-card p-5 transition-colors hover:border-foreground/30"
+            >
+              <span className="flex items-center gap-2 font-serif text-lg font-semibold tracking-tight group-hover:text-link">
+                Try it on a real fit
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </span>
+              <span className="mt-1 block text-sm leading-relaxed text-muted-foreground">
+                Live AZURE2 evaluations: move a level and watch the cross section respond.
+              </span>
+            </Link>
+            <Link
+              href="/atlas"
+              className="group block rounded-lg border border-border bg-card p-5 transition-colors hover:border-foreground/30"
+            >
+              <span className="flex items-center gap-2 font-serif text-lg font-semibold tracking-tight group-hover:text-link">
+                The reactions themselves
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </span>
+              <span className="mt-1 block text-sm leading-relaxed text-muted-foreground">
+                The reaction atlas: what each reaction does in a star and how it was measured.
+              </span>
+            </Link>
+          </section>
+
           {others.length > 0 && (
             <section className="mt-16 border-t border-border/70 pt-8">
               <h2 className="mb-5 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
@@ -107,10 +136,10 @@ export default async function NotePage({
                     className="group block py-4 first:pt-0"
                   >
                     <h3 className="font-serif font-semibold tracking-tight group-hover:text-link">
-                      {other.title}
+                      <Sci>{other.title}</Sci>
                     </h3>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      {other.summary}
+                      <Sci>{other.summary}</Sci>
                     </p>
                   </Link>
                 ))}

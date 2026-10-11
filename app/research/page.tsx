@@ -5,12 +5,12 @@ import { ArrowRight } from "lucide-react"
 import { Container, PageHeader } from "@/components/page-header"
 import { getResearch } from "@/lib/content"
 import { Sci } from "@/components/sci"
+import { pageMetadata } from "@/lib/metadata"
 
-export const metadata: Metadata = {
-  title: "Research",
-  description:
-    "Underground cross-section measurements, R-matrix evaluation, γ-ray tracking and electron screening.",
-}
+export const metadata: Metadata = pageMetadata(
+  "Research",
+  "Underground cross-section measurements, R-matrix evaluation, γ-ray tracking and electron screening.",
+)
 
 export default function ResearchPage() {
   const threads = getResearch()
@@ -79,6 +79,24 @@ export default function ResearchPage() {
           </article>
         ))}
       </div>
+
+      <nav
+        aria-label="More about my work"
+        className="mt-20 flex flex-wrap gap-x-6 gap-y-1 border-t border-border/70 pt-8 text-sm"
+      >
+        <Link href="/publications" className="inline-flex min-h-10 items-center text-link underline-offset-4 hover:underline">
+          Publications
+        </Link>
+        <Link href="/software" className="inline-flex min-h-10 items-center text-link underline-offset-4 hover:underline">
+          Software
+        </Link>
+        <Link href="/cv" className="inline-flex min-h-10 items-center text-link underline-offset-4 hover:underline">
+          Curriculum vitae
+        </Link>
+        <Link href="/atlas" className="inline-flex min-h-10 items-center text-link underline-offset-4 hover:underline">
+          The reactions, explained: the reaction atlas
+        </Link>
+      </nav>
     </Container>
   )
 }

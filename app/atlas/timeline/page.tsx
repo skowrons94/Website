@@ -6,12 +6,12 @@ import { Container, PageHeader } from "@/components/page-header"
 import { TimelineView, type TimelineItem } from "@/components/atlas/timeline-view"
 import { getAtlas } from "@/lib/atlas"
 import { referenceHref, shortCitation } from "@/lib/atlas-format"
+import { pageMetadata } from "@/lib/metadata"
 
-export const metadata: Metadata = {
-  title: "Timeline · Reaction atlas",
-  description:
-    "A history of nuclear astrophysics: the theory, the experiments, the observations and the laboratories, from 1920 to today.",
-}
+export const metadata: Metadata = pageMetadata(
+  "Timeline · Reaction atlas",
+  "A history of nuclear astrophysics: the theory, the experiments, the observations and the laboratories, from 1920 to today.",
+)
 
 export default function TimelinePage() {
   const atlas = getAtlas()
@@ -40,10 +40,10 @@ export default function TimelinePage() {
     <Container wide>
       <Link
         href="/atlas"
-        className="mb-8 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        className="-mt-2.5 mb-[1.375rem] inline-flex py-2.5 items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" />
-        Atlas
+        Reaction atlas
       </Link>
       <PageHeader
         eyebrow="Reaction atlas"

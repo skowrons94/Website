@@ -3,11 +3,12 @@ import type { Metadata } from "next"
 import { Container, PageHeader } from "@/components/page-header"
 import { getProfile, getPublications, type Publication } from "@/lib/content"
 import { Sci } from "@/components/sci"
+import { pageMetadata } from "@/lib/metadata"
 
-export const metadata: Metadata = {
-  title: "Publications",
-  description: "Peer-reviewed articles and conference proceedings.",
-}
+export const metadata: Metadata = pageMetadata(
+  "Publications",
+  "Peer-reviewed articles and conference proceedings by Jakub Skowronski in experimental nuclear astrophysics.",
+)
 
 const SECTIONS: { kind: string; label: string }[] = [
   { kind: "article", label: "Research articles" },

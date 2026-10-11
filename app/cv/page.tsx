@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import Link from "next/link"
 import { Download } from "lucide-react"
 
 import { Container, PageHeader } from "@/components/page-header"
@@ -10,11 +11,12 @@ import {
   type TimelineEntry,
 } from "@/lib/content"
 import { Sci } from "@/components/sci"
+import { pageMetadata } from "@/lib/metadata"
 
-export const metadata: Metadata = {
-  title: "CV",
-  description: "Employment, education, research experience, awards and teaching.",
-}
+export const metadata: Metadata = pageMetadata(
+  "CV",
+  "Curriculum vitae of Jakub Skowronski, experimental nuclear astrophysicist: employment, education, research experience, awards, talks and teaching.",
+)
 
 function Section({
   title,
@@ -115,13 +117,21 @@ export default function CVPage() {
         lead={`${profile.role} · ${profile.affiliation}`}
       />
 
-      <a
-        href={profile.cv.file}
-        className="mb-14 inline-flex items-center gap-2 rounded-md border border-border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
-      >
-        <Download className="h-4 w-4" />
-        {profile.cv.label}
-      </a>
+      <div className="mb-14 flex flex-wrap items-center gap-x-6 gap-y-3">
+        <a
+          href={profile.cv.file.startsWith("/") ? `${process.env.BASE_PATH ?? ""}${profile.cv.file}` : profile.cv.file}
+          className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
+        >
+          <Download className="h-4 w-4" />
+          {profile.cv.label}
+        </a>
+        <Link href="/publications" className="inline-flex min-h-10 items-center text-sm text-link underline-offset-4 hover:underline">
+          Publications
+        </Link>
+        <Link href="/research" className="inline-flex min-h-10 items-center text-sm text-link underline-offset-4 hover:underline">
+          Research
+        </Link>
+      </div>
 
       <div className="space-y-12">
         <Section title="Employment">

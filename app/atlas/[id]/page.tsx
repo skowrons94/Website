@@ -24,6 +24,7 @@ import {
   STATUS_HINT,
   type Reaction,
 } from "@/lib/atlas"
+import { pageMetadata } from "@/lib/metadata"
 
 export function generateStaticParams() {
   return getReactionIds().map((id) => ({ id }))
@@ -39,10 +40,10 @@ export async function generateMetadata({
   const { id } = await params
   const reaction = getReaction(id)
   if (!reaction) return {}
-  return {
-    title: reaction.label,
-    description: reaction.summary || `${reaction.label}: entry in preparation in the reaction atlas.`,
-  }
+  return pageMetadata(
+    `${reaction.label} · Reaction atlas`,
+    reaction.summary || `${reaction.label}: entry in preparation in the reaction atlas.`,
+  )
 }
 
 /* -- pieces ---------------------------------------------------------------- */
@@ -218,10 +219,16 @@ export default async function ReactionPage({ params }: { params: Promise<{ id: s
     <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 xl:max-w-7xl">
       <Link
         href={family ? `/atlas#${family.id}` : "/atlas"}
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        className="-my-2.5 inline-flex py-2.5 items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" />
-        Atlas
+        {family ? (
+          <span>
+            Reaction atlas · <Sci>{family.name.replace(/^The /, "")}</Sci>
+          </span>
+        ) : (
+          "Reaction atlas"
+        )}
       </Link>
 
       {/* -- header -------------------------------------------------------- */}

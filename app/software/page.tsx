@@ -5,12 +5,12 @@ import { ArrowUpRight } from "lucide-react"
 import { Container, PageHeader } from "@/components/page-header"
 import { Sci } from "@/components/sci"
 import { getSoftware, type SoftwareEntry } from "@/lib/content"
+import { pageMetadata } from "@/lib/metadata"
 
-export const metadata: Metadata = {
-  title: "Software",
-  description:
-    "AZURE2, the R-matrix code for nuclear astrophysics; LunaSRIM, SRIM-2013 in pure Python; and LUNA Skills, agent skills for experimental nuclear astrophysics.",
-}
+export const metadata: Metadata = pageMetadata(
+  "Software",
+  "AZURE2, the R-matrix code for nuclear astrophysics; LunaSRIM, SRIM-2013 in pure Python; and LUNA Skills, agent skills for experimental nuclear astrophysics.",
+)
 
 function Entry({ entry }: { entry: SoftwareEntry }) {
   const meta = [entry.version && `version ${entry.version}`, entry.license && `${entry.license} licence`].filter(Boolean)
