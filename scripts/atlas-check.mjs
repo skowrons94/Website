@@ -27,6 +27,7 @@ import {
   parseParticles,
   readRaw,
 } from "../lib/atlas-core.mjs"
+import { TRANSLATIONS, isTranslationKey } from "../lib/localize.mjs"
 
 const args = process.argv.slice(2)
 const quiet = args.includes("--quiet")
@@ -77,6 +78,40 @@ function checkList(file, entry, field, where = "") {
   return value ?? []
 }
 
+/*
+ * Translations: `summary_it` beside `summary`, and so on (lib/localize.mjs).
+ * They are optional. A translation of the wrong kind (text for a list), or one
+ * whose English field does not exist, is an error; a reader-facing field with
+ * no translation is only counted, and reported as one warning per file.
+ */
+const untranslated = new Map() // file -> ["id: field", ...]
+function checkTranslations(file, entry, fields, where = "") {
+  if (!entry || typeof entry !== "object" || isList(entry)) return
+  for (const key of Object.keys(entry)) {
+    if (!isTranslationKey(key)) continue
+    const base = key.replace(/_[a-z]{2}$/, "")
+    const english = entry[base]
+    const translated = entry[key]
+    if (english === undefined || english === null) {
+      warn(file, `${where}\`${key}\` translates \`${base}\`, which is not there`)
+    } else if (isList(english) !== isList(translated) || (!isList(translated) && !isText(translated))) {
+      error(file, `${where}\`${key}\` must be ${isList(english) ? "a list" : "text"}, like \`${base}\``)
+    } else if (isList(translated) && !translated.every(isText)) {
+      error(file, `${where}\`${key}\`: every entry must be text`)
+    }
+  }
+  for (const lang of TRANSLATIONS) {
+    for (const field of fields) {
+      const english = entry[field]
+      const present = isList(english) ? english.length > 0 : isText(english)
+      if (present && (entry[`${field}_${lang}`] === undefined || entry[`${field}_${lang}`] === null)) {
+        if (!untranslated.has(file)) untranslated.set(file, [])
+        untranslated.get(file).push(`${where.replace(/: $/, "") || "(top)"} ${field}_${lang}`)
+      }
+    }
+  }
+}
+
 /* -- read ------------------------------------------------------------------ */
 
 const raw = readRaw(dir)
@@ -96,18 +131,21 @@ const listedReactions = new Set()
   families.forEach((f, i) => {
     const where = `families[${i}]: `
     requireFields(file, f, ["id", "name", "summary"], where)
+    checkTranslations(file, f, ["name", "summary"], where)
     if (familyIds.has(f?.id)) error(file, `${where}duplicate family id \`${f.id}\``)
     familyIds.add(f?.id)
   })
   networks.forEach((n, i) => {
     const where = `networks[${i}] (${n?.id ?? "?"}): `
     requireFields(file, n, ["id", "family", "name", "summary", "reactions"], where)
+    checkTranslations(file, n, ["name", "summary"], where)
     if (networkIds.has(n?.id)) error(file, `${where}duplicate network id`)
     networkIds.add(n?.id)
     if (n?.family && !familyIds.has(n.family)) error(file, `${where}unknown family \`${n.family}\``)
     for (const [j, t] of checkList(file, n, "temperatures", where).entries()) {
       if (!(typeof t?.T9 === "number" && t.T9 > 0)) error(file, `${where}temperatures[${j}].T9 must be a positive number (GK)`)
       if (!isText(t?.label)) warn(file, `${where}temperatures[${j}] has no label`)
+      checkTranslations(file, t, ["label"], `${where}temperatures[${j}]: `)
     }
     for (const id of checkList(file, n, "reactions", where)) listedReactions.add(String(id))
   })
@@ -165,6 +203,7 @@ const facilityIds = new Set()
       error(file, `${where}\`group\` must be underground | surface | other`)
     }
     if (!isText(f?.summary)) stubs++
+    checkTranslations(file, f, ["summary"], where)
   })
   if (stubs) warn(file, `${stubs} of ${list.length} facilities have no summary yet`)
 }
@@ -186,6 +225,7 @@ const methodIds = new Set()
       }
     }
     if (!isText(m?.summary)) stubs++
+    checkTranslations(file, m, ["name", "summary", "strengths", "limits"], where)
   })
   if (stubs) warn(file, `${stubs} of ${list.length} methods have no summary yet`)
 }
@@ -216,6 +256,9 @@ for (const [id, { file, data: r }] of reactionFiles) {
   )
   checkEnum(file, r.kind, "kind")
   checkEnum(file, r.importance, "importance")
+  // The general-reader fields are expected in Italian; the specialist ones
+  // (details, measurement notes, open questions) may stay English.
+  checkTranslations(file, r, ["summary", "role", "status_note"])
   checkEnum(file, r.status, "status")
 
   for (const field of ["target", "product"]) {
@@ -284,6 +327,7 @@ for (const [id, { file, data: r }] of reactionFiles) {
     checkRefs(file, refs, where)
     if (!isText(m.energy)) warn(file, `${where}no \`energy\` range`)
     if (!isText(m.note)) warn(file, `${where}no \`note\``)
+    checkTranslations(file, m, [], where)
   })
 
   if (!decay) {
@@ -316,7 +360,12 @@ if (raw.timelineMissing) {
     if (refs.length === 0 && !e?.url) warn(file, `${where}no reference and no url`)
     for (const id of checkList(file, e, "reactions", where)) if (!knownReaction(String(id))) error(file, `${where}unknown reaction \`${id}\``)
     if (e?.facility && !facilityIds.has(e.facility)) error(file, `${where}unknown facility \`${e.facility}\``)
+    checkTranslations(file, e, ["title", "text"], where)
   })
+}
+
+for (const [file, missing] of untranslated) {
+  warn(file, `${missing.length} field(s) without an Italian translation (English is shown on /it): ${missing.slice(0, 6).join(", ")}${missing.length > 6 ? ", …" : ""}`)
 }
 
 /* -- a last pass through the loader the site uses -------------------------- */

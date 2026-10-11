@@ -31,6 +31,15 @@ nuclear-data/          AME2020 mass excesses and NUBASE2020 half-lives (read, ne
   short sentences, no jargon left undefined, no equations. `details`,
   `measurements` and `open_questions` are for a physicist: precise, with
   numbers, in the style of a methods section.
+- The site is also in Italian, under `/it`. A translation sits beside the field
+  it translates, with the suffix `_it`: `summary_it` beside `summary`,
+  `role_it` beside `role`, `label_it` beside a temperature's `label`. Every
+  translation is optional; where one is missing the Italian page shows the
+  English. Translate the general-reader fields (`summary`, `role`,
+  `status_note`, names and summaries in the other files); the specialist ones
+  (`details`, measurement `note`s, `open_questions`) may stay English, and the
+  Italian page says so above them. Nuclide notation, numbers and units are
+  written as in the English; ids and anchors are never translated.
 - Every factual statement about a measurement must be backed by a reference id,
   and every reference must have been checked against the publisher page, the
   arXiv entry or INSPIRE before it is added. `checked` records how.
@@ -73,6 +82,12 @@ evaluations: [adelberger2011, acharya2025]   # compilations / evaluations used f
 open_questions:
   - ...
 related: [15N-pa-12C]            # other reaction ids worth a link
+summary_it: >-                   # optional Italian versions, beside or after the English
+  Il passo più lento del ciclo CNO. ...
+role_it: >-
+  ...
+status_note_it: >-
+  ...
 ```
 
 A decay needs only `id`, `label`, `kind: decay`, `target`, `product`,
@@ -96,8 +111,17 @@ lemut2006:
 ```
 
 The same key may appear in two files only if both entries carry the same DOI.
+References are not translated: titles stay as published.
 
 ## networks.yaml, facilities.yaml, methods.yaml, timeline.yaml
 
 See the comments at the top of each file. Every list is plain YAML; order in the
 file is display order.
+
+## Checks on translations
+
+`npm run check:atlas` treats the `_it` fields as optional. It stops the build
+only on a translation of the wrong kind (a list where the English is text, or
+the reverse). A translation whose English field does not exist, and the
+general-reader fields still without an Italian version, are listed as
+warnings, one line per file.
