@@ -30,6 +30,15 @@ export async function NotePage({ slug, lang }: { slug: string; lang: Lang }) {
   const noteLang = lang === "en" ? undefined : "en"
 
   const note = await getNote(slug)
+  // Links between pages inside the (English) note lead to the Italian pages here.
+  const base = process.env.BASE_PATH ?? ""
+  const html =
+    lang === "en"
+      ? note.html
+      : note.html.replace(
+          new RegExp(`href="${base}/(?!${lang}/|_next/|atlas/data\\.json)`, "g"),
+          `href="${base}/${lang}/`,
+        )
   const others = getAllNotes().filter((n) => n.slug !== slug).slice(0, 3)
   const sections = note.headings.filter((h) => h.depth === 2)
 
@@ -72,7 +81,7 @@ export async function NotePage({ slug, lang }: { slug: string; lang: Lang }) {
           <div
             lang={noteLang}
             className="prose-note mt-10"
-            dangerouslySetInnerHTML={{ __html: note.html }}
+            dangerouslySetInnerHTML={{ __html: html }}
           />
 
           {note.references && note.references.length > 0 && (

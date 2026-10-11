@@ -14,7 +14,8 @@ import { mono, sans, serif } from "@/lib/fonts"
  * is that page, with a document of its own (experimental.globalNotFound).
  */
 export const metadata: Metadata = {
-  title: "Page not found",
+  // Both languages: the page learns which one it is in only in the browser.
+  title: "Page not found · Pagina non trovata",
 }
 
 export default function GlobalNotFound() {

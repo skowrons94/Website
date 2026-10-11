@@ -362,7 +362,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
                                 <Sci>{facility.name}</Sci>
                               </Link>
                             ) : m.lab ? (
-                              <span className="font-medium">
+                              <span lang={enLang("measurements")} className="font-medium">
                                 <Sci>{m.lab}</Sci>
                               </span>
                             ) : (
@@ -382,7 +382,11 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
                               </Link>
                             )}
                             {method && m.energy && " · "}
-                            {m.energy && <Sci>{m.energy}</Sci>}
+                            {m.energy && (
+                              <span lang={enLang("measurements")}>
+                                <Sci>{m.energy}</Sci>
+                              </span>
+                            )}
                           </p>
                           {m.note && (
                             <p className="mt-2 text-pretty text-[0.95rem] leading-relaxed text-foreground/90">

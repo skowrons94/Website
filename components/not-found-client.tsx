@@ -7,7 +7,7 @@ import { NotFoundBody } from "@/components/not-found-body"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import type { Profile } from "@/lib/content"
-import { dict, langOf, type Lang } from "@/lib/i18n"
+import { langOf, type Lang } from "@/lib/i18n"
 
 /**
  * The 404 for an address no route matches. One file serves every such address
@@ -23,7 +23,6 @@ export function NotFoundClient({ profiles }: { profiles: Record<Lang, Profile> }
     const detected = langOf(path.replace(/\/$/, "") || "/")
     setLang(detected)
     document.documentElement.lang = detected
-    document.title = `${dict(detected).notFound.title} · ${profiles[detected].name}`
   }, [profiles])
 
   return (
