@@ -18,6 +18,7 @@ import os
 from datetime import datetime
 
 from flask import Blueprint, current_app, jsonify, request, send_file
+from werkzeug.exceptions import HTTPException
 
 from app import evaluations as evaluations_module
 from app import serializers
@@ -57,6 +58,9 @@ def _bad_request(err):
 
 @bp.errorhandler(Exception)
 def _unexpected(err):
+    if isinstance(err, HTTPException):
+        # Raised by Flask itself (a malformed body, say): keep its status.
+        return jsonify({"error": err.description}), err.code
     log.exception("unhandled error on %s", request.path)
     return jsonify({"error": "internal server error"}), 500
 

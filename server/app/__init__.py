@@ -66,6 +66,16 @@ def create_app(config=Config):
     from app.routes import bp
     app.register_blueprint(bp)
 
+    # The blueprint's handlers only see errors raised inside its views; an
+    # unknown path or a wrong method fails in routing, before any view, and
+    # would otherwise come back as Flask's HTML page to a JSON client.
+    from flask import jsonify
+    from werkzeug.exceptions import HTTPException
+
+    @app.errorhandler(HTTPException)
+    def _http_error(err):
+        return jsonify({"error": err.description}), err.code
+
     root = app.config["EVALUATIONS_DIR"]
     log = logging.getLogger(__name__)
     log.info("serving evaluations from %s", root)

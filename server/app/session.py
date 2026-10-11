@@ -21,6 +21,7 @@ calculate the wrong segments.
 """
 
 import logging
+import math
 import threading
 import time
 import uuid
@@ -128,7 +129,16 @@ class Session:
             if index < 0 or index >= n:
                 raise IndexError(
                     f"free-parameter index {index} out of range (0..{n - 1})")
+            # bool is an int to Python, null is not a number, and NaN or an
+            # infinity would come back out as bare NaN/Infinity tokens, which
+            # are not JSON and break the client's parse of every curve.
+            if isinstance(value, bool) or not isinstance(value, (int, float, str)):
+                raise ValueError(
+                    f"value for parameter {index} must be a number")
             value = float(value)
+            if not math.isfinite(value):
+                raise ValueError(
+                    f"value for parameter {index} must be finite")
             if self.params[index] != value:
                 self.params[index] = value
                 changed += 1
