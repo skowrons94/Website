@@ -10,12 +10,21 @@ importance: major
 summary: >-
   Neon-22 captures a helium nucleus and keeps it, becoming magnesium-26. It
   competes with the neutron-releasing reaction on the same nucleus.
+summary_it: >-
+  Il neon-22 cattura un nucleo di elio e lo trattiene, diventando magnesio-26.
+  Compete con la reazione sullo stesso nucleo che libera neutroni.
 role: >-
   Every neon-22 nucleus that captures helium through this reaction is lost as a
   neutron source. At lower temperatures this capture is faster than the
   neutron-producing reaction, so it decides how much neon-22 is still left
   when the star becomes hot enough to release neutrons. It also adds
   magnesium-26 to the gas the star returns to the Galaxy.
+role_it: >-
+  Ogni nucleo di neon-22 che cattura elio attraverso questa reazione è perso
+  come sorgente di neutroni. A temperature più basse questa cattura è più veloce
+  della reazione che produce neutroni, quindi decide quanto neon-22 resta quando
+  la stella diventa abbastanza calda da liberare neutroni. Aggiunge anche
+  magnesio-26 al gas che la stella restituisce alla Galassia.
 details: >-
   The rate is dominated by low-energy resonances in ²⁶Mg, chiefly those at
   E(α,lab) = 650 and 830 keV. For the 830 keV resonance Hunt et al. (2019)
@@ -34,6 +43,9 @@ status: uncertain
 status_note: >-
   The 830 keV resonance is measured to about 6%, but the lower-lying resonances
   are known only from indirect data and direct upper limits.
+status_note_it: >-
+  La risonanza a 830 keV è misurata a circa il 6 %, ma le risonanze più basse
+  sono note solo da dati indiretti e da limiti superiori diretti.
 methods: [direct-surface, direct-underground, anc]
 measurements:
   - year: 2019

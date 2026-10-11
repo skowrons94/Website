@@ -10,12 +10,22 @@ importance: major
 summary: >-
   A proton capture on the heaviest stable magnesium isotope that makes ²⁷Al, the
   only stable isotope of aluminium.
+summary_it: >-
+  Una cattura protonica sull'isotopo stabile più pesante del magnesio che
+  produce ²⁷Al, l'unico isotopo stabile dell'alluminio.
 role: >-
   ²⁶Mg is made both by the decay of ²⁶Al and directly in earlier burning stages.
   This reaction turns it into ²⁷Al, so it feeds the aluminium seen in stars. In
   globular clusters some stars show more aluminium and less magnesium than
   others, and models of these stars need this rate together with the other proton
   captures of the MgAl cycle.
+role_it: >-
+  Il ²⁶Mg viene prodotto sia dal decadimento del ²⁶Al sia direttamente in fasi
+  di combustione precedenti. Questa reazione lo trasforma in ²⁷Al, quindi
+  alimenta l'alluminio osservato nelle stelle. Negli ammassi globulari alcune
+  stelle mostrano più alluminio e meno magnesio di altre, e i modelli di queste
+  stelle hanno bisogno di questo tasso insieme alle altre catture protoniche del
+  ciclo MgAl.
 details: >-
   The rate at hydrogen-burning temperatures is given by narrow resonances. Limata
   et al. (2010) measured the strength of the E_cm = 326 keV resonance at LUNA with
@@ -26,6 +36,9 @@ status: uncertain
 status_note: >-
   The reference resonance is measured precisely; the weaker resonances below it,
   which matter at the lowest temperatures, are less well constrained.
+status_note_it: >-
+  La risonanza di riferimento è misurata con precisione; le risonanze più deboli
+  al di sotto, che contano alle temperature più basse, sono vincolate meno bene.
 methods: [direct-underground, direct-surface]
 measurements:
   - year: 1990

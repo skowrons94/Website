@@ -12,6 +12,9 @@
 #              except a facility opening, which may cite an official page via url
 #   url        optional official page (Nobel Prize pages, facility pages)
 #   reactions  optional reaction ids from networks.yaml
+#   title_it, text_it   the Italian title and text, for /it/atlas/timeline
+#              (the English is shown where they are missing; the anchor of an
+#              event is always made from the English title)
 #
 # Dates and numbers in the text are taken from the cited papers or from the
 # records listed in their `checked` field.
@@ -20,6 +23,7 @@ events:
   - year: 1920
     month: 8
     title: Eddington proposes that stars burn hydrogen into helium
+    title_it: Eddington propone che le stelle brucino idrogeno in elio
     category: theory
     text: >-
       In an address to the British Association in Cardiff, Arthur Eddington
@@ -27,65 +31,108 @@ events:
       argued that the mass lost when hydrogen turns into helium inside stars
       would be released as energy, enough to keep them shining for a very long
       time. How this could happen was not yet known.
+    text_it: >-
+      In un discorso alla British Association a Cardiff, Arthur Eddington
+      osservò che un nucleo di elio pesa meno di quattro nuclei di idrogeno.
+      Sostenne che la massa persa quando l'idrogeno si trasforma in elio dentro
+      le stelle sarebbe stata liberata come energia, abbastanza da farle
+      brillare per moltissimo tempo. Come ciò potesse avvenire non era ancora
+      noto.
     refs: [eddington1920]
 
   - year: 1928
     title: Gamow explains how particles cross the Coulomb barrier
+    title_it: Gamow spiega come le particelle attraversano la barriera coulombiana
     category: theory
     text: >-
       George Gamow used the new quantum mechanics to explain alpha decay. A
       particle can pass through the electric repulsion between nuclei, the
       Coulomb barrier, even when its energy is too low to climb over it. This
       effect, called tunnelling, is what makes nuclear fusion possible in stars.
+    text_it: >-
+      George Gamow usò la nuova meccanica quantistica per spiegare il
+      decadimento alfa. Una particella può attraversare la repulsione elettrica
+      tra i nuclei, la barriera coulombiana, anche quando la sua energia è
+      troppo bassa per superarla. Questo effetto, detto effetto tunnel, è ciò
+      che rende possibile la fusione nucleare nelle stelle.
     refs: [gamow1928]
 
   - year: 1929
     title: Atkinson and Houtermans apply tunnelling to the stars
+    title_it: Atkinson e Houtermans applicano l'effetto tunnel alle stelle
     category: theory
     text: >-
       Robert Atkinson and Fritz Houtermans used Gamow's result to estimate how
       often light nuclei fuse at the temperatures inside stars. They found that
       tunnelling makes such reactions frequent enough to power a star. Their
       paper is often taken as the start of nuclear astrophysics.
+    text_it: >-
+      Robert Atkinson e Fritz Houtermans usarono il risultato di Gamow per
+      stimare quanto spesso i nuclei leggeri si fondono alle temperature
+      dell'interno delle stelle. Trovarono che l'effetto tunnel rende queste
+      reazioni abbastanza frequenti da alimentare una stella. Il loro articolo è
+      spesso considerato l'inizio dell'astrofisica nucleare.
     refs: [atkinson1929]
 
   - year: 1938
     month: 8
     title: Bethe and Critchfield describe proton–proton fusion
+    title_it: Bethe e Critchfield descrivono la fusione protone-protone
     category: theory
     text: >-
       Hans Bethe and Charles Critchfield calculated the rate at which two
       protons fuse into a deuteron, emitting a positron and a neutrino. This
       very slow weak-interaction process is the first step of the
       proton–proton chain that powers the Sun.
+    text_it: >-
+      Hans Bethe e Charles Critchfield calcolarono il tasso con cui due protoni
+      si fondono in un deutone, emettendo un positrone e un neutrino. Questo
+      lentissimo processo di interazione debole è il primo passo della catena
+      protone-protone che alimenta il Sole.
     refs: [bethe1938]
     reactions: [1H-pp-2H]
 
   - year: 1938
     title: Von Weizsäcker and the carbon–nitrogen cycle
+    title_it: Von Weizsäcker e il ciclo carbonio-azoto
     category: theory
     text: >-
       In two papers in Physikalische Zeitschrift, Carl Friedrich von
       Weizsäcker discussed which nuclear reactions could power stars. The
       second paper proposed a cycle in which carbon and nitrogen nuclei help
       turn hydrogen into helium and are given back at the end.
+    text_it: >-
+      In due articoli sulla Physikalische Zeitschrift, Carl Friedrich von
+      Weizsäcker discusse quali reazioni nucleari potessero alimentare le
+      stelle. Il secondo articolo proponeva un ciclo in cui nuclei di carbonio e
+      azoto aiutano a trasformare l'idrogeno in elio e alla fine vengono
+      restituiti.
     refs: [weizsacker1937, weizsacker1938]
 
   - year: 1939
     month: 3
     title: Bethe's "Energy production in stars"
+    title_it: >-
+      "Energy production in stars" di Bethe
     category: theory
     text: >-
       Hans Bethe worked out the carbon–nitrogen cycle in detail and estimated
       its rate. He concluded that carbon and nitrogen act as catalysts that
       fuse protons into helium in stars. Together with the proton–proton chain,
       this is still the basis of how we understand hydrogen burning.
+    text_it: >-
+      Hans Bethe elaborò nei dettagli il ciclo carbonio-azoto e ne stimò il
+      tasso. Concluse che nelle stelle carbonio e azoto agiscono da
+      catalizzatori che fondono i protoni in elio. Insieme alla catena
+      protone-protone, questa è ancora la base della nostra comprensione della
+      combustione dell'idrogeno.
     refs: [bethe1939]
     reactions: [12C-pg-13N, 14N-pg-15O, 15N-pa-12C]
 
   - year: 1948
     month: 4
     title: Alpher, Bethe and Gamow on the hot early Universe
+    title_it: Alpher, Bethe e Gamow sull'Universo primordiale caldo
     category: theory
     text: >-
       Ralph Alpher and George Gamow proposed that the light elements formed in
@@ -93,68 +140,108 @@ events:
       so that the authors read like the first three Greek letters. The idea
       became Big Bang nucleosynthesis, although heavier elements turned out to
       be made in stars.
+    text_it: >-
+      Ralph Alpher e George Gamow proposero che gli elementi leggeri si fossero
+      formati nei primi istanti di un Universo caldo e in espansione. Gamow
+      aggiunse il nome di Bethe perché gli autori suonassero come le prime tre
+      lettere dell'alfabeto greco. L'idea divenne la nucleosintesi primordiale,
+      anche se gli elementi più pesanti si rivelarono prodotti nelle stelle.
     refs: [alpher1948]
     reactions: [1H-ng-2H]
 
   - year: 1952
     title: Salpeter's triple-alpha process
+    title_it: Il processo tre alfa di Salpeter
     category: theory
     text: >-
       Edwin Salpeter showed how helium can burn in red giant stars. Two helium
       nuclei form unstable ⁸Be, which lives just long enough to capture a third
       helium nucleus and become carbon. He did this work at Caltech's Kellogg
       Radiation Laboratory, with William Fowler, in the summer of 1951.
+    text_it: >-
+      Edwin Salpeter mostrò come l'elio possa bruciare nelle giganti rosse. Due
+      nuclei di elio formano l'instabile ⁸Be, che vive appena abbastanza da
+      catturare un terzo nucleo di elio e diventare carbonio. Svolse questo
+      lavoro al Kellogg Radiation Laboratory del Caltech, con William Fowler,
+      nell'estate del 1951.
     refs: [salpeter1952]
     reactions: [4He-aa-12C]
 
   - year: 1953
     month: 11
     title: The 7.68 MeV state of carbon-12 is found
+    title_it: Viene scoperto lo stato a 7,68 MeV del carbonio-12
     category: experiment
     text: >-
       At Caltech, Dunbar, Pixley, Wenzel and Whaling found an excited state of
       ¹²C at 7.68 ± 0.03 MeV in the reaction ¹⁴N(d,α)¹²C. Fred Hoyle had pointed
       out that such a state would make the triple-alpha process fast enough to
       produce the carbon we see. It is now called the Hoyle state.
+    text_it: >-
+      Al Caltech, Dunbar, Pixley, Wenzel e Whaling trovarono uno stato eccitato
+      del ¹²C a 7,68 ± 0,03 MeV nella reazione ¹⁴N(d,α)¹²C. Fred Hoyle aveva
+      fatto notare che un tale stato avrebbe reso il processo tre alfa
+      abbastanza veloce da produrre il carbonio che osserviamo. Oggi è chiamato
+      stato di Hoyle.
     refs: [dunbar1953]
     reactions: [4He-aa-12C]
 
   - year: 1954
     title: Hoyle on the synthesis of elements in hot stars
+    title_it: Hoyle sulla sintesi degli elementi nelle stelle calde
     category: theory
     text: >-
       Fred Hoyle argued that the elements from carbon to nickel are made at the
       high temperatures reached inside massive stars late in their lives. The
       paper set out the idea that stars, not the Big Bang, made most of the
       elements.
+    text_it: >-
+      Fred Hoyle sostenne che gli elementi dal carbonio al nichel sono prodotti
+      alle alte temperature raggiunte all'interno delle stelle massicce nelle
+      ultime fasi della loro vita. L'articolo espose l'idea che la maggior parte
+      degli elementi sia stata prodotta dalle stelle, non dal Big Bang.
     refs: [hoyle1954]
 
   - year: 1957
     title: Cook, Fowler and the Lauritsens confirm the Hoyle state
+    title_it: Cook, Fowler e i Lauritsen confermano lo stato di Hoyle
     category: experiment
     text: >-
       At the Kellogg Radiation Laboratory, Cook, Fowler, C. C. Lauritsen and
       T. Lauritsen studied the decay of ¹²B to the 7.65 MeV state of ¹²C and
       its break-up into three alpha particles. They concluded that the state
       can act as the resonance Hoyle needed for helium burning in red giants.
+    text_it: >-
+      Al Kellogg Radiation Laboratory, Cook, Fowler, C. C. Lauritsen e T.
+      Lauritsen studiarono il decadimento del ¹²B verso lo stato a 7,65 MeV del
+      ¹²C e la sua rottura in tre particelle alfa. Conclusero che lo stato può
+      fare da risonanza di cui Hoyle aveva bisogno per la combustione dell'elio
+      nelle giganti rosse.
     refs: [cook1957]
     reactions: [4He-aa-12C]
 
   - year: 1957
     month: 6
     title: Cameron's lectures on nucleogenesis
+    title_it: Le lezioni di Cameron sulla nucleogenesi
     category: theory
     text: >-
       Alastair Cameron, at Chalk River in Canada, published an independent
       account of how the elements are made in stars. Among other results he
       named the two reactions that supply neutrons for slow neutron capture,
       ¹³C(α,n)¹⁶O and ²²Ne(α,n)²⁵Mg.
+    text_it: >-
+      Alastair Cameron, a Chalk River in Canada, pubblicò un resoconto
+      indipendente di come gli elementi vengono prodotti nelle stelle. Tra gli
+      altri risultati indicò le due reazioni che forniscono i neutroni per la
+      cattura neutronica lenta, ¹³C(α,n)¹⁶O e ²²Ne(α,n)²⁵Mg.
     refs: [cameron1957]
     reactions: [13C-an-16O, 22Ne-an-25Mg]
 
   - year: 1957
     month: 10
     title: The B²FH paper
+    title_it: L'articolo B²FH
     category: theory
     text: >-
       Margaret Burbidge, Geoffrey Burbidge, William Fowler and Fred Hoyle
@@ -162,10 +249,18 @@ events:
       sorted the processes by the nuclear reactions involved, including slow
       and rapid neutron capture, and compared them with the measured solar
       system abundances. It is known by the authors' initials, B²FH.
+    text_it: >-
+      Margaret Burbidge, Geoffrey Burbidge, William Fowler e Fred Hoyle
+      pubblicarono una rassegna di 104 pagine su come gli elementi vengono
+      prodotti nelle stelle. Classificava i processi secondo le reazioni
+      nucleari coinvolte, comprese la cattura neutronica lenta e rapida, e li
+      confrontava con le abbondanze misurate nel Sistema Solare. È nota con le
+      iniziali degli autori, B²FH.
     refs: [b2fh1957]
 
   - year: 1964
     title: Bahcall proposes a solar neutrino experiment with chlorine
+    title_it: Bahcall propone un esperimento sui neutrini solari con il cloro
     category: theory
     text: >-
       John Bahcall calculated the rate at which solar neutrinos would turn
@@ -173,12 +268,19 @@ events:
       by the rare high-energy neutrinos from ⁸B decay, and it was large enough
       to make the experiment practical. Raymond Davis described the detector
       in a companion paper in the same journal.
+    text_it: >-
+      John Bahcall calcolò il tasso con cui i neutrini solari avrebbero
+      trasformato il cloro in argon in una grande vasca sotterranea. Il tasso
+      era dominato dai rari neutrini di alta energia del decadimento del ⁸B, ed
+      era abbastanza grande da rendere l'esperimento realizzabile. Raymond Davis
+      descrisse il rivelatore in un articolo gemello sulla stessa rivista.
     refs: [bahcall1964]
     reactions: [7Be-pg-8B, 8B-bp-8Be]
 
   - year: 1968
     month: 5
     title: Davis detects solar neutrinos, and the solar neutrino problem begins
+    title_it: Davis rivela i neutrini solari, e nasce il problema dei neutrini solari
     category: observation
     text: >-
       Raymond Davis and colleagues counted argon atoms produced by solar
@@ -186,21 +288,35 @@ events:
       mine, South Dakota. In the same issue, John Bahcall and collaborators
       showed that solar models predicted a rate about 2.5 times higher than
       Davis's limit. The gap became known as the solar neutrino problem.
+    text_it: >-
+      Raymond Davis e colleghi contarono gli atomi di argon prodotti dai
+      neutrini solari in una grande vasca di liquido contenente cloro nella
+      miniera di Homestake, in South Dakota. Nello stesso numero, John Bahcall e
+      collaboratori mostrarono che i modelli solari prevedevano un tasso circa
+      2,5 volte più alto del limite di Davis. La discrepanza divenne nota come
+      problema dei neutrini solari.
     refs: [davis1968, bahcall1968]
     reactions: [7Be-pg-8B, 8B-bp-8Be]
 
   - year: 1983
     title: Nobel Prize for Fowler and Chandrasekhar
+    title_it: Premio Nobel a Fowler e Chandrasekhar
     category: experiment
     text: >-
       William Fowler shared the Nobel Prize in Physics with Subrahmanyan
       Chandrasekhar. Fowler's half recognised his experimental and theoretical
       studies of the nuclear reactions that form the chemical elements, much
       of it done at the Kellogg Radiation Laboratory at Caltech.
+    text_it: >-
+      William Fowler condivise il premio Nobel per la Fisica con Subrahmanyan
+      Chandrasekhar. La metà di Fowler riconosceva i suoi studi sperimentali e
+      teorici delle reazioni nucleari che formano gli elementi chimici, in gran
+      parte svolti al Kellogg Radiation Laboratory del Caltech.
     refs: [fowler1984]
 
   - year: 1984
     title: Radioactive ²⁶Al is seen in the Galaxy
+    title_it: Il ²⁶Al radioattivo viene osservato nella Galassia
     category: observation
     text: >-
       The germanium γ-ray spectrometer on the HEAO 3 satellite detected the
@@ -208,55 +324,86 @@ events:
       a radioactive nucleus found in the Galaxy. The flux implied about three
       solar masses of ²⁶Al in the interstellar medium, all of it made within the
       last few million years.
+    text_it: >-
+      Lo spettrometro γ al germanio del satellite HEAO 3 rivelò la riga a 1809
+      keV emessa quando il ²⁶Al decade. Era la prima riga γ di un nucleo
+      radioattivo trovata nella Galassia. Il flusso implicava circa tre masse
+      solari di ²⁶Al nel mezzo interstellare, tutto prodotto negli ultimi pochi
+      milioni di anni.
     refs: [mahoney1984]
     reactions: [25Mg-pg-26Al, 26Al-bp-26Mg]
 
   - year: 1987
     title: Neutrinos from supernova SN 1987A
+    title_it: Neutrini dalla supernova SN 1987A
     category: observation
     text: >-
       A star exploded in the Large Magellanic Cloud, and the Kamiokande-II
       detector in Japan recorded eleven neutrino events in about 13 seconds.
       The IMB detector in the United States saw the burst too. It was the first
       detection of neutrinos from a star other than the Sun.
+    text_it: >-
+      Una stella esplose nella Grande Nube di Magellano, e il rivelatore
+      Kamiokande-II in Giappone registrò undici eventi di neutrini in circa 13
+      secondi. Anche il rivelatore IMB negli Stati Uniti vide il lampo. Fu la
+      prima rivelazione di neutrini da una stella diversa dal Sole.
     refs: [hirata1987]
 
   - year: 1989
     title: Kamiokande-II sees ⁸B solar neutrinos
+    title_it: Kamiokande-II vede i neutrini solari del ⁸B
     category: observation
     text: >-
       The Kamiokande-II water detector measured high-energy solar neutrinos
       from the decay of ⁸B in real time. Over 450 days it found about half of
       the flux predicted by the standard solar model, confirming the deficit
       seen at Homestake with a different technique.
+    text_it: >-
+      Il rivelatore ad acqua Kamiokande-II misurò in tempo reale i neutrini
+      solari di alta energia dal decadimento del ⁸B. In 450 giorni trovò circa
+      metà del flusso previsto dal modello solare standard, confermando con una
+      tecnica diversa il deficit visto a Homestake.
     refs: [hirata1989]
     reactions: [7Be-pg-8B, 8B-bp-8Be]
 
   - year: 1991
     month: 12
     title: SAGE, the first gallium experiment
+    title_it: SAGE, il primo esperimento al gallio
     category: observation
     text: >-
       The Soviet–American Gallium Experiment at Baksan used about 30 tonnes of
       gallium, which captures the low-energy neutrinos from proton–proton
       fusion. Its first result was well below the solar-model prediction.
+    text_it: >-
+      Il Soviet–American Gallium Experiment a Baksan usava circa 30 tonnellate
+      di gallio, che cattura i neutrini di bassa energia della fusione
+      protone-protone. Il suo primo risultato era ben al di sotto della
+      previsione dei modelli solari.
     refs: [abazov1991]
     reactions: [1H-pp-2H]
 
   - year: 1992
     title: GALLEX observes pp neutrinos at Gran Sasso
+    title_it: GALLEX osserva i neutrini pp al Gran Sasso
     category: observation
     text: >-
       The GALLEX gallium detector at Gran Sasso measured 83 ± 19 (stat.) ± 8
       (syst.) SNU. The collaboration presented this as the first observation of
       the neutrinos from proton–proton fusion, the reaction that starts the
       Sun's energy production.
+    text_it: >-
+      Il rivelatore al gallio GALLEX, ai Laboratori Nazionali del Gran Sasso,
+      misurò 83 ± 19 (stat.) ± 8 (sist.) SNU. La collaborazione presentò il
+      risultato come la prima osservazione dei neutrini della fusione
+      protone-protone, la reazione che avvia la produzione di energia del Sole.
     refs: [gallex1992]
     reactions: [1H-pp-2H]
 
   - year: 1994
     month: 10
     title: LUNA, the first underground accelerator
+    title_it: LUNA, il primo acceleratore sotterraneo
     category: luna
     text: >-
       A small 50 kV accelerator was installed deep under the Gran Sasso
@@ -264,52 +411,84 @@ events:
       windowless gas target and was built to measure ³He(³He,2p)⁴He at the
       energies where the reaction takes place in the Sun. The facility paper
       describing it appeared in 1994.
+    text_it: >-
+      Un piccolo acceleratore da 50 kV fu installato in profondità sotto il Gran
+      Sasso, dove la roccia ferma la maggior parte dei raggi cosmici. Aveva un
+      bersaglio gassoso senza finestre ed era costruito per misurare
+      ³He(³He,2p)⁴He alle energie a cui la reazione avviene nel Sole. L'articolo
+      che descrive l'apparato uscì nel 1994.
     refs: [greife1994]
     reactions: [3He-3He2p-4He]
 
   - year: 1998
     title: Super-Kamiokande finds neutrino oscillations
+    title_it: Super-Kamiokande scopre le oscillazioni dei neutrini
     category: observation
     text: >-
       Super-Kamiokande found fewer muon neutrinos from the atmosphere than
       expected, and the deficit depended on how far the neutrinos had
       travelled through the Earth. The data fit neutrinos changing type, or
       oscillating, on the way. Oscillation requires neutrinos to have mass.
+    text_it: >-
+      Super-Kamiokande trovò meno neutrini muonici atmosferici del previsto, e
+      il deficit dipendeva da quanta strada i neutrini avevano percorso
+      attraverso la Terra. I dati si spiegano con neutrini che cambiano tipo,
+      cioè oscillano, lungo il percorso. L'oscillazione richiede che i neutrini
+      abbiano massa.
     refs: [fukuda1998]
 
   - year: 1998
     title: Solar Fusion I
+    title_it: Solar Fusion I
     category: theory
     text: >-
       A group of experimentalists and theorists reviewed the nuclear reactions
       that produce the Sun's energy and its neutrinos. They gave recommended
       low-energy S-factors with uncertainties and named the experiments and
       calculations needed to improve them.
+    text_it: >-
+      Un gruppo di sperimentali e teorici passò in rassegna le reazioni nucleari
+      che producono l'energia del Sole e i suoi neutrini. Fornirono fattori S
+      raccomandati a bassa energia, con le loro incertezze, e indicarono gli
+      esperimenti e i calcoli necessari per migliorarli.
     refs: [adelberger1998]
 
   - year: 1999
     title: The NACRE compilation
+    title_it: La compilazione NACRE
     category: theory
     text: >-
       The NACRE collaboration compiled the measured cross sections of the
       charged-particle reactions of stellar hydrogen, helium and carbon
       burning. It turned them into thermonuclear reaction rates in a common
       format, which stellar modellers used for many years.
+    text_it: >-
+      La collaborazione NACRE raccolse le sezioni d'urto misurate delle reazioni
+      con particelle cariche della combustione stellare di idrogeno, elio e
+      carbonio. Le trasformò in tassi di reazione termonucleari in un formato
+      comune, usato per molti anni da chi costruisce modelli stellari.
     refs: [angulo1999]
 
   - year: 1999
     title: LUNA measures ³He + ³He inside the solar Gamow peak
+    title_it: LUNA misura ³He + ³He dentro il picco di Gamow solare
     category: luna
     text: >-
       With the 50 kV accelerator, LUNA measured the fusion of two ³He nuclei
       down to 16.5 keV, an energy at which it actually occurs in the Sun. No
       narrow resonance was found. Such a resonance had been suggested as a
       nuclear explanation of the solar neutrino problem.
+    text_it: >-
+      Con l'acceleratore da 50 kV, LUNA misurò la fusione di due nuclei di ³He
+      fino a 16,5 keV, un'energia a cui la reazione avviene davvero nel Sole.
+      Non fu trovata alcuna risonanza stretta. Una risonanza del genere era
+      stata proposta come spiegazione nucleare del problema dei neutrini solari.
     refs: [bonetti1999]
     reactions: [3He-3He2p-4He]
 
   - year: 2002
     title: SNO shows that solar neutrinos change flavour
+    title_it: SNO mostra che i neutrini solari cambiano sapore
     category: observation
     text: >-
       The Sudbury Neutrino Observatory in Canada used heavy water to measure
@@ -317,12 +496,20 @@ events:
       types from ⁸B decay in the Sun. The total agreed with solar models, but
       only about a third arrived as electron neutrinos. The solar neutrino
       problem was due to neutrino physics, not to the Sun.
+    text_it: >-
+      Il Sudbury Neutrino Observatory in Canada usò acqua pesante per misurare
+      sia i neutrini elettronici sia il numero totale di neutrini di tutti i
+      tipi provenienti dal decadimento del ⁸B nel Sole. Il totale era in accordo
+      con i modelli solari, ma solo circa un terzo arrivava come neutrini
+      elettronici. Il problema dei neutrini solari era dovuto alla fisica dei
+      neutrini, non al Sole.
     refs: [sno2002]
     reactions: [8B-bp-8Be]
 
   - year: 2002
     month: 12
     title: Nobel Prize for Davis and Koshiba
+    title_it: Premio Nobel a Davis e Koshiba
     category: observation
     text: >-
       Raymond Davis and Masatoshi Koshiba received the Nobel Prize in Physics
@@ -330,21 +517,35 @@ events:
       Homestake experiment captured about 2200 solar neutrinos, one third of
       the predicted number. Kamiokande confirmed the deficit and detected the
       neutrinos from SN 1987A.
+    text_it: >-
+      Raymond Davis e Masatoshi Koshiba ricevettero il premio Nobel per la
+      Fisica per il loro lavoro sui neutrini provenienti dallo spazio. In 25
+      anni l'esperimento di Homestake catturò circa 2200 neutrini solari, un
+      terzo del numero previsto. Kamiokande confermò il deficit e rivelò i
+      neutrini della SN 1987A.
     refs: [davis2003, hirata1987]
     url: https://www.nobelprize.org/prizes/physics/2002/davis/lecture/
 
   - year: 2003
     title: The LUNA 400 kV accelerator
+    title_it: L'acceleratore LUNA da 400 kV
     category: luna
     text: >-
       A second, larger accelerator was installed at Gran Sasso. Its proton
       beam energy is known to about 300 eV, its energy spread is below
       100 eV, and it drifts by only about 5 eV per hour. This stability allows
       the long runs needed to measure very small cross sections.
+    text_it: >-
+      Al Gran Sasso fu installato un secondo acceleratore, più grande. L'energia
+      del suo fascio di protoni è nota entro circa 300 eV, la dispersione in
+      energia è inferiore a 100 eV e la deriva è di soli 5 eV circa all'ora.
+      Questa stabilità permette le lunghe misure necessarie per sezioni d'urto
+      molto piccole.
     refs: [formicola2003]
 
   - year: 2004
     title: LUNA measures ¹⁴N(p,γ)¹⁵O underground
+    title_it: LUNA misura ¹⁴N(p,γ)¹⁵O sotto terra
     category: luna
     text: >-
       LUNA measured the slowest reaction of the CNO cycle at energies lower than
@@ -352,141 +553,218 @@ events:
       detector. The extrapolated S-factor at zero energy, 1.7 ± 0.2 keV b, was
       lower than in earlier compilations, so the CNO cycle runs more slowly
       than had been assumed.
+    text_it: >-
+      LUNA misurò la reazione più lenta del ciclo CNO a energie più basse di
+      quelle raggiungibili dai laboratori in superficie, con un bersaglio solido
+      e un rivelatore al germanio. Il fattore S estrapolato a energia zero, 1,7
+      ± 0,2 keV b, era più basso che nelle compilazioni precedenti: il ciclo CNO
+      procede quindi più lentamente di quanto si pensasse.
     refs: [formicola2004]
     reactions: [14N-pg-15O]
 
   - year: 2006
     title: ¹⁴N(p,γ)¹⁵O down to 70 keV
+    title_it: ¹⁴N(p,γ)¹⁵O fino a 70 keV
     category: luna
     text: >-
       With a nitrogen gas target and a large detector surrounding it, LUNA
       measured ¹⁴N(p,γ)¹⁵O down to 70 keV. There the cross section is only
       0.24 picobarn, closer to solar energies than any earlier experiment.
+    text_it: >-
+      Con un bersaglio di azoto gassoso circondato da un grande rivelatore, LUNA
+      misurò ¹⁴N(p,γ)¹⁵O fino a 70 keV. Lì la sezione d'urto è di soli 0,24
+      picobarn, più vicino alle energie solari di qualunque esperimento
+      precedente.
     refs: [lemut2006]
     reactions: [14N-pg-15O]
 
   - year: 2007
     month: 8
     title: Borexino detects ⁷Be solar neutrinos in real time
+    title_it: Borexino rivela in tempo reale i neutrini solari del ⁷Be
     category: observation
     text: >-
       The Borexino liquid scintillator detector at Gran Sasso measured the
       0.862 MeV neutrinos from ⁷Be electron capture in the Sun, one event at a
       time. It was the first real-time measurement of solar neutrinos below
       1 MeV.
+    text_it: >-
+      Il rivelatore a scintillatore liquido Borexino, ai Laboratori Nazionali
+      del Gran Sasso, misurò uno per uno i neutrini da 0,862 MeV della cattura
+      elettronica del ⁷Be nel Sole. Fu la prima misura in tempo reale di
+      neutrini solari sotto 1 MeV.
     refs: [borexino2008]
     reactions: [7Be-ec-7Li, 3He-ag-7Be]
 
   - year: 2011
     title: Solar Fusion II
+    title_it: Solar Fusion II
     category: theory
     text: >-
       A group of experimentalists and theorists reviewed the cross sections of
       the proton–proton chain and the CNO cycles and recommended values for
       solar models. The review followed an earlier one from 1998.
+    text_it: >-
+      Un gruppo di sperimentali e teorici passò in rassegna le sezioni d'urto
+      della catena protone-protone e dei cicli CNO e raccomandò i valori da
+      usare nei modelli solari. La rassegna seguiva una precedente del 1998.
     refs: [adelberger2011]
 
   - year: 2014
     month: 8
     title: Borexino sees pp neutrinos
+    title_it: Borexino vede i neutrini pp
     category: observation
     text: >-
       Borexino measured the spectrum of the neutrinos from proton–proton fusion,
       the first reaction of the Sun's main chain. The collaboration estimated
       that this chain produces about 99 % of the Sun's power.
+    text_it: >-
+      Borexino misurò lo spettro dei neutrini della fusione protone-protone, la
+      prima reazione della catena principale del Sole. La collaborazione stimò
+      che questa catena produce circa il 99 % della potenza del Sole.
     refs: [borexino2014]
     reactions: [1H-pp-2H]
 
   - year: 2015
     title: Nobel Prize for Kajita and McDonald
+    title_it: Premio Nobel a Kajita e McDonald
     category: observation
     text: >-
       Takaaki Kajita (Super-Kamiokande) and Arthur McDonald (SNO) shared the
       Nobel Prize in Physics for showing that neutrinos change type as they
       travel. This means that neutrinos have mass.
+    text_it: >-
+      Takaaki Kajita (Super-Kamiokande) e Arthur McDonald (SNO) condivisero il
+      premio Nobel per la Fisica per aver mostrato che i neutrini cambiano tipo
+      durante il viaggio. Questo significa che i neutrini hanno massa.
     refs: [fukuda1998, sno2002]
     url: https://www.nobelprize.org/prizes/physics/2015/kajita/lecture/
 
   - year: 2017
     title: First beam at CASPAR
+    title_it: Primo fascio a CASPAR
     category: facility
     text: >-
       An accelerator moved from Notre Dame to the 4850 ft level of the Sanford
       Underground Research Facility in South Dakota delivered its first beam.
       It is the first underground accelerator for nuclear astrophysics in the
       United States, in the mine where Davis had counted solar neutrinos.
+    text_it: >-
+      Un acceleratore trasferito da Notre Dame al livello 4850 ft della Sanford
+      Underground Research Facility, in South Dakota, fornì il suo primo fascio.
+      È il primo acceleratore sotterraneo per l'astrofisica nucleare negli Stati
+      Uniti, nella miniera dove Davis aveva contato i neutrini solari.
     url: https://sanfordlab.org/news/caspar-achieves-first-beam
 
   - year: 2017
     month: 8
     title: A neutron-star merger makes heavy elements
+    title_it: La coalescenza di due stelle di neutroni produce elementi pesanti
     category: observation
     text: >-
       On 17 August 2017 the LIGO and Virgo detectors recorded gravitational
       waves from two merging neutron stars. Telescopes then found the glow of
       the explosion, a kilonova. Its spectra showed elements made by rapid
       neutron capture, the r-process.
+    text_it: >-
+      Il 17 agosto 2017 i rivelatori LIGO e Virgo registrarono le onde
+      gravitazionali emesse da due stelle di neutroni in coalescenza. I
+      telescopi trovarono poi il bagliore dell'esplosione, una kilonova. I suoi
+      spettri mostravano elementi prodotti dalla cattura neutronica rapida, il
+      processo r.
     refs: [abbott2017, pian2017]
 
   - year: 2017
     title: A review of ¹²C(α,γ)¹⁶O
+    title_it: Una rassegna su ¹²C(α,γ)¹⁶O
     category: theory
     text: >-
       deBoer and colleagues collected the measurements of ¹²C(α,γ)¹⁶O, the
       reaction that sets how much carbon and oxygen helium burning leaves
       behind, and fitted them together with an R-matrix analysis. They also
       followed the effect of its uncertainty on stellar models.
+    text_it: >-
+      deBoer e colleghi raccolsero le misure di ¹²C(α,γ)¹⁶O, la reazione che
+      fissa quanto carbonio e quanto ossigeno lascia la combustione dell'elio, e
+      le adattarono insieme con un'analisi R-matrix. Seguirono anche l'effetto
+      della sua incertezza sui modelli stellari.
     refs: [deboer2017]
     reactions: [12C-ag-16O]
 
   - year: 2019
     month: 7
     title: The Felsenkeller underground accelerator laboratory opens
+    title_it: Apre il laboratorio sotterraneo con acceleratore Felsenkeller
     category: facility
     text: >-
       HZDR and TU Dresden inaugurated a 5 MV accelerator under 45 m of rock
       in the Felsenkeller tunnels in Dresden. The rock reduces the cosmic-ray
       muon flux by a factor of 40. With an active muon veto, the background is
       about twice that of a deep underground laboratory.
+    text_it: >-
+      HZDR e TU Dresden inaugurarono un acceleratore da 5 MV sotto 45 m di
+      roccia nelle gallerie Felsenkeller di Dresda. La roccia riduce il flusso
+      di muoni cosmici di un fattore 40. Con un veto attivo per i muoni, il
+      fondo è circa il doppio di quello di un laboratorio sotterraneo profondo.
     url: https://hzdr.de/db/Cms?pNid=1029
 
   - year: 2020
     month: 11
     title: LUNA measures deuterium burning for cosmology
+    title_it: LUNA misura la combustione del deuterio per la cosmologia
     category: luna
     text: >-
       LUNA measured d(p,γ)³He at the energies of Big Bang nucleosynthesis with
       high precision. With this rate, the observed amount of
       primordial deuterium gives the density of ordinary matter in the
       Universe to 1.6 %, in agreement with the cosmic microwave background.
+    text_it: >-
+      LUNA misurò con alta precisione d(p,γ)³He alle energie della nucleosintesi
+      primordiale. Con questo tasso, la quantità osservata di deuterio
+      primordiale dà la densità della materia ordinaria nell'Universo all'1,6 %,
+      in accordo con la radiazione cosmica di fondo.
     refs: [mossa2020]
     reactions: [2H-pg-3He]
 
   - year: 2020
     month: 11
     title: Borexino detects CNO neutrinos
+    title_it: Borexino rivela i neutrini CNO
     category: observation
     text: >-
       Borexino reported the first experimental evidence of neutrinos from the
       CNO cycle in the Sun. It shows directly that the cycle runs in stars. In
       the Sun it gives about one percent of the energy.
+    text_it: >-
+      Borexino riportò la prima evidenza sperimentale dei neutrini del ciclo CNO
+      nel Sole. Mostra direttamente che il ciclo è attivo nelle stelle. Nel Sole
+      fornisce circa l'uno per cento dell'energia.
     refs: [borexino2020]
     reactions: [14N-pg-15O, 15O-bp-15N, 13N-bp-13C]
 
   - year: 2022
     title: A 3.5 MV accelerator is installed under Gran Sasso
+    title_it: Un acceleratore da 3,5 MV viene installato sotto il Gran Sasso
     category: luna
     text: >-
       A 3.5 MV Singletron accelerator, built by High Voltage Engineering Europa
       for the LUNA-MV project, was installed underground at Gran Sasso. It
       delivers proton, helium and carbon beams, so that helium and carbon
       burning can be studied underground.
+    text_it: >-
+      Un acceleratore Singletron da 3,5 MV, costruito da High Voltage
+      Engineering Europa per il progetto LUNA-MV, fu installato nel laboratorio
+      sotterraneo del Gran Sasso. Fornisce fasci di protoni, elio e carbonio,
+      così che la combustione dell'elio e del carbonio si possa studiare sotto
+      terra.
     refs: [sen2019, junker2023]
     reactions: [12C-ag-16O, 13C-an-16O, 22Ne-an-25Mg]
 
   - year: 2022
     month: 10
     title: JUNA measures ¹⁹F(p,γ)²⁰Ne underground
+    title_it: JUNA misura ¹⁹F(p,γ)²⁰Ne sotto terra
     category: experiment
     text: >-
       The JUNA accelerator, under about 2400 m of rock at the China Jinping
@@ -494,26 +772,45 @@ events:
       a resonance at 225 keV. Near 0.1 GK the new rate is up to 7.4 times the
       previous one. The reaction lets material leak out of the CNO cycle, and
       the faster rate may explain the calcium in one of the oldest known stars.
+    text_it: >-
+      L'acceleratore JUNA, sotto circa 2400 m di roccia al China Jinping
+      Underground Laboratory, misurò ¹⁹F(p,γ)²⁰Ne fino a 186 keV e trovò una
+      risonanza a 225 keV. Intorno a 0,1 GK il nuovo tasso è fino a 7,4 volte
+      quello precedente. La reazione fa uscire materia dal ciclo CNO, e il tasso
+      più alto potrebbe spiegare il calcio in una delle stelle più antiche che
+      si conoscano.
     refs: [zhang2022]
     reactions: [19F-pg-20Ne]
 
   - year: 2023
     month: 10
     title: Inauguration of the Bellotti Ion Beam Facility
+    title_it: Inaugurazione del Bellotti Ion Beam Facility
     category: luna
     text: >-
       The underground accelerator laboratory was inaugurated and named after
       Enrico Bellotti, the first director of the Gran Sasso laboratory, who
       started underground accelerator physics there. It runs as a user
       facility, with beam time given through yearly calls.
+    text_it: >-
+      Il laboratorio sotterraneo con acceleratore fu inaugurato e intitolato a
+      Enrico Bellotti, il primo direttore dei Laboratori Nazionali del Gran
+      Sasso, che vi avviò la fisica con acceleratori sotto terra. Funziona come
+      user facility, con il tempo fascio assegnato tramite bandi annuali.
     refs: [junker2023]
 
   - year: 2025
     title: Solar Fusion III
+    title_it: Solar Fusion III
     category: theory
     text: >-
       A new review collected the data and theory for hydrogen burning in the
       Sun and other stars that appeared after Solar Fusion II. It gives
       recommended S-factors with uncertainties for the proton–proton chain
       and the CNO cycles.
+    text_it: >-
+      Una nuova rassegna raccolse i dati e la teoria sulla combustione
+      dell'idrogeno nel Sole e nelle altre stelle apparsi dopo Solar Fusion II.
+      Fornisce fattori S raccomandati, con le loro incertezze, per la catena
+      protone-protone e i cicli CNO.
     refs: [acharya2025]

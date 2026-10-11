@@ -11,6 +11,10 @@ summary: >-
   The first step of the CN cycle. A carbon-12 nucleus captures a proton,
   emits a γ-ray and becomes radioactive nitrogen-13, which then decays to
   carbon-13.
+summary_it: >-
+  Il primo passo del ciclo CN. Un nucleo di carbonio-12 cattura un protone,
+  emette un raggio γ e diventa azoto-13 radioattivo, che poi decade in
+  carbonio-13.
 role: >-
   Together with the next proton capture, on carbon-13, this reaction fixes the
   ratio of the two stable carbon isotopes in gas that has burnt hydrogen.
@@ -18,6 +22,14 @@ role: >-
   shows how much material from the burning layers has been mixed to the
   surface. The same reaction also makes the carbon-13 that, in giant stars,
   later releases the neutrons needed to build many elements heavier than iron.
+role_it: >-
+  Insieme alla cattura protonica successiva, sul carbonio-13, questa reazione
+  fissa il rapporto tra i due isotopi stabili del carbonio nel gas che ha
+  bruciato idrogeno. Gli astronomi misurano questo rapporto nelle atmosfere
+  delle giganti rosse, dove indica quanta materia degli strati in combustione è
+  stata rimescolata fino alla superficie. La stessa reazione produce anche il
+  carbonio-13 che, nelle stelle giganti, libererà poi i neutroni necessari a
+  costruire molti elementi più pesanti del ferro.
 details: >-
   At low energy the capture proceeds by direct E1 capture to the ¹³N ground
   state, which interferes with the broad resonance at E = 422 keV formed by the
@@ -32,6 +44,10 @@ status_note: >-
   Direct data now reach 60 keV with systematic uncertainties of 7–8 %; the
   remaining question is the normalisation difference of about 25 % with
   respect to the older data sets.
+status_note_it: >-
+  I dati diretti arrivano ora a 60 keV con incertezze sistematiche del 7–8 %; la
+  questione aperta è la differenza di normalizzazione di circa il 25 % rispetto
+  agli insiemi di dati più vecchi.
 methods: [direct-underground, direct-surface, activation]
 measurements:
   - year: 1974

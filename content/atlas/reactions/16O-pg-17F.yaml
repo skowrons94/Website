@@ -10,11 +10,20 @@ importance: major
 summary: >-
   Oxygen-16 captures a proton and becomes radioactive fluorine-17. It is the
   slowest step of the second CNO cycle.
+summary_it: >-
+  L'ossigeno-16 cattura un protone e diventa fluoro-17 radioattivo. È il passo
+  più lento del secondo ciclo CNO.
 role: >-
   Because this capture is slow, most of the oxygen-16 in a star survives
   hydrogen burning. The small part that burns makes oxygen-17, whose amount
   relative to oxygen-16 is measured in red giants and in grains of stardust
   found in meteorites, and is used to test stellar models.
+role_it: >-
+  Poiché questa cattura è lenta, la maggior parte dell'ossigeno-16 di una stella
+  sopravvive alla combustione dell'idrogeno. La piccola parte che brucia produce
+  ossigeno-17, la cui quantità rispetto all'ossigeno-16 si misura nelle giganti
+  rosse e nei grani di polvere stellare trovati nelle meteoriti, e serve a
+  verificare i modelli stellari.
 details: >-
   There are no resonances at stellar energies. The cross section is direct
   capture to the ¹⁷F ground state and to its first excited state, a weakly bound
@@ -31,6 +40,10 @@ status_note: >-
   A non-resonant direct-capture reaction whose energy dependence is fixed by
   theory; the rate is known to about 7 %, limited by the normalisation of the
   surface data.
+status_note_it: >-
+  Una reazione di cattura diretta non risonante il cui andamento in energia è
+  fissato dalla teoria; il tasso è noto a circa il 7 %, limitato dalla
+  normalizzazione dei dati in superficie.
 methods: [direct-surface, theory]
 measurements:
   - year: 1997

@@ -10,6 +10,9 @@ importance: key
 summary: >-
   The reaction that closes the NeNa cycle. A proton hits ²³Na and an alpha
   particle comes out, leaving ²⁰Ne, the nucleus the cycle started from.
+summary_it: >-
+  La reazione che chiude il ciclo NeNa. Un protone colpisce il ²³Na ed esce una
+  particella alfa, lasciando il ²⁰Ne, il nucleo da cui era partito il ciclo.
 role: >-
   Sodium made by hydrogen burning can be destroyed in two ways. In this reaction
   it goes back to neon and the cycle starts again; in the competing reaction,
@@ -18,6 +21,14 @@ role: >-
   set how much sodium the hottest hydrogen-burning stars return to their
   surroundings. This is part of the puzzle of the sodium-rich stars in globular
   clusters.
+role_it: >-
+  Il sodio prodotto dalla combustione dell'idrogeno può essere distrutto in due
+  modi. In questa reazione torna neon e il ciclo ricomincia; nella reazione
+  concorrente, ²³Na(p,γ)²⁴Mg, passa al magnesio. Il rapporto tra i due tassi
+  decide se il ciclo NeNa è chiuso o perde materia verso il ciclo MgAl, e
+  insieme fissano quanto sodio restituiscono all'ambiente le stelle in cui
+  l'idrogeno brucia alle temperature più alte. Fa parte dell'enigma delle stelle
+  ricche di sodio negli ammassi globulari.
 details: >-
   At the temperatures of hot-bottom burning the rate depends on a few narrow
   low-energy resonances and on the alpha-particle branching of the states of
@@ -39,6 +50,11 @@ status_note: >-
   The rate at the lowest temperatures rests on resonances that have not been seen
   directly in the (p,α) channel, so it is set by upper limits and by the proton
   widths taken from the (p,γ) channel and from transfer reactions.
+status_note_it: >-
+  Alle temperature più basse il tasso si basa su risonanze che non sono state
+  viste direttamente nel canale (p,α), quindi è fissato da limiti superiori e
+  dalle larghezze protoniche ricavate dal canale (p,γ) e da reazioni di
+  trasferimento.
 methods: [direct-surface, direct-underground, anc]
 measurements:
   - year: 2004

@@ -11,6 +11,10 @@ summary: >-
   Two protons and an electron combine into a deuteron and a neutrino. It is a
   rare alternative to the fusion of two protons and gives neutrinos of a single,
   fixed energy.
+summary_it: >-
+  Due protoni e un elettrone si combinano in un deutone e un neutrino. È una
+  rara alternativa alla fusione di due protoni e dà neutrini di un'unica
+  energia, fissa.
 role: >-
   In the hot, dense centre of the Sun free electrons are everywhere. Instead of
   emitting a positron, the fusing pair of protons can absorb one of these
@@ -18,6 +22,13 @@ role: >-
   two particles leave the reaction, the neutrino always carries the same
   energy, which makes these pep neutrinos a clean probe of the solar core and
   of how neutrinos change flavour inside the Sun.
+role_it: >-
+  Nel centro caldo e denso del Sole gli elettroni liberi sono ovunque. Invece di
+  emettere un positrone, la coppia di protoni che si fonde può assorbire uno di
+  questi elettroni. Succede solo in una piccola frazione delle fusioni. Poiché
+  dalla reazione escono solo due particelle, il neutrino porta sempre la stessa
+  energia, il che fa di questi neutrini pep una sonda pulita del nucleo solare e
+  di come i neutrini cambiano sapore all'interno del Sole.
 details: >-
   The rate is not measured but calculated relative to the pp reaction: the
   nuclear matrix element is the same, and the ratio of pep to pp rates depends
@@ -36,6 +47,9 @@ status: well-known
 status_note: >-
   Fixed by the pp rate and the solar electron density; the ratio of the pep to
   the pp rate is calculated with small uncertainty.
+status_note_it: >-
+  Fissata dal tasso pp e dalla densità elettronica solare; il rapporto tra il
+  tasso pep e il tasso pp è calcolato con piccola incertezza.
 methods: [theory]
 measurements: []
 evaluations: [adelberger2011, acharya2025]

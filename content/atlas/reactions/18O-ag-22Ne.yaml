@@ -10,12 +10,22 @@ importance: minor
 summary: >-
   Oxygen-18 captures a helium nucleus and becomes neon-22. It completes the
   conversion of nitrogen into neon-22 during helium burning.
+summary_it: >-
+  L'ossigeno-18 cattura un nucleo di elio e diventa neon-22. Completa la
+  trasformazione dell'azoto in neon-22 durante la combustione dell'elio.
 role: >-
   The oxygen-18 made from nitrogen at the start of helium burning is turned
   into neon-22 by this reaction. Neon-22 later supplies neutrons in massive
   stars and in giant stars through ²²Ne(α,n)²⁵Mg. The speed of this reaction
   also decides how much oxygen-18 survives, which matters for the oxygen
   isotope ratios measured in stardust grains and in some carbon-rich stars.
+role_it: >-
+  L'ossigeno-18 prodotto dall'azoto all'inizio della combustione dell'elio viene
+  trasformato in neon-22 da questa reazione. Il neon-22 fornirà poi neutroni
+  nelle stelle massicce e nelle stelle giganti attraverso ²²Ne(α,n)²⁵Mg. La
+  velocità di questa reazione decide anche quanto ossigeno-18 sopravvive, il che
+  conta per i rapporti isotopici dell'ossigeno misurati nei grani di polvere
+  stellare e in alcune stelle ricche di carbonio.
 details: >-
   The rate at helium-burning temperatures is dominated by two weak resonances
   at E(α,lab) ≈ 470 and 566 keV. For a long time only upper limits existed.
@@ -29,6 +39,9 @@ status: improving
 status_note: >-
   The two resonances that dominate the rate have now been measured directly,
   the higher one with a 50% uncertainty.
+status_note_it: >-
+  Le due risonanze che dominano il tasso sono ora state misurate direttamente,
+  la più alta con un'incertezza del 50 %.
 methods: [direct-surface, direct-underground]
 measurements:
   - year: 2003

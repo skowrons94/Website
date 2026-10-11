@@ -11,12 +11,23 @@ summary: >-
   A ³He nucleus captures a proton and becomes ⁴He directly, emitting a positron
   and a neutrino. It is the rarest branch of the pp chain and makes the most
   energetic solar neutrinos, called hep neutrinos.
+summary_it: >-
+  Un nucleo di ³He cattura un protone e diventa direttamente ⁴He, emettendo un
+  positrone e un neutrino. È il ramo più raro della catena pp e produce i
+  neutrini solari più energetici, detti neutrini hep.
 role: >-
   Only a tiny fraction of the pp-chain terminations goes this way, so the
   reaction adds nothing to the energy of the Sun. Its neutrinos, however, reach
   higher energies than any other solar neutrinos, beyond the end of the ⁸B
   spectrum. Large water and scintillator detectors search for them as a test
   of solar models; so far only upper limits have been set.
+role_it: >-
+  Solo una minuscola frazione delle conclusioni della catena pp segue questa
+  strada, quindi la reazione non aggiunge nulla all'energia del Sole. I suoi
+  neutrini, però, raggiungono energie più alte di qualunque altro neutrino
+  solare, oltre la fine dello spettro del ⁸B. Grandi rivelatori ad acqua e a
+  scintillatore li cercano come verifica dei modelli solari; finora sono stati
+  fissati solo limiti superiori.
 details: >-
   The reaction is a weak capture like p + p, but the leading one-body
   Gamow–Teller matrix element is strongly suppressed by the symmetries of the
@@ -36,6 +47,10 @@ status_note: >-
   Known only from theory, with large relative uncertainty because of
   cancellations in the weak matrix element; solar-neutrino detectors give only
   upper limits on the flux.
+status_note_it: >-
+  Nota solo dalla teoria, con una grande incertezza relativa dovuta a
+  cancellazioni nell'elemento di matrice debole; i rivelatori di neutrini solari
+  danno solo limiti superiori sul flusso.
 methods: [theory]
 measurements:
   - year: 2000

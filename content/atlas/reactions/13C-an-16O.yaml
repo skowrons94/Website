@@ -11,6 +11,10 @@ summary: >-
   Carbon-13 captures a helium nucleus and releases a free neutron. In stars like
   the Sun near the end of their lives, this reaction supplies the neutrons that
   build about half of the elements heavier than iron.
+summary_it: >-
+  Il carbonio-13 cattura un nucleo di elio e libera un neutrone. Nelle stelle
+  come il Sole, verso la fine della loro vita, questa reazione fornisce i
+  neutroni che costruiscono circa metà degli elementi più pesanti del ferro.
 role: >-
   Elements heavier than iron are made mostly by adding neutrons to existing
   nuclei. In the slow neutron-capture process, or s-process, the neutrons
@@ -22,6 +26,18 @@ role: >-
   decides how much strontium, barium, lead and many other elements the star
   makes. The same reaction may also drive the faster intermediate process, or
   i-process, when hydrogen is mixed into hot helium-burning layers.
+role_it: >-
+  Gli elementi più pesanti del ferro si formano per lo più aggiungendo neutroni
+  a nuclei già esistenti. Nel processo di cattura neutronica lenta, o processo
+  s, i neutroni arrivano uno alla volta, abbastanza lentamente che i nuclei
+  instabili di solito decadono prima che arrivi il successivo. Nelle stelle di
+  piccola massa del ramo asintotico delle giganti (stelle AGB, l'ultima fase
+  luminosa delle stelle come il Sole), tra un flash dell'elio e l'altro si forma
+  uno strato sottile ricco di carbonio-13. Lì questa reazione libera neutroni a
+  una temperatura di circa 90 milioni di kelvin, e il loro numero decide quanto
+  stronzio, bario, piombo e molti altri elementi produce la stella. La stessa
+  reazione può alimentare anche il processo intermedio, più veloce, o processo
+  i, quando l'idrogeno viene mescolato in strati caldi in cui brucia l'elio.
 details: >-
   At T₉ ≈ 0.09 the Gamow window lies roughly between 140 and 230 keV, where
   the cross section is dominated by the high-energy tail of the 1/2⁺ state at
@@ -47,6 +63,10 @@ status_note: >-
   Underground data now reach the upper part of the s-process Gamow window; the
   rate below 230 keV still rests on the extrapolation through the
   near-threshold 1/2⁺ state.
+status_note_it: >-
+  I dati sotterranei arrivano ora alla parte alta della finestra di Gamow del
+  processo s; sotto 230 keV il tasso si basa ancora sull'estrapolazione
+  attraverso lo stato 1/2⁺ vicino alla soglia.
 methods: [direct-underground, direct-surface, thm, anc]
 measurements:
   - year: 1993

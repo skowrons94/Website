@@ -11,6 +11,11 @@ summary: >-
   A ³He nucleus captures a ⁴He nucleus (an alpha particle) and becomes ⁷Be,
   giving off a γ-ray. It opens the branches of the pp chain that emit the ⁷Be
   and ⁸B solar neutrinos, and it made most of the lithium after the Big Bang.
+summary_it: >-
+  Un nucleo di ³He cattura un nucleo di ⁴He (una particella alfa) e diventa ⁷Be,
+  emettendo un raggio γ. Apre i rami della catena pp che emettono i neutrini
+  solari del ⁷Be e del ⁸B, e dopo il Big Bang produsse la maggior parte del
+  litio.
 role: >-
   In the Sun, a ³He nucleus either fuses with another ³He or captures an alpha
   particle through this reaction. The share that goes this way fixes the
@@ -20,6 +25,15 @@ role: >-
   later decayed to ⁷Li, so the reaction also sets the predicted amount of
   primordial lithium. That prediction is higher than the amount of lithium
   seen in old stars, a mismatch called the lithium problem.
+role_it: >-
+  Nel Sole un nucleo di ³He o si fonde con un altro ³He o cattura una particella
+  alfa attraverso questa reazione. La frazione che segue questa strada fissa il
+  numero di neutrini del ⁷Be e del ⁸B, contati da rivelatori come Borexino e
+  Super-Kamiokande. È la principale incertezza nucleare sui flussi previsti di
+  questi neutrini. Dopo il Big Bang il ⁷Be prodotto qui decadde poi in ⁷Li,
+  quindi la reazione fissa anche la quantità prevista di litio primordiale.
+  Quella previsione è più alta della quantità di litio osservata nelle stelle
+  antiche, una discrepanza nota come problema del litio.
 details: >-
   The capture proceeds by external direct capture to the ⁷Be ground state and
   to its first excited state at 429 keV, so the cross section can be measured
@@ -41,6 +55,10 @@ status_note: >-
   The S-factor at solar energies is known to a few percent, but no data exist
   inside the solar Gamow window and the extrapolation depends on the model
   used for the energy dependence.
+status_note_it: >-
+  Il fattore S alle energie solari è noto a qualche per cento, ma non esistono
+  dati dentro la finestra di Gamow solare e l'estrapolazione dipende dal modello
+  usato per l'andamento in energia.
 methods: [direct-underground, direct-surface, activation, inverse-kinematics]
 measurements:
   - year: 2004

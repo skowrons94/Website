@@ -10,11 +10,20 @@ importance: major
 summary: >-
   Oxygen-18 captures a proton and keeps it, becoming fluorine-19. This opens
   the fourth CNO cycle.
+summary_it: >-
+  L'ossigeno-18 cattura un protone e lo trattiene, diventando fluoro-19. Questo
+  apre il quarto ciclo CNO.
 role: >-
   Most protons that hit oxygen-18 produce a helium nucleus and nitrogen-15
   instead. The small fraction that makes fluorine-19 decides how much
   material passes into the last CNO cycle and towards neon. The rate also
   enters the oxygen isotope ratios predicted for giant stars and novae.
+role_it: >-
+  La maggior parte dei protoni che colpiscono l'ossigeno-18 produce invece un
+  nucleo di elio e azoto-15. La piccola frazione che forma fluoro-19 decide
+  quanta materia passa nell'ultimo ciclo CNO e verso il neon. Il tasso entra
+  anche nei rapporti isotopici dell'ossigeno previsti per le stelle giganti e le
+  novae.
 details: >-
   The same ¹⁹F states govern ¹⁸O(p,γ)¹⁹F and ¹⁸O(p,α)¹⁵N, so the two
   reactions share resonance energies and total widths and differ in the
@@ -30,6 +39,10 @@ status: improving
 status_note: >-
   Direct data reach 85 keV and rule out a large 90 keV contribution; the
   direct-capture component and the 20 keV resonance still need study.
+status_note_it: >-
+  I dati diretti arrivano a 85 keV ed escludono un grande contributo a 90 keV;
+  la componente di cattura diretta e la risonanza a 20 keV vanno ancora
+  studiate.
 methods: [direct-underground, direct-surface]
 measurements:
   - year: 2012

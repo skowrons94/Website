@@ -10,6 +10,9 @@ importance: minor
 summary: >-
   A deuteron captures a ⁴He nucleus and becomes ⁶Li, giving off a γ-ray. It is
   the only way the Big Bang made the lighter lithium isotope.
+summary_it: >-
+  Un deutone cattura un nucleo di ⁴He e diventa ⁶Li, emettendo un raggio γ. È
+  l'unico modo in cui il Big Bang ha prodotto l'isotopo più leggero del litio.
 role: >-
   Standard Big Bang nucleosynthesis predicts very little ⁶Li, far less than ⁷Li.
   Some observations of old stars once suggested much more, which would have
@@ -18,6 +21,15 @@ role: >-
   have made that much. It is very hard to measure because it happens so
   rarely; the first direct measurement, deep underground at LUNA, found a rate
   too low to explain the reported amounts.
+role_it: >-
+  La nucleosintesi primordiale standard prevede pochissimo ⁶Li, molto meno del
+  ⁷Li. Alcune osservazioni di stelle antiche avevano fatto pensare a quantità
+  molto maggiori, che avrebbero indicato nuova fisica o altre sorgenti di ⁶Li.
+  Il tasso di questa reazione alle energie dell'Universo primordiale dice se il
+  solo Big Bang avrebbe potuto produrne tanto. È molto difficile da misurare
+  perché avviene così raramente; la prima misura diretta, in profondità sotto
+  terra a LUNA, ha trovato un tasso troppo basso per spiegare le quantità
+  riportate.
 details: >-
   The electric-dipole (E1) transition is suppressed by isospin selection rules
   and by the equal charge-to-mass ratios of the deuteron and the alpha
@@ -36,6 +48,10 @@ status: improving
 status_note: >-
   Direct data at BBN energies come from a single underground experiment at four
   energies; the resulting rate is lower than earlier estimates.
+status_note_it: >-
+  I dati diretti alle energie della nucleosintesi primordiale vengono da un
+  unico esperimento sotterraneo, a quattro energie; il tasso che ne risulta è
+  più basso delle stime precedenti.
 methods: [direct-underground, coulomb-dissociation]
 measurements:
   - year: 1991

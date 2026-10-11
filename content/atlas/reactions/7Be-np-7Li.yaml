@@ -11,12 +11,23 @@ summary: >-
   A ⁷Be nucleus absorbs a neutron and becomes ⁷Li, emitting a proton. After the
   Big Bang it was the main reaction that destroyed ⁷Be, and with it much of the
   future lithium.
+summary_it: >-
+  Un nucleo di ⁷Be assorbe un neutrone e diventa ⁷Li, emettendo un protone. Dopo
+  il Big Bang fu la reazione principale che distrusse il ⁷Be, e con esso gran
+  parte del futuro litio.
 role: >-
   Most of the primordial lithium was first made as ⁷Be, which turned into ⁷Li
   only after the nucleosynthesis was over. Any ⁷Be destroyed earlier lowers the
   lithium predicted today. This reaction removed the largest share. Because the
   predicted lithium is higher than the amount seen in old stars, its rate has
   been re-measured to check whether a larger value could close the gap.
+role_it: >-
+  La maggior parte del litio primordiale si formò prima come ⁷Be, che si
+  trasformò in ⁷Li solo a nucleosintesi conclusa. Tutto il ⁷Be distrutto prima
+  abbassa il litio previsto oggi. Questa reazione ne eliminò la parte maggiore.
+  Poiché il litio previsto è più alto della quantità osservata nelle stelle
+  antiche, il suo tasso è stato rimisurato per verificare se un valore più
+  grande potesse colmare la differenza.
 details: >-
   The reaction has a large cross section at thermal energies and follows a
   1/v trend up to resonances in ⁸Be at higher neutron energies. BBN needs
@@ -32,6 +43,10 @@ status: improving
 status_note: >-
   Time-of-flight data now cover the BBN energies; the higher cross section they
   give is far from enough to solve the lithium problem.
+status_note_it: >-
+  I dati a tempo di volo coprono ora le energie della nucleosintesi primordiale;
+  la sezione d'urto più alta che danno è ben lontana dal bastare a risolvere il
+  problema del litio.
 methods: [neutron-beams]
 measurements:
   - year: 1988

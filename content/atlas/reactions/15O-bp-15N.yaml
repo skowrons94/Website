@@ -8,3 +8,6 @@ product: 15N
 networks: [cno1]
 summary: >-
   Oxygen-15 turns into nitrogen-15 by emitting a positron and a neutrino; these neutrinos are part of the solar CNO neutrino flux.
+summary_it: >-
+  L'ossigeno-15 si trasforma in azoto-15 emettendo un positrone e un neutrino;
+  questi neutrini fanno parte del flusso di neutrini CNO solari.

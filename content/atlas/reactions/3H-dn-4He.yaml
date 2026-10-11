@@ -11,11 +11,20 @@ summary: >-
   Tritium and a deuteron fuse into ⁴He and a neutron. After the Big Bang it
   turned tritium into helium; on Earth it is the reaction planned for fusion
   power plants.
+summary_it: >-
+  Trizio e deutone si fondono in ⁴He e un neutrone. Dopo il Big Bang trasformò
+  il trizio in elio; sulla Terra è la reazione prevista per le centrali a
+  fusione.
 role: >-
   The tritium made by deuteron fusion after the Big Bang was mostly turned
   into ⁴He by this reaction. Its rate is so high that it does not limit the
   predicted abundances. Because the same reaction powers fusion experiments,
   its cross section is among the best studied in nuclear physics.
+role_it: >-
+  Il trizio prodotto dalla fusione di deutoni dopo il Big Bang fu trasformato
+  per lo più in ⁴He da questa reazione. Il suo tasso è così alto che non limita
+  le abbondanze previste. Poiché la stessa reazione alimenta gli esperimenti di
+  fusione, la sua sezione d'urto è tra le più studiate della fisica nucleare.
 details: >-
   The cross section is dominated by a broad 3/2⁺ resonance in ⁵He just above
   the d+t threshold, which makes it very large at BBN energies. Bosch and Hale
@@ -27,6 +36,9 @@ status: well-known
 status_note: >-
   Measured precisely for fusion-energy applications; its uncertainty does not
   affect BBN predictions.
+status_note_it: >-
+  Misurata con precisione per le applicazioni all'energia da fusione; la sua
+  incertezza non influisce sulle previsioni della nucleosintesi primordiale.
 methods: [direct-surface, theory]
 measurements:
   - year: 1992

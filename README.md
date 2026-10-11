@@ -20,6 +20,7 @@ CORS configuration anywhere and nothing to point at anything else.
 /software
 /publications
 /cv
+/it/…                the same pages in Italian (every route above, under /it)
 ```
 
 ## Deploying
@@ -205,6 +206,20 @@ the same shape, so a new row needs no code change:
 `content/profile.yaml` holds the name, tagline, landing-page paragraphs and
 external links. `content/research.yaml` holds the long-form research threads.
 
+### The Italian pages
+
+Every page also exists in Italian, under `/it`, statically generated in both
+builds; the EN / IT switch in the header goes to the same page in the other
+language. **To translate content**, add a field with the suffix `_it` beside
+the English one in the same YAML file: `role_it` beside `role`, `intro_it`
+beside `intro`, `summary_it` beside `summary` in an atlas reaction. Anything
+without a translation is shown in English on the Italian page, so a new entry
+can go live in English first. UI strings (buttons, labels, headings) are in
+`lib/i18n.ts`, one dictionary per language; a key added to `en` must be added
+to `it` too, or TypeScript complains. The notes are not translated:
+`/it/notes` lists them and says they are in English. Run `npm run check:atlas`
+after translating the atlas: it lists what is still untranslated.
+
 ### Adding to the atlas
 
 Everything under `/atlas` comes from `content/atlas/`; its own
@@ -325,7 +340,11 @@ calculated with.
 ## Layout
 
 ```
-app/                 routes
+app/(en)/            routes of the English pages (thin: they render components/pages)
+app/it/              the same routes in Italian
+components/pages/    the page bodies, shared by both languages (`lang` prop)
+lib/i18n.ts          UI strings in both languages, and the /it path helpers
+lib/localize.mjs     picks `*_it` fields from the content, English as fallback
 components/          site shell, plus the evaluation UI
 components/sci.tsx   Unicode super/subscripts → <sup>/<sub>
 content/             ← everything you edit

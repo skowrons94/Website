@@ -11,6 +11,10 @@ summary: >-
   The last step of the CN cycle. Nitrogen-15 captures a proton and splits into
   carbon-12 and a helium nucleus, so the carbon that started the cycle comes
   back.
+summary_it: >-
+  L'ultimo passo del ciclo CN. L'azoto-15 cattura un protone e si spezza in
+  carbonio-12 e un nucleo di elio, così il carbonio che aveva avviato il ciclo
+  ritorna.
 role: >-
   A proton that hits nitrogen-15 can either knock out a helium nucleus, which
   closes the CN cycle, or stay and make oxygen-16, which opens the second CNO
@@ -18,6 +22,13 @@ role: >-
   two decides how much material leaks from the CN cycle into the cycles that
   run through oxygen and fluorine, and so how much oxygen-16 hydrogen burning
   makes.
+role_it: >-
+  Un protone che colpisce l'azoto-15 può o espellere un nucleo di elio,
+  chiudendo il ciclo CN, o restare e formare ossigeno-16, aprendo il secondo
+  ciclo CNO. Il primo esito è di gran lunga il più frequente. Il rapporto tra i
+  due decide quanta materia esce dal ciclo CN verso i cicli che passano per
+  ossigeno e fluoro, e quindi quanto ossigeno-16 produce la combustione
+  dell'idrogeno.
 details: >-
   The (p,α) channel competes with ¹⁵N(p,γ)¹⁶O through the same ¹⁶O compound
   states; at low energy both are dominated by the tails of two broad 1⁻
@@ -33,6 +44,10 @@ status: well-known
 status_note: >-
   Direct and Trojan-Horse data give consistent S(0) values with uncertainties
   of 7 % and 19 %; the rate does not limit models of the CN cycle.
+status_note_it: >-
+  I dati diretti e quelli col metodo del cavallo di Troia danno valori di S(0)
+  compatibili, con incertezze del 7 % e del 19 %; il tasso non limita i modelli
+  del ciclo CN.
 methods: [direct-surface, thm]
 measurements:
   - year: 1982

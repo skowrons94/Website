@@ -11,6 +11,10 @@ summary: >-
   Nitrogen-14 captures a helium nucleus and becomes fluorine-18. It is the
   first step that turns the nitrogen left over from hydrogen burning into
   neon-22, the fuel of a stellar neutron source.
+summary_it: >-
+  L'azoto-14 cattura un nucleo di elio e diventa fluoro-18. È il primo passo che
+  trasforma l'azoto lasciato dalla combustione dell'idrogeno in neon-22, il
+  combustibile di una sorgente stellare di neutroni.
 role: >-
   Hydrogen burning through the CNO cycle leaves most of a star's carbon,
   nitrogen and oxygen in the form of nitrogen-14. When helium starts to burn,
@@ -18,6 +22,14 @@ role: >-
   hours to oxygen-18. Oxygen-18 captures another helium nucleus and becomes
   neon-22. The amount of neon-22 that later releases neutrons is therefore set
   by the nitrogen that went through this reaction.
+role_it: >-
+  La combustione dell'idrogeno attraverso il ciclo CNO lascia gran parte del
+  carbonio, dell'azoto e dell'ossigeno di una stella sotto forma di azoto-14.
+  Quando comincia a bruciare l'elio, questo azoto cattura elio e diventa
+  fluoro-18, che in poche ore decade in ossigeno-18. L'ossigeno-18 cattura un
+  altro nucleo di elio e diventa neon-22. La quantità di neon-22 che più tardi
+  libererà neutroni è quindi fissata dall'azoto passato attraverso questa
+  reazione.
 details: >-
   At helium-burning temperatures the rate is dominated by a few narrow
   resonances in ¹⁸F, and the compiled rates are sums of their strengths.
@@ -29,6 +41,9 @@ status: improving
 status_note: >-
   The resonances that set the rate have been measured directly; the lowest
   one is known only from a theoretical argument.
+status_note_it: >-
+  Le risonanze che fissano il tasso sono state misurate direttamente; la più
+  bassa è nota solo da un argomento teorico.
 methods: [direct-surface]
 measurements:
   - year: 2000

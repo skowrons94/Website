@@ -4,6 +4,9 @@
 #   id, name, summary (general reader), details (specialist), strengths, limits,
 #   refs (reference keys, optional), examples (reaction ids, optional)
 #
+# Italian (/it/atlas/methods): `name_it`, `summary_it`, `details_it`,
+# `strengths_it`, `limits_it` beside the English; missing ones fall back to it.
+#
 # Review and facility references were checked by web search on 2026-10-11
 # (see `checked` in references/history.yaml). The Trojan Horse review
 # (tumino2021) has no confirmed DOI or full author list yet. The text below
@@ -12,11 +15,18 @@
 methods:
   - id: direct-underground
     name: Direct measurement underground
+    name_it: Misura diretta in laboratorio sotterraneo
     summary: >-
       An accelerator in a laboratory deep underground fires a beam at a target,
       and detectors count the products of the reaction. The rock above stops
       most cosmic rays, so the detectors can see reactions that happen only a
       few times per day, at energies close to those inside stars.
+    summary_it: >-
+      In un laboratorio sotterraneo un acceleratore invia un fascio su un
+      bersaglio, e i rivelatori contano i prodotti della reazione. La roccia
+      sovrastante ferma la maggior parte dei raggi cosmici, così i rivelatori
+      possono vedere reazioni che avvengono solo poche volte al giorno, a
+      energie vicine a quelle dell'interno delle stelle.
     details: >-
       The observable is the reaction yield per incident projectile, measured
       with γ-ray or charged-particle detectors as a function of beam energy.
@@ -32,24 +42,55 @@ methods:
       energy in a thick or degrading target, the γ-ray detection efficiency
       including summing and angular distributions, and electron screening at
       the lowest energies.
+    details_it: >-
+      L'osservabile è la resa della reazione per proiettile incidente, misurata
+      con rivelatori di raggi γ o di particelle cariche in funzione dell'energia
+      del fascio. La sezione d'urto, o la forza di risonanza per le risonanze
+      strette, si ricava dalla resa, dalla stechiometria e dallo spessore del
+      bersaglio, dal potere frenante e dall'efficienza di rivelazione. Sotto
+      terra il flusso di muoni e i fondi di raggi γ e di neutroni indotti dai
+      muoni si riducono di ordini di grandezza, e con essi la resa minima
+      misurabile. Il fondo residuo viene dalla radioattività ambientale della
+      roccia e dell'apparato, e dalle reazioni indotte dal fascio sui
+      contaminanti del bersaglio. I limiti sistematici tipici sono
+      l'integrazione della corrente del fascio, lo spessore del bersaglio e il
+      suo degrado sotto fascio, l'energia efficace di interazione in un
+      bersaglio spesso o che si degrada, l'efficienza di rivelazione dei raggi γ
+      comprese le somme e le distribuzioni angolari, e lo schermo elettronico
+      alle energie più basse.
     strengths:
       - Measures the reaction of interest directly, without a nuclear model.
       - Reaches energies inside or near the Gamow window for many hydrogen-burning reactions.
       - Low background allows long runs on very small cross sections.
+    strengths_it:
+      - Misura direttamente la reazione che interessa, senza un modello nucleare.
+      - Per molte reazioni di combustione dell'idrogeno raggiunge energie dentro la finestra di Gamow o vicine.
+      - Il fondo basso permette lunghe misure su sezioni d'urto molto piccole.
     limits:
       - Only a few facilities exist, and beam time is limited.
       - At the lowest energies the yield is still small and statistics dominate.
       - Laboratory data include electron screening, which differs from that in a stellar plasma.
       - Below the lowest measured energy an extrapolation, usually by R-matrix, is still needed.
+    limits_it:
+      - Esistono poche infrastrutture, e il tempo fascio è limitato.
+      - Alle energie più basse la resa è ancora piccola e domina l'incertezza statistica.
+      - I dati di laboratorio includono lo schermo elettronico, diverso da quello di un plasma stellare.
+      - Al di sotto della più bassa energia misurata serve comunque un'estrapolazione, di solito R-matrix.
     refs: [broggini2010, broggini2018, junker2023]
     examples: [3He-3He2p-4He, 14N-pg-15O, 2H-pg-3He]
 
   - id: direct-surface
     name: Direct measurement at the surface
+    name_it: Misura diretta in superficie
     summary: >-
       The same kind of experiment in an ordinary laboratory above ground. It
       covers a much wider range of energies and beams, but cosmic rays limit
       how small a cross section can be measured.
+    summary_it: >-
+      Lo stesso tipo di esperimento in un normale laboratorio in superficie.
+      Copre un intervallo molto più ampio di energie e di fasci, ma i raggi
+      cosmici limitano quanto piccola possa essere una sezione d'urto
+      misurabile.
     details: >-
       Yields are measured as underground, but the background from cosmic-ray
       muons and their secondaries limits the sensitivity for γ-ray energies up
@@ -59,21 +100,43 @@ methods:
       distributions that an R-matrix fit needs. They are often the main input
       for the extrapolation into the Gamow window. Systematic limits are the
       same as underground, with background subtraction added.
+    details_it: >-
+      Le rese si misurano come sotto terra, ma il fondo dei muoni cosmici e dei
+      loro secondari limita la sensibilità per raggi γ fino a qualche MeV, a
+      meno di usare schermature attive o passive. I dati in superficie fissano
+      di solito la parte ad alta energia della funzione di eccitazione, le
+      energie e le larghezze delle risonanze, e i rapporti di diramazione γ e le
+      distribuzioni angolari di cui ha bisogno un fit R-matrix. Spesso sono
+      l'ingrediente principale dell'estrapolazione nella finestra di Gamow. I
+      limiti sistematici sono gli stessi che sotto terra, con in più la
+      sottrazione del fondo.
     strengths:
       - Wide choice of accelerators, beams and energies.
       - Supplies angular distributions, branchings and the high-energy data that constrain R-matrix fits.
+    strengths_it:
+      - Ampia scelta di acceleratori, fasci ed energie.
+      - Fornisce distribuzioni angolari, rapporti di diramazione e i dati ad alta energia che vincolano i fit R-matrix.
     limits:
       - Cosmic-ray background limits the lowest measurable cross section.
       - Low-energy data rely on extrapolation.
+    limits_it:
+      - Il fondo dei raggi cosmici limita la più piccola sezione d'urto misurabile.
+      - I dati a bassa energia dipendono da un'estrapolazione.
     refs: [fowler1984, deboer2017]
     examples: [12C-ag-16O, 14N-pg-15O]
 
   - id: inverse-kinematics
     name: Inverse kinematics and recoil separators
+    name_it: Cinematica inversa e separatori di rinculo
     summary: >-
       The roles of beam and target are swapped: a heavy beam hits a light
       target such as hydrogen or helium gas. The product nuclei fly forward
       with the beam, and a recoil separator picks them out and counts them.
+    summary_it: >-
+      I ruoli di fascio e bersaglio si scambiano: un fascio pesante colpisce un
+      bersaglio leggero, per esempio idrogeno o elio gassoso. I nuclei prodotti
+      volano in avanti insieme al fascio, e un separatore di rinculo li isola e
+      li conta.
     details: >-
       In a radiative capture A(a,γ)B studied as a(A,γ)B, the recoil B leaves
       the target inside a narrow forward cone. An electromagnetic separator
@@ -84,22 +147,45 @@ methods:
       beams. Systematic limits are the separator acceptance and transmission,
       the charge-state distribution of the recoils, the beam suppression, and
       the gas-target density and beam normalisation.
+    details_it: >-
+      In una cattura radiativa A(a,γ)B studiata come a(A,γ)B, il nucleo di
+      rinculo B esce dal bersaglio in uno stretto cono in avanti. Un separatore
+      elettromagnetico sopprime il fascio che non ha reagito di molti ordini di
+      grandezza, e i nuclei di rinculo sono identificati sul piano focale,
+      spesso in coincidenza con i raggi γ di cattura. Il metodo misura la
+      sezione d'urto totale di cattura senza bisogno di un modello
+      dell'efficienza γ, e funziona con fasci radioattivi. I limiti sistematici
+      sono l'accettanza e la trasmissione del separatore, la distribuzione degli
+      stati di carica dei nuclei di rinculo, la soppressione del fascio, la
+      densità del bersaglio gassoso e la normalizzazione del fascio.
     strengths:
       - Gives the total cross section directly, independent of the γ-ray cascade.
       - Works with short-lived beams that cannot be made into targets.
+    strengths_it:
+      - Dà direttamente la sezione d'urto totale, indipendentemente dalla cascata γ.
+      - Funziona con fasci di nuclei a vita breve, con cui non si possono fare bersagli.
     limits:
       - The recoil cone must fit the separator acceptance, which restricts reactions and energies.
       - Beam leaking through the separator limits the lowest measurable yield.
       - Charge-state fractions must be measured or modelled.
+    limits_it:
+      - Il cono di rinculo deve rientrare nell'accettanza del separatore, il che limita reazioni ed energie.
+      - Il fascio che attraversa il separatore limita la più piccola resa misurabile.
+      - Le frazioni degli stati di carica vanno misurate o modellate.
     refs: [schurmann2005, hutcheon2003, couder2008]
     examples: [12C-ag-16O, 3He-ag-7Be]
 
   - id: activation
     name: Activation
+    name_it: Attivazione
     summary: >-
       When the reaction product is radioactive, the target is irradiated and
       then moved to a low-background counting station. The number of decays
       gives the number of reactions.
+    summary_it: >-
+      Quando il prodotto della reazione è radioattivo, il bersaglio viene
+      irraggiato e poi portato in una stazione di conteggio a basso fondo. Il
+      numero di decadimenti dà il numero di reazioni.
     details: >-
       The number of product nuclei is inferred from their decay radiation,
       measured offline, together with the half-life and the decay branching.
@@ -109,21 +195,42 @@ methods:
       counted atom by atom with accelerator mass spectrometry. Systematic
       limits are the decay data, the counting efficiency, the irradiation
       history and the loss of product nuclei from the target.
+    details_it: >-
+      Il numero di nuclei prodotti si ricava dalla loro radiazione di
+      decadimento, misurata a parte, insieme al tempo di dimezzamento e al
+      rapporto di diramazione del decadimento. Il metodo dà la sezione d'urto
+      totale, sommata su tutte le cascate γ e integrata sugli angoli, ed evita
+      così le correzioni per somma e per distribuzione angolare della
+      spettroscopia γ prompta. I prodotti a vita lunga si possono anche contare
+      atomo per atomo con la spettrometria di massa con acceleratore. I limiti
+      sistematici sono i dati di decadimento, l'efficienza di conteggio, la
+      storia dell'irraggiamento e la perdita di nuclei prodotti dal bersaglio.
     strengths:
       - Total cross section, independent of the γ-ray cascade and angular distribution.
       - Counting can be done in a low-background setting away from the beam.
+    strengths_it:
+      - Sezione d'urto totale, indipendente dalla cascata γ e dalla distribuzione angolare.
+      - Il conteggio si può fare in un ambiente a basso fondo, lontano dal fascio.
     limits:
       - Needs a radioactive product with a suitable half-life.
       - Gives no information on individual transitions.
+    limits_it:
+      - Richiede un prodotto radioattivo con un tempo di dimezzamento adatto.
+      - Non dà informazioni sulle singole transizioni.
     refs: [gyurky2007, gyurky2023]
     examples: [3He-ag-7Be, 12C-pg-13N, 25Mg-pg-26Al]
 
   - id: neutron-beams
     name: Neutron beams and time of flight
+    name_it: Fasci di neutroni e tempo di volo
     summary: >-
       Neutrons with a wide range of energies are produced in short bursts. The
       time a neutron takes to reach the sample tells its energy, so one
       experiment measures the cross section at many energies.
+    summary_it: >-
+      Si producono neutroni di energie molto diverse in brevi impulsi. Il tempo
+      che un neutrone impiega a raggiungere il campione ne dice l'energia, così
+      un solo esperimento misura la sezione d'urto a molte energie.
     details: >-
       At spallation or photoneutron sources the neutron energy is found from
       the flight time over a known path. Capture is measured with
@@ -132,22 +239,43 @@ methods:
       are then computed from the energy-dependent data. Systematic limits
       include the neutron flux shape, the sample mass, the detector response
       and backgrounds from scattered neutrons.
+    details_it: >-
+      Nelle sorgenti a spallazione o a fotoneutroni l'energia del neutrone si
+      ricava dal tempo di volo lungo un percorso noto. La cattura si misura con
+      rivelatori di raggi γ, le reazioni con particelle cariche con rivelatori
+      al silicio o a gas. Dai dati in funzione dell'energia si calcolano poi le
+      sezioni d'urto mediate su una maxwelliana alle temperature stellari. I
+      limiti sistematici comprendono la forma del flusso di neutroni, la massa
+      del campione, la risposta del rivelatore e i fondi dovuti ai neutroni
+      diffusi.
     strengths:
       - Covers many energies in one measurement.
       - Applies to neutron captures and to neutron-induced reactions on radioactive samples.
+    strengths_it:
+      - Copre molte energie in una sola misura.
+      - Si applica alle catture di neutroni e alle reazioni indotte da neutroni su campioni radioattivi.
     limits:
       - Requires a sample of the target nucleus, which is hard for short-lived nuclei.
       - The neutron flux must be known over the whole energy range.
+    limits_it:
+      - Richiede un campione del nucleo bersaglio, difficile da ottenere per i nuclei a vita breve.
+      - Il flusso di neutroni deve essere noto su tutto l'intervallo di energia.
     refs: [guerrero2013]
     examples: [7Be-np-7Li]
 
   - id: thm
     name: Trojan Horse method
+    name_it: Metodo del cavallo di Troia
     summary: >-
       An indirect method in which the interesting nucleus is carried inside a
       larger one, the Trojan horse, at an energy above the Coulomb barrier.
       The reaction with the carried nucleus can then be studied at very low
       effective energies.
+    summary_it: >-
+      Un metodo indiretto in cui il nucleo che interessa viene portato dentro un
+      nucleo più grande, il cavallo di Troia, a un'energia sopra la barriera
+      coulombiana. La reazione con il nucleo trasportato si può allora studiare
+      a energie efficaci molto basse.
     details: >-
       A two-body reaction A + x → c + C at sub-Coulomb energy is studied through
       a three-body reaction A + a → c + C + s, where a has a large x + s cluster
@@ -160,22 +288,47 @@ methods:
       energies. Systematic limits are the validity of the quasi-free
       factorisation, the momentum distribution adopted, the off-shell
       corrections and the normalisation.
+    details_it: >-
+      Una reazione a due corpi A + x → c + C a energia sotto la barriera
+      coulombiana si studia attraverso una reazione a tre corpi A + a → c + C +
+      s, in cui a ha una marcata struttura a cluster x + s e s fa da spettatore.
+      In cinematica quasi libera la sezione d'urto a tre corpi misurata si
+      fattorizza in un fattore cinematico, nella distribuzione dei momenti di x
+      dentro a e nella sezione d'urto a due corpi "half-off-energy- shell". Il
+      metodo dà l'andamento in energia della sezione d'urto del nucleo nudo,
+      senza soppressione coulombiana né schermo elettronico; la sua scala
+      assoluta è normalizzata ai dati diretti a energie più alte. I limiti
+      sistematici sono la validità della fattorizzazione quasi libera, la
+      distribuzione dei momenti adottata, le correzioni fuori shell e la
+      normalizzazione.
     strengths:
       - Reaches energies far below those accessible directly, free of electron screening.
       - Applicable to charged-particle-induced and to neutron-induced reactions.
+    strengths_it:
+      - Raggiunge energie molto al di sotto di quelle accessibili direttamente, senza schermo elettronico.
+      - Si applica alle reazioni indotte da particelle cariche e a quelle indotte da neutroni.
     limits:
       - Requires normalisation to direct data.
       - Depends on the quasi-free reaction model and its assumptions.
+    limits_it:
+      - Richiede una normalizzazione ai dati diretti.
+      - Dipende dal modello di reazione quasi libera e dalle sue ipotesi.
     refs: [tumino2021, tribble2014]
     examples: [2H-dp-3H, 19F-pa-16O, 18O-pa-15N, 13C-an-16O]
 
   - id: anc
     name: Transfer reactions and ANCs
+    name_it: Reazioni di trasferimento e ANC
     summary: >-
       At very low energy, capture happens at large distances from the nucleus,
       where only the tail of the final-state wave function matters. A transfer
       reaction at higher energy can measure the size of that tail, which then
       gives the low-energy capture rate.
+    summary_it: >-
+      A energie molto basse la cattura avviene a grande distanza dal nucleo,
+      dove conta solo la coda della funzione d'onda dello stato finale. Una
+      reazione di trasferimento a energia più alta può misurare l'ampiezza di
+      quella coda, che dà poi il tasso di cattura a bassa energia.
     details: >-
       The asymptotic normalisation coefficient (ANC) fixes the amplitude of
       the bound-state wave function outside the nuclear interior. For
@@ -186,21 +339,43 @@ methods:
       and the contribution of subthreshold states in an R-matrix calculation.
       Systematic limits are the optical potentials, the peripherality of the
       reaction and the reaction model (DWBA or coupled channels).
+    details_it: >-
+      Il coefficiente di normalizzazione asintotica (ANC) fissa l'ampiezza della
+      funzione d'onda dello stato legato fuori dall'interno del nucleo. Per
+      reazioni di trasferimento periferiche, misurate a energie dove la sezione
+      d'urto è grande, l'ANC si può estrarre con una dipendenza molto minore dai
+      parametri del modello ottico e di particella singola rispetto a un fattore
+      spettroscopico. L'ANC determina poi, in un calcolo R-matrix, il contributo
+      della cattura diretta esterna e quello degli stati sotto soglia. I limiti
+      sistematici sono i potenziali ottici, la perifericità della reazione e il
+      modello di reazione (DWBA o canali accoppiati).
     strengths:
       - Gives low-energy direct capture and subthreshold-state contributions without measuring the capture itself.
       - Uses reactions with large cross sections.
+    strengths_it:
+      - Dà la cattura diretta a bassa energia e i contributi degli stati sotto soglia senza misurare la cattura stessa.
+      - Usa reazioni con sezioni d'urto grandi.
     limits:
       - Model dependent through the optical potentials and the reaction theory.
       - Covers only the non-resonant and subthreshold parts of the rate.
+    limits_it:
+      - Dipende dal modello attraverso i potenziali ottici e la teoria della reazione.
+      - Copre solo le parti non risonante e sotto soglia del tasso di reazione.
     refs: [tribble2014]
     examples: [14N-pg-15O, 7Be-pg-8B, 12C-ag-16O]
 
   - id: coulomb-dissociation
     name: Coulomb dissociation
+    name_it: Dissociazione coulombiana
     summary: >-
       The time-reverse of a capture. A fast beam of the product nucleus passes
       close to a heavy target, and the strong electric field breaks it apart.
       From the break-up rate the capture cross section can be calculated.
+    summary_it: >-
+      È l'inverso temporale di una cattura. Un fascio veloce del nucleo prodotto
+      passa vicino a un bersaglio pesante, e l'intenso campo elettrico lo
+      spezza. Dal tasso di rottura si può calcolare la sezione d'urto di
+      cattura.
     details: >-
       Baur, Bertulani and Rebel proposed the method in 1986. The virtual
       photons of the Coulomb field of a high-Z target induce the
@@ -211,21 +386,42 @@ methods:
       higher multipoles (E2 in an E1-dominated case), of post-acceleration
       in the Coulomb field, and the reaction model used to extract the
       photodissociation cross section.
+    details_it: >-
+      Baur, Bertulani e Rebel proposero il metodo nel 1986. I fotoni virtuali
+      del campo coulombiano di un bersaglio ad alto Z inducono la
+      fotodissociazione B + γ → A + a, legata alla cattura A(a,γ)B dal bilancio
+      dettagliato. La sezione d'urto di dissociazione è grande grazie all'alto
+      flusso di fotoni virtuali, e si possono usare fasci radioattivi. I limiti
+      sistematici sono i contributi della rottura nucleare, dei multipoli
+      superiori (E2 in un caso dominato da E1), della post-accelerazione nel
+      campo coulombiano, e il modello di reazione usato per estrarre la sezione
+      d'urto di fotodissociazione.
     strengths:
       - Large cross sections and the use of radioactive beams.
       - Low relative energies between the fragments are accessible.
+    strengths_it:
+      - Sezioni d'urto grandi e uso di fasci radioattivi.
+      - Sono accessibili basse energie relative tra i frammenti.
     limits:
       - Depends on the reaction model and on multipole separation.
       - Nuclear and higher-order Coulomb effects must be subtracted.
+    limits_it:
+      - Dipende dal modello di reazione e dalla separazione dei multipoli.
+      - Vanno sottratti gli effetti nucleari e coulombiani di ordine superiore.
     refs: [baur1986, tribble2014]
     examples: [7Be-pg-8B]
 
   - id: plasma
     name: Laser and inertial-confinement plasmas
+    name_it: Plasmi da laser e a confinamento inerziale
     summary: >-
       Lasers compress and heat a small capsule of fuel until the nuclei fuse.
       The reactions then take place in a hot plasma, as they do in stars,
       rather than between a beam and a cold target.
+    summary_it: >-
+      I laser comprimono e scaldano una piccola capsula di combustibile finché i
+      nuclei non si fondono. Le reazioni avvengono allora in un plasma caldo,
+      come nelle stelle, invece che tra un fascio e un bersaglio freddo.
     details: >-
       Reaction yields are measured from the emitted neutrons, charged particles
       or γ-rays, and the plasma temperature and density are inferred from other
@@ -237,21 +433,44 @@ methods:
       measured the ²H(d,n)³He and ³H(t,2n)⁴He S-factors in implosions at
       temperatures of 2.1–5.4 keV and densities of 1.2–16 g cm⁻³, in agreement
       with accelerator data within the uncertainties.
+    details_it: >-
+      Le rese delle reazioni si misurano dai neutroni, dalle particelle cariche
+      o dai raggi γ emessi, mentre la temperatura e la densità del plasma si
+      ricavano da altre diagnostiche. Il metodo campiona direttamente la
+      reattività mediata termicamente e permette di studiare effetti di plasma
+      come lo schermo. I limiti sistematici sono la conoscenza delle condizioni
+      del plasma, che variano nello spazio e nel tempo, e la separazione della
+      reazione che interessa dalle altre reazioni nel combustibile. Alla
+      National Ignition Facility, Casey et al. hanno misurato i fattori S di
+      ²H(d,n)³He e ³H(t,2n)⁴He in implosioni a temperature di 2,1–5,4 keV e
+      densità di 1,2–16 g cm⁻³, in accordo con i dati da acceleratore entro le
+      incertezze.
     strengths:
       - Probes reactions in a thermal plasma.
       - Allows studies of reactions between radioactive light nuclei such as tritium.
+    strengths_it:
+      - Studia le reazioni in un plasma termico.
+      - Permette di studiare reazioni tra nuclei leggeri radioattivi come il trizio.
     limits:
       - Plasma conditions are known only approximately.
       - Limited so far to fusion of the lightest nuclei.
+    limits_it:
+      - Le condizioni del plasma sono note solo in modo approssimato.
+      - Finora è limitato alla fusione dei nuclei più leggeri.
     refs: [casey2017, zylstra2017]
     examples: [3H-dn-4He, 2H-dn-3He]
 
   - id: theory
     name: Calculation from theory
+    name_it: Calcolo teorico
     summary: >-
       Some rates cannot be measured at all at stellar energies and are
       calculated instead. The weak proton–proton fusion that starts the Sun's
       energy production is the main example.
+    summary_it: >-
+      Alcuni tassi di reazione non si possono misurare affatto alle energie
+      stellari, e vengono invece calcolati. Il caso principale è la fusione
+      debole di due protoni che avvia la produzione di energia del Sole.
     details: >-
       For weak-interaction processes such as p + p → d + e⁺ + ν the cross
       section is too small for any laboratory measurement and is computed from
@@ -259,11 +478,24 @@ methods:
       radiative captures and resonant reactions, R-matrix and microscopic
       models extrapolate measured data to stellar energies. Electron capture
       rates in the solar plasma also come from theory.
+    details_it: >-
+      Per i processi di interazione debole come p + p → d + e⁺ + ν la sezione
+      d'urto è troppo piccola per qualunque misura di laboratorio e si calcola
+      dalla teoria nucleare. Per le catture radiative e le reazioni risonanti,
+      modelli R-matrix e microscopici estrapolano i dati misurati alle energie
+      stellari. Anche i tassi di cattura elettronica nel plasma solare vengono
+      dalla teoria.
     strengths:
       - The only source for some weak-interaction rates.
       - Provides the energy dependence that links measured data to stellar energies.
+    strengths_it:
+      - È l'unica fonte per alcuni tassi di interazione debole.
+      - Fornisce l'andamento in energia che collega i dati misurati alle energie stellari.
     limits:
       - Accuracy depends on the nuclear model and its inputs.
       - Extrapolations need data to constrain them.
+    limits_it:
+      - La precisione dipende dal modello nucleare e dai suoi ingredienti.
+      - Le estrapolazioni hanno bisogno di dati che le vincolino.
     refs: [bethe1938, adelberger2011, acharya2025]
     examples: [1H-pp-2H, 1H-pep-2H, 7Be-ec-7Li]

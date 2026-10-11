@@ -1,15 +1,22 @@
 # Research threads, rendered in order on /research and summarised on the landing
 # page. `body` paragraphs are plain text; `highlights` become a bulleted list.
+# A field ending in `_it` is the Italian version of the field before it (/it).
 
 threads:
   - id: luna
     title: LUNA — proton capture, deep underground
+    title_it: LUNA — catture protoniche, in profondità sotto terra
     venue: Laboratori Nazionali del Gran Sasso, INFN
     period: 2020 — present
+    period_it: 2020 — oggi
     role: Working Group Leader (¹⁹F + p) · DAQ Coordinator
+    role_it: Coordinatore del gruppo di lavoro ¹⁹F + p · Coordinatore DAQ
     summary: >-
       Direct cross-section measurements at stellar energies, where the signal is
       so faint that the experiment has to be buried to see it at all.
+    summary_it: >-
+      Misure dirette di sezioni d'urto alle energie stellari, dove il segnale è
+      così debole che per vederlo l'esperimento deve stare sotto terra.
     body:
       - >-
         The reactions that burn hydrogen in the CNO cycle have cross sections
@@ -29,23 +36,57 @@ threads:
         slow-control infrastructure of every campaign, and of the MV facility, is
         designed and operated by me. It is what lets shifts be taken remotely,
         which for an experiment a kilometre underground is not a small thing.
+    body_it:
+      - >-
+        Le reazioni che bruciano idrogeno nel ciclo CNO hanno sezioni d'urto che
+        calano esponenzialmente verso le energie stellari: nella finestra di Gamow
+        possono arrivare alla scala del picobarn, che sulla superficie della Terra
+        è indistinguibile dal fondo dei raggi cosmici. La risposta di LUNA sono
+        1400 m di dolomia sopra l'esperimento, che riducono il flusso di muoni di
+        sei ordini di grandezza e rendono possibile la misura.
+      - >-
+        Ho guidato la misura e l'analisi della cattura radiativa ¹²C + p e
+        ¹³C + p a LUNA e al Felsenkeller, che ha fissato i tassi di cattura
+        protonica su entrambi gli isotopi del carbonio e, con essi, il rapporto
+        astrofisico ¹²C/¹³C. Oggi coordino il gruppo di lavoro ¹⁹F + p al nuovo
+        Bellotti Ion Beam Facility, l'acceleratore da 3,5 MV installato nel
+        laboratorio sotterraneo del Gran Sasso.
+      - >-
+        In parallelo sono il coordinatore DAQ della collaborazione: ho progettato
+        e gestisco l'infrastruttura di acquisizione e di slow control di ogni
+        campagna di misura e dell'acceleratore da 3,5 MV. È ciò che permette di
+        fare i turni da remoto, il che per un esperimento a un chilometro sotto
+        terra non è poco.
     highlights:
       - ¹²C(p,γ)¹³N and ¹³C(p,γ)¹⁴N cross sections and their impact on the ¹²C/¹³C ratio
       - Working Group Leader for ¹⁹F + p at the Bellotti Ion Beam Facility
       - Calibration of the 3.5 MV Pelletron; Geant4 tuning for the BGO and HPGe setups
       - R-matrix evaluations for ¹²C + p, ¹³C + p, ²⁰Ne + p and ²²Ne + p
+    highlights_it:
+      - Sezioni d'urto di ¹²C(p,γ)¹³N e ¹³C(p,γ)¹⁴N e loro impatto sul rapporto ¹²C/¹³C
+      - Coordinatore del gruppo di lavoro ¹⁹F + p al Bellotti Ion Beam Facility
+      - Calibrazione del Pelletron da 3,5 MV; messa a punto di Geant4 per i rivelatori BGO e HPGe
+      - Valutazioni R-matrix per ¹²C + p, ¹³C + p, ²⁰Ne + p e ²²Ne + p
     link:
       label: The reactions, in the atlas
+      label_it: Le reazioni, nell'atlante
       href: /atlas
 
   - id: azure2
     title: AZURE2 — the R-matrix code
+    title_it: AZURE2 — il codice R-matrix
     venue: Open source · used worldwide
+    venue_it: Open source · usato in tutto il mondo
     period: 2025 — present
+    period_it: 2025 — oggi
     role: Maintainer and Lead Developer
+    role_it: Responsabile e sviluppatore principale
     summary: >-
       The reference R-matrix code for nuclear astrophysics, IAEA nuclear-data
       evaluation and materials analysis.
+    summary_it: >-
+      Il codice R-matrix di riferimento per l'astrofisica nucleare, per la
+      valutazione dei dati nucleari della IAEA e per l'analisi dei materiali.
     body:
       - >-
         AZURE2 is where a set of measured points becomes a cross section: a
@@ -64,18 +105,44 @@ threads:
       - >-
         The evaluations section of this site runs that same code on
         real published analyses.
+    body_it:
+      - >-
+        AZURE2 è il punto in cui un insieme di punti misurati diventa una sezione
+        d'urto: un modello R-matrix a più livelli e più canali, adattato ai dati
+        di tutti i canali che condividono un nucleo composto, e poi estrapolato
+        alle energie a cui avviene davvero la combustione stellare. È usato in
+        università, laboratori nazionali e alla IAEA.
+      - >-
+        Da quando ne sono il responsabile ho lavorato sulle parti che decidono se
+        un'analisi moderna sia fattibile o no: gradienti analitici e jacobiano
+        dei residui calcolati all'interno del modello, così che un fit o una MCMC
+        non paghino più un fattore di qualche centinaio per le differenze finite;
+        un integratore del tasso di reazione che tabula una sola volta;
+        osservabili di polarizzazione; diffusione di particelle identiche.
+        Accanto a questo, l'interfaccia grafica, la documentazione, il supporto e
+        la formazione per la comunità degli utenti.
+      - >-
+        La sezione delle valutazioni di questo sito esegue lo stesso codice su
+        analisi reali e pubblicate.
     link:
       label: Open the evaluations
+      label_it: Apri le valutazioni
       href: /evaluations
 
   - id: agata
     title: AGATA — a sub-femtosecond lifetime in ¹⁵O
+    title_it: AGATA — una vita media sotto il femtosecondo nell'¹⁵O
     venue: Laboratori Nazionali di Legnaro, INFN
     period: 2023 — present
+    period_it: 2023 — oggi
     role: Spokesperson
+    role_it: Spokesperson
     summary: >-
       Measuring how long a nuclear state lives when the answer is a fraction of a
       femtosecond, and what that says about the Sun.
+    summary_it: >-
+      Misurare quanto vive uno stato nucleare quando la risposta è una frazione
+      di femtosecondo, e che cosa questo ci dice sul Sole.
     body:
       - >-
         The 6.79 MeV state in ¹⁵O sits just above the proton threshold and
@@ -89,15 +156,34 @@ threads:
         reconstruction, Geant4 simulation and the Bayesian extraction of the
         lifetime itself. The analysis is complete and the manuscript is under
         review at Nature Physics.
+    body_it:
+      - >-
+        Lo stato a 6,79 MeV dell'¹⁵O si trova appena sopra la soglia protonica e
+        domina il comportamento a bassa energia di ¹⁴N(p,γ)¹⁵O, il passo più
+        lento del ciclo CNO e quindi la reazione che ne fissa il ritmo e il flusso
+        di neutrini CNO. La sua vita media entra direttamente in quella
+        estrapolazione, ed è così breve che solo un rivelatore a tracciamento di
+        raggi γ può misurarla.
+      - >-
+        Sono spokesperson della misura eseguita con AGATA a Legnaro e ho guidato
+        l'intera catena di analisi: correzione Doppler, ricostruzione cinematica,
+        simulazione Geant4 ed estrazione bayesiana della vita media. L'analisi è
+        conclusa e il manoscritto è in revisione presso Nature Physics.
 
   - id: cryring
     title: CRYRING — electron screening in inverse kinematics
+    title_it: CRYRING — schermo elettronico in cinematica inversa
     venue: GSI Helmholtzzentrum für Schwerionenforschung, Darmstadt
     period: 2024 — present
+    period_it: 2024 — oggi
     role: Participant
+    role_it: Partecipante
     summary: >-
       Testing how atomic electrons distort a nuclear cross section measured in the
       laboratory, in a regime where the effect is largest.
+    summary_it: >-
+      Verificare come gli elettroni atomici alterano una sezione d'urto nucleare
+      misurata in laboratorio, nel regime in cui l'effetto è più grande.
     body:
       - >-
         Every laboratory measurement of a low-energy cross section is made with
@@ -110,3 +196,16 @@ threads:
         stored, cooled beam, which changes the atomic configuration of the
         collision and so attacks the discrepancy from a direction a normal target
         experiment cannot.
+    body_it:
+      - >-
+        Ogni misura di laboratorio di una sezione d'urto a bassa energia si fa
+        con atomi, non con nuclei nudi, e la nube elettronica scherma la barriera
+        coulombiana. L'aumento che ne risulta cresce al diminuire dell'energia,
+        proprio dove all'astrofisica serve il valore, e i potenziali di schermo
+        misurati sono risultati costantemente più grandi di quanto la teoria
+        consenta.
+      - >-
+        A CRYRING la reazione ¹⁵N + p è studiata in cinematica inversa con un
+        fascio immagazzinato e raffreddato, che cambia la configurazione atomica
+        della collisione e così affronta la discrepanza da una direzione che un
+        normale esperimento su bersaglio non può prendere.

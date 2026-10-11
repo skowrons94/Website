@@ -10,6 +10,9 @@ importance: key
 summary: >-
   Oxygen-17 captures a proton and splits into nitrogen-14 and a helium
   nucleus. This closes the second CNO cycle and destroys oxygen-17.
+summary_it: >-
+  L'ossigeno-17 cattura un protone e si spezza in azoto-14 e un nucleo di elio.
+  Questo chiude il secondo ciclo CNO e distrugge l'ossigeno-17.
 role: >-
   The amount of oxygen-17 that a star makes and later shows at its surface
   depends on how fast this reaction destroys it. Astronomers compare the ratio
@@ -17,6 +20,14 @@ role: >-
   meteorites with stellar models, and this reaction is one of the main nuclear
   inputs to that comparison. In nova explosions it competes with
   ¹⁷O(p,γ)¹⁸F, which makes the radioactive fluorine-18.
+role_it: >-
+  La quantità di ossigeno-17 che una stella produce e poi mostra in superficie
+  dipende da quanto velocemente questa reazione lo distrugge. Gli astronomi
+  confrontano con i modelli stellari il rapporto tra ossigeno-17 e ossigeno-16
+  nelle giganti rosse e nei grani di polvere stellare trovati nelle meteoriti, e
+  questa reazione è uno dei principali ingredienti nucleari di quel confronto.
+  Nelle esplosioni di nova compete con ¹⁷O(p,γ)¹⁸F, che produce il fluoro-18
+  radioattivo.
 details: >-
   At the temperatures of red giants and AGB stars the rate is dominated by a
   narrow resonance at E = 64.5 keV (the ¹⁸F state at Ex = 5672 keV), whose
@@ -33,6 +44,11 @@ status_note: >-
   The 183 keV resonance is well measured; at red-giant and AGB temperatures
   the rate rests on the 64.5 keV resonance, where the underground and
   Trojan-Horse strengths differ by about a factor of 3.
+status_note_it: >-
+  La risonanza a 183 keV è ben misurata; alle temperature delle giganti rosse e
+  delle AGB il tasso si basa sulla risonanza a 64,5 keV, dove le forze misurate
+  sotto terra e con il metodo del cavallo di Troia differiscono di circa un
+  fattore 3.
 methods: [direct-underground, direct-surface, inverse-kinematics, thm]
 measurements:
   - year: 2005

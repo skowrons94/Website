@@ -11,6 +11,10 @@ summary: >-
   The branch point of the CNO cycles. Rarely, nitrogen-15 keeps the captured
   proton and becomes oxygen-16, and the material passes from the first CNO
   cycle into the second.
+summary_it: >-
+  Il punto di diramazione dei cicli CNO. Raramente l'azoto-15 trattiene il
+  protone catturato e diventa ossigeno-16, e la materia passa dal primo ciclo
+  CNO al secondo.
 role: >-
   Every time this reaction happens instead of the much more frequent
   ¹⁵N(p,α)¹²C, a nucleus leaves the CN cycle and enters the cycle that runs
@@ -19,6 +23,14 @@ role: >-
   and in nova explosions. Measurements deep underground at Gran Sasso, by the
   LUNA collaboration, showed that the rate is about half the value used in
   the older compilations.
+role_it: >-
+  Ogni volta che avviene questa reazione invece della molto più frequente
+  ¹⁵N(p,α)¹²C, un nucleo lascia il ciclo CN ed entra nel ciclo che passa per
+  ossigeno e fluoro. Il suo tasso fissa quindi quanto ossigeno-16, ossigeno-17 e
+  fluoro produce la combustione dell'idrogeno nelle giganti rosse, nelle stelle
+  AGB e nelle esplosioni di nova. Misure condotte in profondità sotto il Gran
+  Sasso dalla collaborazione LUNA hanno mostrato che il tasso è circa metà del
+  valore usato nelle compilazioni più vecchie.
 details: >-
   The capture at low energy is dominated by the two broad 1⁻ resonances in ¹⁶O
   that also govern ¹⁵N(p,α)¹²C, interfering with each other and with direct
@@ -34,6 +46,10 @@ status_note: >-
   Underground data reach 70 keV and the rate is known to about 10 %; the
   extrapolation still depends on the direct-capture component and on the
   interference pattern in the R-matrix fit.
+status_note_it: >-
+  I dati sotterranei arrivano a 70 keV e il tasso è noto a circa il 10 %;
+  l'estrapolazione dipende ancora dalla componente di cattura diretta e dalla
+  struttura delle interferenze nel fit R-matrix.
 methods: [direct-underground, direct-surface, anc]
 measurements:
   - year: 2008

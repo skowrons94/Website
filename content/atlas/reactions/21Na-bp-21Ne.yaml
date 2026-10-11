@@ -9,3 +9,7 @@ networks: [nena]
 summary: >-
   ²¹Na, made when ²⁰Ne captures a proton, turns into stable ²¹Ne by emitting a
   positron and a neutrino; the cycle then continues with a proton capture on ²¹Ne.
+summary_it: >-
+  Il ²¹Na, prodotto quando il ²⁰Ne cattura un protone, si trasforma in ²¹Ne
+  stabile emettendo un positrone e un neutrino; il ciclo prosegue poi con una
+  cattura protonica sul ²¹Ne.

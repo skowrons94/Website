@@ -8,3 +8,6 @@ product: 17O
 networks: [cno2]
 summary: >-
   Fluorine-17 turns into stable oxygen-17 by emitting a positron and a neutrino.
+summary_it: >-
+  Il fluoro-17 si trasforma in ossigeno-17 stabile emettendo un positrone e un
+  neutrino.

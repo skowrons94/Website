@@ -11,12 +11,21 @@ summary: >-
   Two deuterons fuse into tritium and a proton. It is the twin of the reaction
   that gives ³He and a neutron, and it also destroyed deuterium after the Big
   Bang.
+summary_it: >-
+  Due deutoni si fondono in trizio e un protone. È la gemella della reazione che
+  dà ³He e un neutrone, e anch'essa distrusse deuterio dopo il Big Bang.
 role: >-
   This branch burns deuterium and makes tritium, which later decays to ³He or
   fuses with another deuteron. With proton capture on deuterium and the
   neutron branch of deuteron–deuteron fusion, it sets the amount of deuterium
   left from the Big Bang, which astronomers use to measure the density of
   ordinary matter.
+role_it: >-
+  Questo ramo brucia deuterio e produce trizio, che in seguito decade in ³He o
+  si fonde con un altro deutone. Con la cattura protonica sul deuterio e il ramo
+  a neutrone della fusione deutone-deutone, fissa la quantità di deuterio
+  rimasta dal Big Bang, che gli astronomi usano per misurare la densità della
+  materia ordinaria.
 details: >-
   The proton branch is easier to measure than the neutron branch, since the
   charged products can be detected with silicon detectors at the same time as
@@ -31,6 +40,9 @@ status: improving
 status_note: >-
   Measured over the whole BBN range, but the choice of evaluation matters for
   the deuterium prediction.
+status_note_it: >-
+  Misurata su tutto l'intervallo della nucleosintesi primordiale, ma la scelta
+  della valutazione conta per la previsione del deuterio.
 methods: [direct-surface, thm]
 measurements:
   - year: 1995

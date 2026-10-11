@@ -10,12 +10,23 @@ importance: key
 summary: >-
   Fluorine-19 captures a proton and splits into oxygen-16 and a helium
   nucleus. It is the main way stars destroy fluorine during hydrogen burning.
+summary_it: >-
+  Il fluoro-19 cattura un protone e si spezza in ossigeno-16 e un nucleo di
+  elio. È il modo principale in cui le stelle distruggono il fluoro durante la
+  combustione dell'idrogeno.
 role: >-
   Fluorine is the most fragile of the light elements made in stars, and its
   origin is still debated. In AGB stars, which are thought to make much of the
   fluorine in the Galaxy, part of the fluorine produced can be destroyed by
   this reaction if it is mixed into hot hydrogen-burning layers. The reaction
   also returns material to oxygen-16 and closes the fourth CNO cycle.
+role_it: >-
+  Il fluoro è il più fragile degli elementi leggeri prodotti nelle stelle, e la
+  sua origine è ancora discussa. Nelle stelle AGB, che si pensa producano gran
+  parte del fluoro della Galassia, una parte del fluoro prodotto può essere
+  distrutta da questa reazione se viene mescolata in strati caldi in cui brucia
+  l'idrogeno. La reazione riporta anche materia all'ossigeno-16 e chiude il
+  quarto ciclo CNO.
 details: >-
   The reaction proceeds through states of ²⁰Ne and has several α channels:
   to the ¹⁶O ground state, emitting α particles, and to excited ¹⁶O states,
@@ -30,6 +41,10 @@ status_note: >-
   The (p,αγ) channel is now measured underground in the Gamow window, but
   the dominant α₀ channel below 0.2 MeV is constrained only by Trojan-Horse
   data.
+status_note_it: >-
+  Il canale (p,αγ) è ora misurato sotto terra nella finestra di Gamow, ma il
+  canale dominante α₀ sotto 0,2 MeV è vincolato solo dai dati col metodo del
+  cavallo di Troia.
 methods: [direct-underground, direct-surface, thm]
 measurements:
   - year: 2011

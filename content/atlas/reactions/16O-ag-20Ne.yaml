@@ -10,12 +10,22 @@ importance: minor
 summary: >-
   Oxygen-16 captures a helium nucleus and becomes neon-20. In helium burning it
   is slow, so most of the oxygen survives.
+summary_it: >-
+  L'ossigeno-16 cattura un nucleo di elio e diventa neon-20. Nella combustione
+  dell'elio è lenta, quindi la maggior parte dell'ossigeno sopravvive.
 role: >-
   This is the last step of the chain of helium captures in helium burning.
   Because it is slow at the temperatures where helium burns, little oxygen
   turns into neon, and stars end helium burning with mostly carbon and oxygen.
   If the reaction were much faster, the oxygen made by the previous step would
   be lost to neon and the carbon-to-oxygen balance would change.
+role_it: >-
+  È l'ultimo passo della catena di catture di elio nella combustione dell'elio.
+  Poiché è lenta alle temperature in cui brucia l'elio, poco ossigeno si
+  trasforma in neon, e le stelle concludono la combustione dell'elio con
+  soprattutto carbonio e ossigeno. Se la reazione fosse molto più veloce,
+  l'ossigeno prodotto dal passo precedente andrebbe perso in neon e l'equilibrio
+  tra carbonio e ossigeno cambierebbe.
 details: >-
   At helium-burning energies no resonance contributes significantly and the
   reaction proceeds mainly by direct capture, which makes the cross section
@@ -29,6 +39,9 @@ status: improving
 status_note: >-
   The rate rests on a direct-capture extrapolation from higher-energy data;
   no data reach the helium-burning energies.
+status_note_it: >-
+  Il tasso si basa su un'estrapolazione della cattura diretta dai dati a energia
+  più alta; nessun dato arriva alle energie della combustione dell'elio.
 methods: [direct-surface, inverse-kinematics]
 measurements:
   - year: 2010

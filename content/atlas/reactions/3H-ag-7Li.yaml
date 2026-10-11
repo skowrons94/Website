@@ -10,12 +10,22 @@ importance: minor
 summary: >-
   Tritium captures a ⁴He nucleus and becomes ⁷Li, giving off a γ-ray. It made a
   small part of the primordial lithium; most of it came from ⁷Be.
+summary_it: >-
+  Il trizio cattura un nucleo di ⁴He e diventa ⁷Li, emettendo un raggio γ. Ha
+  prodotto una piccola parte del litio primordiale; la maggior parte venne dal
+  ⁷Be.
 role: >-
   At the baryon density measured today, most of the ⁷Li produced after the Big
   Bang was first made as ⁷Be, through the mirror reaction on ³He, and decayed to
   ⁷Li later. This reaction makes ⁷Li directly and contributes a smaller share.
   It is also a test case for nuclear models, which must describe it together
   with its mirror.
+role_it: >-
+  Alla densità barionica misurata oggi, la maggior parte del ⁷Li prodotto dopo
+  il Big Bang si formò prima come ⁷Be, attraverso la reazione speculare
+  sull'³He, e decadde in ⁷Li più tardi. Questa reazione produce ⁷Li direttamente
+  e ne fornisce una parte minore. È anche un caso di prova per i modelli
+  nucleari, che devono descriverla insieme alla sua speculare.
 details: >-
   The reaction is the mirror of ³He(α,γ)⁷Be: an external direct capture to the
   ground and first excited states of ⁷Li. Its lower Coulomb barrier allows
@@ -28,6 +38,9 @@ status: improving
 status_note: >-
   Measured at BBN energies with uncertainties that affect only the small
   directly produced share of primordial ⁷Li.
+status_note_it: >-
+  Misurata alle energie della nucleosintesi primordiale, con incertezze che
+  riguardano solo la piccola parte di ⁷Li primordiale prodotta direttamente.
 methods: [direct-surface]
 measurements:
   - year: 1994

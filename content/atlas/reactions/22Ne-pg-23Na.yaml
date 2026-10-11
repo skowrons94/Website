@@ -10,6 +10,10 @@ importance: key
 summary: >-
   The proton capture on ²²Ne that makes sodium. It is the main way stars produce
   ²³Na, the only stable sodium isotope, during hydrogen burning.
+summary_it: >-
+  La cattura protonica sul ²²Ne che produce sodio. È il modo principale in cui
+  le stelle producono il ²³Na, l'unico isotopo stabile del sodio, durante la
+  combustione dell'idrogeno.
 role: >-
   Many old star clusters in the Milky Way contain stars with more sodium and less
   oxygen than their neighbours. This pattern, called the sodium–oxygen
@@ -20,6 +24,17 @@ role: >-
   reaction sets part of the sodium and neon yields of nova explosions. For decades
   its rate was uncertain by large factors because several possible low-energy
   resonances had never been seen; most of them have now been measured or excluded.
+role_it: >-
+  Molti vecchi ammassi stellari della Via Lattea contengono stelle con più sodio
+  e meno ossigeno delle loro vicine. Questo andamento, detto anticorrelazione
+  sodio-ossigeno, si pensa venga da materia bruciata ad alta temperatura in una
+  generazione precedente di stelle. Quali stelle abbiano fatto questa
+  combustione, per esempio stelle massicce del ramo asintotico delle giganti
+  (stelle AGB), è ancora discusso, e la risposta dipende da quanto velocemente
+  il ²²Ne si trasforma in sodio. La stessa reazione fissa in parte le rese di
+  sodio e di neon delle esplosioni di nova. Per decenni il suo tasso è stato
+  incerto di grandi fattori perché diverse possibili risonanze a bassa energia
+  non erano mai state viste; la maggior parte è stata ora misurata o esclusa.
 details: >-
   At the temperatures of hot-bottom burning and of novae the rate is a sum of
   narrow resonances and of a non-resonant component, made of direct capture and
@@ -48,6 +63,11 @@ status_note: >-
   at 0.1 GK fell by about three orders of magnitude; the normalisation to the
   higher-energy reference resonances and the non-resonant component remain under
   discussion.
+status_note_it: >-
+  Le risonanze a bassa energia sono ora misurate o escluse e l'incertezza sul
+  tasso a 0,1 GK è scesa di circa tre ordini di grandezza; restano in
+  discussione la normalizzazione alle risonanze di riferimento a energia più
+  alta e la componente non risonante.
 methods: [direct-underground, direct-surface, inverse-kinematics]
 measurements:
   - year: 2014

@@ -10,6 +10,10 @@ importance: key
 summary: >-
   The slowest step of the CNO cycle. Its rate decides how fast the cycle runs,
   how much energy it gives, and how many CNO neutrinos leave the Sun.
+summary_it: >-
+  Il passo più lento del ciclo CNO. Il suo tasso decide quanto velocemente
+  procede il ciclo, quanta energia fornisce e quanti neutrini CNO lasciano il
+  Sole.
 role: >-
   In a star burning hydrogen through the CNO cycle, nuclei wait longest as ¹⁴N
   before they capture the next proton. This one reaction therefore sets the pace
@@ -17,6 +21,13 @@ role: >-
   than the Sun, the flux of CNO neutrinos from the Sun's core, and, through the
   lifetime of stars leaving the main sequence, the ages estimated for the oldest
   star clusters.
+role_it: >-
+  In una stella che brucia idrogeno attraverso il ciclo CNO, i nuclei restano
+  più a lungo come ¹⁴N prima di catturare il protone successivo. Questa sola
+  reazione detta quindi il ritmo dell'intero ciclo. Controlla la produzione di
+  energia delle stelle più massicce del Sole, il flusso di neutrini CNO dal
+  nucleo del Sole e, attraverso la durata della vita delle stelle che lasciano
+  la sequenza principale, le età stimate per gli ammassi stellari più antichi.
 details: >-
   At solar temperatures the Gamow window lies near 27 keV, where the cross
   section is far too small to measure, so the S-factor is extrapolated from
@@ -35,6 +46,10 @@ status: improving
 status_note: >-
   Direct data reach 70 keV; the remaining uncertainty comes from the split into
   the individual γ-ray transitions and from the extrapolation to solar energies.
+status_note_it: >-
+  I dati diretti arrivano a 70 keV; l'incertezza residua viene dalla
+  suddivisione nelle singole transizioni γ e dall'estrapolazione alle energie
+  solari.
 methods: [direct-underground, direct-surface, anc]
 measurements:
   - year: 2001

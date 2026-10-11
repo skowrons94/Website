@@ -6,6 +6,10 @@
 #   luna (true for the LUNA accelerators), url, summary (general reader),
 #   details (specialist, optional), refs (reference keys, optional)
 #
+# Italian (/it/atlas/methods): any text field may have an `_it` twin beside it
+# (`summary_it`, `details_it`, `country_it`, `depth_it`, ...); names of
+# laboratories stay as they are. Missing translations fall back to English.
+#
 # Fields are filled only where a source was checked (web search, 2026-10-11):
 #   LNGS depth: LUNA reviews (arXiv 0906.1097, broggini2010).
 #   JUNA: HIAT 2022 paper "First intense beam at JUNA 400 kV underground
@@ -31,22 +35,38 @@ facilities:
     lab: Laboratori Nazionali del Gran Sasso (INFN)
     location: Assergi, L'Aquila
     country: Italy
+    country_it: Italia
     underground: true
     depth: about 1400 m of rock, 3800 m w.e.
+    depth_it: circa 1400 m di roccia, 3800 m w.e.
     accelerator: 50 kV ion accelerator with a windowless gas target
+    accelerator_it: acceleratore di ioni da 50 kV con bersaglio gassoso senza finestre
     years: described in 1994; first result on ³He(³He,2p)⁴He in 1999
+    years_it: descritto nel 1994; primo risultato su ³He(³He,2p)⁴He nel 1999
     luna: true
     summary: >-
       The first accelerator built deep underground for nuclear astrophysics.
       It was a small pilot machine, installed under the Gran Sasso mountain to
       show that the rock overhead removes enough cosmic-ray background to
       measure fusion reactions at the energies found in the Sun.
+    summary_it: >-
+      Il primo acceleratore costruito in profondità sotto terra per
+      l'astrofisica nucleare. Era una piccola macchina pilota, installata sotto
+      il Gran Sasso per dimostrare che la roccia sovrastante elimina abbastanza
+      fondo dovuto ai raggi cosmici da misurare reazioni di fusione alle energie
+      che si trovano nel Sole.
     details: >-
       Compact 50 kV accelerator with a windowless, differentially pumped gas
       target, a beam calorimeter for the current measurement and silicon
       detector telescopes for the charged reaction products. It was designed
       for ³He(³He,2p)⁴He in the solar Gamow peak, which it reached down to
       16.5 keV.
+    details_it: >-
+      Acceleratore compatto da 50 kV con un bersaglio gassoso senza finestre a
+      pompaggio differenziale, un calorimetro di fascio per la misura della
+      corrente e telescopi di rivelatori al silicio per i prodotti carichi della
+      reazione. Era progettato per ³He(³He,2p)⁴He nel picco di Gamow solare, che
+      raggiunse fino a 16,5 keV.
     refs: [greife1994, bonetti1999, broggini2010]
 
   - id: luna-400
@@ -54,21 +74,36 @@ facilities:
     lab: Laboratori Nazionali del Gran Sasso (INFN)
     location: Assergi, L'Aquila
     country: Italy
+    country_it: Italia
     underground: true
     depth: about 1400 m of rock, 3800 m w.e.
+    depth_it: circa 1400 m di roccia, 3800 m w.e.
     accelerator: 400 kV electrostatic accelerator (LUNA II)
+    accelerator_it: acceleratore elettrostatico da 400 kV (LUNA II)
     years: in operation from the early 2000s (facility paper 2003)
+    years_it: in funzione dai primi anni 2000 (articolo sull'acceleratore del 2003)
     luna: true
     summary: >-
       The second LUNA accelerator, installed at Gran Sasso after the 50 kV
       pilot machine. Its very stable proton beam has been used for most of the
       underground measurements of hydrogen burning.
+    summary_it: >-
+      Il secondo acceleratore di LUNA, installato al Gran Sasso dopo la macchina
+      pilota da 50 kV. Il suo fascio di protoni, molto stabile, è stato usato
+      per la maggior parte delle misure sotterranee della combustione
+      dell'idrogeno.
     details: >-
       High-current 400 kV accelerator. Resonance scans gave an absolute proton
       energy known to about ±300 eV, an energy spread below 100 eV and a
       long-term drift of about 5 eV per hour. It has served both solid targets
       with HPGe detectors and a windowless gas target with a 4π BGO summing
       detector.
+    details_it: >-
+      Acceleratore da 400 kV ad alta corrente. Scansioni di risonanze hanno dato
+      un'energia assoluta dei protoni nota entro circa ±300 eV, una dispersione
+      in energia inferiore a 100 eV e una deriva a lungo termine di circa 5 eV
+      all'ora. Ha servito sia bersagli solidi con rivelatori HPGe sia un
+      bersaglio gassoso senza finestre con un rivelatore BGO 4π a somma.
     refs: [formicola2003, broggini2010, lemut2006]
 
   - id: bellotti-ibf
@@ -76,10 +111,16 @@ facilities:
     lab: Laboratori Nazionali del Gran Sasso (INFN)
     location: Assergi, L'Aquila
     country: Italy
+    country_it: Italia
     underground: true
     depth: about 1400 m of rock, 3800 m w.e.
+    depth_it: circa 1400 m di roccia, 3800 m w.e.
     accelerator: 3.5 MV Singletron (High Voltage Engineering Europa), terminal voltage 0.3–3.5 MV, ECR ion source
+    accelerator_it: >-
+      Singletron da 3,5 MV (High Voltage Engineering Europa), tensione di
+      terminale 0,3–3,5 MV, sorgente di ioni ECR
     years: installed 2022; inaugurated October 2023
+    years_it: installato nel 2022; inaugurato nell'ottobre 2023
     luna: true
     url: https://www.chetec-infra.eu/ta/tna-labs/bellotti-ion-beam-facility/
     summary: >-
@@ -87,12 +128,25 @@ facilities:
       machine, named after Enrico Bellotti, the first director of the
       laboratory. Its proton, helium and carbon beams extend underground
       measurements from hydrogen burning to helium and carbon burning.
+    summary_it: >-
+      Un laboratorio sotterraneo con acceleratore al Gran Sasso, con una
+      macchina da 3,5 MV, intitolato a Enrico Bellotti, il primo direttore del
+      laboratorio. I suoi fasci di protoni, elio e carbonio estendono le misure
+      sotterranee dalla combustione dell'idrogeno a quella dell'elio e del
+      carbonio.
     details: >-
       The Singletron has a 10 GHz permanent-magnet ECR source and delivers
       about 1 mA of protons, 0.5 mA of helium and 0.15 mA of carbon. The design
       paper reports an energy stability better than 10⁻⁵ and a terminal-voltage
       ripple of 1.5 × 10⁻⁵. The facility is run as a user facility by the LNGS
       accelerator service, with beam time allocated through yearly calls.
+    details_it: >-
+      Il Singletron ha una sorgente ECR a magneti permanenti da 10 GHz e
+      fornisce circa 1 mA di protoni, 0,5 mA di elio e 0,15 mA di carbonio.
+      L'articolo di progetto riporta una stabilità in energia migliore di 10⁻⁵ e
+      un ripple della tensione di terminale di 1,5 × 10⁻⁵. L'infrastruttura è
+      gestita come user facility dal servizio acceleratori dei LNGS, con il
+      tempo fascio assegnato tramite bandi annuali.
     refs: [sen2019, junker2023]
 
   - id: juna
@@ -100,21 +154,38 @@ facilities:
     lab: China Jinping Underground Laboratory
     location: Jinping, Sichuan
     country: China
+    country_it: Cina
     underground: true
     depth: about 2400 m of marble, 6720 m w.e.
+    depth_it: circa 2400 m di marmo, 6720 m w.e.
     accelerator: 400 kV high-current platform with ECR ion sources (H⁺, He⁺, He²⁺)
+    accelerator_it: >-
+      piattaforma da 400 kV ad alta corrente con sorgenti di ioni ECR (H⁺, He⁺,
+      He²⁺)
     years: first experiments underground in early 2021
+    years_it: primi esperimenti sotterranei all'inizio del 2021
     summary: >-
       The Jinping Underground laboratory for Nuclear Astrophysics, a
       high-current accelerator deep inside a mountain in south-west China. Like
       LUNA, it uses the rock above it to reduce the background from cosmic
       rays.
+    summary_it: >-
+      Il Jinping Underground laboratory for Nuclear Astrophysics, un
+      acceleratore ad alta corrente nel cuore di una montagna nel sud-ovest
+      della Cina. Come LUNA, usa la roccia sovrastante per ridurre il fondo
+      dovuto ai raggi cosmici.
     details: >-
       The 400 kV platform was designed for 10 emA of H⁺ and He⁺ and 2 emA of
       He²⁺ from ECR sources. It ran for more than 2000 hours underground in
       early 2021, with BGO and neutron detectors, on reactions including
       ¹²C(α,γ)¹⁶O, ¹³C(α,n)¹⁶O, ²⁵Mg(p,γ)²⁶Al and ¹⁹F(p,α)¹⁶O. The muon flux
       measured at the laboratory is (3.53 ± 0.22 ± 0.07) × 10⁻¹⁰ cm⁻² s⁻¹.
+    details_it: >-
+      La piattaforma da 400 kV è stata progettata per 10 emA di H⁺ e He⁺ e 2 emA
+      di He²⁺ da sorgenti ECR. All'inizio del 2021 ha funzionato per più di 2000
+      ore sotto terra, con rivelatori BGO e di neutroni, su reazioni tra cui
+      ¹²C(α,γ)¹⁶O, ¹³C(α,n)¹⁶O, ²⁵Mg(p,γ)²⁶Al e ¹⁹F(p,α)¹⁶O. Il flusso di muoni
+      misurato nel laboratorio è (3,53 ± 0,22 ± 0,07) × 10⁻¹⁰ cm⁻² s⁻¹.
     refs: [zhang2022]
 
   - id: caspar
@@ -122,38 +193,67 @@ facilities:
     lab: Sanford Underground Research Facility
     location: Lead, South Dakota
     country: United States
+    country_it: Stati Uniti
     underground: true
     depth: 4850 ft level, 4300 m w.e.
+    depth_it: livello 4850 ft, 4300 m w.e.
     accelerator: JN Van de Graaff, about 150 kV to 1.1 MV, moved from Notre Dame
+    accelerator_it: Van de Graaff JN, da circa 150 kV a 1,1 MV, trasferito da Notre Dame
     years: first beam 2017, inaugurated July 2017
+    years_it: primo fascio nel 2017, inaugurato nel luglio 2017
     url: https://sanfordlab.org/experiments/caspar
     summary: >-
       The Compact Accelerator System for Performing Astrophysical Research, an
       underground accelerator in the former Homestake gold mine, where Davis
       ran his solar neutrino experiment. It is used mainly for helium-induced
       reactions, including the stellar neutron sources.
+    summary_it: >-
+      Il Compact Accelerator System for Performing Astrophysical Research, un
+      acceleratore sotterraneo nell'ex miniera d'oro di Homestake, dove Davis
+      condusse il suo esperimento sui neutrini solari. È usato soprattutto per
+      le reazioni indotte da elio, comprese le sorgenti di neutroni stellari.
     details: >-
       A JN-type Van de Graaff that ran above ground at Notre Dame was moved to
       the 4850 ft level of SURF from 2015. It delivers proton and α beams of
       200–250 μA on target. The CASPAR collaboration gives a muon flux of about
       4.4 × 10⁻⁹ cm⁻² s⁻¹. CASPAR is run by Notre Dame, the South Dakota School
       of Mines and Technology and the Colorado School of Mines.
+    details_it: >-
+      Un Van de Graaff di tipo JN che funzionava in superficie a Notre Dame è
+      stato trasferito dal 2015 al livello 4850 ft di SURF. Fornisce fasci di
+      protoni e di particelle α di 200–250 μA sul bersaglio. La collaborazione
+      CASPAR indica un flusso di muoni di circa 4,4 × 10⁻⁹ cm⁻² s⁻¹. CASPAR è
+      gestito da Notre Dame, dalla South Dakota School of Mines and Technology e
+      dalla Colorado School of Mines.
 
   - id: felsenkeller
     name: Felsenkeller 5 MV
     lab: Felsenkeller underground laboratory (HZDR and TU Dresden)
+    lab_it: Laboratorio sotterraneo Felsenkeller (HZDR e TU Dresden)
     location: Dresden
+    location_it: Dresda
     country: Germany
+    country_it: Germania
     underground: true
     depth: 45 m of rock
+    depth_it: 45 m di roccia
     accelerator: 5 MV Pelletron (NEC 15SDH-2), with an external sputter ion source and an internal RF source
+    accelerator_it: >-
+      Pelletron da 5 MV (NEC 15SDH-2), con una sorgente di ioni a sputtering
+      esterna e una sorgente RF interna
     years: inaugurated 4 July 2019
+    years_it: inaugurato il 4 luglio 2019
     url: https://hzdr.de/db/Cms?pNid=1029
     summary: >-
       A shallow-underground accelerator laboratory in tunnels under a hill in
       Dresden. The rock above it, together with detectors that veto cosmic-ray
       muons, lowers the background enough for many reactions that are hard to
       measure at the surface.
+    summary_it: >-
+      Un laboratorio con acceleratore a bassa profondità, in gallerie sotto una
+      collina di Dresda. La roccia sovrastante, insieme a rivelatori che
+      escludono i muoni cosmici, abbassa il fondo abbastanza per molte reazioni
+      difficili da misurare in superficie.
     details: >-
       The rock reduces the muon flux by a factor of 40 and the neutron flux by
       a factor of 180 with respect to the surface. With an active muon veto
@@ -161,58 +261,97 @@ facilities:
       The Pelletron was used before for ¹⁴C accelerator mass spectrometry in
       York. Typical beam currents are up to 30 μA for helium and carbon. The
       laboratory is run jointly by HZDR and TU Dresden.
+    details_it: >-
+      La roccia riduce il flusso di muoni di un fattore 40 e quello di neutroni
+      di un fattore 180 rispetto alla superficie. Con un veto attivo per i muoni
+      il fondo di raggi γ è circa il doppio di quello di un sito sotterraneo
+      profondo. Il Pelletron era usato in precedenza a York per la spettrometria
+      di massa con acceleratore del ¹⁴C. Le correnti tipiche arrivano a 30 μA
+      per elio e carbonio. Il laboratorio è gestito congiuntamente da HZDR e TU
+      Dresden.
 
   - id: hzdr
     name: HZDR Tandetron, Dresden-Rossendorf
     lab: Helmholtz-Zentrum Dresden-Rossendorf
     location: Dresden
+    location_it: Dresda
     country: Germany
+    country_it: Germania
     underground: false
     accelerator: 3 MV Tandetron of the HZDR Ion Beam Center
+    accelerator_it: Tandetron da 3 MV dell'Ion Beam Center di HZDR
     summary: >-
       A surface tandem accelerator at the Helmholtz centre in Dresden, used for
       proton- and alpha-capture measurements.
+    summary_it: >-
+      Un acceleratore tandem in superficie al centro Helmholtz di Dresda, usato
+      per misure di cattura di protoni e di particelle alfa.
 
   - id: bochum
     name: Dynamitron Tandem Laboratory, Bochum
     lab: Ruhr-Universität Bochum
     location: Bochum
     country: Germany
+    country_it: Germania
     underground: false
     accelerator: 4 MV Dynamitron tandem
+    accelerator_it: Dynamitron tandem da 4 MV
     summary: >-
       A university accelerator laboratory with a long record in low-energy
       nuclear astrophysics at the surface.
+    summary_it: >-
+      Un laboratorio universitario con acceleratore, con una lunga tradizione
+      nell'astrofisica nucleare a bassa energia in superficie.
 
   - id: notre-dame
     name: Nuclear Science Laboratory, Notre Dame
     lab: University of Notre Dame
     location: Notre Dame, Indiana
     country: United States
+    country_it: Stati Uniti
     underground: false
     accelerator: 10 MV FN tandem, 5 MV Sta. Ana single-ended Pelletron (2012), 3 MV St. Andre tandem (2017)
+    accelerator_it: >-
+      tandem FN da 10 MV, Pelletron single-ended Sta. Ana da 5 MV (2012), tandem
+      St. Andre da 3 MV (2017)
     url: https://isnap.nd.edu/research/facility/accelerator/
     summary: >-
       A university laboratory with several accelerators for nuclear
       astrophysics, used for capture and alpha-induced reactions. The St.
       George recoil separator is part of it.
+    summary_it: >-
+      Un laboratorio universitario con diversi acceleratori per l'astrofisica
+      nucleare, usato per reazioni di cattura e indotte da particelle alfa. Ne
+      fa parte il separatore di rinculo St. George.
 
   - id: st-george
     name: St. George recoil separator
     lab: University of Notre Dame
     location: Notre Dame, Indiana
     country: United States
+    country_it: Stati Uniti
     underground: false
     accelerator: recoil separator on the 5 MV Sta. Ana accelerator
+    accelerator_it: separatore di rinculo sull'acceleratore Sta. Ana da 5 MV
     summary: >-
       A recoil separator built to study helium captures in inverse kinematics.
       A heavy beam hits a helium gas target, and the separator picks out the
       few product nuclei from the much more intense beam.
+    summary_it: >-
+      Un separatore di rinculo costruito per studiare le catture di elio in
+      cinematica inversa. Un fascio pesante colpisce un bersaglio di elio
+      gassoso, e il separatore isola i pochi nuclei prodotti dal fascio, molto
+      più intenso.
     details: >-
       St. George (Strong Gradient Electromagnetic Online Recoil separator for
       capture Gamma Ray Experiments) was designed for (α,γ) reactions in
       inverse kinematics with beams up to about A = 40, with an angular
       acceptance of 40 mrad and an energy acceptance of 7.4 %.
+    details_it: >-
+      St. George (Strong Gradient Electromagnetic Online Recoil separator for
+      capture Gamma Ray Experiments) è stato progettato per reazioni (α,γ) in
+      cinematica inversa con fasci fino a circa A = 40, con un'accettanza
+      angolare di 40 mrad e un'accettanza in energia del 7,4 %.
     refs: [couder2008]
 
   - id: tunl-lena
@@ -220,44 +359,74 @@ facilities:
     lab: Triangle Universities Nuclear Laboratory
     location: Durham, North Carolina
     country: United States
+    country_it: Stati Uniti
     underground: false
     accelerator: 230 kV ECR accelerator and 1 MV JN Van de Graaff; a 2 MV Singletron was added in the LENA II upgrade
+    accelerator_it: >-
+      acceleratore ECR da 230 kV e Van de Graaff JN da 1 MV; con l'aggiornamento
+      LENA II è stato aggiunto un Singletron da 2 MV
     url: https://tunl.duke.edu/nuclear-astrophysics/lena-accelerators
     summary: >-
       The Laboratory for Experimental Nuclear Astrophysics, a low-energy,
       high-current accelerator facility at the surface. It uses detector
       arrays with active shielding against cosmic rays to measure weak
       proton-capture resonances.
+    summary_it: >-
+      Il Laboratory for Experimental Nuclear Astrophysics, un'infrastruttura in
+      superficie con acceleratori a bassa energia e alta corrente. Usa insiemi
+      di rivelatori con schermature attive contro i raggi cosmici per misurare
+      risonanze deboli di cattura protonica.
 
   - id: dragon
     name: DRAGON, TRIUMF
     lab: TRIUMF
     location: Vancouver, British Columbia
     country: Canada
+    country_it: Canada
     underground: false
     summary: >-
       The Detector of Recoils And Gammas Of Nuclear reactions, a recoil
       separator at the radioactive-beam facility of TRIUMF. It measures
       radiative captures in inverse kinematics, including captures on
       short-lived nuclei that cannot be made into targets.
+    summary_it: >-
+      Il Detector of Recoils And Gammas Of Nuclear reactions, un separatore di
+      rinculo all'infrastruttura per fasci radioattivi di TRIUMF. Misura catture
+      radiative in cinematica inversa, comprese catture su nuclei a vita breve
+      con cui non si possono fare bersagli.
     details: >-
       DRAGON has a windowless gas target surrounded by a γ-ray detector array,
       an electromagnetic recoil mass separator and focal-plane detectors. It
       was commissioned with stable and radioactive beams from ISAC; its first
       radioactive-beam study was ²¹Na(p,γ)²²Mg.
+    details_it: >-
+      DRAGON ha un bersaglio gassoso senza finestre circondato da un insieme di
+      rivelatori di raggi γ, un separatore elettromagnetico di massa per i
+      nuclei di rinculo e rivelatori sul piano focale. È stato messo in funzione
+      con fasci stabili e radioattivi di ISAC; il suo primo studio con fascio
+      radioattivo è stato ²¹Na(p,γ)²²Mg.
     refs: [hutcheon2003]
 
   - id: erna
     name: ERNA recoil separator
     lab: CIRCE laboratory, Caserta (at Ruhr-Universität Bochum until 2009)
+    lab_it: Laboratorio CIRCE, Caserta (alla Ruhr-Universität Bochum fino al 2009)
     location: Caserta
     country: Italy
+    country_it: Italia
     underground: false
     accelerator: recoil separator, first on the Bochum 4 MV Dynamitron, since 2009 at CIRCE
+    accelerator_it: >-
+      separatore di rinculo, prima sul Dynamitron da 4 MV di Bochum, dal 2009 al
+      CIRCE
     summary: >-
       The European Recoil separator for Nuclear Astrophysics, built to measure
       helium-capture reactions such as ¹²C(α,γ)¹⁶O in inverse kinematics by
       counting the product nuclei directly.
+    summary_it: >-
+      L'European Recoil separator for Nuclear Astrophysics, costruito per
+      misurare reazioni di cattura di elio come ¹²C(α,γ)¹⁶O in cinematica
+      inversa, contando direttamente i nuclei prodotti.
     details: >-
       ERNA was built at the 4 MV Dynamitron in Bochum to detect ¹⁶O recoils
       from ¹²C(α,γ)¹⁶O. Wien filters before and after the analysing magnet
@@ -265,6 +434,13 @@ facilities:
       2 × 10⁻²⁹. In 2009 the separator moved to the CIRCE laboratory in
       Caserta, where a charge-state selection dipole was added directly after
       the target.
+    details_it: >-
+      ERNA è stato costruito al Dynamitron da 4 MV di Bochum per rivelare i
+      nuclei di rinculo di ¹⁶O da ¹²C(α,γ)¹⁶O. Filtri di Wien prima e dopo il
+      magnete di analisi riducevano la contaminazione di ¹⁶O nel fascio di ¹²C
+      da circa 10⁻¹¹ a meno di 2 × 10⁻²⁹. Nel 2009 il separatore è stato
+      trasferito al laboratorio CIRCE di Caserta, dove è stato aggiunto un
+      dipolo di selezione dello stato di carica subito dopo il bersaglio.
     refs: [rogalla1999, schurmann2005, broggini2019]
 
   - id: kellogg
@@ -272,12 +448,18 @@ facilities:
     lab: California Institute of Technology
     location: Pasadena, California
     country: United States
+    country_it: Stati Uniti
     underground: false
     summary: >-
       The laboratory where William Fowler and colleagues measured many of the
       reactions that power stars. Salpeter's work on the triple-alpha process
       (1951) and the measurements of the Hoyle state (1953, 1957) were done
       here.
+    summary_it: >-
+      Il laboratorio in cui William Fowler e colleghi misurarono molte delle
+      reazioni che alimentano le stelle. Qui furono svolti il lavoro di Salpeter
+      sul processo tre alfa (1951) e le misure dello stato di Hoyle (1953,
+      1957).
     refs: [salpeter1952, dunbar1953, cook1957, fowler1984]
 
   - id: atomki
@@ -285,12 +467,18 @@ facilities:
     lab: Institute for Nuclear Research (Atomki)
     location: Debrecen
     country: Hungary
+    country_it: Ungheria
     underground: false
     summary: >-
       A nuclear research institute with several accelerators. Its astrophysics
       group is known for activation measurements, in which the cross section is
       found by counting the decays of the radioactive product after the
       irradiation.
+    summary_it: >-
+      Un istituto di ricerca nucleare con diversi acceleratori. Il suo gruppo di
+      astrofisica è noto per le misure per attivazione, in cui la sezione d'urto
+      si ricava contando, dopo l'irraggiamento, i decadimenti del prodotto
+      radioattivo.
     refs: [gyurky2023]
 
   - id: lns-catania
@@ -298,43 +486,72 @@ facilities:
     lab: Laboratori Nazionali del Sud (INFN)
     location: Catania
     country: Italy
+    country_it: Italia
     underground: false
     summary: >-
       An INFN national laboratory with a tandem accelerator and a
       superconducting cyclotron. Many Trojan Horse experiments have been done
       here.
+    summary_it: >-
+      Un laboratorio nazionale dell'INFN con un acceleratore tandem e un
+      ciclotrone superconduttore. Qui sono stati svolti molti esperimenti con il
+      metodo del cavallo di Troia.
 
   - id: texas-am
     name: Cyclotron Institute, Texas A&M
     lab: Texas A&M University
     location: College Station, Texas
     country: United States
+    country_it: Stati Uniti
     underground: false
     summary: >-
       A university cyclotron laboratory where many transfer-reaction
       measurements of asymptotic normalisation coefficients (ANCs) were made
       for capture reactions of astrophysical interest.
+    summary_it: >-
+      Un laboratorio universitario con ciclotrone, dove sono state fatte molte
+      misure di coefficienti di normalizzazione asintotica (ANC) con reazioni di
+      trasferimento, per reazioni di cattura di interesse astrofisico.
 
   - id: n-tof
     name: n_TOF, CERN
     lab: CERN
     location: Geneva
+    location_it: Ginevra
     country: Switzerland
+    country_it: Svizzera
     underground: false
     accelerator: 20 GeV/c proton beam from the CERN PS on a lead spallation target
+    accelerator_it: >-
+      fascio di protoni da 20 GeV/c del PS del CERN su un bersaglio di
+      spallazione di piombo
     years: in operation since 2001
+    years_it: in funzione dal 2001
     summary: >-
       A neutron source at CERN in which protons from an accelerator strike a
       lead target and knock out neutrons with a wide range of energies. The
       energy of each neutron is found from its time of flight along a long beam
       line. It measures neutron captures for the s- and r-processes and
       neutron-induced reactions on light nuclei.
+    summary_it: >-
+      Una sorgente di neutroni al CERN in cui i protoni di un acceleratore
+      colpiscono un bersaglio di piombo ed estraggono neutroni di energie molto
+      diverse. L'energia di ciascun neutrone si ricava dal suo tempo di volo
+      lungo una lunga linea di fascio. Misura catture di neutroni per i processi
+      s e r e reazioni indotte da neutroni su nuclei leggeri.
     details: >-
       Pulses of up to 8.5 × 10¹² protons, 6 ns (rms) long, strike the lead
       target. The horizontal flight path to experimental area EAR1 is 185 m;
       a second area, EAR2, sits about 20 m above the target on a vertical
       flight path. A nitrogen-cooled third-generation target was installed
       during the CERN Long Shutdown 2 (2019–2021).
+    details_it: >-
+      Impulsi fino a 8,5 × 10¹² protoni, lunghi 6 ns (rms), colpiscono il
+      bersaglio di piombo. La base di volo orizzontale fino all'area
+      sperimentale EAR1 è di 185 m; una seconda area, EAR2, si trova circa 20 m
+      sopra il bersaglio, su una base di volo verticale. Durante il Long
+      Shutdown 2 del CERN (2019–2021) è stato installato un bersaglio di terza
+      generazione raffreddato ad azoto.
     refs: [guerrero2013]
 
   - id: nif
@@ -342,123 +559,183 @@ facilities:
     lab: Lawrence Livermore National Laboratory
     location: Livermore, California
     country: United States
+    country_it: Stati Uniti
     underground: false
     summary: >-
       A large laser system built for inertial-confinement fusion. Its lasers
       compress small capsules of fuel into a hot, dense plasma, in which fusion
       reactions between light nuclei can be studied in conditions closer to
       those in stars than an accelerator beam on a cold target.
+    summary_it: >-
+      Un grande sistema laser costruito per la fusione a confinamento inerziale.
+      I suoi laser comprimono piccole capsule di combustibile in un plasma caldo
+      e denso, in cui si possono studiare reazioni di fusione tra nuclei leggeri
+      in condizioni più vicine a quelle stellari di un fascio da acceleratore su
+      un bersaglio freddo.
 
   - id: stuttgart-dynamitron
     name: Dynamitron, Stuttgart
     lab: Institut für Strahlenphysik, Universität Stuttgart
     location: Stuttgart
     country: Germany
+    country_it: Germania
     underground: false
     accelerator: Dynamitron
     summary: >-
       A university accelerator laboratory where ¹²C(α,γ)¹⁶O, among other
       helium-capture reactions, was measured with γ-ray detectors.
+    summary_it: >-
+      Un laboratorio universitario con acceleratore dove, tra altre reazioni di
+      cattura di elio, è stata misurata ¹²C(α,γ)¹⁶O con rivelatori di raggi γ.
 
   - id: karlsruhe-vdg
     name: Karlsruhe Van de Graaff
     lab: Kernforschungszentrum Karlsruhe (now Karlsruhe Institute of Technology)
+    lab_it: Kernforschungszentrum Karlsruhe (oggi Karlsruhe Institute of Technology)
     location: Karlsruhe
     country: Germany
+    country_it: Germania
     underground: false
     accelerator: single-ended Van de Graaff
+    accelerator_it: Van de Graaff single-ended
     summary: >-
       A Van de Graaff accelerator at the Karlsruhe nuclear research centre,
       used among other work for measurements of ¹²C(α,γ)¹⁶O.
+    summary_it: >-
+      Un acceleratore Van de Graaff del centro di ricerca nucleare di Karlsruhe,
+      usato tra l'altro per misure di ¹²C(α,γ)¹⁶O.
 
   - id: tunl-tandem
     name: TUNL tandem
     lab: Triangle Universities Nuclear Laboratory
     location: Durham, North Carolina
     country: United States
+    country_it: Stati Uniti
     underground: false
     accelerator: tandem Van de Graaff
+    accelerator_it: Van de Graaff tandem
     summary: >-
       The tandem accelerator of the Triangle Universities Nuclear Laboratory,
       run by Duke University, the University of North Carolina and North
       Carolina State University. LENA, the low-energy laboratory, is part of
       the same institute.
+    summary_it: >-
+      L'acceleratore tandem del Triangle Universities Nuclear Laboratory,
+      gestito dalla Duke University, dalla University of North Carolina e dalla
+      North Carolina State University. LENA, il laboratorio di bassa energia, fa
+      parte dello stesso istituto.
 
   - id: jsi-ljubljana
     name: Jožef Stefan Institute
     lab: Jožef Stefan Institute
     location: Ljubljana
+    location_it: Lubiana
     country: Slovenia
+    country_it: Slovenia
     underground: false
     summary: >-
       A research institute in Ljubljana whose accelerator laboratory has
       measured proton captures on light nuclei at low energy.
+    summary_it: >-
+      Un istituto di ricerca di Lubiana il cui laboratorio con acceleratore ha
+      misurato catture protoniche su nuclei leggeri a bassa energia.
 
   - id: rcnp-osaka
     name: RCNP, Osaka
     lab: Research Center for Nuclear Physics, Osaka University
     location: Ibaraki, Osaka
     country: Japan
+    country_it: Giappone
     underground: false
     summary: >-
       A university centre for nuclear physics with cyclotrons for nuclear
       structure and reactions. The OCEAN low-energy set-up measured ³He + ³He
       fusion here.
+    summary_it: >-
+      Un centro universitario di fisica nucleare con ciclotroni per lo studio
+      della struttura e delle reazioni nucleari. Qui l'apparato di bassa energia
+      OCEAN ha misurato la fusione ³He + ³He.
 
   - id: omega
     name: OMEGA laser
     lab: Laboratory for Laser Energetics, University of Rochester
     location: Rochester, New York
     country: United States
+    country_it: Stati Uniti
     underground: false
     summary: >-
       A high-power laser that compresses small fuel capsules for
       inertial-confinement fusion research. Fusion of light nuclei in its
       implosions has been studied as a plasma counterpart of accelerator
       measurements.
+    summary_it: >-
+      Un laser di alta potenza che comprime piccole capsule di combustibile per
+      la ricerca sulla fusione a confinamento inerziale. La fusione di nuclei
+      leggeri nelle sue implosioni è stata studiata come controparte in plasma
+      delle misure con acceleratore.
 
   - id: weizmann
     name: Weizmann Institute accelerator laboratory
     lab: Weizmann Institute of Science
     location: Rehovot
     country: Israel
+    country_it: Israele
     underground: false
     summary: >-
       The accelerator laboratory of the Weizmann Institute, where
       ³He(α,γ)⁷Be, the reaction that makes the ⁷Be of the Sun, was measured.
+    summary_it: >-
+      Il laboratorio con acceleratore del Weizmann Institute, dove è stata
+      misurata ³He(α,γ)⁷Be, la reazione che produce il ⁷Be del Sole.
 
   - id: cenpa
     name: CENPA, University of Washington
     lab: Center for Experimental Nuclear Physics and Astrophysics, University of Washington
     location: Seattle, Washington
     country: United States
+    country_it: Stati Uniti
     underground: false
     accelerator: tandem Van de Graaff
+    accelerator_it: Van de Graaff tandem
     summary: >-
       A university laboratory in Seattle with a tandem accelerator, where
       ³He(α,γ)⁷Be was measured for the solar neutrino fluxes.
+    summary_it: >-
+      Un laboratorio universitario di Seattle con un acceleratore tandem, dove è
+      stata misurata ³He(α,γ)⁷Be per i flussi di neutrini solari.
 
   - id: oslo-ocl
     name: Oslo Cyclotron Laboratory
     lab: University of Oslo
     location: Oslo
     country: Norway
+    country_it: Norvegia
     underground: false
     accelerator: cyclotron
+    accelerator_it: ciclotrone
     summary: >-
       A university cyclotron laboratory in Oslo, used for light-ion reactions
       and γ-ray decay studies of excited nuclear states.
+    summary_it: >-
+      Un laboratorio universitario con ciclotrone a Oslo, usato per reazioni con
+      ioni leggeri e per studi del decadimento γ di stati nucleari eccitati.
 
   - id: isolde
     name: ISOLDE, CERN
     lab: CERN
     location: Geneva
+    location_it: Ginevra
     country: Switzerland
+    country_it: Svizzera
     underground: false
     summary: >-
       CERN's facility for radioactive nuclei. Protons strike thick targets,
       and the short-lived nuclei produced are separated by mass and delivered
       as low-energy or post-accelerated beams.
+    summary_it: >-
+      L'infrastruttura del CERN per i nuclei radioattivi. I protoni colpiscono
+      bersagli spessi, e i nuclei a vita breve prodotti vengono separati in
+      massa e forniti come fasci di bassa energia o post-accelerati.
 
   - id: anu
     name: Heavy Ion Accelerator Facility, ANU
@@ -467,18 +744,30 @@ facilities:
     country: Australia
     underground: false
     accelerator: tandem electrostatic accelerator
+    accelerator_it: acceleratore elettrostatico tandem
     summary: >-
       The heavy-ion accelerator laboratory of the Australian National
       University, used for nuclear structure and reaction studies.
+    summary_it: >-
+      Il laboratorio di acceleratori di ioni pesanti dell'Australian National
+      University, usato per studi di struttura e di reazioni nucleari.
 
   - id: circe
     name: CIRCE, Caserta
     lab: Center for Isotopic Research on Cultural and Environmental heritage (Università della Campania and INNOVA)
+    lab_it: >-
+      Center for Isotopic Research on Cultural and Environmental heritage
+      (Università della Campania e INNOVA)
     location: Caserta
     country: Italy
+    country_it: Italia
     underground: false
     summary: >-
       An accelerator laboratory in Caserta built for isotope analysis. Since
       2009 it has also hosted the ERNA recoil separator for helium-capture
       measurements.
+    summary_it: >-
+      Un laboratorio con acceleratore a Caserta costruito per l'analisi
+      isotopica. Dal 2009 ospita anche il separatore di rinculo ERNA per le
+      misure di cattura di elio.
     refs: [broggini2019]

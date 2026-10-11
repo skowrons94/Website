@@ -10,6 +10,9 @@ importance: major
 summary: >-
   The first step of the MgAl cycle. ²⁴Mg, the most abundant magnesium isotope,
   captures a proton and becomes ²⁵Al, which quickly decays to ²⁵Mg.
+summary_it: >-
+  Il primo passo del ciclo MgAl. Il ²⁴Mg, l'isotopo più abbondante del magnesio,
+  cattura un protone e diventa ²⁵Al, che decade rapidamente in ²⁵Mg.
 role: >-
   This is one of the slowest proton captures in the MgAl cycle, so it controls how fast
   the most common magnesium isotope is converted into ²⁵Mg and, after one more
@@ -17,6 +20,13 @@ role: >-
   stars it destroys ²⁴Mg; some stars in globular clusters show less magnesium and
   more aluminium than their neighbours, a pattern attributed to this kind of
   burning.
+role_it: >-
+  È una delle catture protoniche più lente del ciclo MgAl, quindi controlla
+  quanto velocemente l'isotopo più comune del magnesio viene trasformato in ²⁵Mg
+  e, dopo un'altra cattura, nel ²⁶Al radioattivo e nel ²⁷Al stabile. Nelle
+  stelle in cui l'idrogeno brucia alle temperature più alte distrugge il ²⁴Mg;
+  alcune stelle degli ammassi globulari mostrano meno magnesio e più alluminio
+  delle loro vicine, un andamento attribuito a questo tipo di combustione.
 details: >-
   The rate at the temperatures of hot-bottom burning is determined by direct
   capture and by the narrow resonance at E_cm = 214 keV. Limata et al. (2010)
@@ -30,6 +40,10 @@ status_note: >-
   The resonance that dominates at hydrogen-burning temperatures has been measured
   directly underground with good precision; below it the rate relies on
   extrapolated direct capture.
+status_note_it: >-
+  La risonanza che domina alle temperature della combustione dell'idrogeno è
+  stata misurata direttamente sotto terra con buona precisione; al di sotto il
+  tasso si basa sulla cattura diretta estrapolata.
 methods: [direct-underground, direct-surface]
 measurements:
   - year: 2010

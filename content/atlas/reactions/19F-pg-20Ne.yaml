@@ -10,6 +10,9 @@ importance: key
 summary: >-
   Fluorine-19 captures a proton and keeps it, becoming neon-20. This is the
   way out of the CNO cycles towards heavier elements.
+summary_it: >-
+  Il fluoro-19 cattura un protone e lo trattiene, diventando neon-20. È la via
+  d'uscita dai cicli CNO verso elementi più pesanti.
 role: >-
   In all the CNO cycles the catalyst nuclei carbon, nitrogen, oxygen and
   fluorine are recycled, so their total number stays the same. This reaction
@@ -18,6 +21,15 @@ role: >-
   compared with the much more frequent ¹⁹F(p,α)¹⁶O, sets how fast this
   leakage happens in very hot hydrogen burning, as in massive stars without
   heavy elements and in nova explosions.
+role_it: >-
+  In tutti i cicli CNO i nuclei catalizzatori, carbonio, azoto, ossigeno e
+  fluoro, vengono riciclati, così il loro numero totale resta lo stesso. Questa
+  reazione è l'eccezione: porta materia fuori dai cicli verso il neon, da cui i
+  cicli NeNa e MgAl possono costruire nuclei più pesanti. Il suo tasso,
+  confrontato con quello molto più frequente di ¹⁹F(p,α)¹⁶O, fissa quanto
+  velocemente avviene questa fuga nella combustione dell'idrogeno molto calda,
+  come nelle stelle massicce prive di elementi pesanti e nelle esplosioni di
+  nova.
 details: >-
   The γ-ray channel is weak compared with the α channels of the same ²⁰Ne
   states, so measurements at low energy need intense beams and
@@ -34,6 +46,9 @@ status: uncertain
 status_note: >-
   Underground data now reach 186 keV; below that the rate depends on weak
   resonances not yet measured directly, and on the (p,γ)/(p,α) ratio.
+status_note_it: >-
+  I dati sotterranei arrivano ora a 186 keV; più in basso il tasso dipende da
+  risonanze deboli non ancora misurate direttamente, e dal rapporto (p,γ)/(p,α).
 methods: [direct-underground, direct-surface]
 measurements:
   - year: 2008

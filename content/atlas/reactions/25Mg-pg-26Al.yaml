@@ -10,6 +10,10 @@ importance: key
 summary: >-
   The reaction that makes radioactive ²⁶Al in hydrogen-burning stars. The decay of
   ²⁶Al gives the 1809 keV γ-ray line seen across the Milky Way.
+summary_it: >-
+  La reazione che produce il ²⁶Al radioattivo nelle stelle che bruciano
+  idrogeno. Il decadimento del ²⁶Al dà la riga γ a 1809 keV osservata in tutta
+  la Via Lattea.
 role: >-
   ²⁶Al lives long enough to spread through the Galaxy but not so long that it
   piles up, so the 1809 keV γ-ray line from its decay shows where nuclei were made
@@ -22,6 +26,20 @@ role: >-
   line a star contributes. The same reaction also matters for the ²⁶Al once
   present in the early Solar System, recorded in meteorites, and for the
   magnesium and aluminium abundances of globular-cluster stars.
+role_it: >-
+  Il ²⁶Al vive abbastanza a lungo da diffondersi nella Galassia ma non così a
+  lungo da accumularsi, quindi la riga γ a 1809 keV del suo decadimento mostra
+  dove sono stati prodotti nuclei negli ultimi pochi milioni di anni. I
+  telescopi spaziali mappano questa riga, e la quantità di ²⁶Al che osservano
+  viene confrontata con la produzione prevista di stelle massicce, stelle di
+  Wolf-Rayet, stelle AGB e novae. La maggior parte di quel ²⁶Al è prodotta da
+  questa reazione. La reazione può lasciare il ²⁶Al nel suo stato fondamentale,
+  che dà la riga γ, oppure in uno stato eccitato di vita breve, l'isomero ²⁶ᵐAl,
+  che decade direttamente in ²⁶Mg senza emetterla. Come si ripartiscono le
+  catture tra i due decide quanto della riga produce una stella. La stessa
+  reazione conta anche per il ²⁶Al presente un tempo nel Sistema Solare
+  primordiale, registrato nelle meteoriti, e per le abbondanze di magnesio e
+  alluminio delle stelle degli ammassi globulari.
 details: >-
   Between 50 and 150 MK the rate is given by a handful of narrow resonances, of
   which the one at E_cm = 92 keV dominates around 100 MK. Each resonance decays by
@@ -45,6 +63,11 @@ status_note: >-
   and at JUNA; the split
   between ground state and isomer, especially for the 92 keV resonance, is the
   largest remaining uncertainty for the ²⁶Al ground-state yield.
+status_note_it: >-
+  Le risonanze chiave a bassa energia sono state misurate direttamente sotto
+  terra, a LUNA e a JUNA; la ripartizione tra stato fondamentale e isomero,
+  soprattutto per la risonanza a 92 keV, è la principale incertezza residua
+  sulla resa di ²⁶Al nello stato fondamentale.
 methods: [direct-underground, direct-surface]
 measurements:
   - year: 1990

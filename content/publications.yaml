@@ -4,6 +4,7 @@
 #   kind:      article | proceedings   (anything else becomes its own section)
 #   highlight: true                    marks it as a first-author / key paper
 #   status:    shown instead of the journal, for anything not yet out
+#   status_it: the same, in Italian, for /it/publications (titles stay as published)
 
 publications:
   - kind: article
@@ -11,12 +12,14 @@ publications:
     authors: E. Pilotto, J. Skowronski, et al.
     title: The CNO Cycle in the Sun Constrained by a Novel Lifetime Measurement with AGATA
     status: under review at Nature Physics
+    status_it: in revisione presso Nature Physics
     year: 2026
 
   - kind: article
     authors: D. Robb, et al.
     title: Experimental determination of the ²³Na(p,p)²³Na excitation function from 2.1 to 4.1 MeV
     status: under review at Physical Review Letters
+    status_it: in revisione presso Physical Review Letters
     year: 2026
 
   - kind: article

@@ -10,6 +10,9 @@ importance: key
 summary: >-
   Carbon-13 captures a proton, emits a γ-ray and becomes nitrogen-14. It is
   the step of the CN cycle that destroys carbon-13.
+summary_it: >-
+  Il carbonio-13 cattura un protone, emette un raggio γ e diventa azoto-14. È il
+  passo del ciclo CN che distrugge il carbonio-13.
 role: >-
   The balance between this reaction, which destroys carbon-13, and the capture
   on carbon-12, which makes it, sets the ratio of the two carbon isotopes left
@@ -17,6 +20,14 @@ role: >-
   nebulae and in meteoritic grains, and is used to test how material is mixed
   inside stars. The rate also controls how much carbon-13 survives to act as a
   neutron source in giant stars.
+role_it: >-
+  L'equilibrio tra questa reazione, che distrugge il carbonio-13, e la cattura
+  sul carbonio-12, che lo produce, fissa il rapporto tra i due isotopi del
+  carbonio lasciati dalla combustione dell'idrogeno. Quel rapporto si misura
+  nelle giganti rosse, nelle nebulose planetarie e nei grani delle meteoriti, e
+  serve a verificare come si rimescola la materia all'interno delle stelle. Il
+  tasso controlla anche quanto carbonio-13 sopravvive per fare da sorgente di
+  neutroni nelle stelle giganti.
 details: >-
   Below 1 MeV the cross section is the sum of direct capture and of two
   resonances, a 2⁻ state and a 1⁻ state in ¹⁴N observed at proton energies of
@@ -31,6 +42,10 @@ status_note: >-
   Underground data now reach 60 keV with 7–8 % systematic uncertainty; the
   rate is lower than in the compilations based on the 1994 data, and the
   resonance parameters have been revised.
+status_note_it: >-
+  I dati sotterranei arrivano ora a 60 keV con un'incertezza sistematica del 7–8
+  %; il tasso è più basso che nelle compilazioni basate sui dati del 1994, e i
+  parametri delle risonanze sono stati rivisti.
 methods: [direct-underground, direct-surface, anc]
 measurements:
   - year: 1994

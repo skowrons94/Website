@@ -11,6 +11,10 @@ summary: >-
   A ⁷Be nucleus captures a proton and becomes ⁸B, giving off a γ-ray. The ⁸B
   then decays and emits the high-energy solar neutrinos that started the solar
   neutrino problem.
+summary_it: >-
+  Un nucleo di ⁷Be cattura un protone e diventa ⁸B, emettendo un raggio γ. Il ⁸B
+  poi decade ed emette i neutrini solari di alta energia da cui nacque il
+  problema dei neutrini solari.
 role: >-
   Only a small fraction of the ⁷Be in the Sun captures a proton; most of it
   captures an electron instead. Yet this rare branch makes the most energetic
@@ -19,6 +23,14 @@ role: >-
   SNO. The predicted number of these neutrinos is directly proportional to the
   rate of this reaction, so it has to be known well to use them as a probe of
   the solar core and of neutrino properties.
+role_it: >-
+  Solo una piccola frazione del ⁷Be nel Sole cattura un protone; la maggior
+  parte cattura invece un elettrone. Eppure questo ramo raro produce i più
+  energetici tra i neutrini solari comuni, quelli visti dal primo rivelatore al
+  cloro nella miniera di Homestake e poi misurati con precisione da
+  Super-Kamiokande e SNO. Il numero previsto di questi neutrini è direttamente
+  proporzionale al tasso di questa reazione, che deve quindi essere ben noto per
+  usarli come sonda del nucleo solare e delle proprietà dei neutrini.
 details: >-
   The measurement is difficult because the target is radioactive: ⁷Be decays by
   electron capture, so targets must be produced, characterized and used within
@@ -38,6 +50,10 @@ status_note: >-
   Modern direct measurements give S(0) between about 18.5 and 22 eV b; the
   extrapolation to solar energies adds a model uncertainty of about the same
   size as the experimental one.
+status_note_it: >-
+  Le misure dirette moderne danno S(0) tra circa 18,5 e 22 eV b;
+  l'estrapolazione alle energie solari aggiunge un'incertezza di modello circa
+  pari a quella sperimentale.
 methods: [direct-surface, coulomb-dissociation]
 measurements:
   - year: 1983

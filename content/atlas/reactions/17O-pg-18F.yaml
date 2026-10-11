@@ -10,6 +10,9 @@ importance: key
 summary: >-
   Oxygen-17 captures a proton and becomes radioactive fluorine-18. It opens the
   third CNO cycle.
+summary_it: >-
+  L'ossigeno-17 cattura un protone e diventa fluoro-18 radioattivo. Apre il
+  terzo ciclo CNO.
 role: >-
   In nova explosions this reaction makes fluorine-18. When fluorine-18 decays
   it emits positrons, and their annihilation produces γ-rays that space
@@ -17,6 +20,13 @@ role: >-
   also sets, together with ¹⁷O(p,α)¹⁴N, how much oxygen-17 and oxygen-18 a nova
   ejects, which is compared with the isotope ratios of presolar grains thought
   to come from novae.
+role_it: >-
+  Nelle esplosioni di nova questa reazione produce fluoro-18. Quando il
+  fluoro-18 decade emette positroni, e la loro annichilazione produce raggi γ
+  che i telescopi spaziali potrebbero rivelare nelle prime ore dopo
+  l'esplosione. Il tasso fissa anche, insieme a ¹⁷O(p,α)¹⁴N, quanto ossigeno-17
+  e ossigeno-18 espelle una nova, da confrontare con i rapporti isotopici dei
+  grani presolari che si pensa provengano dalle novae.
 details: >-
   At nova temperatures the rate is dominated by the resonance at E = 183 keV
   together with the non-resonant direct-capture contribution; at lower
@@ -35,6 +45,10 @@ status_note: >-
   The nova-relevant resonance is measured directly to about 7 %; at lower
   temperatures the 64.5 keV resonance, measured directly only once, and the
   direct-capture component dominate the uncertainty.
+status_note_it: >-
+  La risonanza rilevante per le novae è misurata direttamente a circa il 7 %; a
+  temperature più basse dominano l'incertezza la risonanza a 64,5 keV, misurata
+  direttamente una sola volta, e la componente di cattura diretta.
 methods: [direct-underground, direct-surface, inverse-kinematics, activation]
 measurements:
   - year: 2005

@@ -8,3 +8,7 @@ product: 18O
 networks: [cno3]
 summary: >-
   Fluorine-18 turns into stable oxygen-18 by emitting a positron and a neutrino; in nova explosions the annihilation of these positrons gives a γ-ray signal.
+summary_it: >-
+  Il fluoro-18 si trasforma in ossigeno-18 stabile emettendo un positrone e un
+  neutrino; nelle esplosioni di nova l'annichilazione di questi positroni dà un
+  segnale γ.

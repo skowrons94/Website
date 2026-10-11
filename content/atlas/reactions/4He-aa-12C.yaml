@@ -11,6 +11,10 @@ summary: >-
   The triple-alpha process: three helium nuclei join to make carbon. Almost all
   the carbon in the Universe, including the carbon in living things, was made
   this way inside stars.
+summary_it: >-
+  Il processo tre alfa: tre nuclei di elio si uniscono per formare carbonio.
+  Quasi tutto il carbonio dell'Universo, compreso quello degli esseri viventi, è
+  stato prodotto così all'interno delle stelle.
 role: >-
   Two helium nuclei cannot stick together for long. They form beryllium-8, which
   falls apart again in a tiny fraction of a second. In the hot, dense core of a
@@ -22,6 +26,18 @@ role: >-
   process sets how fast helium burns and, together with the next step,
   carbon-12 capturing a helium nucleus, decides how much carbon and how much
   oxygen a star leaves behind.
+role_it: >-
+  Due nuclei di elio non riescono a restare uniti a lungo. Formano il
+  berillio-8, che si spezza di nuovo in una minuscola frazione di secondo. Nel
+  nucleo caldo e denso di una stella che brucia elio, a volte un terzo nucleo di
+  elio arriva prima che ciò accada. Si forma allora carbonio, ma solo perché il
+  carbonio-12 ha uno stato eccitato, lo stato di Hoyle, proprio all'energia
+  giusta per catturare le tre particelle. Nel 1954 Fred Hoyle sostenne che un
+  tale stato doveva esistere perché le stelle producessero tanto carbonio quanto
+  ne vediamo, e gli esperimenti lo trovarono presto. Il tasso di questo processo
+  fissa quanto velocemente brucia l'elio e, insieme al passo successivo, la
+  cattura di un nucleo di elio da parte del carbonio-12, decide quanto carbonio
+  e quanto ossigeno lascia una stella.
 details: >-
   At helium-burning temperatures (T₉ ≈ 0.1–0.2) the rate proceeds sequentially:
   α + α forms the unbound ⁸Be ground state in equilibrium, and ⁸Be + α
@@ -49,6 +65,11 @@ status_note: >-
   The rate at helium-burning temperatures rests on the radiative width of the
   Hoyle state, where recent determinations of the γ-decay branching ratio
   disagree at the 30% level.
+status_note_it: >-
+  Alle temperature della combustione dell'elio il tasso si basa sulla larghezza
+  radiativa dello stato di Hoyle, per la quale le determinazioni recenti del
+  rapporto di diramazione del decadimento γ sono in disaccordo al livello del 30
+  %.
 methods: [direct-surface, inverse-kinematics, theory]
 measurements:
   - year: 1953

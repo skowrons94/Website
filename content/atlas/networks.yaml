@@ -5,180 +5,277 @@
 #
 #   temperatures: where the process runs, in GK (T9); the site computes the
 #                 Gamow window of every charged-particle reaction at each one.
+#
+# Italian (/it/atlas): `name_it` and `summary_it` beside `name` and `summary`,
+# `label_it` beside a temperature's `label`. Missing ones fall back to English.
 
 families:
   - id: pp
     name: The proton–proton chains
+    name_it: Le catene protone-protone
     summary: >-
       How the Sun shines. Four protons become one helium nucleus through a chain
       of reactions that starts with the slowest process in the Sun, the fusion of
       two protons.
+    summary_it: >-
+      Come brilla il Sole. Quattro protoni diventano un nucleo di elio attraverso una
+      catena di reazioni che comincia con il processo più lento del Sole, la
+      fusione di due protoni.
   - id: cno
     name: The CNO cycles
+    name_it: I cicli CNO
     summary: >-
       Carbon, nitrogen and oxygen act as catalysts that turn hydrogen into helium.
       In the Sun this gives about one percent of the energy; in stars heavier than
       about 1.3 solar masses it is the main source.
+    summary_it: >-
+      Carbonio, azoto e ossigeno fanno da catalizzatori e trasformano l'idrogeno in
+      elio. Nel Sole questo fornisce circa l'uno per cento dell'energia; nelle
+      stelle più massicce di circa 1,3 masse solari è la fonte principale.
   - id: nena
     name: The NeNa cycle
+    name_it: Il ciclo NeNa
     summary: >-
       In red giants, AGB stars and novae, protons are captured on the neon
       isotopes and on sodium. The cycle sets the sodium abundance of stars, and the
       sodium–oxygen anticorrelation seen in globular clusters.
+    summary_it: >-
+      Nelle giganti rosse, nelle stelle AGB e nelle novae i protoni vengono catturati
+      dagli isotopi del neon e dal sodio. Il ciclo fissa l'abbondanza di sodio
+      delle stelle e l'anticorrelazione sodio-ossigeno osservata negli ammassi
+      globulari.
   - id: mgal
     name: The MgAl cycle
+    name_it: Il ciclo MgAl
     summary: >-
       At still higher temperatures protons are captured on magnesium and
       aluminium. The cycle makes the radioactive ²⁶Al whose γ-ray line traces
       recent nucleosynthesis across the Galaxy.
+    summary_it: >-
+      A temperature ancora più alte i protoni vengono catturati dal magnesio e
+      dall'alluminio. Il ciclo produce il ²⁶Al radioattivo, la cui riga γ traccia
+      la nucleosintesi recente in tutta la Galassia.
   - id: he
     name: Helium burning
+    name_it: La combustione dell'elio
     summary: >-
       Once the hydrogen is gone, the core contracts and heats until helium burns.
       Three helium nuclei make carbon, and carbon captures helium to make oxygen:
       the ratio of the two decides much of what follows.
+    summary_it: >-
+      Esaurito l'idrogeno, il nucleo della stella si contrae e si scalda finché
+      l'elio non si accende. Tre nuclei di elio formano il carbonio, e il carbonio
+      cattura elio per formare l'ossigeno: il rapporto tra i due decide gran parte
+      di ciò che segue.
   - id: neutrons
     name: Neutron sources
+    name_it: Le sorgenti di neutroni
     summary: >-
       Elements heavier than iron are mostly built by neutron captures. In stars the
       neutrons come from two helium-induced reactions, on ¹³C and on ²²Ne.
+    summary_it: >-
+      Gli elementi più pesanti del ferro sono costruiti per lo più da catture di
+      neutroni. Nelle stelle i neutroni vengono da due reazioni indotte da elio,
+      sul ¹³C e sul ²²Ne.
   - id: bbn
     name: Big Bang nucleosynthesis
+    name_it: La nucleosintesi primordiale
     summary: >-
       In the first minutes after the Big Bang the Universe made deuterium, helium
       and a little lithium. Comparing the predicted and observed amounts tests
       cosmology and particle physics.
+    summary_it: >-
+      Nei primi minuti dopo il Big Bang l'Universo produsse deuterio, elio e un po'
+      di litio. Il confronto tra le quantità previste e quelle osservate mette
+      alla prova la cosmologia e la fisica delle particelle.
 
 networks:
   - id: pp1
     family: pp
     name: pp-I
+    name_it: pp-I
     summary: >-
       The main branch in the Sun: two protons make a deuteron, the deuteron
       captures a proton to make ³He, and two ³He nuclei fuse to ⁴He.
+    summary_it: >-
+      Il ramo principale nel Sole: due protoni formano un deutone, il deutone
+      cattura un protone e diventa ³He, e due nuclei di ³He si fondono in ⁴He.
     temperatures:
-      - { label: centre of the Sun, T9: 0.0157 }
+      - { label: centre of the Sun, label_it: "centro del Sole", T9: 0.0157 }
     reactions: [1H-pp-2H, 1H-pep-2H, 2H-pg-3He, 3He-3He2p-4He]
 
   - id: pp2
     family: pp
     name: pp-II
+    name_it: pp-II
     summary: >-
       ³He captures a ⁴He nucleus to make ⁷Be, which captures an electron and
       becomes ⁷Li; ⁷Li and a proton give two ⁴He. Source of the ⁷Be solar
       neutrinos.
+    summary_it: >-
+      L'³He cattura un nucleo di ⁴He e forma il ⁷Be, che cattura un elettrone e
+      diventa ⁷Li; ⁷Li e un protone danno due ⁴He. È la sorgente dei neutrini
+      solari del ⁷Be.
     temperatures:
-      - { label: centre of the Sun, T9: 0.0157 }
+      - { label: centre of the Sun, label_it: "centro del Sole", T9: 0.0157 }
     reactions: [3He-ag-7Be, 7Be-ec-7Li, 7Li-pa-4He]
 
   - id: pp3
     family: pp
     name: pp-III
+    name_it: pp-III
     summary: >-
       A rare branch: ⁷Be captures a proton to make ⁸B, whose decay emits the
       high-energy solar neutrinos first detected in the Homestake mine.
+    summary_it: >-
+      Un ramo raro: il ⁷Be cattura un protone e forma il ⁸B, il cui decadimento
+      emette i neutrini solari di alta energia rivelati per la prima volta nella
+      miniera di Homestake.
     temperatures:
-      - { label: centre of the Sun, T9: 0.0157 }
+      - { label: centre of the Sun, label_it: "centro del Sole", T9: 0.0157 }
     reactions: [3He-ag-7Be, 7Be-pg-8B, 8B-bp-8Be, 3He-hep-4He]
 
   - id: cno1
     family: cno
     name: CN cycle (CNO-I)
+    name_it: Ciclo CN (CNO-I)
     summary: >-
       Carbon captures a proton, decays, captures more protons and returns to
       carbon at the end, having turned four protons into one helium nucleus.
+    summary_it: >-
+      Il carbonio cattura un protone, decade, cattura altri protoni e alla fine
+      torna carbonio, dopo aver trasformato quattro protoni in un nucleo di elio.
     temperatures:
-      - { label: centre of the Sun, T9: 0.0157 }
-      - { label: core of a 15 M☉ star, T9: 0.035 }
+      - { label: centre of the Sun, label_it: "centro del Sole", T9: 0.0157 }
+      - { label: core of a 15 M☉ star, label_it: "nucleo di una stella di 15 M☉", T9: 0.035 }
     reactions: [12C-pg-13N, 13N-bp-13C, 13C-pg-14N, 14N-pg-15O, 15O-bp-15N, 15N-pa-12C]
 
   - id: cno2
     family: cno
     name: CNO-II
+    name_it: CNO-II
     summary: >-
       Rarely, ¹⁵N captures a proton and keeps it instead of emitting an alpha
       particle; the cycle then passes through oxygen and fluorine.
+    summary_it: >-
+      Raramente l'¹⁵N cattura un protone e lo trattiene invece di emettere una
+      particella alfa; il ciclo passa allora per l'ossigeno e il fluoro.
     temperatures:
-      - { label: core of a 15 M☉ star, T9: 0.035 }
+      - { label: core of a 15 M☉ star, label_it: "nucleo di una stella di 15 M☉", T9: 0.035 }
     reactions: [15N-pg-16O, 16O-pg-17F, 17F-bp-17O, 17O-pa-14N]
 
   - id: cno3
     family: cno
     name: CNO-III
+    name_it: CNO-III
     summary: >-
       A further branch through ¹⁸F and ¹⁸O, which matters in AGB stars and in
       nova explosions; the oxygen isotope ratios measured in presolar grains
       depend on it.
+    summary_it: >-
+      Un ulteriore ramo attraverso ¹⁸F e ¹⁸O, importante nelle stelle AGB e nelle
+      esplosioni di nova; ne dipendono i rapporti isotopici dell'ossigeno misurati
+      nei grani presolari.
     temperatures:
-      - { label: AGB star, T9: 0.05 }
-      - { label: classical nova, T9: 0.2 }
+      - { label: AGB star, label_it: "stella AGB", T9: 0.05 }
+      - { label: classical nova, label_it: "nova classica", T9: 0.2 }
     reactions: [17O-pg-18F, 18F-bp-18O, 18O-pa-15N]
 
   - id: cno4
     family: cno
     name: CNO-IV
+    name_it: CNO-IV
     summary: >-
       The last branch, through ¹⁹F. A proton capture on ¹⁹F that emits a γ-ray
       instead of an alpha particle leaks material out of the CNO cycles towards
       neon.
+    summary_it: >-
+      L'ultimo ramo, attraverso il ¹⁹F. Una cattura protonica sul ¹⁹F che emette
+      un raggio γ invece di una particella alfa fa uscire materia dai cicli CNO
+      verso il neon.
     temperatures:
-      - { label: AGB star, T9: 0.05 }
-      - { label: classical nova, T9: 0.2 }
+      - { label: AGB star, label_it: "stella AGB", T9: 0.05 }
+      - { label: classical nova, label_it: "nova classica", T9: 0.2 }
     reactions: [18O-pg-19F, 19F-pa-16O, 19F-pg-20Ne]
 
   - id: nena
     family: nena
     name: NeNa cycle
+    name_it: Ciclo NeNa
     summary: >-
       Proton captures on the neon isotopes and on ²³Na. They set the sodium
       abundance, and the sodium–oxygen anticorrelation seen in globular clusters.
+    summary_it: >-
+      Catture protoniche sugli isotopi del neon e sul ²³Na. Fissano l'abbondanza
+      di sodio e l'anticorrelazione sodio-ossigeno osservata negli ammassi
+      globulari.
     temperatures:
-      - { label: AGB hot-bottom burning, T9: 0.08 }
-      - { label: classical nova, T9: 0.2 }
+      - { label: AGB hot-bottom burning, label_it: "combustione alla base dell'inviluppo (HBB) nelle AGB", T9: 0.08 }
+      - { label: classical nova, label_it: "nova classica", T9: 0.2 }
     reactions: [20Ne-pg-21Na, 21Na-bp-21Ne, 21Ne-pg-22Na, 22Na-bp-22Ne, 22Ne-pg-23Na, 23Na-pa-20Ne, 23Na-pg-24Mg]
 
   - id: mgal
     family: mgal
     name: MgAl cycle
+    name_it: Ciclo MgAl
     summary: >-
       Proton captures on the magnesium isotopes and on ²⁷Al. ²⁵Mg(p,γ)²⁶Al makes
       the radioactive ²⁶Al whose 1809 keV γ-ray line maps recent nucleosynthesis
       in the Galaxy.
+    summary_it: >-
+      Catture protoniche sugli isotopi del magnesio e sul ²⁷Al. La ²⁵Mg(p,γ)²⁶Al
+      produce il ²⁶Al radioattivo, la cui riga γ a 1809 keV traccia la mappa
+      della nucleosintesi recente nella Galassia.
     temperatures:
-      - { label: AGB hot-bottom burning, T9: 0.08 }
-      - { label: classical nova, T9: 0.2 }
+      - { label: AGB hot-bottom burning, label_it: "combustione alla base dell'inviluppo (HBB) nelle AGB", T9: 0.08 }
+      - { label: classical nova, label_it: "nova classica", T9: 0.2 }
     reactions: [24Mg-pg-25Al, 25Al-bp-25Mg, 25Mg-pg-26Al, 26Al-bp-26Mg, 26Mg-pg-27Al, 27Al-pa-24Mg, 27Al-pg-28Si]
 
   - id: he-burning
     family: he
     name: Helium burning
+    name_it: Combustione dell'elio
     summary: >-
       The triple-alpha process makes ¹²C through the Hoyle state; alpha captures
       then make ¹⁶O and ²⁰Ne. ¹²C(α,γ)¹⁶O is often called the most important
       reaction in nuclear astrophysics.
+    summary_it: >-
+      Il processo tre alfa produce il ¹²C attraverso lo stato di Hoyle; le
+      catture alfa producono poi ¹⁶O e ²⁰Ne. La ¹²C(α,γ)¹⁶O è spesso definita la
+      reazione più importante dell'astrofisica nucleare.
     temperatures:
-      - { label: core helium burning, T9: 0.2 }
+      - { label: core helium burning, label_it: "combustione centrale dell'elio", T9: 0.2 }
     reactions: [4He-aa-12C, 12C-ag-16O, 16O-ag-20Ne, 14N-ag-18F, 18F-bp-18O, 18O-ag-22Ne]
 
   - id: neutron-sources
     family: neutrons
     name: Neutron sources of the s-process
+    name_it: Sorgenti di neutroni del processo s
     summary: >-
       ¹³C(α,n)¹⁶O supplies the neutrons in low-mass AGB stars, ²²Ne(α,n)²⁵Mg in
       massive stars; ²²Ne(α,γ)²⁶Mg competes with the second.
+    summary_it: >-
+      La ¹³C(α,n)¹⁶O fornisce i neutroni nelle stelle AGB di piccola massa, la
+      ²²Ne(α,n)²⁵Mg nelle stelle massicce; la ²²Ne(α,γ)²⁶Mg compete con la
+      seconda.
     temperatures:
-      - { label: AGB ¹³C pocket, T9: 0.09 }
-      - { label: massive star, He core end, T9: 0.3 }
+      - { label: AGB ¹³C pocket, label_it: "tasca di ¹³C nelle AGB", T9: 0.09 }
+      - { label: massive star, He core end, label_it: "stella massiccia, fine della combustione centrale dell'elio", T9: 0.3 }
     reactions: [13C-an-16O, 22Ne-an-25Mg, 22Ne-ag-26Mg, 17O-an-20Ne]
 
   - id: bbn
     family: bbn
     name: Big Bang nucleosynthesis
+    name_it: Nucleosintesi primordiale
     summary: >-
       A few minutes after the Big Bang, neutrons and protons combined into
       deuterium, ³He, ⁴He and ⁷Li. The predicted deuterium abundance depends on
       d(p,γ)³He, now measured at LUNA.
+    summary_it: >-
+      Pochi minuti dopo il Big Bang neutroni e protoni si combinarono in deuterio,
+      ³He, ⁴He e ⁷Li. L'abbondanza di deuterio prevista dipende dalla d(p,γ)³He,
+      oggi misurata a LUNA.
     temperatures:
-      - { label: deuterium bottleneck, T9: 0.8 }
-      - { label: end of BBN, T9: 0.3 }
+      - { label: deuterium bottleneck, label_it: "collo di bottiglia del deuterio", T9: 0.8 }
+      - { label: end of BBN, label_it: "fine della nucleosintesi primordiale", T9: 0.3 }
     reactions: [1H-ng-2H, 2H-pg-3He, 2H-dn-3He, 2H-dp-3H, 3H-dn-4He, 3He-dp-4He, 3He-ag-7Be, 3H-ag-7Li, 7Be-np-7Li, 2H-ag-6Li]

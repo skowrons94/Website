@@ -11,6 +11,10 @@ summary: >-
   A deuteron captures a proton and becomes ³He, giving off a γ-ray. In the Sun
   this follows the fusion of two protons almost at once. After the Big Bang it
   was the main reaction that destroyed deuterium.
+summary_it: >-
+  Un deutone cattura un protone e diventa ³He, emettendo un raggio γ. Nel Sole
+  segue quasi subito la fusione di due protoni. Dopo il Big Bang fu la reazione
+  principale che distrusse il deuterio.
 role: >-
   Deuterium, the nucleus made of one proton and one neutron, was formed in the
   first minutes after the Big Bang. How much of it survived depends on two
@@ -22,6 +26,17 @@ role: >-
   the Big Bang. In stars the reaction is so fast that it never limits the pp
   chain, but it burns the deuterium of young stars before they start to burn
   hydrogen.
+role_it: >-
+  Il deuterio, il nucleo formato da un protone e un neutrone, si formò nei primi
+  minuti dopo il Big Bang. Quanto ne sia sopravvissuto dipende da due cose: la
+  densità della materia ordinaria nell'Universo e la velocità delle reazioni che
+  lo bruciano. Questa reazione è una di esse. Gli astronomi misurano il deuterio
+  rimasto in nubi di gas lontane e quasi primordiali; se il tasso di combustione
+  è noto, quella misura dà la densità di materia, che si può poi confrontare con
+  il valore ricavato dalla radiazione cosmica di fondo, la luce rimasta dal Big
+  Bang. Nelle stelle la reazione è così veloce che non limita mai la catena pp,
+  ma brucia il deuterio delle stelle giovani prima che comincino a bruciare
+  idrogeno.
 details: >-
   Two energy ranges matter. The solar Gamow window lies at a few keV, where the
   LUNA 50 kV accelerator measured the cross section with about 10 % accuracy
@@ -43,6 +58,10 @@ status_note: >-
   The LUNA data of 2020 fix the S-factor at BBN energies to about 3 %; the
   remaining questions concern the energy dependence at higher energies and the
   consistency with ab initio theory.
+status_note_it: >-
+  I dati LUNA del 2020 fissano il fattore S alle energie della nucleosintesi
+  primordiale a circa il 3 %; le questioni aperte riguardano l'andamento in
+  energia a energie più alte e l'accordo con la teoria ab initio.
 methods: [direct-underground, direct-surface, theory]
 measurements:
   - year: 1997

@@ -8,3 +8,6 @@ product: 13C
 networks: [cno1]
 summary: >-
   The radioactive nitrogen-13 made by proton capture on carbon-12 turns into stable carbon-13 by emitting a positron and a neutrino.
+summary_it: >-
+  L'azoto-13 radioattivo, prodotto dalla cattura protonica sul carbonio-12, si
+  trasforma in carbonio-13 stabile emettendo un positrone e un neutrino.

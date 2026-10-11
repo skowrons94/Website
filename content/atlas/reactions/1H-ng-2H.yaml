@@ -11,6 +11,10 @@ summary: >-
   A neutron and a proton bind into a deuteron and give off a γ-ray. This is the
   first step of Big Bang nucleosynthesis: all later reactions start from the
   deuterium it makes.
+summary_it: >-
+  Un neutrone e un protone si legano in un deutone ed emettono un raggio γ. È il
+  primo passo della nucleosintesi primordiale: tutte le reazioni successive
+  partono dal deuterio che produce.
 role: >-
   In the first minutes after the Big Bang, neutrons and protons combined into
   deuterons almost as fast as energetic photons broke them apart again. Only
@@ -18,6 +22,13 @@ role: >-
   of heavier nuclei could begin. The rate of this capture therefore sets when
   nucleosynthesis starts and how many neutrons are still left, which in turn
   fixes the amount of helium.
+role_it: >-
+  Nei primi minuti dopo il Big Bang, neutroni e protoni si combinavano in
+  deutoni quasi alla stessa velocità con cui fotoni energetici li spezzavano di
+  nuovo. Solo quando l'Universo si fu raffreddato abbastanza il deuterio
+  sopravvisse, e poté cominciare la formazione di nuclei più pesanti. Il tasso
+  di questa cattura fissa quindi quando comincia la nucleosintesi e quanti
+  neutroni restano ancora, il che a sua volta determina la quantità di elio.
 details: >-
   At BBN energies the capture is dominated by the isovector M1 transition from
   the ¹S₀ continuum at the lowest energies and by isovector E1 capture from P
@@ -30,6 +41,9 @@ status: well-known
 status_note: >-
   Theory constrained by thermal capture and photodisintegration data gives the
   cross section at BBN energies to about 1 %.
+status_note_it: >-
+  La teoria, vincolata dai dati di cattura termica e di fotodisintegrazione, dà
+  la sezione d'urto alle energie della nucleosintesi primordiale a circa l'1 %.
 methods: [theory]
 measurements:
   - year: 2000

@@ -10,6 +10,9 @@ importance: major
 summary: >-
   Two ³He nuclei fuse into one ⁴He nucleus and release two protons. This closes
   the main branch of the pp chain in the Sun.
+summary_it: >-
+  Due nuclei di ³He si fondono in un nucleo di ⁴He e liberano due protoni.
+  Questo chiude il ramo principale della catena pp nel Sole.
 role: >-
   Once ³He has been made, it can meet another ³He nucleus or a ⁴He nucleus.
   The first path ends the pp-I chain and produces no further neutrinos; the
@@ -18,6 +21,14 @@ role: >-
   neutrinos the Sun emits. In the 1990s the reaction was also measured to test
   the idea that an unknown low-energy resonance could explain the solar
   neutrino deficit.
+role_it: >-
+  Una volta formato, l'³He può incontrare un altro nucleo di ³He o un nucleo di
+  ⁴He. La prima strada conclude la catena pp-I e non produce altri neutrini; la
+  seconda apre i rami pp-II e pp-III, che emettono i neutrini solari del ⁷Be e
+  del ⁸B. La competizione tra le due fissa quindi quanti di questi neutrini
+  emette il Sole. Negli anni Novanta la reazione fu misurata anche per
+  verificare l'idea che una risonanza sconosciuta a bassa energia potesse
+  spiegare il deficit di neutrini solari.
 details: >-
   The two-proton exit channel makes the reaction measurable by detecting the
   energetic protons in silicon telescopes, which LUNA did with the 50 kV
@@ -34,6 +45,10 @@ status: well-known
 status_note: >-
   Direct data reach the solar Gamow peak; the residual uncertainty comes from
   the electron-screening correction and from the proton spectral shape.
+status_note_it: >-
+  I dati diretti raggiungono il picco di Gamow solare; l'incertezza residua
+  viene dalla correzione per lo schermo elettronico e dalla forma dello spettro
+  dei protoni.
 methods: [direct-underground, direct-surface, plasma]
 measurements:
   - year: 1996

@@ -10,11 +10,19 @@ importance: minor
 summary: >-
   ³He and a deuteron fuse into ⁴He and a proton. After the Big Bang it converted
   part of the ³He into ⁴He.
+summary_it: >-
+  ³He e un deutone si fondono in ⁴He e un protone. Dopo il Big Bang trasformò
+  parte dell'³He in ⁴He.
 role: >-
   The reaction is the mirror of deuterium–tritium fusion and, like it, is very
   fast at the energies of the early Universe. It removes ³He and deuterium and
   adds to ⁴He. In the laboratory it has been a favourite case for studying how
   the electrons around the target nuclei make fusion easier at low energy.
+role_it: >-
+  La reazione è la speculare della fusione deuterio-trizio e, come quella, è
+  molto veloce alle energie dell'Universo primordiale. Rimuove ³He e deuterio e
+  aggiunge ⁴He. In laboratorio è stata un caso prediletto per studiare come gli
+  elettroni attorno ai nuclei bersaglio facilitino la fusione a bassa energia.
 details: >-
   The cross section is dominated by the 3/2⁺ resonance in ⁵Li, the mirror of
   the ⁵He state that governs d+t. At the lowest energies the measured S-factor
@@ -31,6 +39,10 @@ status: well-known
 status_note: >-
   Measured over the BBN range with small uncertainty; open questions concern
   only the electron-screening enhancement at the lowest energies.
+status_note_it: >-
+  Misurata su tutto l'intervallo della nucleosintesi primordiale con piccola
+  incertezza; le questioni aperte riguardano solo l'aumento dovuto allo schermo
+  elettronico alle energie più basse.
 methods: [direct-underground, direct-surface, thm]
 measurements:
   - year: 2000

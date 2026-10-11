@@ -11,6 +11,10 @@ summary: >-
   Two protons fuse into a deuteron, emitting a positron and a neutrino. This is
   the first and slowest step of the pp chain, and it sets the pace at which the
   Sun burns hydrogen.
+summary_it: >-
+  Due protoni si fondono in un deutone, emettendo un positrone e un neutrino. È
+  il primo e il più lento passo della catena pp, e detta il ritmo con cui il
+  Sole brucia idrogeno.
 role: >-
   For two protons to stick together, one of them must turn into a neutron
   while they are briefly close. That change goes through the weak interaction,
@@ -20,6 +24,15 @@ role: >-
   that turns hydrogen into helium in the Sun begins here, and the neutrinos it
   produces, called pp neutrinos, are the most numerous solar neutrinos reaching
   the Earth.
+role_it: >-
+  Perché due protoni restino uniti, uno dei due deve trasformarsi in neutrone
+  mentre sono brevemente vicini. Questo cambiamento passa per l'interazione
+  debole, la stessa forza responsabile del decadimento β radioattivo, e quindi
+  avviene molto raramente: un protone al centro del Sole aspetta in media
+  miliardi di anni prima di prendervi parte. Questa lentezza è il motivo per cui
+  il Sole vive così a lungo. Quasi ogni catena che trasforma idrogeno in elio
+  nel Sole comincia qui, e i neutrini che produce, detti neutrini pp, sono i
+  neutrini solari più numerosi che raggiungono la Terra.
 details: >-
   The cross section is far too small to measure in the laboratory at any
   energy, so S(0) is calculated. The calculation needs the overlap of the
@@ -39,6 +52,9 @@ status: well-known
 status_note: >-
   Known from theory only; potential-model and effective-field-theory
   calculations agree within their small uncertainties.
+status_note_it: >-
+  Nota solo dalla teoria; i calcoli con modelli di potenziale e con teorie di
+  campo efficaci concordano entro le loro piccole incertezze.
 methods: [theory]
 measurements:
   - year: 1998

@@ -10,6 +10,10 @@ importance: minor
 summary: >-
   Oxygen-17 captures a helium nucleus and gives back a neutron. It decides
   whether neutrons swallowed by the abundant oxygen-16 are lost or returned.
+summary_it: >-
+  L'ossigeno-17 cattura un nucleo di elio e restituisce un neutrone. Decide se i
+  neutroni assorbiti dall'abbondante ossigeno-16 vanno persi o vengono
+  restituiti.
 role: >-
   In massive stars, and even more in stars poor in heavy elements, oxygen-16
   is very abundant and captures many of the neutrons released by neon-22.
@@ -19,6 +23,15 @@ role: >-
   competing ¹⁷O(α,γ)²¹Ne keeps it. The ratio of the two decides how strongly
   oxygen-16 poisons the s-process, and therefore how many heavy elements
   metal-poor massive stars can make.
+role_it: >-
+  Nelle stelle massicce, e ancor più in quelle povere di elementi pesanti,
+  l'ossigeno-16 è molto abbondante e cattura molti dei neutroni liberati dal
+  neon-22. Questi neutroni andrebbero persi per il processo s, ed è per questo
+  che l'ossigeno-16 è detto un veleno per i neutroni. L'ossigeno-17 che si forma
+  può catturare un nucleo di elio in due modi. Questa reazione libera di nuovo
+  il neutrone, mentre la concorrente ¹⁷O(α,γ)²¹Ne lo trattiene. Il rapporto tra
+  le due decide quanto l'ossigeno-16 avvelena il processo s, e quindi quanti
+  elementi pesanti possono produrre le stelle massicce povere di metalli.
 details: >-
   The relevant quantity is the ratio of the (α,n) and (α,γ) rates at
   T₉ ≈ 0.2–0.3, set by resonances in ²¹Ne above the α threshold. Best et al.
@@ -35,6 +48,10 @@ status: uncertain
 status_note: >-
   What matters is the (α,n)/(α,γ) ratio; both channels have been measured
   directly, but not at the lowest energies of core helium burning.
+status_note_it: >-
+  Ciò che conta è il rapporto (α,n)/(α,γ); entrambi i canali sono stati misurati
+  direttamente, ma non alle energie più basse della combustione centrale
+  dell'elio.
 methods: [direct-surface, inverse-kinematics]
 measurements:
   - year: 2013

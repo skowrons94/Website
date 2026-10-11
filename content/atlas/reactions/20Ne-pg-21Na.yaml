@@ -10,6 +10,9 @@ importance: key
 summary: >-
   The first and slowest step of the NeNa cycle. A ²⁰Ne nucleus captures a proton
   and becomes ²¹Na, giving off the extra energy as a γ-ray.
+summary_it: >-
+  Il primo e più lento passo del ciclo NeNa. Un nucleo di ²⁰Ne cattura un
+  protone e diventa ²¹Na, cedendo l'energia in eccesso come raggio γ.
 role: >-
   ²⁰Ne is the most abundant neon isotope, and in the NeNa cycle nuclei wait longest
   as ²⁰Ne before the next proton arrives. This reaction therefore sets how fast
@@ -18,6 +21,15 @@ role: >-
   hydrogen and helium burn in thin shells), and in nova explosions. Because so
   much neon is available, even a slow leak through this step matters for the
   sodium made in these stars.
+role_it: >-
+  Il ²⁰Ne è l'isotopo più abbondante del neon, e nel ciclo NeNa i nuclei restano
+  più a lungo come ²⁰Ne prima che arrivi il protone successivo. Questa reazione
+  fissa quindi quanto velocemente il neon viene trasformato in sodio negli
+  strati in cui brucia l'idrogeno nelle giganti rosse, nelle stelle massicce del
+  ramo asintotico delle giganti (stelle AGB, nella fase avanzata in cui idrogeno
+  ed elio bruciano in gusci sottili) e nelle esplosioni di nova. Poiché c'è così
+  tanto neon a disposizione, anche una piccola fuga attraverso questo passo
+  conta per il sodio prodotto in queste stelle.
 details: >-
   Below about 0.4 MeV the cross section is non-resonant. It is dominated by direct
   capture and by the tail of a ²¹Na state just below the proton threshold, the
@@ -35,6 +47,10 @@ status_note: >-
   Underground data now reach below E_cm = 352 keV and the 368 keV resonance
   strength is known to about 5 %; the low-energy extrapolation still rests on the
   separation of direct capture from the subthreshold state.
+status_note_it: >-
+  I dati sotterranei arrivano ora sotto E_cm = 352 keV e la forza della
+  risonanza a 368 keV è nota a circa il 5 %; l'estrapolazione a bassa energia si
+  basa ancora sulla separazione della cattura diretta dallo stato sotto soglia.
 methods: [direct-underground, direct-surface]
 measurements:
   - year: 2018

@@ -10,12 +10,23 @@ importance: key
 summary: >-
   A proton capture that turns aluminium into silicon. It is the way out of the
   MgAl cycle, in competition with ²⁷Al(p,α)²⁴Mg, which keeps material inside it.
+summary_it: >-
+  Una cattura protonica che trasforma l'alluminio in silicio. È la via d'uscita
+  dal ciclo MgAl, in competizione con ²⁷Al(p,α)²⁴Mg, che invece trattiene la
+  materia nel ciclo.
 role: >-
   When ²⁷Al captures a proton, the new nucleus either emits an alpha particle and
   returns to magnesium, or emits a γ-ray and becomes ²⁸Si. This reaction is the
   second route. It sets how much aluminium the hottest hydrogen-burning stars
   destroy, how much silicon they make, and how much material escapes the MgAl
   cycle towards heavier elements in nova explosions.
+role_it: >-
+  Quando il ²⁷Al cattura un protone, il nuovo nucleo o emette una particella
+  alfa e torna magnesio, o emette un raggio γ e diventa ²⁸Si. Questa reazione è
+  la seconda strada. Fissa quanto alluminio distruggono le stelle in cui
+  l'idrogeno brucia alle temperature più alte, quanto silicio producono, e
+  quanta materia sfugge dal ciclo MgAl verso elementi più pesanti nelle
+  esplosioni di nova.
 details: >-
   At hydrogen-burning temperatures the rate is a sum of narrow resonances near
   the proton threshold and of direct capture. The weakest low-energy resonances
@@ -33,6 +44,10 @@ status_note: >-
   At the lowest temperatures the rate depends on resonances that are too weak to
   have been observed directly; at nova temperatures it rests on measured
   resonances.
+status_note_it: >-
+  Alle temperature più basse il tasso dipende da risonanze troppo deboli per
+  essere state osservate direttamente; alle temperature delle novae si basa su
+  risonanze misurate.
 methods: [direct-surface, anc]
 measurements:
   - year: 1990

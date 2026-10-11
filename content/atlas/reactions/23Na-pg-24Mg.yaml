@@ -10,6 +10,9 @@ importance: key
 summary: >-
   A proton capture that destroys sodium and makes magnesium. It competes with
   ²³Na(p,α)²⁰Ne, which also destroys sodium but returns the material to neon.
+summary_it: >-
+  Una cattura protonica che distrugge sodio e produce magnesio. Compete con
+  ²³Na(p,α)²⁰Ne, che pure distrugge sodio ma riporta la materia al neon.
 role: >-
   When ²³Na captures a proton, the new nucleus either emits an alpha particle and
   goes back to ²⁰Ne, closing the NeNa cycle, or emits a γ-ray and becomes ²⁴Mg,
@@ -17,6 +20,14 @@ role: >-
   its competitor it decides how much sodium survives hydrogen burning, which
   matters for the sodium-rich and oxygen-poor stars observed in old star clusters,
   and how much material flows on from neon to magnesium and aluminium.
+role_it: >-
+  Quando il ²³Na cattura un protone, il nuovo nucleo o emette una particella
+  alfa e torna ²⁰Ne, chiudendo il ciclo NeNa, o emette un raggio γ e diventa
+  ²⁴Mg, facendo uscire materia verso il ciclo MgAl. Questa reazione è la via di
+  fuga. Insieme alla sua concorrente decide quanto sodio sopravvive alla
+  combustione dell'idrogeno, il che conta per le stelle ricche di sodio e povere
+  di ossigeno osservate nei vecchi ammassi stellari, e quanta materia prosegue
+  dal neon verso il magnesio e l'alluminio.
 details: >-
   At 50–110 MK the rate is dominated by narrow resonances at Eₚ = 140 and 251 keV
   and, at the low end of that range, by direct capture. The 140 keV resonance is
@@ -34,6 +45,10 @@ status_note: >-
   The two key resonances were measured directly at LUNA, which limits the rate
   uncertainty at 0.07 GK to −35 %/+50 %; the strength of the lowest resonance is
   still in tension between direct and transfer data.
+status_note_it: >-
+  Le due risonanze chiave sono state misurate direttamente a LUNA, il che limita
+  l'incertezza sul tasso a 0,07 GK a −35 %/+50 %; la forza della risonanza più
+  bassa è ancora in tensione tra dati diretti e dati da trasferimento.
 methods: [direct-underground, direct-surface, anc]
 measurements:
   - year: 2013

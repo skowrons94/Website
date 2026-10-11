@@ -9,3 +9,7 @@ networks: [mgal]
 summary: >-
   ²⁵Al, made when ²⁴Mg captures a proton, turns into stable ²⁵Mg by emitting a
   positron and a neutrino; ²⁵Mg is the nucleus from which radioactive ²⁶Al is made.
+summary_it: >-
+  Il ²⁵Al, prodotto quando il ²⁴Mg cattura un protone, si trasforma in ²⁵Mg
+  stabile emettendo un positrone e un neutrino; il ²⁵Mg è il nucleo da cui si
+  forma il ²⁶Al radioattivo.

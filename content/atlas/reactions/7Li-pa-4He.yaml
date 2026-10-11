@@ -10,6 +10,9 @@ importance: minor
 summary: >-
   A ⁷Li nucleus captures a proton and splits into two ⁴He nuclei. It is the last
   step of the pp-II chain, and it destroys lithium in stars.
+summary_it: >-
+  Un nucleo di ⁷Li cattura un protone e si spezza in due nuclei di ⁴He. È
+  l'ultimo passo della catena pp-II, e distrugge il litio nelle stelle.
 role: >-
   The reaction closes the pp-II chain in the Sun but never limits its speed.
   It matters more as a destroyer of lithium: ⁷Li burns already at temperatures
@@ -17,6 +20,14 @@ role: >-
   deep enough by mixing. The lithium seen at the surface of a star is therefore
   a clue to how its outer layers mix. After the Big Bang the reaction also
   removed part of the ⁷Li made directly.
+role_it: >-
+  La reazione chiude la catena pp-II nel Sole ma non ne limita mai la velocità.
+  Conta di più come distruttrice di litio: il ⁷Li brucia già a temperature di
+  qualche milione di gradi, quindi le stelle perdono il loro litio non appena il
+  rimescolamento lo porta abbastanza in profondità. Il litio osservato sulla
+  superficie di una stella è perciò un indizio di come si rimescolano i suoi
+  strati esterni. Dopo il Big Bang la reazione eliminò anche parte del ⁷Li
+  prodotto direttamente.
 details: >-
   The cross section is large enough to be measured with good statistics at low
   energies, which made it a standard case for studying electron screening in
@@ -31,6 +42,9 @@ status: well-known
 status_note: >-
   The S-factor is measured down to low energies; the remaining uncertainty is
   in the electron-screening correction.
+status_note_it: >-
+  Il fattore S è misurato fino a basse energie; l'incertezza residua è nella
+  correzione per lo schermo elettronico.
 methods: [direct-surface, thm]
 measurements:
   - year: 1992

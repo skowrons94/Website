@@ -11,6 +11,10 @@ summary: >-
   Carbon-12 captures a helium nucleus and becomes oxygen-16. Together with the
   triple-alpha process, it decides how much carbon and how much oxygen stars
   make.
+summary_it: >-
+  Il carbonio-12 cattura un nucleo di elio e diventa ossigeno-16. Insieme al
+  processo tre alfa, decide quanto carbonio e quanto ossigeno producono le
+  stelle.
 role: >-
   While helium burns in the core of a star, carbon is made by the triple-alpha
   process and destroyed by this reaction. When the helium runs out, the balance
@@ -21,6 +25,17 @@ role: >-
   reason the reaction is often called the most important one in nuclear
   astrophysics. It is also one of the hardest to measure: at the energies
   inside stars the reaction happens far too rarely for any experiment so far.
+role_it: >-
+  Mentre l'elio brucia nel nucleo di una stella, il carbonio viene prodotto dal
+  processo tre alfa e distrutto da questa reazione. Quando l'elio si esaurisce,
+  l'equilibrio tra le due lascia un rapporto ben preciso tra carbonio e
+  ossigeno. Quel rapporto determina il resto della vita della stella: decide
+  quali combustibili bruceranno dopo, la struttura delle nane bianche, la massa
+  dei buchi neri lasciati dalle stelle più pesanti e le quantità di molti
+  elementi espulsi nelle supernovae. Per questo la reazione è spesso definita la
+  più importante dell'astrofisica nucleare. È anche una delle più difficili da
+  misurare: alle energie dell'interno delle stelle avviene troppo raramente per
+  qualunque esperimento realizzato finora.
 details: >-
   The stellar energy is near E = 300 keV, where the cross section is far below
   the sensitivity of any experiment so far. The S-factor is therefore
@@ -46,6 +61,10 @@ status_note: >-
   No direct data exist below about 1 MeV; the rate at helium-burning
   temperatures comes from an R-matrix extrapolation, limited by the E1/E2
   split and by the subthreshold-state contributions.
+status_note_it: >-
+  Non esistono dati diretti sotto circa 1 MeV; il tasso alle temperature della
+  combustione dell'elio viene da un'estrapolazione R-matrix, limitata dalla
+  separazione tra E1 ed E2 e dai contributi degli stati sotto soglia.
 methods: [direct-surface, inverse-kinematics, anc, theory]
 measurements:
   - year: 2001
