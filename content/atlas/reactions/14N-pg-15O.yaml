@@ -1,0 +1,65 @@
+id: 14N-pg-15O
+label: ¹⁴N(p,γ)¹⁵O
+kind: capture
+target: 14N
+projectile: 1H
+ejectile: g
+product: 15O
+networks: [cno1]
+importance: key
+summary: >-
+  The slowest step of the CNO cycle. Its rate decides how fast the cycle runs,
+  how much energy it gives, and how many CNO neutrinos leave the Sun.
+role: >-
+  In a star burning hydrogen through the CNO cycle, nuclei wait longest as ¹⁴N
+  before they capture the next proton. This one reaction therefore sets the pace
+  of the whole cycle. It controls the energy production of stars more massive
+  than the Sun, the flux of CNO neutrinos from the Sun's core, and, through the
+  lifetime of stars leaving the main sequence, the ages estimated for the oldest
+  star clusters.
+details: >-
+  At solar temperatures the Gamow window lies near 27 keV, where the cross
+  section is far too small to measure, so the S-factor is extrapolated from
+  higher energies with R-matrix fits. The capture proceeds mainly to the
+  6.79 MeV excited state of ¹⁵O and to its ground state, which makes the
+  extrapolation sensitive to the γ-ray summing and to the subthreshold state at
+  6.79 MeV. The LUNA measurements at the 400 kV accelerator under Gran Sasso
+  extended the data down to 70 keV, much closer to the solar energies than any
+  surface experiment, and lowered the extrapolated S(0) with respect to earlier
+  compilations.
+status: improving
+status_note: >-
+  Direct data reach 70 keV; the remaining uncertainty comes from the split into
+  the individual γ-ray transitions and from the extrapolation to solar energies.
+methods: [direct-underground, direct-surface]
+measurements:
+  - year: 2004
+    facility: luna-400
+    method: direct-underground
+    energy: "140–400 keV (proton energy)"
+    note: >-
+      First underground measurement with a solid TiN target and a HPGe detector,
+      separating the γ-ray transitions; total S(0) = 1.7 ± 0.2 keV b from an
+      R-matrix analysis.
+    refs: [formicola2004]
+  - year: 2006
+    facility: luna-400
+    method: direct-underground
+    energy: "down to 70 keV"
+    note: >-
+      Windowless nitrogen gas target and 4π BGO summing detector; the cross
+      section was measured down to 70 keV, where it is 0.24 pb.
+    refs: [lemut2006]
+  - year: 2011
+    facility: luna-400
+    method: direct-underground
+    energy: "proton energies 359, 380 and 399 keV"
+    note: >-
+      A composite germanium detector reduced the summing corrections; new cross
+      sections for capture to the ground state and to the 5181, 6172 and
+      6792 keV states.
+    refs: [marta2011]
+evaluations: [adelberger2011, acharya2025]
+open_questions:
+  - The ground-state transition, whose contribution at low energy depends on interference in the R-matrix fit.
+related: [15O-bp-15N, 15N-pa-12C, 12C-pg-13N]

@@ -1,0 +1,18 @@
+# How cross sections are measured or determined. Referred to by
+# reactions[].methods and measurements[].method.
+#
+#   id, name, summary (general reader), details (specialist), strengths, limits
+#
+# The stub entries below fix the ids; the descriptions are filled in later.
+
+methods:
+  - { id: direct-underground, name: Direct measurement underground }
+  - { id: direct-surface, name: Direct measurement at the surface }
+  - { id: inverse-kinematics, name: Inverse kinematics and recoil separators }
+  - { id: activation, name: Activation }
+  - { id: neutron-beams, name: Neutron beams and time of flight }
+  - { id: thm, name: Trojan Horse method }
+  - { id: anc, name: Transfer reactions and ANCs }
+  - { id: coulomb-dissociation, name: Coulomb dissociation }
+  - { id: plasma, name: Laser and inertial-confinement plasmas }
+  - { id: theory, name: Calculation from theory }

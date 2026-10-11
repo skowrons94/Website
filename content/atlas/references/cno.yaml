@@ -1,0 +1,31 @@
+# References for the CNO cycles.
+
+formicola2004:
+  authors: A. Formicola et al. (LUNA Collaboration)
+  title: Astrophysical S-factor of ¹⁴N(p,γ)¹⁵O
+  journal: Phys. Lett. B 591, 61 (2004)
+  year: 2004
+  doi: 10.1016/j.physletb.2004.03.092
+  arxiv: nucl-ex/0312015
+  luna: true
+  checked: arXiv nucl-ex/0312015 and DOI confirmed by search, 2026-10-11
+
+lemut2006:
+  authors: A. Lemut et al. (LUNA Collaboration)
+  title: First measurement of the ¹⁴N(p,γ)¹⁵O cross section down to 70 keV
+  journal: Phys. Lett. B 634, 483 (2006)
+  year: 2006
+  doi: 10.1016/j.physletb.2006.02.021
+  arxiv: nucl-ex/0602012
+  luna: true
+  checked: arXiv nucl-ex/0602012 and DOI confirmed by search, 2026-10-11
+
+marta2011:
+  authors: M. Marta et al. (LUNA Collaboration)
+  title: The ¹⁴N(p,γ)¹⁵O reaction studied with a composite germanium detector
+  journal: Phys. Rev. C 83, 045804 (2011)
+  year: 2011
+  doi: 10.1103/PhysRevC.83.045804
+  arxiv: "1103.5393"
+  luna: true
+  checked: arXiv 1103.5393 and journal reference confirmed by search, 2026-10-11

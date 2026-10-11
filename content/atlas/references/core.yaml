@@ -1,0 +1,26 @@
+# Reviews, evaluations and landmark papers used across the atlas.
+
+adelberger2011:
+  authors: E. G. Adelberger et al.
+  title: "Solar fusion cross sections II: the pp chain and CNO cycles"
+  journal: Rev. Mod. Phys. 83, 195 (2011)
+  year: 2011
+  doi: 10.1103/RevModPhys.83.195
+  checked: publisher DOI confirmed by search (HZDR and Surrey repository records), 2026-10-11
+
+acharya2025:
+  authors: B. Acharya et al.
+  title: "Solar fusion III: New data and theory for hydrogen-burning stars"
+  journal: Rev. Mod. Phys. 97, 035002 (2025)
+  year: 2025
+  doi: 10.1103/8lm7-gs18
+  arxiv: "2405.06470"
+  checked: arXiv 2405.06470 and DOI from the JINA Virtual Journal and Milan IRIS records, 2026-10-11
+
+borexino2020:
+  authors: Borexino Collaboration
+  title: Experimental evidence of neutrinos produced in the CNO fusion cycle in the Sun
+  journal: Nature 587, 577 (2020)
+  year: 2020
+  doi: 10.1038/s41586-020-2934-0
+  checked: PubMed record 33239797, 2026-10-11

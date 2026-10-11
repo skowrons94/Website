@@ -1,0 +1,30 @@
+# Laboratories and accelerators referred to by reactions (measurements[].facility)
+# and by the timeline. Order here is display order on /atlas/methods.
+#
+#   id, name, lab, location, country, underground (true/false), depth (text,
+#   e.g. "1400 m rock, 3800 m w.e."), accelerator (text), years (text),
+#   luna (true for the LUNA accelerators), url, summary (general reader),
+#   details (specialist, optional)
+#
+# The stub entries below fix the ids; the descriptions are filled in later.
+
+facilities:
+  - { id: luna-50, name: LUNA 50 kV }
+  - { id: luna-400, name: LUNA 400 kV }
+  - { id: bellotti-ibf, name: Bellotti Ion Beam Facility (LUNA MV) }
+  - { id: juna, name: JUNA }
+  - { id: caspar, name: CASPAR }
+  - { id: felsenkeller, name: Felsenkeller 5 MV }
+  - { id: hzdr, name: HZDR Tandetron, Dresden-Rossendorf }
+  - { id: bochum, name: Dynamitron Tandem Laboratory, Bochum }
+  - { id: notre-dame, name: Nuclear Science Laboratory, Notre Dame }
+  - { id: st-george, name: St. George recoil separator }
+  - { id: tunl-lena, name: LENA, TUNL }
+  - { id: dragon, name: DRAGON, TRIUMF }
+  - { id: erna, name: ERNA recoil separator }
+  - { id: kellogg, name: Kellogg Radiation Laboratory, Caltech }
+  - { id: atomki, name: Atomki, Debrecen }
+  - { id: lns-catania, name: INFN LNS, Catania }
+  - { id: texas-am, name: Cyclotron Institute, Texas A&M }
+  - { id: n-tof, name: n_TOF, CERN }
+  - { id: nif, name: National Ignition Facility }
