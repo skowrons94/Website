@@ -52,13 +52,13 @@ details: >-
   highly unlikely.
 status: improving
 status_note: >-
-  The S-factor at solar energies is known to a few percent, but no data exist
-  inside the solar Gamow window and the extrapolation depends on the model
-  used for the energy dependence.
+  Known to a few percent at solar energies, but only by extending measurements
+  made at higher energies: no experiment has yet reached the energies at which
+  the reaction runs in the Sun.
 status_note_it: >-
-  Il fattore S alle energie solari è noto a qualche per cento, ma non esistono
-  dati dentro la finestra di Gamow solare e l'estrapolazione dipende dal modello
-  usato per l'andamento in energia.
+  Noto a qualche per cento alle energie solari, ma solo prolungando misure
+  fatte a energie più alte: nessun esperimento ha ancora raggiunto le energie
+  a cui la reazione avviene nel Sole.
 methods: [direct-underground, direct-surface, activation, inverse-kinematics]
 measurements:
   - year: 2004

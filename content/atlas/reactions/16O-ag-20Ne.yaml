@@ -45,8 +45,6 @@ status_note_it: >-
 methods: [direct-surface, inverse-kinematics]
 measurements:
   - year: 2010
-    facility: other
-    lab: "not recorded"
     method: direct-surface
     note: >-
       New measurements of the low-energy resonances combined with earlier

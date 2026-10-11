@@ -40,11 +40,13 @@ details: >-
   adiabatic limit of 175 eV.
 status: well-known
 status_note: >-
-  The S-factor is measured down to low energies; the remaining uncertainty is
-  in the electron-screening correction.
+  Measured down to low energies. The remaining uncertainty is the correction
+  for the atomic electrons of the target, which make the reaction easier in
+  the laboratory than it is for bare nuclei.
 status_note_it: >-
-  Il fattore S è misurato fino a basse energie; l'incertezza residua è nella
-  correzione per lo schermo elettronico.
+  Misurata fino a basse energie. L'incertezza residua è la correzione per gli
+  elettroni atomici del bersaglio, che in laboratorio rendono la reazione più
+  facile di quanto sia tra nuclei nudi.
 methods: [direct-surface, thm]
 measurements:
   - year: 1992

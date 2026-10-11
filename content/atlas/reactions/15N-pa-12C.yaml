@@ -42,12 +42,13 @@ details: >-
   data and 70 ± 13.5 MeV b from the Trojan-Horse data.
 status: well-known
 status_note: >-
-  Direct and Trojan-Horse data give consistent S(0) values with uncertainties
-  of 7 % and 19 %; the rate does not limit models of the CN cycle.
+  Direct measurements and the indirect Trojan Horse method agree, with
+  uncertainties of 7 % and 19 %. The reaction is fast, and its remaining
+  uncertainty does not limit models of the CN cycle.
 status_note_it: >-
-  I dati diretti e quelli col metodo del cavallo di Troia danno valori di S(0)
-  compatibili, con incertezze del 7 % e del 19 %; il tasso non limita i modelli
-  del ciclo CN.
+  Le misure dirette e il metodo indiretto del cavallo di Troia concordano, con
+  incertezze del 7 % e del 19 %. La reazione è veloce, e la sua incertezza
+  residua non limita i modelli del ciclo CN.
 methods: [direct-surface, thm]
 measurements:
   - year: 1982

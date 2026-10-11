@@ -43,12 +43,15 @@ details: >-
   low-resolution detectors are used.
 status: well-known
 status_note: >-
-  Direct data reach the solar Gamow peak; the residual uncertainty comes from
-  the electron-screening correction and from the proton spectral shape.
+  Measured down to the energies at which the reaction runs in the Sun. The
+  remaining uncertainty comes from the correction for the atomic electrons of
+  the target, which make the reaction easier in the laboratory than it is for
+  bare nuclei, and from the energy spectrum of the emitted protons.
 status_note_it: >-
-  I dati diretti raggiungono il picco di Gamow solare; l'incertezza residua
-  viene dalla correzione per lo schermo elettronico e dalla forma dello spettro
-  dei protoni.
+  Misurata fino alle energie a cui la reazione avviene nel Sole. L'incertezza
+  residua viene dalla correzione per gli elettroni atomici del bersaglio, che
+  in laboratorio rendono la reazione più facile di quanto sia tra nuclei nudi,
+  e dallo spettro in energia dei protoni emessi.
 methods: [direct-underground, direct-surface, plasma]
 measurements:
   - year: 1996

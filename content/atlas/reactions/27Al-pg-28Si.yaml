@@ -51,8 +51,6 @@ status_note_it: >-
 methods: [direct-surface, anc]
 measurements:
   - year: 1990
-    facility: other
-    lab: "not recorded"
     method: direct-surface
     energy: "low-energy (p,γ) resonances"
     note: >-

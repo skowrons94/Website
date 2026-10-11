@@ -39,11 +39,13 @@ details: >-
   stated accuracy is 1 % for centre-of-mass energies up to about 1 MeV.
 status: well-known
 status_note: >-
-  Theory constrained by thermal capture and photodisintegration data gives the
-  cross section at BBN energies to about 1 %.
+  Calculated to about 1 % at the energies of the Big Bang, with a theory tied
+  to measurements of slow-neutron capture and of deuterons broken up by
+  γ-rays.
 status_note_it: >-
-  La teoria, vincolata dai dati di cattura termica e di fotodisintegrazione, dà
-  la sezione d'urto alle energie della nucleosintesi primordiale a circa l'1 %.
+  Calcolata a circa l'1 % alle energie della nucleosintesi primordiale, con
+  una teoria vincolata dalle misure di cattura di neutroni lenti e di deutoni
+  spezzati da raggi γ.
 methods: [theory]
 measurements:
   - year: 2000

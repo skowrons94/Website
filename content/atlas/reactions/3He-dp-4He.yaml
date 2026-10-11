@@ -37,12 +37,13 @@ details: >-
   potential consistent with the adiabatic limit.
 status: well-known
 status_note: >-
-  Measured over the BBN range with small uncertainty; open questions concern
-  only the electron-screening enhancement at the lowest energies.
+  Measured with small uncertainty at the energies of the Big Bang. The only
+  open question is how much the atomic electrons of the target raise the
+  measured rate at the lowest energies.
 status_note_it: >-
-  Misurata su tutto l'intervallo della nucleosintesi primordiale con piccola
-  incertezza; le questioni aperte riguardano solo l'aumento dovuto allo schermo
-  elettronico alle energie più basse.
+  Misurata con piccola incertezza alle energie della nucleosintesi
+  primordiale. L'unica questione aperta è quanto gli elettroni atomici del
+  bersaglio aumentino il tasso misurato alle energie più basse.
 methods: [direct-underground, direct-surface, thm]
 measurements:
   - year: 2000

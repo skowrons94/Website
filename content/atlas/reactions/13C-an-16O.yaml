@@ -60,18 +60,19 @@ details: >-
   set and constrained the near-threshold state directly (Gao et al. 2022).
 status: improving
 status_note: >-
-  Underground data now reach the upper part of the s-process Gamow window; the
-  rate below 230 keV still rests on the extrapolation through the
-  near-threshold 1/2⁺ state.
+  Measurements deep underground now reach the upper part of the energy range
+  that matters in giant stars, from 230 keV up. Below that, the rate still
+  depends on extending the data with a model of a nuclear state that lies just
+  below the reaction threshold.
 status_note_it: >-
-  I dati sotterranei arrivano ora alla parte alta della finestra di Gamow del
-  processo s; sotto 230 keV il tasso si basa ancora sull'estrapolazione
-  attraverso lo stato 1/2⁺ vicino alla soglia.
+  Le misure in laboratori sotterranei profondi arrivano ora alla parte alta
+  dell'intervallo di energie che conta nelle stelle giganti, da 230 keV in su.
+  Più in basso il tasso dipende ancora dal prolungamento dei dati con il
+  modello di uno stato nucleare che si trova appena sotto la soglia della
+  reazione.
 methods: [direct-underground, direct-surface, thm, anc]
 measurements:
   - year: 1993
-    facility: other
-    lab: "not recorded"
     method: direct-surface
     note: >-
       Direct measurement of both s-process neutron sources, ¹³C(α,n)¹⁶O and
@@ -86,8 +87,6 @@ measurements:
       resulting rate became the reference for later comparisons.
     refs: [heil2008]
   - year: 2012
-    facility: other
-    lab: "not recorded"
     method: thm
     energy: "quasi-free ¹³C(⁶Li,n¹⁶O)d"
     note: >-

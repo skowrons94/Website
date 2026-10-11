@@ -147,9 +147,11 @@ function IntroEn() {
         That rate is hard to measure. Nuclei repel each other electrically, and at stellar temperatures
         they have far too little energy to overcome the repulsion. They fuse only by quantum tunnelling,
         and only within a narrow band of energies, the Gamow window, where the nuclei are fast enough
-        and still numerous enough. In the Sun the window for <Sci>¹⁴N + p</Sci> lies near 27 keV. At
-        70 keV, the lowest energy at which this reaction has been measured, its cross section is
-        0.24 picobarn, or 2.4 × 10<sup>−37</sup> cm².
+        and still numerous enough. In the Sun the window for <Sci>¹⁴N + p</Sci> lies near 27 keV
+        (a keV, a kilo-electronvolt, is the energy an electron gains across 1000 volts). The chance that
+        a reaction happens is measured by its cross section, an effective target area. At 70 keV, the lowest
+        energy at which this reaction has been measured, the cross section is 0.24 picobarn, or
+        2.4 × 10<sup>−37</sup> cm².
       </p>
       <p>
         Even an intense beam then produces only a trickle of reactions, and at the surface of the Earth
@@ -160,9 +162,11 @@ function IntroEn() {
         at, or close to, the energies at which the Sun runs them.
       </p>
       <p>
-        This atlas collects the reactions that matter most. For each it says what the reaction does, why
-        it matters, how it has been measured and what is still uncertain. The map places them on the
-        chart of nuclides; pick a process to follow its path.
+        Each reaction turns one nucleus into another, and in a star they link up into chains and
+        cycles: a reaction network. This atlas collects the reactions that matter most. For each it
+        says what the reaction does, why it matters, how it has been measured and what is still
+        uncertain. The map places them on the chart of nuclides, with protons counted upwards and
+        neutrons across; pick a process to follow its path.
       </p>
     </>
   )
@@ -182,8 +186,11 @@ function IntroIt() {
         elettrica, e alle temperature stellari hanno troppa poca energia per vincere la repulsione. Si
         fondono solo per effetto tunnel quantistico, e solo in una stretta banda di energie, la finestra di
         Gamow, dove i nuclei sono abbastanza veloci e ancora abbastanza numerosi. Nel Sole la finestra per{" "}
-        <Sci>¹⁴N + p</Sci> si trova intorno a 27 keV. A 70 keV, l'energia più bassa a cui questa reazione è
-        stata misurata, la sua sezione d'urto è di 0,24 picobarn, cioè 2,4 × 10<sup>−37</sup> cm².
+        <Sci>¹⁴N + p</Sci> si trova intorno a 27 keV (un keV, un chiloelettronvolt, è l'energia che un
+        elettrone acquista attraversando una differenza di potenziale di 1000 volt). La probabilità che
+        una reazione avvenga si misura con la sua sezione d'urto, un'area efficace del bersaglio. A 70 keV,
+        l'energia più bassa a cui questa reazione è stata misurata, la sezione d'urto è di 0,24 picobarn,
+        cioè 2,4 × 10<sup>−37</sup> cm².
       </p>
       <p>
         Anche un fascio intenso produce allora solo una manciata di reazioni, e sulla superficie della Terra
@@ -194,9 +201,11 @@ function IntroIt() {
         misurate in questo laboratorio sotterraneo alle energie a cui le usa il Sole, o molto vicino.
       </p>
       <p>
-        Questo atlante raccoglie le reazioni più importanti. Per ciascuna spiega che cosa fa la reazione,
-        perché conta, come è stata misurata e che cosa è ancora incerto. La mappa le colloca sulla carta dei
-        nuclidi; scegli un processo per seguirne il percorso.
+        Ogni reazione trasforma un nucleo in un altro, e in una stella le reazioni si collegano in catene e
+        cicli: una rete di reazioni. Questo atlante raccoglie le reazioni più importanti. Per ciascuna spiega
+        che cosa fa la reazione, perché conta, come è stata misurata e che cosa è ancora incerto. La mappa le
+        colloca sulla carta dei nuclidi, con i protoni contati verso l'alto e i neutroni in orizzontale;
+        scegli un processo per seguirne il percorso.
       </p>
     </>
   )

@@ -7,19 +7,18 @@ ejectile: e+ nu
 product: 26Mg
 networks: [mgal]
 summary: >-
-  ²⁶Al in its ground state decays slowly to an excited state of ²⁶Mg, which emits
-  a γ-ray of 1809 keV. Space telescopes see this line across the Milky Way, a map
-  of where nuclei were made in the last few million years. ²⁶Al also has an
-  isomer, ²⁶ᵐAl: an excited state that does not drop to the ground state but decays
-  on its own, much faster than the ground state and directly to the ground state of
-  ²⁶Mg, without the 1809 keV γ-ray, so only ²⁶Al made in its
-  ground state feeds the Galactic line.
+  ²⁶Al in its ground state lives for about a million years. It decays to an
+  excited state of ²⁶Mg, which at once emits a γ-ray of 1809 keV. Space
+  telescopes see this γ-ray line across the Milky Way: a map of where nuclei
+  were made in the last few million years. ²⁶Al also has a second, excited form,
+  the isomer ²⁶ᵐAl. It decays within seconds, straight to the ground state of
+  ²⁶Mg, and gives no 1809 keV γ-ray. Only ²⁶Al made in its ground state feeds
+  the line.
 summary_it: >-
-  Il ²⁶Al nel suo stato fondamentale decade lentamente in uno stato eccitato del
-  ²⁶Mg, che emette un raggio γ da 1809 keV. I telescopi spaziali vedono questa
-  riga in tutta la Via Lattea: una mappa di dove sono stati prodotti nuclei
-  negli ultimi pochi milioni di anni. Il ²⁶Al ha anche un isomero, il ²⁶ᵐAl: uno
-  stato eccitato che non scende allo stato fondamentale ma decade per conto suo,
-  molto più rapidamente dello stato fondamentale e direttamente nello stato
-  fondamentale del ²⁶Mg, senza il raggio γ da 1809 keV; quindi solo il ²⁶Al
-  prodotto nello stato fondamentale alimenta la riga galattica.
+  Il ²⁶Al nel suo stato fondamentale vive circa un milione di anni. Decade in
+  uno stato eccitato del ²⁶Mg, che emette subito un raggio γ da 1809 keV. I
+  telescopi spaziali vedono questa riga γ in tutta la Via Lattea: una mappa di
+  dove sono stati prodotti nuclei negli ultimi pochi milioni di anni. Il ²⁶Al ha
+  anche una seconda forma, eccitata: l'isomero ²⁶ᵐAl. Decade in pochi secondi,
+  direttamente nello stato fondamentale del ²⁶Mg, e non emette il raggio γ da
+  1809 keV. Solo il ²⁶Al prodotto nello stato fondamentale alimenta la riga.

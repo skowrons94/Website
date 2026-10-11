@@ -38,13 +38,15 @@ details: >-
   at JUNA across the whole Gamow window, from E = 72 to 344 keV.
 status: uncertain
 status_note: >-
-  The (p,αγ) channel is now measured underground in the Gamow window, but
-  the dominant α₀ channel below 0.2 MeV is constrained only by Trojan-Horse
-  data.
+  The part of the reaction that leaves oxygen excited, so that it emits a
+  γ-ray, has now been measured underground at stellar energies. The main part,
+  which leaves oxygen in its ground state, is known below 200 keV only from
+  the indirect Trojan Horse method.
 status_note_it: >-
-  Il canale (p,αγ) è ora misurato sotto terra nella finestra di Gamow, ma il
-  canale dominante α₀ sotto 0,2 MeV è vincolato solo dai dati col metodo del
-  cavallo di Troia.
+  La parte della reazione che lascia l'ossigeno eccitato, così che emette un
+  raggio γ, è stata ora misurata sotto terra alle energie stellari. La parte
+  principale, che lascia l'ossigeno nello stato fondamentale, sotto 200 keV è
+  nota solo dal metodo indiretto del cavallo di Troia.
 methods: [direct-underground, direct-surface, thm]
 measurements:
   - year: 2011

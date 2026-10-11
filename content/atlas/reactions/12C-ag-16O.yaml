@@ -58,13 +58,17 @@ details: >-
   gave the recommended rate used here.
 status: uncertain
 status_note: >-
-  No direct data exist below about 1 MeV; the rate at helium-burning
-  temperatures comes from an R-matrix extrapolation, limited by the E1/E2
-  split and by the subthreshold-state contributions.
+  No experiment has yet reached the energies at which helium burns in stars:
+  the lowest data lie near 1 MeV, about three times higher. The stellar rate
+  comes from extending the measured trend downwards with a nuclear model, and
+  its uncertainty depends on how the reaction divides between its two main
+  ways of emitting the γ-ray.
 status_note_it: >-
-  Non esistono dati diretti sotto circa 1 MeV; il tasso alle temperature della
-  combustione dell'elio viene da un'estrapolazione R-matrix, limitata dalla
-  separazione tra E1 ed E2 e dai contributi degli stati sotto soglia.
+  Nessun esperimento ha ancora raggiunto le energie a cui l'elio brucia nelle
+  stelle: i dati più bassi sono intorno a 1 MeV, circa tre volte più in alto.
+  Il tasso stellare si ottiene prolungando verso il basso l'andamento misurato
+  con un modello nucleare, e la sua incertezza dipende da come la reazione si
+  ripartisce tra i suoi due modi principali di emettere il raggio γ.
 methods: [direct-surface, inverse-kinematics, anc, theory]
 measurements:
   - year: 2001

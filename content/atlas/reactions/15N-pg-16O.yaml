@@ -43,13 +43,13 @@ details: >-
   near 10 %.
 status: improving
 status_note: >-
-  Underground data reach 70 keV and the rate is known to about 10 %; the
-  extrapolation still depends on the direct-capture component and on the
-  interference pattern in the R-matrix fit.
+  Measurements deep underground reach 70 keV and fix the rate to about 10 %.
+  The remaining uncertainty is in extending the data to lower energies, where
+  several contributions to the reaction interfere with each other.
 status_note_it: >-
-  I dati sotterranei arrivano a 70 keV e il tasso è noto a circa il 10 %;
-  l'estrapolazione dipende ancora dalla componente di cattura diretta e dalla
-  struttura delle interferenze nel fit R-matrix.
+  Le misure in laboratorio sotterraneo arrivano a 70 keV e fissano il tasso a
+  circa il 10 %. L'incertezza residua sta nel prolungare i dati a energie più
+  basse, dove diversi contributi alla reazione interferiscono tra loro.
 methods: [direct-underground, direct-surface, anc]
 measurements:
   - year: 2008

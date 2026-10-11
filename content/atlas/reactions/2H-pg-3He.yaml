@@ -55,13 +55,13 @@ details: >-
   BBN window.
 status: well-known
 status_note: >-
-  The LUNA data of 2020 fix the S-factor at BBN energies to about 3 %; the
-  remaining questions concern the energy dependence at higher energies and the
-  consistency with ab initio theory.
+  Since the LUNA measurement of 2020 the rate at the energies of the Big Bang
+  is known to about 3 %. Small differences remain with theoretical
+  calculations and with the data at higher energies.
 status_note_it: >-
-  I dati LUNA del 2020 fissano il fattore S alle energie della nucleosintesi
-  primordiale a circa il 3 %; le questioni aperte riguardano l'andamento in
-  energia a energie più alte e l'accordo con la teoria ab initio.
+  Dalla misura di LUNA del 2020 il tasso alle energie della nucleosintesi
+  primordiale è noto a circa il 3 %. Restano piccole differenze con i calcoli
+  teorici e con i dati a energie più alte.
 methods: [direct-underground, direct-surface, theory]
 measurements:
   - year: 1997

@@ -58,8 +58,6 @@ status_note_it: >-
 methods: [direct-surface, direct-underground, anc]
 measurements:
   - year: 2004
-    facility: other
-    lab: "not recorded"
     method: anc
     energy: "²³Na(³He,d)²⁴Mg at E(³He) = 20 MeV, θlab = 5°–35°"
     note: >-

@@ -22,10 +22,11 @@ role: >-
   times the mass of the Sun, and during the hottest helium flashes of giant
   stars, the temperature rises enough for neon-22 to capture a helium nucleus
   and release a neutron. These neutrons make most of the elements between iron
-  and strontium, the so-called weak s-process. The reaction only starts at
-  energies where it competes with another reaction, ²²Ne(α,γ)²⁶Mg, which uses
-  up neon-22 without giving a neutron. The balance between the two decides how
-  many neutrons are released.
+  and strontium, the so-called weak s-process. Releasing a neutron costs
+  energy, so the reaction cannot happen at all below a threshold. Below it, and
+  in competition above it, neon-22 can capture helium through another
+  reaction, ²²Ne(α,γ)²⁶Mg, which uses it up without giving a neutron. The
+  balance between the two decides how many neutrons are released.
 role_it: >-
   Mentre bruciano idrogeno, le stelle trasformano in azoto-14 il carbonio,
   l'azoto e l'ossigeno con cui sono nate. Quando brucia l'elio, l'azoto diventa
@@ -34,9 +35,11 @@ role_it: >-
   delle stelle giganti, la temperatura sale abbastanza perché il neon-22 catturi
   un nucleo di elio e liberi un neutrone. Questi neutroni producono la maggior
   parte degli elementi tra il ferro e lo stronzio, il cosiddetto processo s
-  debole. La reazione si attiva solo a energie a cui compete con un'altra
-  reazione, ²²Ne(α,γ)²⁶Mg, che consuma neon-22 senza dare un neutrone.
-  L'equilibrio tra le due decide quanti neutroni vengono liberati.
+  debole. Liberare un neutrone costa energia, quindi sotto una certa soglia la
+  reazione non può avvenire. Sotto la soglia, e in competizione sopra di essa,
+  il neon-22 può catturare elio attraverso un'altra reazione, ²²Ne(α,γ)²⁶Mg,
+  che lo consuma senza dare un neutrone. L'equilibrio tra le due decide quanti
+  neutroni vengono liberati.
 details: >-
   The reaction opens just above the neutron threshold, and the rate at
   T₉ ≈ 0.2–0.3 is dominated by resonances in ²⁶Mg above it, in particular the
@@ -68,8 +71,6 @@ status_note_it: >-
 methods: [direct-surface, neutron-beams, anc, direct-underground]
 measurements:
   - year: 1993
-    facility: other
-    lab: "not recorded"
     method: direct-surface
     note: >-
       Direct measurement of both s-process neutron sources, ²²Ne(α,n)²⁵Mg and

@@ -46,17 +46,16 @@ details: >-
   2022).
 status: uncertain
 status_note: >-
-  The low-energy resonances are known from Trojan Horse data and upper limits;
-  no direct measurement in the (p,α) channel reaches the Gamow window.
+  The low-energy resonances that set the rate are known only from the indirect
+  Trojan Horse method and from upper limits; no direct measurement reaches the
+  energies of hydrogen burning in stars.
 status_note_it: >-
-  Le risonanze a bassa energia sono note dai dati col metodo del cavallo di
-  Troia e da limiti superiori; nessuna misura diretta nel canale (p,α) raggiunge
-  la finestra di Gamow.
+  Le risonanze a bassa energia che fissano il tasso sono note solo dal metodo
+  indiretto del cavallo di Troia e da limiti superiori; nessuna misura diretta
+  raggiunge le energie della combustione dell'idrogeno nelle stelle.
 methods: [thm, direct-surface, anc]
 measurements:
   - year: 2021
-    facility: other
-    lab: "not recorded"
     method: thm
     energy: "²H(²⁷Al,α²⁴Mg)n, E up to 1.5 MeV"
     note: >-
@@ -64,8 +63,6 @@ measurements:
       close to the 70–120 keV Gamow window of hydrogen burning.
     refs: [palmerini2021]
   - year: 2022
-    facility: other
-    lab: "not recorded"
     method: thm
     energy: "E = 84.3 keV resonance and its neighbours"
     note: >-

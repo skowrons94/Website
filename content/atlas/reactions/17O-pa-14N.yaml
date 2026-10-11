@@ -41,14 +41,16 @@ details: >-
   same resonance give a lower strength.
 status: improving
 status_note: >-
-  The 183 keV resonance is well measured; at red-giant and AGB temperatures
-  the rate rests on the 64.5 keV resonance, where the underground and
-  Trojan-Horse strengths differ by about a factor of 3.
+  At nova temperatures the rate is well measured. In red giants and AGB stars
+  it depends on a single very weak resonance at 64.5 keV, an energy at which
+  the reaction is strongly favoured; there the underground measurement and the
+  indirect Trojan Horse method differ by about a factor of 3.
 status_note_it: >-
-  La risonanza a 183 keV è ben misurata; alle temperature delle giganti rosse e
-  delle AGB il tasso si basa sulla risonanza a 64,5 keV, dove le forze misurate
-  sotto terra e con il metodo del cavallo di Troia differiscono di circa un
-  fattore 3.
+  Alle temperature delle novae il tasso è ben misurato. Nelle giganti rosse e
+  nelle stelle AGB dipende da una sola risonanza, molto debole, a 64,5 keV,
+  un'energia a cui la reazione è fortemente favorita; lì la misura sotterranea
+  e il metodo indiretto del cavallo di Troia differiscono di circa un fattore
+  3.
 methods: [direct-underground, direct-surface, inverse-kinematics, thm]
 measurements:
   - year: 2005

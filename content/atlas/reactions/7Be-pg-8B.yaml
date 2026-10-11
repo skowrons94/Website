@@ -47,13 +47,13 @@ details: >-
   recommended value on the direct measurements.
 status: improving
 status_note: >-
-  Modern direct measurements give S(0) between about 18.5 and 22 eV b; the
-  extrapolation to solar energies adds a model uncertainty of about the same
-  size as the experimental one.
+  The best experiments, all with radioactive ⁷Be targets, differ by up to
+  about 15 %, and extending their data to solar energies adds an uncertainty
+  of similar size.
 status_note_it: >-
-  Le misure dirette moderne danno S(0) tra circa 18,5 e 22 eV b;
-  l'estrapolazione alle energie solari aggiunge un'incertezza di modello circa
-  pari a quella sperimentale.
+  I migliori esperimenti, tutti con bersagli radioattivi di ⁷Be, differiscono
+  fino a circa il 15 %, e il prolungamento dei loro dati alle energie solari
+  aggiunge un'incertezza di entità simile.
 methods: [direct-surface, coulomb-dissociation]
 measurements:
   - year: 1983
