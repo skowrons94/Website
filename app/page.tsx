@@ -132,6 +132,28 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* -- atlas call-out ------------------------------------------------ */}
+      <section className="border-t border-border/70 py-16">
+        <div className="rounded-lg border border-border bg-card p-8 sm:p-10">
+          <h2 className="font-serif text-2xl font-semibold tracking-tight">
+            A reaction atlas
+          </h2>
+          <p className="mt-4 max-w-2xl text-pretty leading-relaxed text-muted-foreground">
+            The reactions of the pp chains, the CNO cycles, helium burning and
+            the Big Bang, drawn on the chart of nuclides. For each one: what it
+            does in a star, how well its rate is known, and who measured it,
+            where and how, with the references.
+          </p>
+          <Link
+            href="/atlas"
+            className="group mt-6 inline-flex items-center gap-2 text-sm font-medium text-link underline-offset-4 hover:underline"
+          >
+            Open the atlas
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </Link>
+        </div>
+      </section>
+
       {/* -- evaluations call-out ------------------------------------------ */}
       <section className="border-t border-border/70 py-16">
         <div className="rounded-lg border border-border bg-card p-8 sm:p-10">

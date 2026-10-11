@@ -106,6 +106,24 @@ export interface TalkEntry {
   role?: string
 }
 
+export interface SoftwareEntry {
+  id: string
+  name: string
+  /** One line under the name. */
+  tagline?: string
+  /** My part in it, e.g. "Maintainer and lead developer since 2025". */
+  role?: string
+  version?: string
+  license?: string
+  summary: string[]
+  /** What it is for, as a short list. */
+  uses?: string[]
+  links?: { label: string; href: string }[]
+  snippets?: { caption?: string; lang?: string; code: string }[]
+  list?: { title: string; items: { name: string; text: string }[] }
+  note?: string
+}
+
 /* -- YAML ------------------------------------------------------------------ */
 
 function readYaml<T>(name: string): T {
@@ -125,6 +143,9 @@ export const getPublications = () =>
     .publications.map((p, i) => ({ ...p, _i: i }))
     .sort((a, b) => b.year - a.year || a._i - b._i)
     .map(({ _i, ...p }) => p)
+
+export const getSoftware = () =>
+  readYaml<{ software: SoftwareEntry[] }>("software.yaml").software
 
 export const getExperience = () =>
   readYaml<{
@@ -289,7 +310,7 @@ function rehypeUnicodeScripts() {
   return (tree: any) => walk(tree)
 }
 
-async function renderMarkdown(markdown: string): Promise<string> {
+export async function renderMarkdown(markdown: string): Promise<string> {
   const file = await unified()
     .use(remarkParse)
     .use(remarkGfm)

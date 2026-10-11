@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/atlas-export.mjs",
     "dev": "next dev",
+    "prebuild": "node scripts/atlas-check.mjs && node scripts/atlas-export.mjs",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "check:atlas": "node scripts/atlas-check.mjs"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.3.11",

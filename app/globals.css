@@ -262,3 +262,40 @@ sub {
 .katex-display {
   max-width: 100%;
 }
+
+/*
+ * The atlas map (components/atlas/network-map.tsx).
+ *
+ * Cell fills are one and two steps off the chart surface: stable nuclides are
+ * filled, radioactive ones outlined, and the nuclides of the process on show a
+ * step darker. Greys only, so the three series hues stay the only colour.
+ */
+:root {
+  --atlas-cell: #ecebe7;
+  --atlas-cell-strong: #d9d8d2;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    --atlas-cell: #262623;
+    --atlas-cell-strong: #3a3a35;
+  }
+}
+
+:root[data-theme="dark"] {
+  --atlas-cell: #262623;
+  --atlas-cell-strong: #3a3a35;
+}
+
+/* Arrows are focusable buttons; the ring is a wide stroke under the line. */
+.atlas-arrow {
+  outline: none;
+}
+
+.atlas-arrow .atlas-focus {
+  stroke: transparent;
+}
+
+.atlas-arrow:focus-visible .atlas-focus {
+  stroke: hsl(var(--ring) / 0.6);
+}

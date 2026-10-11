@@ -8,11 +8,15 @@ import { Menu, X } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { cn } from "@/lib/utils"
 
+// `short` is what the desktop bar shows between md and lg, where seven full
+// labels and the name do not fit on one line; the menu always has the full one.
 const NAV = [
   { href: "/research", label: "Research" },
+  { href: "/atlas", label: "Atlas" },
   { href: "/notes", label: "Notes" },
   { href: "/evaluations", label: "Evaluations" },
-  { href: "/publications", label: "Publications" },
+  { href: "/software", label: "Software" },
+  { href: "/publications", label: "Publications", short: "Papers" },
   { href: "/cv", label: "CV" },
 ]
 
@@ -34,7 +38,7 @@ export function SiteHeader({ name }: { name: string }) {
           {name}
         </Link>
 
-        <nav className="ml-auto hidden items-center gap-6 md:flex">
+        <nav className="ml-auto hidden items-center gap-4 md:flex lg:gap-6">
           {NAV.map((item) => (
             <Link
               key={item.href}
@@ -46,7 +50,14 @@ export function SiteHeader({ name }: { name: string }) {
                   : "text-muted-foreground",
               )}
             >
-              {item.label}
+              {item.short ? (
+                <>
+                  <span className="lg:hidden">{item.short}</span>
+                  <span className="hidden lg:inline">{item.label}</span>
+                </>
+              ) : (
+                item.label
+              )}
             </Link>
           ))}
           <ThemeToggle />

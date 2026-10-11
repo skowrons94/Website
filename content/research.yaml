@@ -34,6 +34,9 @@ threads:
       - Working Group Leader for ¹⁹F + p at the Bellotti Ion Beam Facility
       - Calibration of the 3.5 MV Pelletron; Geant4 tuning for the BGO and HPGe setups
       - R-matrix evaluations for ¹²C + p, ¹³C + p, ²⁰Ne + p and ²²Ne + p
+    link:
+      label: The reactions, in the atlas
+      href: /atlas
 
   - id: azure2
     title: AZURE2 — the R-matrix code

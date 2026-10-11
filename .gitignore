@@ -28,3 +28,6 @@ server/evaluations/*/.azure_history
 # content/notes/ are the public form of this material. Delete this line to track
 # it in a private repository.
 _source/
+
+# Written by scripts/atlas-export.mjs before every build.
+public/atlas/data.json

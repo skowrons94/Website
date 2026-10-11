@@ -1,0 +1,122 @@
+# Software, rendered in order on /software. `summary` paragraphs are plain text
+# for any reader; `uses` is a short list of what the code is for; `snippets` are
+# shown as code blocks, with `lang` only as a label. Every field but `id`,
+# `name` and `summary` is optional.
+
+software:
+  - id: azure2
+    name: AZURE2
+    tagline: The R-matrix code for nuclear astrophysics
+    role: Maintainer and lead developer since 2025
+    summary:
+      - >-
+        AZURE2 fits a multi-level, multi-channel R-matrix model to the measured
+        cross sections, angular distributions and scattering data of every
+        reaction that shares a compound nucleus, and extrapolates the result to
+        the energies at which stars burn. From the fitted cross section it also
+        computes the reaction rate.
+      - >-
+        It is used for nuclear astrophysics, for nuclear-data evaluation at the
+        IAEA and for ion-beam analysis of materials. Since 2025 I maintain it and
+        lead its development: analytic gradients for fits and Markov chain Monte
+        Carlo, a reaction-rate integrator, polarization observables,
+        identical-particle scattering, the graphical interface and the
+        documentation.
+    uses:
+      - Fitting R-matrix parameters to cross-section data from several reaction channels at once
+      - Extrapolating an S-factor below the lowest measured energy
+      - Reaction rates and their uncertainties
+      - Separating a measured cross section into its resonant and non-resonant parts
+    links:
+      - { label: Website and documentation, href: "https://azure.nd.edu" }
+      - { label: Source on GitHub, href: "https://github.com/AZURE2DEV/AZURE2" }
+      - { label: Run it in the browser, href: /evaluations }
+    note: >-
+      The evaluations on this site run AZURE2 on a server, on published analyses;
+      the input files can be downloaded and run locally.
+
+  - id: lunasrim
+    name: LunaSRIM
+    tagline: SRIM-2013 in pure Python, identical to the original
+    version: 1.0.0
+    license: MIT
+    summary:
+      - >-
+        lunasrim is a re-implementation of SRIM-2013 in Python 3: TRIM, the Monte
+        Carlo transport of ions in matter, and the SR module, which tabulates
+        stopping powers, ranges and straggling. Both were reverse engineered from
+        TRIM.exe and SRModule.exe, and lunasrim reproduces them digit for digit,
+        with the same random numbers, the same arithmetic and the same output
+        files.
+      - >-
+        It needs no Windows, wine or docker, and has no required dependencies. A
+        web application runs it in the browser.
+    uses:
+      - Stopping-power and range tables for any ion in any element or compound
+      - Energy loss and energy straggling of a beam crossing a target layer
+      - TRIM calculations of implantation, damage and sputtering, with SRIM's own output files
+      - Implantation profiles, in the web application
+    links:
+      - { label: Web application, href: "https://skowrons94.github.io/LunaSRIM/" }
+      - { label: PyPI, href: "https://pypi.org/project/lunasrim/" }
+      - { label: Source on GitHub, href: "https://github.com/skowrons94/LunaSRIM" }
+      - { label: Documentation, href: "https://github.com/skowrons94/LunaSRIM/tree/main/docs" }
+    snippets:
+      - caption: Install (Python 3.9 or later)
+        lang: sh
+        code: pip install lunasrim
+      - caption: Stopping and range table of protons in silicon
+        lang: sh
+        code: lunasrim stopping H Si --emin 100keV --emax 1MeV
+      - caption: Energy loss and straggling of 400 keV protons in 1 µm of silicon
+        lang: python
+        code: |-
+          import lunasrim
+
+          r = lunasrim.energy_loss('H', 'Si', energy=400, thickness=1, unit='um')
+          print(r['energy_out'], r['sigma'], r['fwhm'])    # 330.46 keV, 4.48 keV, 10.56 keV
+
+  - id: luna-skills
+    name: LUNA Skills
+    tagline: Agent skills for experimental nuclear astrophysics
+    license: MIT
+    summary:
+      - >-
+        A set of skills for Claude Code and other agents that use the Agent
+        Skills format, covering low-energy reaction measurements and γ-ray
+        spectroscopy from the raw spectra to a published paper and a talk. Each
+        skill is a folder with its instructions and, where needed, scripts and
+        reference material; the analysis skills ship an offline demo that must
+        print PASS.
+    uses:
+      - Yields, peak shapes, detection efficiency and summing corrections, and target profiles
+      - Geant4 simulations of underground γ-ray set-ups and of AGATA
+      - Femtosecond lifetimes with the Doppler-shift attenuation method
+      - R-matrix calculations, fits and rates with AZURE2
+      - Writing papers and proposals, figures in the Physical Review C style, and talks
+    links:
+      - { label: Source on GitHub, href: "https://github.com/skowrons94/LUNA-Skills" }
+    snippets:
+      - caption: Install for Claude Code (links every skill into ~/.claude/skills)
+        lang: sh
+        code: |-
+          git clone https://github.com/skowrons94/LUNA-Skills.git && cd LUNA-Skills
+          for s in */; do [ -f "$s/SKILL.md" ] && ln -sfn "$PWD/${s%/}" ~/.claude/skills/"${s%/}"; done
+    list:
+      title: The skills
+      items:
+        - { name: yield-analysis, text: "Net areas, charge and live-time normalization and correlated uncertainties, to excitation-curve points" }
+        - { name: peak-shape-analysis, text: "Bin-integrated fits of asymmetric γ-ray peaks and target energy-loss shapes" }
+        - { name: efficiency-analysis, text: "Photopeak efficiency, IAEA decay data, cascade summing corrections" }
+        - { name: target-analysis, text: "Target profiles, stoichiometry and degradation from excitation curves; SRIM tables" }
+        - { name: underground-gamma-simulation, text: "Geant4 and ROOT simulations of γ-ray detection set-ups at underground accelerators" }
+        - { name: agata-simulation, text: "The AGATA Geant4 code: custom geometries, external cascades, pulse-shape analysis emulation, summing and tracking" }
+        - { name: delta-beta-dsam, text: "Femtosecond lifetimes with the Doppler-velocity (Δβ) DSAM method" }
+        - { name: azure2, text: "AZURE2 and pyazr R-matrix calculations, fits, decompositions, extrapolations and rates" }
+        - { name: nuclear-research-project, text: "Layout, provenance and reports of reproducible feasibility studies" }
+        - { name: clear-experimental-writing, text: "Experimental manuscripts, abstracts, captions and referee replies" }
+        - { name: methods-paper-style, text: "Formalism, methods and R-matrix sections in a plain technical register" }
+        - { name: proposal-style, text: "Proposals, grants, fellowships and beam-time requests" }
+        - { name: unslop, text: "Editing prose to remove formulaic wording" }
+        - { name: prc-figures, text: "Figures in the Physical Review C and ROOT style: spectra, S-factors, heatmaps" }
+        - { name: research-slides, text: "Talks in a consistent layout, Manim animations, rendering and a deck audit" }

@@ -12,6 +12,12 @@ CORS configuration anywhere and nothing to point at anything else.
 /notes/[slug]
 /evaluations         the AZURE2 evaluation UI
 /evaluations/[id]
+/atlas               the reaction atlas: introduction and network map
+/atlas/[id]          one reaction or decay
+/atlas/timeline
+/atlas/methods       methods and laboratories
+/atlas/data.json     the whole atlas, written at build time
+/software
 /publications
 /cv
 ```
@@ -199,6 +205,38 @@ the same shape, so a new row needs no code change:
 `content/profile.yaml` holds the name, tagline, landing-page paragraphs and
 external links. `content/research.yaml` holds the long-form research threads.
 
+### Adding to the atlas
+
+Everything under `/atlas` comes from `content/atlas/`; its own
+[README](content/atlas/README.md) gives the schema of every file. A new reaction
+is a new file in `content/atlas/reactions/`, named after its id
+(`14N-pg-15O.yaml`), plus its id in a network of `networks.yaml` if it should be
+on the map. A reaction listed in a network before its file exists is shown as
+"entry in preparation", built from the id.
+
+Q-values, Gamow windows and half-lives are computed from the AME2020 and
+NUBASE2020 tables in `nuclear-data/`; never type them into a reaction file.
+
+```sh
+npm run check:atlas      # validate content/atlas, list errors and warnings
+```
+
+`npm run build` runs the same check first (`prebuild`), and stops on an error:
+a field of the wrong kind, an id that points nowhere, a file whose name is not
+its id, a reference key defined twice with different DOIs, a reference without
+`checked`. Warnings (a reaction without a file yet, a facility with only a name)
+are printed and the build goes on. The prebuild then writes the whole database,
+derived numbers included, to `public/atlas/data.json` with
+`scripts/atlas-export.mjs`; that file is generated, not committed.
+
+`ATLAS_DIR=/some/copy npm run check:atlas` (or `… npx next build`) points the
+check and the site at another copy of the directory, for trying out changes.
+
+### Software
+
+`content/software.yaml`, one entry per program; the comment at the top of the
+file lists the fields.
+
 ### A new evaluation
 
 Drop a directory containing a `.azr` file into `server/evaluations/`, with its
@@ -270,6 +308,10 @@ components/          site shell, plus the evaluation UI
 components/sci.tsx   Unicode super/subscripts → <sup>/<sub>
 content/             ← everything you edit
 lib/content.ts       the loader: Markdown + YAML → typed objects, at build time
+lib/atlas-core.mjs   the atlas loader and its physics (Q, Gamow window, half-life)
+lib/atlas.ts         the same, typed, for the pages
+components/atlas/    the network map, timeline and badges
+scripts/             atlas check and JSON export, run before every build
 lib/api.ts           client for the AZURE2 API
 server/              the Flask API
 server/app/engine.py one AZURE2 model per process
