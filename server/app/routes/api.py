@@ -140,7 +140,10 @@ def close_session_beacon(session_id):
 
 @bp.route("/sessions", methods=["GET"])
 def list_sessions():
-    return jsonify(_manager().stats())
+    # Load only: a session id is all it takes to drive someone else's model,
+    # so ids are never listed publicly.
+    stats = _manager().stats()
+    return jsonify([{k: v for k, v in s.items() if k != "id"} for s in stats])
 
 
 # -- level scheme -------------------------------------------------------------

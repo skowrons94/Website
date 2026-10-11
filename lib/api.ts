@@ -216,7 +216,10 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   }
 
   if (!response.ok) {
-    let message = `Request failed (${response.status})`
+    let message =
+      response.status === 502 || response.status === 503 || response.status === 504
+        ? "The evaluation server is not available right now. Please try again in a minute."
+        : `Request failed (${response.status})`
     try {
       const body = await response.json()
       if (body?.error) message = body.error
