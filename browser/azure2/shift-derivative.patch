@@ -1,0 +1,88 @@
+diff -ru a/include/WhitFunc.h b/include/WhitFunc.h
+--- a/include/WhitFunc.h	2026-10-11 11:55:37.870053452 +0000
++++ b/include/WhitFunc.h	2026-10-11 11:55:37.911214172 +0000
+@@ -64,6 +64,27 @@
+     return exp(-z / 2.0) * pow(z, m + 0.50) * gsl_sf_hyperg_U(a, b, z);
+   };
+   /*!
++   * Dimensionless logarithmic derivative radius*W'(radius)/W(radius), evaluated
++   * analytically from dU/dz = -a U(a+1,b+1,z):
++   *   z W'(z)/W(z) = -z/2 + m + 1/2 - a z U(a+1,b+1,z)/U(a,b,z).
++   */
++  double LogDerivative(int l, double radius, double energy) const {
++    const double k = -sqrt(uconv / 2.) * fstruc * z1() * z2() * sqrt(redmass() / energy);
++    const double m = l + 0.5;
++    const double z = 2.0 * sqrt(2.0 * uconv) / hbarc * radius * sqrt(redmass() * energy);
++    const double a = m - k + 0.5;
++    const double b = 1.0 + 2.0 * m;
++    if (a != a || b != b || z != z || !(z > 0.0)) return 0.0;
++    gsl_sf_result_e10 u0, u1;
++    gsl_error_handler_t *oldHandler = gsl_set_error_handler_off();
++    int s0 = gsl_sf_hyperg_U_e10_e(a, b, z, &u0);
++    int s1 = gsl_sf_hyperg_U_e10_e(a + 1.0, b + 1.0, z, &u1);
++    gsl_set_error_handler(oldHandler);
++    if (s0 != GSL_SUCCESS || s1 != GSL_SUCCESS || u0.val == 0.0) return 0.0;
++    const double ratio = u1.val / u0.val * pow(10.0, (double)(u1.e10 - u0.e10));
++    return -z / 2.0 + m + 0.5 - a * z * ratio;
++  };
++  /*!
+    * Whittaker function in scaled form: returns the mantissa and sets
+    * log10Scale so that W = mantissa * 10^log10Scale.
+    *
+diff -ru a/src/CoulFunc.cpp b/src/CoulFunc.cpp
+--- a/src/CoulFunc.cpp	2026-10-11 11:55:37.830181167 +0000
++++ b/src/CoulFunc.cpp	2026-10-11 11:55:37.911591315 +0000
+@@ -261,12 +261,14 @@
+   dEShiftParams_.radius = radius;
+   dEShiftParams_.lValue = l;
+ 
+-  gsl_function F;
+-  F.function = &thisPEShift;
+-  F.params = &dEShiftParams_;
+-
+-  gsl_deriv_central(&F, energy, 1e-6, &result, &error);
+-
++  // The Coulomb functions are only accurate to ~1e-10 (cwfcomp precision), so
++  // gsl_deriv_central with an absolute 1e-6 MeV step turns that noise into
++  // O(1e-4) absolute (up to ~100% relative) errors in dS/dE.  Use a step
++  // relative to the energy and a 5-point stencil: error ~ eps/h + h^4.
++  const double h = 1e-2 * energy;
++  const double fp1 = PEShift(l, radius, energy + h), fm1 = PEShift(l, radius, energy - h);
++  const double fp2 = PEShift(l, radius, energy + 2. * h), fm2 = PEShift(l, radius, energy - 2. * h);
++  result = (8. * (fp1 - fm1) - (fp2 - fm2)) / (12. * h);
+   return result;
+ }
+ 
+diff -ru a/src/ShftFunc.cpp b/src/ShftFunc.cpp
+--- a/src/ShftFunc.cpp	2026-10-11 11:55:37.850165115 +0000
++++ b/src/ShftFunc.cpp	2026-10-11 11:55:37.911830441 +0000
+@@ -22,6 +22,10 @@
+   params_.bindingEnergy = fabs(energy - totalSepE());
+   params_.lValue = l;
+ 
++  // Analytic r W'/W (was a gsl_deriv_central in r, nested inside another
++  // numerical derivative in EnergyDerivative).
++  return params_.whitFunc->LogDerivative(l, radius(), params_.bindingEnergy);
++
+   double result;
+   double error;
+ 
+@@ -45,11 +49,11 @@
+ 
+   params_.lValue = l;
+ 
+-  gsl_function F;
+-  F.function = &thisShftFunc;
+-  F.params = this;
+-
+-  gsl_deriv_central(&F, energy, 1e-6, &result, &error);
+-
+-  return result;
++  // 5-point stencil with a step relative to the binding energy (2h never
++  // crosses the threshold).
++  const double h = 1e-2 * fabs(energy - totalSepE());
++  const double fp1 = (*this)(l, energy + h), fm1 = (*this)(l, energy - h);
++  const double fp2 = (*this)(l, energy + 2. * h), fm2 = (*this)(l, energy - 2. * h);
++  params_.lValue = l;
++  return (8. * (fp1 - fm1) - (fp2 - fm2)) / (12. * h);
+ }
