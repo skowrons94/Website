@@ -28,6 +28,9 @@ CORS configuration anywhere and nothing to point at anything else.
 Requires a host with Docker and Compose, and the domain's A/AAAA records
 pointing at it. Nothing else — the AZURE2 engine is compiled inside the image.
 
+The step-by-step list (sizing, `.env`, verifying, updating, fixing) is
+[DEPLOY.md](DEPLOY.md).
+
 ```sh
 git clone <this repo> && cd Website
 cp .env.example .env       # set SITE_DOMAIN and ACME_EMAIL
@@ -108,7 +111,7 @@ message. Put `BUILD_JOBS=2` in `.env` and it fits.
 
 | | |
 |---|---|
-| `AZURE2_MAX_SESSIONS` | how many evaluations may be open at once. Each is a worker process holding a model. Measured: the API idles at ~45 MB and a session costs 35–80 MB depending on the model (`7Be`, the largest, is the 80), so the default of 8 fits in well under 600 MB. This is what bounds memory. |
+| `AZURE2_MAX_SESSIONS` | how many evaluations may be open at once. Each is a worker process holding a model. Measured: the API idles at ~45 MB and an open session costs 35–100 MB depending on the model, so 8 open evaluations fit in well under 1 GB. The exception is the `7Be` **extrapolations**: computing them takes that worker to ~3.6 GB until the session closes. This is what bounds memory; see DEPLOY.md. |
 | `AZURE2_SESSION_TTL` | seconds before an abandoned session is reaped. |
 | `AZURE2_OMP_THREADS` | OpenMP threads per worker. Total load is sessions × threads, so `1` is the right default until the box is large. |
 | `AZURE2_THREADS` | Waitress' HTTP threads. Unrelated to the above — these serve requests, they do not run AZURE2. |
