@@ -34,9 +34,15 @@ export const metadata: Metadata = {
   description: profile.tagline,
   authors: [{ name: profile.name }],
   openGraph: {
-    title: profile.name,
+    title: `${profile.name} — ${profile.role}`,
     description: profile.tagline,
+    siteName: profile.name,
     type: "profile",
+  },
+  twitter: {
+    card: "summary",
+    title: `${profile.name} — ${profile.role}`,
+    description: profile.tagline,
   },
 }
 
@@ -55,9 +61,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           disableTransitionOnChange
         >
           <SessionProvider>
+            {/* First stop for a keyboard: past the eight header links to the page. */}
+            <a
+              href="#content"
+              className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-3 focus:z-50 focus:rounded-md focus:bg-background focus:px-4 focus:py-2.5 focus:text-sm focus:font-medium focus:shadow-md focus:ring-2 focus:ring-ring"
+            >
+              Skip to content
+            </a>
             <div className="flex min-h-screen flex-col">
               <SiteHeader name={profile.name} />
-              <main className="flex-1">{children}</main>
+              <main id="content" tabIndex={-1} className="flex-1 focus:outline-none">
+                {children}
+              </main>
               <SiteFooter profile={profile} />
             </div>
           </SessionProvider>

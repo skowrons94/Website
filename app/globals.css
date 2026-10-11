@@ -143,6 +143,12 @@
   :target {
     scroll-margin-top: 5rem;
   }
+  /* One visible keyboard focus everywhere, in the accent; components that
+     draw their own ring (focus-visible:outline-none + ring) override it. */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
 }
 
 @layer utilities {
