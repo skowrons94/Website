@@ -386,11 +386,12 @@ contributes. An analyzing power is a ratio, so it cannot be integrated that way.
 What the experiment returns is the ratio of the two integrated yields,
 
 $$
-\langle A_y \rangle = \frac{\int A_y(E)\,\sigma(E)\,dE}{\int \sigma(E)\,dE},
+\langle A_y \rangle = \frac{\int A_y(E)\,\sigma(E)\,\epsilon(E)^{-1}\,dE}{\int \sigma(E)\,\epsilon(E)^{-1}\,dE},
 $$
 
-weighted by the cross section, so the depths where the reaction is likely count for
-more. For charged-particle scattering this is severe. Rutherford scattering makes
+with $\epsilon(E)$ the stopping power: each energy is weighted by the cross
+section and by the target thickness the beam spends at that energy, so the depths
+where the reaction is likely count for more. For charged-particle scattering this is severe. Rutherford scattering makes
 the cross section blow up as the beam slows down, exactly where the analyzing power
 goes to zero — so the low-energy tail of the target dominates the weighting and
 drowns the asymmetry. A resonant $A_y$ of $0.8$ can average down to $10^{-6}$

@@ -148,7 +148,7 @@ takacs2024:
   year: 2024
   doi: 10.1103/PhysRevC.109.064627
   luna: true
-  checked: author's publication list (content/publications.yaml); journal reference also cited in a 2024 LUNA conference talk found by search, 2026-10-11
+  checked: author's publication list (content/publications.yaml); journal reference also cited in a 2024 LUNA conference talk found by search; title, PRC June 2024 and abstract (branchings of the 156.2 and 259.7 keV resonances, direct capture down to Ep = 188 keV) confirmed by the University of Edinburgh research portal record, 2026-10-11
 
 # --- 23Na + p --------------------------------------------------------------
 
@@ -273,3 +273,11 @@ ananna2024:
   doi: 10.3390/universe10050228
   luna: true
   checked: author's publication list (content/publications.yaml); a search hit for the same review describes the planned LUNA campaign on the 133 keV ²³Na(p,α)²⁰Ne resonance, 2026-10-11
+
+kankainen2021:
+  authors: A. Kankainen et al.
+  title: Decay of the key 92-keV resonance in the ²⁵Mg(p,γ) reaction to the ground and isomeric states of the cosmic γ-ray emitter ²⁶Al
+  journal: Phys. Lett. B 813, 136033 (2021)
+  year: 2021
+  doi: 10.1016/j.physletb.2020.136033
+  checked: University of Jyväskylä JYX repository record and DOAJ listing (Phys. Lett. B, February 2021; abstract with f₀ = 0.52(2)(6)), IAEA EXFOR entry C2632 (ATLAS, Argonne) and the DOI as given in a second search, 2026-10-11

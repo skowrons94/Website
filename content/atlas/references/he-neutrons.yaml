@@ -357,3 +357,11 @@ rapagnani2022:
   year: 2022
   arxiv: "2510.06268"
   checked: arXiv 2510.06268 abstract page and PDF (journal reference EPJ Web Conf. 260, 11031); DOI not shown, so omitted, 2026-10-11
+
+rana2024:
+  authors: T. K. Rana et al.
+  title: New measurement of the Hoyle state radiative transition width
+  journal: Phys. Lett. B (2024)
+  year: 2024
+  arxiv: "2311.08781"
+  checked: arXiv 2311.08781 (abstract, Γrad/Γ = 4.01(30) × 10⁻⁴) and DOAJ listing (Phys. Lett. B, December 2024), by web search; volume, article number and DOI not seen, 2026-10-11

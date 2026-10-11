@@ -85,6 +85,16 @@ publications:
 
   - kind: article
     highlight: true
+    authors: J. Skowronski, D. Piatti, A. Caciolli, S. Turkat, et al.
+    title: >-
+      Improved S factor of the ¹³C(p,γ)¹⁴N reaction at Eₚ = 330–740 keV and
+      parameters of resonances at 448 keV and 551 keV
+    journal: Phys. Rev. C 111, 064611
+    doi: 10.1103/h1yt-5myk
+    year: 2025
+
+  - kind: article
+    highlight: true
     authors: J. Skowronski, et al.
     title: "A comparative analysis of R-matrix fitting: ¹²C(p,γ)¹³N as test case"
     journal: Phys. Rev. C 111, 035802

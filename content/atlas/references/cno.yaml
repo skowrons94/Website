@@ -89,7 +89,7 @@ skowronski2025:
   year: 2025
   doi: 10.1103/h1yt-5myk
   arxiv: "2512.17288"
-  checked: Milan and Padova IRIS records (journal, DOI), HZDR conference slides and arXiv 2512.17288, by web search, 2026-10-11
+  checked: Milan and Padova IRIS records (journal, DOI), HZDR conference slides and arXiv 2512.17288, by web search; rechecked by search (Milan expertise record, PRC 111(6), 064611, 11 June 2025; S_tot(0) = 6.4(4) keV b in the abstract), 2026-10-11
 
 # Second round (2026-10-11): ¹⁴N(p,γ) extension and the NO, ¹⁸O and ¹⁹F reactions.
 # "DOI from the APS volume and article number" means the DOI was not shown by a
@@ -109,8 +109,10 @@ imbriani2005:
   title: S-factor of ¹⁴N(p,γ)¹⁵O at astrophysical energies
   journal: Eur. Phys. J. A 25, 455 (2005)
   year: 2005
+  doi: 10.1140/epja/i2005-10138-7
+  arxiv: nucl-ex/0509005
   luna: true
-  checked: abstract (title, journal, energy range 119–367 keV) and Milan AIR record, by web search; DOI not seen, 2026-10-11
+  checked: abstract (title, journal, energy range 119–367 keV) and Milan AIR record, by web search; DOI and arXiv id (journal reference EPJA 25, 455–466) confirmed by a second web search (EPJA article page, arXiv nucl-ex/0509005), 2026-10-11
 
 bertone2001:
   authors: P. F. Bertone, A. E. Champagne, D. C. Powell, C. Iliadis, S. E. Hale and V. Y. Hansper
@@ -173,9 +175,10 @@ bemmerer2009:
   title: Direct measurement of the ¹⁵N(p,γ)¹⁶O total cross section at novae energies
   journal: J. Phys. G 36, 045202 (2009)
   year: 2009
+  doi: 10.1088/0954-3899/36/4/045202
   arxiv: "0902.0783"
   luna: true
-  checked: arXiv 0902.0783 and journal reference cited in later papers, by web search; DOI not seen, 2026-10-11
+  checked: arXiv 0902.0783 and journal reference cited in later papers, by web search; DOI confirmed by a second web search (arXiv journal-ref, HZDR Publ-12340, Milan AIR), 2026-10-11
 
 mukhamedzhanov2008:
   authors: A. M. Mukhamedzhanov et al.
@@ -384,8 +387,9 @@ bruno2019:
   title: Improved astrophysical rate for the ¹⁸O(p,α)¹⁵N reaction by underground measurements
   journal: Phys. Lett. B 790, 237 (2019)
   year: 2019
+  doi: 10.1016/j.physletb.2019.01.017
   luna: true
-  checked: DOAJ record (Phys. Lett. B, March 2019) and LUNA reference list (PLB 790, 237–242), by web search; DOI not seen, 2026-10-11
+  checked: DOAJ record (Phys. Lett. B, March 2019) and LUNA reference list (PLB 790, 237–242), by web search; DOI from the SCOAP3 open-access copy and HZDR Publ-28791, found by a second search, 2026-10-11
 
 couture2008:
   authors: A. Couture, M. Wiescher et al.
@@ -424,3 +428,50 @@ indelicato2017:
   journal: Astrophys. J. 845, 19 (2017)
   year: 2017
   checked: Padova repository copy (Indelicato_2017_ApJ_845_19.pdf) and Sassari IRIS record, by web search; DOI not seen, 2026-10-11
+
+# Third round (2026-10-11, content review): ¹⁴N(p,γ)¹⁵O lifetimes, activation,
+# and the new LUNA campaign.
+
+schurmann2008:
+  authors: D. Schürmann et al.
+  title: Lifetime measurement of the 6792 keV state in ¹⁵O, important for the astrophysical S factor extrapolation in ¹⁴N(p,γ)¹⁵O
+  journal: Phys. Rev. C 77, 055803 (2008)
+  year: 2008
+  doi: 10.1103/PhysRevC.77.055803
+  arxiv: "0804.1934"
+  checked: arXiv 0804.1934 (abstract, τ < 0.77 fs) and JINA Virtual Journal listing (PRC 77, issue 5, 055803), by web search; DOI from the APS volume and article number, 2026-10-11
+
+frentz2021:
+  authors: B. Frentz et al.
+  title: Lifetime measurements of excited states in ¹⁵O
+  journal: Phys. Rev. C 103, 045802 (2021)
+  year: 2021
+  doi: 10.1103/PhysRevC.103.045802
+  checked: APS accepted-manuscript page for the DOI and NSF PAR copy (published 7 April 2021; τ = 0.6 ± 0.4 fs for the 6792 keV state), by web search, 2026-10-11
+
+gyurky2022:
+  authors: Gy. Gyürky, Z. Halász, G. G. Kiss, T. Szücs, Zs. Fülöp
+  title: Activation cross section measurement of the ¹⁴N(p,γ)¹⁵O astrophysical key reaction
+  journal: Phys. Rev. C 105, L022801 (2022)
+  year: 2022
+  doi: 10.1103/PhysRevC.105.L022801
+  arxiv: "2201.10176"
+  checked: arXiv 2201.10176 and Atomki Tandetron news page (journal reference, DOI, 550–1400 keV, about 10 % uncertainty), by web search, 2026-10-11
+
+gosta2025:
+  authors: G. Gosta et al. (LUNA Collaboration)
+  title: "The SOCIAL project: measurement of the ¹⁴N(p,γ)¹⁵O cross section"
+  journal: Eur. Phys. J. A 61, 110 (2025)
+  year: 2025
+  doi: 10.1140/epja/s10050-025-01561-1
+  luna: true
+  checked: ADS record 2025EPJA...61..110G, EPJA abstract page and Milan expertise record (May 2025), by web search; full author list not seen, 2026-10-11
+
+compagnucci2025:
+  authors: A. Compagnucci et al. (LUNA Collaboration)
+  title: "Towards a comprehensive study of the ¹⁴N(p,γ)¹⁵O astrophysical key reaction: description of the experimental technique including novel target preparation"
+  journal: Eur. Phys. J. A 61, 191 (2025)
+  year: 2025
+  doi: 10.1140/epja/s10050-025-01658-7
+  luna: true
+  checked: author's publication list (content/publications.yaml); a 2025 conference abstract by A. Compagnucci on the same campaign found by search, 2026-10-11

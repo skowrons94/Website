@@ -41,7 +41,11 @@ details: >-
   to the solar energies than any surface experiment, and gave a total S(0)
   near 1.7 keV b. Surface measurements at HZDR and Notre Dame since 2018 cover
   0.3–1.3 MeV with high precision and anchor the R-matrix fit above the
-  underground data.
+  underground data, and an activation measurement at Atomki gives the total
+  cross section at 0.55–1.4 MeV independently of γ-ray spectroscopy. A new
+  LUNA campaign with solid nitrogen targets and a 4π BGO detector aims at the
+  total and partial cross sections at about 100–370 keV, for a rate with 5 %
+  precision (Gosta et al. 2025; Compagnucci et al. 2025).
 status: improving
 status_note: >-
   Direct data reach 70 keV; the remaining uncertainty comes from the split into
@@ -107,6 +111,14 @@ measurements:
       Windowless nitrogen gas target and 4π BGO summing detector; the cross
       section was measured down to 70 keV, where it is 0.24 pb.
     refs: [lemut2006]
+  - year: 2008
+    method: direct-surface
+    energy: "278 keV resonance (proton energy; Doppler-shift attenuation)"
+    note: >-
+      New Doppler-shift attenuation measurement of the 6792 keV state at the
+      same resonance: the finite lifetime reported in 2001 is not confirmed,
+      and τ < 0.77 fs.
+    refs: [schurmann2008]
   - year: 2011
     facility: luna-400
     method: direct-underground
@@ -125,6 +137,23 @@ measurements:
       strongest transition, and at ten energies between 0.479 and 1.202 MeV for
       the second strongest; the total rate uncertainty remained about 8 %.
     refs: [wagner2018]
+  - year: 2021
+    facility: notre-dame
+    method: direct-surface
+    energy: "Doppler-shift attenuation"
+    note: >-
+      Lifetimes of several excited states of ¹⁵O; τ = 0.6 ± 0.4 fs for the
+      6792 keV state, below the 2001 value and consistent with the 2008 limit.
+    refs: [frentz2021]
+  - year: 2022
+    facility: atomki
+    method: activation
+    energy: "550–1400 keV"
+    note: >-
+      Total cross section from the ¹⁵O activity, counted through the
+      annihilation radiation of its β⁺ decay, with about 10 % uncertainty and
+      no dependence on γ-ray angular distributions or summing.
+    refs: [gyurky2022]
   - year: 2022
     facility: notre-dame
     method: direct-surface
@@ -135,6 +164,15 @@ measurements:
       transitions; differences between the data and the R-matrix fits
       remain.
     refs: [frentz2022]
+  - year: 2025
+    facility: luna-400
+    method: direct-underground
+    energy: "about 100–370 keV (campaign under way)"
+    note: >-
+      Description of a new LUNA campaign with solid nitrogen targets and a 4π
+      BGO detector, which aims at total and partial cross sections for a rate
+      with 5 % precision; no cross sections published yet.
+    refs: [gosta2025, compagnucci2025]
 evaluations: [adelberger2011, acharya2025]
 open_questions:
   - The ground-state transition, whose contribution at low energy depends on interference in the R-matrix fit.

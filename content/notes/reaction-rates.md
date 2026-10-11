@@ -63,8 +63,8 @@ $$
 The width of the peak is $\Delta \approx 4\sqrt{E_0 kT/3}$.
 
 The numbers are the point. For $^{12}\mathrm{C}(p,\gamma)^{13}\mathrm{N}$ in the
-CNO cycle of the Sun, $T \approx 15$ MK, and $E_0 \approx 27$ keV with
-$\Delta \approx 15$ keV. The Coulomb barrier for that pair is around 2 MeV. The
+CNO cycle of the Sun, $T \approx 15$ MK, and $E_0 \approx 24$ keV with
+$\Delta \approx 13$ keV. The Coulomb barrier for that pair is around 2 MeV. The
 reaction proceeds almost entirely by tunnelling, in an energy window nearly two
 orders of magnitude below the barrier, where the cross section is of order
 picobarns or less.

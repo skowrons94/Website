@@ -42,13 +42,13 @@ research:
     bullets:
       - Working Group Leader for the ¹⁹F + p measurement; analysis of the ¹²C + p and ¹³C + p experiments
       - DAQ Coordinator — design, deployment and operation of the data acquisition and slow-control systems across all LUNA campaigns and the new Bellotti IBF facility
-      - Calibration of the 3.5 MV Pelletron accelerator of the Bellotti Ion Beam Facility
+      - Calibration of the 3.5 MV Singletron accelerator of the Bellotti Ion Beam Facility
       - Fine-tuning of the Geant4 simulation for BGO and HPGe setups
       - R-matrix evaluation for ¹²C + p, ¹³C + p, ²⁰Ne + p and ²²Ne + p reactions
     bullets_it:
       - Coordinatore del gruppo di lavoro per la misura ¹⁹F + p; analisi degli esperimenti ¹²C + p e ¹³C + p
       - Coordinatore DAQ — progettazione, installazione e gestione dei sistemi di acquisizione dati e di slow control in tutte le campagne di LUNA e nel nuovo Bellotti IBF
-      - Calibrazione dell'acceleratore Pelletron da 3,5 MV del Bellotti Ion Beam Facility
+      - Calibrazione dell'acceleratore Singletron da 3,5 MV del Bellotti Ion Beam Facility
       - Messa a punto della simulazione Geant4 per gli apparati BGO e HPGe
       - Valutazione R-matrix delle reazioni ¹²C + p, ¹³C + p, ²⁰Ne + p e ²²Ne + p
 
@@ -70,8 +70,8 @@ research:
   - period: Jun 2024 — present
     period_it: giu 2024 — oggi
     title: CRYRING
-    detail: Gesellschaft für Schwerionenforschung, Darmstadt, Germany
-    detail_it: Gesellschaft für Schwerionenforschung, Darmstadt, Germania
+    detail: GSI Helmholtzzentrum für Schwerionenforschung, Darmstadt, Germany
+    detail_it: GSI Helmholtzzentrum für Schwerionenforschung, Darmstadt, Germania
     bullets:
       - Study of the screening effect through the ¹⁵N + p reaction in inverse kinematics
     bullets_it:
@@ -154,15 +154,14 @@ awards:
     title: IAEA INDEN-LE Committee
     title_it: Comitato INDEN-LE della IAEA
     detail: >-
-      International Atomic Energy Agency, Vienna — invited membership in the IAEA
-      committee of world-leading R-matrix experts, working on the evaluation and
-      extrapolation of light-element nuclear cross sections for research and
-      industrial applications
+      International Atomic Energy Agency, Vienna — invited member of the IAEA
+      committee of R-matrix experts that evaluates and extrapolates
+      light-element nuclear cross sections for research and industrial
+      applications
     detail_it: >-
       Agenzia Internazionale per l'Energia Atomica, Vienna — membro su invito
-      del comitato IAEA di esperti R-matrix di primo piano a livello mondiale,
-      che si occupa della valutazione e dell'estrapolazione delle sezioni d'urto
-      nucleari degli elementi leggeri per la ricerca e le applicazioni
+      del comitato IAEA di esperti R-matrix che valuta ed estrapola le sezioni
+      d'urto nucleari degli elementi leggeri per la ricerca e le applicazioni
       industriali
 
 teaching:
@@ -198,7 +197,7 @@ supervision:
 outreach:
   - period: 2024
     title: Stelle sulla Terra
-    detail: Nuclear astrophysics for impaired children, UniPD
+    detail: Nuclear astrophysics for children with disabilities, UniPD
     detail_it: Astrofisica nucleare per bambini con disabilità, UniPD
   - period: 2023
     title: Project Asimov · Project RadioLab · Science4All

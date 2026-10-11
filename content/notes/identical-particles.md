@@ -82,8 +82,10 @@ e^{2i\sigma_{L}}(S_{L}-1)\,P_{L}(\cos\theta).
 $$
 
 The bracket $\bigl[1+\varepsilon(-1)^{L}\bigr]$ is **2 for allowed $L$ and 0 for
-forbidden $L$**. For two $0^+$ bosons only **even $L$** survives; for two identical
-fermions coupled to $S=0$ only odd $L$ does.
+forbidden $L$**. For two $0^+$ bosons only **even $L$** survives. For two identical
+spin-½ fermions the spin state carries part of the sign: the spatial amplitude is
+symmetric in the singlet ($S=0$), where only even $L$ survives, and antisymmetric
+in the triplet ($S=1$), where only odd $L$ does.
 
 This is a strong statement, and it is worth being clear about what it means for a
 level scheme. In $^{12}\mathrm{C} + {}^{12}\mathrm{C}$ elastic scattering, a

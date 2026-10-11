@@ -132,10 +132,13 @@ measurements:
   - year: 2024
     facility: luna-400
     method: direct-underground
-    energy: "low energy"
+    energy: "direct capture down to Eₚ = 188 keV"
     note: >-
-      Further LUNA analysis of the direct capture cross section and of the
-      low-energy resonances.
+      Full account of the high-statistics LUNA data: new γ-decay branchings for
+      the resonances at Eₚ = 156.2 and 259.7 keV, and partial cross sections for
+      direct capture to several states of ²³Na down to Eₚ = 188 keV, the lowest
+      energy so far. A new R-matrix fit gives a revised rate; tensions remain on
+      some branching ratios and on the capture to excited states.
     refs: [takacs2024]
 evaluations: [angulo1999]
 open_questions:

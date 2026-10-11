@@ -79,9 +79,10 @@ measurements:
     method: direct-underground
     energy: "E_cm ≈ 368 keV resonance (366 keV in the report) and direct capture below 400 keV"
     note: >-
-      Conference report of the LUNA campaign with a windowless gas target and
-      two HPGe detectors, with preliminary results on the resonance and on
-      low-energy direct capture; no journal publication yet.
+      Conference report on the LUNA campaign with a windowless gas target and
+      two HPGe detectors, the campaign published in Masha et al. (2023); it
+      describes the experiment and gives preliminary results on the resonance
+      and on direct capture at the lowest energies.
     refs: [caciolli2025]
 evaluations: [angulo1999]
 open_questions:

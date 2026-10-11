@@ -56,7 +56,11 @@ details: >-
   ground state. The JUNA collaboration chose the 92 keV resonance for the first
   experiment at the China Jinping Underground Laboratory and reported a precise
   measurement of its strength (Su et al. 2022). The γ-ray decay schemes of the
-  low-energy resonances were first studied by Iliadis et al. (1990).
+  low-energy resonances were first studied by Iliadis et al. (1990). For the
+  92 keV resonance, Kankainen et al. (2021) identified four γ-ray transitions
+  and obtained a ground-state fraction f₀ = 0.52(2)(6), the most precise value
+  so far and at the low end of those adopted before, which lowers the
+  production of ²⁶Al in its ground state.
 status: improving
 status_note: >-
   The key low-energy resonances were measured directly underground, at LUNA
@@ -71,8 +75,6 @@ status_note_it: >-
 methods: [direct-underground, direct-surface]
 measurements:
   - year: 1990
-    facility: other
-    lab: "not recorded"
     method: direct-surface
     energy: "low-energy (p,γ) resonances"
     note: >-

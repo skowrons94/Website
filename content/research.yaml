@@ -60,12 +60,12 @@ threads:
     highlights:
       - ¹²C(p,γ)¹³N and ¹³C(p,γ)¹⁴N cross sections and their impact on the ¹²C/¹³C ratio
       - Working Group Leader for ¹⁹F + p at the Bellotti Ion Beam Facility
-      - Calibration of the 3.5 MV Pelletron; Geant4 tuning for the BGO and HPGe setups
+      - Calibration of the 3.5 MV Singletron; Geant4 tuning for the BGO and HPGe setups
       - R-matrix evaluations for ¹²C + p, ¹³C + p, ²⁰Ne + p and ²²Ne + p
     highlights_it:
       - Sezioni d'urto di ¹²C(p,γ)¹³N e ¹³C(p,γ)¹⁴N e loro impatto sul rapporto ¹²C/¹³C
       - Coordinatore del gruppo di lavoro ¹⁹F + p al Bellotti Ion Beam Facility
-      - Calibrazione del Pelletron da 3,5 MV; messa a punto di Geant4 per i rivelatori BGO e HPGe
+      - Calibrazione del Singletron da 3,5 MV; messa a punto di Geant4 per i rivelatori BGO e HPGe
       - Valutazioni R-matrix per ¹²C + p, ¹³C + p, ²⁰Ne + p e ²²Ne + p
     link:
       label: The reactions, in the atlas
@@ -145,11 +145,13 @@ threads:
       di femtosecondo, e che cosa questo ci dice sul Sole.
     body:
       - >-
-        The 6.79 MeV state in ¹⁵O sits just above the proton threshold and
-        dominates the low-energy behaviour of ¹⁴N(p,γ)¹⁵O — the slowest step of
-        the CNO cycle, and therefore the reaction that sets the cycle's rate and
-        the CNO neutrino flux. Its lifetime enters that extrapolation directly,
-        and it is short enough that only a γ-ray tracking array can reach it.
+        The 6.79 MeV state in ¹⁵O sits about 0.5 MeV below the proton threshold
+        and dominates the low-energy behaviour of ¹⁴N(p,γ)¹⁵O — the slowest step
+        of the CNO cycle, and therefore the reaction that sets the cycle's rate
+        and the CNO neutrino flux. Its lifetime enters that extrapolation
+        directly. It is below a femtosecond, and the published values disagree;
+        the position resolution of a γ-ray tracking array is what makes a
+        Doppler-shift measurement of it precise.
       - >-
         I am spokesperson of the measurement performed with AGATA at Legnaro, and
         led the full analysis pipeline: Doppler correction, kinematic
@@ -158,12 +160,14 @@ threads:
         review at Nature Physics.
     body_it:
       - >-
-        Lo stato a 6,79 MeV dell'¹⁵O si trova appena sopra la soglia protonica e
-        domina il comportamento a bassa energia di ¹⁴N(p,γ)¹⁵O, il passo più
-        lento del ciclo CNO e quindi la reazione che ne fissa il ritmo e il flusso
-        di neutrini CNO. La sua vita media entra direttamente in quella
-        estrapolazione, ed è così breve che solo un rivelatore a tracciamento di
-        raggi γ può misurarla.
+        Lo stato a 6,79 MeV dell'¹⁵O si trova circa 0,5 MeV sotto la soglia
+        protonica e domina il comportamento a bassa energia di ¹⁴N(p,γ)¹⁵O, il
+        passo più lento del ciclo CNO e quindi la reazione che ne fissa il ritmo
+        e il flusso di neutrini CNO. La sua vita media entra direttamente in
+        quella estrapolazione. È inferiore al femtosecondo, e i valori pubblicati
+        non concordano; la risoluzione in posizione di un rivelatore a
+        tracciamento di raggi γ è ciò che rende precisa una sua misura per
+        effetto Doppler.
       - >-
         Sono spokesperson della misura eseguita con AGATA a Legnaro e ho guidato
         l'intera catena di analisi: correzione Doppler, ricostruzione cinematica,
