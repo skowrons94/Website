@@ -32,7 +32,7 @@ software:
       - { label: Source on GitHub, href: "https://github.com/AZURE2DEV/AZURE2" }
       - { label: Run it in the browser, href: /evaluations }
     note: >-
-      The evaluations on this site run AZURE2 on a server, on published analyses;
+      The evaluations on this site run AZURE2 itself on published analyses;
       the input files can be downloaded and run locally.
 
   - id: lunasrim

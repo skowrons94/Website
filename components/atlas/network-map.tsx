@@ -490,7 +490,7 @@ export function NetworkMap({ data }: { data: MapData }) {
               aria-pressed={f.id === family?.id}
               onClick={() => chooseFamily(f.id)}
               className={cn(
-                "rounded-full border px-2.5 py-1 text-[0.8125rem] transition-colors sm:px-3 sm:py-1.5 sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "min-h-10 rounded-full border px-2.5 py-1 text-[0.8125rem] sm:min-h-0 transition-colors sm:px-3 sm:py-1.5 sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 f.id === family?.id
                   ? "border-foreground bg-foreground text-background"
                   : "border-border text-muted-foreground hover:border-foreground/40 hover:text-foreground",
@@ -521,7 +521,7 @@ export function NetworkMap({ data }: { data: MapData }) {
                       })
                     }
                     className={cn(
-                      "inline-flex items-center gap-2 rounded-md border px-2.5 py-1 text-[0.8125rem] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                      "inline-flex min-h-10 items-center gap-2 rounded-md border px-2.5 py-1 text-[0.8125rem] sm:min-h-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                       on
                         ? "border-border bg-card text-foreground"
                         : "border-dashed border-border text-muted-foreground line-through decoration-muted-foreground/60",
@@ -549,7 +549,7 @@ export function NetworkMap({ data }: { data: MapData }) {
               setWhole((v) => !v)
             }}
             aria-pressed={whole}
-            className="ml-auto inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[0.8125rem] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="ml-auto inline-flex min-h-10 items-center gap-1.5 rounded-md px-2 py-1 sm:min-h-0 text-[0.8125rem] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             {whole ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
             {whole ? "Zoom to process" : "Whole chart"}

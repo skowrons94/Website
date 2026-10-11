@@ -216,7 +216,7 @@ function Chip({
       aria-pressed={on}
       onClick={onClick}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        "inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3 py-1 text-sm sm:min-h-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         on
           ? "border-foreground bg-foreground text-background"
           : "border-border text-muted-foreground hover:border-foreground/40 hover:text-foreground",

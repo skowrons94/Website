@@ -62,7 +62,7 @@ threads:
         identical-particle scattering. Alongside that, the GUI, the documentation,
         and support and training for the user community.
       - >-
-        The evaluations section of this site runs that same code, on a server, on
+        The evaluations section of this site runs that same code on
         real published analyses.
     link:
       label: Open the evaluations

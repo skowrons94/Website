@@ -129,8 +129,7 @@ export default function HomePage() {
             R-matrix evaluations, live
           </h2>
           <p className="mt-4 max-w-2xl text-pretty leading-relaxed text-muted-foreground">
-            Published evaluations, running on a server against the real AZURE2
-            code. Open a compound nucleus, look at its level scheme and the data
+            Published evaluations, running the real AZURE2 code. Open a compound nucleus, look at its level scheme and the data
             it was fitted to, move a level energy or a reduced width, and watch
             the cross section and the χ² respond. Nothing is installed, and the
             input files can be downloaded and run locally.

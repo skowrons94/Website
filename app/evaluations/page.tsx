@@ -33,7 +33,7 @@ function Intro() {
         Each of these is a published multi-level, multi-channel fit. Open one
         to see its level scheme and the data it was fitted to, then move a
         level energy or a reduced width and watch the cross section and the χ²
-        respond — the calculation is the real code, run on the server. Every
+        respond — the calculation is the real AZURE2 code, not an approximation. Every
         evaluation can also be downloaded as an <code className="font-mono text-[0.85em]">.azr</code>{" "}
         project and run locally.
       </p>
