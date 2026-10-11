@@ -31,7 +31,7 @@ const GROUPS: { title: string; links: { href: string; label: string }[] }[] = [
 
 // Roomy tap targets on a phone, a compact list once there is a pointer.
 const LINK =
-  "inline-block py-2 text-muted-foreground transition-colors hover:text-foreground sm:py-1"
+  "inline-block py-2.5 text-muted-foreground transition-colors hover:text-foreground sm:py-1"
 
 export function SiteFooter({ profile }: { profile: Profile }) {
   return (
@@ -46,7 +46,7 @@ export function SiteFooter({ profile }: { profile: Profile }) {
           <p>
             <a
               href={`mailto:${profile.email}`}
-              className="inline-block break-all py-2 text-link underline-offset-2 hover:underline sm:py-0"
+              className="inline-block break-all py-2.5 text-link underline-offset-2 hover:underline sm:py-0"
             >
               {profile.email}
             </a>
