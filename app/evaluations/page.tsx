@@ -20,6 +20,27 @@ import {
   type Evaluation,
 } from "@/lib/api"
 
+function Intro() {
+  return (
+    <div className="border-b border-border/70 pb-8">
+      <p className="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
+        Running on AZURE2
+      </p>
+      <h1 className="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
+        R-matrix evaluations
+      </h1>
+      <p className="mt-4 max-w-2xl text-pretty leading-relaxed text-muted-foreground">
+        Each of these is a published multi-level, multi-channel fit. Open one
+        to see its level scheme and the data it was fitted to, then move a
+        level energy or a reduced width and watch the cross section and the χ²
+        respond — the calculation is the real code, run on the server. Every
+        evaluation can also be downloaded as an <code className="font-mono text-[0.85em]">.azr</code>{" "}
+        project and run locally.
+      </p>
+    </div>
+  )
+}
+
 export default function EvaluationsPage() {
   const [evaluations, setEvaluations] = useState<Evaluation[]>([])
   const [loading, setLoading] = useState(true)
@@ -43,41 +64,57 @@ export default function EvaluationsPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[24rem] items-center justify-center gap-2 text-muted-foreground">
-        <Loader2 className="h-5 w-5 animate-spin" />
-        Loading evaluations…
+      <div className="space-y-8">
+        <Intro />
+        <div className="flex min-h-[12rem] items-center justify-center gap-2 text-muted-foreground">
+          <Loader2 className="h-5 w-5 animate-spin" />
+          Loading evaluations…
+        </div>
       </div>
     )
   }
 
   if (error) {
+    // The header and the way onwards stay up when the calculation server is
+    // down, so a visitor is not left with a bare error and nothing to do.
     return (
-      <div className="mx-auto max-w-md py-16 text-center">
-        <AlertCircle className="mx-auto mb-4 h-10 w-10 text-destructive" />
-        <p className="mb-4 text-sm text-muted-foreground">{error}</p>
-        <Button onClick={load}>Retry</Button>
+      <div className="space-y-8">
+        <Intro />
+        <div className="rounded-lg border border-border bg-card p-6 sm:p-8">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" aria-hidden />
+            <div className="min-w-0">
+              <h2 className="font-serif text-lg font-semibold tracking-tight">
+                The evaluation server is not available right now
+              </h2>
+              <p className="mt-2 max-w-2xl text-pretty leading-relaxed text-muted-foreground">
+                The list of evaluations comes from the server that runs AZURE2, and it did not answer. Try
+                again in a moment; in the meantime the reaction atlas and the notes explain the physics
+                behind these fits.
+              </p>
+              <p className="mt-2 break-words font-mono text-xs text-muted-foreground/80">{error}</p>
+              <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm">
+                <Button onClick={load}>Try again</Button>
+                <Link href="/atlas" className="text-link underline-offset-4 hover:underline">
+                  Reaction atlas
+                </Link>
+                <Link href="/notes" className="text-link underline-offset-4 hover:underline">
+                  Notes on R-matrix theory
+                </Link>
+                <Link href="/software#azure2" className="text-link underline-offset-4 hover:underline">
+                  About AZURE2
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     )
   }
 
   return (
     <div className="space-y-8">
-      <div className="border-b border-border/70 pb-8">
-        <p className="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-          Running on AZURE2
-        </p>
-        <h1 className="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
-          R-matrix evaluations
-        </h1>
-        <p className="mt-4 max-w-2xl text-pretty leading-relaxed text-muted-foreground">
-          Each of these is a published multi-level, multi-channel fit. Open one
-          to see its level scheme and the data it was fitted to, then move a
-          level energy or a reduced width and watch the cross section and the χ²
-          respond — the calculation is the real code, run on the server. Every
-          evaluation can also be downloaded as an <code className="font-mono text-[0.85em]">.azr</code>{" "}
-          project and run locally.
-        </p>
-      </div>
+      <Intro />
 
       {evaluations.length === 0 ? (
         <Card>

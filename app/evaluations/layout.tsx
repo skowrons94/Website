@@ -1,10 +1,10 @@
 import type { Metadata } from "next"
+import { pageMetadata } from "@/lib/metadata"
 
-export const metadata: Metadata = {
-  title: "Evaluations",
-  description:
-    "Interactive R-matrix evaluations running on AZURE2: level schemes, fitted data and extrapolations.",
-}
+export const metadata: Metadata = pageMetadata(
+  "Evaluations",
+  "Interactive R-matrix evaluations running on AZURE2: level schemes, fitted data and extrapolations.",
+)
 
 /**
  * The evaluation UI is wider than the prose pages — a level scheme plus its
