@@ -273,18 +273,21 @@ sub {
 :root {
   --atlas-cell: #ecebe7;
   --atlas-cell-strong: #d9d8d2;
+  --atlas-cell-edge: #cbcbc7;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:where(:not([data-theme="light"])) {
     --atlas-cell: #262623;
     --atlas-cell-strong: #3a3a35;
+    --atlas-cell-edge: #434340;
   }
 }
 
 :root[data-theme="dark"] {
   --atlas-cell: #262623;
   --atlas-cell-strong: #3a3a35;
+  --atlas-cell-edge: #434340;
 }
 
 /* Arrows are focusable buttons; the ring is a wide stroke under the line. */

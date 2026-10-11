@@ -19,13 +19,18 @@ families:
       Carbon, nitrogen and oxygen act as catalysts that turn hydrogen into helium.
       In the Sun this gives about one percent of the energy; in stars heavier than
       about 1.3 solar masses it is the main source.
-  - id: hot-h
-    name: Hotter hydrogen burning
+  - id: nena
+    name: The NeNa cycle
     summary: >-
-      At higher temperatures, in red giants, AGB stars and novae, protons are
-      captured on neon, sodium, magnesium and aluminium. These cycles set the
-      abundances of sodium and aluminium and produce the radioactive ²⁶Al seen in
-      the Galaxy.
+      In red giants, AGB stars and novae, protons are captured on the neon
+      isotopes and on sodium. The cycle sets the sodium abundance of stars, and the
+      sodium–oxygen anticorrelation seen in globular clusters.
+  - id: mgal
+    name: The MgAl cycle
+    summary: >-
+      At still higher temperatures protons are captured on magnesium and
+      aluminium. The cycle makes the radioactive ²⁶Al whose γ-ray line traces
+      recent nucleosynthesis across the Galaxy.
   - id: he
     name: Helium burning
     summary: >-
@@ -122,7 +127,7 @@ networks:
     reactions: [18O-pg-19F, 19F-pa-16O, 19F-pg-20Ne]
 
   - id: nena
-    family: hot-h
+    family: nena
     name: NeNa cycle
     summary: >-
       Proton captures on the neon isotopes and on ²³Na. They set the sodium
@@ -133,7 +138,7 @@ networks:
     reactions: [20Ne-pg-21Na, 21Na-bp-21Ne, 21Ne-pg-22Na, 22Na-bp-22Ne, 22Ne-pg-23Na, 23Na-pa-20Ne, 23Na-pg-24Mg]
 
   - id: mgal
-    family: hot-h
+    family: mgal
     name: MgAl cycle
     summary: >-
       Proton captures on the magnesium isotopes and on ²⁷Al. ²⁵Mg(p,γ)²⁶Al makes

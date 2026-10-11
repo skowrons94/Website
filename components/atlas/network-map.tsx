@@ -113,7 +113,11 @@ function arrowPath(
   const len = Math.hypot(dx, dy) || 1
   const nx = -dy / len
   const ny = dx / len
-  const offset = (index - (siblings - 1) / 2) * 0.42
+  // A straight line through a cell in between (α captures, a step of two in
+  // N and Z) would run over that cell's label: bow it to one side.
+  const gcd = (a: number, b: number): number => (b ? gcd(b, a % b) : a)
+  const bow = gcd(Math.abs(dx), Math.abs(dy)) > 1 ? 0.9 : 0
+  const offset = (index - (siblings - 1) / 2) * 0.42 + bow
   const cx = (ax + bx) / 2 + nx * offset
   const cy = (ay + by) / 2 + ny * offset
 
@@ -201,8 +205,16 @@ export function NetworkMap({ data }: { data: MapData }) {
   /* -- deep links: /atlas#cno -------------------------------------------- */
 
   useEffect(() => {
-    const hash = window.location.hash.slice(1)
-    if (hash && families.some((f) => f.id === hash)) setFamilyId(hash)
+    const read = () => {
+      const hash = window.location.hash.slice(1)
+      if (hash && families.some((f) => f.id === hash)) {
+        animateRef.current = true
+        setFamilyId(hash)
+      }
+    }
+    read()
+    window.addEventListener("hashchange", read)
+    return () => window.removeEventListener("hashchange", read)
   }, [families])
 
   const chooseFamily = useCallback((id: string) => {
@@ -302,8 +314,11 @@ export function NetworkMap({ data }: { data: MapData }) {
 
   const scale = size.w / view.w // px per cell unit
   const px = (n: number) => n / scale
-  const showLabels = scale * CELL >= 25
-  const labelSize = Math.min(Math.max(scale * 0.27, 9.5), 13.5)
+  // Every cell is labelled when the cells are large enough; on a phone, with a
+  // wide process on show, only the nuclides of the process are.
+  const showLabels = scale * CELL >= 17
+  const labelAll = scale * CELL >= 25
+  const labelSize = Math.min(Math.max(scale * 0.27, labelAll ? 9.5 : 8.5), 13.5)
 
   /* -- arrows ---------------------------------------------------------------- */
 
@@ -423,7 +438,6 @@ export function NetworkMap({ data }: { data: MapData }) {
         onPointerLeave={() => setTip((t) => (t?.id === a.r.id ? null : t))}
         onFocus={() => showTipFor(a)}
         onBlur={() => setTip((t) => (t?.id === a.r.id ? null : t))}
-        opacity={active ? 1 : 0.85}
       >
         {/* generous hit area, and a surface halo so crossing arrows stay legible */}
         <path d={a.d} fill="none" stroke="transparent" strokeWidth={px(18)} />
@@ -468,7 +482,7 @@ export function NetworkMap({ data }: { data: MapData }) {
     <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start lg:gap-10 xl:grid-cols-[minmax(0,1fr)_21rem]">
       <div className="min-w-0">
         {/* -- process picker ------------------------------------------------ */}
-        <div role="group" aria-label="Process" className="flex flex-wrap gap-1.5">
+        <div role="group" aria-label="Process" className="flex scroll-mt-24 flex-wrap gap-1.5">
           {families.map((f) => (
             <button
               key={f.id}
@@ -476,7 +490,7 @@ export function NetworkMap({ data }: { data: MapData }) {
               aria-pressed={f.id === family?.id}
               onClick={() => chooseFamily(f.id)}
               className={cn(
-                "rounded-full border px-3 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "rounded-full border px-2.5 py-1 text-[0.8125rem] transition-colors sm:px-3 sm:py-1.5 sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 f.id === family?.id
                   ? "border-foreground bg-foreground text-background"
                   : "border-border text-muted-foreground hover:border-foreground/40 hover:text-foreground",
@@ -571,9 +585,10 @@ export function NetworkMap({ data }: { data: MapData }) {
                     height={CELL}
                     rx={px(3)}
                     fill={c.stable ? (active ? "var(--atlas-cell-strong)" : "var(--atlas-cell)") : "var(--viz-surface)"}
-                    stroke={active ? "var(--viz-text-muted)" : "var(--viz-axis)"}
+                    // Dimmed by colour, not opacity: hundreds of translucent
+                    // rects leave tiling artefacts in some rasterisers.
+                    stroke={active ? "var(--viz-text-muted)" : whole ? "var(--viz-axis)" : "var(--atlas-cell-edge)"}
                     strokeWidth={px(active ? 1.25 : 0.85)}
-                    opacity={active || whole ? 1 : 0.7}
                   />
                 )
               })}
@@ -587,6 +602,7 @@ export function NetworkMap({ data }: { data: MapData }) {
                   // Cells half under an axis band would show a clipped label.
                   if (x < view.x + AXIS_LEFT + 0.2 || y > view.y + view.h - AXIS_BOTTOM) return null
                   const active = activeCodes.has(c.code)
+                  if (!labelAll && !active) return null
                   return (
                     <text
                       key={c.code}
@@ -643,7 +659,8 @@ export function NetworkMap({ data }: { data: MapData }) {
               />
               {rows.map((Z) => {
                 const y = maxZ - Z
-                if (y < view.y + 0.3 || y > view.y + view.h - AXIS_BOTTOM) return null
+                // The top row would meet the HTML caption "↑ protons Z".
+                if ((y - view.y) * scale < 30 || y > view.y + view.h - AXIS_BOTTOM) return null
                 return (
                   <text
                     key={Z}
