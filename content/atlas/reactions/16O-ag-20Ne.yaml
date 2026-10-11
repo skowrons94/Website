@@ -1,0 +1,54 @@
+id: 16O-ag-20Ne
+label: ¹⁶O(α,γ)²⁰Ne
+kind: capture
+target: 16O
+projectile: 4He
+ejectile: g
+product: 20Ne
+networks: [he-burning]
+importance: minor
+summary: >-
+  Oxygen-16 captures a helium nucleus and becomes neon-20. In helium burning it
+  is slow, so most of the oxygen survives.
+role: >-
+  This is the last step of the chain of helium captures in helium burning.
+  Because it is slow at the temperatures where helium burns, little oxygen
+  turns into neon, and stars end helium burning with mostly carbon and oxygen.
+  If the reaction were much faster, the oxygen made by the previous step would
+  be lost to neon and the carbon-to-oxygen balance would change.
+details: >-
+  At helium-burning energies no resonance contributes significantly and the
+  reaction proceeds mainly by direct capture, which makes the cross section
+  very small. The rate is obtained from an R-matrix description of the
+  low-energy resonances together with the direct-capture transitions
+  (Costantini et al. 2010). DRAGON
+  measured the total cross section at E = 2.26 MeV in inverse kinematics and
+  determined, for the first time together, the total S-factor and its
+  direct-capture components (Hager et al. 2011).
+status: improving
+status_note: >-
+  The rate rests on a direct-capture extrapolation from higher-energy data;
+  no data reach the helium-burning energies.
+methods: [direct-surface, inverse-kinematics]
+measurements:
+  - year: 2010
+    facility: other
+    lab: "not recorded"
+    method: direct-surface
+    note: >-
+      New measurements of the low-energy resonances combined with earlier
+      unpublished data in an R-matrix analysis, giving a rate for helium
+      burning.
+    refs: [costantini2010]
+  - year: 2011
+    facility: dragon
+    method: inverse-kinematics
+    energy: "E = 2.26 MeV"
+    note: >-
+      Total cross section from ²⁰Ne recoils; first determination of the total
+      S-factor together with its direct-capture transitions.
+    refs: [hager2011]
+evaluations: [angulo1999]
+open_questions:
+  - The direct-capture S-factor at energies below 1 MeV, where no measurement exists.
+related: [12C-ag-16O]

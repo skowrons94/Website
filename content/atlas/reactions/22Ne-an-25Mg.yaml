@@ -1,0 +1,101 @@
+id: 22Ne-an-25Mg
+label: ²²Ne(α,n)²⁵Mg
+kind: transfer
+target: 22Ne
+projectile: 4He
+ejectile: n
+product: 25Mg
+networks: [neutron-sources]
+importance: key
+summary: >-
+  Neon-22 captures a helium nucleus and releases a neutron. It is the main
+  neutron source in massive stars and a second source in the late pulses of
+  giant stars.
+role: >-
+  Stars convert the carbon, nitrogen and oxygen they were born with into
+  nitrogen-14 while they burn hydrogen. When helium burns, the nitrogen turns
+  into neon-22. Near the end of helium burning in stars more than about ten
+  times the mass of the Sun, and during the hottest helium flashes of giant
+  stars, the temperature rises enough for neon-22 to capture a helium nucleus
+  and release a neutron. These neutrons make most of the elements between iron
+  and strontium, the so-called weak s-process. The reaction only starts at
+  energies where it competes with another reaction, ²²Ne(α,γ)²⁶Mg, which uses
+  up neon-22 without giving a neutron. The balance between the two decides how
+  many neutrons are released.
+details: >-
+  The reaction opens just above the neutron threshold, and the rate at
+  T₉ ≈ 0.2–0.3 is dominated by resonances in ²⁶Mg above it, in particular the
+  well-known resonance at E(α,lab) ≈ 830 keV. Below it, direct experiments give
+  only upper limits, because the cross section is small and the neutron
+  background in surface laboratories is large. The rate therefore rests on the properties of
+  near-threshold ²⁶Mg states obtained indirectly: neutron resonances in
+  ²⁵Mg + n measured at n_TOF (Massimi et al. 2017), α-transfer reactions
+  (Ota et al. 2020; Jayatissa et al. 2020). The
+  evaluation of Adsley et al. (2021), based on updated spin-parity
+  assignments, lowered the (α,n) rate substantially while leaving the (α,γ)
+  rate almost unchanged.
+
+
+  A direct measurement in the Gamow window is the aim of the SHADES project,
+  with a hybrid array of EJ-309 scintillators and ³He counters and a
+  recirculating gas target at the LUNA MV accelerator of the Bellotti Ion Beam
+  Facility; the expected sensitivity gain is more than two orders of magnitude
+  (Rapagnani et al. 2022).
+status: uncertain
+status_note: >-
+  Below the 830 keV resonance only upper limits exist from direct experiments,
+  and the indirect constraints on the near-threshold ²⁶Mg states do not yet
+  agree.
+methods: [direct-surface, neutron-beams, anc, direct-underground]
+measurements:
+  - year: 1993
+    facility: other
+    lab: "not recorded"
+    method: direct-surface
+    note: >-
+      Direct measurement of both s-process neutron sources, ²²Ne(α,n)²⁵Mg and
+      ¹³C(α,n)¹⁶O, with new rates for each.
+    refs: [drotleff1993]
+  - year: 2001
+    facility: other
+    lab: "Dynamitron, Universität Stuttgart, Stuttgart"
+    method: direct-surface
+    energy: "E(α,lab) = 0.57–1.47 MeV"
+    note: >-
+      Windowless gas target Rhinoceros and a new neutron detector with active
+      shielding, up to 50% efficiency and 0.02 counts/s background; the resulting
+      rate lies well below earlier compilations
+      for some stellar temperatures below 0.3 GK.
+    refs: [jaeger2001]
+  - year: 2017
+    facility: n-tof
+    method: neutron-beams
+    energy: "²⁵Mg + n, thermal to about 300 keV neutron energy"
+    note: >-
+      ²⁵Mg(n,γ) and total cross sections fitted together in an R-matrix
+      analysis gave unambiguous spin-parity assignments for ²⁶Mg states above
+      the neutron threshold; the limits point to a larger (α,n)/(α,γ) ratio
+      than previously evaluated.
+    refs: [massimi2017]
+  - year: 2020
+    facility: texas-am
+    method: anc
+    energy: "²²Ne(⁶Li,d)²⁶Mg in inverse kinematics"
+    note: >-
+      Deuterons and ²⁶Mg recoils detected in coincidence with the TIARA array
+      and the MDM spectrometer; a new neutron/γ decay branching ratio for a key
+      resonance gives it a new α strength.
+    refs: [ota2020]
+  - year: 2020
+    facility: texas-am
+    method: anc
+    energy: "²²Ne(⁶Li,d) and ²²Ne(⁷Li,t), 1.0 MeV/u ²²Ne beam"
+    note: >-
+      Partial α widths of ²⁶Mg resonances in the Gamow window; the derived
+      (α,n) and (α,γ) rates differ significantly from earlier values.
+    refs: [jayatissa2020]
+evaluations: [angulo1999, adsley2021]
+open_questions:
+  - A direct measurement below the 830 keV resonance, which needs the low neutron background of an underground laboratory and a neutron detector with energy sensitivity.
+  - Spin, parity and α width of the ²⁶Mg states just above the neutron threshold, where transfer and neutron-resonance data still disagree.
+related: [22Ne-ag-26Mg, 13C-an-16O, 18O-ag-22Ne, 14N-ag-18F]

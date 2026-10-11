@@ -1,0 +1,70 @@
+id: 18O-pg-19F
+label: ¹⁸O(p,γ)¹⁹F
+kind: capture
+target: 18O
+projectile: 1H
+ejectile: g
+product: 19F
+networks: [cno4]
+importance: major
+summary: >-
+  Oxygen-18 captures a proton and keeps it, becoming fluorine-19. This opens
+  the fourth CNO cycle.
+role: >-
+  Most protons that hit oxygen-18 produce a helium nucleus and nitrogen-15
+  instead. The small fraction that makes fluorine-19 decides how much
+  material passes into the last CNO cycle and towards neon. The rate also
+  enters the oxygen isotope ratios predicted for giant stars and novae.
+details: >-
+  The same ¹⁹F states govern ¹⁸O(p,γ)¹⁹F and ¹⁸O(p,α)¹⁵N, so the two
+  reactions share resonance energies and total widths and differ in the
+  partial widths. At stellar energies the γ-ray channel is weak compared
+  with the α channel. The low-energy cross section is the sum of direct
+  capture, the tail of the strong resonance at E = 143 keV, the resonance at
+  90 keV and, at the lowest temperatures, a resonance at 20 keV known only
+  from indirect data. LUNA measured the 90 keV resonance directly for the
+  first time, with a 4π BGO summing detector deep underground: its strength,
+  0.53 ± 0.07 neV, is too small to matter for the stellar rate. Solar Fusion
+  III adopts a direct-capture S(0) = 23 ± 3.8 keV b.
+status: improving
+status_note: >-
+  Direct data reach 85 keV and rule out a large 90 keV contribution; the
+  direct-capture component and the 20 keV resonance still need study.
+methods: [direct-underground, direct-surface]
+measurements:
+  - year: 2012
+    facility: tunl-lena
+    method: direct-surface
+    energy: "95 keV resonance (proton energy)"
+    note: >-
+      Intense beams from an electron-cyclotron-resonance ion source and
+      γγ-coincidence detection on anodised tantalum targets enriched to
+      99.3 % in ¹⁸O; a new
+      upper limit for the strength of the 95 keV resonance and rates for
+      cool bottom processing in low-mass AGB stars.
+    refs: [buckner2012]
+  - year: 2019
+    facility: luna-400
+    method: direct-underground
+    energy: "85–140 keV"
+    note: >-
+      First direct measurement in this energy range, with a 4π BGO summing
+      detector. The 90 keV resonance has ωγ = 0.53 ± 0.07 neV, three orders
+      of magnitude below the indirect estimate and a factor of 20 below the
+      previous upper limit, so it does not contribute significantly to the
+      stellar rate.
+    refs: [best2019]
+  - year: 2021
+    facility: luna-400
+    method: direct-underground
+    energy: "resonances at 151, 215, 274 and 334 keV (proton energy)"
+    note: >-
+      Second LUNA campaign, with a HPGe detector, on the higher-energy
+      resonances; it confirmed the
+      contributions of these resonances to the stellar rate.
+    refs: [pantaleo2021]
+evaluations: [acharya2025]
+open_questions:
+  - The direct-capture S-factor at low energy, which Solar Fusion III flags for further study.
+  - The strength of the 20 keV resonance, known only from indirect data.
+related: [18O-pa-15N, 19F-pa-16O, 19F-pg-20Ne]

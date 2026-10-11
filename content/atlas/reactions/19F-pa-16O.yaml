@@ -1,0 +1,70 @@
+id: 19F-pa-16O
+label: ¹⁹F(p,α)¹⁶O
+kind: transfer
+target: 19F
+projectile: 1H
+ejectile: 4He
+product: 16O
+networks: [cno4]
+importance: key
+summary: >-
+  Fluorine-19 captures a proton and splits into oxygen-16 and a helium
+  nucleus. It is the main way stars destroy fluorine during hydrogen burning.
+role: >-
+  Fluorine is the most fragile of the light elements made in stars, and its
+  origin is still debated. In AGB stars, which are thought to make much of the
+  fluorine in the Galaxy, part of the fluorine produced can be destroyed by
+  this reaction if it is mixed into hot hydrogen-burning layers. The reaction
+  also returns material to oxygen-16 and closes the fourth CNO cycle.
+details: >-
+  The reaction proceeds through states of ²⁰Ne and has several α channels:
+  to the ¹⁶O ground state, emitting α particles, and to excited ¹⁶O states,
+  followed by γ-ray (and pair) emission. At low energy each channel must be
+  measured separately. For the α₀ channel, direct data reach 0.2 MeV and give
+  S-factors 1.5–2 times larger than the adopted extrapolations, and
+  Trojan-Horse data, which reach lower energies, show resonances that direct
+  measurements had not seen. The (p,αγ) channel was measured deep underground
+  at JUNA across the whole Gamow window, from E = 72 to 344 keV.
+status: uncertain
+status_note: >-
+  The (p,αγ) channel is now measured underground in the Gamow window, but
+  the dominant α₀ channel below 0.2 MeV is constrained only by Trojan-Horse
+  data.
+methods: [direct-underground, direct-surface, thm]
+measurements:
+  - year: 2011
+    method: thm
+    energy: "below about 300 keV (α₀ channel)"
+    note: >-
+      First study of the α₀ channel at astrophysical energies, from the
+      quasi-free parts of ²H(¹⁹F,α¹⁶O)n and ¹⁹F(³He,α¹⁶O)d. Resonances not
+      observed before raise the rate at astrophysical temperatures by up to a
+      factor of 1.7.
+    refs: [lacognata2011]
+  - year: 2015
+    method: direct-surface
+    energy: "0.2–0.6 MeV (α₀ channel)"
+    note: >-
+      Direct measurement at deeply sub-Coulomb energies; the S-factor is
+      1.5–2 times larger than the extrapolations then adopted.
+    refs: [lombardo2015]
+  - year: 2017
+    method: thm
+    energy: "about 0–1 MeV (α₀ channel)"
+    note: >-
+      Improved Trojan-Horse measurement of the α₀ S-factor over the energy
+      range of astrophysical interest.
+    refs: [indelicato2017]
+  - year: 2021
+    facility: juna
+    method: direct-underground
+    energy: "72.4–344 keV"
+    note: >-
+      First measurement of the (p,αγ) channel in the low-energy part of the
+      Gamow window (70–200 keV), at the China JinPing Underground
+      Laboratory.
+    refs: [zhang2021]
+open_questions:
+  - The contribution of low-energy resonances to the separate α channels.
+  - The ratio to ¹⁹F(p,γ)²⁰Ne, which decides how much material leaks from the CNO cycles towards neon.
+related: [19F-pg-20Ne, 18O-pg-19F, 15N-pa-12C]

@@ -1,0 +1,79 @@
+id: 23Na-pg-24Mg
+label: ²³Na(p,γ)²⁴Mg
+kind: capture
+target: 23Na
+projectile: 1H
+ejectile: g
+product: 24Mg
+networks: [nena]
+importance: key
+summary: >-
+  A proton capture that destroys sodium and makes magnesium. It competes with
+  ²³Na(p,α)²⁰Ne, which also destroys sodium but returns the material to neon.
+role: >-
+  When ²³Na captures a proton, the new nucleus either emits an alpha particle and
+  goes back to ²⁰Ne, closing the NeNa cycle, or emits a γ-ray and becomes ²⁴Mg,
+  leaking material into the MgAl cycle. This reaction is the leak. Together with
+  its competitor it decides how much sodium survives hydrogen burning, which
+  matters for the sodium-rich and oxygen-poor stars observed in old star clusters,
+  and how much material flows on from neon to magnesium and aluminium.
+details: >-
+  At 50–110 MK the rate is dominated by narrow resonances at Eₚ = 140 and 251 keV
+  and, at the low end of that range, by direct capture. The 140 keV resonance is
+  quoted as E_cm = 138 keV or 133 keV in different works. A direct search at LENA
+  gave only an upper limit on its strength (Cesaratto et al. 2013). The LUNA measurement of
+  Boeltzig et al. (2019) observed it directly for the first time with a 4π BGO
+  summing detector, ωγ = 1.46 (+0.58/−0.53) neV, and measured the 251 keV
+  resonance with an HPGe detector, ωγ = 482(82) μeV. Direct capture, which had
+  received little attention, was studied off resonance at Eₚ = 0.5–1.05 MeV by
+  Boeltzig et al. (2022). A new ²³Na(³He,d) measurement at TUNL (Marshall et al.
+  2023) gives a proton width for the 133 keV resonance in clear tension with the
+  LUNA strength.
+status: improving
+status_note: >-
+  The two key resonances were measured directly at LUNA, which limits the rate
+  uncertainty at 0.07 GK to −35 %/+50 %; the strength of the lowest resonance is
+  still in tension between direct and transfer data.
+methods: [direct-underground, direct-surface, anc]
+measurements:
+  - year: 2013
+    facility: tunl-lena
+    method: direct-surface
+    energy: "E_cm = 138 keV resonance"
+    note: >-
+      Search for the 138 keV resonance with the 200 kV accelerator and its ECR ion
+      source; only an upper limit on the strength could be set, 5.17 neV at 95 %
+      confidence.
+    refs: [cesaratto2013]
+  - year: 2019
+    facility: luna-400
+    method: direct-underground
+    energy: "Eₚ = 140 and 251 keV resonances"
+    note: >-
+      First direct observation of the 140 keV resonance (4π BGO), ωγ = 1.46
+      (+0.58/−0.53) neV, and the 251 keV resonance (HPGe), ωγ = 482(82) μeV. The
+      rate uncertainty at 0.07 GK is reduced to at most −35 %/+50 %.
+    refs: [boeltzig2019]
+  - year: 2022
+    facility: notre-dame
+    method: direct-surface
+    energy: "Eₚ = 0.5–1.05 MeV"
+    note: >-
+      Off-resonance cross section, to determine the direct capture component that
+      extrapolates to low energies.
+    refs: [boeltzig2022]
+  - year: 2023
+    facility: other
+    lab: "TUNL, Durham"
+    method: anc
+    energy: "states of ²⁴Mg near the proton threshold"
+    note: >-
+      ²³Na(³He,d)²⁴Mg proton transfer to constrain the proton widths of the
+      low-energy resonances; the width of the 133 keV resonance is in strong
+      disagreement with the LUNA strength.
+    refs: [marshall2023]
+evaluations: [angulo1999, acharya2025]
+open_questions:
+  - The strength of the lowest resonance (E_cm ≈ 133 keV), where the direct LUNA value and the transfer data of Marshall et al. (2023) disagree.
+  - The direct capture S-factor at the energies of the Gamow window, which so far comes from extrapolation.
+related: [23Na-pa-20Ne, 22Ne-pg-23Na, 24Mg-pg-25Al]

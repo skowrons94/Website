@@ -1,0 +1,83 @@
+id: 15N-pg-16O
+label: ¹⁵N(p,γ)¹⁶O
+kind: capture
+target: 15N
+projectile: 1H
+ejectile: g
+product: 16O
+networks: [cno2]
+importance: key
+summary: >-
+  The branch point of the CNO cycles. Rarely, nitrogen-15 keeps the captured
+  proton and becomes oxygen-16, and the material passes from the first CNO
+  cycle into the second.
+role: >-
+  Every time this reaction happens instead of the much more frequent
+  ¹⁵N(p,α)¹²C, a nucleus leaves the CN cycle and enters the cycle that runs
+  through oxygen and fluorine. Its rate therefore sets how much oxygen-16,
+  oxygen-17 and fluorine hydrogen burning produces in red giants, in AGB stars
+  and in nova explosions. Measurements deep underground at Gran Sasso, by the
+  LUNA collaboration, showed that the rate is about half the value used in
+  the older compilations.
+details: >-
+  The capture at low energy is dominated by the two broad 1⁻ resonances in ¹⁶O
+  that also govern ¹⁵N(p,α)¹²C, interfering with each other and with direct
+  capture to the ¹⁶O ground state. The non-resonant contribution and the
+  interference sign between the resonances determine the S-factor below the
+  first resonance. Asymptotic normalisation coefficients (ANCs) from transfer
+  reactions constrain the direct-capture component. The LUNA data, from 70 to
+  370 keV, and the Notre Dame data, from 130 keV to 1.8 MeV, give a rate about
+  a factor of 2 below the NACRE and CF88 compilations, with an uncertainty
+  near 10 %.
+status: improving
+status_note: >-
+  Underground data reach 70 keV and the rate is known to about 10 %; the
+  extrapolation still depends on the direct-capture component and on the
+  interference pattern in the R-matrix fit.
+methods: [direct-underground, direct-surface, anc]
+measurements:
+  - year: 2008
+    method: anc
+    energy: "transfer reactions; R-matrix fit"
+    note: >-
+      Asymptotic normalisation coefficients for ¹⁵N + p → ¹⁶O fix the direct
+      capture to the ¹⁶O ground state. The R-matrix fit gives about one CN
+      catalyst lost to the second cycle every 2200 ± 300 cycles, instead of
+      about 1000 in the NACRE compilation.
+    refs: [mukhamedzhanov2008]
+  - year: 2009
+    facility: luna-400
+    method: direct-underground
+    energy: "90–230 keV"
+    note: >-
+      Total cross section with a windowless nitrogen gas target and a 4π BGO
+      summing detector; the cross section at nova energies is a factor of 2
+      lower than previously believed.
+    refs: [bemmerer2009]
+  - year: 2010
+    facility: notre-dame
+    method: direct-surface
+    energy: "130–1800 keV (proton energy)"
+    note: >-
+      Measurement across both broad resonances, at Ep = 338 and 1028 keV, and
+      below them; a multilevel R-matrix analysis gives S(0) = 39.6 keV b.
+    refs: [leblanc2010]
+  - year: 2011
+    facility: luna-400
+    method: direct-underground
+    energy: "70–370 keV"
+    note: >-
+      Extends the LUNA data and confirms the earlier R-matrix extrapolation. The rate is about a
+      factor of 2 below NACRE and CF88, with a 10 % uncertainty.
+    refs: [caciolli2011]
+  - year: 2012
+    facility: notre-dame
+    method: direct-surface
+    note: >-
+      Exclusive cross sections for the γ-ray cascades through excited states
+      of ¹⁶O, measured together with ¹⁵N(p,α₁γ)¹²C.
+    refs: [imbriani2012]
+evaluations: [adelberger2011, acharya2025]
+open_questions:
+  - The direct-capture contribution to the ground state, which sets the S-factor below the lower resonance.
+related: [15N-pa-12C, 16O-pg-17F, 14N-pg-15O]

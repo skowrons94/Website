@@ -1,0 +1,451 @@
+# References for timeline.yaml, facilities.yaml and methods.yaml: the history
+# of the field, neutrino observations, facility papers and method reviews.
+#
+# Verification note (2026-10-11): every entry below was checked by web search
+# against a publisher, arXiv, INSPIRE, ADS or institutional-repository record.
+# A DOI is given only where a record showed it; for older papers without a
+# confirmed DOI the journal reference alone is given. Network access to
+# doi.org, Crossref, arXiv and INSPIRE was not available from the build
+# container, so no entry was checked by resolving its DOI directly.
+
+# --- Stellar energy and the first nuclear theories ---------------------------
+
+eddington1920:
+  authors: A. S. Eddington
+  title: The internal constitution of the stars
+  journal: Nature 106, 14 (1920)
+  year: 1920
+  checked: >-
+    volume and page from a Nature-printed copy of the address (Cardiff, 24 August
+    1920; issue of 2 September 1920) found by search; DOI not confirmed, 2026-10-11
+
+gamow1928:
+  authors: G. Gamow
+  title: Zur Quantentheorie des Atomkernes
+  journal: Z. Phys. 51, 204 (1928)
+  year: 1928
+  checked: >-
+    first page (received 2 August 1928, Z. Phys. 51, 204) reproduced in a
+    Saarland University course file and cited in arXiv 1508.03578; DOI not
+    confirmed against Springer, 2026-10-11
+
+atkinson1929:
+  authors: R. d'E. Atkinson, F. G. Houtermans
+  title: Zur Frage der Aufbaumöglichkeit der Elemente in Sternen
+  journal: Z. Phys. 54, 656 (1929)
+  year: 1929
+  checked: >-
+    volume and page from a Springer reference list (Hahn 1934) and the history
+    in arXiv 2209.00072; one other reference list gives a different page, so
+    check before quoting the page; DOI not confirmed, 2026-10-11
+
+weizsacker1937:
+  authors: C. F. von Weizsäcker
+  title: Über Elementumwandlungen im Innern der Sterne. I
+  journal: Phys. Z. 38, 176 (1937)
+  year: 1937
+  checked: citation from a 2006 Physik in unserer Zeit interview and the Nobel bibliography search, 2026-10-11
+
+weizsacker1938:
+  authors: C. F. von Weizsäcker
+  title: Über Elementumwandlungen im Innern der Sterne. II
+  journal: Phys. Z. 39, 633 (1938)
+  year: 1938
+  checked: Nobel Prize bibliography and Physikalische Zeitschrift reference list (pp. 633–646), 2026-10-11
+
+bethe1938:
+  authors: H. A. Bethe, C. L. Critchfield
+  title: The formation of deuterons by proton combination
+  journal: Phys. Rev. 54, 248 (1938)
+  year: 1938
+  doi: 10.1103/PhysRev.54.248
+  checked: Crossref record and APS issue table (published 15 August 1938), 2026-10-11
+
+bethe1939:
+  authors: H. A. Bethe
+  title: Energy production in stars
+  journal: Phys. Rev. 55, 434 (1939)
+  year: 1939
+  doi: 10.1103/PhysRev.55.434
+  checked: INSPIRE record and APS issue listing (published 1 March 1939), 2026-10-11
+
+alpher1948:
+  authors: R. A. Alpher, H. Bethe, G. Gamow
+  title: The origin of chemical elements
+  journal: Phys. Rev. 73, 803 (1948)
+  year: 1948
+  doi: 10.1103/PhysRev.73.803
+  checked: bibcode 1948PhRv...73..803A and DOI from reference records found by search (published 1 April 1948), 2026-10-11
+
+# --- Helium burning and the synthesis of the elements ------------------------
+
+salpeter1952:
+  authors: E. E. Salpeter
+  title: Nuclear reactions in stars without hydrogen
+  journal: Astrophys. J. 115, 326 (1952)
+  year: 1952
+  checked: >-
+    journal reference from a Cambridge-hosted bibliography and Salpeter's own
+    retrospective (arXiv 0711.3139); DOI not confirmed, 2026-10-11
+
+dunbar1953:
+  authors: D. N. F. Dunbar, R. E. Pixley, W. A. Wenzel, W. Whaling
+  title: The 7.68-MeV state in C¹²
+  journal: Phys. Rev. 92, 649 (1953)
+  year: 1953
+  doi: 10.1103/PhysRev.92.649
+  checked: Caltech Authors record (published 1 November 1953), 2026-10-11
+
+hoyle1954:
+  authors: F. Hoyle
+  title: "On nuclear reactions occurring in very hot stars. I. The synthesis of elements from carbon to nickel"
+  journal: Astrophys. J. Suppl. 1, 121 (1954)
+  year: 1954
+  url: https://ui.adsabs.harvard.edu/abs/1954ApJS....1..121H/abstract
+  checked: ADS record 1954ApJS....1..121H; DOI not confirmed, 2026-10-11
+
+cook1957:
+  authors: C. W. Cook, W. A. Fowler, C. C. Lauritsen, T. Lauritsen
+  title: B¹², C¹², and the red giants
+  journal: Phys. Rev. 107, 508 (1957)
+  year: 1957
+  doi: 10.1103/PhysRev.107.508
+  checked: reference list giving volume, page and DOI, and the related Caltech PhD thesis of C. W. Cook (1957), 2026-10-11
+
+b2fh1957:
+  authors: E. M. Burbidge, G. R. Burbidge, W. A. Fowler, F. Hoyle
+  title: Synthesis of the elements in stars
+  journal: Rev. Mod. Phys. 29, 547 (1957)
+  year: 1957
+  doi: 10.1103/RevModPhys.29.547
+  checked: INSPIRE record (pp. 547–650), 2026-10-11
+
+cameron1957:
+  authors: A. G. W. Cameron
+  title: Nuclear reactions in stars and nucleogenesis
+  journal: Publ. Astron. Soc. Pac. 69, 201 (1957)
+  year: 1957
+  url: https://articles.adsabs.harvard.edu/pdf/1957PASP...69..201C
+  checked: ADS scan 1957PASP...69..201C (June 1957); DOI not confirmed, 2026-10-11
+
+fowler1984:
+  authors: W. A. Fowler
+  title: "Experimental and theoretical nuclear astrophysics: the quest for the origin of the elements"
+  journal: Rev. Mod. Phys. 56, 149 (1984)
+  year: 1984
+  doi: 10.1103/RevModPhys.56.149
+  checked: CiNii record (pp. 149–179, 1 April 1984); Nobel lecture, 2026-10-11
+
+# --- Solar and supernova neutrinos -------------------------------------------
+
+davis1968:
+  authors: R. Davis Jr., D. S. Harmer, K. C. Hoffman
+  title: Search for neutrinos from the Sun
+  journal: Phys. Rev. Lett. 20, 1205 (1968)
+  year: 1968
+  doi: 10.1103/PhysRevLett.20.1205
+  checked: INSPIRE record and APS issue page (published 20 May 1968), 2026-10-11
+
+bahcall1968:
+  authors: J. N. Bahcall, N. A. Bahcall, G. Shaviv
+  title: Present status of the theoretical predictions for the ³⁷Cl solar-neutrino experiment
+  journal: Phys. Rev. Lett. 20, 1209 (1968)
+  year: 1968
+  checked: Princeton and Caltech repository records (pp. 1209–1212); DOI not confirmed, 2026-10-11
+
+hirata1987:
+  authors: K. Hirata et al. (Kamiokande-II Collaboration)
+  title: Observation of a neutrino burst from the supernova SN1987A
+  journal: Phys. Rev. Lett. 58, 1490 (1987)
+  year: 1987
+  doi: 10.1103/PhysRevLett.58.1490
+  checked: APS issue listing (published 6 April 1987) and DOI in several reference lists, 2026-10-11
+
+hirata1989:
+  authors: K. S. Hirata et al. (Kamiokande-II Collaboration)
+  title: Observation of ⁸B solar neutrinos in the Kamiokande-II detector
+  journal: Phys. Rev. Lett. 63, 16 (1989)
+  year: 1989
+  checked: KEK Kamiokande publication list and later reference lists; DOI not confirmed, 2026-10-11
+
+abazov1991:
+  authors: A. I. Abazov et al. (SAGE)
+  title: Search for neutrinos from the Sun using the reaction ⁷¹Ga(νₑ,e⁻)⁷¹Ge
+  journal: Phys. Rev. Lett. 67, 3332 (1991)
+  year: 1991
+  checked: INIS record (pp. 3332–3335, issue of 9 December 1991); DOI not confirmed, 2026-10-11
+
+gallex1992:
+  authors: GALLEX Collaboration
+  title: Solar neutrinos observed by GALLEX at Gran Sasso
+  journal: Phys. Lett. B 285, 376 (1992)
+  year: 1992
+  doi: 10.1016/0370-2693(92)91521-A
+  checked: Heidelberg and Tor Vergata library records, 2026-10-11
+
+fukuda1998:
+  authors: Y. Fukuda et al. (Super-Kamiokande Collaboration)
+  title: Evidence for oscillation of atmospheric neutrinos
+  journal: Phys. Rev. Lett. 81, 1562 (1998)
+  year: 1998
+  doi: 10.1103/PhysRevLett.81.1562
+  arxiv: hep-ex/9807003
+  checked: arXiv hep-ex/9807003 listing with journal DOI, 2026-10-11
+
+sno2002:
+  authors: Q. R. Ahmad et al. (SNO Collaboration)
+  title: Direct evidence for neutrino flavor transformation from neutral-current interactions in the Sudbury Neutrino Observatory
+  journal: Phys. Rev. Lett. 89, 011301 (2002)
+  year: 2002
+  doi: 10.1103/PhysRevLett.89.011301
+  arxiv: nucl-ex/0204008
+  checked: arXiv nucl-ex/0204008 and INSPIRE record, 2026-10-11
+
+davis2003:
+  authors: R. Davis Jr.
+  title: "Nobel lecture: A half-century with solar neutrinos"
+  journal: Rev. Mod. Phys. 75, 985 (2003)
+  year: 2003
+  checked: journal header of the published lecture (published 8 August 2003) and nobelprize.org lecture page; DOI not confirmed, 2026-10-11
+
+borexino2008:
+  authors: Borexino Collaboration
+  title: First real time detection of ⁷Be solar neutrinos by Borexino
+  journal: Phys. Lett. B 658, 101 (2008)
+  year: 2008
+  arxiv: "0708.2251"
+  checked: >-
+    arXiv 0708.2251 (submitted 16 August 2007) and journal record (pp. 101–108);
+    DOI not confirmed, 2026-10-11
+
+borexino2014:
+  authors: G. Bellini et al. (Borexino Collaboration)
+  title: Neutrinos from the primary proton–proton fusion process in the Sun
+  journal: Nature 512, 383 (2014)
+  year: 2014
+  doi: 10.1038/nature13702
+  checked: Mainz, Princeton and TUM records (published 28 August 2014), 2026-10-11
+
+# --- Gamma-ray and multimessenger astronomy ----------------------------------
+
+mahoney1984:
+  authors: W. A. Mahoney, J. C. Ling, W. A. Wheaton, A. S. Jacobson
+  title: HEAO 3 discovery of Al-26 in the interstellar medium
+  journal: Astrophys. J. 286, 578 (1984)
+  year: 1984
+  checked: >-
+    authors, title and year from NASA NTRS and the citation in arXiv
+    astro-ph/0304508; volume and page not independently confirmed, 2026-10-11
+
+abbott2017:
+  authors: B. P. Abbott et al. (LIGO Scientific and Virgo Collaborations)
+  title: "GW170817: Observation of gravitational waves from a binary neutron star inspiral"
+  journal: Phys. Rev. Lett. 119, 161101 (2017)
+  year: 2017
+  doi: 10.1103/PhysRevLett.119.161101
+  arxiv: "1710.05832"
+  checked: Strathclyde and Caltech repository records and arXiv listing, 2026-10-11
+
+pian2017:
+  authors: E. Pian et al.
+  title: Spectroscopic identification of r-process nucleosynthesis in a double neutron-star merger
+  journal: Nature 551, 67 (2017)
+  year: 2017
+  doi: 10.1038/nature24298
+  arxiv: "1710.05858"
+  checked: ADS record 2017Natur.551...67P and Warwick repository, 2026-10-11
+
+# --- LUNA and the Bellotti Ion Beam Facility ---------------------------------
+
+greife1994:
+  authors: U. Greife et al.
+  title: Laboratory for Underground Nuclear Astrophysics (LUNA)
+  journal: Nucl. Instrum. Methods A 350, 327 (1994)
+  year: 1994
+  luna: true
+  checked: INSPIRE and Caltech Authors records (pp. 327–337, October 1994); DOI not confirmed against the publisher, 2026-10-11
+
+bonetti1999:
+  authors: R. Bonetti et al. (LUNA Collaboration)
+  title: First measurement of the ³He(³He,2p)⁴He cross section down to the lower edge of the solar Gamow peak
+  journal: Phys. Rev. Lett. 82, 5205 (1999)
+  year: 1999
+  doi: 10.1103/PhysRevLett.82.5205
+  arxiv: nucl-ex/9902004
+  luna: true
+  checked: arXiv nucl-ex/9902004 and Naples IRIS record, 2026-10-11
+
+formicola2003:
+  authors: A. Formicola et al.
+  title: The LUNA II 400 kV accelerator
+  journal: Nucl. Instrum. Methods A 507, 609 (2003)
+  year: 2003
+  doi: 10.1016/S0168-9002(03)01435-9
+  luna: true
+  checked: INFN open-access repository record (pp. 609–616), 2026-10-11
+
+broggini2010:
+  authors: C. Broggini, D. Bemmerer, A. Guglielmetti, R. Menegazzo
+  title: "LUNA: Nuclear astrophysics deep underground"
+  journal: Annu. Rev. Nucl. Part. Sci. 60, 53 (2010)
+  year: 2010
+  doi: 10.1146/annurev.nucl.012809.104526
+  arxiv: "1010.4165"
+  luna: true
+  checked: arXiv 1010.4165 listing with journal reference and DOI, 2026-10-11
+
+sen2019:
+  authors: A. Sen, G. Domínguez-Cañizares, N. C. Podaru, D. J. W. Mous, M. Junker, G. Imbriani, V. Rigato
+  title: A high intensity, high stability 3.5 MV Singletron accelerator
+  journal: Nucl. Instrum. Methods B 450, 390 (2019)
+  year: 2019
+  doi: 10.1016/j.nimb.2018.09.016
+  luna: true
+  checked: Naples IRIS record (pp. 390–395), 2026-10-11
+
+mossa2020:
+  authors: V. Mossa et al. (LUNA Collaboration)
+  title: The baryon density of the Universe from an improved rate of deuterium burning
+  journal: Nature 587, 210 (2020)
+  year: 2020
+  doi: 10.1038/s41586-020-2878-4
+  luna: true
+  checked: RePEc and INAF repository records, 2026-10-11
+
+junker2023:
+  authors: M. Junker, G. Imbriani, A. Best, A. Boeltzig, A. Compagnucci, A. Di Leva, F. Ferraro, D. Rapagnani, V. Rigato
+  title: The deep underground Bellotti Ion Beam Facility – status and perspectives
+  journal: Front. Phys. 11, 1291113 (2023)
+  year: 2023
+  doi: 10.3389/fphy.2023.1291113
+  checked: DOAJ and HZDR publication records (published 9 November 2023), 2026-10-11
+
+broggini2018:
+  authors: C. Broggini, D. Bemmerer, A. Caciolli, D. Trezzi
+  title: "LUNA: Status and prospects"
+  journal: Prog. Part. Nucl. Phys. 98, 55 (2018)
+  year: 2018
+  arxiv: "1707.07952"
+  luna: true
+  checked: >-
+    arXiv 1707.07952 listing (authors, title; v4 of 30 November 2017, later
+    marked withdrawn by the first author) and the journal reference (pp. 55–84)
+    as cited in a 2026 LUNA paper; DOI not confirmed, 2026-10-11
+
+broggini2019:
+  authors: C. Broggini, O. Straniero, M. G. F. Taiuti et al.
+  title: Experimental nuclear astrophysics in Italy
+  journal: Riv. Nuovo Cimento 42, 103 (2019)
+  year: 2019
+  doi: 10.1393/ncr/i2019-10157-1
+  arxiv: "1902.05262"
+  checked: >-
+    Italian university repository records (vol. 42, no. 3, pp. 103–152, with
+    DOI) and arXiv 1902.05262, 2026-10-11
+
+# --- Other facility papers ----------------------------------------------------
+
+rogalla1999:
+  authors: D. Rogalla et al.
+  title: "Recoil separator ERNA: ion beam specifications"
+  journal: Eur. Phys. J. A 6, 471 (1999)
+  year: 1999
+  checked: >-
+    EPJ A abstract page (1999) and later ERNA papers (pp. 471–477); DOI not
+    confirmed, 2026-10-11
+
+hutcheon2003:
+  authors: D. A. Hutcheon et al.
+  title: "The DRAGON facility for nuclear astrophysics at TRIUMF-ISAC: design, construction and operation"
+  journal: Nucl. Instrum. Methods A 498, 190 (2003)
+  year: 2003
+  checked: >-
+    title, first author and journal from the TRIUMF astrophysics publication
+    list and the McMaster record; volume and page not independently
+    confirmed; DOI not confirmed, 2026-10-11
+
+couder2008:
+  authors: M. Couder, G. P. A. Berg, J. Görres, P. J. LeBlanc, L. O. Lamm, E. Stech, M. Wiescher, J. Hinnefeldt
+  title: Design of the recoil mass separator St. George
+  journal: Nucl. Instrum. Methods A 587, 35 (2008)
+  year: 2008
+  checked: >-
+    publication record found by search (pp. 35–45, online December 2007);
+    DOI not confirmed, 2026-10-11
+
+guerrero2013:
+  authors: C. Guerrero et al. (n_TOF Collaboration)
+  title: Performance of the neutron time-of-flight facility n_TOF at CERN
+  journal: Eur. Phys. J. A 49, 27 (2013)
+  year: 2013
+  doi: 10.1140/epja/i2013-13027-6
+  checked: University of Hertfordshire, Manchester and JRC repository records, 2026-10-11
+
+zhang2022:
+  authors: L. Zhang et al. (JUNA Collaboration)
+  title: Measurement of ¹⁹F(p,γ)²⁰Ne reaction suggests CNO breakout in first stars
+  journal: Nature 610, 656 (2022)
+  year: 2022
+  doi: 10.1038/s41586-022-05230-x
+  arxiv: "2302.09802"
+  checked: >-
+    RePEc record and Springer article page (published 27 October 2022) and
+    arXiv 2302.09802; end page not confirmed, 2026-10-11
+
+# --- Method reviews -----------------------------------------------------------
+
+baur1986:
+  authors: G. Baur, C. A. Bertulani, H. Rebel
+  title: Coulomb dissociation as a source of information on radiative capture processes of astrophysical interest
+  journal: Nucl. Phys. A 458, 188 (1986)
+  year: 1986
+  checked: >-
+    reference lists giving pp. 188–204 and the Karlsruhe preprint KfK 4032
+    (January 1986) with the same title; DOI not confirmed, 2026-10-11
+
+tribble2014:
+  authors: R. E. Tribble, C. A. Bertulani, M. La Cognata, A. M. Mukhamedzhanov, C. Spitaleri
+  title: "Indirect techniques in nuclear astrophysics: a review"
+  journal: Rep. Prog. Phys. 77, 106901 (2014)
+  year: 2014
+  doi: 10.1088/0034-4885/77/10/106901
+  checked: Texas A&M Cyclotron Institute publication record, 2026-10-11
+
+tumino2021:
+  authors: A. Tumino, C. A. Bertulani, M. La Cognata et al.
+  title: "The Trojan Horse method: a nuclear physics tool for astrophysics"
+  journal: Annu. Rev. Nucl. Part. Sci. 71, 345 (2021)
+  year: 2021
+  checked: >-
+    title, authors Tumino, Bertulani and La Cognata, volume and first page from
+    an indexed record and a seminar citation (second check by search); DOI not
+    confirmed, 2026-10-11
+
+casey2017:
+  authors: D. T. Casey et al.
+  title: Thermonuclear reactions probed at stellar-core conditions with laser-based inertial-confinement fusion
+  journal: Nat. Phys. 13, 1227 (2017)
+  year: 2017
+  doi: 10.1038/nphys4220
+  checked: Princeton research portal and OSTI record 1404861; LLNL news release, 2026-10-11
+
+# --- Solar neutrinos and compilations (timeline) ------------------------------
+
+bahcall1964:
+  authors: J. N. Bahcall
+  title: "Solar neutrinos. I. Theoretical"
+  journal: Phys. Rev. Lett. 12, 300 (1964)
+  year: 1964
+  checked: >-
+    volume and page from Bahcall's popular account (arXiv physics/0411190) and
+    other reference lists; title from the standard citation, not seen on the
+    APS page; DOI not confirmed, 2026-10-11
+
+adelberger1998:
+  authors: E. G. Adelberger et al.
+  title: Solar fusion cross sections
+  journal: Rev. Mod. Phys. 70, 1265 (1998)
+  year: 1998
+  doi: 10.1103/RevModPhys.70.1265
+  arxiv: astro-ph/9805121
+  checked: arXiv astro-ph/9805121 listing and NCSU repository record (pp. 1265–1291), 2026-10-11

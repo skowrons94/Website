@@ -1,0 +1,47 @@
+id: 16O-pg-17F
+label: ¹⁶O(p,γ)¹⁷F
+kind: capture
+target: 16O
+projectile: 1H
+ejectile: g
+product: 17F
+networks: [cno2]
+importance: major
+summary: >-
+  Oxygen-16 captures a proton and becomes radioactive fluorine-17. It is the
+  slowest step of the second CNO cycle.
+role: >-
+  Because this capture is slow, most of the oxygen-16 in a star survives
+  hydrogen burning. The small part that burns makes oxygen-17, whose amount
+  relative to oxygen-16 is measured in red giants and in grains of stardust
+  found in meteorites, and is used to test stellar models.
+details: >-
+  There are no resonances at stellar energies. The cross section is direct
+  capture to the ¹⁷F ground state and to its first excited state, a weakly bound
+  1/2⁺ level whose extended wave function makes the capture to it dominant at
+  low energy and gives the S-factor a steep rise towards zero energy. The
+  energy dependence is therefore well described by direct-capture and
+  microscopic models, and the rate rests on surface data scaled with such a
+  model. Solar Fusion II adopts S(0) = 10.6 ± 0.8 keV b from model
+  calculations normalised to the data of 1973 and 1997. A 2008 evaluation,
+  which corrected the data sets since 1958 for coincidence summing and
+  stopping powers, gives the rate with an uncertainty of about 7 %.
+status: well-known
+status_note: >-
+  A non-resonant direct-capture reaction whose energy dependence is fixed by
+  theory; the rate is known to about 7 %, limited by the normalisation of the
+  surface data.
+methods: [direct-surface, theory]
+measurements:
+  - year: 1997
+    method: direct-surface
+    note: >-
+      Cross sections for capture to the ground state and to the first excited
+      state. The S-factor for the excited-state transition rises as the energy
+      decreases, which the authors explained by the loose binding of the
+      proton in the 1/2⁺ state.
+    refs: [morlock1997]
+evaluations: [adelberger2011, iliadis2008, acharya2025]
+open_questions:
+  - Direct data closer to the Gamow window, to test the predicted rise of the S-factor at low energy.
+related: [17F-bp-17O, 15N-pg-16O, 17O-pa-14N]

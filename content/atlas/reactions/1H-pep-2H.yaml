@@ -1,0 +1,43 @@
+id: 1H-pep-2H
+label: ¹H(pe⁻,ν)²H
+kind: weak
+target: 1H
+projectile: "1H e-"
+ejectile: nu
+product: 2H
+networks: [pp1]
+importance: major
+summary: >-
+  Two protons and an electron combine into a deuteron and a neutrino. It is a
+  rare alternative to the fusion of two protons and gives neutrinos of a single,
+  fixed energy.
+role: >-
+  In the hot, dense centre of the Sun free electrons are everywhere. Instead of
+  emitting a positron, the fusing pair of protons can absorb one of these
+  electrons. This happens in only a small fraction of the fusions. Because only
+  two particles leave the reaction, the neutrino always carries the same
+  energy, which makes these pep neutrinos a clean probe of the solar core and
+  of how neutrinos change flavour inside the Sun.
+details: >-
+  The rate is not measured but calculated relative to the pp reaction: the
+  nuclear matrix element is the same, and the ratio of pep to pp rates depends
+  on the electron density and temperature at the centre of the Sun through a
+  phase-space and electron-wave-function factor. The predicted pep neutrino flux
+  is therefore tied closely to the pp flux and to the solar luminosity. Its
+  monoenergetic line lies in the energy region where the transition between
+  vacuum and matter-enhanced neutrino oscillations takes place. Borexino
+  reported the first evidence of pep neutrinos in 2012 (Bellini et al., Phys.
+  Rev. Lett. 108, 051302): an interaction rate of 3.1 ± 0.6 (stat) ± 0.3 (syst)
+  counts per day per 100 t, which corresponds to a flux of
+  (1.6 ± 0.3) × 10⁸ cm⁻² s⁻¹ for the MSW-LMA oscillation solution, in agreement
+  with the Standard Solar Model. The absence of a pep signal was disfavoured
+  at 98 % C.L.
+status: well-known
+status_note: >-
+  Fixed by the pp rate and the solar electron density; the ratio of the pep to
+  the pp rate is calculated with small uncertainty.
+methods: [theory]
+measurements: []
+evaluations: [adelberger2011, acharya2025]
+open_questions: []
+related: [1H-pp-2H]

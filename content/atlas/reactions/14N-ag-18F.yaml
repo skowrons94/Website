@@ -1,0 +1,47 @@
+id: 14N-ag-18F
+label: ¹⁴N(α,γ)¹⁸F
+kind: capture
+target: 14N
+projectile: 4He
+ejectile: g
+product: 18F
+networks: [he-burning]
+importance: minor
+summary: >-
+  Nitrogen-14 captures a helium nucleus and becomes fluorine-18. It is the
+  first step that turns the nitrogen left over from hydrogen burning into
+  neon-22, the fuel of a stellar neutron source.
+role: >-
+  Hydrogen burning through the CNO cycle leaves most of a star's carbon,
+  nitrogen and oxygen in the form of nitrogen-14. When helium starts to burn,
+  this nitrogen captures helium and becomes fluorine-18, which decays within
+  hours to oxygen-18. Oxygen-18 captures another helium nucleus and becomes
+  neon-22. The amount of neon-22 that later releases neutrons is therefore set
+  by the nitrogen that went through this reaction.
+details: >-
+  At helium-burning temperatures the rate is dominated by a few narrow
+  resonances in ¹⁸F, and the compiled rates are sums of their strengths.
+  Görres et al. (2000) measured the low-energy resonances with thin TiN
+  targets and a Ge clover detector at Karlsruhe and Notre Dame. The lowest
+  resonance was not observed; the authors argued that its strength lies far
+  below the reach of present experiments.
+status: improving
+status_note: >-
+  The resonances that set the rate have been measured directly; the lowest
+  one is known only from a theoretical argument.
+methods: [direct-surface]
+measurements:
+  - year: 2000
+    facility: other
+    lab: "Forschungszentrum Karlsruhe, Karlsruhe, and University of Notre Dame"
+    method: direct-surface
+    energy: "low-energy resonances"
+    note: >-
+      Strengths of the low-energy resonances with thin TiN targets and a Ge
+      clover detector; the lowest resonance was not observed and was argued to
+      be far too weak to measure.
+    refs: [gorres2000]
+evaluations: [angulo1999, iliadis2010]
+open_questions:
+  - The strength of the lowest resonances, which control the rate at the start of helium burning.
+related: [18F-bp-18O, 18O-ag-22Ne, 22Ne-an-25Mg, 14N-pg-15O]

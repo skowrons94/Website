@@ -1,0 +1,45 @@
+id: 1H-ng-2H
+label: ¹H(n,γ)²H
+kind: capture
+target: 1H
+projectile: n
+ejectile: g
+product: 2H
+networks: [bbn]
+importance: major
+summary: >-
+  A neutron and a proton bind into a deuteron and give off a γ-ray. This is the
+  first step of Big Bang nucleosynthesis: all later reactions start from the
+  deuterium it makes.
+role: >-
+  In the first minutes after the Big Bang, neutrons and protons combined into
+  deuterons almost as fast as energetic photons broke them apart again. Only
+  when the Universe had cooled enough did deuterium survive, and the build-up
+  of heavier nuclei could begin. The rate of this capture therefore sets when
+  nucleosynthesis starts and how many neutrons are still left, which in turn
+  fixes the amount of helium.
+details: >-
+  At BBN energies the capture is dominated by the isovector M1 transition from
+  the ¹S₀ continuum at the lowest energies and by isovector E1 capture from P
+  waves at higher energies. The cross section is calculated in pionless
+  effective field theory, with the M1 amplitude to next-to-next-to-leading
+  order and the E1 amplitude to N4LO; one counterterm is fixed by the cold
+  neutron capture rate and another by deuteron photodisintegration data. The
+  stated accuracy is 1 % for centre-of-mass energies up to about 1 MeV.
+status: well-known
+status_note: >-
+  Theory constrained by thermal capture and photodisintegration data gives the
+  cross section at BBN energies to about 1 %.
+methods: [theory]
+measurements:
+  - year: 2000
+    method: theory
+    energy: "up to about 1 MeV"
+    note: >-
+      Pionless effective field theory calculation with M1 to NNLO and E1 to
+      N4LO, constrained by the cold-neutron capture rate and by deuteron
+      photodisintegration; 1 % accuracy over the BBN range.
+    refs: [rupak2000]
+evaluations: [fields2020]
+open_questions: []
+related: [2H-pg-3He, 2H-dn-3He, 2H-dp-3H]

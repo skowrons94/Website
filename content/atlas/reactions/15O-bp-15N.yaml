@@ -1,0 +1,10 @@
+id: 15O-bp-15N
+label: ¹⁵O(β⁺ν)¹⁵N
+kind: decay
+target: 15O
+projectile: ""
+ejectile: e+ nu
+product: 15N
+networks: [cno1]
+summary: >-
+  Oxygen-15 turns into nitrogen-15 by emitting a positron and a neutrino; these neutrinos are part of the solar CNO neutrino flux.

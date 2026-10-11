@@ -1,0 +1,49 @@
+id: 21Ne-pg-22Na
+label: ²¹Ne(p,γ)²²Na
+kind: capture
+target: 21Ne
+projectile: 1H
+ejectile: g
+product: 22Na
+networks: [nena]
+importance: major
+summary: >-
+  A proton capture on the rare neon isotope ²¹Ne that makes radioactive ²²Na. It
+  is the second proton capture of the NeNa cycle.
+role: >-
+  ²¹Ne is the rarest of the stable neon isotopes, and in hydrogen burning it is
+  destroyed quickly by this reaction. Its rate therefore sets how much ²¹Ne
+  survives in stars and how much ²²Na is made. In nova explosions, ²²Na is of
+  special interest because its decay gives a γ-ray line that space telescopes
+  search for; the amount predicted depends in part on this reaction.
+details: >-
+  The rate at the temperatures of hydrogen shell burning and of novae is given by
+  a few narrow resonances. The LUNA measurement of Sidhu et al. (2025) remeasured
+  the resonances at Eₚ = 127.3, 271.4, 272.3, 291.5 and 352.6 keV deep underground. The strengths of the 127.3, 271.4 and 291.5 keV
+  resonances agree with earlier values within 1σ, while those of the 272.3 and
+  352.6 keV resonances, ωγ = 129.9 ± 5.8 meV and 14.9 ± 0.8 meV, are more than a
+  factor 1.5 above the literature values. New branching ratios were obtained for
+  the 127.3, 272.3 and 352.6 keV resonances, and the thermonuclear rate was
+  updated for nova temperatures.
+status: improving
+status_note: >-
+  The main low-energy resonances were remeasured underground in 2025; two of them
+  came out more than 50 % stronger than in the earlier literature, with
+  uncertainties of about 5 %.
+methods: [direct-underground, direct-surface]
+measurements:
+  - year: 2025
+    facility: luna-400
+    method: direct-underground
+    energy: "Eₚ = 127.3–352.6 keV (five resonances)"
+    note: >-
+      Resonance strengths measured deep underground. The
+      272.3 and 352.6 keV resonances are more than 1.5 times stronger than the
+      literature values; new γ-ray branching ratios for three resonances and an
+      updated rate for nova conditions.
+    refs: [sidhu2025]
+evaluations: [angulo1999]
+open_questions:
+  - The origin of the discrepancy between the new and the earlier strengths of the 272.3 and 352.6 keV resonances.
+  - An independent measurement of the 272.3 and 352.6 keV strengths with a different target and detection technique.
+related: [21Na-bp-21Ne, 22Na-bp-22Ne, 20Ne-pg-21Na, 22Ne-pg-23Na]

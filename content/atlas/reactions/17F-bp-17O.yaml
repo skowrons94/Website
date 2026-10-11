@@ -1,0 +1,10 @@
+id: 17F-bp-17O
+label: ¹⁷F(β⁺ν)¹⁷O
+kind: decay
+target: 17F
+projectile: ""
+ejectile: e+ nu
+product: 17O
+networks: [cno2]
+summary: >-
+  Fluorine-17 turns into stable oxygen-17 by emitting a positron and a neutrino.

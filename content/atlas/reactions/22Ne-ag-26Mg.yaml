@@ -1,0 +1,76 @@
+id: 22Ne-ag-26Mg
+label: ²²Ne(α,γ)²⁶Mg
+kind: capture
+target: 22Ne
+projectile: 4He
+ejectile: g
+product: 26Mg
+networks: [neutron-sources]
+importance: major
+summary: >-
+  Neon-22 captures a helium nucleus and keeps it, becoming magnesium-26. It
+  competes with the neutron-releasing reaction on the same nucleus.
+role: >-
+  Every neon-22 nucleus that captures helium through this reaction is lost as a
+  neutron source. At lower temperatures this capture is faster than the
+  neutron-producing reaction, so it decides how much neon-22 is still left
+  when the star becomes hot enough to release neutrons. It also adds
+  magnesium-26 to the gas the star returns to the Galaxy.
+details: >-
+  The rate is dominated by low-energy resonances in ²⁶Mg, chiefly those at
+  E(α,lab) = 650 and 830 keV. For the 830 keV resonance Hunt et al. (2019)
+  found ωγ = (4.6 ± 1.2)×10⁻⁵ eV at LENA, and Shahina et al. (2022)
+  measured ωγ = 35 ± 4 µeV and give a weighted average with earlier
+  measurements of 35 ± 2 µeV; for the 650 keV resonance they report an upper
+  limit, ωγ < 0.15 µeV. At lower energies the resonance strengths come only
+  from indirect data, and the literature values for the resonance at
+  E = 334 keV (E(α,lab) ≈ 395 keV, Ex = 10949 keV) span a wide range. LUNA
+  set the first direct upper limit on it, ωγ < 4.0×10⁻¹¹ eV at 90% confidence,
+  with a windowless enriched ²²Ne gas target and a 4π BGO summing detector
+  at the 400 kV accelerator; the background in the region of interest was
+  below 0.5 counts per day (Piatti et al. 2022). The authors propose to
+  extend the approach to higher energies at the 3.5 MV LUNA MV accelerator.
+status: uncertain
+status_note: >-
+  The 830 keV resonance is measured to about 6%, but the lower-lying resonances
+  are known only from indirect data and direct upper limits.
+methods: [direct-surface, direct-underground, anc]
+measurements:
+  - year: 2019
+    facility: tunl-lena
+    method: direct-surface
+    energy: "E(α,lab) = 0.83 MeV resonance"
+    note: >-
+      Implanted ²²Ne target and γγ-coincidence detection;
+      E(α,lab) = 835.2 ± 3.0 keV and ωγ = (4.6 ± 1.2)×10⁻⁵ eV, higher than
+      earlier values but overlapping within the uncertainties.
+    refs: [hunt2019]
+  - year: 2020
+    facility: texas-am
+    method: anc
+    energy: "²²Ne(⁶Li,d) and ²²Ne(⁷Li,t), 1.0 MeV/u ²²Ne beam"
+    note: >-
+      Partial α widths of ²⁶Mg resonances in the Gamow window; the (α,γ) rate
+      differs significantly from earlier values.
+    refs: [jayatissa2020]
+  - year: 2022
+    facility: luna-400
+    method: direct-underground
+    energy: "E = 334 keV resonance"
+    note: >-
+      First direct limit, ωγ < 4.0×10⁻¹¹ eV (90% CL), higher than most
+      indirect limits but free of their model assumptions.
+    refs: [piatti2022]
+  - year: 2022
+    facility: notre-dame
+    method: direct-surface
+    energy: "E(α,lab) = 650 and 830 keV resonances"
+    note: >-
+      Implanted ²²Ne targets; ωγ(830 keV) = 35 ± 4 µeV and the first direct
+      upper limit for the 650 keV resonance.
+    refs: [shahina2022]
+evaluations: [angulo1999, adsley2021]
+open_questions:
+  - The strengths of the resonances below 830 keV, in particular at E = 334 keV, where direct sensitivity must improve by orders of magnitude to reach the indirect estimates.
+  - Spin-parity assignments of the ²⁶Mg states in the Gamow window, which decide whether a state can be populated in α capture.
+related: [22Ne-an-25Mg, 18O-ag-22Ne]

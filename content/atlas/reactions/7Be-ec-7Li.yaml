@@ -1,0 +1,11 @@
+id: 7Be-ec-7Li
+label: ⁷Be(e⁻,ν)⁷Li
+kind: decay
+target: 7Be
+projectile: e-
+ejectile: nu
+product: 7Li
+networks: [pp2]
+summary: >-
+  ⁷Be captures one of the electrons around it and becomes ⁷Li, emitting a
+  neutrino of fixed energy; in the Sun these are the ⁷Be solar neutrinos.

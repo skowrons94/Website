@@ -1,0 +1,54 @@
+id: 3He-hep-4He
+label: ³He(p,e⁺ν)⁴He
+kind: weak
+target: 3He
+projectile: 1H
+ejectile: "e+ nu"
+product: 4He
+networks: [pp3]
+importance: minor
+summary: >-
+  A ³He nucleus captures a proton and becomes ⁴He directly, emitting a positron
+  and a neutrino. It is the rarest branch of the pp chain and makes the most
+  energetic solar neutrinos, called hep neutrinos.
+role: >-
+  Only a tiny fraction of the pp-chain terminations goes this way, so the
+  reaction adds nothing to the energy of the Sun. Its neutrinos, however, reach
+  higher energies than any other solar neutrinos, beyond the end of the ⁸B
+  spectrum. Large water and scintillator detectors search for them as a test
+  of solar models; so far only upper limits have been set.
+details: >-
+  The reaction is a weak capture like p + p, but the leading one-body
+  Gamow–Teller matrix element is strongly suppressed by the symmetries of the
+  ³He and ⁴He wave functions. Two-body axial currents and small components of
+  the wave functions therefore contribute at the same level as the one-body
+  term, and the result is sensitive to cancellations between them. The
+  cross section cannot be measured; the S-factor is taken from ab initio
+  calculations, and the predicted hep flux carries a much larger relative
+  uncertainty than any other solar-neutrino flux. The calculation of Marcucci
+  et al. (2000) with correlated hyperspherical-harmonics wave functions gave
+  an S-factor about 4.5 times the value then used in the standard solar model,
+  with P-wave captures contributing about 40 %. On the observational side, the
+  first phase of SNO set an upper limit of 2.3 × 10⁴ cm⁻² s⁻¹ (90 % C.L.) on
+  the total hep-neutrino flux (Aharmim et al., Astrophys. J. 653, 1545, 2006).
+status: unmeasured
+status_note: >-
+  Known only from theory, with large relative uncertainty because of
+  cancellations in the weak matrix element; solar-neutrino detectors give only
+  upper limits on the flux.
+methods: [theory]
+measurements:
+  - year: 2000
+    method: theory
+    energy: "0–10 keV"
+    note: >-
+      Ab initio calculation with the AV18 two-nucleon and Urbana IX
+      three-nucleon interactions; S(0) = 9.64 × 10⁻²⁰ keV b and
+      10.1 × 10⁻²⁰ keV b at 10 keV, about 4.5 times the earlier standard value
+      of 2.3 × 10⁻²⁰ keV b. P-wave transitions give about 40 % of the result.
+    refs: [marcucci2000]
+evaluations: [adelberger2011, acharya2025]
+open_questions:
+  - A first detection of hep neutrinos, which would test the calculated S-factor.
+  - The convergence of the two-body current contributions in ab initio calculations.
+related: [1H-pp-2H, 7Be-pg-8B, 3He-3He2p-4He]

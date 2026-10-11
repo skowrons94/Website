@@ -1,0 +1,55 @@
+id: 18O-ag-22Ne
+label: ¹⁸O(α,γ)²²Ne
+kind: capture
+target: 18O
+projectile: 4He
+ejectile: g
+product: 22Ne
+networks: [he-burning]
+importance: minor
+summary: >-
+  Oxygen-18 captures a helium nucleus and becomes neon-22. It completes the
+  conversion of nitrogen into neon-22 during helium burning.
+role: >-
+  The oxygen-18 made from nitrogen at the start of helium burning is turned
+  into neon-22 by this reaction. Neon-22 later supplies neutrons in massive
+  stars and in giant stars through ²²Ne(α,n)²⁵Mg. The speed of this reaction
+  also decides how much oxygen-18 survives, which matters for the oxygen
+  isotope ratios measured in stardust grains and in some carbon-rich stars.
+details: >-
+  The rate at helium-burning temperatures is dominated by two weak resonances
+  at E(α,lab) ≈ 470 and 566 keV. For a long time only upper limits existed.
+  Dababneh et al. (2003) gave the first partial strengths,
+  0.48 ± 0.16 µeV and 0.71 ± 0.17 µeV. Dombos et al. (2022) measured the total
+  strengths for the first time at the CASPAR underground accelerator, with
+  the γ-summing detector HECTOR: 0.26 ± 0.05 µeV and 0.63 ± 0.30 µeV for the
+  resonances at 472 and 569 keV, with new strengths for those at 662.1, 749.9
+  and 767.6 keV.
+status: improving
+status_note: >-
+  The two resonances that dominate the rate have now been measured directly,
+  the higher one with a 50% uncertainty.
+methods: [direct-surface, direct-underground]
+measurements:
+  - year: 2003
+    facility: other
+    lab: "Forschungszentrum Karlsruhe, Karlsruhe"
+    method: direct-surface
+    energy: "E(α,lab) ≈ 470 and 566 keV resonances"
+    note: >-
+      First direct partial strengths of the two weak resonances,
+      0.48 ± 0.16 µeV and 0.71 ± 0.17 µeV.
+    refs: [dababneh2003]
+  - year: 2022
+    facility: caspar
+    method: direct-underground
+    energy: "E(α,lab) = 472–768 keV"
+    note: >-
+      First total strengths of the 472 and 569 keV resonances,
+      0.26 ± 0.05 µeV and 0.63 ± 0.30 µeV, measured with the HECTOR γ-summing
+      detector; new strengths for the resonances at 662.1, 749.9 and 767.6 keV.
+    refs: [dombos2022]
+evaluations: [angulo1999, iliadis2010]
+open_questions:
+  - The strength of the 569 keV resonance, known to 50%, and the agreement between the partial and total strengths of the 472 keV resonance.
+related: [14N-ag-18F, 18F-bp-18O, 22Ne-an-25Mg, 22Ne-ag-26Mg]

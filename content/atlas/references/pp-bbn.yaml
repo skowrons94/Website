@@ -1,0 +1,521 @@
+# References for the pp chains and Big Bang nucleosynthesis.
+# DOIs marked "APS scheme" in `checked` follow the deterministic
+# 10.1103/<Journal>.<volume>.<page> form from a confirmed journal reference;
+# they were not seen on the publisher page itself.
+
+# --- Evaluations and BBN reviews -------------------------------------------
+
+descouvemont2004:
+  authors: P. Descouvemont, A. Adahchour, C. Angulo, A. Coc, E. Vangioni-Flam
+  title: Compilation and R-matrix analysis of Big Bang nuclear reaction rates
+  journal: At. Data Nucl. Data Tables 88, 203 (2004)
+  year: 2004
+  arxiv: astro-ph/0407101
+  checked: arXiv astro-ph/0407101 listing and UCLouvain repository record (vol. 88, pp. 203–236); DOI not seen, 2026-10-11
+
+fields2020:
+  authors: B. D. Fields, K. A. Olive, T.-H. Yeh, C. Young
+  title: Big-Bang Nucleosynthesis after Planck
+  journal: JCAP 03, 010 (2020); erratum JCAP 11, E02 (2020)
+  year: 2020
+  doi: 10.1088/1475-7516/2020/03/010
+  arxiv: "1912.01132"
+  checked: arXiv 1912.01132 and University of Minnesota records of the article and erratum; DOI follows the IOP JCAP scheme, 2026-10-11
+
+iliadis2020:
+  authors: C. Iliadis, A. Coc
+  title: Thermonuclear reaction rates and primordial nucleosynthesis
+  journal: Astrophys. J. 901, 127 (2020)
+  year: 2020
+  arxiv: "2008.12200"
+  checked: arXiv 2008.12200, HAL record hal-02946231 and TUNL publication list; DOI not seen, 2026-10-11
+
+pisanti2021:
+  authors: O. Pisanti, G. Mangano, G. Miele, P. Mazzella
+  title: "Primordial deuterium after LUNA: concordances and error budget"
+  journal: JCAP 04, 020 (2021)
+  year: 2021
+  doi: 10.1088/1475-7516/2021/04/020
+  arxiv: "2011.11537"
+  checked: arXiv 2011.11537 listing, which links the JCAP DOI, 2026-10-11
+
+# --- d(p,γ)3He ----------------------------------------------------------------
+
+ma1997:
+  authors: L. Ma, H. J. Karwowski, C. R. Brune et al.
+  title: Measurements of ¹H(d⃗,γ)³He and ²H(p⃗,γ)³He at very low energies
+  journal: Phys. Rev. C 55, 588 (1997)
+  year: 1997
+  doi: 10.1103/PhysRevC.55.588
+  checked: OSTI records 450481 and 804151 and ACNP index (vol. 55, pp. 588–596); DOI from the APS scheme, 2026-10-11
+
+schmid1997:
+  authors: G. J. Schmid et al.
+  title: The ²H(p⃗,γ)³He and ¹H(d⃗,γ)³He reactions below 80 keV
+  journal: Phys. Rev. C 56, 2565 (1997)
+  year: 1997
+  doi: 10.1103/PhysRevC.56.2565
+  checked: INIS record and Duke Scholars record, DOI quoted there, 2026-10-11
+
+casella2002:
+  authors: C. Casella et al. (LUNA Collaboration)
+  title: First measurement of the d(p,γ)³He cross section down to the solar Gamow peak
+  journal: Nucl. Phys. A 706, 203 (2002)
+  year: 2002
+  doi: 10.1016/S0375-9474(02)00749-2
+  luna: true
+  checked: University of Naples and Turin IRIS records (DOI and pages 203–216), 2026-10-11
+
+marcucci2016:
+  authors: L. E. Marcucci, G. Mangano, A. Kievsky, M. Viviani
+  title: Implication of the proton-deuteron radiative capture for Big Bang Nucleosynthesis
+  journal: Phys. Rev. Lett. 116, 102501 (2016)
+  year: 2016
+  doi: 10.1103/PhysRevLett.116.102501
+  arxiv: "1510.07877"
+  checked: arXiv 1510.07877 and University of Pisa and Naples repository records; DOI from the APS scheme, 2026-10-11
+
+tisma2019:
+  authors: I. Tišma, M. Lipoglavšek, M. Mihovilovič et al.
+  title: Experimental cross section and angular distribution of the ²H(p,γ)³He reaction at Big-Bang nucleosynthesis energies
+  journal: Eur. Phys. J. A 55, 137 (2019)
+  year: 2019
+  doi: 10.1140/epja/i2019-12816-1
+  checked: Springer article page and INSPIRE record 1750911 as listed by search, 2026-10-11
+
+mossa2020:
+  authors: V. Mossa et al. (LUNA Collaboration)
+  title: The baryon density of the Universe from an improved rate of deuterium burning
+  journal: Nature 587, 210 (2020)
+  year: 2020
+  doi: 10.1038/s41586-020-2878-4
+  luna: true
+  checked: INAF open-access record, RePEc entry and Padua repository preprint, 2026-10-11
+
+mossa2020b:
+  authors: V. Mossa et al. (LUNA Collaboration)
+  title: Setup commissioning for an improved measurement of the D(p,γ)³He cross section at Big Bang Nucleosynthesis energies
+  journal: Eur. Phys. J. A 56, 144 (2020)
+  year: 2020
+  doi: 10.1140/epja/s10050-020-00149-1
+  arxiv: "2005.00002"
+  luna: true
+  checked: arXiv 2005.00002 and HZDR publication record, 2026-10-11
+
+turkat2021:
+  authors: S. Turkat et al.
+  title: Measurement of the ²H(p,γ)³He S factor at 265–1094 keV
+  journal: Phys. Rev. C 103, 045805 (2021)
+  year: 2021
+  doi: 10.1103/PhysRevC.103.045805
+  arxiv: "2104.06914"
+  checked: arXiv 2104.06914, HZDR record Publ-31449 and JYX repository record; DOI from the APS scheme, 2026-10-11
+
+# --- 3He(3He,2p)4He -------------------------------------------------------------
+
+arpesella1996:
+  authors: C. Arpesella et al. (LUNA Collaboration)
+  title: Measurement of the ³He(³He,2p)⁴He cross section within the solar Gamow peak
+  journal: Phys. Lett. B 389, 452 (1996)
+  year: 1996
+  luna: true
+  checked: ACNP index and Turin IRIS record (vol. 389, pp. 452–456); DOI not found, 2026-10-11
+
+junker1998:
+  authors: M. Junker et al. (LUNA Collaboration)
+  title: Cross section of ³He(³He,2p)⁴He measured at solar energies
+  journal: Phys. Rev. C 57, 2700 (1998)
+  year: 1998
+  doi: 10.1103/PhysRevC.57.2700
+  arxiv: nucl-ex/9707003
+  luna: true
+  checked: arXiv nucl-ex/9707003 journal reference and DOI, Turin IRIS abstract, 2026-10-11
+
+bonetti1999:
+  authors: R. Bonetti et al. (LUNA Collaboration)
+  title: First measurement of the ³He(³He,2p)⁴He cross section down to the lower edge of the solar Gamow peak
+  journal: Phys. Rev. Lett. 82, 5205 (1999)
+  year: 1999
+  doi: 10.1103/PhysRevLett.82.5205
+  arxiv: nucl-ex/9902004
+  luna: true
+  checked: arXiv nucl-ex/9902004 and Turin IRIS record with DOI, 2026-10-11
+
+kudomi2004:
+  authors: N. Kudomi, M. Komori, K. Takahisa, S. Yoshida, K. Kume, H. Ohsumi, T. Itahashi
+  title: Precise measurement of cross section of ³He(³He,2p)⁴He by using ³He doubly charged beam
+  journal: Phys. Rev. C 69, 015802 (2004)
+  year: 2004
+  doi: 10.1103/PhysRevC.69.015802
+  arxiv: astro-ph/0306454
+  checked: arXiv astro-ph/0306454 and EXFOR entry E1890; DOI from the APS scheme, 2026-10-11
+
+zylstra2017:
+  authors: A. B. Zylstra et al.
+  title: Proton spectra from ³He+T and ³He+³He fusion at low center-of-mass energy, with potential implications for solar fusion cross sections
+  journal: Phys. Rev. Lett. 119, 222701 (2017)
+  year: 2017
+  doi: 10.1103/PhysRevLett.119.222701
+  checked: APS accepted-manuscript link and MIT DSpace record 1721.1/114497, 2026-10-11
+
+# --- 3He(α,γ)7Be ----------------------------------------------------------------
+
+narasingh2004:
+  authors: B. S. Nara Singh, M. Hass, Y. Nir-El, G. Haquin
+  title: New precision measurement of the ³He(⁴He,γ)⁷Be cross section
+  journal: Phys. Rev. Lett. 93, 262503 (2004)
+  year: 2004
+  doi: 10.1103/PhysRevLett.93.262503
+  arxiv: nucl-ex/0407017
+  checked: arXiv nucl-ex/0407017 and Ben-Gurion and UWS research-portal records with DOI, 2026-10-11
+
+bemmerer2006:
+  authors: D. Bemmerer et al. (LUNA Collaboration)
+  title: Activation measurement of the ³He(α,γ)⁷Be cross section at low energy
+  journal: Phys. Rev. Lett. 97, 122502 (2006)
+  year: 2006
+  doi: 10.1103/PhysRevLett.97.122502
+  arxiv: nucl-ex/0609013
+  luna: true
+  checked: arXiv nucl-ex/0609013 and HZDR record Publ-10247; DOI from the APS scheme, 2026-10-11
+
+gyurky2007:
+  authors: Gy. Gyürky et al. (LUNA Collaboration)
+  title: ³He(α,γ)⁷Be cross section at low energies
+  journal: Phys. Rev. C 75, 035805 (2007)
+  year: 2007
+  doi: 10.1103/PhysRevC.75.035805
+  luna: true
+  checked: University of Milan record and abstract quoted in later LUNA papers; DOI from the APS scheme, 2026-10-11
+
+confortola2007:
+  authors: F. Confortola et al. (LUNA Collaboration)
+  title: Astrophysical S factor of the ³He(α,γ)⁷Be reaction measured at low energy via detection of prompt and delayed γ rays
+  journal: Phys. Rev. C 75, 065803 (2007)
+  year: 2007
+  doi: 10.1103/PhysRevC.75.065803
+  arxiv: "0705.2151"
+  luna: true
+  checked: arXiv 0705.2151, University of Milan and Turin records; DOI from the APS scheme, 2026-10-11
+
+brown2007:
+  authors: T. A. D. Brown, C. Bordeanu, K. A. Snover et al.
+  title: ³He + ⁴He → ⁷Be astrophysical S factor
+  journal: Phys. Rev. C 76, 055801 (2007)
+  year: 2007
+  doi: 10.1103/PhysRevC.76.055801
+  arxiv: "0710.1279"
+  checked: arXiv 0710.1279, Texas A&M publication list and EXFOR entry C1610, 2026-10-11
+
+costantini2008:
+  authors: H. Costantini et al. (LUNA Collaboration)
+  title: "The ³He(α,γ)⁷Be S-factor at solar energies: the prompt γ experiment at LUNA"
+  journal: Nucl. Phys. A 814, 144 (2008)
+  year: 2008
+  doi: 10.1016/j.nuclphysa.2008.09.014
+  arxiv: "0809.5269"
+  luna: true
+  checked: arXiv 0809.5269 and HZDR record Publ-12003, 2026-10-11
+
+dileva2009:
+  authors: A. Di Leva et al.
+  title: "Stellar and primordial nucleosynthesis of ⁷Be: measurement of ³He(α,γ)⁷Be"
+  journal: Phys. Rev. Lett. 102, 232502 (2009); erratum Phys. Rev. Lett. 103 (2009)
+  year: 2009
+  doi: 10.1103/PhysRevLett.102.232502
+  checked: University of Naples IRIS record and JINA Virtual Journal listing of the article and its erratum; DOI from the APS scheme, 2026-10-11
+
+kontos2013:
+  authors: A. Kontos, E. Uberseder, R. deBoer, J. Görres, C. Akers, A. Best, M. Couder, M. Wiescher
+  title: Astrophysical S factor of ³He(α,γ)⁷Be
+  journal: Phys. Rev. C 87, 065804 (2013)
+  year: 2013
+  doi: 10.1103/PhysRevC.87.065804
+  checked: University of Naples IRIS record and later citations; DOI quoted there, 2026-10-11
+
+szucs2019:
+  authors: T. Szücs, G. G. Kiss, Gy. Gyürky, Z. Halász, T. N. Szegedi, Zs. Fülöp
+  title: Cross section of ³He(α,γ)⁷Be around the ⁷Be proton separation threshold
+  journal: Phys. Rev. C 99, 055804 (2019)
+  year: 2019
+  doi: 10.1103/PhysRevC.99.055804
+  checked: HZDR record Publ-29287 and REAL repository record 99555; DOI from the APS scheme, 2026-10-11
+
+# --- 7Be(p,γ)8B -----------------------------------------------------------------
+
+filippone1983:
+  authors: B. W. Filippone, A. J. Elwyn, C. N. Davids, D. D. Koetke
+  title: Proton capture cross section of ⁷Be and the flux of high energy solar neutrinos
+  journal: Phys. Rev. C 28, 2222 (1983)
+  year: 1983
+  doi: 10.1103/PhysRevC.28.2222
+  checked: Caltech Authors record and EXFOR entry; DOI quoted in the bibliographic records, 2026-10-11
+
+hammache1998:
+  authors: F. Hammache et al.
+  title: New measurement and analysis of the ⁷Be(p,γ)⁸B cross section
+  journal: Phys. Rev. Lett. 80, 928 (1998)
+  year: 1998
+  doi: 10.1103/PhysRevLett.80.928
+  arxiv: nucl-ex/9712003
+  checked: arXiv nucl-ex/9712003 journal reference; DOI from the APS scheme, 2026-10-11
+
+hammache2001:
+  authors: F. Hammache et al.
+  title: Low-energy measurement of the ⁷Be(p,γ)⁸B cross section
+  journal: Phys. Rev. Lett. 86, 3985 (2001)
+  year: 2001
+  doi: 10.1103/PhysRevLett.86.3985
+  arxiv: nucl-ex/0101014
+  checked: arXiv nucl-ex/0101014, UCLouvain and Bordeaux repository records with DOI, 2026-10-11
+
+baby2003:
+  authors: L. T. Baby, M. Hass et al.
+  title: Precision measurement of the ⁷Be(p,γ)⁸B cross section with an implanted ⁷Be target
+  journal: Phys. Rev. Lett. 90, 022501 (2003); erratum Phys. Rev. Lett. 92, 029901 (2004)
+  year: 2003
+  doi: 10.1103/PhysRevLett.90.022501
+  arxiv: nucl-ex/0208005
+  checked: arXiv nucl-ex/0208005 journal reference and Weizmann research-portal record; DOI from the APS scheme; author list beyond Baby and Hass not seen on the publisher page, 2026-10-11
+
+junghans2003:
+  authors: A. R. Junghans et al.
+  title: Precise measurement of the ⁷Be(p,γ)⁸B S factor
+  journal: Phys. Rev. C 68, 065803 (2003)
+  year: 2003
+  doi: 10.1103/PhysRevC.68.065803
+  arxiv: nucl-ex/0308003
+  checked: HZDR record Publ-6536 and arXiv nucl-ex/0308003; DOI from the APS scheme, 2026-10-11
+
+junghans2010:
+  authors: A. R. Junghans, K. A. Snover, E. C. Mohrmann, E. G. Adelberger, L. Buchmann
+  title: Updated S factors for the ⁷Be(p,γ)⁸B reaction
+  journal: Phys. Rev. C 81, 012801(R) (2010)
+  year: 2010
+  doi: 10.1103/PhysRevC.81.012801
+  checked: HZDR record Publ-13139 and JINA Virtual Journal listing (5 March 2010); DOI from the APS scheme, 2026-10-11
+
+motobayashi1994:
+  authors: T. Motobayashi et al.
+  title: Coulomb dissociation of ⁸B and the ⁷Be(p,γ)⁸B reaction at low energies
+  journal: Phys. Rev. Lett. 73, 2680 (1994)
+  year: 1994
+  doi: 10.1103/PhysRevLett.73.2680
+  checked: EXFOR entry E1576 (journal reference and title); DOI from the APS scheme, 2026-10-11
+
+schumann2003:
+  authors: F. Schümann, F. Hammache, S. Typel et al.
+  title: Coulomb dissociation of ⁸B and the low-energy cross section of the ⁷Be(p,γ)⁸B solar fusion reaction
+  journal: Phys. Rev. Lett. 90, 232501 (2003)
+  year: 2003
+  doi: 10.1103/PhysRevLett.90.232501
+  arxiv: nucl-ex/0304011
+  checked: Santiago de Compostela research-portal record (volume, issue, year) and arXiv nucl-ex/0304011; DOI from the APS scheme, 2026-10-11
+
+schumann2006:
+  authors: F. Schümann, S. Typel et al.
+  title: Low-energy cross section of the ⁷Be(p,γ)⁸B solar fusion reaction from the Coulomb dissociation of ⁸B
+  journal: Phys. Rev. C 73, 015806 (2006)
+  year: 2006
+  doi: 10.1103/PhysRevC.73.015806
+  checked: Santiago de Compostela research-portal record with DOI, 2026-10-11
+
+# --- 2H(α,γ)6Li -----------------------------------------------------------------
+
+kiener1991:
+  authors: J. Kiener, H. J. Gils, H. Rebel, S. Zagromski, G. Gsottschneider, N. Heide, H. Jelitto, J. Wentz, G. Baur
+  title: Measurements of the Coulomb dissociation cross section of 156 MeV ⁶Li projectiles at extremely low relative fragment energies of astrophysical interest
+  journal: Phys. Rev. C 44, 2195 (1991)
+  year: 1991
+  doi: 10.1103/PhysRevC.44.2195
+  checked: KIT library record (also KfK report 4870) and later citations; DOI from the APS scheme, 2026-10-11
+
+hammache2010:
+  authors: F. Hammache et al.
+  title: High-energy breakup of ⁶Li as a tool to study the Big Bang nucleosynthesis reaction ²H(α,γ)⁶Li
+  journal: Phys. Rev. C 82, 065803 (2010)
+  year: 2010
+  doi: 10.1103/PhysRevC.82.065803
+  arxiv: "1011.6179"
+  checked: Santiago de Compostela research-portal record with DOI, HZDR record Publ-14337 and arXiv 1011.6179, 2026-10-11
+
+anders2014:
+  authors: M. Anders et al. (LUNA Collaboration)
+  title: First direct measurement of the ²H(α,γ)⁶Li cross section at Big Bang energies and the primordial lithium problem
+  journal: Phys. Rev. Lett. 113, 042501 (2014)
+  year: 2014
+  doi: 10.1103/PhysRevLett.113.042501
+  luna: true
+  checked: HZDR record Publ-19877, Edinburgh, Milan and Turin repository records with DOI, 2026-10-11
+
+trezzi2017:
+  authors: D. Trezzi et al. (LUNA Collaboration)
+  title: Big Bang ⁶Li nucleosynthesis studied deep underground (LUNA collaboration)
+  journal: Astropart. Phys. 89, 57 (2017)
+  year: 2017
+  doi: 10.1016/j.astropartphys.2017.01.007
+  luna: true
+  checked: HZDR record Publ-25241, Edinburgh and Milan repository records with DOI; last page differs between repositories, 2026-10-11
+
+# --- 3He(d,p)4He ------------------------------------------------------------------
+
+costantini2000:
+  authors: H. Costantini et al. (LUNA Collaboration)
+  title: Stopping power, electron screening and the astrophysical S(E) factor of d(³He,p)⁴He
+  journal: Phys. Lett. B 482, 43 (2000)
+  year: 2000
+  doi: 10.1016/S0370-2693(00)00513-X
+  luna: true
+  checked: Naples, Pisa and Turin repository records (pp. 43–49) with DOI, 2026-10-11
+
+aliotta2001:
+  authors: M. Aliotta, F. Raiola, G. Gyürky et al.
+  title: Electron screening effect in the reactions ³He(d,p)⁴He and d(³He,p)⁴He
+  journal: Nucl. Phys. A 690, 790 (2001)
+  year: 2001
+  doi: 10.1016/S0375-9474(01)00366-9
+  checked: EXFOR entry A0228 and Naples IRIS record with DOI, 2026-10-11
+
+lacognata2005:
+  authors: M. La Cognata et al.
+  title: Bare-nucleus astrophysical factor of the ³He(d,p)⁴He reaction via the "Trojan horse" method
+  journal: Phys. Rev. C 72 (2005), issue 6
+  year: 2005
+  checked: >-
+    JINA Virtual Journal listing (Phys. Rev. C 72, issue 6), OSTI and Catania
+    IRIS records of the abstract, citation as "La Cognata et al. 2005" in arXiv
+    1403.4909; article number, full author list and DOI not confirmed, 2026-10-11
+
+# --- 7Be(n,p)7Li ------------------------------------------------------------------
+
+koehler1988:
+  authors: P. E. Koehler, C. D. Bowman et al.
+  title: ⁷Be(n,p)⁷Li total cross section from 25 meV to 13.5 keV
+  journal: Phys. Rev. C 37, 917 (1988)
+  year: 1988
+  doi: 10.1103/PhysRevC.37.917
+  checked: APS issue listing (vol. 37, no. 3) and later reviews; DOI from the APS scheme, 2026-10-11
+
+damone2018:
+  authors: L. Damone et al. (n_TOF Collaboration)
+  title: ⁷Be(n,p)⁷Li reaction and the cosmological lithium problem
+  journal: Phys. Rev. Lett. 121, 042701 (2018)
+  year: 2018
+  doi: 10.1103/PhysRevLett.121.042701
+  arxiv: "1806.03050"
+  checked: Seville, INAF, Manchester and White Rose repository records with DOI, 2026-10-11
+
+# --- Weak processes: pp, pep, hep ---------------------------------------------------
+
+schiavilla1998:
+  authors: R. Schiavilla, V. G. J. Stoks et al.
+  title: Weak capture of protons by protons
+  journal: Phys. Rev. C 58, 1263 (1998)
+  year: 1998
+  doi: 10.1103/PhysRevC.58.1263
+  arxiv: nucl-th/9808010
+  checked: arXiv nucl-th/9808010 and Adelaide repository record (pp. 1263–1277) with DOI, 2026-10-11
+
+marcucci2013:
+  authors: L. E. Marcucci, R. Schiavilla, M. Viviani
+  title: Proton-proton weak capture in chiral effective field theory
+  journal: Phys. Rev. Lett. 110, 192503 (2013); erratum Phys. Rev. Lett. 123, 019901 (2019)
+  year: 2013
+  doi: 10.1103/PhysRevLett.110.192503
+  arxiv: "1303.3124"
+  checked: APS DOI link in search results, arXiv 1303.3124 and Pisa repository record; erratum as cited in later work, 2026-10-11
+
+marcucci2000:
+  authors: L. E. Marcucci, R. Schiavilla, M. Viviani, A. Kievsky, S. Rosati, J. F. Beacom
+  title: Weak proton capture on ³He
+  journal: Phys. Rev. C 63, 015801 (2000)
+  year: 2000
+  doi: 10.1103/PhysRevC.63.015801
+  arxiv: nucl-th/0006005
+  checked: arXiv nucl-th/0006005 journal reference and Pisa repository record; DOI from the APS scheme, 2026-10-11
+
+aharmim2006:
+  authors: B. Aharmim et al. (SNO Collaboration)
+  title: A search for neutrinos from the solar hep reaction and the diffuse supernova neutrino background with the Sudbury Neutrino Observatory
+  journal: Astrophys. J. 653, 1545 (2006)
+  year: 2006
+  arxiv: hep-ex/0607010
+  checked: arXiv hep-ex/0607010, SNO collaboration paper list and Kentucky and IP Paris research-portal records (pp. 1545–1551); DOI not seen, 2026-10-11
+
+borexino2012:
+  authors: G. Bellini et al. (Borexino Collaboration)
+  title: First evidence of pep solar neutrinos by direct detection in Borexino
+  journal: Phys. Rev. Lett. 108, 051302 (2012)
+  year: 2012
+  doi: 10.1103/PhysRevLett.108.051302
+  arxiv: "1110.3230"
+  checked: arXiv 1110.3230, Princeton and Perugia repository records; DOI from the APS scheme, 2026-10-11
+
+# --- 1H(n,γ)2H --------------------------------------------------------------------
+
+rupak2000:
+  authors: G. Rupak
+  title: Precision calculation of np → dγ cross section for big-bang nucleosynthesis
+  journal: Nucl. Phys. A 678, 405 (2000)
+  year: 2000
+  doi: 10.1016/S0375-9474(00)00323-7
+  arxiv: nucl-th/9911018
+  checked: arXiv nucl-th/9911018, which links the DOI; volume and page not seen on the publisher page, 2026-10-11
+
+# --- d+d, d+t ----------------------------------------------------------------------
+
+greife1995:
+  authors: U. Greife, F. Gorris, M. Junker, C. Rolfs, D. Zahnow
+  title: Oppenheimer-Phillips effect and electron screening in d+d fusion reactions
+  journal: Z. Phys. A 351, 107 (1995)
+  year: 1995
+  doi: 10.1007/BF01292792
+  checked: Springer DOI page with abstract and EXFOR entry O1171, 2026-10-11
+
+leonard2006:
+  authors: D. S. Leonard, H. J. Karwowski, C. R. Brune, B. M. Fisher, E. J. Ludwig
+  title: Precision measurements of ²H(d,p)³H and ²H(d,n)³He total cross sections at Big Bang nucleosynthesis energies
+  journal: Phys. Rev. C 73, 045801 (2006)
+  year: 2006
+  doi: 10.1103/PhysRevC.73.045801
+  arxiv: nucl-ex/0601035
+  checked: arXiv nucl-ex/0601035 and EXFOR entry C1499; DOI from the APS scheme, 2026-10-11
+
+tumino2014:
+  authors: A. Tumino et al.
+  title: New determination of the ²H(d,p)³H and ²H(d,n)³He reaction rates at astrophysical energies
+  journal: Astrophys. J. 785, 96 (2014)
+  year: 2014
+  checked: Texas A&M Cyclotron Institute publication list and later THM reviews; DOI not seen, 2026-10-11
+
+bosch1992:
+  authors: H.-S. Bosch, G. M. Hale
+  title: Improved formulas for fusion cross-sections and thermal reactivities
+  journal: Nucl. Fusion 32, 611 (1992); correction Nucl. Fusion 33, 1919 (1993)
+  year: 1992
+  checked: INIS record (vol. 32, no. 4, pp. 611–631) and IOP page of the 1993 correction; DOI of the 1992 article not seen, 2026-10-11
+
+# --- 3H(α,γ)7Li, 7Li(p,α)4He -------------------------------------------------------
+
+brune1994:
+  authors: C. R. Brune, R. W. Kavanagh, C. Rolfs
+  title: ³H(α,γ)⁷Li reaction at low energies
+  journal: Phys. Rev. C 50, 2205 (1994)
+  year: 1994
+  doi: 10.1103/PhysRevC.50.2205
+  checked: Caltech Authors feed, Caltech thesis record 6174 and EXFOR entry C0191; DOI from the APS scheme, 2026-10-11
+
+engstler1992:
+  authors: S. Engstler, G. Raimann, C. Angulo, U. Greife, C. Rolfs, U. Schröder, E. Somorjai, B. Kirch, K. Langanke
+  title: Isotopic dependence of electron screening in fusion reactions
+  journal: Z. Phys. A 342, 471 (1992)
+  year: 1992
+  doi: 10.1007/BF01294958
+  checked: EXFOR entry A0632 and Atomki publication database; DOI from a doi.org page carrying the abstract, 2026-10-11
+
+lattuada2001:
+  authors: M. Lattuada, R. G. Pizzone, S. Typel et al.
+  title: The bare astrophysical S(E) factor of the ⁷Li(p,α)α reaction
+  journal: Astrophys. J. 562, 1076 (2001)
+  year: 2001
+  checked: full text in the Catania IRIS repository (pp. 1076–1080); DOI not seen, 2026-10-11

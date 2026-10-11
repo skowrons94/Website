@@ -1,0 +1,107 @@
+id: 2H-pg-3He
+label: ²H(p,γ)³He
+kind: capture
+target: 2H
+projectile: 1H
+ejectile: g
+product: 3He
+networks: [pp1, bbn]
+importance: key
+summary: >-
+  A deuteron captures a proton and becomes ³He, giving off a γ-ray. In the Sun
+  this follows the fusion of two protons almost at once. After the Big Bang it
+  was the main reaction that destroyed deuterium.
+role: >-
+  Deuterium, the nucleus made of one proton and one neutron, was formed in the
+  first minutes after the Big Bang. How much of it survived depends on two
+  things: the density of ordinary matter in the Universe and the speed of the
+  reactions that burn it. This reaction is one of them. Astronomers measure the
+  deuterium left in distant, almost pristine gas clouds; if the burning rate is
+  known, that measurement gives the matter density, which can then be compared
+  with the value from the cosmic microwave background, the light left over from
+  the Big Bang. In stars the reaction is so fast that it never limits the pp
+  chain, but it burns the deuterium of young stars before they start to burn
+  hydrogen.
+details: >-
+  Two energy ranges matter. The solar Gamow window lies at a few keV, where the
+  LUNA 50 kV accelerator measured the cross section with about 10 % accuracy
+  well below the solar Gamow peak. For Big Bang nucleosynthesis (BBN) the
+  relevant centre-of-mass energies range from tens to a few hundred keV, where
+  before 2020 the data had large uncertainties and an ab initio calculation
+  (Marcucci et al. 2016) predicted an S-factor about 10 % above the adopted
+  fits. The capture is dominated by E1 and M1 transitions to the ³He ground
+  state; polarization observables measured at TUNL below 80 keV are sensitive
+  to meson-exchange currents. The LUNA 400 kV measurement with a windowless
+  D₂ gas target and a HPGe detector reached a systematic uncertainty below 3 %
+  and settled the rate in the BBN range. With it the BBN-derived baryon density
+  has a 1.6 % uncertainty and agrees with the value from the cosmic microwave
+  background (CMB). Measurements at
+  higher energy, with TiD targets, constrain the energy dependence above the
+  BBN window.
+status: well-known
+status_note: >-
+  The LUNA data of 2020 fix the S-factor at BBN energies to about 3 %; the
+  remaining questions concern the energy dependence at higher energies and the
+  consistency with ab initio theory.
+methods: [direct-underground, direct-surface, theory]
+measurements:
+  - year: 1997
+    facility: other
+    lab: "Triangle Universities Nuclear Laboratory, Durham NC"
+    method: direct-surface
+    energy: "below 80 keV"
+    note: >-
+      Cross sections, S-factors and analyzing powers with polarized and
+      unpolarized beams; the extracted S(0) was about 25 % below the value then
+      used in astrophysics, and the vector analyzing power proved sensitive to
+      meson-exchange currents.
+    refs: [ma1997, schmid1997]
+  - year: 2002
+    facility: luna-50
+    method: direct-underground
+    energy: "down to 2.5 keV"
+    note: >-
+      Windowless gas target and segmented 4π BGO detector; first data inside and
+      below the solar Gamow peak, with about 10 % accuracy.
+    refs: [casella2002]
+  - year: 2016
+    method: theory
+    energy: "BBN range"
+    note: >-
+      Ab initio calculation with the AV18 and Urbana IX interactions and
+      relativistic corrections to the one-body current; S-factor about 10 %
+      above the adopted fits.
+    refs: [marcucci2016]
+  - year: 2019
+    facility: other
+    lab: "Jožef Stefan Institute, Ljubljana"
+    method: direct-surface
+    energy: "47–210 keV"
+    note: >-
+      Deuterated titanium targets and two HPGe detectors at 90° and 135°;
+      cross sections and angular distributions in good agreement with the ab
+      initio calculation.
+    refs: [tisma2019]
+  - year: 2020
+    facility: luna-400
+    method: direct-underground
+    energy: "BBN range"
+    note: >-
+      High-purity D₂ gas target, intense proton beam and a HPGe detector, after a
+      commissioning campaign that brought the systematic uncertainty below 3 %.
+      The new rate gives the baryon density to 1.6 %, in agreement with the CMB.
+    refs: [mossa2020b, mossa2020]
+  - year: 2021
+    facility: hzdr
+    method: direct-surface
+    energy: "265–1094 keV"
+    note: >-
+      Solid TiD targets, HPGe detectors at 55° and 90°, target deuterium content
+      measured in situ and by elastic recoil detection; the data favour an
+      S-factor higher than earlier fits in this range.
+    refs: [turkat2021]
+evaluations: [adelberger2011, acharya2025, descouvemont2004, pisanti2021, fields2020]
+open_questions:
+  - The residual tension between the measured S-factor and ab initio calculations at a level of a few percent.
+  - The energy dependence above the BBN window, where the TiD-target data of 2021 lie above earlier fits.
+related: [1H-pp-2H, 3He-3He2p-4He, 2H-dn-3He, 2H-dp-3H]

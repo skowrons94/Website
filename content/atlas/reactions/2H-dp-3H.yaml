@@ -1,0 +1,66 @@
+id: 2H-dp-3H
+label: ²H(d,p)³H
+kind: fusion
+target: 2H
+projectile: 2H
+ejectile: 1H
+product: 3H
+networks: [bbn]
+importance: major
+summary: >-
+  Two deuterons fuse into tritium and a proton. It is the twin of the reaction
+  that gives ³He and a neutron, and it also destroyed deuterium after the Big
+  Bang.
+role: >-
+  This branch burns deuterium and makes tritium, which later decays to ³He or
+  fuses with another deuteron. With proton capture on deuterium and the
+  neutron branch of deuteron–deuteron fusion, it sets the amount of deuterium
+  left from the Big Bang, which astronomers use to measure the density of
+  ordinary matter.
+details: >-
+  The proton branch is easier to measure than the neutron branch, since the
+  charged products can be detected with silicon detectors at the same time as
+  the ³He from the mirror channel. Below 10 keV the data show an
+  electron-screening enhancement larger than atomic-physics models predict.
+  At BBN energies the TUNL measurement of 2006 gave rates about 7 % above the
+  NACRE compilation, and a Trojan Horse experiment determined the bare
+  S-factor. As for ²H(d,n)³He, the normalization of the data sets at BBN
+  energies and the choice of evaluation are the main open issues for
+  primordial deuterium.
+status: improving
+status_note: >-
+  Measured over the whole BBN range, but the choice of evaluation matters for
+  the deuterium prediction.
+methods: [direct-surface, thm]
+measurements:
+  - year: 1995
+    method: direct-surface
+    energy: "1.6–130 keV"
+    note: >-
+      Both d+d channels measured with beams from 30, 100 and 450 kV
+      accelerators. The ratio of the two cross sections stays close to unity at
+      low energy, so no Oppenheimer–Phillips effect was seen, and the
+      electron-screening enhancement of d(d,p)t below 10 keV is larger than
+      atomic-physics models predict.
+    refs: [greife1995]
+  - year: 2006
+    facility: other
+    lab: "TUNL Low-Energy Beam Facility, Durham NC"
+    method: direct-surface
+    energy: "110–650 keV (laboratory)"
+    note: >-
+      Total cross sections of both channels from a simultaneous fit of angular
+      distributions and normalization data, with about 2 % uncertainty and a
+      1 % scale error; the resulting rates are about 7 % above NACRE.
+    refs: [leonard2006]
+  - year: 2014
+    method: thm
+    energy: "BBN energies"
+    note: >-
+      Trojan Horse determination of the bare S-factors of both channels,
+      free of electron screening, and new reaction rates for BBN.
+    refs: [tumino2014]
+evaluations: [descouvemont2004, bosch1992, pisanti2021, fields2020]
+open_questions:
+  - The normalization of the S-factor at BBN energies.
+related: [2H-dn-3He, 3H-dn-4He, 2H-pg-3He]

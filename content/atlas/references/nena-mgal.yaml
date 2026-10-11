@@ -1,0 +1,275 @@
+# References for the NeNa and MgAl cycles.
+# A DOI is given only where a source seen during checking showed it, or where it
+# follows the APS scheme (10.1103/PhysRev...) from a confirmed APS journal
+# reference ("APS scheme" in `checked`); where it is missing, the journal
+# reference and arXiv id were confirmed but the DOI was not.
+
+# --- Compilations ------------------------------------------------------------
+
+iliadis2010:
+  authors: C. Iliadis, R. Longland, A. E. Champagne, A. Coc, R. Fitzgerald
+  title: "Charged-particle thermonuclear reaction rates: II. Tables and graphs of reaction rates and probability density functions"
+  journal: Nucl. Phys. A 841, 31 (2010)
+  year: 2010
+  doi: 10.1016/j.nuclphysa.2010.04.009
+  arxiv: "1004.4517"
+  checked: arXiv 1004.4517 and NIST publication record (authors, DOI) found by search; volume 841 from the companion record of paper I, start page 31 not displayed by a record, 2026-10-11
+
+# --- 20Ne(p,γ)21Na ---------------------------------------------------------
+
+lyons2018:
+  authors: S. Lyons et al.
+  title: Determination of ²⁰Ne(p,γ)²¹Na cross sections from Eₚ = 500–2000 keV
+  journal: Phys. Rev. C 97, 065802 (2018)
+  year: 2018
+  doi: 10.1103/PhysRevC.97.065802
+  checked: JINA Virtual Journal listing and APS accepted-manuscript link (link.aps.org/accepted/10.1103/PhysRevC.97.065802) found by search, 2026-10-11
+
+masha2023:
+  authors: E. Masha, L. Barbieri, J. Skowronski et al. (LUNA Collaboration)
+  title: First measurement of the low-energy direct capture in ²⁰Ne(p,γ)²¹Na and improved energy and strength of the E_cm = 368 keV resonance
+  journal: Phys. Rev. C 108, L052801 (2023)
+  year: 2023
+  doi: 10.1103/PhysRevC.108.L052801
+  arxiv: "2311.04089"
+  luna: true
+  checked: arXiv 2311.04089 and Genoa IRIS copy of the published letter found by search; DOI from the author's publication list (content/publications.yaml), 2026-10-11
+
+caciolli2025:
+  authors: A. Caciolli (LUNA Collaboration)
+  title: Study of the ²⁰Ne(p,γ)²¹Na reaction at LUNA
+  year: 2025
+  arxiv: "2510.01884"
+  luna: true
+  checked: arXiv 2510.01884 listing found by search (conference contribution submitted 2 October 2025 by A. Caciolli for the LUNA Collaboration; preliminary results); no journal reference shown, 2026-10-11
+
+# --- 21Ne(p,γ)22Na ---------------------------------------------------------
+
+sidhu2025:
+  authors: R. S. Sidhu et al. (LUNA Collaboration)
+  title: Improved direct measurement of low-energy resonances in the ²¹Ne(p,γ)²²Na reaction
+  journal: Phys. Rev. C 112, L052801 (2025)
+  year: 2025
+  doi: 10.1103/vqt1-jxpw
+  arxiv: "2505.22426"
+  luna: true
+  checked: arXiv 2505.22426 and Milan AIR copy of the published letter found by search (volume, article number, dates); DOI from the author's publication list (content/publications.yaml), 2026-10-11
+
+# --- 22Ne(p,γ)23Na ---------------------------------------------------------
+
+cavanna2014:
+  authors: F. Cavanna et al. (LUNA Collaboration)
+  title: "A new study of the ²²Ne(p,γ)²³Na reaction deep underground: feasibility, setup, and first observation of the 186 keV resonance"
+  journal: Eur. Phys. J. A 50, 179 (2014)
+  year: 2014
+  doi: 10.1140/epja/i2014-14179-5
+  arxiv: "1411.2888"
+  luna: true
+  checked: EPJ A abstract page, arXiv 1411.2888 and Turin IRIS record found by search, 2026-10-11
+
+depalo2015:
+  authors: R. Depalo et al.
+  title: Strengths of the resonances at 436, 479, 639, 661, and 1279 keV in the ²²Ne(p,γ)²³Na reaction
+  journal: Phys. Rev. C 92, 045807 (2015)
+  year: 2015
+  doi: 10.1103/PhysRevC.92.045807
+  arxiv: "1507.03893"
+  checked: HZDR publication record (journal reference and arXiv id) and Padua repository record found by search; DOI by APS scheme from the confirmed journal reference, 2026-10-11
+
+cavanna2015:
+  authors: F. Cavanna et al. (LUNA Collaboration)
+  title: Three new low-energy resonances in the ²²Ne(p,γ)²³Na reaction
+  journal: Phys. Rev. Lett. 115, 252501 (2015)
+  year: 2015
+  doi: 10.1103/PhysRevLett.115.252501
+  arxiv: "1511.05329"
+  luna: true
+  checked: arXiv 1511.05329, INAF and HZDR repository records found by search; DOI by APS scheme from the confirmed journal reference, 2026-10-11
+
+cavanna2018:
+  authors: F. Cavanna et al. (LUNA Collaboration)
+  title: "Erratum: Three new low-energy resonances in the ²²Ne(p,γ)²³Na reaction"
+  journal: Phys. Rev. Lett. 120, 239901 (2018)
+  year: 2018
+  doi: 10.1103/PhysRevLett.120.239901
+  luna: true
+  checked: Milan AIR and Edinburgh research portal records found by search, 2026-10-11
+
+depalo2016:
+  authors: R. Depalo et al. (LUNA Collaboration)
+  title: Direct measurement of low-energy ²²Ne(p,γ)²³Na resonances
+  journal: Phys. Rev. C 94, 055804 (2016)
+  year: 2016
+  doi: 10.1103/PhysRevC.94.055804
+  arxiv: "1610.00925"
+  luna: true
+  checked: arXiv 1610.00925, JINA Virtual Journal and HZDR records found by search, 2026-10-11
+
+kelly2017:
+  authors: K. J. Kelly, A. E. Champagne, L. N. Downen, J. R. Dermigny, S. Hunt, C. Iliadis, A. L. Cooper
+  title: New measurements of low-energy resonances in the ²²Ne(p,γ)²³Na reaction
+  journal: Phys. Rev. C 95, 015806 (2017)
+  year: 2017
+  doi: 10.1103/PhysRevC.95.015806
+  checked: EXFOR entry C2254 (title, authors, journal reference, LENA setup) and the reference list of arXiv 1910.01698, found by search; DOI by APS scheme from the confirmed journal reference, 2026-10-11
+
+ferraro2018:
+  authors: F. Ferraro et al. (LUNA Collaboration)
+  title: Direct capture cross section and the Eₚ = 71 and 105 keV resonances in the ²²Ne(p,γ)²³Na reaction
+  journal: Phys. Rev. Lett. 121, 172701 (2018)
+  year: 2018
+  doi: 10.1103/PhysRevLett.121.172701
+  arxiv: "1810.01628"
+  luna: true
+  checked: arXiv 1810.01628, HZDR record, JINA Virtual Journal and UK REF database (DOI) found by search, 2026-10-11
+
+lennarz2020:
+  authors: A. Lennarz et al.
+  title: First inverse kinematics measurement of key resonances in the ²²Ne(p,γ)²³Na reaction at stellar temperatures
+  journal: Phys. Lett. B 807, 135539 (2020)
+  year: 2020
+  doi: 10.1016/j.physletb.2020.135539
+  arxiv: "1910.00791"
+  checked: arXiv 1910.00791, White Rose eprint and DOAJ records found by search, 2026-10-11
+
+williams2020:
+  authors: M. Williams et al.
+  title: First inverse kinematics study of the ²²Ne(p,γ)²³Na reaction and its role in AGB star and classical nova nucleosynthesis
+  journal: Phys. Rev. C 102, 035801 (2020)
+  year: 2020
+  doi: 10.1103/PhysRevC.102.035801
+  arxiv: "1910.01698"
+  checked: arXiv 1910.01698, White Rose record and EXFOR entry C2582 found by search, 2026-10-11
+
+takacs2024:
+  authors: M. P. Takács et al. (LUNA Collaboration)
+  title: Direct capture cross section and resonances in the ²²Ne(p,γ)²³Na reaction at low energy
+  journal: Phys. Rev. C 109, 064627 (2024)
+  year: 2024
+  doi: 10.1103/PhysRevC.109.064627
+  luna: true
+  checked: author's publication list (content/publications.yaml); journal reference also cited in a 2024 LUNA conference talk found by search, 2026-10-11
+
+# --- 23Na + p --------------------------------------------------------------
+
+cesaratto2013:
+  authors: J. M. Cesaratto et al.
+  title: Measurement of the E_c.m. = 138 keV resonance in the ²³Na(p,γ)²⁴Mg reaction and the abundance of sodium in AGB stars
+  journal: Phys. Rev. C 88, 065806 (2013)
+  year: 2013
+  doi: 10.1103/PhysRevC.88.065806
+  checked: EXFOR entry C2076 (title, journal reference, LENA setup) found by search; DOI by APS scheme from the confirmed journal reference, 2026-10-11
+
+boeltzig2019:
+  authors: A. Boeltzig et al. (LUNA Collaboration)
+  title: Direct measurements of low-energy resonance strengths of the ²³Na(p,γ)²⁴Mg reaction for astrophysics
+  journal: Phys. Lett. B 795, 122 (2019)
+  year: 2019
+  doi: 10.1016/j.physletb.2019.05.044
+  luna: true
+  checked: Edinburgh research portal, Turin IRIS, DOAJ and NSF PAR records found by search (pages 122–128, DOI); arXiv id not seen, 2026-10-11
+
+boeltzig2022:
+  authors: A. Boeltzig, R. J. deBoer et al.
+  title: Investigation of direct capture in the ²³Na(p,γ)²⁴Mg reaction
+  journal: Phys. Rev. C 106, 045801 (2022)
+  year: 2022
+  doi: 10.1103/PhysRevC.106.045801
+  checked: APS accepted-manuscript link, JINA Virtual Journal and NSF PAR records found by search, 2026-10-11
+
+marshall2023:
+  authors: C. Marshall, K. Setoodehnia, G. C. Cinquegrana, J. H. Kelly, F. Portillo Chaves, A. Karakas, R. Longland
+  title: New constraints on sodium production in globular clusters from the ²³Na(³He,d)²⁴Mg reaction
+  journal: Phys. Rev. C 107, 035806 (2023)
+  year: 2023
+  doi: 10.1103/PhysRevC.107.035806
+  arxiv: "2303.06128"
+  checked: arXiv 2303.06128, APS accepted-manuscript link and JINA Virtual Journal listing found by search, 2026-10-11
+
+hale2004:
+  authors: S. E. Hale et al.
+  title: Investigation of the ²³Na(p,γ)²⁴Mg and ²³Na(p,α)²⁰Ne reactions via (³He,d) spectroscopy
+  journal: Phys. Rev. C 70, 045802 (2004)
+  year: 2004
+  doi: 10.1103/PhysRevC.70.045802
+  checked: LSU Digital Commons record and JINA Virtual Journal listing (title, journal reference, abstract) found by search; DOI by APS scheme, 2026-10-11
+
+# --- Magnesium isotopes ----------------------------------------------------
+
+limata2010:
+  authors: B. Limata et al. (LUNA Collaboration)
+  title: New experimental study of low-energy (p,γ) resonances in magnesium isotopes
+  journal: Phys. Rev. C 82, 015801 (2010)
+  year: 2010
+  doi: 10.1103/PhysRevC.82.015801
+  arxiv: "1006.5281"
+  luna: true
+  checked: arXiv 1006.5281, HZDR and INIS records found by search, 2026-10-11
+
+strieder2012:
+  authors: F. Strieder et al. (LUNA Collaboration)
+  title: The ²⁵Mg(p,γ)²⁶Al reaction at low astrophysical energies
+  journal: Phys. Lett. B 707, 60 (2012)
+  year: 2012
+  doi: 10.1016/j.physletb.2011.12.029
+  arxiv: "1112.3313"
+  luna: true
+  checked: arXiv 1112.3313 and HZDR publication record found by search, 2026-10-11
+
+straniero2013:
+  authors: O. Straniero et al. (LUNA Collaboration)
+  title: Impact of a revised ²⁵Mg(p,γ)²⁶Al reaction rate on the operation of the Mg-Al cycle
+  journal: Astrophys. J. 763, 100 (2013)
+  year: 2013
+  arxiv: "1211.6661"
+  luna: true
+  checked: arXiv 1211.6661, Atomki, MTAK and Turin repository records (ADS bibcode 2013ApJ...763..100S) found by search; DOI not seen, omitted, 2026-10-11
+
+su2022:
+  authors: J. Su, H. Zhang, Z. H. Li et al. (JUNA Collaboration)
+  title: "First result from the Jinping Underground Nuclear Astrophysics experiment JUNA: precise measurement of the 92 keV ²⁵Mg(p,γ)²⁶Al resonance"
+  journal: Sci. Bull. 67, 125 (2022)
+  year: 2022
+  checked: title from a SciSpace author listing; journal reference from the reference list of a later JUNA review (Chinese Physics Letters) found by search; DOI not seen, omitted, 2026-10-11
+
+iliadis1990:
+  authors: C. Iliadis et al.
+  title: Low-energy resonances in ²⁵Mg(p,γ)²⁶Al, ²⁶Mg(p,γ)²⁷Al and ²⁷Al(p,γ)²⁸Si
+  journal: Nucl. Phys. A 512, 509 (1990)
+  year: 1990
+  checked: Atomki APHA publication listings (title, journal reference) and the ENSDF ²⁷Al(p,γ) evaluation reference list found by search; DOI not seen, omitted, 2026-10-11
+
+# --- 27Al + p ----------------------------------------------------------------
+
+harissopulos2000:
+  authors: S. Harissopulos et al.
+  title: "The ²⁷Al(p,γ)²⁸Si reaction: direct capture cross-section and resonance strengths at Eₚ = 0.2–1.12 MeV"
+  journal: Eur. Phys. J. A 9, 479 (2000)
+  year: 2000
+  checked: EPJ A abstract page (title, abstract) and IAEA EXFOR entry found by search; DOI not seen, omitted, 2026-10-11
+
+palmerini2021:
+  authors: S. Palmerini, M. La Cognata et al.
+  title: The ²⁷Al(p,α)²⁴Mg reaction at astrophysical energies studied by means of the Trojan Horse Method applied to the ²H(²⁷Al,α²⁴Mg)n reaction
+  journal: Eur. Phys. J. Plus 136 (2021)
+  year: 2021
+  doi: 10.1140/epjp/s13360-021-01872-4
+  arxiv: "2108.06145"
+  checked: arXiv 2108.06145 and a repository record giving journal, volume and DOI, found by search; article number not seen, 2026-10-11
+
+lacognata2022:
+  authors: M. La Cognata et al.
+  title: "Exploring the astrophysical energy range of the ²⁷Al(p,α)²⁴Mg reaction: a new recommended reaction rate"
+  journal: Phys. Lett. B 826, 136917 (2022)
+  year: 2022
+  doi: 10.1016/j.physletb.2022.136917
+  checked: DOAJ listing and abstract (journal, article number, DOI) found by search, 2026-10-11
+
+ananna2024:
+  authors: C. Ananna et al. (LUNA Collaboration)
+  title: "Detectors and shieldings: past and future at LUNA"
+  journal: Universe 10, 228 (2024)
+  year: 2024
+  doi: 10.3390/universe10050228
+  luna: true
+  checked: author's publication list (content/publications.yaml); a search hit for the same review describes the planned LUNA campaign on the 133 keV ²³Na(p,α)²⁰Ne resonance, 2026-10-11

@@ -1,0 +1,90 @@
+id: 3He-3He2p-4He
+label: ³He(³He,2p)⁴He
+kind: fusion
+target: 3He
+projectile: 3He
+ejectile: "2 1H"
+product: 4He
+networks: [pp1]
+importance: major
+summary: >-
+  Two ³He nuclei fuse into one ⁴He nucleus and release two protons. This closes
+  the main branch of the pp chain in the Sun.
+role: >-
+  Once ³He has been made, it can meet another ³He nucleus or a ⁴He nucleus.
+  The first path ends the pp-I chain and produces no further neutrinos; the
+  second opens the pp-II and pp-III branches, which emit the ⁷Be and ⁸B solar
+  neutrinos. The competition between the two therefore sets how many of these
+  neutrinos the Sun emits. In the 1990s the reaction was also measured to test
+  the idea that an unknown low-energy resonance could explain the solar
+  neutrino deficit.
+details: >-
+  The two-proton exit channel makes the reaction measurable by detecting the
+  energetic protons in silicon telescopes, which LUNA did with the 50 kV
+  accelerator and a windowless ³He gas target. The data reached below the
+  centre of the solar Gamow peak and excluded a narrow resonance there. The low-energy data
+  show a rise of the S-factor due to electron screening by the atomic electrons
+  of the target, larger than expected; the screening
+  correction is the main uncertainty on the bare-nucleus S(0). Measurements with
+  a doubly charged ³He beam at Osaka, free of molecular-beam contamination,
+  filled the energy gap above the LUNA range. Plasma experiments at laser
+  facilities measured the proton spectrum, whose shape matters when
+  low-resolution detectors are used.
+status: well-known
+status_note: >-
+  Direct data reach the solar Gamow peak; the residual uncertainty comes from
+  the electron-screening correction and from the proton spectral shape.
+methods: [direct-underground, direct-surface, plasma]
+measurements:
+  - year: 1996
+    facility: luna-50
+    method: direct-underground
+    energy: "down to about 21 keV"
+    note: >-
+      First data inside the solar Gamow peak, no evidence for a low-energy
+      resonance; tentative S(0) = 5.1 ± 0.1 MeV b after the screening
+      correction.
+    refs: [arpesella1996]
+  - year: 1998
+    facility: luna-50
+    method: direct-underground
+    energy: "down to 20.76 keV"
+    note: >-
+      Full analysis of the first LUNA campaign; electron screening observed
+      clearly for this reaction, larger than expected, and dominating the
+      uncertainty of the bare S(0) = 5.40 MeV b.
+    refs: [junker1998]
+  - year: 1999
+    facility: luna-50
+    method: direct-underground
+    energy: "down to 16.5 keV"
+    note: >-
+      New detector setup; data down to the lower edge of the solar Gamow peak,
+      with no sign of the narrow resonance proposed to reduce the ⁷Be and ⁸B
+      neutrino fluxes.
+    refs: [bonetti1999]
+  - year: 2004
+    facility: other
+    lab: "OCEAN, Research Center for Nuclear Physics, Osaka"
+    method: direct-surface
+    energy: "30–50 keV"
+    note: >-
+      Doubly charged ³He beam free from molecular interference; S-factor in the
+      gap left by LUNA, with smaller statistical and systematic errors than
+      earlier data.
+    refs: [kudomi2004]
+  - year: 2017
+    facility: other
+    lab: "OMEGA laser, Laboratory for Laser Energetics, Rochester NY"
+    method: plasma
+    energy: "low centre-of-mass energy, plasma"
+    note: >-
+      Proton spectra from ³He+³He fusion in high-energy-density plasmas; the
+      measured shape is proposed as a benchmark for the analysis of
+      low-resolution accelerator data.
+    refs: [zylstra2017]
+evaluations: [adelberger2011, acharya2025]
+open_questions:
+  - The origin of the electron-screening enhancement, which is larger than expected.
+  - The shape of the three-body proton spectrum and its effect on detection efficiencies.
+related: [3He-ag-7Be, 2H-pg-3He, 3He-dp-4He]

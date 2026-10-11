@@ -1,0 +1,11 @@
+id: 8B-bp-8Be
+label: ⁸B(β⁺ν)⁸Be
+kind: decay
+target: 8B
+projectile: ""
+ejectile: "e+ nu"
+product: 8Be
+networks: [pp3]
+summary: >-
+  ⁸B decays to ⁸Be, which at once breaks into two ⁴He nuclei; the neutrinos of
+  this decay are the high-energy solar neutrinos seen by Homestake, Super-Kamiokande and SNO.

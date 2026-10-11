@@ -1,0 +1,126 @@
+id: 7Be-pg-8B
+label: ⁷Be(p,γ)⁸B
+kind: capture
+target: 7Be
+projectile: 1H
+ejectile: g
+product: 8B
+networks: [pp3]
+importance: key
+summary: >-
+  A ⁷Be nucleus captures a proton and becomes ⁸B, giving off a γ-ray. The ⁸B
+  then decays and emits the high-energy solar neutrinos that started the solar
+  neutrino problem.
+role: >-
+  Only a small fraction of the ⁷Be in the Sun captures a proton; most of it
+  captures an electron instead. Yet this rare branch makes the most energetic
+  of the common solar neutrinos, the ones seen by the first chlorine detector
+  in the Homestake mine and later measured precisely by Super-Kamiokande and
+  SNO. The predicted number of these neutrinos is directly proportional to the
+  rate of this reaction, so it has to be known well to use them as a probe of
+  the solar core and of neutrino properties.
+details: >-
+  The measurement is difficult because the target is radioactive: ⁷Be decays by
+  electron capture, so targets must be produced, characterized and used within
+  months, and their areal density and uniformity become the main systematic
+  uncertainty. The capture is an external,
+  non-resonant E1 process at low energy, with a narrow M1 resonance (the 1⁺
+  state of ⁸B) near 630 keV, and the extrapolation to solar energies relies on
+  models of the energy dependence. Since 1998 the direct experiments with ⁷Be
+  targets at Orsay and Bordeaux, at the Weizmann Institute and in Seattle give
+  S(0) between about 18.5 and 22 eV b; the Seattle group quotes a model
+  uncertainty of the extrapolation as large as its experimental one. The
+  S-factor has also been inferred from Coulomb dissociation of ⁸B beams on
+  heavy targets, at RIKEN and at GSI. The Solar Fusion evaluations base the
+  recommended value on the direct measurements.
+status: improving
+status_note: >-
+  Modern direct measurements give S(0) between about 18.5 and 22 eV b; the
+  extrapolation to solar energies adds a model uncertainty of about the same
+  size as the experimental one.
+methods: [direct-surface, coulomb-dissociation]
+measurements:
+  - year: 1983
+    facility: other
+    lab: "Argonne National Laboratory, Argonne IL"
+    method: direct-surface
+    energy: "low energies and the 1⁺ resonance"
+    note: >-
+      Radioactive ⁷Be target, ⁸B detected through the delayed α particles from
+      its β decay; the ⁷Be areal density determined with two independent
+      methods, which removed the dependence of earlier data on the ⁷Li(d,p)⁸Li
+      normalization.
+    refs: [filippone1983]
+  - year: 1994
+    facility: other
+    lab: "RIKEN, Wako"
+    method: coulomb-dissociation
+    energy: "⁸B beam at about 50 MeV/u"
+    note: >-
+      First Coulomb-dissociation experiment: break-up of ⁸B into ⁷Be + p in the
+      Coulomb field of a heavy target, converted to the low-energy capture
+      cross section.
+    refs: [motobayashi1994]
+  - year: 1998
+    facility: other
+    lab: "CENBG 4 MV Van de Graaff, Bordeaux"
+    method: direct-surface
+    energy: "0.35–1.4 MeV"
+    note: >-
+      Two independent measurements with different beam conditions, targets and
+      detectors, in agreement with each other; the extrapolated S(0) is
+      15–20 % below the value recommended at the time.
+    refs: [hammache1998]
+  - year: 2001
+    facility: other
+    lab: "PAPAP accelerator, Orsay"
+    method: direct-surface
+    energy: "111.7, 134.7 and 185.8 keV"
+    note: >-
+      A 132 mCi ⁷Be target, intense proton beams and a large-acceptance
+      solenoidal spectrometer; S(0) = 18.5 ± 2.4 eV b from these data and
+      18.8 ± 1.7 eV b combined with the 1998 results.
+    refs: [hammache2001]
+  - year: 2003
+    facility: other
+    lab: "Weizmann Institute of Science, Rehovot"
+    method: direct-surface
+    note: >-
+      ⁷Be implanted in the backing and a raster-scanned proton beam, which
+      removed the loss of ⁸B by backscattering; extrapolated S(0) =
+      21.2 ± 0.7 eV b in the arXiv version (an erratum followed in 2004).
+    refs: [baby2003]
+  - year: 2003
+    facility: other
+    lab: "GSI, Darmstadt"
+    method: coulomb-dissociation
+    energy: "⁸B beam at 254 MeV/u"
+    note: >-
+      Exclusive Coulomb-dissociation measurement at high beam energy; the full
+      analysis followed in 2006.
+    refs: [schumann2003, schumann2006]
+  - year: 2003
+    facility: other
+    lab: "CENPA, University of Washington, Seattle"
+    method: direct-surface
+    note: >-
+      Precision measurement with a ⁷Be target made at TRIUMF; S(0) =
+      22.1 ± 0.6 (expt) ± 0.6 (theor) eV b, and a recommended best value of
+      21.4 eV b.
+    refs: [junghans2003]
+  - year: 2010
+    facility: other
+    lab: "CENPA, University of Washington, Seattle"
+    method: direct-surface
+    energy: "below the 1⁺ resonance"
+    note: >-
+      Reanalysis of the earlier data with a more detailed target analysis and
+      improved stopping powers: S(0) = 21.5 ± 0.6 (expt) ± 0.6 (theor) eV b,
+      and 20.9 ± 0.6 ± 0.6 eV b from a fit of all modern low-energy data with
+      the same theory.
+    refs: [junghans2010]
+evaluations: [adelberger2011, acharya2025]
+open_questions:
+  - The theoretical energy dependence used to extrapolate the direct data to solar energies.
+  - The spread of about 15 % between the S(0) values of the modern direct experiments.
+related: [3He-ag-7Be, 8B-bp-8Be, 7Be-ec-7Li, 3He-hep-4He]

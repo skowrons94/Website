@@ -1,0 +1,115 @@
+id: 17O-pg-18F
+label: ¹⁷O(p,γ)¹⁸F
+kind: capture
+target: 17O
+projectile: 1H
+ejectile: g
+product: 18F
+networks: [cno3]
+importance: key
+summary: >-
+  Oxygen-17 captures a proton and becomes radioactive fluorine-18. It opens the
+  third CNO cycle.
+role: >-
+  In nova explosions this reaction makes fluorine-18. When fluorine-18 decays
+  it emits positrons, and their annihilation produces γ-rays that space
+  telescopes could detect in the first hours after the explosion. The rate
+  also sets, together with ¹⁷O(p,α)¹⁴N, how much oxygen-17 and oxygen-18 a nova
+  ejects, which is compared with the isotope ratios of presolar grains thought
+  to come from novae.
+details: >-
+  At nova temperatures the rate is dominated by the resonance at E = 183 keV
+  together with the non-resonant direct-capture contribution; at lower
+  temperatures the narrow resonance at 64.5 keV also contributes. The 183 keV
+  resonance strength and the direct-capture S-factor have been measured with
+  prompt-γ, activation and recoil-separator techniques; the γ-ray decay of the
+  resonance proceeds through many cascades, which makes efficiency and angular
+  corrections important. The LUNA measurements at Gran Sasso gave
+  ωγ(183 keV) = 1.67 ± 0.12 µeV and reduced the rate uncertainty at nova
+  temperatures by a factor of 4; the lower background revealed γ-ray
+  transitions missed at the surface. In 2024 LUNA also measured the 64.5 keV
+  resonance directly, ωγ = 30 ± 6 (stat) ± 2 (syst) peV, about twice the
+  value adopted from indirect data.
+status: improving
+status_note: >-
+  The nova-relevant resonance is measured directly to about 7 %; at lower
+  temperatures the 64.5 keV resonance, measured directly only once, and the
+  direct-capture component dominate the uncertainty.
+methods: [direct-underground, direct-surface, inverse-kinematics, activation]
+measurements:
+  - year: 2005
+    facility: tunl-lena
+    method: direct-surface
+    energy: "140–540 keV (proton energy)"
+    note: >-
+      Proton beams of up to 100 µA on tantalum backings anodised in
+      ¹⁷O-enriched water; new thermonuclear rate including the 183 keV
+      resonance.
+    refs: [fox2005]
+  - year: 2005
+    facility: other
+    lab: "CSNSM, Orsay"
+    method: activation
+    energy: "around Ep = 194 keV"
+    note: >-
+      The (p,γ) channel of the 183 keV resonance measured by ¹⁸F activation,
+      together with the (p,α) channel.
+    refs: [chafa2005]
+  - year: 2012
+    facility: dragon
+    method: inverse-kinematics
+    energy: "250–500 keV"
+    note: >-
+      S-factor measured in inverse kinematics with the DRAGON recoil
+      separator, which detects the ¹⁸F recoils directly.
+    refs: [hager2012]
+  - year: 2012
+    facility: notre-dame
+    method: direct-surface
+    note: >-
+      The primary γ-ray transitions were used in an R-matrix analysis to
+      estimate the direct-capture contribution; the new rate combines these
+      data with earlier S-factor determinations.
+    refs: [kontos2012]
+  - year: 2012
+    facility: luna-400
+    method: direct-underground
+    energy: "200–370 keV"
+    note: >-
+      First direct measurement in the Gamow window of classical novae;
+      ωγ(183 keV) = 1.67 ± 0.12 µeV, the most precise value then, and a rate
+      uncertainty reduced by a factor of 4.
+    refs: [scott2012]
+  - year: 2014
+    facility: luna-400
+    method: direct-underground
+    energy: "nova Gamow window"
+    note: >-
+      Full analysis of the LUNA campaign with prompt γ-ray detection and
+      activation; recommended rate with which the oxygen and fluorine isotopes
+      ejected by novae are predicted to about 10 %.
+    refs: [dileva2014]
+  - year: 2015
+    facility: tunl-lena
+    method: direct-surface
+    energy: "170–530 keV (proton energy)"
+    note: >-
+      Beam currents up to 2 mA; ωγ = (1.86 ± 0.13) µeV for the resonance at
+      Ep = 193 keV and (13.70 ± 0.96) meV at 518 keV, and a direct-capture
+      S(0) = 4.82 ± 0.41 keV b.
+    refs: [buckner2015]
+  - year: 2024
+    facility: luna-400
+    method: direct-underground
+    energy: "64.5 keV resonance"
+    note: >-
+      First direct measurement of the 64.5 keV resonance, the lowest strength
+      ever measured directly: ωγ = 30 ± 6 (stat) ± 2 (syst) peV. The proton
+      width, 34 ± 7 ± 3 neV, agrees with the LUNA result from the (p,α)
+      channel.
+    refs: [gesue2024]
+evaluations: [acharya2025]
+open_questions:
+  - The direct-capture S-factor between the low-energy resonances.
+  - The strength of the 64.5 keV resonance, where the direct result is about twice the value from indirect data.
+related: [17O-pa-14N, 18F-bp-18O, 18O-pa-15N]

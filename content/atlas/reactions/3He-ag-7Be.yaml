@@ -1,0 +1,129 @@
+id: 3He-ag-7Be
+label: ³He(α,γ)⁷Be
+kind: capture
+target: 3He
+projectile: 4He
+ejectile: g
+product: 7Be
+networks: [pp2, pp3, bbn]
+importance: key
+summary: >-
+  A ³He nucleus captures a ⁴He nucleus (an alpha particle) and becomes ⁷Be,
+  giving off a γ-ray. It opens the branches of the pp chain that emit the ⁷Be
+  and ⁸B solar neutrinos, and it made most of the lithium after the Big Bang.
+role: >-
+  In the Sun, a ³He nucleus either fuses with another ³He or captures an alpha
+  particle through this reaction. The share that goes this way fixes the
+  number of ⁷Be and ⁸B neutrinos, which detectors such as Borexino and
+  Super-Kamiokande count. It is the largest nuclear uncertainty in the
+  predicted fluxes of those neutrinos. After the Big Bang the ⁷Be made here
+  later decayed to ⁷Li, so the reaction also sets the predicted amount of
+  primordial lithium. That prediction is higher than the amount of lithium
+  seen in old stars, a mismatch called the lithium problem.
+details: >-
+  The capture proceeds by external direct capture to the ⁷Be ground state and
+  to its first excited state at 429 keV, so the cross section can be measured
+  either by detecting the prompt γ-rays or by counting the ⁷Be activity
+  afterwards (activation). Before 2006 the two approaches disagreed on the
+  extrapolated S(0). The LUNA campaign at the 400 kV accelerator used a
+  windowless ³He gas target and measured both observables at the same time,
+  down to 93 keV, with agreement between them; the activation results reached
+  a 4 % total uncertainty. Surface experiments at the Weizmann Institute,
+  Seattle and Notre Dame, and the ERNA recoil separator, then covered the
+  energies from about 0.3 MeV upwards and constrained the energy dependence needed to extrapolate to the
+  solar Gamow window. Above 1 MeV the ERNA data differ from earlier results in
+  both normalization and slope. Activation measurements at Atomki extended the
+  data to the ⁷Be proton separation threshold. BBN analyses with the current
+  rates conclude that a nuclear-physics solution of the lithium problem is
+  highly unlikely.
+status: improving
+status_note: >-
+  The S-factor at solar energies is known to a few percent, but no data exist
+  inside the solar Gamow window and the extrapolation depends on the model
+  used for the energy dependence.
+methods: [direct-underground, direct-surface, activation, inverse-kinematics]
+measurements:
+  - year: 2004
+    facility: other
+    lab: "Weizmann Institute of Science, Rehovot"
+    method: activation
+    energy: "420–950 keV"
+    note: >-
+      Activation with a ³He gas cell; S(0) = 0.53 ± 0.02 ± 0.01 keV b, from a
+      set of energies at a time when earlier activation data covered only one or
+      two energies each.
+    refs: [narasingh2004]
+  - year: 2006
+    facility: luna-400
+    method: activation
+    energy: "127, 148 and 169 keV"
+    note: >-
+      Windowless gas target, high beam intensity and low-background γ counting
+      of the ⁷Be produced; cross sections with 4 % total uncertainty.
+    refs: [bemmerer2006]
+  - year: 2007
+    facility: luna-400
+    method: activation
+    energy: "106 keV"
+    note: >-
+      Activation point at 106 keV, closer to the solar Gamow energy than any
+      earlier measurement; σ = 0.567 ± 0.029 (stat) ± 0.016 (syst) nb.
+    refs: [gyurky2007]
+  - year: 2007
+    facility: luna-400
+    method: direct-underground
+    energy: "93, 106 and 170 keV"
+    note: >-
+      Prompt γ-rays and ⁷Be activity measured simultaneously; the two methods
+      agree, branching ratios between the two γ transitions measured to 5–8 %,
+      extrapolated S(0) = 0.560 ± 0.017 keV b.
+    refs: [confortola2007]
+  - year: 2007
+    facility: other
+    lab: "CENPA, University of Washington, Seattle"
+    method: direct-surface
+    energy: "0.33–1.23 MeV"
+    note: >-
+      Small gas cell, prompt γ-rays and ⁷Be activity; the two methods agree, and
+      a fit with the Kajino model gives S(0) = 0.595 ± 0.018 keV b.
+    refs: [brown2007]
+  - year: 2008
+    facility: luna-400
+    method: direct-underground
+    energy: "beam energies 220, 250 and 400 keV"
+    note: >-
+      Full account of the LUNA prompt-γ experiment and its systematic
+      uncertainties, together with the activation results, and S-factor
+      extrapolations with two theoretical models.
+    refs: [costantini2008]
+  - year: 2009
+    facility: erna
+    method: inverse-kinematics
+    energy: "around and above 1 MeV"
+    note: >-
+      Direct detection of the ⁷Be recoils with the ERNA separator, with
+      coincident γ-rays; above 1 MeV the cross section differs from earlier
+      results in absolute value and energy dependence.
+    refs: [dileva2009]
+  - year: 2013
+    facility: notre-dame
+    method: direct-surface
+    energy: "about 0.3–1.5 MeV"
+    note: >-
+      Prompt γ-ray measurement with the HIPPO helium-jet gas target over a wide
+      energy window.
+    refs: [kontos2013]
+  - year: 2019
+    facility: atomki
+    method: activation
+    energy: "4.0–4.4 MeV"
+    note: >-
+      Thin-window ³He gas cell; a constant cross section of about 10.5 μb near
+      the ⁷Be proton separation threshold and an upper limit of 45 neV on the
+      strength of a resonance there.
+    refs: [szucs2019]
+evaluations: [adelberger2011, acharya2025, descouvemont2004, iliadis2020]
+open_questions:
+  - The energy dependence of the S-factor between 100 keV and 1 MeV, which controls the extrapolation to the solar Gamow window.
+  - The disagreement in slope and normalization above 1 MeV between recoil-separator and γ-ray data.
+related: [3He-3He2p-4He, 7Be-pg-8B, 7Be-ec-7Li, 3H-ag-7Li, 7Be-np-7Li]

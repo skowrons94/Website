@@ -1,0 +1,66 @@
+id: 3He-dp-4He
+label: ³He(d,p)⁴He
+kind: fusion
+target: 3He
+projectile: 2H
+ejectile: 1H
+product: 4He
+networks: [bbn]
+importance: minor
+summary: >-
+  ³He and a deuteron fuse into ⁴He and a proton. After the Big Bang it converted
+  part of the ³He into ⁴He.
+role: >-
+  The reaction is the mirror of deuterium–tritium fusion and, like it, is very
+  fast at the energies of the early Universe. It removes ³He and deuterium and
+  adds to ⁴He. In the laboratory it has been a favourite case for studying how
+  the electrons around the target nuclei make fusion easier at low energy.
+details: >-
+  The cross section is dominated by the 3/2⁺ resonance in ⁵Li, the mirror of
+  the ⁵He state that governs d+t. At the lowest energies the measured S-factor
+  rises above the bare-nucleus trend because the atomic electrons of the target
+  screen the Coulomb barrier. The LUNA 50 kV accelerator measured
+  d(³He,p)⁴He down to 4.2 keV and found a screening potential of
+  132 ± 9 eV, twice the atomic-physics estimate of 65 eV. Measurements of both
+  ³He(d,p)⁴He and d(³He,p)⁴He at a 100 kV accelerator in Bochum, with the LUNA
+  setup, gave screening potentials of 219 ± 7 eV and 109 ± 9 eV, again well
+  above the atomic-physics values of 120 eV and 65 eV. The Trojan Horse
+  method, which gives the bare S-factor without screening, yielded a screening
+  potential consistent with the adiabatic limit.
+status: well-known
+status_note: >-
+  Measured over the BBN range with small uncertainty; open questions concern
+  only the electron-screening enhancement at the lowest energies.
+methods: [direct-underground, direct-surface, thm]
+measurements:
+  - year: 2000
+    facility: luna-50
+    method: direct-underground
+    energy: "4.2–13.8 keV"
+    note: >-
+      d(³He,p)⁴He with a ³He beam on a deuterium gas target; the stopping power
+      of ³He in D₂ agrees with the standard compilation, and the screening
+      potential Uₑ = 132 ± 9 eV is twice the atomic-physics estimate.
+    refs: [costantini2000]
+  - year: 2001
+    facility: other
+    lab: "100 kV accelerator, Ruhr-Universität Bochum"
+    method: direct-surface
+    energy: "5–60 keV (d beam) and 10–40 keV (³He beam)"
+    note: >-
+      Both ³He(d,p)⁴He and d(³He,p)⁴He, with the LUNA setup; Uₑ = 219 ± 7 eV
+      and 109 ± 9 eV, above the atomic-physics values of 120 and 65 eV.
+    refs: [aliotta2001]
+  - year: 2005
+    method: thm
+    energy: "from 600 keV down to astrophysical energies"
+    note: >-
+      Trojan Horse measurement through the three-body reaction
+      ⁶Li(³He,pα)⁴He at 5 and 6 MeV; the bare S-factor was extracted in the
+      modified plane-wave Born approximation, and the screening potential
+      derived from it is consistent with the adiabatic limit.
+    refs: [lacognata2005]
+evaluations: [descouvemont2004, bosch1992]
+open_questions:
+  - The electron-screening potential extracted from the lowest-energy direct data, which exceeds the adiabatic estimate, while the Trojan Horse analysis finds a value consistent with it.
+related: [3H-dn-4He, 2H-dn-3He, 3He-3He2p-4He]

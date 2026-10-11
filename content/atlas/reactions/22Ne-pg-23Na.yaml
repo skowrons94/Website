@@ -1,0 +1,125 @@
+id: 22Ne-pg-23Na
+label: ²²Ne(p,γ)²³Na
+kind: capture
+target: 22Ne
+projectile: 1H
+ejectile: g
+product: 23Na
+networks: [nena]
+importance: key
+summary: >-
+  The proton capture on ²²Ne that makes sodium. It is the main way stars produce
+  ²³Na, the only stable sodium isotope, during hydrogen burning.
+role: >-
+  Many old star clusters in the Milky Way contain stars with more sodium and less
+  oxygen than their neighbours. This pattern, called the sodium–oxygen
+  anticorrelation, is thought to come from material that was burned at high
+  temperature in an earlier generation of stars. Which stars did the burning, for
+  example massive stars on the asymptotic giant branch (AGB stars), is still
+  debated, and the answer depends on how fast ²²Ne turns into sodium. The same
+  reaction sets part of the sodium and neon yields of nova explosions. For decades
+  its rate was uncertain by large factors because several possible low-energy
+  resonances had never been seen; most of them have now been measured or excluded.
+details: >-
+  At the temperatures of hot-bottom burning and of novae the rate is a sum of
+  narrow resonances and of a non-resonant component, made of direct capture and
+  of the tails of subthreshold states. Before 2014 several resonances below
+  Eₚ = 300 keV were known only as upper limits or from indirect data, and the
+  tentative resonances at Eₚ = 71 and 105 keV, together with the non-resonant
+  component, left the rate at 0.1 GK uncertain by orders of magnitude.
+
+  LUNA observed the Eₚ = 186 keV resonance in a feasibility study (Cavanna et al.
+  2014) and then measured the resonances at Eₚ = 156.2, 189.5 and 259.7 keV
+  directly for the first time with a windowless ²²Ne gas target and two HPGe
+  detectors (Cavanna et al. 2015; Depalo et al. 2016). The original strengths
+  were later raised by 18–19 % because the energy straggling of the beam had been
+  neglected (erratum, 2018). A second LUNA campaign set upper limits of 6 × 10⁻¹¹ eV and 7 × 10⁻¹¹ eV on the 71 and 105 keV
+  resonances and measured the off-resonance S-factor (Ferraro et al. 2018); a
+  further analysis of direct capture and resonances at low energy followed
+  (Takács et al. 2024). At TUNL, Kelly et al. (2017) measured the low-energy
+  resonances with implanted targets. At higher energies, the resonances used to
+  normalise the low-energy data were remeasured at HZDR (Depalo et al. 2015) and,
+  in inverse kinematics, at DRAGON (Lennarz et al. 2020; Williams et al. 2020),
+  where the strength of the E_cm = 458 keV reference resonance came out
+  0.467(14) eV, significantly lower than earlier values.
+status: improving
+status_note: >-
+  The low-energy resonances are now measured or excluded and the rate uncertainty
+  at 0.1 GK fell by about three orders of magnitude; the normalisation to the
+  higher-energy reference resonances and the non-resonant component remain under
+  discussion.
+methods: [direct-underground, direct-surface, inverse-kinematics]
+measurements:
+  - year: 2014
+    facility: luna-400
+    method: direct-underground
+    energy: "Eₚ = 186 keV resonance"
+    note: >-
+      Feasibility study for the underground campaign, including the beam-induced
+      background. First direct observation of the 186 keV resonance, with a lower
+      limit ωγ > 0.12 × 10⁻⁶ eV on its strength.
+    refs: [cavanna2014]
+  - year: 2015
+    facility: hzdr
+    method: direct-surface
+    energy: "Eₚ = 436–1279 keV (five resonances)"
+    note: >-
+      Strengths of the 436, 639 and 661 keV resonances relative to those at 479
+      and 1279 keV, with a ²²Ne-implanted tantalum target. Consistent with but
+      more precise than the literature, except the 661 keV resonance, which is
+      ten times weaker; improved γ-ray branching ratios.
+    refs: [depalo2015]
+  - year: 2015
+    facility: luna-400
+    method: direct-underground
+    energy: "Eₚ = 156.2, 189.5 and 259.7 keV"
+    note: >-
+      First direct observation of the three resonances, with strengths known to
+      2–7 %, and much lower upper limits on three tentative resonances; the full
+      account is in Depalo et al. (2016). An erratum raised the strengths by
+      18–19 % after including the beam energy straggling, with unchanged
+      astrophysical conclusions.
+    refs: [cavanna2015, depalo2016, cavanna2018]
+  - year: 2017
+    facility: tunl-lena
+    method: direct-surface
+    energy: "Eₚ below 200 keV (ECR ion source) and higher energies (1 MV accelerator)"
+    note: >-
+      Independent measurement of the low-energy resonances with ²²Ne implanted in
+      tantalum backings.
+    refs: [kelly2017]
+  - year: 2018
+    facility: luna-400
+    method: direct-underground
+    energy: "Eₚ = 71 and 105 keV, and off-resonance"
+    note: >-
+      Upper limits of 6 × 10⁻¹¹ and 7 × 10⁻¹¹ eV (90 % CL)
+      on the two suggested resonances, and the off-resonance S-factor at very low
+      energy, which constrains direct capture and a subthreshold resonance. The
+      rate uncertainty at 0.1 GK was reduced by three orders of magnitude.
+    refs: [ferraro2018]
+  - year: 2020
+    facility: dragon
+    method: inverse-kinematics
+    energy: "E_cm = 149–1222 keV (resonances); 282–511 keV (non-resonant)"
+    note: >-
+      First measurement in inverse kinematics, a ²²Ne beam on a windowless H₂
+      target, with different systematic uncertainties from all earlier work. The
+      458 keV reference resonance has ωγ = 0.467(14) eV, lower than earlier values;
+      the rate is a factor of 4 above STARLIB-2013, with little effect on ²³Na in
+      AGB stars but an effect on Ne–Al nuclei in novae.
+    refs: [lennarz2020, williams2020]
+  - year: 2024
+    facility: luna-400
+    method: direct-underground
+    energy: "low energy"
+    note: >-
+      Further LUNA analysis of the direct capture cross section and of the
+      low-energy resonances.
+    refs: [takacs2024]
+evaluations: [angulo1999]
+open_questions:
+  - The strength of the E_cm = 458 keV reference resonance, where the DRAGON value is significantly lower than earlier forward-kinematics results; strengths normalised to it inherit the discrepancy.
+  - The size of the non-resonant component (direct capture and subthreshold states) between the resonances.
+  - Whether the updated rate is enough for AGB models to reproduce the sodium–oxygen anticorrelation in globular clusters.
+related: [23Na-pg-24Mg, 23Na-pa-20Ne, 21Ne-pg-22Na, 22Ne-an-25Mg, 22Ne-ag-26Mg]

@@ -1,0 +1,65 @@
+id: 27Al-pa-24Mg
+label: ²⁷Al(p,α)²⁴Mg
+kind: transfer
+target: 27Al
+projectile: 1H
+ejectile: 4He
+product: 24Mg
+networks: [mgal]
+importance: key
+summary: >-
+  The reaction that closes the MgAl cycle. A proton hits ²⁷Al and an alpha
+  particle comes out, leaving ²⁴Mg, where the cycle started.
+role: >-
+  Aluminium made in hydrogen burning can either return to magnesium through this
+  reaction or move on to silicon through ²⁷Al(p,γ)²⁸Si. The balance between the
+  two sets how much aluminium survives, and whether material stays inside the
+  MgAl cycle or leaks out of it. This matters for the aluminium-rich and
+  magnesium-poor stars observed in globular clusters and for the aluminium made in
+  nova explosions.
+details: >-
+  At the temperatures of hot-bottom burning and of novae the rate depends on
+  narrow resonances close to the proton threshold and on the α-particle
+  branching of the corresponding states of ²⁸Si. Many of these resonances are
+  too weak to have been observed directly in the (p,α) channel, so the
+  compiled rates (Angulo et al. 1999; Iliadis et al. 2010) combine upper
+  limits, the (p,γ) strengths of the same resonances and proton widths from
+  transfer reactions.
+
+
+  The Trojan Horse method gave the first data in this energy range. The
+  three-body reaction ²H(²⁷Al,α²⁴Mg)n covered centre-of-mass energies up to
+  1.5 MeV and showed a group of resonances close to the Gamow window of
+  stellar hydrogen burning, 70–120 keV (Palmerini et al. 2021). A second
+  analysis determined the contribution of the 84.3 keV resonance, set upper
+  limits on the nearby ones and gave a new recommended rate (La Cognata et al.
+  2022).
+status: uncertain
+status_note: >-
+  The low-energy resonances are known from Trojan Horse data and upper limits;
+  no direct measurement in the (p,α) channel reaches the Gamow window.
+methods: [thm, direct-surface, anc]
+measurements:
+  - year: 2021
+    facility: other
+    lab: "not recorded"
+    method: thm
+    energy: "²H(²⁷Al,α²⁴Mg)n, E up to 1.5 MeV"
+    note: >-
+      First Trojan Horse study of the reaction; a group of resonances appears
+      close to the 70–120 keV Gamow window of hydrogen burning.
+    refs: [palmerini2021]
+  - year: 2022
+    facility: other
+    lab: "not recorded"
+    method: thm
+    energy: "E = 84.3 keV resonance and its neighbours"
+    note: >-
+      Contribution of the 84.3 keV resonance determined and upper limits set on
+      the nearby resonances; new recommended reaction rate.
+    refs: [lacognata2022]
+evaluations: [angulo1999, iliadis2010]
+open_questions:
+  - Direct observation of the low-energy resonances in the (p,α) channel, which requires the low background of an underground laboratory.
+  - The ratio of the (p,α) and (p,γ) rates on ²⁷Al, which decides whether the MgAl cycle closes or leaks to silicon.
+related: [27Al-pg-28Si, 24Mg-pg-25Al, 23Na-pa-20Ne]

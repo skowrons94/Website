@@ -1,0 +1,75 @@
+id: 20Ne-pg-21Na
+label: ²⁰Ne(p,γ)²¹Na
+kind: capture
+target: 20Ne
+projectile: 1H
+ejectile: g
+product: 21Na
+networks: [nena]
+importance: key
+summary: >-
+  The first and slowest step of the NeNa cycle. A ²⁰Ne nucleus captures a proton
+  and becomes ²¹Na, giving off the extra energy as a γ-ray.
+role: >-
+  ²⁰Ne is the most abundant neon isotope, and in the NeNa cycle nuclei wait longest
+  as ²⁰Ne before the next proton arrives. This reaction therefore sets how fast
+  neon is turned into sodium in the hydrogen-burning layers of red giants, of
+  massive stars on the asymptotic giant branch (AGB stars, in the late stage where
+  hydrogen and helium burn in thin shells), and in nova explosions. Because so
+  much neon is available, even a slow leak through this step matters for the
+  sodium made in these stars.
+details: >-
+  Below about 0.4 MeV the cross section is non-resonant. It is dominated by direct
+  capture and by the tail of a ²¹Na state just below the proton threshold, the
+  2425 keV level, whose contribution has to be separated from direct capture in
+  an R-matrix fit. The first resonance above threshold, at E_cm = 368 keV,
+  is narrow and contributes at higher temperatures. The Notre Dame
+  data of Lyons et al. (2018) between Eₚ = 0.5 and 2.0 MeV fixed the primary
+  transitions to the bound states for the R-matrix extrapolation. The LUNA
+  measurement of Masha et al. (2023) used a windowless neon gas target and two
+  HPGe detectors deep underground to measure direct capture for the first time
+  below E_cm = 352 keV, and remeasured the energy and strength of the 368 keV
+  resonance.
+status: improving
+status_note: >-
+  Underground data now reach below E_cm = 352 keV and the 368 keV resonance
+  strength is known to about 5 %; the low-energy extrapolation still rests on the
+  separation of direct capture from the subthreshold state.
+methods: [direct-underground, direct-surface]
+measurements:
+  - year: 2018
+    facility: notre-dame
+    method: direct-surface
+    energy: "Eₚ = 500–2000 keV"
+    note: >-
+      Cross sections for the primary transitions to the bound states of ²¹Na. An
+      R-matrix fit separated direct capture from the subthreshold resonance; the
+      resulting rate is lower than those in the libraries of the time by up to
+      20 % in the temperature range of interest.
+    refs: [lyons2018]
+  - year: 2023
+    facility: luna-400
+    method: direct-underground
+    energy: "E_cm below 352 keV, and the 368 keV resonance"
+    note: >-
+      First measurement of direct capture below E_cm = 352 keV, with a windowless
+      gas target and two HPGe detectors. Resonance strength
+      ωγ = 0.112 ± 0.002 (stat) ± 0.005 (sys) meV, three times more precise than
+      before; the rate is 20 % lower than previously adopted below 0.1 GK and
+      unchanged above.
+    refs: [masha2023]
+  - year: 2025
+    facility: luna-400
+    method: direct-underground
+    energy: "E_cm ≈ 368 keV resonance (366 keV in the report) and direct capture below 400 keV"
+    note: >-
+      Conference report of the LUNA campaign with a windowless gas target and
+      two HPGe detectors, with preliminary results on the resonance and on
+      low-energy direct capture; no journal publication yet.
+    refs: [caciolli2025]
+evaluations: [angulo1999]
+open_questions:
+  - The contribution of the subthreshold 2425 keV state relative to direct capture at E_cm below 300 keV, which sets the rate at the lowest temperatures.
+  - The LUNA strength of the 368 keV resonance is three times more precise than earlier values and has not yet been checked by an independent measurement.
+  - A combined R-matrix analysis of the capture data at all energies, to fix the shape of the S-factor near the threshold.
+related: [21Na-bp-21Ne, 21Ne-pg-22Na, 23Na-pa-20Ne, 19F-pg-20Ne]

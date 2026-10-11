@@ -1,0 +1,60 @@
+id: 7Be-np-7Li
+label: ⁷Be(n,p)⁷Li
+kind: transfer
+target: 7Be
+projectile: n
+ejectile: 1H
+product: 7Li
+networks: [bbn]
+importance: major
+summary: >-
+  A ⁷Be nucleus absorbs a neutron and becomes ⁷Li, emitting a proton. After the
+  Big Bang it was the main reaction that destroyed ⁷Be, and with it much of the
+  future lithium.
+role: >-
+  Most of the primordial lithium was first made as ⁷Be, which turned into ⁷Li
+  only after the nucleosynthesis was over. Any ⁷Be destroyed earlier lowers the
+  lithium predicted today. This reaction removed the largest share. Because the
+  predicted lithium is higher than the amount seen in old stars, its rate has
+  been re-measured to check whether a larger value could close the gap.
+details: >-
+  The reaction has a large cross section at thermal energies and follows a
+  1/v trend up to resonances in ⁸Be at higher neutron energies. BBN needs
+  neutron energies of tens of keV. Direct measurements combine radioactive ⁷Be
+  targets with neutron time-of-flight beams. Before 2018 the only two data sets
+  from thermal to keV energies dated from the 1980s, did not reach the BBN
+  window and disagreed with each other. The n_TOF measurement at CERN, with a
+  ⁷Be target implanted at ISOLDE, covered neutron energies from thermal up to about
+  325 keV. Its cross section is higher than the evaluations at low energy and
+  agrees with values inferred from the time-reversed ⁷Li(p,n)⁷Be reaction, but
+  the change reduces the predicted primordial lithium only slightly.
+status: improving
+status_note: >-
+  Time-of-flight data now cover the BBN energies; the higher cross section they
+  give is far from enough to solve the lithium problem.
+methods: [neutron-beams]
+measurements:
+  - year: 1988
+    facility: other
+    lab: "LANSCE, Los Alamos National Laboratory, Los Alamos NM"
+    method: neutron-beams
+    energy: "25 meV to 13.5 keV (neutron energy)"
+    note: >-
+      Time-of-flight measurement with a ⁷Be sample, normalized to the thermal
+      cross section measured at the Omega West Reactor; it stops below the BBN
+      energies.
+    refs: [koehler1988]
+  - year: 2018
+    facility: n-tof
+    method: neutron-beams
+    energy: "thermal to about 325 keV (neutron energy)"
+    note: >-
+      High-purity ⁷Be target implanted at ISOLDE, the EAR2 flight path and a
+      silicon telescope; the cross section is higher than the evaluations at
+      low energy and agrees with ⁷Li(p,n)⁷Be data. The effect on the lithium
+      problem is minor.
+    refs: [damone2018]
+evaluations: [descouvemont2004, iliadis2020]
+open_questions:
+  - The contribution of transitions to the first excited state of ⁷Li at BBN energies, which the total cross-section measurements of 1988 and 2018 do not separate.
+related: [3He-ag-7Be, 7Be-ec-7Li, 7Li-pa-4He]

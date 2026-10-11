@@ -1,18 +1,269 @@
 # How cross sections are measured or determined. Referred to by
 # reactions[].methods and measurements[].method.
 #
-#   id, name, summary (general reader), details (specialist), strengths, limits
+#   id, name, summary (general reader), details (specialist), strengths, limits,
+#   refs (reference keys, optional), examples (reaction ids, optional)
 #
-# The stub entries below fix the ids; the descriptions are filled in later.
+# Review and facility references were checked by web search on 2026-10-11
+# (see `checked` in references/history.yaml). The Trojan Horse review
+# (tumino2021) has no confirmed DOI or full author list yet. The text below
+# describes the methods in general terms and quotes no measured values.
 
 methods:
-  - { id: direct-underground, name: Direct measurement underground }
-  - { id: direct-surface, name: Direct measurement at the surface }
-  - { id: inverse-kinematics, name: Inverse kinematics and recoil separators }
-  - { id: activation, name: Activation }
-  - { id: neutron-beams, name: Neutron beams and time of flight }
-  - { id: thm, name: Trojan Horse method }
-  - { id: anc, name: Transfer reactions and ANCs }
-  - { id: coulomb-dissociation, name: Coulomb dissociation }
-  - { id: plasma, name: Laser and inertial-confinement plasmas }
-  - { id: theory, name: Calculation from theory }
+  - id: direct-underground
+    name: Direct measurement underground
+    summary: >-
+      An accelerator in a laboratory deep underground fires a beam at a target,
+      and detectors count the products of the reaction. The rock above stops
+      most cosmic rays, so the detectors can see reactions that happen only a
+      few times per day, at energies close to those inside stars.
+    details: >-
+      The observable is the reaction yield per incident projectile, measured
+      with γ-ray or charged-particle detectors as a function of beam energy.
+      The cross section, or the resonance strength for narrow resonances,
+      follows from the yield, the target stoichiometry and thickness, the
+      stopping power and the detection efficiency. Underground, the muon flux
+      and the muon-induced γ-ray and neutron backgrounds are reduced by orders
+      of magnitude, which lowers the minimum measurable yield. The remaining
+      background comes from the environmental radioactivity of the rock and of
+      the set-up, and from beam-induced reactions on target contaminants.
+      Typical systematic limits are the beam current integration, the target
+      thickness and its degradation under beam, the effective interaction
+      energy in a thick or degrading target, the γ-ray detection efficiency
+      including summing and angular distributions, and electron screening at
+      the lowest energies.
+    strengths:
+      - Measures the reaction of interest directly, without a nuclear model.
+      - Reaches energies inside or near the Gamow window for many hydrogen-burning reactions.
+      - Low background allows long runs on very small cross sections.
+    limits:
+      - Only a few facilities exist, and beam time is limited.
+      - At the lowest energies the yield is still small and statistics dominate.
+      - Laboratory data include electron screening, which differs from that in a stellar plasma.
+      - Below the lowest measured energy an extrapolation, usually by R-matrix, is still needed.
+    refs: [broggini2010, broggini2018, junker2023]
+    examples: [3He-3He2p-4He, 14N-pg-15O, 2H-pg-3He]
+
+  - id: direct-surface
+    name: Direct measurement at the surface
+    summary: >-
+      The same kind of experiment in an ordinary laboratory above ground. It
+      covers a much wider range of energies and beams, but cosmic rays limit
+      how small a cross section can be measured.
+    details: >-
+      Yields are measured as underground, but the background from cosmic-ray
+      muons and their secondaries limits the sensitivity for γ-ray energies up
+      to several MeV unless active or passive shielding is used. Surface data
+      usually fix the higher-energy part of the excitation function, the
+      resonance energies and widths, and the γ-ray branchings and angular
+      distributions that an R-matrix fit needs. They are often the main input
+      for the extrapolation into the Gamow window. Systematic limits are the
+      same as underground, with background subtraction added.
+    strengths:
+      - Wide choice of accelerators, beams and energies.
+      - Supplies angular distributions, branchings and the high-energy data that constrain R-matrix fits.
+    limits:
+      - Cosmic-ray background limits the lowest measurable cross section.
+      - Low-energy data rely on extrapolation.
+    refs: [fowler1984, deboer2017]
+    examples: [12C-ag-16O, 14N-pg-15O]
+
+  - id: inverse-kinematics
+    name: Inverse kinematics and recoil separators
+    summary: >-
+      The roles of beam and target are swapped: a heavy beam hits a light
+      target such as hydrogen or helium gas. The product nuclei fly forward
+      with the beam, and a recoil separator picks them out and counts them.
+    details: >-
+      In a radiative capture A(a,γ)B studied as a(A,γ)B, the recoil B leaves
+      the target inside a narrow forward cone. An electromagnetic separator
+      suppresses the unreacted beam by many orders of magnitude, and the
+      recoils are identified at the focal plane, often in coincidence with
+      the capture γ-rays. The method measures the total capture cross section
+      with no need for a γ-ray efficiency model, and it works with radioactive
+      beams. Systematic limits are the separator acceptance and transmission,
+      the charge-state distribution of the recoils, the beam suppression, and
+      the gas-target density and beam normalisation.
+    strengths:
+      - Gives the total cross section directly, independent of the γ-ray cascade.
+      - Works with short-lived beams that cannot be made into targets.
+    limits:
+      - The recoil cone must fit the separator acceptance, which restricts reactions and energies.
+      - Beam leaking through the separator limits the lowest measurable yield.
+      - Charge-state fractions must be measured or modelled.
+    refs: [schurmann2005, hutcheon2003, couder2008]
+    examples: [12C-ag-16O, 3He-ag-7Be]
+
+  - id: activation
+    name: Activation
+    summary: >-
+      When the reaction product is radioactive, the target is irradiated and
+      then moved to a low-background counting station. The number of decays
+      gives the number of reactions.
+    details: >-
+      The number of product nuclei is inferred from their decay radiation,
+      measured offline, together with the half-life and the decay branching.
+      The method gives the total cross section, summed over all γ-ray cascades
+      and integrated over angle, which avoids the summing and angular
+      corrections of prompt γ-ray spectroscopy. Long-lived products can also be
+      counted atom by atom with accelerator mass spectrometry. Systematic
+      limits are the decay data, the counting efficiency, the irradiation
+      history and the loss of product nuclei from the target.
+    strengths:
+      - Total cross section, independent of the γ-ray cascade and angular distribution.
+      - Counting can be done in a low-background setting away from the beam.
+    limits:
+      - Needs a radioactive product with a suitable half-life.
+      - Gives no information on individual transitions.
+    refs: [gyurky2007, gyurky2023]
+    examples: [3He-ag-7Be, 12C-pg-13N, 25Mg-pg-26Al]
+
+  - id: neutron-beams
+    name: Neutron beams and time of flight
+    summary: >-
+      Neutrons with a wide range of energies are produced in short bursts. The
+      time a neutron takes to reach the sample tells its energy, so one
+      experiment measures the cross section at many energies.
+    details: >-
+      At spallation or photoneutron sources the neutron energy is found from
+      the flight time over a known path. Capture is measured with
+      γ-ray detectors and charged-particle reactions with silicon or gas
+      detectors. Maxwellian-averaged cross sections at stellar temperatures
+      are then computed from the energy-dependent data. Systematic limits
+      include the neutron flux shape, the sample mass, the detector response
+      and backgrounds from scattered neutrons.
+    strengths:
+      - Covers many energies in one measurement.
+      - Applies to neutron captures and to neutron-induced reactions on radioactive samples.
+    limits:
+      - Requires a sample of the target nucleus, which is hard for short-lived nuclei.
+      - The neutron flux must be known over the whole energy range.
+    refs: [guerrero2013]
+    examples: [7Be-np-7Li]
+
+  - id: thm
+    name: Trojan Horse method
+    summary: >-
+      An indirect method in which the interesting nucleus is carried inside a
+      larger one, the Trojan horse, at an energy above the Coulomb barrier.
+      The reaction with the carried nucleus can then be studied at very low
+      effective energies.
+    details: >-
+      A two-body reaction A + x → c + C at sub-Coulomb energy is studied through
+      a three-body reaction A + a → c + C + s, where a has a large x + s cluster
+      structure and s acts as a spectator. In quasi-free kinematics the
+      measured three-body cross section is factorised into a kinematic factor,
+      the momentum distribution of x inside a, and the half-off-energy-shell
+      two-body cross section. The method gives the energy dependence of the
+      bare-nucleus cross section without Coulomb suppression or electron
+      screening; its absolute scale is normalised to direct data at higher
+      energies. Systematic limits are the validity of the quasi-free
+      factorisation, the momentum distribution adopted, the off-shell
+      corrections and the normalisation.
+    strengths:
+      - Reaches energies far below those accessible directly, free of electron screening.
+      - Applicable to charged-particle-induced and to neutron-induced reactions.
+    limits:
+      - Requires normalisation to direct data.
+      - Depends on the quasi-free reaction model and its assumptions.
+    refs: [tumino2021, tribble2014]
+    examples: [2H-dp-3H, 19F-pa-16O, 18O-pa-15N, 13C-an-16O]
+
+  - id: anc
+    name: Transfer reactions and ANCs
+    summary: >-
+      At very low energy, capture happens at large distances from the nucleus,
+      where only the tail of the final-state wave function matters. A transfer
+      reaction at higher energy can measure the size of that tail, which then
+      gives the low-energy capture rate.
+    details: >-
+      The asymptotic normalisation coefficient (ANC) fixes the amplitude of
+      the bound-state wave function outside the nuclear interior. For
+      peripheral transfer reactions, measured at energies where the cross
+      section is large, the ANC can be extracted with much smaller dependence
+      on the optical-model and single-particle parameters than a spectroscopic
+      factor. The ANC then determines the external direct-capture contribution
+      and the contribution of subthreshold states in an R-matrix calculation.
+      Systematic limits are the optical potentials, the peripherality of the
+      reaction and the reaction model (DWBA or coupled channels).
+    strengths:
+      - Gives low-energy direct capture and subthreshold-state contributions without measuring the capture itself.
+      - Uses reactions with large cross sections.
+    limits:
+      - Model dependent through the optical potentials and the reaction theory.
+      - Covers only the non-resonant and subthreshold parts of the rate.
+    refs: [tribble2014]
+    examples: [14N-pg-15O, 7Be-pg-8B, 12C-ag-16O]
+
+  - id: coulomb-dissociation
+    name: Coulomb dissociation
+    summary: >-
+      The time-reverse of a capture. A fast beam of the product nucleus passes
+      close to a heavy target, and the strong electric field breaks it apart.
+      From the break-up rate the capture cross section can be calculated.
+    details: >-
+      Baur, Bertulani and Rebel proposed the method in 1986. The virtual
+      photons of the Coulomb field of a high-Z target induce the
+      photodissociation B + γ → A + a, which is related to the capture
+      A(a,γ)B by detailed balance. The dissociation cross section is large
+      because of the high virtual-photon flux, and radioactive beams can be
+      used. Systematic limits are the contributions of nuclear break-up, of
+      higher multipoles (E2 in an E1-dominated case), of post-acceleration
+      in the Coulomb field, and the reaction model used to extract the
+      photodissociation cross section.
+    strengths:
+      - Large cross sections and the use of radioactive beams.
+      - Low relative energies between the fragments are accessible.
+    limits:
+      - Depends on the reaction model and on multipole separation.
+      - Nuclear and higher-order Coulomb effects must be subtracted.
+    refs: [baur1986, tribble2014]
+    examples: [7Be-pg-8B]
+
+  - id: plasma
+    name: Laser and inertial-confinement plasmas
+    summary: >-
+      Lasers compress and heat a small capsule of fuel until the nuclei fuse.
+      The reactions then take place in a hot plasma, as they do in stars,
+      rather than between a beam and a cold target.
+    details: >-
+      Reaction yields are measured from the emitted neutrons, charged particles
+      or γ-rays, and the plasma temperature and density are inferred from other
+      diagnostics. The method samples the thermally averaged reactivity
+      directly and can test plasma effects such as screening. Systematic limits
+      are the knowledge of the plasma conditions, which vary in space and
+      time, and the separation of the reaction of interest from other
+      reactions in the fuel. At the National Ignition Facility, Casey et al.
+      measured the ²H(d,n)³He and ³H(t,2n)⁴He S-factors in implosions at
+      temperatures of 2.1–5.4 keV and densities of 1.2–16 g cm⁻³, in agreement
+      with accelerator data within the uncertainties.
+    strengths:
+      - Probes reactions in a thermal plasma.
+      - Allows studies of reactions between radioactive light nuclei such as tritium.
+    limits:
+      - Plasma conditions are known only approximately.
+      - Limited so far to fusion of the lightest nuclei.
+    refs: [casey2017, zylstra2017]
+    examples: [3H-dn-4He, 2H-dn-3He]
+
+  - id: theory
+    name: Calculation from theory
+    summary: >-
+      Some rates cannot be measured at all at stellar energies and are
+      calculated instead. The weak proton–proton fusion that starts the Sun's
+      energy production is the main example.
+    details: >-
+      For weak-interaction processes such as p + p → d + e⁺ + ν the cross
+      section is too small for any laboratory measurement and is computed from
+      nuclear theory. For
+      radiative captures and resonant reactions, R-matrix and microscopic
+      models extrapolate measured data to stellar energies. Electron capture
+      rates in the solar plasma also come from theory.
+    strengths:
+      - The only source for some weak-interaction rates.
+      - Provides the energy dependence that links measured data to stellar energies.
+    limits:
+      - Accuracy depends on the nuclear model and its inputs.
+      - Extrapolations need data to constrain them.
+    refs: [bethe1938, adelberger2011, acharya2025]
+    examples: [1H-pp-2H, 1H-pep-2H, 7Be-ec-7Li]

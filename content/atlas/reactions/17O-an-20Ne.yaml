@@ -1,0 +1,61 @@
+id: 17O-an-20Ne
+label: ¹⁷O(α,n)²⁰Ne
+kind: transfer
+target: 17O
+projectile: 4He
+ejectile: n
+product: 20Ne
+networks: [neutron-sources]
+importance: minor
+summary: >-
+  Oxygen-17 captures a helium nucleus and gives back a neutron. It decides
+  whether neutrons swallowed by the abundant oxygen-16 are lost or returned.
+role: >-
+  In massive stars, and even more in stars poor in heavy elements, oxygen-16
+  is very abundant and captures many of the neutrons released by neon-22.
+  These neutrons would be lost to the s-process, which is why oxygen-16 is
+  called a neutron poison. The oxygen-17 it forms can capture a helium
+  nucleus in two ways. This reaction releases the neutron again, while the
+  competing ¹⁷O(α,γ)²¹Ne keeps it. The ratio of the two decides how strongly
+  oxygen-16 poisons the s-process, and therefore how many heavy elements
+  metal-poor massive stars can make.
+details: >-
+  The relevant quantity is the ratio of the (α,n) and (α,γ) rates at
+  T₉ ≈ 0.2–0.3, set by resonances in ²¹Ne above the α threshold. Best et al.
+  (2013) measured the (α,n) channel at Notre Dame between E(α,lab) = 0.8 and
+  2.3 MeV with a moderating neutron detector, and independently through the
+  1633 keV γ-ray of ²⁰Ne; a simultaneous R-matrix fit to both channels gave a
+  new rate for 0.1–10 GK. They found the (α,γ) channel strong enough to compete
+  with the neutron channel, so neutrons are recycled less efficiently than
+  assumed when the (α,γ) channel was taken to be very weak. In the competing
+  channel, DRAGON measurements in inverse kinematics set an upper limit of
+  140 neV (95% CL) on the 612 keV resonance, which removes it from the
+  (α,γ) rate (Williams et al. 2022).
+status: uncertain
+status_note: >-
+  What matters is the (α,n)/(α,γ) ratio; both channels have been measured
+  directly, but not at the lowest energies of core helium burning.
+methods: [direct-surface, inverse-kinematics]
+measurements:
+  - year: 2013
+    facility: notre-dame
+    method: direct-surface
+    energy: "E(α,lab) = 0.8–2.3 MeV"
+    note: >-
+      (α,n) cross section with a moderating neutron detector and, separately,
+      from the 1633 keV γ-ray of ²⁰Ne; R-matrix fit to both channels and a new
+      rate for 0.1–10 GK.
+    refs: [best2013]
+  - year: 2022
+    facility: dragon
+    method: inverse-kinematics
+    energy: "¹⁷O(α,γ)²¹Ne resonances between 612 and 1318 keV"
+    note: >-
+      Competing (α,γ) channel: upper limit ωγ < 140 neV (95% CL) for the 612 keV
+      resonance; the new (α,γ) rate is lower than earlier ones and increases the
+      weak s-process yields of a rotating low-metallicity 20 M☉ star.
+    refs: [williams2022]
+evaluations: [angulo1999]
+open_questions:
+  - The ratio of ¹⁷O(α,n)²⁰Ne to ¹⁷O(α,γ)²¹Ne at the temperatures of core helium burning and shell carbon burning.
+related: [22Ne-an-25Mg, 13C-an-16O, 17O-pa-14N]

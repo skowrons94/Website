@@ -1,0 +1,40 @@
+id: 3H-dn-4He
+label: ³H(d,n)⁴He
+kind: fusion
+target: 3H
+projectile: 2H
+ejectile: n
+product: 4He
+networks: [bbn]
+importance: minor
+summary: >-
+  Tritium and a deuteron fuse into ⁴He and a neutron. After the Big Bang it
+  turned tritium into helium; on Earth it is the reaction planned for fusion
+  power plants.
+role: >-
+  The tritium made by deuteron fusion after the Big Bang was mostly turned
+  into ⁴He by this reaction. Its rate is so high that it does not limit the
+  predicted abundances. Because the same reaction powers fusion experiments,
+  its cross section is among the best studied in nuclear physics.
+details: >-
+  The cross section is dominated by a broad 3/2⁺ resonance in ⁵He just above
+  the d+t threshold, which makes it very large at BBN energies. Bosch and Hale
+  (1992) gave parametrizations of the cross section and of the Maxwellian
+  reactivity, based on R-matrix calculations, that are widely used in fusion
+  research, together with those of ²H(d,n)³He,
+  ²H(d,p)³H and ³He(d,p)⁴He.
+status: well-known
+status_note: >-
+  Measured precisely for fusion-energy applications; its uncertainty does not
+  affect BBN predictions.
+methods: [direct-surface, theory]
+measurements:
+  - year: 1992
+    method: theory
+    note: >-
+      Parametrizations of the cross section and thermal reactivity based on
+      R-matrix calculations; a correction followed in 1993.
+    refs: [bosch1992]
+evaluations: [descouvemont2004, bosch1992]
+open_questions: []
+related: [2H-dp-3H, 3He-dp-4He, 3H-ag-7Li]

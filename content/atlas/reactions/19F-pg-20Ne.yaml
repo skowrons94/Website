@@ -1,0 +1,63 @@
+id: 19F-pg-20Ne
+label: ¹⁹F(p,γ)²⁰Ne
+kind: capture
+target: 19F
+projectile: 1H
+ejectile: g
+product: 20Ne
+networks: [cno4]
+importance: key
+summary: >-
+  Fluorine-19 captures a proton and keeps it, becoming neon-20. This is the
+  way out of the CNO cycles towards heavier elements.
+role: >-
+  In all the CNO cycles the catalyst nuclei carbon, nitrogen, oxygen and
+  fluorine are recycled, so their total number stays the same. This reaction
+  is the exception: it carries material out of the cycles into neon, from
+  which the NeNa and MgAl cycles can build heavier nuclei. Its rate,
+  compared with the much more frequent ¹⁹F(p,α)¹⁶O, sets how fast this
+  leakage happens in very hot hydrogen burning, as in massive stars without
+  heavy elements and in nova explosions.
+details: >-
+  The γ-ray channel is weak compared with the α channels of the same ²⁰Ne
+  states, so measurements at low energy need intense beams and
+  low-background detection, which motivated underground experiments. The
+  rate at the relevant temperatures depends on low-energy resonances and on
+  the non-resonant contribution, and on the γ-ray branchings of the ²⁰Ne
+  states near the proton threshold. A surface measurement in 2008 observed
+  only the transition to the first excited state of ²⁰Ne and gave an upper
+  limit for the resonance near 213 keV. The JUNA experiment, deep under the
+  JinPing mountain, reached E = 186 keV and identified a key resonance at
+  225 keV; near 0.1 GK its rate is up to 7.4 times the previous
+  recommendation.
+status: uncertain
+status_note: >-
+  Underground data now reach 186 keV; below that the rate depends on weak
+  resonances not yet measured directly, and on the (p,γ)/(p,α) ratio.
+methods: [direct-underground, direct-surface]
+measurements:
+  - year: 2008
+    facility: notre-dame
+    method: direct-surface
+    energy: "200–760 keV"
+    note: >-
+      Resonances at 323.9, 564 and 634 keV and interference terms between
+      them; only an upper limit for the expected resonance at 213 keV. Only
+      the transition to the first excited state of ²⁰Ne was measured.
+    refs: [couture2008]
+  - year: 2022
+    facility: juna
+    method: direct-underground
+    energy: "down to 186 keV"
+    note: >-
+      Direct measurement at the China JinPing Underground Laboratory; a key
+      resonance at 225 keV raises the rate near 0.1 GK by up to a factor of
+      7.4. Stellar models then give a stronger breakout from the CNO cycle in
+      first stars, a possible source of the calcium seen in the most
+      iron-poor stars.
+    refs: [zhang2022]
+evaluations: [acharya2025]
+open_questions:
+  - The strength of the lowest-energy resonances and the non-resonant contribution.
+  - The leakage ratio (p,γ)/(p,α) at the temperatures of hot hydrogen burning.
+related: [19F-pa-16O, 18O-pg-19F, 20Ne-pg-21Na]

@@ -1,0 +1,16 @@
+id: 26Al-bp-26Mg
+label: ²⁶Al(β⁺ν)²⁶Mg
+kind: decay
+target: 26Al
+projectile: ""
+ejectile: e+ nu
+product: 26Mg
+networks: [mgal]
+summary: >-
+  ²⁶Al in its ground state decays slowly to an excited state of ²⁶Mg, which emits
+  a γ-ray of 1809 keV. Space telescopes see this line across the Milky Way, a map
+  of where nuclei were made in the last few million years. ²⁶Al also has an
+  isomer, ²⁶ᵐAl: an excited state that does not drop to the ground state but decays
+  on its own, much faster than the ground state and directly to the ground state of
+  ²⁶Mg, without the 1809 keV γ-ray, so only ²⁶Al made in its
+  ground state feeds the Galactic line.

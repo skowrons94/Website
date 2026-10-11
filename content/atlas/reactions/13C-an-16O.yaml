@@ -1,0 +1,114 @@
+id: 13C-an-16O
+label: ¹³C(α,n)¹⁶O
+kind: transfer
+target: 13C
+projectile: 4He
+ejectile: n
+product: 16O
+networks: [neutron-sources]
+importance: key
+summary: >-
+  Carbon-13 captures a helium nucleus and releases a free neutron. In stars like
+  the Sun near the end of their lives, this reaction supplies the neutrons that
+  build about half of the elements heavier than iron.
+role: >-
+  Elements heavier than iron are made mostly by adding neutrons to existing
+  nuclei. In the slow neutron-capture process, or s-process, the neutrons
+  arrive one at a time, slowly enough that unstable nuclei usually decay
+  before the next one comes. In low-mass stars on the asymptotic giant branch
+  (AGB stars, the last bright phase of stars like the Sun), a thin layer rich
+  in carbon-13 forms between helium flashes. There this reaction releases
+  neutrons at a temperature of about 90 million kelvin, and their number
+  decides how much strontium, barium, lead and many other elements the star
+  makes. The same reaction may also drive the faster intermediate process, or
+  i-process, when hydrogen is mixed into hot helium-burning layers.
+details: >-
+  At T₉ ≈ 0.09 the Gamow window lies roughly between 140 and 230 keV, where
+  the cross section is dominated by the high-energy tail of the 1/2⁺ state at
+  6.356 MeV in ¹⁷O, about 3 keV below the α threshold. Its contribution depends
+  on the reduced α width, usually expressed through the asymptotic
+  normalization coefficient (ANC), and on the exact position of the state
+  relative to the threshold (deBoer et al. 2020). Indirect methods, the Trojan
+  Horse method (La Cognata et al. 2012) and α-transfer ANC measurements
+  (Avila et al. 2015), constrain this state, but their results have not
+  always agreed. Avila et al. removed the disagreement among the α-transfer
+  measurements, while a difference from the Trojan Horse value remained.
+
+
+  At the surface, the low event rate against the neutron background kept
+  direct measurements above the Gamow window. The LUNA measurement under Gran Sasso reached
+  E = 230–300 keV, entering the s-process Gamow window for the first time,
+  with much smaller uncertainties than earlier data (Ciani et al. 2021). The
+  JUNA measurement in the China Jinping Underground Laboratory, combined with
+  data taken at Sichuan University, covered 0.24–1.9 MeV in one consistent data
+  set and constrained the near-threshold state directly (Gao et al. 2022).
+status: improving
+status_note: >-
+  Underground data now reach the upper part of the s-process Gamow window; the
+  rate below 230 keV still rests on the extrapolation through the
+  near-threshold 1/2⁺ state.
+methods: [direct-underground, direct-surface, thm, anc]
+measurements:
+  - year: 1993
+    facility: other
+    lab: "not recorded"
+    method: direct-surface
+    note: >-
+      Direct measurement of both s-process neutron sources, ¹³C(α,n)¹⁶O and
+      ²²Ne(α,n)²⁵Mg, with new rates for each.
+    refs: [drotleff1993]
+  - year: 2008
+    facility: other
+    lab: "Forschungszentrum Karlsruhe, Karlsruhe"
+    method: direct-surface
+    note: >-
+      Direct measurement and R-matrix analysis of the cross section; the
+      resulting rate became the reference for later comparisons.
+    refs: [heil2008]
+  - year: 2012
+    facility: other
+    lab: "not recorded"
+    method: thm
+    energy: "quasi-free ¹³C(⁶Li,n¹⁶O)d"
+    note: >-
+      First Trojan Horse study of the −3 keV subthreshold resonance from the
+      6.356 MeV level of ¹⁷O, which dominates the cross section in the
+      140–230 keV window.
+    refs: [lacognata2012]
+  - year: 2015
+    facility: other
+    lab: "John D. Fox Accelerator Laboratory, Florida State University, Tallahassee"
+    method: anc
+    energy: "⁶Li(¹³C,d)¹⁷O at sub-Coulomb energy, 8 MeV ¹³C beam"
+    note: >-
+      Squared Coulomb-modified α ANC of the 1/2⁺ state at 6.356 MeV,
+      3.6 ± 0.7 fm⁻¹. The result removes the disagreement between earlier
+      α-transfer measurements; some disagreement with the Trojan Horse result
+      remains.
+    refs: [avila2015]
+  - year: 2021
+    facility: luna-400
+    method: direct-underground
+    energy: "E = 230–300 keV"
+    note: >-
+      First direct data inside the s-process Gamow window, measured deep
+      underground with much smaller uncertainties than previous data; stellar
+      models with the revised rate change the yields of ⁶⁰Fe, ²⁰⁵Pb and ¹⁵²Gd
+      in stars of near-solar composition.
+    refs: [ciani2021]
+  - year: 2022
+    facility: juna
+    method: direct-underground
+    energy: "E = 0.24–1.9 MeV (with Sichuan University above ground)"
+    note: >-
+      One consistent data set across the s- and i-process windows; the
+      uncertainty at the centre of the i-process window fell from about 60% to
+      15%, with the first direct determination of the α strength of the
+      near-threshold state.
+    refs: [gao2022]
+evaluations: [angulo1999, xu2013, deboer2020]
+open_questions:
+  - The ANC and the exact energy of the 1/2⁺ state at 6.356 MeV in ¹⁷O, which control the extrapolation below 230 keV.
+  - Absolute normalisation of the direct data, which depends on target stoichiometry under beam and on the neutron-detection efficiency as a function of neutron energy and angle.
+  - Consistent data over a wide energy range, overlapping the underground and surface measurements, to constrain the R-matrix fit.
+related: [13C-pg-14N, 22Ne-an-25Mg, 17O-an-20Ne]

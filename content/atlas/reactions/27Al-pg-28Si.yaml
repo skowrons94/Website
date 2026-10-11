@@ -1,0 +1,62 @@
+id: 27Al-pg-28Si
+label: ²⁷Al(p,γ)²⁸Si
+kind: capture
+target: 27Al
+projectile: 1H
+ejectile: g
+product: 28Si
+networks: [mgal]
+importance: key
+summary: >-
+  A proton capture that turns aluminium into silicon. It is the way out of the
+  MgAl cycle, in competition with ²⁷Al(p,α)²⁴Mg, which keeps material inside it.
+role: >-
+  When ²⁷Al captures a proton, the new nucleus either emits an alpha particle and
+  returns to magnesium, or emits a γ-ray and becomes ²⁸Si. This reaction is the
+  second route. It sets how much aluminium the hottest hydrogen-burning stars
+  destroy, how much silicon they make, and how much material escapes the MgAl
+  cycle towards heavier elements in nova explosions.
+details: >-
+  At hydrogen-burning temperatures the rate is a sum of narrow resonances near
+  the proton threshold and of direct capture. The weakest low-energy resonances
+  are known only from upper limits or from transfer reactions, so the low-
+  temperature rate depends on indirect data; at nova temperatures it is
+  dominated by resonances that have been measured directly. Iliadis et al.
+  (1990) measured the γ-ray decay schemes of low-energy resonances and gave
+  new spin-parity and isospin assignments for states of ²⁸Si. Harissopulos et
+  al. (2000) measured the strengths of 26 resonances between Eₚ = 200 and
+  1120 keV with two 4π NaI(Tl) summing detectors, and obtained the
+  direct-capture cross section from yields at nine beam energies between 490
+  and 1150 keV.
+status: uncertain
+status_note: >-
+  At the lowest temperatures the rate depends on resonances that are too weak to
+  have been observed directly; at nova temperatures it rests on measured
+  resonances.
+methods: [direct-surface, anc]
+measurements:
+  - year: 1990
+    facility: other
+    lab: "not recorded"
+    method: direct-surface
+    energy: "low-energy (p,γ) resonances"
+    note: >-
+      γ-ray decay schemes of the low-energy resonances, with new spin-parity and
+      isospin assignments for states of ²⁸Si; measured together with resonances
+      in ²⁵Mg(p,γ) and ²⁶Mg(p,γ).
+    refs: [iliadis1990]
+  - year: 2000
+    facility: other
+    lab: "Ruhr-Universität Bochum, Bochum, and NCSR Demokritos, Athens"
+    method: direct-surface
+    energy: "Eₚ = 0.2–1.12 MeV"
+    note: >-
+      Strengths of 26 resonances with two 4π NaI(Tl) summing detectors, and the
+      direct-capture cross section from yields at nine energies between 490
+      and 1150 keV, combined with earlier data on the non-resonant capture.
+    refs: [harissopulos2000]
+evaluations: [angulo1999, iliadis2010]
+open_questions:
+  - Direct measurements of the lowest-energy resonances, which require an underground laboratory.
+  - The competition with ²⁷Al(p,α)²⁴Mg, which decides whether the MgAl cycle closes.
+related: [27Al-pa-24Mg, 26Mg-pg-27Al, 24Mg-pg-25Al]

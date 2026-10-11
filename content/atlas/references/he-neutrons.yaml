@@ -1,0 +1,359 @@
+# References for helium burning and the s-process neutron sources.
+# Verified by web search on 2026-10-11 (direct access to arxiv.org, doi.org and
+# INSPIRE was blocked from the build container, so `checked` names the records
+# that confirmed each entry). A DOI is given only where a record showed it, or
+# where it follows the APS scheme from a confirmed APS journal reference.
+
+# --- Compilations and reviews -------------------------------------------------
+
+angulo1999:
+  authors: C. Angulo, M. Arnould, M. Rayet et al. (NACRE Collaboration)
+  title: A compilation of charged-particle induced thermonuclear reaction rates
+  journal: Nucl. Phys. A 656, 3 (1999)
+  year: 1999
+  checked: journal, volume and pages from the INSPIRE record 522312 and citing reference lists; DOI not shown by any record found, so omitted, 2026-10-11
+
+xu2013:
+  authors: Y. Xu, K. Takahashi, S. Goriely, M. Arnould, M. Ohta, H. Utsunomiya
+  title: "NACRE II: an update of the NACRE compilation of charged-particle-induced thermonuclear reaction rates for nuclei with mass number A < 16"
+  journal: Nucl. Phys. A 918, 61 (2013)
+  year: 2013
+  doi: 10.1016/j.nuclphysa.2013.09.007
+  arxiv: "1310.7099"
+  checked: arXiv 1310.7099 listing and GSI repository record giving the DOI, 2026-10-11
+
+deboer2017:
+  authors: R. J. deBoer, J. Görres, M. Wiescher, R. E. Azuma, A. Best, C. R. Brune, C. E. Fields, S. Jones, M. Pignatari, D. Sayre, K. Smith, F. X. Timmes, E. Uberseder
+  title: The ¹²C(α,γ)¹⁶O reaction and its implications for stellar helium burning
+  journal: Rev. Mod. Phys. 89, 035007 (2017)
+  year: 2017
+  doi: 10.1103/RevModPhys.89.035007
+  arxiv: "1709.03144"
+  checked: Hull repository record (authors, DOI), NSF PAR copy and arXiv 1709.03144, 2026-10-11
+
+freer2014:
+  authors: M. Freer, H. O. U. Fynbo
+  title: The Hoyle state in ¹²C
+  journal: Prog. Part. Nucl. Phys. 78, 1 (2014)
+  year: 2014
+  doi: 10.1016/j.ppnp.2014.06.001
+  checked: University of Birmingham repository record and accepted manuscript, 2026-10-11
+
+adsley2021:
+  authors: P. Adsley et al.
+  title: Reevaluation of the ²²Ne(α,γ)²⁶Mg and ²²Ne(α,n)²⁵Mg reaction rates
+  journal: Phys. Rev. C 103, 015805 (2021)
+  year: 2021
+  doi: 10.1103/PhysRevC.103.015805
+  arxiv: "2005.14482"
+  checked: arXiv 2005.14482, Keele repository record and JINA Virtual Journal listing, 2026-10-11
+
+# --- Triple-alpha process ------------------------------------------------------
+# salpeter1952, hoyle1954, dunbar1953 and cook1957 are defined in history.yaml.
+
+fynbo2005:
+  authors: H. O. U. Fynbo, C. Aa. Diget, U. C. Bergmann et al.
+  title: Revised rates for the stellar triple-α process from measurement of ¹²C nuclear resonances
+  journal: Nature 433, 136 (2005)
+  year: 2005
+  doi: 10.1038/nature03219
+  checked: Chalmers research record and RePEc listing (DOI, pages 136–139), 2026-10-11
+
+eriksen2020:
+  authors: T. K. Eriksen, T. Kibédi, M. W. Reed et al.
+  title: Improved precision on the experimental E0 decay branching ratio of the Hoyle state
+  journal: Phys. Rev. C 102, 024320 (2020)
+  year: 2020
+  doi: 10.1103/PhysRevC.102.024320
+  arxiv: "2007.15374"
+  checked: arXiv 2007.15374 and Bangor and ANU repository records (journal, volume, article number); DOI by APS scheme from the confirmed journal reference, 2026-10-11
+
+kibedi2020:
+  authors: T. Kibédi et al.
+  title: Radiative width of the Hoyle state from γ-ray spectroscopy
+  journal: Phys. Rev. Lett. 125, 182701 (2020)
+  year: 2020
+  doi: 10.1103/PhysRevLett.125.182701
+  arxiv: "2009.10915"
+  checked: arXiv 2009.10915, APS accepted-manuscript page and University of Oslo repository copy, 2026-10-11
+
+tsumura2021:
+  authors: M. Tsumura et al.
+  title: First experimental determination of the radiative-decay probability of the 3⁻₁ state in ¹²C for estimating the triple alpha reaction rate in high temperature environments
+  journal: Phys. Lett. B 817, 136283 (2021)
+  year: 2021
+  doi: 10.1016/j.physletb.2021.136283
+  checked: INSPIRE full-text mirror, Kyoto University repository and DOAJ listing (journal, DOI); full title as searched, not displayed verbatim by a record, 2026-10-11
+
+paulsen2025:
+  authors: W. Paulsen et al.
+  title: Remeasuring the γ-decay branching ratio of the Hoyle state
+  journal: Phys. Rev. C 112, 015803 (2025)
+  year: 2025
+  doi: 10.1103/2h2s-sbyx
+  arxiv: "2406.00397"
+  checked: APS abstract page for the DOI (volume, article number, 2 July 2025) and arXiv 2406.00397 (v2 retitled "A saga on the γ-decay branching ratio of the Hoyle state"), 2026-10-11
+
+# --- 12C(α,γ)16O ---------------------------------------------------------------
+
+kunz2001:
+  authors: R. Kunz, M. Jaeger, A. Mayer, J. W. Hammer, G. Staudt, S. Harissopulos, T. Paradellis
+  title: "¹²C(α,γ)¹⁶O: the key reaction in stellar nucleosynthesis"
+  journal: Phys. Rev. Lett. 86, 3244 (2001)
+  year: 2001
+  doi: 10.1103/PhysRevLett.86.3244
+  checked: IAEA EXFOR entry A0428 (authors, journal reference and DOI) found by search, 2026-10-11
+
+kunz2002:
+  authors: R. Kunz, M. Jaeger, A. Mayer, J. W. Hammer, G. Staudt, S. Harissopulos, T. Paradellis
+  title: Astrophysical reaction rate of ¹²C(α,γ)¹⁶O
+  journal: Astrophys. J. 567, 643 (2002)
+  year: 2002
+  doi: 10.1086/338384
+  checked: IAEA EXFOR entry A0428 (reference and DOI) and citing papers, 2026-10-11
+
+hammer2005:
+  authors: J. W. Hammer, M. Fey, R. Kunz et al.
+  title: E1 and E2 capture cross section and astrophysical reaction rate of the key reaction ¹²C(α,γ)¹⁶O
+  journal: Nucl. Phys. A 758, 363 (2005)
+  year: 2005
+  doi: 10.1016/j.nuclphysa.2005.05.066
+  checked: IAC publication record (pages 363–366) and Academic Search Index record giving the DOI, 2026-10-11
+
+schurmann2005:
+  authors: D. Schürmann et al.
+  title: First direct measurement of the total cross-section of ¹²C(α,γ)¹⁶O
+  journal: Eur. Phys. J. A 26, 301 (2005)
+  year: 2005
+  doi: 10.1140/epja/i2005-10175-2
+  arxiv: nucl-ex/0511050
+  checked: arXiv nucl-ex/0511050 and EPJ A article page, 2026-10-11
+
+assuncao2006:
+  authors: M. Assunção et al.
+  title: E1 and E2 S factors of ¹²C(α,γ₀)¹⁶O from γ-ray angular distributions with a 4π-detector array
+  journal: Phys. Rev. C 73, 055801 (2006)
+  year: 2006
+  doi: 10.1103/PhysRevC.73.055801
+  checked: HAL in2p3-00067806, JINA Virtual Journal listing and IAEA EXFOR O1420, 2026-10-11
+
+matei2006:
+  authors: C. Matei, L. Buchmann, W. R. Hannes, D. A. Hutcheon, C. Ruiz, C. R. Brune, J. Caggiano, A. A. Chen, J. D'Auria, A. Laird et al.
+  title: Measurement of the cascade transition via the first excited state of ¹⁶O in the ¹²C(α,γ)¹⁶O reaction, and its S factor in stellar helium burning
+  journal: Phys. Rev. Lett. 97, 242503 (2006)
+  year: 2006
+  doi: 10.1103/PhysRevLett.97.242503
+  checked: McMaster experts record and INIS record (authors, DOI, abstract); title from memory, consistent with the abstract, 2026-10-11
+
+schurmann2011:
+  authors: D. Schürmann, A. Di Leva, L. Gialanella, R. Kunz, F. Strieder et al.
+  title: Study of the 6.05 MeV cascade transition in ¹²C(α,γ)¹⁶O
+  journal: Phys. Lett. B 703, 557 (2011)
+  year: 2011
+  doi: 10.1016/j.physletb.2011.08.061
+  checked: University of Naples and University of Campania IRIS records (authors, pages, DOI) and IAEA EXFOR O1957, 2026-10-11
+
+plag2012:
+  authors: R. Plag, R. Reifarth, M. Heil, F. Käppeler, G. Rupp, F. Voss, K. Wisshak
+  title: ¹²C(α,γ)¹⁶O studied with the Karlsruhe 4π BaF₂ detector
+  journal: Phys. Rev. C 86, 015805 (2012)
+  year: 2012
+  doi: 10.1103/PhysRevC.86.015805
+  checked: GSI repository record GSI-2013-05617, IAEA EXFOR O1988 and author copy at usc.gal, 2026-10-11
+
+# --- 16O(α,γ)20Ne --------------------------------------------------------------
+
+costantini2010:
+  authors: H. Costantini, R. J. deBoer, R. E. Azuma, M. Couder, J. Görres, J. W. Hammer et al.
+  title: "¹⁶O(α,γ)²⁰Ne S factor: measurements and R-matrix analysis"
+  journal: Phys. Rev. C 82, 035802 (2010)
+  year: 2010
+  doi: 10.1103/PhysRevC.82.035802
+  checked: ANU and Surrey repository records (journal, article number, DOI) and JINA Virtual Journal listing, 2026-10-11
+
+hager2011:
+  authors: U. Hager, J. R. Brown, L. Buchmann et al.
+  title: Direct total cross section measurement of the ¹⁶O(α,γ)²⁰Ne reaction at E(c.m.) = 2.26 MeV
+  journal: Phys. Rev. C 84, 022801 (2011)
+  year: 2011
+  doi: 10.1103/PhysRevC.84.022801
+  checked: PNNL publication record (authors, DOI, abstract) and IAEA EXFOR C1854, 2026-10-11
+
+# --- 14N(α,γ)18F and 18O(α,γ)22Ne ---------------------------------------------
+
+gorres2000:
+  authors: J. Görres, C. Arlandini, U. Giesen, M. Heil, F. Käppeler, H. Leiste, E. Stech, M. Wiescher
+  title: Low-energy resonances in ¹⁴N(α,γ)¹⁸F and their astrophysical implications
+  journal: Phys. Rev. C 62, 055801 (2000)
+  year: 2000
+  doi: 10.1103/PhysRevC.62.055801
+  checked: IAEA EXFOR entry C0843 (authors, title, facilities at Karlsruhe and Notre Dame) and KIT library record found by search; DOI by APS scheme, 2026-10-11
+
+dababneh2003:
+  authors: S. Dababneh et al.
+  title: "Stellar He burning of ¹⁸O: a measurement of low-energy resonances and their astrophysical implications"
+  journal: Phys. Rev. C 68, 025801 (2003)
+  year: 2003
+  doi: 10.1103/PhysRevC.68.025801
+  checked: INIS record (title, abstract, Karlsruhe, Los Alamos and Notre Dame affiliations) and the Karlsruhe dissertation FZKA 6782 found by search; journal reference as cited, DOI by APS scheme, 2026-10-11
+
+dombos2022:
+  authors: A. C. Dombos et al.
+  title: Measurement of low-energy resonance strengths in the ¹⁸O(α,γ)²²Ne reaction
+  journal: Phys. Rev. Lett. 128, 162701 (2022)
+  year: 2022
+  doi: 10.1103/PhysRevLett.128.162701
+  checked: APS accepted-manuscript page for the DOI, NSF PAR copy and Sanford Lab publication page (abstract) found by search, 2026-10-11
+
+# --- 17O + α ------------------------------------------------------------------
+
+best2013:
+  authors: A. Best, M. Beard et al.
+  title: Measurement of the reaction ¹⁷O(α,n)²⁰Ne and its impact on the s process in massive stars
+  journal: Phys. Rev. C 87, 045805 (2013)
+  year: 2013
+  doi: 10.1103/PhysRevC.87.045805
+  arxiv: "1304.6443"
+  checked: Hull repository record, JINA Virtual Journal listing and published PDF hosted at usc.gal found by search; DOI by APS scheme, 2026-10-11
+
+williams2022:
+  authors: M. Williams, A. M. Laird, A. Choplin, P. Adsley, B. Davids, U. Greife, K. Hudson, D. Hutcheon, A. Lennarz, C. Ruiz
+  title: Constraints on key ¹⁷O(α,γ)²¹Ne resonances and impact on the weak s-process
+  journal: Phys. Rev. C 105, 065805 (2022)
+  year: 2022
+  doi: 10.1103/PhysRevC.105.065805
+  arxiv: "2206.06016"
+  checked: arXiv 2206.06016 and ULB repository record (journal, DOI) found by search, 2026-10-11
+
+# --- 13C(α,n)16O ---------------------------------------------------------------
+
+drotleff1993:
+  authors: H. W. Drotleff, A. Denker, H. Knee, M. Soiné, G. Wolf, J. W. Hammer, U. Greife, C. Rolfs, H. P. Trautvetter
+  title: Reaction rates of the s-process neutron sources ¹³C(α,n)¹⁶O and ²²Ne(α,n)²⁵Mg
+  journal: Astrophys. J. 414, 735 (1993)
+  year: 1993
+  checked: full citation in the reference list of arXiv 0810.1262 (Ugalde, review of ²²Ne(α,n)²⁵Mg); DOI not confirmed, so omitted, 2026-10-11
+
+heil2008:
+  authors: M. Heil et al.
+  title: The ¹³C(α,n) reaction and its role as a neutron source for the s process
+  journal: Phys. Rev. C 78, 025803 (2008)
+  year: 2008
+  doi: 10.1103/PhysRevC.78.025803
+  checked: KIT library record (DOI) and JINA Virtual Journal listing, 2026-10-11
+
+lacognata2012:
+  authors: M. La Cognata et al.
+  title: Measurement of the −3 keV resonance in the reaction ¹³C(α,n)¹⁶O of importance in the s-process
+  journal: Phys. Rev. Lett. 109, 232701 (2012)
+  year: 2012
+  doi: 10.1103/PhysRevLett.109.232701
+  checked: APS accepted-manuscript page for the DOI and Texas A&M Cyclotron Institute publication record, 2026-10-11
+
+avila2015:
+  authors: M. L. Avila et al.
+  title: New α ANC measurement of the 1/2⁺ state in ¹⁷O at 6.356 MeV, that dominates the ¹³C(α,n)¹⁶O reaction rate at temperatures relevant for the s-process
+  journal: Phys. Rev. C 91, 048801 (2015)
+  year: 2015
+  doi: 10.1103/PhysRevC.91.048801
+  arxiv: "1503.08743"
+  checked: arXiv 1503.08743 and IAEA EXFOR C2158 (journal reference); DOI by APS scheme from the confirmed journal reference, 2026-10-11
+
+deboer2020:
+  authors: R. J. deBoer, C. R. Brune, M. Febbraro, J. Görres, I. J. Thompson, M. Wiescher
+  title: Sensitivity of the ¹³C(α,n)¹⁶O S factor to the uncertainty in the level parameters of the near-threshold state
+  journal: Phys. Rev. C 101, 045802 (2020)
+  year: 2020
+  doi: 10.1103/PhysRevC.101.045802
+  checked: NSF PAR record 10174275 and JINA Virtual Journal listing, 2026-10-11
+
+ciani2021:
+  authors: G. F. Ciani et al. (LUNA Collaboration)
+  title: Direct measurement of the ¹³C(α,n)¹⁶O cross section into the s-process Gamow peak
+  journal: Phys. Rev. Lett. 127, 152701 (2021)
+  year: 2021
+  doi: 10.1103/PhysRevLett.127.152701
+  arxiv: "2110.00303"
+  luna: true
+  checked: INAF open-access record (arXiv 2110.00303, DOI, abstract), HZDR repository and University of Genoa copy, 2026-10-11
+
+gao2022:
+  authors: B. Gao, T. Y. Jiao, Y. T. Li et al. (JUNA Collaboration)
+  title: Deep underground laboratory measurement of ¹³C(α,n)¹⁶O in the Gamow windows of the s and i processes
+  journal: Phys. Rev. Lett. 129, 132701 (2022)
+  year: 2022
+  doi: 10.1103/PhysRevLett.129.132701
+  arxiv: "2210.03222"
+  checked: arXiv 2210.03222, NSF PAR copy and JINA Virtual Journal listing, 2026-10-11
+
+# --- 22Ne + α ------------------------------------------------------------------
+
+jaeger2001:
+  authors: M. Jaeger, R. Kunz, A. Mayer, J. W. Hammer, G. Staudt, K. L. Kratz, B. Pfeiffer
+  title: "²²Ne(α,n)²⁵Mg: the key neutron source in massive stars"
+  journal: Phys. Rev. Lett. 87, 202501 (2001)
+  year: 2001
+  doi: 10.1103/PhysRevLett.87.202501
+  checked: full citation in the reference list of arXiv 0810.1262 and the Stuttgart thesis record of M. Jaeger (Dynamitron, Rhinoceros gas target); DOI by APS scheme from the confirmed journal reference, 2026-10-11
+
+massimi2017:
+  authors: C. Massimi et al. (n_TOF Collaboration)
+  title: "Neutron spectroscopy of ²⁶Mg states: constraining the stellar neutron source ²²Ne(α,n)²⁵Mg"
+  journal: Phys. Lett. B 768, 1 (2017)
+  year: 2017
+  doi: 10.1016/j.physletb.2017.02.025
+  arxiv: "1702.04520"
+  checked: University of Hertfordshire and JRC repository records (pages 1–6, DOI) and arXiv 1702.04520, 2026-10-11
+
+hunt2019:
+  authors: S. Hunt, C. Iliadis, A. E. Champagne, L. N. Downen, A. Cooper
+  title: New measurement of the E(α,lab) = 0.83 MeV resonance in ²²Ne(α,γ)²⁶Mg
+  journal: Phys. Rev. C 99, 045804 (2019)
+  year: 2019
+  doi: 10.1103/PhysRevC.99.045804
+  checked: APS accepted-manuscript page for the DOI and IAEA EXFOR C2399, 2026-10-11
+
+ota2020:
+  authors: S. Ota, G. Christian et al.
+  title: Decay properties of ²²Ne + α resonances and their impact on s-process nucleosynthesis
+  journal: Phys. Lett. B 802, 135256 (2020)
+  year: 2020
+  doi: 10.1016/j.physletb.2020.135256
+  arxiv: "2001.08206"
+  checked: arXiv 2001.08206, DOAJ listing and IAEA EXFOR C2573 (journal reference); DOI from a search listing of the Texas A&M Cyclotron Institute and DOAJ records, consistent with the Elsevier scheme for the article number, 2026-10-11
+
+jayatissa2020:
+  authors: H. Jayatissa, G. V. Rogachev et al.
+  title: Constraining the ²²Ne(α,γ)²⁶Mg and ²²Ne(α,n)²⁵Mg reaction rates using sub-Coulomb α-transfer reactions
+  journal: Phys. Lett. B 802, 135267 (2020)
+  year: 2020
+  doi: 10.1016/j.physletb.2020.135267
+  arxiv: "2001.08316"
+  checked: arXiv 2001.08316 (K150 cyclotron, Texas A&M) and IAEA EXFOR C2517 (journal reference); DOI from a search listing, consistent with the Elsevier scheme for the article number, 2026-10-11
+
+piatti2022:
+  authors: D. Piatti et al. (LUNA Collaboration)
+  title: First direct limit on the 334 keV resonance strength in ²²Ne(α,γ)²⁶Mg reaction
+  journal: Eur. Phys. J. A 58, 194 (2022)
+  year: 2022
+  doi: 10.1140/epja/s10050-022-00827-2
+  arxiv: "2209.03051"
+  luna: true
+  checked: arXiv 2209.03051, HZDR repository record and published PDF at the University of Bari repository, 2026-10-11
+
+shahina2022:
+  authors: Shahina, J. Görres, D. Robertson, M. Wiescher et al.
+  title: Direct measurement of the low-energy resonances in ²²Ne(α,γ)²⁶Mg reaction
+  journal: Phys. Rev. C 106, 025805 (2022)
+  year: 2022
+  doi: 10.1103/PhysRevC.106.025805
+  arxiv: "2208.07885"
+  checked: arXiv 2208.07885, Sanford Lab publication page (abstract) and JINA Virtual Journal link to the DOI, 2026-10-11
+
+rapagnani2022:
+  authors: D. Rapagnani, C. Ananna, A. Di Leva, G. Imbriani, M. Junker, M. Pignatari, A. Best
+  title: SHADES – ²²Ne(α,n)²⁵Mg reaction rate in the Gamow window
+  journal: EPJ Web Conf. 260, 11031 (2022)
+  year: 2022
+  arxiv: "2510.06268"
+  checked: arXiv 2510.06268 abstract page and PDF (journal reference EPJ Web Conf. 260, 11031); DOI not shown, so omitted, 2026-10-11

@@ -1,0 +1,81 @@
+id: 2H-ag-6Li
+label: ²H(α,γ)⁶Li
+kind: capture
+target: 2H
+projectile: 4He
+ejectile: g
+product: 6Li
+networks: [bbn]
+importance: minor
+summary: >-
+  A deuteron captures a ⁴He nucleus and becomes ⁶Li, giving off a γ-ray. It is
+  the only way the Big Bang made the lighter lithium isotope.
+role: >-
+  Standard Big Bang nucleosynthesis predicts very little ⁶Li, far less than ⁷Li.
+  Some observations of old stars once suggested much more, which would have
+  pointed to new physics or to other sources of ⁶Li. The rate of this reaction
+  at the energies of the early Universe tells whether the Big Bang alone could
+  have made that much. It is very hard to measure because it happens so
+  rarely; the first direct measurement, deep underground at LUNA, found a rate
+  too low to explain the reported amounts.
+details: >-
+  The electric-dipole (E1) transition is suppressed by isospin selection rules
+  and by the equal charge-to-mass ratios of the deuteron and the alpha
+  particle, so the capture at BBN energies proceeds through E2 and a residual
+  E1 component, and the cross section is very small. At higher energy the 3⁺
+  first excited state of ⁶Li appears as a resonance. Direct measurements are
+  limited by the neutron background from ²H(d,n)³He, induced by deuterons that
+  the beam scatters elastically in the target, and by the γ-ray background,
+  which makes underground accelerators the natural place for them. The LUNA
+  collaboration measured the cross section directly at the 400 kV accelerator
+  under Gran Sasso, first at two BBN energies (2014) and then at four energies
+  between 80 and 133 keV (2017). Coulomb dissociation of ⁶Li beams was used
+  earlier, but nuclear break-up dominates at the relevant energies, so those
+  data give only upper limits on the capture cross section.
+status: improving
+status_note: >-
+  Direct data at BBN energies come from a single underground experiment at four
+  energies; the resulting rate is lower than earlier estimates.
+methods: [direct-underground, coulomb-dissociation]
+measurements:
+  - year: 1991
+    facility: other
+    lab: "Kernforschungszentrum Karlsruhe, Karlsruhe"
+    method: coulomb-dissociation
+    energy: "156 MeV ⁶Li beam"
+    note: >-
+      Coulomb dissociation of ⁶Li into α + d at very low relative energies; the
+      deduced S-factor was almost constant below 400 keV, contrary to
+      theoretical expectations.
+    refs: [kiener1991]
+  - year: 2010
+    facility: other
+    lab: "GSI, Darmstadt"
+    method: coulomb-dissociation
+    energy: "⁶Li beam at 150 MeV/u"
+    note: >-
+      High-energy break-up of ⁶Li to test the Coulomb-dissociation approach;
+      nuclear break-up dominates, so the data constrain the capture cross
+      section only from above.
+    refs: [hammache2010]
+  - year: 2014
+    facility: luna-400
+    method: direct-underground
+    energy: "two energies in the BBN range"
+    note: >-
+      First direct measurement at BBN energies. With standard BBN the data give
+      a primordial ⁶Li/⁷Li ratio of (1.5 ± 0.3) × 10⁻⁵, far below the values
+      reported for halo stars.
+    refs: [anders2014]
+  - year: 2017
+    facility: luna-400
+    method: direct-underground
+    energy: "80, 93, 120 and 133 keV"
+    note: >-
+      Full LUNA data set and a new thermonuclear rate, lower than earlier
+      estimates, which widens the gap between predicted and reported ⁶Li.
+    refs: [trezzi2017]
+evaluations: [descouvemont2004]
+open_questions:
+  - The size of the residual E1 contribution at BBN energies.
+related: [2H-dn-3He, 2H-dp-3H, 3H-ag-7Li]

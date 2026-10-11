@@ -1,0 +1,12 @@
+id: 22Na-bp-22Ne
+label: ²²Na(β⁺ν)²²Ne
+kind: decay
+target: 22Na
+projectile: ""
+ejectile: e+ nu
+product: 22Ne
+networks: [nena]
+summary: >-
+  ²²Na turns into stable ²²Ne by emitting a positron and a neutrino, and the
+  ²²Ne it leaves behind emits a γ-ray of 1275 keV; ²²Na made in nova explosions
+  is a long-sought source of this γ-ray line.

@@ -1,0 +1,519 @@
+# The history of nuclear astrophysics, as shown on /atlas/timeline.
+# Events are sorted by year (and month, where given); order in the file is
+# display order.
+#
+#   year       integer; the year of publication or of the event
+#   month      optional integer 1–12, only where a source gives it
+#   title      short title, sentence case
+#   category   theory | experiment | observation | facility | luna
+#              (luna marks LUNA milestones, whatever their kind)
+#   text       two to four plain sentences for a general reader
+#   refs       reference keys from references/*.yaml; at least one per event,
+#              except a facility opening, which may cite an official page via url
+#   url        optional official page (Nobel Prize pages, facility pages)
+#   reactions  optional reaction ids from networks.yaml
+#
+# Dates and numbers in the text are taken from the cited papers or from the
+# records listed in their `checked` field.
+
+events:
+  - year: 1920
+    month: 8
+    title: Eddington proposes that stars burn hydrogen into helium
+    category: theory
+    text: >-
+      In an address to the British Association in Cardiff, Arthur Eddington
+      noted that a helium nucleus weighs less than four hydrogen nuclei. He
+      argued that the mass lost when hydrogen turns into helium inside stars
+      would be released as energy, enough to keep them shining for a very long
+      time. How this could happen was not yet known.
+    refs: [eddington1920]
+
+  - year: 1928
+    title: Gamow explains how particles cross the Coulomb barrier
+    category: theory
+    text: >-
+      George Gamow used the new quantum mechanics to explain alpha decay. A
+      particle can pass through the electric repulsion between nuclei, the
+      Coulomb barrier, even when its energy is too low to climb over it. This
+      effect, called tunnelling, is what makes nuclear fusion possible in stars.
+    refs: [gamow1928]
+
+  - year: 1929
+    title: Atkinson and Houtermans apply tunnelling to the stars
+    category: theory
+    text: >-
+      Robert Atkinson and Fritz Houtermans used Gamow's result to estimate how
+      often light nuclei fuse at the temperatures inside stars. They found that
+      tunnelling makes such reactions frequent enough to power a star. Their
+      paper is often taken as the start of nuclear astrophysics.
+    refs: [atkinson1929]
+
+  - year: 1938
+    month: 8
+    title: Bethe and Critchfield describe proton–proton fusion
+    category: theory
+    text: >-
+      Hans Bethe and Charles Critchfield calculated the rate at which two
+      protons fuse into a deuteron, emitting a positron and a neutrino. This
+      very slow weak-interaction process is the first step of the
+      proton–proton chain that powers the Sun.
+    refs: [bethe1938]
+    reactions: [1H-pp-2H]
+
+  - year: 1938
+    title: Von Weizsäcker and the carbon–nitrogen cycle
+    category: theory
+    text: >-
+      In two papers in Physikalische Zeitschrift, Carl Friedrich von
+      Weizsäcker discussed which nuclear reactions could power stars. The
+      second paper proposed a cycle in which carbon and nitrogen nuclei help
+      turn hydrogen into helium and are given back at the end.
+    refs: [weizsacker1937, weizsacker1938]
+
+  - year: 1939
+    month: 3
+    title: Bethe's "Energy production in stars"
+    category: theory
+    text: >-
+      Hans Bethe worked out the carbon–nitrogen cycle in detail and estimated
+      its rate. He concluded that carbon and nitrogen act as catalysts that
+      fuse protons into helium in stars. Together with the proton–proton chain,
+      this is still the basis of how we understand hydrogen burning.
+    refs: [bethe1939]
+    reactions: [12C-pg-13N, 14N-pg-15O, 15N-pa-12C]
+
+  - year: 1948
+    month: 4
+    title: Alpher, Bethe and Gamow on the hot early Universe
+    category: theory
+    text: >-
+      Ralph Alpher and George Gamow proposed that the light elements formed in
+      the first moments of a hot, expanding Universe. Gamow added Bethe's name
+      so that the authors read like the first three Greek letters. The idea
+      became Big Bang nucleosynthesis, although heavier elements turned out to
+      be made in stars.
+    refs: [alpher1948]
+    reactions: [1H-ng-2H]
+
+  - year: 1952
+    title: Salpeter's triple-alpha process
+    category: theory
+    text: >-
+      Edwin Salpeter showed how helium can burn in red giant stars. Two helium
+      nuclei form unstable ⁸Be, which lives just long enough to capture a third
+      helium nucleus and become carbon. He did this work at Caltech's Kellogg
+      Radiation Laboratory, with William Fowler, in the summer of 1951.
+    refs: [salpeter1952]
+    reactions: [4He-aa-12C]
+
+  - year: 1953
+    month: 11
+    title: The 7.68 MeV state of carbon-12 is found
+    category: experiment
+    text: >-
+      At Caltech, Dunbar, Pixley, Wenzel and Whaling found an excited state of
+      ¹²C at 7.68 ± 0.03 MeV in the reaction ¹⁴N(d,α)¹²C. Fred Hoyle had pointed
+      out that such a state would make the triple-alpha process fast enough to
+      produce the carbon we see. It is now called the Hoyle state.
+    refs: [dunbar1953]
+    reactions: [4He-aa-12C]
+
+  - year: 1954
+    title: Hoyle on the synthesis of elements in hot stars
+    category: theory
+    text: >-
+      Fred Hoyle argued that the elements from carbon to nickel are made at the
+      high temperatures reached inside massive stars late in their lives. The
+      paper set out the idea that stars, not the Big Bang, made most of the
+      elements.
+    refs: [hoyle1954]
+
+  - year: 1957
+    title: Cook, Fowler and the Lauritsens confirm the Hoyle state
+    category: experiment
+    text: >-
+      At the Kellogg Radiation Laboratory, Cook, Fowler, C. C. Lauritsen and
+      T. Lauritsen studied the decay of ¹²B to the 7.65 MeV state of ¹²C and
+      its break-up into three alpha particles. They concluded that the state
+      can act as the resonance Hoyle needed for helium burning in red giants.
+    refs: [cook1957]
+    reactions: [4He-aa-12C]
+
+  - year: 1957
+    month: 6
+    title: Cameron's lectures on nucleogenesis
+    category: theory
+    text: >-
+      Alastair Cameron, at Chalk River in Canada, published an independent
+      account of how the elements are made in stars. Among other results he
+      named the two reactions that supply neutrons for slow neutron capture,
+      ¹³C(α,n)¹⁶O and ²²Ne(α,n)²⁵Mg.
+    refs: [cameron1957]
+    reactions: [13C-an-16O, 22Ne-an-25Mg]
+
+  - year: 1957
+    month: 10
+    title: The B²FH paper
+    category: theory
+    text: >-
+      Margaret Burbidge, Geoffrey Burbidge, William Fowler and Fred Hoyle
+      published a 104-page review of how the elements are made in stars. It
+      sorted the processes by the nuclear reactions involved, including slow
+      and rapid neutron capture, and compared them with the measured solar
+      system abundances. It is known by the authors' initials, B²FH.
+    refs: [b2fh1957]
+
+  - year: 1964
+    title: Bahcall proposes a solar neutrino experiment with chlorine
+    category: theory
+    text: >-
+      John Bahcall calculated the rate at which solar neutrinos would turn
+      chlorine into argon in a large underground tank. The rate was dominated
+      by the rare high-energy neutrinos from ⁸B decay, and it was large enough
+      to make the experiment practical. Raymond Davis described the detector
+      in a companion paper in the same journal.
+    refs: [bahcall1964]
+    reactions: [7Be-pg-8B, 8B-bp-8Be]
+
+  - year: 1968
+    month: 5
+    title: Davis detects solar neutrinos, and the solar neutrino problem begins
+    category: observation
+    text: >-
+      Raymond Davis and colleagues counted argon atoms produced by solar
+      neutrinos in a large tank of chlorine-containing liquid in the Homestake
+      mine, South Dakota. In the same issue, John Bahcall and collaborators
+      showed that solar models predicted a rate about 2.5 times higher than
+      Davis's limit. The gap became known as the solar neutrino problem.
+    refs: [davis1968, bahcall1968]
+    reactions: [7Be-pg-8B, 8B-bp-8Be]
+
+  - year: 1983
+    title: Nobel Prize for Fowler and Chandrasekhar
+    category: experiment
+    text: >-
+      William Fowler shared the Nobel Prize in Physics with Subrahmanyan
+      Chandrasekhar. Fowler's half recognised his experimental and theoretical
+      studies of the nuclear reactions that form the chemical elements, much
+      of it done at the Kellogg Radiation Laboratory at Caltech.
+    refs: [fowler1984]
+
+  - year: 1984
+    title: Radioactive ²⁶Al is seen in the Galaxy
+    category: observation
+    text: >-
+      The germanium γ-ray spectrometer on the HEAO 3 satellite detected the
+      1809 keV line emitted when ²⁶Al decays. It was the first γ-ray line from
+      a radioactive nucleus found in the Galaxy. The flux implied about three
+      solar masses of ²⁶Al in the interstellar medium, all of it made within the
+      last few million years.
+    refs: [mahoney1984]
+    reactions: [25Mg-pg-26Al, 26Al-bp-26Mg]
+
+  - year: 1987
+    title: Neutrinos from supernova SN 1987A
+    category: observation
+    text: >-
+      A star exploded in the Large Magellanic Cloud, and the Kamiokande-II
+      detector in Japan recorded eleven neutrino events in about 13 seconds.
+      The IMB detector in the United States saw the burst too. It was the first
+      detection of neutrinos from a star other than the Sun.
+    refs: [hirata1987]
+
+  - year: 1989
+    title: Kamiokande-II sees ⁸B solar neutrinos
+    category: observation
+    text: >-
+      The Kamiokande-II water detector measured high-energy solar neutrinos
+      from the decay of ⁸B in real time. Over 450 days it found about half of
+      the flux predicted by the standard solar model, confirming the deficit
+      seen at Homestake with a different technique.
+    refs: [hirata1989]
+    reactions: [7Be-pg-8B, 8B-bp-8Be]
+
+  - year: 1991
+    month: 12
+    title: SAGE, the first gallium experiment
+    category: observation
+    text: >-
+      The Soviet–American Gallium Experiment at Baksan used about 30 tonnes of
+      gallium, which captures the low-energy neutrinos from proton–proton
+      fusion. Its first result was well below the solar-model prediction.
+    refs: [abazov1991]
+    reactions: [1H-pp-2H]
+
+  - year: 1992
+    title: GALLEX observes pp neutrinos at Gran Sasso
+    category: observation
+    text: >-
+      The GALLEX gallium detector at Gran Sasso measured 83 ± 19 (stat.) ± 8
+      (syst.) SNU. The collaboration presented this as the first observation of
+      the neutrinos from proton–proton fusion, the reaction that starts the
+      Sun's energy production.
+    refs: [gallex1992]
+    reactions: [1H-pp-2H]
+
+  - year: 1994
+    month: 10
+    title: LUNA, the first underground accelerator
+    category: luna
+    text: >-
+      A small 50 kV accelerator was installed deep under the Gran Sasso
+      mountain in Italy, where the rock stops most cosmic rays. It had a
+      windowless gas target and was built to measure ³He(³He,2p)⁴He at the
+      energies where the reaction takes place in the Sun. The facility paper
+      describing it appeared in 1994.
+    refs: [greife1994]
+    reactions: [3He-3He2p-4He]
+
+  - year: 1998
+    title: Super-Kamiokande finds neutrino oscillations
+    category: observation
+    text: >-
+      Super-Kamiokande found fewer muon neutrinos from the atmosphere than
+      expected, and the deficit depended on how far the neutrinos had
+      travelled through the Earth. The data fit neutrinos changing type, or
+      oscillating, on the way. Oscillation requires neutrinos to have mass.
+    refs: [fukuda1998]
+
+  - year: 1998
+    title: Solar Fusion I
+    category: theory
+    text: >-
+      A group of experimentalists and theorists reviewed the nuclear reactions
+      that produce the Sun's energy and its neutrinos. They gave recommended
+      low-energy S-factors with uncertainties and named the experiments and
+      calculations needed to improve them.
+    refs: [adelberger1998]
+
+  - year: 1999
+    title: The NACRE compilation
+    category: theory
+    text: >-
+      The NACRE collaboration compiled the measured cross sections of the
+      charged-particle reactions of stellar hydrogen, helium and carbon
+      burning. It turned them into thermonuclear reaction rates in a common
+      format, which stellar modellers used for many years.
+    refs: [angulo1999]
+
+  - year: 1999
+    title: LUNA measures ³He + ³He inside the solar Gamow peak
+    category: luna
+    text: >-
+      With the 50 kV accelerator, LUNA measured the fusion of two ³He nuclei
+      down to 16.5 keV, an energy at which it actually occurs in the Sun. No
+      narrow resonance was found. Such a resonance had been suggested as a
+      nuclear explanation of the solar neutrino problem.
+    refs: [bonetti1999]
+    reactions: [3He-3He2p-4He]
+
+  - year: 2002
+    title: SNO shows that solar neutrinos change flavour
+    category: observation
+    text: >-
+      The Sudbury Neutrino Observatory in Canada used heavy water to measure
+      both the electron neutrinos and the total number of neutrinos of all
+      types from ⁸B decay in the Sun. The total agreed with solar models, but
+      only about a third arrived as electron neutrinos. The solar neutrino
+      problem was due to neutrino physics, not to the Sun.
+    refs: [sno2002]
+    reactions: [8B-bp-8Be]
+
+  - year: 2002
+    month: 12
+    title: Nobel Prize for Davis and Koshiba
+    category: observation
+    text: >-
+      Raymond Davis and Masatoshi Koshiba received the Nobel Prize in Physics
+      for their work on neutrinos from space. Over 25 years the
+      Homestake experiment captured about 2200 solar neutrinos, one third of
+      the predicted number. Kamiokande confirmed the deficit and detected the
+      neutrinos from SN 1987A.
+    refs: [davis2003, hirata1987]
+    url: https://www.nobelprize.org/prizes/physics/2002/davis/lecture/
+
+  - year: 2003
+    title: The LUNA 400 kV accelerator
+    category: luna
+    text: >-
+      A second, larger accelerator was installed at Gran Sasso. Its proton
+      beam energy is known to about 300 eV, its energy spread is below
+      100 eV, and it drifts by only about 5 eV per hour. This stability allows
+      the long runs needed to measure very small cross sections.
+    refs: [formicola2003]
+
+  - year: 2004
+    title: LUNA measures ¹⁴N(p,γ)¹⁵O underground
+    category: luna
+    text: >-
+      LUNA measured the slowest reaction of the CNO cycle at energies lower than
+      surface laboratories could reach, with a solid target and a germanium
+      detector. The extrapolated S-factor at zero energy, 1.7 ± 0.2 keV b, was
+      lower than in earlier compilations, so the CNO cycle runs more slowly
+      than had been assumed.
+    refs: [formicola2004]
+    reactions: [14N-pg-15O]
+
+  - year: 2006
+    title: ¹⁴N(p,γ)¹⁵O down to 70 keV
+    category: luna
+    text: >-
+      With a nitrogen gas target and a large detector surrounding it, LUNA
+      measured ¹⁴N(p,γ)¹⁵O down to 70 keV. There the cross section is only
+      0.24 picobarn, closer to solar energies than any earlier experiment.
+    refs: [lemut2006]
+    reactions: [14N-pg-15O]
+
+  - year: 2007
+    month: 8
+    title: Borexino detects ⁷Be solar neutrinos in real time
+    category: observation
+    text: >-
+      The Borexino liquid scintillator detector at Gran Sasso measured the
+      0.862 MeV neutrinos from ⁷Be electron capture in the Sun, one event at a
+      time. It was the first real-time measurement of solar neutrinos below
+      1 MeV.
+    refs: [borexino2008]
+    reactions: [7Be-ec-7Li, 3He-ag-7Be]
+
+  - year: 2011
+    title: Solar Fusion II
+    category: theory
+    text: >-
+      A group of experimentalists and theorists reviewed the cross sections of
+      the proton–proton chain and the CNO cycles and recommended values for
+      solar models. The review followed an earlier one from 1998.
+    refs: [adelberger2011]
+
+  - year: 2014
+    month: 8
+    title: Borexino sees pp neutrinos
+    category: observation
+    text: >-
+      Borexino measured the spectrum of the neutrinos from proton–proton fusion,
+      the first reaction of the Sun's main chain. The collaboration estimated
+      that this chain produces about 99 % of the Sun's power.
+    refs: [borexino2014]
+    reactions: [1H-pp-2H]
+
+  - year: 2015
+    title: Nobel Prize for Kajita and McDonald
+    category: observation
+    text: >-
+      Takaaki Kajita (Super-Kamiokande) and Arthur McDonald (SNO) shared the
+      Nobel Prize in Physics for showing that neutrinos change type as they
+      travel. This means that neutrinos have mass.
+    refs: [fukuda1998, sno2002]
+    url: https://www.nobelprize.org/prizes/physics/2015/kajita/lecture/
+
+  - year: 2017
+    title: First beam at CASPAR
+    category: facility
+    text: >-
+      An accelerator moved from Notre Dame to the 4850 ft level of the Sanford
+      Underground Research Facility in South Dakota delivered its first beam.
+      It is the first underground accelerator for nuclear astrophysics in the
+      United States, in the mine where Davis had counted solar neutrinos.
+    url: https://sanfordlab.org/news/caspar-achieves-first-beam
+
+  - year: 2017
+    month: 8
+    title: A neutron-star merger makes heavy elements
+    category: observation
+    text: >-
+      On 17 August 2017 the LIGO and Virgo detectors recorded gravitational
+      waves from two merging neutron stars. Telescopes then found the glow of
+      the explosion, a kilonova. Its spectra showed elements made by rapid
+      neutron capture, the r-process.
+    refs: [abbott2017, pian2017]
+
+  - year: 2017
+    title: A review of ¹²C(α,γ)¹⁶O
+    category: theory
+    text: >-
+      deBoer and colleagues collected the measurements of ¹²C(α,γ)¹⁶O, the
+      reaction that sets how much carbon and oxygen helium burning leaves
+      behind, and fitted them together with an R-matrix analysis. They also
+      followed the effect of its uncertainty on stellar models.
+    refs: [deboer2017]
+    reactions: [12C-ag-16O]
+
+  - year: 2019
+    month: 7
+    title: The Felsenkeller underground accelerator laboratory opens
+    category: facility
+    text: >-
+      HZDR and TU Dresden inaugurated a 5 MV accelerator under 45 m of rock
+      in the Felsenkeller tunnels in Dresden. The rock reduces the cosmic-ray
+      muon flux by a factor of 40. With an active muon veto, the background is
+      about twice that of a deep underground laboratory.
+    url: https://hzdr.de/db/Cms?pNid=1029
+
+  - year: 2020
+    month: 11
+    title: LUNA measures deuterium burning for cosmology
+    category: luna
+    text: >-
+      LUNA measured d(p,γ)³He at the energies of Big Bang nucleosynthesis with
+      high precision. With this rate, the observed amount of
+      primordial deuterium gives the density of ordinary matter in the
+      Universe to 1.6 %, in agreement with the cosmic microwave background.
+    refs: [mossa2020]
+    reactions: [2H-pg-3He]
+
+  - year: 2020
+    month: 11
+    title: Borexino detects CNO neutrinos
+    category: observation
+    text: >-
+      Borexino reported the first experimental evidence of neutrinos from the
+      CNO cycle in the Sun. It shows directly that the cycle runs in stars. In
+      the Sun it gives about one percent of the energy.
+    refs: [borexino2020]
+    reactions: [14N-pg-15O, 15O-bp-15N, 13N-bp-13C]
+
+  - year: 2022
+    title: A 3.5 MV accelerator is installed under Gran Sasso
+    category: luna
+    text: >-
+      A 3.5 MV Singletron accelerator, built by High Voltage Engineering Europa
+      for the LUNA-MV project, was installed underground at Gran Sasso. It
+      delivers proton, helium and carbon beams, so that helium and carbon
+      burning can be studied underground.
+    refs: [sen2019, junker2023]
+    reactions: [12C-ag-16O, 13C-an-16O, 22Ne-an-25Mg]
+
+  - year: 2022
+    month: 10
+    title: JUNA measures ¹⁹F(p,γ)²⁰Ne underground
+    category: experiment
+    text: >-
+      The JUNA accelerator, under about 2400 m of rock at the China Jinping
+      Underground Laboratory, measured ¹⁹F(p,γ)²⁰Ne down to 186 keV and found
+      a resonance at 225 keV. Near 0.1 GK the new rate is up to 7.4 times the
+      previous one. The reaction lets material leak out of the CNO cycle, and
+      the faster rate may explain the calcium in one of the oldest known stars.
+    refs: [zhang2022]
+    reactions: [19F-pg-20Ne]
+
+  - year: 2023
+    month: 10
+    title: Inauguration of the Bellotti Ion Beam Facility
+    category: luna
+    text: >-
+      The underground accelerator laboratory was inaugurated and named after
+      Enrico Bellotti, the first director of the Gran Sasso laboratory, who
+      started underground accelerator physics there. It runs as a user
+      facility, with beam time given through yearly calls.
+    refs: [junker2023]
+
+  - year: 2025
+    title: Solar Fusion III
+    category: theory
+    text: >-
+      A new review collected the data and theory for hydrogen burning in the
+      Sun and other stars that appeared after Solar Fusion II. It gives
+      recommended S-factors with uncertainties for the proton–proton chain
+      and the CNO cycles.
+    refs: [acharya2025]

@@ -1,0 +1,89 @@
+id: 25Mg-pg-26Al
+label: ²⁵Mg(p,γ)²⁶Al
+kind: capture
+target: 25Mg
+projectile: 1H
+ejectile: g
+product: 26Al
+networks: [mgal]
+importance: key
+summary: >-
+  The reaction that makes radioactive ²⁶Al in hydrogen-burning stars. The decay of
+  ²⁶Al gives the 1809 keV γ-ray line seen across the Milky Way.
+role: >-
+  ²⁶Al lives long enough to spread through the Galaxy but not so long that it
+  piles up, so the 1809 keV γ-ray line from its decay shows where nuclei were made
+  in the last few million years. Space telescopes map this line, and the amount of
+  ²⁶Al they see is compared with the predicted output of massive stars, Wolf–Rayet
+  stars, AGB stars and novae. Most of that ²⁶Al is made by this reaction. The
+  reaction can leave ²⁶Al in its ground state, which gives the γ-ray line, or in a
+  short-lived excited state, the isomer ²⁶ᵐAl, which decays straight to ²⁶Mg
+  without it. How the captures divide between the two decides how much of the
+  line a star contributes. The same reaction also matters for the ²⁶Al once
+  present in the early Solar System, recorded in meteorites, and for the
+  magnesium and aluminium abundances of globular-cluster stars.
+details: >-
+  Between 50 and 150 MK the rate is given by a handful of narrow resonances, of
+  which the one at E_cm = 92 keV dominates around 100 MK. Each resonance decays by
+  a γ-ray cascade that ends either in the ground state or in the isomer of ²⁶Al,
+  so the rate has to be split using the measured ground-state fraction of each
+  resonance. At LUNA, Limata et al. (2010) measured the strength of the 304 keV
+  resonance as a reference for the weaker ones, and Strieder et al. (2012)
+  observed the 92 keV resonance directly for the first time with a 4π BGO
+  summing detector, ωγ = (2.9 ± 0.6) × 10⁻¹⁰ eV, and studied the γ-ray branchings
+  and strength of the 189 keV resonance with an HPGe detector, finding a strength
+  20 % larger than earlier works. The rate derived from these data (Straniero et
+  al. 2013) increases the production of the isomer by up to a factor of 5 between
+  50 and 150 MK and doubles the total rate at 100 MK, so less ²⁶Al is made in the
+  ground state. The JUNA collaboration chose the 92 keV resonance for the first
+  experiment at the China Jinping Underground Laboratory and reported a precise
+  measurement of its strength (Su et al. 2022). The γ-ray decay schemes of the
+  low-energy resonances were first studied by Iliadis et al. (1990).
+status: improving
+status_note: >-
+  The key low-energy resonances were measured directly underground, at LUNA
+  and at JUNA; the split
+  between ground state and isomer, especially for the 92 keV resonance, is the
+  largest remaining uncertainty for the ²⁶Al ground-state yield.
+methods: [direct-underground, direct-surface]
+measurements:
+  - year: 1990
+    facility: other
+    lab: "not recorded"
+    method: direct-surface
+    energy: "low-energy (p,γ) resonances"
+    note: >-
+      γ-ray decay schemes of the low-energy resonances, measured together with
+      resonances in ²⁶Mg(p,γ) and ²⁷Al(p,γ).
+    refs: [iliadis1990]
+  - year: 2010
+    facility: luna-400
+    method: direct-underground
+    energy: "E_cm = 304 keV resonance"
+    note: >-
+      Strength of the 304 keV resonance with higher accuracy than before, to
+      serve as a normalisation for the low-energy resonances.
+    refs: [limata2010]
+  - year: 2012
+    facility: luna-400
+    method: direct-underground
+    energy: "E_cm = 92 and 189 keV resonances"
+    note: >-
+      First direct observation of the 92 keV resonance with a 4π BGO summing
+      detector, ωγ = (2.9 ± 0.6) × 10⁻¹⁰ eV. γ-ray branchings and strength of the
+      189 keV resonance with an HPGe detector, 20 % higher than previous values.
+    refs: [strieder2012]
+  - year: 2022
+    facility: juna
+    method: direct-underground
+    energy: "E_cm = 92 keV resonance"
+    note: >-
+      First experiment at JUNA in the China Jinping Underground Laboratory: a
+      precise measurement of the 92 keV resonance, independent of the LUNA one.
+    refs: [su2022]
+evaluations: [straniero2013, angulo1999]
+open_questions:
+  - The ground-state fraction of the 92 keV resonance, which sets how much of the rate produces ²⁶Al in its ground state and therefore the 1809 keV line.
+  - The comparison of the LUNA and JUNA strengths of the 92 keV resonance, the two direct measurements in deep underground laboratories.
+  - The effect of the higher isomer production on the ²⁶Al yields of Wolf–Rayet and massive AGB stars.
+related: [26Al-bp-26Mg, 24Mg-pg-25Al, 25Al-bp-25Mg, 26Mg-pg-27Al, 22Ne-an-25Mg]

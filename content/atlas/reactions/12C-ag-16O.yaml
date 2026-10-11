@@ -1,0 +1,114 @@
+id: 12C-ag-16O
+label: ¹²C(α,γ)¹⁶O
+kind: capture
+target: 12C
+projectile: 4He
+ejectile: g
+product: 16O
+networks: [he-burning]
+importance: key
+summary: >-
+  Carbon-12 captures a helium nucleus and becomes oxygen-16. Together with the
+  triple-alpha process, it decides how much carbon and how much oxygen stars
+  make.
+role: >-
+  While helium burns in the core of a star, carbon is made by the triple-alpha
+  process and destroyed by this reaction. When the helium runs out, the balance
+  between the two leaves a definite ratio of carbon to oxygen. That ratio
+  shapes the rest of the star's life. It decides which fuels burn next, the
+  structure of white dwarfs, the mass of the black holes left by the heaviest
+  stars, and the amounts of many elements thrown out in supernovae. For this
+  reason the reaction is often called the most important one in nuclear
+  astrophysics. It is also one of the hardest to measure: at the energies
+  inside stars the reaction happens far too rarely for any experiment so far.
+details: >-
+  The stellar energy is near E = 300 keV, where the cross section is far below
+  the sensitivity of any experiment so far. The S-factor is therefore
+  extrapolated with multi-channel R-matrix fits from data above about 1 MeV.
+  The ground-state capture is dominated by two components: E1 capture through
+  the high-energy tail of the 1⁻ subthreshold state at 7.12 MeV interfering
+  with the broad 1⁻ resonance at 9.6 MeV, and E2 capture through the 2⁺
+  subthreshold state at 6.92 MeV plus a direct contribution. Separating the two
+  multipoles requires γ-ray angular distributions; the cascade transitions
+  through the 6.05, 6.13, 6.92 and 7.12 MeV states add a few percent at 300 keV
+  but dominate at higher energies (deBoer et al. 2017).
+
+
+  Surface experiments in forward kinematics with high-intensity α beams and
+  Ge or BaF₂ arrays (Stuttgart, Karlsruhe) measured the E1 and E2 angular
+  distributions; recoil separators (ERNA, DRAGON) measured the total cross
+  section in inverse kinematics, independent of the γ-ray angular
+  distribution. The review of deBoer et al. (2017) combined capture,
+  scattering and β-delayed α-emission data in a global R-matrix analysis and
+  gave the recommended rate used here.
+status: uncertain
+status_note: >-
+  No direct data exist below about 1 MeV; the rate at helium-burning
+  temperatures comes from an R-matrix extrapolation, limited by the E1/E2
+  split and by the subthreshold-state contributions.
+methods: [direct-surface, inverse-kinematics, anc, theory]
+measurements:
+  - year: 2001
+    facility: other
+    lab: "Dynamitron, Universität Stuttgart, Stuttgart"
+    method: direct-surface
+    energy: "E1 and E2 capture, forward kinematics"
+    note: >-
+      γ-ray angular distributions separated E1 and E2 ground-state capture;
+      the derived rate is about 30% below the NACRE rate near
+      10⁸ K.
+    refs: [kunz2001, kunz2002, hammer2005]
+  - year: 2005
+    facility: erna
+    method: inverse-kinematics
+    energy: "E = 1.9–4.9 MeV"
+    note: >-
+      First direct measurement of the total cross section: ¹⁶O recoils
+      detected with the ERNA recoil separator behind a windowless helium gas
+      target, with no γ-ray coincidence.
+    refs: [schurmann2005]
+  - year: 2006
+    facility: other
+    lab: "Dynamitron, Universität Stuttgart, Stuttgart"
+    method: direct-surface
+    energy: "E = 1.30–2.78 MeV"
+    note: >-
+      An array of nine EUROGAM HPGe detectors with BGO shields recorded the
+      ground-state angular distributions at all angles at once, with α beams
+      up to 340 µA on implanted ¹²C targets; E1 and E2 S-factors were derived
+      with the mixing phase free or fixed from α + ¹²C scattering.
+    refs: [assuncao2006]
+  - year: 2006
+    facility: dragon
+    method: inverse-kinematics
+    energy: "E = 2.2–5.42 MeV"
+    note: >-
+      Cascade through the 6.05 MeV 0⁺ state, measured with a BGO array in
+      coincidence with recoils at the focal plane;
+      S₆.₀(300 keV) = 25 (+16/−15) keV b, the largest cascade contribution.
+    refs: [matei2006]
+  - year: 2011
+    facility: erna
+    method: inverse-kinematics
+    energy: "E = 3.3–4.5 MeV"
+    note: >-
+      The 6.05 MeV cascade was found to be pure E2 in this range; the
+      extrapolation gives a negligible contribution at helium-burning energies,
+      in contrast with the earlier DRAGON result.
+    refs: [schurmann2011]
+  - year: 2012
+    facility: other
+    lab: "Karlsruhe 3.7 MV Van de Graaff, Karlsruhe"
+    method: direct-surface
+    energy: "E = 1.00–1.51 MeV"
+    note: >-
+      Nearly 4π BaF₂ array with a pulsed beam; the high efficiency allowed low
+      beam currents, avoiding target degradation, and gave E1 and E2
+      components with accuracy comparable to the best Ge data.
+    refs: [plag2012]
+evaluations: [deboer2017, angulo1999, xu2013]
+open_questions:
+  - Direct data below 1 MeV, which need an underground accelerator able to deliver intense α beams, or high-intensity γ beams for the inverse reaction ¹⁶O(γ,α)¹²C.
+  - The E2 ground-state S-factor, whose extrapolation depends on the ANC of the 6.92 MeV subthreshold state and on the interference with the direct capture.
+  - The contribution of the 6.05 MeV cascade at low energy, where the DRAGON and ERNA analyses differ.
+related: [4He-aa-12C, 16O-ag-20Ne]

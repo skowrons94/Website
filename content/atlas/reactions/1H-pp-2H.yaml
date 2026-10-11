@@ -1,0 +1,65 @@
+id: 1H-pp-2H
+label: ¹H(p,e⁺ν)²H
+kind: weak
+target: 1H
+projectile: 1H
+ejectile: "e+ nu"
+product: 2H
+networks: [pp1]
+importance: key
+summary: >-
+  Two protons fuse into a deuteron, emitting a positron and a neutrino. This is
+  the first and slowest step of the pp chain, and it sets the pace at which the
+  Sun burns hydrogen.
+role: >-
+  For two protons to stick together, one of them must turn into a neutron
+  while they are briefly close. That change goes through the weak interaction,
+  the same force behind radioactive β decay, so it happens very rarely: a
+  proton in the centre of the Sun waits billions of years on average before it
+  takes part. This slowness is why the Sun lives so long. Almost every chain
+  that turns hydrogen into helium in the Sun begins here, and the neutrinos it
+  produces, called pp neutrinos, are the most numerous solar neutrinos reaching
+  the Earth.
+details: >-
+  The cross section is far too small to measure in the laboratory at any
+  energy, so S(0) is calculated. The calculation needs the overlap of the
+  initial pp scattering state and the deuteron, both well constrained by
+  nucleon-nucleon data, the axial coupling constant from neutron β decay, and
+  two-body (meson-exchange) contributions to the weak axial current, which are
+  fixed in modern calculations by the tritium β-decay rate. Potential-model
+  calculations with several modern nucleon-nucleon interactions (Schiavilla
+  et al. 1998) show a weak model dependence, and the chiral effective field
+  theory calculation of Marcucci et al. (2013) agrees with them. The Solar
+  Fusion evaluations adopt a calculated S(0) whose uncertainty is smaller than
+  that of the measured pp-chain rates, although the reaction has never been
+  observed in the laboratory. The neutrinos it emits are observed directly:
+  Borexino measured the pp-neutrino flux in 2014 (Bellini et al., Nature 512,
+  383), consistent with the solar-model prediction.
+status: well-known
+status_note: >-
+  Known from theory only; potential-model and effective-field-theory
+  calculations agree within their small uncertainties.
+methods: [theory]
+measurements:
+  - year: 1998
+    method: theory
+    energy: "solar energies"
+    note: >-
+      Potential-model calculation with several high-precision nucleon-nucleon
+      interactions, the axial two-body current tuned to the Gamow–Teller matrix
+      element of tritium β decay; the overlap integral Λ²(0) lies between 7.05
+      and 7.06 for all interactions.
+    refs: [schiavilla1998]
+  - year: 2013
+    method: theory
+    energy: "0–100 keV"
+    note: >-
+      Chiral effective field theory with the N3LO two-nucleon potential, full
+      electromagnetic interaction and weak-current constants fixed by the A = 3
+      binding energies, magnetic moments and tritium β decay; S- and P-wave
+      contributions included. An erratum followed in 2019.
+    refs: [marcucci2013]
+evaluations: [adelberger2011, acharya2025]
+open_questions:
+  - The size of two-body axial-current contributions at higher orders of effective field theory, which dominates the theoretical uncertainty.
+related: [1H-pep-2H, 2H-pg-3He, 3He-hep-4He]

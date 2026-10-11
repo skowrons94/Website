@@ -1,0 +1,58 @@
+id: 7Li-pa-4He
+label: ⁷Li(p,α)⁴He
+kind: transfer
+target: 7Li
+projectile: 1H
+ejectile: 4He
+product: 4He
+networks: [pp2]
+importance: minor
+summary: >-
+  A ⁷Li nucleus captures a proton and splits into two ⁴He nuclei. It is the last
+  step of the pp-II chain, and it destroys lithium in stars.
+role: >-
+  The reaction closes the pp-II chain in the Sun but never limits its speed.
+  It matters more as a destroyer of lithium: ⁷Li burns already at temperatures
+  of a few million degrees, so stars lose their lithium as soon as it is carried
+  deep enough by mixing. The lithium seen at the surface of a star is therefore
+  a clue to how its outer layers mix. After the Big Bang the reaction also
+  removed part of the ⁷Li made directly.
+details: >-
+  The cross section is large enough to be measured with good statistics at low
+  energies, which made it a standard case for studying electron screening in
+  laboratory targets: at the lowest energies the measured S-factor rises above
+  the bare-nucleus trend. Engstler et al. (1992) measured it with proton beams
+  on lithium targets and with lithium beams on hydrogen gas, and found the
+  enhancement in all cases. The Trojan Horse method, which is free of
+  screening effects, gave a bare S(0) = 55 ± 3 keV b; compared with the direct
+  data it implies a screening potential of 330 ± 40 eV, well above the
+  adiabatic limit of 175 eV.
+status: well-known
+status_note: >-
+  The S-factor is measured down to low energies; the remaining uncertainty is
+  in the electron-screening correction.
+methods: [direct-surface, thm]
+measurements:
+  - year: 1992
+    facility: other
+    lab: "Ruhr-Universität Bochum and Universität Münster"
+    method: direct-surface
+    energy: "10–1450 keV (whole data set)"
+    note: >-
+      Proton, deuteron and lithium beams with atomic and molecular targets,
+      to compare electron screening in ⁶Li and ⁷Li reactions; the low-energy
+      cross sections are enhanced in all cases, somewhat more for atomic than
+      for molecular targets.
+    refs: [engstler1992]
+  - year: 2001
+    method: thm
+    energy: "10–400 keV"
+    note: >-
+      Bare S-factor from the Trojan Horse method in a distorted-wave Born
+      approximation analysis: S_b(0) = 55 ± 3 keV b and a screening potential
+      Uₑ = 330 ± 40 eV, above the adiabatic limit of 175 eV.
+    refs: [lattuada2001]
+evaluations: [descouvemont2004]
+open_questions:
+  - The electron-screening potential extracted from low-energy data, which exceeds the atomic-physics estimate.
+related: [7Be-ec-7Li, 3H-ag-7Li, 3He-ag-7Be]

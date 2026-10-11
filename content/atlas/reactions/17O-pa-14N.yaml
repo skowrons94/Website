@@ -1,0 +1,98 @@
+id: 17O-pa-14N
+label: ¹⁷O(p,α)¹⁴N
+kind: transfer
+target: 17O
+projectile: 1H
+ejectile: 4He
+product: 14N
+networks: [cno2]
+importance: key
+summary: >-
+  Oxygen-17 captures a proton and splits into nitrogen-14 and a helium
+  nucleus. This closes the second CNO cycle and destroys oxygen-17.
+role: >-
+  The amount of oxygen-17 that a star makes and later shows at its surface
+  depends on how fast this reaction destroys it. Astronomers compare the ratio
+  of oxygen-17 to oxygen-16 in red giants and in grains of stardust found in
+  meteorites with stellar models, and this reaction is one of the main nuclear
+  inputs to that comparison. In nova explosions it competes with
+  ¹⁷O(p,γ)¹⁸F, which makes the radioactive fluorine-18.
+details: >-
+  At the temperatures of red giants and AGB stars the rate is dominated by a
+  narrow resonance at E = 64.5 keV (the ¹⁸F state at Ex = 5672 keV), whose
+  strength is too small to measure at the surface. At nova temperatures the
+  resonance at E = 183 keV dominates. It was reported as a new resonance in
+  2005, and its (p,α) strength, 1.6–1.7 meV, now agrees between several
+  experiments. LUNA measured the 64.5 keV resonance directly underground:
+  ωγ = 10.0 ± 1.4 (stat) ± 0.7 (syst) neV, which gives a proton width of
+  35 ± 5 ± 3 neV, about twice the earlier values, and doubles the rate at
+  red-giant and AGB temperatures. The Trojan-Horse determinations of the
+  same resonance give a lower strength.
+status: improving
+status_note: >-
+  The 183 keV resonance is well measured; at red-giant and AGB temperatures
+  the rate rests on the 64.5 keV resonance, where the underground and
+  Trojan-Horse strengths differ by about a factor of 3.
+methods: [direct-underground, direct-surface, inverse-kinematics, thm]
+measurements:
+  - year: 2005
+    facility: other
+    lab: "CSNSM, Orsay"
+    method: direct-surface
+    energy: "around Ep = 194 keV"
+    note: >-
+      Discovery of the resonance at E_R(lab) = 194.1 ± 0.6 keV in the (p,α)
+      channel, with strength 1.6 ± 0.2 meV; the (p,γ) channel was measured by
+      activation in the same experiment.
+    refs: [chafa2005]
+  - year: 2007
+    facility: other
+    lab: "Holifield Radioactive Ion Beam Facility, Oak Ridge"
+    method: inverse-kinematics
+    energy: "183 keV resonance"
+    note: >-
+      Heavy-ion ¹⁷O beam on a windowless hydrogen gas target, with α and ¹⁴N
+      detected in coincidence by silicon strip detectors inside the gas:
+      E_R = 183.5 (+0.1/−0.4) keV and ωγ = 1.70 ± 0.15 meV.
+    refs: [moazen2007]
+  - year: 2010
+    method: thm
+    energy: "0–300 keV"
+    note: >-
+      Indirect measurement of the bare-nucleus cross section; both the 65 keV
+      and the 183 keV resonances are observed and the strength of the 65 keV
+      resonance is extracted.
+    refs: [sergi2010]
+  - year: 2015
+    facility: luna-400
+    method: direct-underground
+    energy: "Ep = 194.8 keV resonance"
+    note: >-
+      Commissioning of a silicon-detector setup for α particles underground:
+      ωγ = 1.68 ± 0.03 (stat) ± 0.12 (syst) meV and Ep = 194.8 ± 0.3 keV, the
+      most precise resonance energy so far. Underground the background near
+      200 keV was up to a factor of 15 lower than at the surface.
+    refs: [bruno2015]
+  - year: 2015
+    method: thm
+    energy: "65 and 183 keV resonances"
+    note: >-
+      Improved Trojan-Horse analysis of narrow-resonance strengths; the 65 keV
+      strength was used to renormalise the same resonance in the (p,γ)
+      channel.
+    refs: [sergi2015]
+  - year: 2016
+    facility: luna-400
+    method: direct-underground
+    energy: "64.5 keV resonance"
+    note: >-
+      Direct measurement of the 64.5 keV resonance: ωγ = 10.0 ± 1.4 (stat)
+      ± 0.7 (syst) neV and Γp = 35 ± 5 (stat) ± 3 (syst) neV, about twice the
+      earlier values, which doubles the rate at red-giant and AGB
+      temperatures and lowers the predicted ¹⁷O/¹⁶O ratio.
+    refs: [bruno2016]
+evaluations: [adelberger2011]
+open_questions:
+  - The difference of about a factor of 3 between the LUNA and Trojan-Horse strengths of the 64.5 keV resonance.
+  - The subthreshold state of ¹⁸F, whose contribution at solar energies Solar Fusion II discusses together with the 65 keV resonance.
+related: [17O-pg-18F, 16O-pg-17F, 17F-bp-17O, 14N-pg-15O]

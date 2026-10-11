@@ -1,0 +1,10 @@
+id: 18F-bp-18O
+label: ¹⁸F(β⁺ν)¹⁸O
+kind: decay
+target: 18F
+projectile: ""
+ejectile: e+ nu
+product: 18O
+networks: [cno3]
+summary: >-
+  Fluorine-18 turns into stable oxygen-18 by emitting a positron and a neutrino; in nova explosions the annihilation of these positrons gives a γ-ray signal.

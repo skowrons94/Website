@@ -1,0 +1,66 @@
+id: 18O-pa-15N
+label: ¹⁸O(p,α)¹⁵N
+kind: transfer
+target: 18O
+projectile: 1H
+ejectile: 4He
+product: 15N
+networks: [cno3]
+importance: key
+summary: >-
+  Oxygen-18 captures a proton and splits into nitrogen-15 and a helium
+  nucleus. It closes the third CNO cycle and destroys oxygen-18.
+role: >-
+  This reaction removes oxygen-18 in hydrogen-burning layers, and so it
+  shapes the oxygen isotope ratios that astronomers measure in giant stars and
+  in grains of stardust. The nitrogen-15 it produces is also a step on the way
+  to fluorine in AGB stars, where nitrogen-15 can capture a helium nucleus.
+details: >-
+  The rate at stellar temperatures is the sum of several low-energy
+  resonances in ¹⁹F, at E = 20, 90 and 143 keV, and of non-resonant
+  contributions from the tails of broad higher-lying states. The 20 keV
+  resonance is far below the reach of direct measurements, and its strength
+  comes from Trojan-Horse data. LUNA measured the cross section underground
+  down to E = 55 keV, where it is below 1 pb/sr, and found the 90 keV
+  resonance about ten times stronger than previously reported. A multichannel
+  R-matrix fit of these and earlier data gives the rate between 0.01 and
+  1 GK.
+status: improving
+status_note: >-
+  Direct data now reach 55 keV; the 20 keV resonance, which matters at the
+  lowest temperatures, is known only from Trojan-Horse data.
+methods: [direct-surface, direct-underground, thm]
+measurements:
+  - year: 2008
+    method: thm
+    energy: "20 and 90 keV resonances"
+    note: >-
+      First experimental evaluation of the 20 keV resonance, whose
+      contribution came out about 35 % larger than previously estimated; the
+      90 keV resonance appeared negligible. The rate accuracy improved by a
+      factor of 8.5 because it rests on a measured strength.
+    refs: [lacognata2008]
+  - year: 2015
+    facility: luna-400
+    method: direct-underground
+    energy: "Ep = 151 keV resonance"
+    note: >-
+      Commissioning of a silicon-detector setup for α particles underground:
+      ωγ = 164.2 ± 0.9 (stat) +12.1/−11.7 (syst) meV and a new resonance
+      energy Ep = 151.2 ± 0.3 keV.
+    refs: [bruno2015]
+  - year: 2019
+    facility: luna-400
+    method: direct-underground
+    energy: "55–340 keV"
+    note: >-
+      Cross section measured down to 55 keV, the lowest energy so far. The
+      90 keV resonance is a factor of 10 stronger than previously reported;
+      the multichannel R-matrix rate is more precise than earlier evaluations
+      between 0.01 and 1 GK.
+    refs: [bruno2019]
+evaluations: [acharya2025]
+open_questions:
+  - The strength of the 20 keV resonance, known only from Trojan-Horse data.
+  - The 90 keV resonance, whose direct LUNA strength is ten times the earlier value, while the Trojan-Horse analysis found it negligible.
+related: [18O-pg-19F, 17O-pg-18F, 18F-bp-18O, 15N-pa-12C]

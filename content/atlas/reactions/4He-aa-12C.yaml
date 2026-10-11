@@ -1,0 +1,126 @@
+id: 4He-aa-12C
+label: ⁴He(αα,γ)¹²C
+kind: fusion
+target: 4He
+projectile: "2 4He"
+ejectile: g
+product: 12C
+networks: [he-burning]
+importance: key
+summary: >-
+  The triple-alpha process: three helium nuclei join to make carbon. Almost all
+  the carbon in the Universe, including the carbon in living things, was made
+  this way inside stars.
+role: >-
+  Two helium nuclei cannot stick together for long. They form beryllium-8, which
+  falls apart again in a tiny fraction of a second. In the hot, dense core of a
+  helium-burning star a third helium nucleus sometimes arrives before that
+  happens. Carbon then forms, but only because carbon-12 has an excited state,
+  the Hoyle state, at just the right energy to catch the three particles. In
+  1954 Fred Hoyle argued that such a state had to exist for stars to make as
+  much carbon as we see, and experiments soon found it. The rate of this
+  process sets how fast helium burns and, together with the next step,
+  carbon-12 capturing a helium nucleus, decides how much carbon and how much
+  oxygen a star leaves behind.
+details: >-
+  At helium-burning temperatures (T₉ ≈ 0.1–0.2) the rate proceeds sequentially:
+  α + α forms the unbound ⁸Be ground state in equilibrium, and ⁸Be + α
+  populates the 7.65 MeV 0⁺ Hoyle state of ¹²C (Salpeter 1952; Hoyle 1954). The
+  Hoyle state decays almost always back to three α particles; the rate is
+  therefore proportional to its radiative width Γ_rad = Γ_γ + Γ_π, the sum of
+  the γ-decay and E0 pair-decay widths. Γ_rad is not measured directly but
+  obtained as the product of three quantities: the γ-decay branching ratio
+  Γ_rad/Γ, the pair-decay branching ratio Γ_π/Γ and the pair-decay width
+  Γ_π (Freer and Fynbo 2014).
+
+
+  Recent work has questioned the adopted Γ_rad/Γ. Kibédi et al. (2020) found
+  Γ_rad/Γ = 6.2(6)×10⁻⁴ from p–γ–γ coincidences and, combined with the new
+  pair-decay branching ratio of Eriksen et al. (2020), Γ_rad = 5.1(6)×10⁻³ eV,
+  about 34% above the previously adopted value. Eriksen et al. alone had
+  lowered Γ_rad by 11% through a 14% larger Γ_π/Γ. Paulsen et al. (2025)
+  remeasured the γ-decay branching ratio at Oslo and reanalysed the data used
+  by Kibédi et al. At high temperatures (T₉ ≳ 1) broader states above the Hoyle
+  state and non-resonant contributions matter: Fynbo et al. (2005) mapped the
+  ¹²C continuum in β decay, and Tsumura et al. (2021) gave the first value for
+  the radiative-decay probability of the 3⁻₁ state.
+status: improving
+status_note: >-
+  The rate at helium-burning temperatures rests on the radiative width of the
+  Hoyle state, where recent determinations of the γ-decay branching ratio
+  disagree at the 30% level.
+methods: [direct-surface, inverse-kinematics, theory]
+measurements:
+  - year: 1953
+    facility: kellogg
+    method: direct-surface
+    energy: "¹²C excitation 4.4–9.2 MeV via ¹⁴N(d,α)¹²C"
+    note: >-
+      Magnetic analysis of the α spectrum from ¹⁴N(d,α)¹²C found a level at
+      7.68 ± 0.03 MeV, the state Hoyle had predicted; the paper credits Hoyle
+      with its astrophysical significance.
+    refs: [dunbar1953]
+  - year: 1957
+    facility: kellogg
+    method: direct-surface
+    energy: "β decay of ¹²B"
+    note: >-
+      α particles following the β decay of ¹²B showed that the 7.65 MeV state
+      breaks up into ⁸Be + α, so it can be formed from three α particles in a
+      star; this fixed its energy and spin-parity.
+    refs: [cook1957]
+  - year: 2005
+    facility: other
+    lab: "ISOLDE, CERN, Geneva, and IGISOL, Jyväskylä"
+    method: direct-surface
+    energy: "¹²C continuum populated in the β decay of ¹²B and ¹²N"
+    note: >-
+      ¹²B was produced at ISOLDE and ¹²N at IGISOL. Breakup spectra of the ¹²C
+      states fed in their β decay showed a dominant resonance
+      near 11 MeV and no evidence for a previously reported state at 9.1 MeV;
+      the revised rate is higher below 5×10⁷ K and much lower above 10⁹ K.
+    refs: [fynbo2005]
+  - year: 2020
+    facility: other
+    lab: "Australian National University, Canberra"
+    method: direct-surface
+    energy: "E0 pair decay of the 7.65 MeV state, ¹²C(p,p′) at 10.5 MeV"
+    note: >-
+      e⁺e⁻ pairs detected with the Super-e spectrometer. New pair-decay branching ratio, 14% larger than the adopted
+      Γ_π/Γ = 6.7(6)×10⁻⁶, with the uncertainty reduced from 9% to 5%; on its
+      own it lowers Γ_rad and the rate by 11%.
+    refs: [eriksen2020]
+  - year: 2020
+    facility: other
+    lab: "Oslo Cyclotron Laboratory, Oslo"
+    method: direct-surface
+    energy: "¹²C(p,p′) at 10.7 MeV"
+    note: >-
+      Proton–γ–γ triple coincidences gave Γ_rad/Γ = 6.2(6)×10⁻⁴ and
+      Γ_rad = 5.1(6)×10⁻³ eV, 34% above the adopted value.
+    refs: [kibedi2020]
+  - year: 2021
+    facility: other
+    lab: "RCNP, Osaka University, Ibaraki"
+    method: inverse-kinematics
+    energy: "¹H(¹²C,¹²C p), 3⁻₁ state at 9.64 MeV"
+    note: >-
+      First experimental radiative-decay probability of the 3⁻₁ state,
+      1.3 (+1.2/−1.1)×10⁻⁶; the state increases the triple-α rate at high
+      temperature, where it had been assumed to be negligible.
+    refs: [tsumura2021]
+  - year: 2025
+    facility: other
+    lab: "Oslo Cyclotron Laboratory, Oslo"
+    method: direct-surface
+    energy: "¹²C(p,p′) at 10.8 MeV"
+    note: >-
+      Remeasurement of the γ-decay branching ratio from triple coincidences,
+      checked with a surrogate γ-ray cascade in ²⁸Si, together with a
+      reanalysis of the 2014 data used by Kibédi et al.
+    refs: [paulsen2025]
+evaluations: [angulo1999, freer2014]
+open_questions:
+  - The γ-decay branching ratio of the Hoyle state, where the 2020 and 2025 determinations must be reconciled before the rate can be quoted to better than about 10%.
+  - The rate at T₉ ≳ 1, which depends on broad higher-lying states and on the 3⁻₁ radiative width, known only to about a factor of two.
+related: [12C-ag-16O]

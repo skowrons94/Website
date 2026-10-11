@@ -29,3 +29,398 @@ marta2011:
   arxiv: "1103.5393"
   luna: true
   checked: arXiv 1103.5393 and journal reference confirmed by search, 2026-10-11
+
+rolfs1974:
+  authors: C. Rolfs and R. E. Azuma
+  title: Interference effects in ¹²C(p,γ)¹³N and direct capture to unbound states
+  journal: Nucl. Phys. A 227, 291 (1974)
+  year: 1974
+  doi: 10.1016/0375-9474(74)90798-2
+  checked: ScienceDirect record (PII 0375947474907982) and citations in later arXiv papers, by web search, 2026-10-11
+
+king1994:
+  authors: J. D. King, R. E. Azuma, J. B. Vise, J. Görres, C. Rolfs, H. P. Trautvetter and A. E. Vlieks
+  title: Cross section and astrophysical S-factor for the ¹³C(p,γ)¹⁴N reaction
+  journal: Nucl. Phys. A 567, 354 (1994)
+  year: 1994
+  doi: 10.1016/0375-9474(94)90154-6
+  checked: ScienceDirect record (PII 0375947494901546), OSTI/ETDE record 5009398 and EXFOR entry C0872, by web search, 2026-10-11
+
+gyurky2023:
+  authors: Gy. Gyürky, L. Csedreki, T. Szücs, G. G. Kiss, Z. Halász and Zs. Fülöp
+  title: Cross section measurement of the ¹²C(p,γ)¹³N reaction with activation in a wide energy range
+  journal: Eur. Phys. J. A 59, 59 (2023)
+  year: 2023
+  doi: 10.1140/epja/s10050-023-00974-0
+  arxiv: "2303.05999"
+  checked: arXiv 2303.05999, Atomki Tandetron news page and EXFOR entry D4426, by web search, 2026-10-11
+
+skowronski2023b:
+  authors: J. Skowronski et al.
+  title: Improved S factor of the ¹²C(p,γ)¹³N reaction at E = 320–620 keV and the 422 keV resonance
+  journal: Phys. Rev. C 107, L062801 (2023)
+  year: 2023
+  doi: 10.1103/PhysRevC.107.L062801
+  arxiv: "2306.09022"
+  checked: arXiv 2306.09022, HZDR record Publ-36857 and TU Dresden research portal, by web search, 2026-10-11
+
+kettner2023:
+  authors: K.-U. Kettner, R. J. deBoer, J. Görres, M. Wiescher et al.
+  title: Absolute cross section of the ¹²C(p,γ)¹³N reaction
+  journal: Phys. Rev. C 108, 035805 (2023)
+  year: 2023
+  doi: 10.1103/PhysRevC.108.035805
+  checked: OSTI accepted-manuscript record 2419357 (title, authors, journal reference); DOI follows the APS volume and article number, by web search, 2026-10-11
+
+skowronski2023:
+  authors: J. Skowronski et al. (LUNA Collaboration)
+  title: Proton-capture rates on carbon isotopes and their impact on the astrophysical ¹²C/¹³C ratio
+  journal: Phys. Rev. Lett. 131, 162701 (2023)
+  year: 2023
+  doi: 10.1103/PhysRevLett.131.162701
+  arxiv: "2308.16098"
+  luna: true
+  checked: HZDR record Publ-36855, Padova, Milan and Genova IRIS records and JINA Virtual Journal, by web search, 2026-10-11
+
+skowronski2025:
+  authors: J. Skowronski, D. Piatti, A. Caciolli, S. Turkat et al.
+  title: Improved S factor of the ¹³C(p,γ)¹⁴N reaction at Ep = 330–740 keV and parameters of resonances at 448 keV and 551 keV
+  journal: Phys. Rev. C 111, 064611 (2025)
+  year: 2025
+  doi: 10.1103/h1yt-5myk
+  arxiv: "2512.17288"
+  checked: Milan and Padova IRIS records (journal, DOI), HZDR conference slides and arXiv 2512.17288, by web search, 2026-10-11
+
+# Second round (2026-10-11): ¹⁴N(p,γ) extension and the NO, ¹⁸O and ¹⁹F reactions.
+# "DOI from the APS volume and article number" means the DOI was not shown by a
+# source but follows the APS pattern for a journal reference confirmed by search.
+
+runkle2005:
+  authors: R. C. Runkle, A. E. Champagne et al.
+  title: Direct measurement of the ¹⁴N(p,γ)¹⁵O S factor
+  journal: Phys. Rev. Lett. 94, 082503 (2005)
+  year: 2005
+  doi: 10.1103/PhysRevLett.94.082503
+  arxiv: nucl-ex/0408018
+  checked: arXiv nucl-ex/0408018 (title, journal reference) and EXFOR entry O1195, by web search; DOI from the APS volume and article number, 2026-10-11
+
+imbriani2005:
+  authors: G. Imbriani et al. (LUNA Collaboration)
+  title: S-factor of ¹⁴N(p,γ)¹⁵O at astrophysical energies
+  journal: Eur. Phys. J. A 25, 455 (2005)
+  year: 2005
+  luna: true
+  checked: abstract (title, journal, energy range 119–367 keV) and Milan AIR record, by web search; DOI not seen, 2026-10-11
+
+bertone2001:
+  authors: P. F. Bertone, A. E. Champagne, D. C. Powell, C. Iliadis, S. E. Hale and V. Y. Hansper
+  title: Lifetime of the 6793-keV state in ¹⁵O
+  journal: Phys. Rev. Lett. 87, 152501 (2001)
+  year: 2001
+  doi: 10.1103/PhysRevLett.87.152501
+  checked: INT Seattle archive copy of the article (title, authors, date 8 October 2001), by web search; DOI from the APS volume and article number, 2026-10-11
+
+mukhamedzhanov2003:
+  authors: A. M. Mukhamedzhanov, P. Bém, B. A. Brown, V. Burjan, C. A. Gagliardi, V. Kroha, J. Novák, F. M. Nunes, Š. Piskoř, F. Pirlepesov, E. Šimečková, R. E. Tribble and J. Vincour
+  title: Asymptotic normalization coefficients for ¹⁴N + p → ¹⁵O and the astrophysical S factor for ¹⁴N(p,γ)¹⁵O
+  journal: Phys. Rev. C 67, 065804 (2003); erratum Phys. Rev. C 68, 019901 (2003)
+  year: 2003
+  doi: 10.1103/PhysRevC.67.065804
+  checked: INT Seattle archive copy of the article and JINA Virtual Journal listing (with erratum), by web search; DOI from the APS volume and article number, 2026-10-11
+
+wagner2018:
+  authors: L. Wagner et al.
+  title: Astrophysical S factor of the ¹⁴N(p,γ)¹⁵O reaction at 0.4–1.3 MeV
+  journal: Phys. Rev. C 97, 015801 (2018)
+  year: 2018
+  doi: 10.1103/PhysRevC.97.015801
+  arxiv: "1711.10847"
+  checked: HZDR record Publ-25105, TU Dresden research portal and arXiv 1711.10847, by web search; DOI from the APS volume and article number, 2026-10-11
+
+frentz2022:
+  authors: B. Frentz et al.
+  title: Investigation of the ¹⁴N(p,γ)¹⁵O reaction and its impact on the CNO cycle
+  journal: Phys. Rev. C 106, 065803 (2022)
+  year: 2022
+  doi: 10.1103/PhysRevC.106.065803
+  checked: APS accepted-manuscript link (DOI) and NSF PAR record, by web search, 2026-10-11
+
+redder1982:
+  authors: A. Redder, H. W. Becker, H. Lorenz-Wirzba, C. Rolfs, P. Schmalbrock and H. P. Trautvetter
+  title: The ¹⁵N(p,α₀)¹²C reaction at stellar energies
+  journal: Z. Phys. A 305, 325 (1982)
+  year: 1982
+  checked: EXFOR entry A0142 (authors, journal reference, title given there as "...reaction of stellar energies") and citations in Solar Fusion II, by web search; DOI not seen, 2026-10-11
+
+lacognata2007:
+  authors: M. La Cognata, S. Romano, C. Spitaleri et al.
+  title: Astrophysical S(E) factor of the ¹⁵N(p,α)¹²C reaction at sub-Coulomb energies via the Trojan horse method
+  journal: Phys. Rev. C 76, 065804 (2007)
+  year: 2007
+  doi: 10.1103/PhysRevC.76.065804
+  checked: Texas A&M OAKTrust copy (PhysRevC.76.065804) and Catania IRIS record, by web search; DOI from the APS volume and article number, 2026-10-11
+
+lacognata2009:
+  authors: M. La Cognata, V. Z. Goldberg, A. M. Mukhamedzhanov, C. Spitaleri and R. E. Tribble
+  title: Improved determination of the astrophysical S(0) factor of the ¹⁵N(p,α)¹²C reaction
+  journal: Phys. Rev. C 80, 012801(R) (2009)
+  year: 2009
+  doi: 10.1103/PhysRevC.80.012801
+  checked: Texas A&M OAKTrust copy (PhysRevC.80.012801) and JINA Virtual Journal listing, by web search; DOI from the APS volume and article number, 2026-10-11
+
+bemmerer2009:
+  authors: D. Bemmerer et al. (LUNA Collaboration)
+  title: Direct measurement of the ¹⁵N(p,γ)¹⁶O total cross section at novae energies
+  journal: J. Phys. G 36, 045202 (2009)
+  year: 2009
+  arxiv: "0902.0783"
+  luna: true
+  checked: arXiv 0902.0783 and journal reference cited in later papers, by web search; DOI not seen, 2026-10-11
+
+mukhamedzhanov2008:
+  authors: A. M. Mukhamedzhanov et al.
+  title: New astrophysical S factor for the ¹⁵N(p,γ)¹⁶O reaction via the asymptotic normalization coefficient (ANC) method
+  journal: Phys. Rev. C 78, 015804 (2008)
+  year: 2008
+  doi: 10.1103/PhysRevC.78.015804
+  checked: Texas A&M OAKTrust copy (PhysRevC.78.015804) and Czech Academy ASEP record (title truncated after "coeff..."), by web search; DOI from the APS volume and article number, 2026-10-11
+
+leblanc2010:
+  authors: P. J. LeBlanc, G. Imbriani, J. Görres, M. Wiescher et al.
+  title: Constraining the S factor of ¹⁵N(p,γ)¹⁶O at astrophysical energies
+  journal: Phys. Rev. C 82, 055804 (2010)
+  year: 2010
+  doi: 10.1103/PhysRevC.82.055804
+  arxiv: "1011.2518"
+  checked: arXiv 1011.2518, HZDR record Publ-14900 and Milan AIR record (DOI), by web search, 2026-10-11
+
+caciolli2011:
+  authors: A. Caciolli et al. (LUNA Collaboration)
+  title: Revision of the ¹⁵N(p,γ)¹⁶O reaction rate and oxygen abundance in H-burning zones
+  journal: Astron. Astrophys. 533, A66 (2011)
+  year: 2011
+  doi: 10.1051/0004-6361/201117475
+  arxiv: "1107.4514"
+  luna: true
+  checked: arXiv 1107.4514 and A&A DOI page, by web search, 2026-10-11
+
+imbriani2012:
+  authors: G. Imbriani, R. J. deBoer, A. Best, M. Couder, G. Gervino, J. Görres, P. J. LeBlanc, H. Leiste, A. Lemut, E. Stech, F. Strieder, E. Uberseder and M. Wiescher
+  title: Measurement of γ rays from ¹⁵N(p,γ)¹⁶O cascade and ¹⁵N(p,α₁γ)¹²C reactions
+  journal: Phys. Rev. C 85, 065810 (2012); erratum Phys. Rev. C 86, 039902 (2012)
+  year: 2012
+  doi: 10.1103/PhysRevC.85.065810
+  checked: APS accepted-manuscript link (DOI) and Naples IRIS record, by web search, 2026-10-11
+
+morlock1997:
+  authors: R. Morlock, R. Kunz, A. Mayer, M. Jaeger et al.
+  title: Halo properties of the first 1/2⁺ state in ¹⁷F from the ¹⁶O(p,γ)¹⁷F reaction
+  journal: Phys. Rev. Lett. 79, 3837 (1997)
+  year: 1997
+  doi: 10.1103/PhysRevLett.79.3837
+  checked: title from the published Comment (arXiv nucl-ex/9712007) and citation in Solar Fusion II, by web search; DOI from the APS volume and article number; full author list not seen, 2026-10-11
+
+iliadis2008:
+  authors: C. Iliadis, C. Angulo, P. Descouvemont, M. Lugaro and P. Mohr
+  title: New reaction rate for ¹⁶O(p,γ)¹⁷F and its influence on the oxygen isotopic ratios in massive AGB stars
+  journal: Phys. Rev. C 77, 045802 (2008)
+  year: 2008
+  doi: 10.1103/PhysRevC.77.045802
+  arxiv: "0803.2757"
+  checked: arXiv 0803.2757 and JINA Virtual Journal listing, by web search; DOI from the APS volume and article number, 2026-10-11
+
+sergi2010:
+  authors: M. L. Sergi, C. Spitaleri, M. La Cognata et al.
+  title: New high accuracy measurement of the ¹⁷O(p,α)¹⁴N reaction rate at astrophysical temperatures
+  journal: Phys. Rev. C 82, 032801(R) (2010)
+  year: 2010
+  doi: 10.1103/PhysRevC.82.032801
+  checked: Czech Academy ASEP record 0348012 and Catania IRIS record, by web search; DOI from the APS volume and article number, 2026-10-11
+
+sergi2015:
+  authors: M. L. Sergi, C. Spitaleri, M. La Cognata et al.
+  title: Improvement of the high-accuracy ¹⁷O(p,α)¹⁴N reaction-rate measurement via the Trojan Horse method for application to ¹⁷O nucleosynthesis
+  journal: Phys. Rev. C 91, 065803 (2015)
+  year: 2015
+  doi: 10.1103/PhysRevC.91.065803
+  checked: Czech Academy ASEP record 0445860 and APS accepted-manuscript link (DOI), by web search, 2026-10-11
+
+chafa2005:
+  authors: A. Chafa, V. Tatischeff et al.
+  title: Hydrogen burning of ¹⁷O in classical novae
+  journal: Phys. Rev. Lett. 95, 031101 (2005)
+  year: 2005
+  doi: 10.1103/PhysRevLett.95.031101
+  arxiv: astro-ph/0506500
+  checked: arXiv astro-ph/0506500 and HAL record in2p3-00024492, by web search; DOI from the APS volume and article number, 2026-10-11
+
+moazen2007:
+  authors: B. H. Moazen et al.
+  title: Measurement of the 183 keV resonance in ¹⁷O(p,α)¹⁴N using a novel technique
+  journal: Phys. Rev. C 75, 065801 (2007)
+  year: 2007
+  doi: 10.1103/PhysRevC.75.065801
+  checked: LSU and ORNL publication records and EXFOR entry C1567 (HRIBF, Oak Ridge), by web search; DOI from the APS volume and article number, 2026-10-11
+
+bruno2015:
+  authors: C. G. Bruno et al. (LUNA Collaboration)
+  title: Resonance strengths in the ¹⁷,¹⁸O(p,α)¹⁴,¹⁵N reactions and background suppression underground
+  journal: Eur. Phys. J. A 51, 94 (2015)
+  year: 2015
+  doi: 10.1140/epja/i2015-15094-y
+  luna: true
+  checked: EPJ A abstract page, HZDR record Publ-22410 and Milan AIR record, by web search, 2026-10-11
+
+bruno2016:
+  authors: C. G. Bruno et al. (LUNA Collaboration)
+  title: Improved direct measurement of the 64.5 keV resonance strength in the ¹⁷O(p,α)¹⁴N reaction at LUNA
+  journal: Phys. Rev. Lett. 117, 142502 (2016)
+  year: 2016
+  doi: 10.1103/PhysRevLett.117.142502
+  arxiv: "1610.00483"
+  luna: true
+  checked: arXiv 1610.00483, HZDR record Publ-24057 and JINA Virtual Journal listing, by web search, 2026-10-11
+
+fox2005:
+  authors: C. Fox, C. Iliadis, A. E. Champagne, R. P. Fitzgerald, R. Longland, J. Newton, J. Pollanen and R. Runkle
+  title: Thermonuclear reaction rate of ¹⁷O(p,γ)¹⁸F
+  journal: Phys. Rev. C 71, 055801 (2005)
+  year: 2005
+  doi: 10.1103/PhysRevC.71.055801
+  checked: EXFOR entry C1259 (authors, LENA, Ep = 140–540 keV) and JINA Virtual Journal listing, by web search; DOI from the APS volume and article number, 2026-10-11
+
+hager2012:
+  authors: U. Hager et al.
+  title: Measurement of the ¹⁷O(p,γ)¹⁸F reaction rate at astrophysically relevant energies
+  journal: Phys. Rev. C 85, 035803 (2012)
+  year: 2012
+  doi: 10.1103/PhysRevC.85.035803
+  checked: APS accepted-manuscript link (DOI) and Caltech/IPAC ADS record, by web search, 2026-10-11
+
+kontos2012:
+  authors: A. Kontos, J. Görres, A. Best, M. Couder, R. deBoer, G. Imbriani, Q. Li, D. Robertson, D. Schürmann, E. Stech, E. Uberseder and M. Wiescher
+  title: Proton capture on ¹⁷O and its astrophysical implications
+  journal: Phys. Rev. C 86, 055801 (2012); erratum Phys. Rev. C 88, 029905 (2013)
+  year: 2012
+  doi: 10.1103/PhysRevC.86.055801
+  arxiv: "1210.7866"
+  checked: arXiv 1210.7866, APS accepted-manuscript link (DOI) and JINA Virtual Journal listing, by web search, 2026-10-11
+
+scott2012:
+  authors: D. A. Scott et al. (LUNA Collaboration)
+  title: First direct measurement of the ¹⁷O(p,γ)¹⁸F reaction cross section at Gamow energies for classical novae
+  journal: Phys. Rev. Lett. 109, 202501 (2012)
+  year: 2012
+  doi: 10.1103/PhysRevLett.109.202501
+  arxiv: "1210.6529"
+  luna: true
+  checked: arXiv 1210.6529 and Milan, Naples, Turin and Padova IRIS records, by web search, 2026-10-11
+
+dileva2014:
+  authors: A. Di Leva et al. (LUNA Collaboration)
+  title: Underground study of the ¹⁷O(p,γ)¹⁸F reaction relevant for explosive hydrogen burning
+  journal: Phys. Rev. C 89, 015803 (2014)
+  year: 2014
+  doi: 10.1103/PhysRevC.89.015803
+  luna: true
+  checked: HZDR record Publ-19863 and Turin and Milan IRIS records (an erratum is also listed), by web search; DOI from the APS volume and article number, 2026-10-11
+
+buckner2015:
+  authors: M. Q. Buckner, C. Iliadis, K. J. Kelly, L. N. Downen, A. E. Champagne, J. M. Cesaratto, C. Howard and R. Longland
+  title: High-intensity-beam study of ¹⁷O(p,γ)¹⁸F and thermonuclear reaction rates for ¹⁷O + p
+  journal: Phys. Rev. C 91, 015812 (2015)
+  year: 2015
+  doi: 10.1103/PhysRevC.91.015812
+  checked: APS accepted-manuscript link (DOI) and EXFOR entry C2155, by web search, 2026-10-11
+
+gesue2024:
+  authors: R. M. Gesuè et al. (LUNA Collaboration)
+  title: First direct measurement of the 64.5 keV resonance strength in the ¹⁷O(p,γ)¹⁸F reaction
+  journal: Phys. Rev. Lett. 133, 052701 (2024)
+  year: 2024
+  doi: 10.1103/PhysRevLett.133.052701
+  arxiv: "2408.03015"
+  luna: true
+  checked: arXiv 2408.03015 and Padova, Genova and Naples IRIS records, by web search; DOI from the APS volume and article number, 2026-10-11
+
+buckner2012:
+  authors: M. Q. Buckner, C. Iliadis et al.
+  title: Thermonuclear reaction rate of ¹⁸O(p,γ)¹⁹F
+  journal: Phys. Rev. C 86, 065804 (2012)
+  year: 2012
+  doi: 10.1103/PhysRevC.86.065804
+  arxiv: "1212.1126"
+  checked: arXiv 1212.1126 and EXFOR entry C1964 (LENA), by web search; DOI from the APS volume and article number, 2026-10-11
+
+best2019:
+  authors: A. Best et al. (LUNA Collaboration)
+  title: "Cross section of the reaction ¹⁸O(p,γ)¹⁹F at astrophysical energies: the 90 keV resonance and the direct capture component"
+  journal: Phys. Lett. B 797, 134900 (2019)
+  year: 2019
+  doi: 10.1016/j.physletb.2019.134900
+  luna: true
+  checked: HZDR record Publ-29655, Naples and Milan IRIS records and library DOI record, by web search, 2026-10-11
+
+pantaleo2021:
+  authors: F. R. Pantaleo et al. (LUNA Collaboration)
+  title: Low-energy cross section of the ¹⁸O(p,γ)¹⁹F reaction
+  journal: Phys. Rev. C 104, 025802 (2021)
+  year: 2021
+  doi: 10.1103/PhysRevC.104.025802
+  luna: true
+  checked: Bari IRIS full-text file and Padova repository copy (PhysRevC.104.025802), by web search; exact title wording taken from the repository file name; DOI from the APS volume and article number, 2026-10-11
+
+lacognata2008:
+  authors: M. La Cognata, C. Spitaleri et al.
+  title: Measurement of the 20 and 90 keV resonances in the ¹⁸O(p,α)¹⁵N reaction via the Trojan Horse method
+  journal: Phys. Rev. Lett. 101, 152501 (2008)
+  year: 2008
+  doi: 10.1103/PhysRevLett.101.152501
+  arxiv: "0806.1274"
+  checked: arXiv 0806.1274 and INT Seattle archive copy (published 7 October 2008), by web search; volume and article number not shown by those sources; DOI from the APS volume and article number, 2026-10-11
+
+bruno2019:
+  authors: C. G. Bruno et al. (LUNA Collaboration)
+  title: Improved astrophysical rate for the ¹⁸O(p,α)¹⁵N reaction by underground measurements
+  journal: Phys. Lett. B 790, 237 (2019)
+  year: 2019
+  luna: true
+  checked: DOAJ record (Phys. Lett. B, March 2019) and LUNA reference list (PLB 790, 237–242), by web search; DOI not seen, 2026-10-11
+
+couture2008:
+  authors: A. Couture, M. Wiescher et al.
+  title: Measurement of the ¹⁹F(p,γ)²⁰Ne reaction and interference terms from E(c.m.) = 200–760 keV
+  journal: Phys. Rev. C 77, 015802 (2008)
+  year: 2008
+  doi: 10.1103/PhysRevC.77.015802
+  checked: JINA Virtual Journal listing (title, volume, article) and Solar Fusion III (arXiv 2405.06470), by web search; DOI from the APS volume and article number, 2026-10-11
+
+zhang2021:
+  authors: L. Y. Zhang et al. (JUNA Collaboration)
+  title: Direct measurement of the astrophysical ¹⁹F(p,αγ)¹⁶O reaction in the deepest operational underground laboratory
+  journal: Phys. Rev. Lett. 127, 152702 (2021)
+  year: 2021
+  doi: 10.1103/PhysRevLett.127.152702
+  checked: JINA Virtual Journal listing (DOI) and NSF PAR record, by web search, 2026-10-11
+
+lacognata2011:
+  authors: M. La Cognata et al.
+  title: "The fluorine destruction in stars: first experimental study of the ¹⁹F(p,α₀)¹⁶O reaction at astrophysical energies"
+  journal: Astrophys. J. Lett. 739, L54 (2011)
+  year: 2011
+  doi: 10.1088/2041-8205/739/2/L54
+  checked: DOI link and Catania IRIS record (journal, abstract); title confirmed by the Atomki APHA author database and the TAMU abstract citation, 2026-10-11
+
+lombardo2015:
+  authors: I. Lombardo, D. Dell'Aquila, A. Di Leva, I. Indelicato et al.
+  title: Toward a reassessment of the ¹⁹F(p,α₀)¹⁶O reaction rate at astrophysical temperatures
+  journal: Phys. Lett. B 748, 178 (2015)
+  year: 2015
+  checked: DOAJ record and Naples IRIS record, by web search; DOI not seen, 2026-10-11
+
+indelicato2017:
+  authors: I. Indelicato et al.
+  title: New improved indirect measurement of the ¹⁹F(p,α)¹⁶O reaction at energies of astrophysical relevance
+  journal: Astrophys. J. 845, 19 (2017)
+  year: 2017
+  checked: Padova repository copy (Indelicato_2017_ApJ_845_19.pdf) and Sassari IRIS record, by web search; DOI not seen, 2026-10-11

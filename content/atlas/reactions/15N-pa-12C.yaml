@@ -1,0 +1,67 @@
+id: 15N-pa-12C
+label: ¹⁵N(p,α)¹²C
+kind: transfer
+target: 15N
+projectile: 1H
+ejectile: 4He
+product: 12C
+networks: [cno1]
+importance: key
+summary: >-
+  The last step of the CN cycle. Nitrogen-15 captures a proton and splits into
+  carbon-12 and a helium nucleus, so the carbon that started the cycle comes
+  back.
+role: >-
+  A proton that hits nitrogen-15 can either knock out a helium nucleus, which
+  closes the CN cycle, or stay and make oxygen-16, which opens the second CNO
+  cycle. The first outcome is by far the more frequent. The ratio between the
+  two decides how much material leaks from the CN cycle into the cycles that
+  run through oxygen and fluorine, and so how much oxygen-16 hydrogen burning
+  makes.
+details: >-
+  The (p,α) channel competes with ¹⁵N(p,γ)¹⁶O through the same ¹⁶O compound
+  states; at low energy both are dominated by the tails of two broad 1⁻
+  resonances, whose interference fixes the energy dependence of the S-factor.
+  The cross section is large compared with the other CN-cycle reactions, so it
+  never limits the cycle speed; what matters for nucleosynthesis is the ratio
+  to the (p,γ) channel. The direct data of 1982 reach a proton energy of
+  80 keV. Trojan-Horse data extend the S-factor down to about 20 keV without
+  Coulomb suppression or electron screening, and agree with the direct data
+  where they overlap. R-matrix fits give S(0) = 73 ± 5 MeV b from the direct
+  data and 70 ± 13.5 MeV b from the Trojan-Horse data.
+status: well-known
+status_note: >-
+  Direct and Trojan-Horse data give consistent S(0) values with uncertainties
+  of 7 % and 19 %; the rate does not limit models of the CN cycle.
+methods: [direct-surface, thm]
+measurements:
+  - year: 1982
+    method: direct-surface
+    energy: "80–810 keV (proton energy)"
+    note: >-
+      Cross section of the α₀ channel measured with a 350 kV implanter and a
+      1 MV accelerator, normalised at Ep = 353.4 keV. For decades this was the
+      main direct data set at low energy and the basis of the recommended
+      S(0).
+    refs: [redder1982]
+  - year: 2007
+    method: thm
+    energy: "about 20–312 keV"
+    note: >-
+      Bare-nucleus cross section from the quasi-free ²H(¹⁵N,α¹²C)n reaction at
+      60 MeV beam energy; agrees with the direct data between 70 and 312 keV
+      and extends the S-factor to about 20 keV.
+    refs: [lacognata2007]
+  - year: 2009
+    method: thm
+    energy: "R-matrix reanalysis"
+    note: >-
+      R-matrix fits of the direct and Trojan-Horse data, including the
+      finite energy resolution of the latter: S(0) = 73.0 ± 5.0 MeV b from the
+      direct data, adopted by Solar Fusion II, and 70.0 ± 13.5 MeV b from the
+      Trojan-Horse data.
+    refs: [lacognata2009]
+evaluations: [adelberger2011, acharya2025]
+open_questions:
+  - The electron-screening correction needed to compare direct data at the lowest energies with Trojan-Horse results.
+related: [15N-pg-16O, 12C-pg-13N, 14N-pg-15O]

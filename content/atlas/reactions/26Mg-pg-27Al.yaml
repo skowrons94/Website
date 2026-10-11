@@ -1,0 +1,52 @@
+id: 26Mg-pg-27Al
+label: ²⁶Mg(p,γ)²⁷Al
+kind: capture
+target: 26Mg
+projectile: 1H
+ejectile: g
+product: 27Al
+networks: [mgal]
+importance: major
+summary: >-
+  A proton capture on the heaviest stable magnesium isotope that makes ²⁷Al, the
+  only stable isotope of aluminium.
+role: >-
+  ²⁶Mg is made both by the decay of ²⁶Al and directly in earlier burning stages.
+  This reaction turns it into ²⁷Al, so it feeds the aluminium seen in stars. In
+  globular clusters some stars show more aluminium and less magnesium than
+  others, and models of these stars need this rate together with the other proton
+  captures of the MgAl cycle.
+details: >-
+  The rate at hydrogen-burning temperatures is given by narrow resonances. Limata
+  et al. (2010) measured the strength of the E_cm = 326 keV resonance at LUNA with
+  a precision higher than previously achieved, as a normalisation reference for
+  the weaker resonances at lower energies, whose absolute measurement is limited
+  by beam-induced background and target stoichiometry.
+status: uncertain
+status_note: >-
+  The reference resonance is measured precisely; the weaker resonances below it,
+  which matter at the lowest temperatures, are less well constrained.
+methods: [direct-underground, direct-surface]
+measurements:
+  - year: 1990
+    facility: other
+    lab: "not recorded"
+    method: direct-surface
+    energy: "low-energy (p,γ) resonances"
+    note: >-
+      γ-ray decay schemes of low-energy resonances, including a newly observed
+      ²⁶Mg(p,γ)²⁷Al resonance; measured together with ²⁵Mg(p,γ) and
+      ²⁷Al(p,γ).
+    refs: [iliadis1990]
+  - year: 2010
+    facility: luna-400
+    method: direct-underground
+    energy: "E_cm = 326 keV resonance"
+    note: >-
+      Resonance strength measured underground, more precise than earlier values,
+      for use as a normalisation reference.
+    refs: [limata2010]
+evaluations: [angulo1999]
+open_questions:
+  - Direct measurements of the resonances below E_cm = 326 keV, which dominate the rate in hot-bottom burning.
+related: [26Al-bp-26Mg, 25Mg-pg-26Al, 27Al-pg-28Si, 27Al-pa-24Mg, 22Ne-ag-26Mg]

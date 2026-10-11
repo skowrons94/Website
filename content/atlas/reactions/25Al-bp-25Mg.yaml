@@ -1,0 +1,11 @@
+id: 25Al-bp-25Mg
+label: ²⁵Al(β⁺ν)²⁵Mg
+kind: decay
+target: 25Al
+projectile: ""
+ejectile: e+ nu
+product: 25Mg
+networks: [mgal]
+summary: >-
+  ²⁵Al, made when ²⁴Mg captures a proton, turns into stable ²⁵Mg by emitting a
+  positron and a neutrino; ²⁵Mg is the nucleus from which radioactive ²⁶Al is made.

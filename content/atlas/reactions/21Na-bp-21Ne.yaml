@@ -1,0 +1,11 @@
+id: 21Na-bp-21Ne
+label: ²¹Na(β⁺ν)²¹Ne
+kind: decay
+target: 21Na
+projectile: ""
+ejectile: e+ nu
+product: 21Ne
+networks: [nena]
+summary: >-
+  ²¹Na, made when ²⁰Ne captures a proton, turns into stable ²¹Ne by emitting a
+  positron and a neutrino; the cycle then continues with a proton capture on ²¹Ne.

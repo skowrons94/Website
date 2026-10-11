@@ -1,0 +1,47 @@
+id: 24Mg-pg-25Al
+label: ²⁴Mg(p,γ)²⁵Al
+kind: capture
+target: 24Mg
+projectile: 1H
+ejectile: g
+product: 25Al
+networks: [mgal]
+importance: major
+summary: >-
+  The first step of the MgAl cycle. ²⁴Mg, the most abundant magnesium isotope,
+  captures a proton and becomes ²⁵Al, which quickly decays to ²⁵Mg.
+role: >-
+  This is one of the slowest proton captures in the MgAl cycle, so it controls how fast
+  the most common magnesium isotope is converted into ²⁵Mg and, after one more
+  capture, into radioactive ²⁶Al and stable ²⁷Al. In the hottest hydrogen-burning
+  stars it destroys ²⁴Mg; some stars in globular clusters show less magnesium and
+  more aluminium than their neighbours, a pattern attributed to this kind of
+  burning.
+details: >-
+  The rate at the temperatures of hot-bottom burning is determined by direct
+  capture and by the narrow resonance at E_cm = 214 keV. Limata et al. (2010)
+  measured its strength at LUNA, together with resonances in ²⁵Mg + p and
+  ²⁶Mg + p, with a precision higher than previously achieved; these resonances
+  also serve as normalisation references for weaker, lower-energy resonances in
+  the magnesium isotopes, where absolute measurements suffer from beam-induced
+  background and changing target stoichiometry.
+status: well-known
+status_note: >-
+  The resonance that dominates at hydrogen-burning temperatures has been measured
+  directly underground with good precision; below it the rate relies on
+  extrapolated direct capture.
+methods: [direct-underground, direct-surface]
+measurements:
+  - year: 2010
+    facility: luna-400
+    method: direct-underground
+    energy: "E_cm = 214 keV resonance"
+    note: >-
+      Resonance strength measured underground with several techniques, more
+      precise than earlier values; also intended as a reference for lower-energy
+      resonances.
+    refs: [limata2010]
+evaluations: [angulo1999]
+open_questions:
+  - The direct capture S-factor below the 214 keV resonance, which so far comes from extrapolation of higher-energy data.
+related: [25Al-bp-25Mg, 25Mg-pg-26Al, 23Na-pg-24Mg, 27Al-pa-24Mg]

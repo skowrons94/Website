@@ -1,0 +1,80 @@
+id: 23Na-pa-20Ne
+label: ²³Na(p,α)²⁰Ne
+kind: transfer
+target: 23Na
+projectile: 1H
+ejectile: 4He
+product: 20Ne
+networks: [nena]
+importance: key
+summary: >-
+  The reaction that closes the NeNa cycle. A proton hits ²³Na and an alpha
+  particle comes out, leaving ²⁰Ne, the nucleus the cycle started from.
+role: >-
+  Sodium made by hydrogen burning can be destroyed in two ways. In this reaction
+  it goes back to neon and the cycle starts again; in the competing reaction,
+  ²³Na(p,γ)²⁴Mg, it moves on to magnesium. The ratio of the two rates decides
+  whether the NeNa cycle is closed or leaks into the MgAl cycle, and together they
+  set how much sodium the hottest hydrogen-burning stars return to their
+  surroundings. This is part of the puzzle of the sodium-rich stars in globular
+  clusters.
+details: >-
+  At the temperatures of hot-bottom burning the rate depends on a few narrow
+  low-energy resonances and on the alpha-particle branching of the states of
+  ²⁴Mg that they populate. The lowest of them, at E_cm ≈ 133 keV (Eₚ = 140 keV
+  in the (p,γ) channel), has not been observed directly in the (p,α) channel.
+  Cesaratto et al. (2013) combined their upper limit on the (p,γ) strength with
+  the α-particle branching ratio to set an upper limit of 0.88 × 10⁻⁹ eV on the
+  (p,α) strength, which makes this resonance negligible for the rate, as
+  summarised in Solar Fusion III (Acharya et al. 2025). The state was first
+  identified with the ²³Na(³He,d)²⁴Mg reaction by Hale et al. (2004). The proton widths of the
+  near-threshold states, which enter both the (p,α) and the (p,γ) channels, were
+  remeasured with the ²³Na(³He,d)²⁴Mg reaction at TUNL (Marshall et al. 2023). The
+  LUNA measurement of the (p,γ) channel (Boeltzig et al. 2019) observed the
+  140 keV resonance, whose strength in turn constrains the proton width of the
+  state. A dedicated LUNA campaign on the (p,α) channel with an array of silicon
+  detectors was announced (Ananna et al. 2024); no result has been published yet.
+status: uncertain
+status_note: >-
+  The rate at the lowest temperatures rests on resonances that have not been seen
+  directly in the (p,α) channel, so it is set by upper limits and by the proton
+  widths taken from the (p,γ) channel and from transfer reactions.
+methods: [direct-surface, direct-underground, anc]
+measurements:
+  - year: 2004
+    facility: other
+    lab: "not recorded"
+    method: anc
+    energy: "²³Na(³He,d)²⁴Mg at E(³He) = 20 MeV, θlab = 5°–35°"
+    note: >-
+      Proton-transfer spectroscopy of the states of ²⁴Mg near the proton
+      threshold; a state corresponding to a previously unobserved resonance at
+      E_cm = 138 keV may contribute to both the (p,γ) and (p,α) rates at low
+      temperatures.
+    refs: [hale2004]
+  - year: 2013
+    facility: tunl-lena
+    method: direct-surface
+    energy: "E_cm = 138 keV resonance"
+    note: >-
+      The upper limit on the (p,γ) strength of this resonance, combined with its
+      α-particle branching ratio, gives an upper limit of 0.88 × 10⁻⁹ eV on the
+      (p,α) strength.
+    refs: [cesaratto2013, acharya2025]
+  - year: 2023
+    facility: other
+    lab: "TUNL, Durham"
+    method: anc
+    energy: "states of ²⁴Mg near the proton threshold"
+    note: >-
+      ²³Na(³He,d)²⁴Mg proton transfer: new proton widths for the near-threshold
+      states, in tension with the strength of the 133 keV resonance measured at
+      LUNA in the (p,γ) channel. The energy of this state comes out about 9 keV
+      below the value of Hale et al. (2004).
+    refs: [marshall2023]
+evaluations: [angulo1999, iliadis2010, acharya2025]
+open_questions:
+  - A direct observation of the 133 keV resonance in the (p,α) channel, the aim of the planned LUNA campaign.
+  - The proton width of the 133 keV state, where transfer data and the direct (p,γ) strength disagree.
+  - The ratio of the (p,α) and (p,γ) rates near 0.05–0.1 GK, which decides whether material cycles back to neon or leaks to magnesium.
+related: [23Na-pg-24Mg, 20Ne-pg-21Na, 22Ne-pg-23Na]
