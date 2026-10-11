@@ -75,6 +75,28 @@ class ModelInfo:
     sfactor_err: List[Any]
 
 
+def model_info(azr) -> ModelInfo:
+    """What a session keeps of an open ``pyazr.azure2`` model.
+
+    Shared with the in-browser engine (``browser/bridge.py``), which runs the
+    same model in the page's own interpreter instead of a worker process.
+    """
+    return ModelInfo(
+        params=[float(v) for v in azr.params],
+        parameters=azr.parameters,
+        pairs=azr.pairs,
+        scheme=azr.level_scheme,
+        datasets=azr.datasets,
+        extrapolations=azr.extrapolations,
+        energies=list(azr.energies),
+        angles=list(azr.angles),
+        cross=list(azr.cross),
+        cross_err=list(azr.cross_err),
+        sfactor=list(azr.sfactor),
+        sfactor_err=list(azr.sfactor_err),
+    )
+
+
 # -- the worker ---------------------------------------------------------------
 
 def _worker(conn, azr_path, cwd, omp_threads):
@@ -93,21 +115,7 @@ def _worker(conn, azr_path, cwd, omp_threads):
     try:
         import pyazr
         azr = pyazr.azure2(azr_path, cwd=cwd)
-        info = ModelInfo(
-            params=[float(v) for v in azr.params],
-            parameters=azr.parameters,
-            pairs=azr.pairs,
-            scheme=azr.level_scheme,
-            datasets=azr.datasets,
-            extrapolations=azr.extrapolations,
-            energies=list(azr.energies),
-            angles=list(azr.angles),
-            cross=list(azr.cross),
-            cross_err=list(azr.cross_err),
-            sfactor=list(azr.sfactor),
-            sfactor_err=list(azr.sfactor_err),
-        )
-        conn.send(("ready", info))
+        conn.send(("ready", model_info(azr)))
     except BaseException as err:            # the model may simply not open
         try:
             conn.send(("error", f"{type(err).__name__}: {err}"))

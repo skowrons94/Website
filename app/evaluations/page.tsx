@@ -133,7 +133,7 @@ export default function EvaluationsPage() {
                   </Button>
                   <Button asChild variant="outline" size="icon">
                     <a
-                      href={evaluationDownloadUrl(evaluation.id)}
+                      href={evaluationDownloadUrl(evaluation.id, evaluation.filename)}
                       download
                       title={`Download ${evaluation.filename}`}
                     >

@@ -10,6 +10,8 @@
  * quantities carry `free_index: null` and cannot be changed.
  */
 
+import { browserAzrUrl, browserDownload, browserRequest } from "./browser-engine"
+
 /**
  * Origin of the AZURE2 API, baked in at build time.
  *
@@ -20,6 +22,13 @@
  */
 export const API_BASE =
   process.env.API_BASE === undefined ? "http://localhost:5001" : process.env.API_BASE
+
+/**
+ * `API_BASE=browser` builds the static site (GitHub Pages): there is no server,
+ * and AZURE2 runs in the visitor's browser (lib/browser-engine.ts).
+ */
+export const IN_BROWSER = API_BASE === "browser"
+const ORIGIN = IN_BROWSER ? "" : API_BASE
 
 /* -- types ----------------------------------------------------------------- */
 
@@ -174,6 +183,25 @@ export class ApiError extends Error {
 /* -- plumbing -------------------------------------------------------------- */
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  if (IN_BROWSER) {
+    let r: Awaited<ReturnType<typeof browserRequest>>
+    try {
+      r = await browserRequest(init?.method ?? "GET", path, (init?.body as string) ?? null)
+    } catch (err) {
+      throw new ApiError(err instanceof Error ? err.message : String(err), 0)
+    }
+    if (r.status >= 400) {
+      let message = `Request failed (${r.status})`
+      try {
+        message = JSON.parse(r.text)?.error ?? message
+      } catch {
+        /* keep the status-based message */
+      }
+      throw new ApiError(message, r.status)
+    }
+    return JSON.parse(r.text) as T
+  }
+
   let response: Response
   try {
     response = await fetch(`${API_BASE}${path}`, {
@@ -219,8 +247,26 @@ export function openEvaluation(id: string): Promise<OpenedSession> {
 }
 
 /** URL of the evaluation's .azr file, for a direct browser download. */
-export function evaluationDownloadUrl(id: string): string {
+export function evaluationDownloadUrl(id: string, filename: string): string {
+  if (IN_BROWSER) return browserAzrUrl(id, filename)
   return `${API_BASE}/api/evaluations/${encodeURIComponent(id)}/download`
+}
+
+/**
+ * Props for a link that downloads a file the API generates. On the server
+ * build it is a plain link; in the browser build the file is produced by the
+ * engine in the page and saved from there.
+ */
+export function downloadLink(url: string, filename: string) {
+  if (!IN_BROWSER) return { href: url, download: filename }
+  return {
+    href: url,
+    download: filename,
+    onClick: (event: { preventDefault: () => void }) => {
+      event.preventDefault()
+      browserDownload(url, filename).catch((err) => alert(String(err?.message ?? err)))
+    },
+  }
 }
 
 /* -- session --------------------------------------------------------------- */
@@ -265,7 +311,7 @@ export function closeSession(sessionId: string): Promise<{ closed: boolean }> {
 }
 
 export function schemeExportUrl(sessionId: string): string {
-  return `${API_BASE}/api/sessions/${sessionId}/scheme/export.txt`
+  return `${ORIGIN}/api/sessions/${sessionId}/scheme/export.txt`
 }
 
 export function extrapolationsCsvUrl(
@@ -274,5 +320,5 @@ export function extrapolationsCsvUrl(
 ): string {
   const query =
     segments && segments.length > 0 ? `?segments=${segments.join(",")}` : ""
-  return `${API_BASE}/api/sessions/${sessionId}/extrapolations/download.csv${query}`
+  return `${ORIGIN}/api/sessions/${sessionId}/extrapolations/download.csv${query}`
 }

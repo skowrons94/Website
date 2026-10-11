@@ -31,3 +31,7 @@ _source/
 
 # Written by scripts/atlas-export.mjs before every build.
 public/atlas/data.json
+
+# Built by browser/assemble.py for the static (GitHub Pages) build
+/public/azure2/
+/build/

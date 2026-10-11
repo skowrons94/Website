@@ -12,6 +12,7 @@ import {
 
 import {
   API_BASE,
+  IN_BROWSER,
   ApiError,
   closeSession,
   getData,
@@ -171,6 +172,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     const release = () => {
       // sendBeacon survives page unload where fetch may not; it is always a
       // POST, so it targets the /close alias rather than the DELETE route.
+      // In the browser build the engine lives in this tab and goes with it.
+      if (IN_BROWSER) return
       navigator.sendBeacon?.(
         `${API_BASE}/api/sessions/${sessionId}/close`,
         new Blob([], { type: "text/plain" }),

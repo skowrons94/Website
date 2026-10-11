@@ -330,7 +330,11 @@ export async function renderMarkdown(markdown: string): Promise<string> {
     .use(rehypeUnicodeScripts)
     .use(rehypeStringify)
     .process(markdown)
-  return String(file)
+  // Root-relative links and images need the site's base path when it is
+  // served from a subdirectory (the GitHub Pages build).
+  const base = process.env.BASE_PATH ?? ""
+  const html = String(file)
+  return base ? html.replace(/(href|src)="\/(?!\/)/g, `$1="${base}/`) : html
 }
 
 export function getNoteSlugs(): string[] {

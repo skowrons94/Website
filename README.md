@@ -279,6 +279,28 @@ make dev-server AZURE2_SRC=/path/to/AZURE2
 
 The rest of the site works without it.
 
+## GitHub Pages (no server)
+
+The same site also builds as plain files for GitHub Pages, with AZURE2 running
+in the visitor's browser instead of on a server. `.github/workflows/pages.yml`
+does it on every push to `main`. To turn it on once: Settings → Pages →
+Source: **GitHub Actions**. The site is then at
+`https://<user>.github.io/<repository>/`.
+
+Everything works as on the server — level scheme, data, plots, parameter edits,
+extrapolations, downloads — with three differences:
+
+- The first evaluation a visitor opens takes about ten seconds: Python and the
+  engine (about 20 MB, cached by the browser afterwards) are loaded then.
+- Results at an evaluation's own parameters were calculated when the site was
+  built, so they appear at once. After an edit the browser recalculates, on one
+  core: from under a second (¹⁴N data) to several minutes (the ⁷Be
+  extrapolations, which carry external-capture integrals).
+- An evaluation added under `server/evaluations/` appears after the next build,
+  not immediately.
+
+How it works, and how to build it locally: `browser/README.md`.
+
 ## How the two halves fit together
 
 **`API_BASE` is inlined at build time**, not read at runtime — it ends up in the
@@ -317,5 +339,7 @@ server/              the Flask API
 server/app/engine.py one AZURE2 model per process
 server/evaluations/  the .azr models and their data
 deploy/              Dockerfiles and Caddyfile
+browser/             the GitHub Pages build: AZURE2 in WebAssembly, in the page
+lib/browser-engine.ts  client for it
 _source/             original CV and raw notes, not published
 ```

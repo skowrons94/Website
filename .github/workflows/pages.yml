@@ -1,0 +1,137 @@
+# The static site on GitHub Pages, with AZURE2 running in the visitor's
+# browser (see browser/README.md).  The Docker deployment is unaffected.
+#
+# Steps: build AZURE2's engine module natively (as deploy/Dockerfile.azure2
+# does) and precompute every evaluation at its shipped parameters; build the
+# same module for WebAssembly; lay out public/azure2/; export the site.
+name: GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+env:
+  PYODIDE: "0.28.3"
+  EMSCRIPTEN: "4.0.9"   # the version that Pyodide release was built with
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      # Fails until Pages is enabled (Settings > Pages > Source: GitHub
+      # Actions); the build still runs, for the repository's own path.
+      - id: pages
+        uses: actions/configure-pages@v5
+        continue-on-error: true
+
+      - name: Base path
+        run: |
+          if [ "${{ steps.pages.outcome }}" = success ]; then
+            echo "BASE_PATH=${{ steps.pages.outputs.base_path }}" >> "$GITHUB_ENV"
+          else
+            echo "BASE_PATH=/${{ github.event.repository.name }}" >> "$GITHUB_ENV"
+          fi
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: AZURE2 commit
+        id: azure2
+        run: echo "ref=$(sed -n 's/^ARG AZURE2_REF=//p' deploy/Dockerfile.azure2)" >> "$GITHUB_OUTPUT"
+
+      # -- native engine, for the precomputed results -------------------------
+      - name: Native AZURE2 (pyazr)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libgsl-dev libreadline-dev libncurses-dev
+          pip install --quiet pybind11 numpy mpmath flask flask-cors
+          git clone --quiet https://github.com/rdeboer1/AZURE2.git /tmp/AZURE2
+          git -C /tmp/AZURE2 checkout --quiet --detach ${{ steps.azure2.outputs.ref }}
+          cmake -S /tmp/AZURE2 -B /tmp/AZURE2-build -DCMAKE_BUILD_TYPE=Release \
+            -DUSE_API=ON -DBUILD_GUI=OFF -DUSE_QWT=OFF \
+            -Dpybind11_DIR="$(python -m pybind11 --cmakedir)" > /dev/null
+          cmake --build /tmp/AZURE2-build --target _azure2 -j "$(nproc)" > /dev/null
+          pip install --quiet /tmp/AZURE2
+          python -c "import pyazr, pyazr._azure2; print('pyazr', pyazr.__version__)"
+
+      - name: Precompute the evaluations
+        run: python browser/precompute.py server/evaluations build/azure2/evaluations
+
+      # -- WebAssembly engine -------------------------------------------------
+      - name: Cache the WebAssembly build
+        uses: actions/cache@v4
+        with:
+          path: |
+            build/wasm/obj
+            build/wasm/gsl-prefix
+            build/wasm/xbuildenv
+          key: azure2-wasm-${{ steps.azure2.outputs.ref }}-${{ env.EMSCRIPTEN }}-${{ env.PYODIDE }}-${{ hashFiles('browser/azure2/*') }}
+
+      - name: Emscripten
+        run: |
+          git clone --quiet --depth 1 https://github.com/emscripten-core/emsdk.git /tmp/emsdk
+          /tmp/emsdk/emsdk install "$EMSCRIPTEN" > /dev/null
+          /tmp/emsdk/emsdk activate "$EMSCRIPTEN" > /dev/null
+
+      - name: AZURE2 for WebAssembly
+        run: |
+          source /tmp/emsdk/emsdk_env.sh > /dev/null 2>&1
+          browser/azure2/build.sh build/wasm
+
+      - name: Pyodide
+        run: |
+          mkdir -p build/pyodide
+          curl -sSL "https://github.com/pyodide/pyodide/releases/download/$PYODIDE/pyodide-core-$PYODIDE.tar.bz2" \
+            | tar -xj -C build/pyodide --strip-components=1
+          numpy=$(python -c "import json; p=json.load(open('build/pyodide/pyodide-lock.json'))['packages']['numpy']; print(p['file_name'])")
+          curl -sSL -o "build/pyodide/$numpy" "https://cdn.jsdelivr.net/pyodide/v$PYODIDE/full/$numpy"
+          echo "NUMPY=build/pyodide/$numpy" >> "$GITHUB_ENV"
+
+      - name: Assemble public/azure2
+        run: |
+          python browser/assemble.py --pyodide build/pyodide --numpy "$NUMPY" \
+            --module build/wasm/_azure2.cpython-313-wasm32-emscripten.so \
+            --pyazr build/wasm/AZURE2/pyazr \
+            --evaluations build/azure2/evaluations --out public/azure2
+
+      # -- the site -----------------------------------------------------------
+      - run: npm ci
+      - name: Static export
+        env:
+          STATIC_EXPORT: "1"
+          API_BASE: browser
+        run: npm run build
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -141,7 +141,7 @@ export default function AtlasPage() {
           <ArrowRight className="mt-4 h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
         </Link>
         <a
-          href="/atlas/data.json"
+          href={`${process.env.BASE_PATH ?? ""}/atlas/data.json`}
           download
           className="group block rounded-lg border border-border bg-card p-6 sm:col-span-2 lg:col-span-1"
         >

@@ -27,6 +27,7 @@ import {
 import { SegmentChart, type ChartSeries } from "@/components/segment-chart"
 import {
   extrapolationsCsvUrl,
+  downloadLink,
   type DataSegment,
   type ExtrapSegment,
 } from "@/lib/api"
@@ -152,7 +153,7 @@ export function ExtrapPlot({
             </Label>
           </div>
           <Button asChild variant="outline" size="sm" disabled={chosen.length === 0}>
-            <a href={extrapolationsCsvUrl(sessionId, selected)} download>
+            <a {...downloadLink(extrapolationsCsvUrl(sessionId, selected), "extrapolations.csv")}>
               <Download className="mr-2 h-4 w-4" />
               Download CSV
             </a>

@@ -29,6 +29,7 @@ import { LevelDiagram } from "@/components/level-diagram"
 import {
   evaluationDownloadUrl,
   schemeExportUrl,
+  downloadLink,
   type Evaluation,
   type Scheme,
   type SchemeLevel,
@@ -144,13 +145,13 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Button asChild variant="outline" size="sm">
-            <a href={schemeExportUrl(sessionId)} download>
+            <a {...downloadLink(schemeExportUrl(sessionId), `${evaluation.id}_level_scheme.txt`)}>
               <FileText className="mr-2 h-4 w-4" />
               Export scheme
             </a>
           </Button>
           <Button asChild size="sm">
-            <a href={evaluationDownloadUrl(evaluation.id)} download>
+            <a href={evaluationDownloadUrl(evaluation.id, evaluation.filename)} download>
               <Download className="mr-2 h-4 w-4" />
               Download {evaluation.filename}
             </a>
