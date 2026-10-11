@@ -95,6 +95,10 @@ export default function EvaluationWorkspace() {
 
   if (!scheme || !evaluation || !sessionId) return null
 
+  // A calculation that failed leaves its tab without results; offer to run it
+  // again rather than spin forever under the error message.
+  const failed = Boolean(error) && !calculating && !expired
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -134,7 +138,9 @@ export default function EvaluationWorkspace() {
       )}
 
       <Tabs value={tab} onValueChange={(value) => setTab(value as Tab)}>
-        <TabsList>
+        {/* Wraps rather than overflows: the Italian labels are wider than a
+            phone at one row. */}
+        <TabsList className="h-auto max-w-full flex-wrap justify-start">
           <TabsTrigger value="scheme">{t.tabs.scheme}</TabsTrigger>
           <TabsTrigger value="data">{t.tabs.data}</TabsTrigger>
           <TabsTrigger value="plot">{t.tabs.plot}</TabsTrigger>
@@ -151,7 +157,7 @@ export default function EvaluationWorkspace() {
 
         <TabsContent value="data" className="mt-6">
           {data === null ? (
-            <Pending label={t.calculatingData} />
+            <Pending label={t.calculatingData} failed={failed} onRetry={loadData} retry={t.retry} />
           ) : (
             <DataTable data={data} />
           )}
@@ -159,7 +165,7 @@ export default function EvaluationWorkspace() {
 
         <TabsContent value="plot" className="mt-6">
           {data === null ? (
-            <Pending label={t.calculatingData} />
+            <Pending label={t.calculatingData} failed={failed} onRetry={loadData} retry={t.retry} />
           ) : (
             <DataPlot
               data={data}
@@ -173,7 +179,12 @@ export default function EvaluationWorkspace() {
 
         <TabsContent value="extrap" className="mt-6">
           {extrapolations === null ? (
-            <Pending label={t.calculatingExtrap} />
+            <Pending
+              label={t.calculatingExtrap}
+              failed={failed}
+              onRetry={loadExtrapolations}
+              retry={t.retry}
+            />
           ) : (
             <ExtrapPlot
               extrapolations={extrapolations}
@@ -188,7 +199,26 @@ export default function EvaluationWorkspace() {
   )
 }
 
-function Pending({ label }: { label: string }) {
+function Pending({
+  label,
+  failed,
+  onRetry,
+  retry,
+}: {
+  label: string
+  failed: boolean
+  onRetry: () => void
+  retry: string
+}) {
+  if (failed) {
+    return (
+      <div className="flex min-h-[16rem] items-center justify-center">
+        <Button variant="outline" onClick={onRetry}>
+          {retry}
+        </Button>
+      </div>
+    )
+  }
   return (
     <div className="flex min-h-[16rem] items-center justify-center gap-2 text-sm text-muted-foreground">
       <Loader2 className="h-4 w-4 animate-spin" />
