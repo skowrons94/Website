@@ -20,7 +20,10 @@ help:                       ## show this list
 
 env:                        ## create .env from the example, if absent
 	@test -f .env || { cp .env.example .env; \
-	  echo "created .env -- set SITE_DOMAIN and ACME_EMAIL in it, then run: make deploy"; }
+	  sed -i -e "s/^AZURE2_UID=.*/AZURE2_UID=$$(stat -c %u server/evaluations)/" \
+	         -e "s/^AZURE2_GID=.*/AZURE2_GID=$$(stat -c %g server/evaluations)/" .env; \
+	  echo "created .env (AZURE2_UID/GID set to the owner of server/evaluations)"; \
+	  echo "-- set SITE_DOMAIN and ACME_EMAIL in it, then run: make deploy"; }
 	@test -f .env && grep -q '^SITE_DOMAIN=example.com' .env \
 	  && echo "WARNING: .env still says SITE_DOMAIN=example.com" || true
 
