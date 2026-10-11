@@ -260,7 +260,7 @@ networks:
       seconda.
     temperatures:
       - { label: AGB ¹³C pocket, label_it: "tasca di ¹³C nelle AGB", T9: 0.09 }
-      - { label: massive star, He core end, label_it: "stella massiccia, fine della combustione centrale dell'elio", T9: 0.3 }
+      - { label: "massive star, He core end", label_it: "stella massiccia, fine della combustione centrale dell'elio", T9: 0.3 }
     reactions: [13C-an-16O, 22Ne-an-25Mg, 22Ne-ag-26Mg, 17O-an-20Ne]
 
   - id: bbn
