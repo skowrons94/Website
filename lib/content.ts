@@ -16,6 +16,7 @@ import yaml from "js-yaml"
 import rehypeAutolinkHeadings from "rehype-autolink-headings"
 import rehypeKatex from "rehype-katex"
 import rehypeSlug from "rehype-slug"
+import GithubSlugger from "github-slugger"
 import rehypeStringify from "rehype-stringify"
 import remarkGfm from "remark-gfm"
 import remarkMath from "remark-math"
@@ -184,6 +185,7 @@ function estimateReadingTime(markdown: string): number {
 
 function collectHeadings(markdown: string) {
   const headings: { depth: number; text: string; id: string }[] = []
+  const slugger = new GithubSlugger()
   const fences = /^```/
   let inFence = false
   for (const line of markdown.split("\n")) {
@@ -195,12 +197,17 @@ function collectHeadings(markdown: string) {
       .replace(/\$[^$]*\$/g, "")
       .replace(/[*_`]/g, "")
       .trim()
-    // Must match rehype-slug (github-slugger) for the anchors to line up.
-    const id = text
-      .toLowerCase()
-      .replace(/[^\w\s-]/g, "")
-      .trim()
-      .replace(/\s+/g, "-")
+    // The id is rehype-slug's own: the same slugger, fed the heading's text
+    // as the rendered tree has it (inline maths as its source). A hand-rolled
+    // slug drifted from it on "—" and on Greek letters, and those table of
+    // contents links pointed nowhere.
+    const id = slugger.slug(
+      match[2]
+        .replace(/\$([^$]*)\$/g, "$1")
+        .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+        .replace(/[*_`]/g, "")
+        .trim(),
+    )
     headings.push({ depth: match[1].length, text, id })
   }
   return headings
