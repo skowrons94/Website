@@ -40,6 +40,7 @@ import {
   quantityName,
   quantitySymbol,
 } from "@/lib/viz"
+import { useDict, useLang } from "@/components/lang-provider"
 
 /**
  * The level scheme, built to stay readable when the model is crowded.
@@ -69,6 +70,8 @@ function jpiLatex(jpi: string): string {
 }
 
 export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
+  const lang = useLang()
+  const t = useDict().workspace
   const [showFixed, setShowFixed] = useState(true)
   const [selectedJpi, setSelectedJpi] = useState<string[]>([])
   const [energyMin, setEnergyMin] = useState("")
@@ -137,23 +140,22 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-semibold tracking-tight">Level scheme</h2>
+          <h2 className="text-2xl font-semibold tracking-tight">{t.levelScheme}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            {scheme.levels.length} levels across {scheme.pairs.length} particle
-            pairs · {freeCount} free R-matrix parameters
+            {t.schemeSummary(scheme.levels.length, scheme.pairs.length, freeCount)}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Button asChild variant="outline" size="sm">
             <a {...downloadLink(schemeExportUrl(sessionId), `${evaluation.id}_level_scheme.txt`)}>
               <FileText className="mr-2 h-4 w-4" />
-              Export scheme
+              {t.exportScheme}
             </a>
           </Button>
           <Button asChild size="sm">
             <a href={evaluationDownloadUrl(evaluation.id, evaluation.filename)} download>
               <Download className="mr-2 h-4 w-4" />
-              Download {evaluation.filename}
+              {t.downloadFile(evaluation.filename)}
             </a>
           </Button>
         </div>
@@ -190,7 +192,7 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
           <div className="flex flex-wrap items-end gap-3">
             <div className="space-y-1">
               <Label htmlFor="emin" className="text-xs">
-                Energy min (MeV)
+                {t.energyMin}
               </Label>
               <Input
                 id="emin"
@@ -203,7 +205,7 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
             </div>
             <div className="space-y-1">
               <Label htmlFor="emax" className="text-xs">
-                Energy max (MeV)
+                {t.energyMax}
               </Label>
               <Input
                 id="emax"
@@ -221,7 +223,7 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
                 onCheckedChange={setShowFixed}
               />
               <Label htmlFor="show-fixed" className="text-sm">
-                Show fixed channels
+                {t.showFixed}
               </Label>
             </div>
             {filtering && (
@@ -232,11 +234,11 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
                 className="pb-1"
               >
                 <X className="mr-1 h-3.5 w-3.5" />
-                Clear
+                {t.clear}
               </Button>
             )}
             <span className="pb-1.5 text-xs text-muted-foreground">
-              {filtered.length} of {scheme.levels.length} levels
+              {t.shownOf(filtered.length, scheme.levels.length)}
             </span>
           </div>
         </CardContent>
@@ -246,10 +248,8 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
 
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">Levels</CardTitle>
-          <CardDescription>
-            Select a row to show its channels.
-          </CardDescription>
+          <CardTitle className="text-base">{t.levels}</CardTitle>
+          <CardDescription>{t.selectRow}</CardDescription>
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
@@ -259,11 +259,11 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
                   <th className="w-8 px-2 py-2" />
                   <th className="px-2 py-2 font-medium">J^π</th>
                   <th className="px-2 py-2 text-right font-medium">
-                    Energy (MeV)
+                    {t.energyMeV}
                   </th>
-                  <th className="px-2 py-2 font-medium">Energy</th>
-                  <th className="px-2 py-2 text-right font-medium">Channels</th>
-                  <th className="px-2 py-2 text-right font-medium">Free</th>
+                  <th className="px-2 py-2 font-medium">{t.energy}</th>
+                  <th className="px-2 py-2 text-right font-medium">{t.channels}</th>
+                  <th className="px-2 py-2 text-right font-medium">{t.free}</th>
                 </tr>
               </thead>
               <tbody>
@@ -297,18 +297,18 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
                           {formatEnergy(level.energy)}
                           {level.energy !== level.initial_energy && (
                             <span className="ml-1.5 text-xs text-muted-foreground">
-                              (was {formatEnergy(level.initial_energy)})
+                              {t.was(formatEnergy(level.initial_energy))}
                             </span>
                           )}
                         </td>
                         <td className="px-2 py-2">
                           {level.energy_fixed ? (
                             <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                              <Lock className="h-3 w-3" /> fixed
+                              <Lock className="h-3 w-3" /> {t.fixedWord}
                             </span>
                           ) : (
                             <span className="flex items-center gap-1 text-xs">
-                              <Unlock className="h-3 w-3" /> free
+                              <Unlock className="h-3 w-3" /> {t.freeWord}
                             </span>
                           )}
                         </td>
@@ -330,7 +330,7 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
                           <td colSpan={5} className="px-2 py-3">
                             {channels.length === 0 ? (
                               <p className="text-xs text-muted-foreground">
-                                No free channels.
+                                {t.noFreeChannels}
                               </p>
                             ) : (
                               <ul className="space-y-1.5">
@@ -353,7 +353,7 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
                                           ` · ${channel.radiation_type}${channel.L}`}
                                         {channel.quantity !== "width" && (
                                           <span className="ml-1.5">
-                                            · {quantityName(channel.quantity)}
+                                            · {quantityName(channel.quantity, lang)}
                                           </span>
                                         )}
                                       </span>
@@ -385,7 +385,7 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
 
           {filtered.length === 0 && (
             <p className="py-10 text-center text-sm text-muted-foreground">
-              No levels match the current filters.
+              {t.noLevels}
             </p>
           )}
         </CardContent>
@@ -393,24 +393,24 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
 
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">Particle pairs</CardTitle>
+          <CardTitle className="text-base">{t.pairs}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[36rem] text-sm">
               <thead>
                 <tr className="border-b text-left text-xs uppercase tracking-wide text-muted-foreground">
-                  <th className="px-2 py-2 font-medium">Pair</th>
-                  <th className="px-2 py-2 font-medium">Channel</th>
-                  <th className="px-2 py-2 font-medium">Type</th>
+                  <th className="px-2 py-2 font-medium">{t.pair}</th>
+                  <th className="px-2 py-2 font-medium">{t.channel}</th>
+                  <th className="px-2 py-2 font-medium">{t.type}</th>
                   <th className="px-2 py-2 text-right font-medium">
-                    Separation (MeV)
+                    {t.separation}
                   </th>
                   <th className="px-2 py-2 text-right font-medium">
-                    Excitation (MeV)
+                    {t.excitation}
                   </th>
                   <th className="px-2 py-2 text-right font-medium">
-                    Radius (fm)
+                    {t.radius}
                   </th>
                 </tr>
               </thead>
@@ -424,12 +424,12 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
                       <InlineMath math={pair.label} />
                       {pair.is_entrance && (
                         <Badge variant="secondary" className="ml-2 text-xs">
-                          entrance
+                          {t.entrance}
                         </Badge>
                       )}
                     </td>
                     <td className="px-2 py-2 text-muted-foreground">
-                      {pair.is_photon ? "photon" : "particle"}
+                      {pair.is_photon ? t.photon : t.particle}
                     </td>
                     <td className="px-2 py-2 text-right tabular-nums">
                       {formatEnergy(pair.separation_energy)}

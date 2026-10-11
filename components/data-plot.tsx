@@ -21,6 +21,7 @@ import { LevelControls } from "@/components/level-controls"
 import { SegmentChart, type ChartSeries } from "@/components/segment-chart"
 import type { DataSegment, Scheme } from "@/lib/api"
 import { OVERLAY_LIMIT, observableLabel, quantityLabel } from "@/lib/viz"
+import { useDict, useLang } from "@/components/lang-provider"
 
 /**
  * The interactive tab: measured data with the model overlaid, beside sliders
@@ -51,6 +52,8 @@ export function DataPlot({
   onParameterChange,
   onReset,
 }: Props) {
+  const lang = useLang()
+  const t = useDict().workspace
   const [selected, setSelected] = useState<number[]>([])
   const [quantity, setQuantity] = useState<Quantity>("sfactor")
   const [logX, setLogX] = useState(false)
@@ -94,7 +97,7 @@ export function DataPlot({
   }
 
   const observable = chosen[0]?.observable ?? "angle-integrated"
-  const yLabel = quantityLabel(quantity, observable)
+  const yLabel = quantityLabel(quantity, observable, lang)
 
   return (
     <div className="space-y-4">
@@ -103,7 +106,7 @@ export function DataPlot({
           exactly the same height, with no hard-coded chart dimension. */}
       <div className="flex flex-wrap items-end gap-4">
           <div className="space-y-1.5">
-            <Label className="text-xs">Quantity</Label>
+            <Label className="text-xs">{t.quantity}</Label>
             <Select
               value={quantity}
               onValueChange={(value: Quantity) => setQuantity(value)}
@@ -112,36 +115,34 @@ export function DataPlot({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="sfactor">S-factor</SelectItem>
-                <SelectItem value="cross_section">Cross section</SelectItem>
+                <SelectItem value="sfactor">{t.sfactor}</SelectItem>
+                <SelectItem value="cross_section">{t.crossSection}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="flex items-center gap-2">
             <Switch id="logx" checked={logX} onCheckedChange={setLogX} />
             <Label htmlFor="logx" className="text-sm">
-              Log energy
+              {t.logEnergy}
             </Label>
           </div>
           <div className="flex items-center gap-2">
             <Switch id="logy" checked={logY} onCheckedChange={setLogY} />
             <Label htmlFor="logy" className="text-sm">
-              Log {quantity === "sfactor" ? "S-factor" : "cross section"}
+              {quantity === "sfactor" ? t.logSfactor : t.logCrossSection}
             </Label>
           </div>
           {calculating && (
             <span className="flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              recalculating
+              {t.recalculating}
             </span>
           )}
       </div>
 
       {faceted && (
         <p className="text-xs text-muted-foreground">
-          Showing {chosen.length} datasets as small multiples — beyond{" "}
-          {OVERLAY_LIMIT} overlaid series the colors are no longer reliably
-          distinguishable.
+          {t.facets(chosen.length, OVERLAY_LIMIT, "datasets")}
         </p>
       )}
 
@@ -149,7 +150,7 @@ export function DataPlot({
         {chosen.length === 0 ? (
           <Card>
             <CardContent className="py-16 text-center text-sm text-muted-foreground">
-              Select a dataset to plot.
+              {t.selectDataset}
             </CardContent>
           </Card>
         ) : faceted ? (
@@ -169,8 +170,8 @@ export function DataPlot({
                   <CardContent>
                     <SegmentChart
                       series={[toSeries(segment)]}
-                      xLabel="Energy (MeV)"
-                      yLabel={quantityLabel(quantity, segment.observable)}
+                      xLabel={t.energyAxis}
+                      yLabel={quantityLabel(quantity, segment.observable, lang)}
                       logX={logX}
                       logY={logY}
                       height={240}
@@ -185,7 +186,7 @@ export function DataPlot({
             <CardContent className="flex-1 pt-6">
               <SegmentChart
                 series={chosen.map(toSeries)}
-                xLabel="Energy (MeV)"
+                xLabel={t.energyAxis}
                 yLabel={yLabel}
                 logX={logX}
                 logY={logY}
@@ -201,7 +202,7 @@ export function DataPlot({
         <div className="relative">
           <Card className="flex min-h-0 flex-col lg:absolute lg:inset-0">
             <CardHeader className="shrink-0 pb-3">
-              <CardTitle className="text-base">Datasets</CardTitle>
+              <CardTitle className="text-base">{t.datasets}</CardTitle>
             </CardHeader>
             <CardContent className="min-h-0 flex-1 overflow-y-auto">
               <div className="space-y-2 pr-1">
@@ -226,14 +227,14 @@ export function DataPlot({
                       {segment.name}
                     </span>
                     <span className="text-muted-foreground">
-                      {observableLabel(segment.observable)}
+                      {observableLabel(segment.observable, lang)}
                       {segment.chi2 !== null &&
                         ` · χ²/N ${segment.chi2.toFixed(1)}`}
                     </span>
                   </Label>
                   {!segment.active && (
                     <Badge variant="outline" className="text-[10px]">
-                      off
+                      {t.off}
                     </Badge>
                   )}
                 </div>

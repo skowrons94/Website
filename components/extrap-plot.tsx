@@ -32,6 +32,7 @@ import {
   type ExtrapSegment,
 } from "@/lib/api"
 import { OVERLAY_LIMIT, formatEnergy, observableLabel, quantityLabel } from "@/lib/viz"
+import { useDict, useLang } from "@/components/lang-provider"
 
 /**
  * Extrapolation curves, optionally with measured datasets overlaid for context,
@@ -56,6 +57,8 @@ export function ExtrapPlot({
   sessionId,
   calculating,
 }: Props) {
+  const lang = useLang()
+  const t = useDict().workspace
   const [selected, setSelected] = useState<number[]>([])
   const [overlaid, setOverlaid] = useState<number[]>([])
   const [quantity, setQuantity] = useState<Quantity>("sfactor")
@@ -87,7 +90,7 @@ export function ExtrapPlot({
         ? segment.calculated_sfactor
         : segment.calculated
     return {
-      label: `${segment.name} (${observableLabel(segment.observable)})`,
+      label: `${segment.name} (${observableLabel(segment.observable, lang)})`,
       points: [],
       curve: energies.map((x, i) => ({ x, y: values?.[i] ?? NaN })),
     }
@@ -114,7 +117,7 @@ export function ExtrapPlot({
 
   const series = useMemo(
     () => [...chosen.map(curveSeries), ...chosenData.map(dataSeries)],
-    [chosen, chosenData, quantity],
+    [chosen, chosenData, quantity, lang],
   )
 
   const overLimit = series.length > OVERLAY_LIMIT
@@ -126,7 +129,7 @@ export function ExtrapPlot({
           extrapolation list and grid stretch makes them equal height. */}
       <div className="flex flex-wrap items-end gap-4">
           <div className="space-y-1.5">
-            <Label className="text-xs">Quantity</Label>
+            <Label className="text-xs">{t.quantity}</Label>
             <Select
               value={quantity}
               onValueChange={(value: Quantity) => setQuantity(value)}
@@ -135,42 +138,40 @@ export function ExtrapPlot({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="sfactor">S-factor</SelectItem>
-                <SelectItem value="cross_section">Cross section</SelectItem>
+                <SelectItem value="sfactor">{t.sfactor}</SelectItem>
+                <SelectItem value="cross_section">{t.crossSection}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="flex items-center gap-2">
             <Switch id="ex-logx" checked={logX} onCheckedChange={setLogX} />
             <Label htmlFor="ex-logx" className="text-sm">
-              Log energy
+              {t.logEnergy}
             </Label>
           </div>
           <div className="flex items-center gap-2">
             <Switch id="ex-logy" checked={logY} onCheckedChange={setLogY} />
             <Label htmlFor="ex-logy" className="text-sm">
-              Log value
+              {t.logValue}
             </Label>
           </div>
           <Button asChild variant="outline" size="sm" disabled={chosen.length === 0}>
             <a {...downloadLink(extrapolationsCsvUrl(sessionId, selected), "extrapolations.csv")}>
               <Download className="mr-2 h-4 w-4" />
-              Download CSV
+              {t.downloadCsv}
             </a>
           </Button>
           {calculating && (
             <span className="flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              calculating
+              {t.calculating}
             </span>
           )}
       </div>
 
       {overLimit && (
         <p className="text-xs text-muted-foreground">
-          Showing {series.length} series as small multiples — beyond{" "}
-          {OVERLAY_LIMIT} overlaid series the colors are no longer reliably
-          distinguishable.
+          {t.facets(series.length, OVERLAY_LIMIT, "series")}
         </p>
       )}
 
@@ -178,7 +179,7 @@ export function ExtrapPlot({
         {series.length === 0 ? (
           <Card>
             <CardContent className="py-16 text-center text-sm text-muted-foreground">
-              Select an extrapolation to plot.
+              {t.selectExtrap}
             </CardContent>
           </Card>
         ) : overLimit ? (
@@ -191,15 +192,15 @@ export function ExtrapPlot({
                       {" → "}
                       <InlineMath math={segment.exit} />
                       <span className="ml-2 text-xs font-normal text-muted-foreground">
-                        {observableLabel(segment.observable)}
+                        {observableLabel(segment.observable, lang)}
                       </span>
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <SegmentChart
                       series={[curveSeries(segment)]}
-                      xLabel="Energy (MeV)"
-                      yLabel={quantityLabel(quantity, segment.observable)}
+                      xLabel={t.energyAxis}
+                      yLabel={quantityLabel(quantity, segment.observable, lang)}
                       logX={logX}
                       logY={logY}
                       height={240}
@@ -214,15 +215,15 @@ export function ExtrapPlot({
                     <CardTitle className="text-sm">
                       {segment.name}
                       <span className="ml-2 text-xs font-normal text-muted-foreground">
-                        measured
+                        {t.measured}
                       </span>
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <SegmentChart
                       series={[dataSeries(segment)]}
-                      xLabel="Energy (MeV)"
-                      yLabel={quantityLabel(quantity, segment.observable)}
+                      xLabel={t.energyAxis}
+                      yLabel={quantityLabel(quantity, segment.observable, lang)}
                       logX={logX}
                       logY={logY}
                       height={240}
@@ -237,8 +238,8 @@ export function ExtrapPlot({
             <CardContent className="flex-1 pt-6">
               <SegmentChart
                 series={series}
-                xLabel="Energy (MeV)"
-                yLabel={quantityLabel(quantity, observable)}
+                xLabel={t.energyAxis}
+                yLabel={quantityLabel(quantity, observable, lang)}
                 logX={logX}
                 logY={logY}
               />
@@ -251,7 +252,7 @@ export function ExtrapPlot({
         <div className="relative">
           <Card className="flex min-h-0 flex-col lg:absolute lg:inset-0">
             <CardHeader className="shrink-0 pb-3">
-              <CardTitle className="text-base">Extrapolations</CardTitle>
+              <CardTitle className="text-base">{t.extrapolations}</CardTitle>
             </CardHeader>
             <CardContent className="min-h-0 flex-1 overflow-y-auto">
               <div className="space-y-2 pr-1">
@@ -278,7 +279,7 @@ export function ExtrapPlot({
                       <InlineMath math={segment.exit} />
                     </span>
                     <span className="text-muted-foreground">
-                      {observableLabel(segment.observable)} ·{" "}
+                      {observableLabel(segment.observable, lang)} ·{" "}
                       {formatEnergy(segment.energy_min)}–
                       {formatEnergy(segment.energy_max)} MeV
                       {!segment.is_angle_integrated &&
@@ -287,7 +288,7 @@ export function ExtrapPlot({
                   </Label>
                   {!segment.active && (
                     <Badge variant="outline" className="text-[10px]">
-                      off
+                      {t.off}
                     </Badge>
                   )}
                 </div>
@@ -303,16 +304,13 @@ export function ExtrapPlot({
           extrapolation list that drives the plot. */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">Add measured data</CardTitle>
-          <CardDescription>
-            Overlay measured datasets from this evaluation onto the
-            extrapolation curves.
-          </CardDescription>
+          <CardTitle className="text-base">{t.addMeasured}</CardTitle>
+          <CardDescription>{t.addMeasuredText}</CardDescription>
         </CardHeader>
         <CardContent>
           {!data || data.length === 0 ? (
             <p className="text-sm text-muted-foreground">
-              Open the Data tab first to load the measured segments.
+              {t.openDataFirst}
             </p>
           ) : (
             <div className="grid max-h-72 gap-x-6 gap-y-2 overflow-y-auto pr-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">

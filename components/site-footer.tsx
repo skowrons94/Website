@@ -1,39 +1,46 @@
 import Link from "next/link"
 
 import type { Profile } from "@/lib/content"
+import { dict, localePath, type Lang } from "@/lib/i18n"
 
 /*
  * The footer is the site map: one column for the work (what someone evaluating
  * the researcher looks for), one for the explanations (what a curious reader
- * looks for), one for profiles elsewhere. UI strings are kept here, together.
+ * looks for), one for profiles elsewhere. Its strings are in lib/i18n.ts.
  */
-const GROUPS: { title: string; links: { href: string; label: string }[] }[] = [
-  {
-    title: "Work",
-    links: [
-      { href: "/research", label: "Research" },
-      { href: "/publications", label: "Publications" },
-      { href: "/software", label: "Software" },
-      { href: "/evaluations", label: "R-matrix evaluations" },
-      { href: "/cv", label: "Curriculum vitae" },
-    ],
-  },
-  {
-    title: "Explore",
-    links: [
-      { href: "/atlas", label: "Reaction atlas" },
-      { href: "/atlas/timeline", label: "History timeline" },
-      { href: "/atlas/methods", label: "Methods and laboratories" },
-      { href: "/notes", label: "Notes on R-matrix theory" },
-    ],
-  },
-]
+function groups(lang: Lang): { title: string; links: { href: string; label: string }[] }[] {
+  const t = dict(lang).footer
+  const local = (links: { href: string; label: string }[]) =>
+    links.map((link) => ({ ...link, href: localePath(lang, link.href) }))
+  return [
+    {
+      title: t.work,
+      links: local([
+        { href: "/research", label: t.research },
+        { href: "/publications", label: t.publications },
+        { href: "/software", label: t.software },
+        { href: "/evaluations", label: t.evaluations },
+        { href: "/cv", label: t.cv },
+      ]),
+    },
+    {
+      title: t.explore,
+      links: local([
+        { href: "/atlas", label: t.atlas },
+        { href: "/atlas/timeline", label: t.timeline },
+        { href: "/atlas/methods", label: t.methods },
+        { href: "/notes", label: t.notes },
+      ]),
+    },
+  ]
+}
 
 // Roomy tap targets on a phone, a compact list once there is a pointer.
 const LINK =
   "inline-block py-2.5 text-muted-foreground transition-colors hover:text-foreground sm:py-1"
 
-export function SiteFooter({ profile }: { profile: Profile }) {
+export function SiteFooter({ profile, lang }: { profile: Profile; lang: Lang }) {
+  const t = dict(lang).footer
   return (
     <footer className="mt-24 border-t border-border/70">
       <div className="mx-auto grid max-w-6xl grid-cols-2 gap-x-8 gap-y-10 px-5 py-12 sm:px-8 lg:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))] xl:max-w-7xl">
@@ -53,7 +60,7 @@ export function SiteFooter({ profile }: { profile: Profile }) {
           </p>
         </div>
 
-        {GROUPS.map((group) => (
+        {groups(lang).map((group) => (
           <nav key={group.title} aria-label={group.title} className="text-sm">
             <h2 className="mb-2 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
               {group.title}
@@ -70,9 +77,9 @@ export function SiteFooter({ profile }: { profile: Profile }) {
           </nav>
         ))}
 
-        <nav aria-label="Elsewhere" className="text-sm">
+        <nav aria-label={t.elsewhere} className="text-sm">
           <h2 className="mb-2 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-            Elsewhere
+            {t.elsewhere}
           </h2>
           <ul>
             {profile.links.map((link) => (

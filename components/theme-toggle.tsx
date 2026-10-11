@@ -4,8 +4,11 @@ import { useEffect, useState } from "react"
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 
+import { useDict } from "@/components/lang-provider"
+
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme()
+  const t = useDict()
   const [mounted, setMounted] = useState(false)
 
   // The server cannot know the resolved theme, so the icon is only decided once
@@ -16,7 +19,7 @@ export function ThemeToggle() {
   return (
     <button
       type="button"
-      aria-label="Toggle colour theme"
+      aria-label={t.nav.theme}
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
       className="inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
     >

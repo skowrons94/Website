@@ -1,7 +1,8 @@
 import { CircleAlert, CircleCheck, CircleDashed, FilePen, Mountain, TrendingUp } from "lucide-react"
 
 import type { Status } from "@/lib/atlas"
-import { STATUS_HINT, STATUS_LABEL } from "@/lib/atlas-format"
+import { statusHint, statusLabel } from "@/lib/atlas-format"
+import { dict, type Lang } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 
 /**
@@ -22,11 +23,13 @@ export function StatusBadge({
   status,
   pending = false,
   className,
+  lang = "en",
 }: {
   status: Status | null
   /** No file yet: say so instead of showing nothing. */
   pending?: boolean
   className?: string
+  lang?: Lang
 }) {
   if (!status || !(status in ICONS)) {
     // A decay has no status (its half-life is simply measured); only a
@@ -40,21 +43,21 @@ export function StatusBadge({
         )}
       >
         <FilePen className="h-3.5 w-3.5" aria-hidden />
-        Entry in preparation
+        {dict(lang).atlas.entryInPreparation}
       </span>
     )
   }
   const Icon = ICONS[status]
   return (
     <span
-      title={STATUS_HINT[status]}
+      title={statusHint(status, lang)}
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary px-2.5 py-0.5 text-xs font-medium text-secondary-foreground",
         className,
       )}
     >
       <Icon className="h-3.5 w-3.5" aria-hidden />
-      {STATUS_LABEL[status]}
+      {statusLabel(status, lang)}
     </span>
   )
 }

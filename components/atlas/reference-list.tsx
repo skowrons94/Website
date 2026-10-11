@@ -1,6 +1,7 @@
 import { LunaBadge } from "@/components/atlas/status-badge"
 import { Sci } from "@/components/sci"
 import type { Reference } from "@/lib/atlas"
+import { dict, type Lang } from "@/lib/i18n"
 
 /**
  * A numbered bibliography, set like the publications page: authors, the title
@@ -10,20 +11,23 @@ import type { Reference } from "@/lib/atlas"
 export function ReferenceList({
   keys,
   references,
+  lang = "en",
 }: {
   keys: string[]
   references: Record<string, Reference>
+  lang?: Lang
 }) {
   return (
     <ol className="space-y-4">
       {keys.map((key, i) => {
         const ref = references[key]
         return (
-          <li key={key} id={`ref-${key}`} className="flex scroll-mt-24 gap-3">
+          // Reference titles stay as published, in English.
+          <li key={key} id={`ref-${key}`} lang={lang === "en" ? undefined : "en"} className="flex scroll-mt-24 gap-3">
             <span className="tabular w-6 shrink-0 pt-0.5 text-right text-sm text-muted-foreground/70">
               {i + 1}.
             </span>
-            {ref ? <Entry reference={ref} /> : <span className="text-sm text-muted-foreground">{key} (reference not found)</span>}
+            {ref ? <Entry reference={ref} /> : <span className="text-sm text-muted-foreground">{key} ({dict(lang).atlas.referenceNotFound})</span>}
           </li>
         )
       })}

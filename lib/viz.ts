@@ -16,6 +16,8 @@
  */
 
 /** Maximum datasets drawn on one pair of axes before faceting takes over. */
+import type { Lang } from "@/lib/i18n"
+
 export const OVERLAY_LIMIT = 3
 
 /** Categorical slots, light and dark steps of the same three hues. */
@@ -118,18 +120,19 @@ export function formatQuantityText(value: number, unit: string): string {
 }
 
 /** Human name for what a channel parameter represents. */
-export function quantityName(quantity: string): string {
+export function quantityName(quantity: string, lang: Lang = "en"): string {
+  const it = lang === "it"
   switch (quantity) {
     case "anc":
       return "ANC"
     case "moment_m1":
-      return "Magnetic moment"
+      return it ? "Momento magnetico" : "Magnetic moment"
     case "moment_e2":
-      return "Quadrupole moment"
+      return it ? "Momento di quadrupolo" : "Quadrupole moment"
     case "beta":
       return "B"
     default:
-      return "Partial width"
+      return it ? "Larghezza parziale" : "Partial width"
   }
 }
 
@@ -152,38 +155,45 @@ export function quantitySymbol(quantity: string, channelLabel: string): string {
 /* -- observable axis labels ------------------------------------------------ */
 
 /** Human label for a segment's observable code. */
-export function observableLabel(observable: string): string {
-  switch (observable) {
-    case "angle-integrated":
-      return "Angle-integrated"
-    case "differential":
-      return "Differential"
-    case "differential-cm":
-      return "Differential (cm)"
-    case "phase-shift":
-      return "Phase shift"
-    case "total-capture":
-      return "Total capture"
-    case "angular-distribution":
-      return "Angular distribution"
-    case "angle-integrated-E1":
-      return "Angle-integrated (E1)"
-    case "angle-integrated-E2":
-      return "Angle-integrated (E2)"
-    default:
-      return observable
-  }
+export function observableLabel(observable: string, lang: Lang = "en"): string {
+  return (OBSERVABLES[lang] ?? OBSERVABLES.en)[observable] ?? observable
+}
+
+const OBSERVABLES: Record<Lang, Record<string, string>> = {
+  en: {
+    "angle-integrated": "Angle-integrated",
+    differential: "Differential",
+    "differential-cm": "Differential (cm)",
+    "phase-shift": "Phase shift",
+    "total-capture": "Total capture",
+    "angular-distribution": "Angular distribution",
+    "angle-integrated-E1": "Angle-integrated (E1)",
+    "angle-integrated-E2": "Angle-integrated (E2)",
+  },
+  it: {
+    "angle-integrated": "Integrata sugli angoli",
+    differential: "Differenziale",
+    "differential-cm": "Differenziale (cm)",
+    "phase-shift": "Sfasamento",
+    "total-capture": "Cattura totale",
+    "angular-distribution": "Distribuzione angolare",
+    "angle-integrated-E1": "Integrata sugli angoli (E1)",
+    "angle-integrated-E2": "Integrata sugli angoli (E2)",
+  },
 }
 
 /** Y-axis title for a quantity, given what the segment measures. */
 export function quantityLabel(
   quantity: "sfactor" | "cross_section",
   observable: string,
+  lang: Lang = "en",
 ): string {
-  if (quantity === "sfactor") return "S-factor (MeV b)"
+  if (quantity === "sfactor") return lang === "it" ? "Fattore S (MeV b)" : "S-factor (MeV b)"
   return observable.startsWith("differential")
     ? "dσ/dΩ (b/sr)"
-    : "Cross section (b)"
+    : lang === "it"
+      ? "Sezione d'urto (b)"
+      : "Cross section (b)"
 }
 
 /**

@@ -15,6 +15,7 @@ import {
   quantitySymbol,
   significant,
 } from "@/lib/viz"
+import { useDict } from "@/components/lang-provider"
 
 /**
  * Sliders for every free R-matrix parameter, driving a live recalculation.
@@ -71,6 +72,7 @@ function jpiLatex(jpi: string): string {
 }
 
 export function LevelControls({ scheme, onChange, onReset, disabled }: Props) {
+  const t = useDict().workspace
   const groups = useMemo<LevelGroup[]>(() => {
     const list: LevelGroup[] = []
     for (const level of scheme.levels) {
@@ -81,11 +83,11 @@ export function LevelControls({ scheme, onChange, onReset, disabled }: Props) {
           freeIndex: level.energy_free_index,
           kind: "energy",
           latex: "E",
-          ariaLabel: `${level.jpi} level energy`,
+          ariaLabel: t.levelEnergyAria(level.jpi),
           value: level.energy,
           initial: level.initial_energy,
           unit: "MeV",
-          detail: "level energy",
+          detail: t.levelEnergy,
         })
       }
 
@@ -113,7 +115,7 @@ export function LevelControls({ scheme, onChange, onReset, disabled }: Props) {
       }
     }
     return list.sort((a, b) => a.energy - b.energy)
-  }, [scheme])
+  }, [scheme, t])
 
   // Open the first resonance so the panel is never a wall of collapsed rows.
   const [open, setOpen] = useState<string[]>([])
@@ -158,7 +160,7 @@ export function LevelControls({ scheme, onChange, onReset, disabled }: Props) {
   if (total === 0) {
     return (
       <p className="text-sm text-muted-foreground">
-        This model has no free R-matrix parameters to vary.
+        {t.noFreeParameters}
       </p>
     )
   }
@@ -167,13 +169,13 @@ export function LevelControls({ scheme, onChange, onReset, disabled }: Props) {
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <h3 className="text-sm font-medium">Interactive levels</h3>
+          <h3 className="text-sm font-medium">{t.interactiveLevels}</h3>
           <Badge variant="secondary" className="text-xs">
-            {total} free
+            {t.nFree(total)}
           </Badge>
           {scheme.modified && (
             <Badge variant="outline" className="text-xs">
-              modified
+              {t.modified}
             </Badge>
           )}
         </div>
@@ -187,7 +189,7 @@ export function LevelControls({ scheme, onChange, onReset, disabled }: Props) {
               )
             }
           >
-            {open.length === groups.length ? "Collapse all" : "Expand all"}
+            {open.length === groups.length ? t.collapseAll : t.expandAll}
           </Button>
           <Button
             variant="outline"
@@ -196,7 +198,7 @@ export function LevelControls({ scheme, onChange, onReset, disabled }: Props) {
             disabled={disabled || !scheme.modified}
           >
             <RotateCcw className="mr-2 h-3.5 w-3.5" />
-            Reset
+            {t.reset}
           </Button>
         </div>
       </div>
@@ -232,12 +234,11 @@ export function LevelControls({ scheme, onChange, onReset, disabled }: Props) {
                 <span className="ml-auto flex items-center gap-2">
                   {touched && (
                     <Badge variant="outline" className="text-[10px]">
-                      changed
+                      {t.changed}
                     </Badge>
                   )}
                   <span className="text-xs text-muted-foreground">
-                    {group.controls.length} parameter
-                    {group.controls.length === 1 ? "" : "s"}
+                    {t.nParameters(group.controls.length)}
                   </span>
                 </span>
               </button>
@@ -283,7 +284,7 @@ export function LevelControls({ scheme, onChange, onReset, disabled }: Props) {
                         />
                         {changed && (
                           <p className="text-[11px] text-muted-foreground">
-                            was {initial.text} {initial.unit}
+                            {t.wasValue(`${initial.text} ${initial.unit}`)}
                           </p>
                         )}
                       </div>

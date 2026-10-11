@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card"
 import type { SchemeLevel } from "@/lib/api"
 import { formatEnergy } from "@/lib/viz"
+import { useDict } from "@/components/lang-provider"
 
 /**
  * A conventional nuclear energy-level diagram: one horizontal line per level,
@@ -35,6 +36,7 @@ interface Props {
 }
 
 export function LevelDiagram({ levels }: Props) {
+  const t = useDict().workspace
   const svgRef = useRef<SVGSVGElement>(null)
 
   const { columns, scale, ticks } = useMemo(() => {
@@ -108,11 +110,8 @@ export function LevelDiagram({ levels }: Props) {
     <Card>
       <CardHeader className="flex flex-row items-start justify-between space-y-0">
         <div>
-          <CardTitle className="text-base">Level diagram</CardTitle>
-          <CardDescription>
-            Levels by excitation energy, grouped by spin-parity. Free levels are
-            drawn solid, fixed levels dashed.
-          </CardDescription>
+          <CardTitle className="text-base">{t.levelDiagram}</CardTitle>
+          <CardDescription>{t.diagramText}</CardDescription>
         </div>
         <Button variant="outline" size="sm" onClick={download}>
           <ImageDown className="mr-2 h-4 w-4" />
@@ -128,7 +127,7 @@ export function LevelDiagram({ levels }: Props) {
             className="min-w-[42rem]"
             xmlns="http://www.w3.org/2000/svg"
             role="img"
-            aria-label={`Energy level diagram with ${levels.length} levels`}
+            aria-label={t.diagramLabel(levels.length)}
           >
             <rect width={WIDTH} height={HEIGHT} fill="var(--viz-surface)" />
 
@@ -164,7 +163,7 @@ export function LevelDiagram({ levels }: Props) {
               fontSize={12}
               fill="var(--viz-text)"
             >
-              Excitation energy (MeV)
+              {t.excitationAxis}
             </text>
 
             {columns.map(([jpi, group], columnIndex) => {

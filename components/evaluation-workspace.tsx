@@ -16,10 +16,14 @@ import { LevelScheme } from "@/components/level-scheme"
 import { useSession } from "@/contexts/session-context"
 import { IN_BROWSER } from "@/lib/api"
 import { onEngineProgress } from "@/lib/browser-engine"
+import { useDict, useLang } from "@/components/lang-provider"
+import { localePath } from "@/lib/i18n"
 
 type Tab = "scheme" | "data" | "plot" | "extrap"
 
 export default function EvaluationWorkspace() {
+  const lang = useLang()
+  const t = useDict().workspace
   const params = useParams<{ id: string }>()
   const id = params?.id
   const [tab, setTab] = useState<Tab>("scheme")
@@ -64,11 +68,10 @@ export default function EvaluationWorkspace() {
     return (
       <div className="flex min-h-[24rem] flex-col items-center justify-center gap-3 text-muted-foreground">
         <Loader2 className="h-6 w-6 animate-spin" />
-        <p className="text-sm">Starting AZURE2 for {id}…</p>
+        <p className="text-sm">{t.starting(id ?? "")}</p>
         {IN_BROWSER && (
           <p className="max-w-sm text-center text-xs">
-            {progress ? `${progress}…` : "Loading the engine…"} AZURE2 runs in your browser; the
-            first evaluation takes a few seconds to load.
+            {progress ? `${t.progress[progress] ?? progress}…` : t.loadingEngine} {t.inBrowser}
           </p>
         )}
       </div>
@@ -81,9 +84,9 @@ export default function EvaluationWorkspace() {
         <AlertCircle className="mx-auto mb-4 h-10 w-10 text-destructive" />
         <p className="mb-4 text-sm text-muted-foreground">{error}</p>
         <div className="flex justify-center gap-2">
-          <Button onClick={() => id && open(id)}>Retry</Button>
+          <Button onClick={() => id && open(id)}>{t.retry}</Button>
           <Button asChild variant="outline">
-            <Link href="/evaluations">Back</Link>
+            <Link href={localePath(lang, "/evaluations")}>{t.back}</Link>
           </Button>
         </div>
       </div>
@@ -97,9 +100,9 @@ export default function EvaluationWorkspace() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <Button asChild variant="ghost" size="sm">
-            <Link href="/evaluations">
+            <Link href={localePath(lang, "/evaluations")}>
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Evaluations
+              {t.evaluations}
             </Link>
           </Button>
           <div>
@@ -117,9 +120,9 @@ export default function EvaluationWorkspace() {
 
       {expired && (
         <div className="flex items-center justify-between gap-4 rounded-md border border-destructive/40 bg-destructive/5 px-4 py-3 text-sm">
-          <span>This session expired on the server.</span>
+          <span>{t.expired}</span>
           <Button size="sm" onClick={() => id && open(id)}>
-            Reopen
+            {t.reopen}
           </Button>
         </div>
       )}
@@ -132,10 +135,10 @@ export default function EvaluationWorkspace() {
 
       <Tabs value={tab} onValueChange={(value) => setTab(value as Tab)}>
         <TabsList>
-          <TabsTrigger value="scheme">Level scheme</TabsTrigger>
-          <TabsTrigger value="data">Data</TabsTrigger>
-          <TabsTrigger value="plot">Plot</TabsTrigger>
-          <TabsTrigger value="extrap">Extrapolations</TabsTrigger>
+          <TabsTrigger value="scheme">{t.tabs.scheme}</TabsTrigger>
+          <TabsTrigger value="data">{t.tabs.data}</TabsTrigger>
+          <TabsTrigger value="plot">{t.tabs.plot}</TabsTrigger>
+          <TabsTrigger value="extrap">{t.tabs.extrap}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="scheme" className="mt-6">
@@ -148,7 +151,7 @@ export default function EvaluationWorkspace() {
 
         <TabsContent value="data" className="mt-6">
           {data === null ? (
-            <Pending label="Calculating data segments…" />
+            <Pending label={t.calculatingData} />
           ) : (
             <DataTable data={data} />
           )}
@@ -156,7 +159,7 @@ export default function EvaluationWorkspace() {
 
         <TabsContent value="plot" className="mt-6">
           {data === null ? (
-            <Pending label="Calculating data segments…" />
+            <Pending label={t.calculatingData} />
           ) : (
             <DataPlot
               data={data}
@@ -170,7 +173,7 @@ export default function EvaluationWorkspace() {
 
         <TabsContent value="extrap" className="mt-6">
           {extrapolations === null ? (
-            <Pending label="Calculating extrapolations…" />
+            <Pending label={t.calculatingExtrap} />
           ) : (
             <ExtrapPlot
               extrapolations={extrapolations}

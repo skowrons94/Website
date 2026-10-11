@@ -11,6 +11,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import type { DataSegment } from "@/lib/api"
 import { formatEnergy, observableLabel } from "@/lib/viz"
+import { useDict, useLang } from "@/components/lang-provider"
 
 /**
  * Every data segment with its provenance and fit quality.
@@ -26,6 +27,8 @@ interface Props {
 }
 
 export function DataTable({ data }: Props) {
+  const lang = useLang()
+  const t = useDict().workspace
   const [filter, setFilter] = useState("")
   const [sortKey, setSortKey] = useState<SortKey>("key")
   const [ascending, setAscending] = useState(true)
@@ -89,15 +92,15 @@ export function DataTable({ data }: Props) {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-semibold tracking-tight">Data</h2>
+          <h2 className="text-2xl font-semibold tracking-tight">{t.data}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            {data.length} segments · {totals.active} active · {totals.points}{" "}
-            points
-            {totals.mean !== null && ` · mean χ²/N ${totals.mean.toFixed(2)}`}
+            {t.dataSummary(data.length, totals.active, totals.points)}
+            {totals.mean !== null && t.meanChi2(totals.mean.toFixed(2))}
           </p>
         </div>
         <Input
-          placeholder="Filter datasets…"
+          placeholder={t.filterDatasets}
+          aria-label={t.filterDatasets}
           value={filter}
           onChange={(event) => setFilter(event.target.value)}
           className="w-64"
@@ -111,15 +114,15 @@ export function DataTable({ data }: Props) {
               <thead>
                 <tr className="border-b text-left text-xs uppercase tracking-wide text-muted-foreground">
                   {header("key", "#")}
-                  {header("name", "Dataset")}
-                  <th className="px-2 py-2 font-medium">Reaction</th>
-                  {header("observable", "Observable")}
+                  {header("name", t.dataset)}
+                  <th className="px-2 py-2 font-medium">{t.reaction}</th>
+                  {header("observable", t.observable)}
                   <th className="px-2 py-2 text-right font-medium">
-                    Energy (MeV)
+                    {t.energyMeV}
                   </th>
-                  <th className="px-2 py-2 text-right font-medium">Angle (°)</th>
-                  {header("n_points", "Points", "right")}
-                  {header("norm", "Norm", "right")}
+                  <th className="px-2 py-2 text-right font-medium">{t.angle}</th>
+                  {header("n_points", t.points, "right")}
+                  {header("norm", t.norm, "right")}
                   {header("chi2", "χ²/N", "right")}
                 </tr>
               </thead>
@@ -136,7 +139,7 @@ export function DataTable({ data }: Props) {
                       <span className="font-medium">{segment.name}</span>
                       {!segment.active && (
                         <Badge variant="outline" className="ml-2 text-[10px]">
-                          inactive
+                          {t.inactive}
                         </Badge>
                       )}
                     </td>
@@ -146,7 +149,7 @@ export function DataTable({ data }: Props) {
                       <InlineMath math={segment.exit} />
                     </td>
                     <td className="px-2 py-2 text-muted-foreground">
-                      {observableLabel(segment.observable)}
+                      {observableLabel(segment.observable, lang)}
                     </td>
                     <td className="whitespace-nowrap px-2 py-2 text-right tabular-nums">
                       {formatEnergy(segment.energy_min)}–
@@ -167,7 +170,7 @@ export function DataTable({ data }: Props) {
                       {segment.vary_norm && (
                         <span
                           className="ml-1 text-muted-foreground"
-                          title="normalization is a fit parameter"
+                          title={t.normFree}
                         >
                           *
                         </span>
@@ -186,7 +189,7 @@ export function DataTable({ data }: Props) {
 
       {rows.length === 0 && (
         <p className="py-8 text-center text-sm text-muted-foreground">
-          No datasets match “{filter}”.
+          {t.noMatch(filter)}
         </p>
       )}
     </div>

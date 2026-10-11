@@ -25,6 +25,7 @@ import {
   type ExtrapSegment,
   type Scheme,
 } from "@/lib/api"
+import { useDict } from "@/components/lang-provider"
 
 interface SessionState {
   sessionId: string | null
@@ -48,6 +49,7 @@ interface SessionState {
 const SessionContext = createContext<SessionState | undefined>(undefined)
 
 export function SessionProvider({ children }: { children: ReactNode }) {
+  const unexpected = useDict().workspace.unexpected
   const [sessionId, setSessionId] = useState<string | null>(null)
   const [evaluation, setEvaluation] = useState<Evaluation | null>(null)
   const [scheme, setScheme] = useState<Scheme | null>(null)
@@ -71,9 +73,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       // to offer a reopen rather than retrying against a dead id.
       if (err.sessionExpired) setExpired(true)
     } else {
-      setError(err instanceof Error ? err.message : "Unexpected error")
+      setError(err instanceof Error ? err.message : unexpected)
     }
-  }, [])
+  }, [unexpected])
 
   const open = useCallback(
     async (id: string) => {

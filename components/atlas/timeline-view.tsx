@@ -5,7 +5,9 @@ import { useEffect, useMemo, useState } from "react"
 import { ExternalLink } from "lucide-react"
 
 import { LunaBadge } from "@/components/atlas/status-badge"
+import { useDict, useLang } from "@/components/lang-provider"
 import { Sci } from "@/components/sci"
+import { localePath } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 
 export interface TimelineItem {
@@ -21,15 +23,7 @@ export interface TimelineItem {
   refs: { key: string; label: string; href?: string }[]
 }
 
-const CATEGORIES: { id: string; label: string }[] = [
-  { id: "theory", label: "Theory" },
-  { id: "experiment", label: "Experiment" },
-  { id: "observation", label: "Observation" },
-  { id: "facility", label: "Facility" },
-  { id: "luna", label: "LUNA" },
-]
-
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+const CATEGORIES = ["theory", "experiment", "observation", "facility", "luna"]
 
 /**
  * The history of the field as one vertical line, grouped by decade, with chips
@@ -38,13 +32,16 @@ const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
  * decade bar keep working.
  */
 export function TimelineView({ events }: { events: TimelineItem[] }) {
+  const lang = useLang()
+  const t = useDict().atlas
+  const label = (category: string) => t.categories[category] ?? category
   const [only, setOnly] = useState<string | null>(null)
 
   // /atlas/timeline?only=luna, linked from the atlas page. Read on the client,
   // so the page itself stays static.
   useEffect(() => {
     const value = new URLSearchParams(window.location.search).get("only")
-    if (value && CATEGORIES.some((c) => c.id === value)) setOnly(value)
+    if (value && CATEGORIES.includes(value)) setOnly(value)
   }, [])
 
   const choose = (value: string | null) => {
@@ -83,20 +80,20 @@ export function TimelineView({ events }: { events: TimelineItem[] }) {
     <div>
       {/* -- filters and the decade bar ------------------------------------ */}
       <div className="sticky top-16 z-20 -mx-5 border-b border-border/70 bg-background/95 px-5 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/85 sm:-mx-8 sm:px-8">
-        <div role="group" aria-label="Show" className="flex flex-wrap gap-1.5">
+        <div role="group" aria-label={t.show} className="flex flex-wrap gap-1.5">
           <Chip on={only === null} onClick={() => choose(null)}>
-            All <span className="tabular opacity-70">{events.length}</span>
+            {t.all} <span className="tabular opacity-70">{events.length}</span>
           </Chip>
-          {CATEGORIES.filter((c) => counts.get(c.id)).map((c) => (
-            <Chip key={c.id} on={only === c.id} onClick={() => choose(only === c.id ? null : c.id)}>
-              {c.label} <span className="tabular opacity-70">{counts.get(c.id)}</span>
+          {CATEGORIES.filter((c) => counts.get(c)).map((c) => (
+            <Chip key={c} on={only === c} onClick={() => choose(only === c ? null : c)}>
+              {label(c)} <span className="tabular opacity-70">{counts.get(c)}</span>
             </Chip>
           ))}
         </div>
-        <nav aria-label="Decades" className="mt-2.5 flex gap-x-3.5 gap-y-1 overflow-x-auto whitespace-nowrap pb-0.5 text-xs text-muted-foreground [scrollbar-width:none]">
+        <nav aria-label={t.decades} className="mt-2.5 flex gap-x-3.5 gap-y-1 overflow-x-auto whitespace-nowrap pb-0.5 text-xs text-muted-foreground [scrollbar-width:none]">
           {decades.map((d) => (
             <a key={d.decade} href={`#d${d.decade}`} className="tabular underline-offset-2 hover:text-foreground hover:underline">
-              {d.decade ? `${d.decade}s` : "Undated"}
+              {d.decade ? t.decade(d.decade) : t.undated}
             </a>
           ))}
         </nav>
@@ -104,14 +101,14 @@ export function TimelineView({ events }: { events: TimelineItem[] }) {
 
       {/* -- the line -------------------------------------------------------- */}
       <div className="mt-10">
-        {decades.length === 0 && <p className="text-muted-foreground">Nothing in this category yet.</p>}
+        {decades.length === 0 && <p className="text-muted-foreground">{t.nothingHere}</p>}
         {decades.map((d) => (
           <section key={d.decade} aria-labelledby={`d${d.decade}`} className="relative">
             <h2
               id={`d${d.decade}`}
               className="scroll-mt-44 pb-4 pt-2 font-serif text-2xl font-semibold tracking-tight tabular sm:text-[1.65rem]"
             >
-              {d.decade ? `${d.decade}s` : "Undated"}
+              {d.decade ? t.decade(d.decade) : t.undated}
             </h2>
             <ol className="relative ml-[0.3rem] border-l border-border pb-10 sm:ml-[5.25rem]">
               {d.events.map((e) => (
@@ -128,7 +125,7 @@ export function TimelineView({ events }: { events: TimelineItem[] }) {
                   />
                   {/* the date: in the margin on a wide screen, above the title on a phone */}
                   <p className="tabular text-sm font-medium text-muted-foreground sm:absolute sm:-left-[5.25rem] sm:top-0 sm:w-[4.25rem] sm:text-right">
-                    {e.month ? `${MONTHS[e.month - 1]} ` : ""}
+                    {e.month ? `${t.months[e.month - 1]} ` : ""}
                     {e.year ?? ""}
                   </p>
                   <h3 className="mt-0.5 text-pretty font-serif text-[1.15rem] font-semibold leading-snug tracking-tight sm:mt-0">
@@ -137,7 +134,7 @@ export function TimelineView({ events }: { events: TimelineItem[] }) {
                   <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs uppercase tracking-[0.1em] text-muted-foreground">
                     {e.categories
                       .filter((c) => c !== "luna")
-                      .map((c) => CATEGORIES.find((x) => x.id === c)?.label ?? c)
+                      .map(label)
                       .join(" · ")}
                     {e.luna && <LunaBadge className="normal-case" />}
                   </p>
@@ -151,7 +148,7 @@ export function TimelineView({ events }: { events: TimelineItem[] }) {
                       {e.reactions.map((r) => (
                         <li key={r.id}>
                           <Link
-                            href={`/atlas/${r.id}`}
+                            href={localePath(lang, `/atlas/${r.id}`)}
                             className="inline-block rounded-md border border-border bg-card px-2 py-0.5 font-serif text-sm font-semibold transition-colors hover:border-foreground/30 hover:text-link"
                           >
                             <Sci>{r.label}</Sci>
@@ -186,7 +183,7 @@ export function TimelineView({ events }: { events: TimelineItem[] }) {
                           rel="noreferrer"
                           className="inline-flex items-center gap-1 underline-offset-2 hover:text-link hover:underline"
                         >
-                          Official page <ExternalLink className="h-3 w-3" />
+                          {t.officialPage} <ExternalLink className="h-3 w-3" />
                         </a>
                       )}
                     </p>

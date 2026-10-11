@@ -5,24 +5,27 @@ import { usePathname } from "next/navigation"
 import { useState } from "react"
 import { Menu, X } from "lucide-react"
 
+import { LanguageSwitch } from "@/components/language-switch"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { dict, localePath, type Lang } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 
-// `short` is what the desktop bar shows between md and lg, where seven full
-// labels and the name do not fit on one line; the menu always has the full one.
-const NAV = [
-  { href: "/research", label: "Research" },
-  { href: "/atlas", label: "Atlas" },
-  { href: "/notes", label: "Notes" },
-  { href: "/evaluations", label: "Evaluations" },
-  { href: "/software", label: "Software" },
-  { href: "/publications", label: "Publications", short: "Papers" },
-  { href: "/cv", label: "CV" },
-]
-
-export function SiteHeader({ name }: { name: string }) {
+export function SiteHeader({ name, lang }: { name: string; lang: Lang }) {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
+  const t = dict(lang).nav
+
+  // `short` is what the desktop bar shows between md and lg, where seven full
+  // labels and the name do not fit on one line; the menu always has the full one.
+  const NAV: { href: string; label: string; short?: string }[] = [
+    { href: "/research", label: t.research },
+    { href: "/atlas", label: t.atlas },
+    { href: "/notes", label: t.notes },
+    { href: "/evaluations", label: t.evaluations },
+    { href: "/software", label: t.software },
+    { href: "/publications", label: t.publications, short: t.publicationsShort },
+    { href: "/cv", label: t.cv },
+  ].map((item) => ({ ...item, href: localePath(lang, item.href) }))
 
   const isActive = (href: string) =>
     pathname === href || pathname.startsWith(`${href}/`)
@@ -31,14 +34,14 @@ export function SiteHeader({ name }: { name: string }) {
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/85">
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-5 sm:px-8 xl:max-w-7xl">
         <Link
-          href="/"
-          className="-my-2 py-2 font-serif text-[1.0625rem] font-semibold tracking-tight"
+          href={localePath(lang, "/")}
+          className="-my-2 shrink-0 py-2 font-serif text-[1.0625rem] font-semibold tracking-tight"
           onClick={() => setOpen(false)}
         >
           {name}
         </Link>
 
-        <nav aria-label="Main" className="ml-auto hidden items-center gap-4 md:flex lg:gap-6">
+        <nav aria-label={t.label} className="ml-auto hidden items-center gap-4 md:flex lg:gap-6">
           {NAV.map((item) => (
             <Link
               key={item.href}
@@ -61,18 +64,18 @@ export function SiteHeader({ name }: { name: string }) {
               )}
             </Link>
           ))}
-          <ThemeToggle />
         </nav>
 
-        <div className="ml-auto flex items-center gap-1 md:hidden">
+        <div className="ml-auto flex items-center gap-1 md:ml-0">
+          <LanguageSwitch lang={lang} />
           <ThemeToggle />
           <button
             type="button"
-            aria-label={open ? "Close menu" : "Open menu"}
+            aria-label={open ? t.closeMenu : t.openMenu}
             aria-expanded={open}
             aria-controls="mobile-menu"
             onClick={() => setOpen((v) => !v)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-md hover:bg-accent"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-md hover:bg-accent md:hidden"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -80,7 +83,7 @@ export function SiteHeader({ name }: { name: string }) {
       </div>
 
       {open && (
-        <nav id="mobile-menu" aria-label="Main" className="border-t border-border/70 md:hidden">
+        <nav id="mobile-menu" aria-label={t.label} className="border-t border-border/70 md:hidden">
           <div className="mx-auto flex max-w-6xl flex-col px-5 py-2 sm:px-8 xl:max-w-7xl">
             {NAV.map((item) => (
               <Link

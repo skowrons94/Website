@@ -5,9 +5,11 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { ArrowRight, Maximize2, Minimize2, X } from "lucide-react"
 
 import { LunaBadge, StatusBadge } from "@/components/atlas/status-badge"
+import { useDict, useLang } from "@/components/lang-provider"
 import { Sci } from "@/components/sci"
 import type { MapData, MapReaction } from "@/lib/atlas"
-import { formatGamow, formatQ, formatTemperature, KIND_LABEL } from "@/lib/atlas-format"
+import { formatGamow, formatQ, formatTemperature, kindLabel } from "@/lib/atlas-format"
+import { decimal, localePath, withoutArticle } from "@/lib/i18n"
 import { OVERLAY_LIMIT } from "@/lib/viz"
 import { cn } from "@/lib/utils"
 
@@ -179,6 +181,8 @@ function LineKey({ slot, muted = false }: { slot: number; muted?: boolean }) {
 
 export function NetworkMap({ data }: { data: MapData }) {
   const { families, networks, reactions, cells, maxZ, maxN } = data
+  const lang = useLang()
+  const t = useDict().atlas
 
   const [familyId, setFamilyId] = useState(families[0]?.id ?? "")
   const [disabled, setDisabled] = useState<Set<string>>(() => new Set())
@@ -482,7 +486,7 @@ export function NetworkMap({ data }: { data: MapData }) {
     <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start lg:gap-10 xl:grid-cols-[minmax(0,1fr)_21rem]">
       <div className="min-w-0">
         {/* -- process picker ------------------------------------------------ */}
-        <div role="group" aria-label="Process" className="flex scroll-mt-24 flex-wrap gap-1.5">
+        <div role="group" aria-label={t.process} className="flex scroll-mt-24 flex-wrap gap-1.5">
           {families.map((f) => (
             <button
               key={f.id}
@@ -496,7 +500,7 @@ export function NetworkMap({ data }: { data: MapData }) {
                   : "border-border text-muted-foreground hover:border-foreground/40 hover:text-foreground",
               )}
             >
-              <Sci>{f.name.replace(/^The /, "")}</Sci>
+              <Sci>{withoutArticle(f.name)}</Sci>
             </button>
           ))}
         </div>
@@ -504,7 +508,7 @@ export function NetworkMap({ data }: { data: MapData }) {
         {/* -- networks of the family: toggles, and the legend ------------------ */}
         <div className="mt-4 flex flex-wrap items-center gap-x-1 gap-y-1.5">
           {familyNetworks.length > 1 ? (
-            <div role="group" aria-label="Networks shown" className="flex flex-wrap gap-1.5">
+            <div role="group" aria-label={t.networksShown} className="flex flex-wrap gap-1.5">
               {familyNetworks.map((n, i) => {
                 const on = !disabled.has(n.id)
                 return (
@@ -552,7 +556,7 @@ export function NetworkMap({ data }: { data: MapData }) {
             className="ml-auto inline-flex min-h-10 items-center gap-1.5 rounded-md px-2 py-1 sm:min-h-0 text-[0.8125rem] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             {whole ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
-            {whole ? "Zoom to process" : "Whole chart"}
+            {whole ? t.zoomToProcess : t.wholeChart}
           </button>
         </div>
 
@@ -568,7 +572,7 @@ export function NetworkMap({ data }: { data: MapData }) {
             viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`}
             className="block select-none"
             role="group"
-            aria-label={`Chart of nuclides, neutron number across and proton number up, with the reactions of ${family?.name ?? "the atlas"} in colour`}
+            aria-label={t.chartLabel(family?.name ?? t.theAtlas)}
           >
             {/* cells, then grey arrows, then the cell labels, then colour: a
                 label is never crossed by another process's arrow, only by one
@@ -700,7 +704,7 @@ export function NetworkMap({ data }: { data: MapData }) {
           {/* axis caption, in HTML so it keeps its size at any zoom; the N
               caption sits under the frame, where it cannot meet a tick label */}
           <p className="pointer-events-none absolute left-1.5 top-1.5 text-[0.6875rem] text-muted-foreground">
-            ↑ protons Z
+            {t.protonsAxis}
           </p>
 
           {/* tooltip */}
@@ -717,13 +721,13 @@ export function NetworkMap({ data }: { data: MapData }) {
                 <Sci>{tipReaction.label}</Sci>
               </p>
               <p className="mt-0.5 text-xs leading-snug text-muted-foreground">
-                {tipReaction.line ? <Sci>{tipReaction.line}</Sci> : "Entry in preparation."}
+                {tipReaction.line ? <Sci>{tipReaction.line}</Sci> : t.tipPending}
               </p>
             </div>
           )}
         </div>
 
-        <p className="mt-1 text-right text-[0.6875rem] text-muted-foreground">neutrons N →</p>
+        <p className="mt-1 text-right text-[0.6875rem] text-muted-foreground">{t.neutronsAxis}</p>
 
         {/* -- legend --------------------------------------------------------- */}
         <div className="mt-1 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground">
@@ -733,23 +737,22 @@ export function NetworkMap({ data }: { data: MapData }) {
                 <line key={i} x1={1 + i * 13} x2={11 + i * 13} y1="5" y2="5" stroke="var(--viz-text-muted)" strokeWidth={w} strokeLinecap="round" />
               ))}
             </svg>
-            Line weight: key, major, minor reaction
+            {t.legendWeight}
           </span>
           <span className="inline-flex items-center gap-2">
             <LineKey slot={0} muted />
-            Other processes
+            {t.legendOther}
           </span>
           <span className="inline-flex items-center gap-2">
             <svg width="26" height="12" aria-hidden>
               <rect x="0.5" y="0.5" width="11" height="11" rx="2" fill="var(--atlas-cell-strong)" stroke="var(--viz-text-muted)" />
               <rect x="14.5" y="0.5" width="11" height="11" rx="2" fill="var(--viz-surface)" stroke="var(--viz-text-muted)" />
             </svg>
-            Stable, radioactive
+            {t.legendStable}
           </span>
         </div>
         <p className="mt-2 text-xs text-muted-foreground">
-          Hover or focus an arrow for its name; select it for the details. Tab moves between the reactions of
-          the process on show.
+          {t.mapHelp}
         </p>
       </div>
 
@@ -759,7 +762,7 @@ export function NetworkMap({ data }: { data: MapData }) {
           <>
             <button
               type="button"
-              aria-label="Close details"
+              aria-label={t.closeDetails}
               tabIndex={-1}
               className="fixed inset-0 z-40 bg-black/30 lg:hidden"
               onClick={close}
@@ -782,7 +785,7 @@ export function NetworkMap({ data }: { data: MapData }) {
             <p className="mt-2">
               <Sci>{family?.summary}</Sci>
             </p>
-            <p className="mt-4">Select an arrow to see what the reaction does, its energy release and how well it is known.</p>
+            <p className="mt-4">{t.selectArrow}</p>
           </div>
         )}
       </aside>
@@ -807,7 +810,7 @@ export function NetworkMap({ data }: { data: MapData }) {
               </p>
               {n.temperatures.length > 0 && (
                 <p className="mt-2 text-xs text-muted-foreground">
-                  {n.temperatures.map((t) => `${t.label}, ${formatTemperature(t.T9)}`).join(" · ")}
+                  {n.temperatures.map((temp) => `${temp.label}, ${formatTemperature(temp.T9, lang)}`).join(" · ")}
                 </p>
               )}
               <ol className="mt-4 divide-y divide-border/70 border-y border-border/70">
@@ -816,7 +819,7 @@ export function NetworkMap({ data }: { data: MapData }) {
                   return (
                     <li key={id}>
                       <Link
-                        href={`/atlas/${id}`}
+                        href={localePath(lang, `/atlas/${id}`)}
                         className="group flex flex-wrap items-baseline gap-x-3 gap-y-1 py-2.5 text-[0.95rem]"
                       >
                         <span className="tabular w-5 shrink-0 text-xs text-muted-foreground/70">{j + 1}.</span>
@@ -825,10 +828,10 @@ export function NetworkMap({ data }: { data: MapData }) {
                         </span>
                         <span className="ml-auto flex flex-wrap items-center justify-end gap-2">
                           {r?.luna && <LunaBadge />}
-                          {r && r.kind !== "decay" && <StatusBadge status={r.status} pending={!r.hasFile} />}
+                          {r && r.kind !== "decay" && <StatusBadge status={r.status} pending={!r.hasFile} lang={lang} />}
                           {r && r.kind === "decay" && (
                             <span className="text-xs text-muted-foreground">
-                              {r.halfLife ? `t½ ${r.halfLife}` : "decay"}
+                              {r.halfLife ? `t½ ${r.halfLife}` : t.decay}
                             </span>
                           )}
                         </span>
@@ -865,12 +868,14 @@ function ReactionPanel({
   networks: MapData["networks"]
   onClose: () => void
 }) {
+  const lang = useLang()
+  const t = useDict().atlas
   const names = r.networks.map((id) => networks.find((n) => n.id === id)?.name ?? id)
   return (
     <div>
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">{KIND_LABEL[r.kind] ?? r.kind}</p>
+          <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">{kindLabel(r.kind, lang)}</p>
           <h3 className="mt-1 font-serif text-2xl font-semibold tracking-tight">
             <Sci>{r.label}</Sci>
           </h3>
@@ -878,7 +883,7 @@ function ReactionPanel({
         <button
           type="button"
           onClick={onClose}
-          aria-label="Close"
+          aria-label={t.close}
           className="-mr-2 -mt-1 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
         >
           <X className="h-[1.125rem] w-[1.125rem]" />
@@ -886,8 +891,8 @@ function ReactionPanel({
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
-        {r.kind !== "decay" && <StatusBadge status={r.status} pending={!r.hasFile} />}
-        {r.luna && <LunaBadge label="Measured at LUNA" />}
+        {r.kind !== "decay" && <StatusBadge status={r.status} pending={!r.hasFile} lang={lang} />}
+        {r.luna && <LunaBadge label={t.measuredAtLuna} />}
       </div>
 
       {r.summary ? (
@@ -896,8 +901,7 @@ function ReactionPanel({
         </p>
       ) : (
         <p className="mt-4 text-[0.95rem] leading-relaxed text-muted-foreground">
-          The entry for this reaction is in preparation. Its place in the network, its energy release and its
-          Gamow window are below.
+          {t.panelPending}
         </p>
       )}
       {r.role && (
@@ -907,35 +911,35 @@ function ReactionPanel({
       )}
 
       <dl className="mt-5 divide-y divide-border/70 border-y border-border/70">
-        <Fact label="Networks">
+        <Fact label={t.networks}>
           <Sci>{names.join(", ")}</Sci>
         </Fact>
         {r.q && (
-          <Fact label="Q-value">
-            <span className="tabular">{formatQ(r.q)}</span>
+          <Fact label={t.qValue}>
+            <span className="tabular">{formatQ(r.q, lang)}</span>
             {r.q.annihilation && (
               <span className="block text-xs leading-snug text-muted-foreground">
-                Q includes positron annihilation; {r.q.kinetic.toFixed(3)} MeV without it
+                {t.qShort(decimal(r.q.kinetic.toFixed(3), lang))}
               </span>
             )}
           </Fact>
         )}
         {r.halfLife && (
-          <Fact label="Half-life">
+          <Fact label={t.halfLife}>
             <span className="tabular">
               <Sci>{r.halfLife}</Sci>
             </span>
           </Fact>
         )}
         {r.gamow.length > 0 && (
-          <Fact label="Gamow window">
+          <Fact label={t.gamow}>
             <ul className="space-y-0.5">
               {r.gamow.map((g) => (
                 <li key={`${g.T9}-${g.label}`}>
-                  <span className="tabular">{formatGamow(g)}</span>
+                  <span className="tabular">{formatGamow(g, lang)}</span>
                   <span className="text-xs text-muted-foreground">
                     {" "}
-                    <Sci>{`${g.label}, ${formatTemperature(g.T9)}`}</Sci>
+                    <Sci>{`${g.label}, ${formatTemperature(g.T9, lang)}`}</Sci>
                   </span>
                 </li>
               ))}
@@ -943,22 +947,22 @@ function ReactionPanel({
           </Fact>
         )}
         {r.windowNote && r.kind !== "decay" && r.gamow.length === 0 && (
-          <Fact label="Energies">
+          <Fact label={t.energies}>
             <span className="text-xs leading-snug text-muted-foreground">
               <Sci>{r.windowNote}</Sci>
             </span>
           </Fact>
         )}
         {r.kind !== "decay" && (
-          <Fact label="Measurements">
-            <span className="tabular">{r.measurements === 0 ? "none listed yet" : r.measurements}</span>
+          <Fact label={t.measurements}>
+            <span className="tabular">{r.measurements === 0 ? t.noneYet : r.measurements}</span>
           </Fact>
         )}
         {r.rmatrix.length > 0 && (
-          <Fact label="R-matrix">
+          <Fact label={t.rmatrix}>
             {r.rmatrix.map((ev) => (
-              <Link key={ev} href={`/evaluations/${ev}`} className="mr-3 text-link hover:underline">
-                Interactive evaluation →
+              <Link key={ev} href={localePath(lang, `/evaluations/${ev}`)} className="mr-3 text-link hover:underline">
+                {t.interactive}
               </Link>
             ))}
           </Fact>
@@ -972,10 +976,10 @@ function ReactionPanel({
       )}
 
       <Link
-        href={`/atlas/${r.id}`}
+        href={localePath(lang, `/atlas/${r.id}`)}
         className="group mt-6 inline-flex items-center gap-2 text-sm font-medium text-link underline-offset-4 hover:underline"
       >
-        {r.hasFile ? "The full entry" : "What there is so far"}
+        {r.hasFile ? t.fullEntry : t.soFar}
         <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
       </Link>
     </div>

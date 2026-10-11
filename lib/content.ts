@@ -23,6 +23,9 @@ import remarkParse from "remark-parse"
 import remarkRehype from "remark-rehype"
 import { unified } from "unified"
 
+import type { Lang } from "@/lib/i18n"
+import { localize } from "@/lib/localize.mjs"
+
 const CONTENT_DIR = path.join(process.cwd(), "content")
 const NOTES_DIR = path.join(CONTENT_DIR, "notes")
 
@@ -126,28 +129,32 @@ export interface SoftwareEntry {
 
 /* -- YAML ------------------------------------------------------------------ */
 
-function readYaml<T>(name: string): T {
+/**
+ * A content file in `lang`: every field replaced by its `*_<lang>` translation
+ * where the file has one, English otherwise (see `lib/localize.mjs`).
+ */
+function readYaml<T>(name: string, lang: Lang = "en"): T {
   const file = path.join(CONTENT_DIR, name)
-  return yaml.load(fs.readFileSync(file, "utf8")) as T
+  return localize(yaml.load(fs.readFileSync(file, "utf8")), lang) as T
 }
 
-export const getProfile = () => readYaml<Profile>("profile.yaml")
+export const getProfile = (lang: Lang = "en") => readYaml<Profile>("profile.yaml", lang)
 
-export const getResearch = () =>
-  readYaml<{ threads: ResearchThread[] }>("research.yaml").threads
+export const getResearch = (lang: Lang = "en") =>
+  readYaml<{ threads: ResearchThread[] }>("research.yaml", lang).threads
 
-export const getPublications = () =>
+export const getPublications = (lang: Lang = "en") =>
   // Newest first; ties keep their file order, which is where the manual
   // ordering of same-year entries lives.
-  readYaml<{ publications: Publication[] }>("publications.yaml")
+  readYaml<{ publications: Publication[] }>("publications.yaml", lang)
     .publications.map((p, i) => ({ ...p, _i: i }))
     .sort((a, b) => b.year - a.year || a._i - b._i)
     .map(({ _i, ...p }) => p)
 
-export const getSoftware = () =>
-  readYaml<{ software: SoftwareEntry[] }>("software.yaml").software
+export const getSoftware = (lang: Lang = "en") =>
+  readYaml<{ software: SoftwareEntry[] }>("software.yaml", lang).software
 
-export const getExperience = () =>
+export const getExperience = (lang: Lang = "en") =>
   readYaml<{
     employment: TimelineEntry[]
     education: TimelineEntry[]
@@ -158,14 +165,14 @@ export const getExperience = () =>
     projects: TimelineEntry[]
     outreach: TimelineEntry[]
     skills: { label: string; items: string }[]
-  }>("experience.yaml")
+  }>("experience.yaml", lang)
 
-export const getTalks = () =>
+export const getTalks = (lang: Lang = "en") =>
   readYaml<{
     invited: TalkEntry[]
     organisation: TalkEntry[]
     participation: TalkEntry[]
-  }>("talks.yaml")
+  }>("talks.yaml", lang)
 
 /* -- notes ----------------------------------------------------------------- */
 
@@ -397,13 +404,13 @@ export async function getNote(slug: string): Promise<Note> {
 
 /* -- formatting ------------------------------------------------------------ */
 
-export function formatDate(iso: string): string {
+export function formatDate(iso: string, lang: Lang = "en"): string {
   if (!iso) return ""
   const date = new Date(`${iso}T00:00:00Z`)
   // A malformed frontmatter date should cost the dateline, not print
   // "Invalid Date" into the page.
   if (Number.isNaN(date.getTime())) return ""
-  return date.toLocaleDateString("en-GB", {
+  return date.toLocaleDateString(lang === "it" ? "it-IT" : "en-GB", {
     year: "numeric",
     month: "long",
     timeZone: "UTC",

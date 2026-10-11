@@ -16,6 +16,7 @@ import {
   readRaw,
 } from "@/lib/atlas-core.mjs"
 import { renderMarkdown } from "@/lib/content"
+import type { Lang } from "@/lib/i18n"
 
 /* -- types ----------------------------------------------------------------- */
 
@@ -141,6 +142,8 @@ export interface Reaction {
   references: string[]
   luna: boolean
   lunaYears: number[]
+  /** Specialist sections still in English on a translated page. */
+  untranslated: ("details" | "measurements" | "openQuestions")[]
 }
 
 export interface Reference {
@@ -214,13 +217,17 @@ export interface Atlas {
 
 /* -- loading --------------------------------------------------------------- */
 
-// Read once per build process. Every atlas page asks for the whole database,
-// and there are sixty of them.
-let cache: Atlas | null = null
+// Read once per build process and language. Every atlas page asks for the
+// whole database, and there are sixty of them in each language.
+const cache = new Map<Lang, Atlas>()
 
-export function getAtlas(): Atlas {
-  if (!cache) cache = buildAtlas(readRaw()) as unknown as Atlas
-  return cache
+export function getAtlas(lang: Lang = "en"): Atlas {
+  let atlas = cache.get(lang)
+  if (!atlas) {
+    atlas = buildAtlas(readRaw(), { lang }) as unknown as Atlas
+    cache.set(lang, atlas)
+  }
+  return atlas
 }
 
 /** The JSON export, as written to public/atlas/data.json. */
@@ -230,24 +237,24 @@ export function getAtlasExport(): unknown {
 
 export const getReactionIds = () => getAtlas().reactions.map((r) => r.id)
 
-export function getReaction(id: string): Reaction | undefined {
-  return getAtlas().reactions.find((r) => r.id === id)
+export function getReaction(id: string, lang: Lang = "en"): Reaction | undefined {
+  return getAtlas(lang).reactions.find((r) => r.id === id)
 }
 
-export function getNetwork(id: string): Network | undefined {
-  return getAtlas().networks.find((n) => n.id === id)
+export function getNetwork(id: string, lang: Lang = "en"): Network | undefined {
+  return getAtlas(lang).networks.find((n) => n.id === id)
 }
 
-export function getFamily(id: string): Family | undefined {
-  return getAtlas().families.find((f) => f.id === id)
+export function getFamily(id: string, lang: Lang = "en"): Family | undefined {
+  return getAtlas(lang).families.find((f) => f.id === id)
 }
 
-export function getFacility(id: string): Facility | undefined {
-  return getAtlas().facilities.find((f) => f.id === id)
+export function getFacility(id: string, lang: Lang = "en"): Facility | undefined {
+  return getAtlas(lang).facilities.find((f) => f.id === id)
 }
 
-export function getMethod(id: string): Method | undefined {
-  return getAtlas().methods.find((m) => m.id === id)
+export function getMethod(id: string, lang: Lang = "en"): Method | undefined {
+  return getAtlas(lang).methods.find((m) => m.id === id)
 }
 
 /** Details are Markdown with KaTeX, rendered by the same pipeline as the notes. */
@@ -256,8 +263,8 @@ export async function renderDetails(markdown: string): Promise<string> {
 }
 
 /** Events that name a reaction, oldest first. */
-export function eventsFor(id: string): TimelineEvent[] {
-  return getAtlas().timeline.filter((e) => e.reactions.includes(id))
+export function eventsFor(id: string, lang: Lang = "en"): TimelineEvent[] {
+  return getAtlas(lang).timeline.filter((e) => e.reactions.includes(id))
 }
 
 /* -- the map --------------------------------------------------------------- */
@@ -312,9 +319,9 @@ export interface MapData {
  * Everything the client-side map needs, and nothing else: the long specialist
  * text and the bibliography stay on the server.
  */
-export function getMapData(): MapData {
-  const atlas = getAtlas()
-  const { cells, maxZ, maxN } = chartCells(atlas as never) as {
+export function getMapData(lang: Lang = "en"): MapData {
+  const atlas = getAtlas(lang)
+  const { cells, maxZ, maxN } = chartCells(atlas as never, undefined, lang) as {
     cells: MapCell[]
     maxZ: number
     maxN: number
@@ -363,6 +370,9 @@ export {
   formatQ,
   formatTemperature,
   KIND_LABEL,
+  kindLabel,
   STATUS_HINT,
   STATUS_LABEL,
+  statusHint,
+  statusLabel,
 } from "@/lib/atlas-format"
