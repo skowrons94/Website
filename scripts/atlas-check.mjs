@@ -13,6 +13,7 @@
  *   node scripts/atlas-check.mjs [--quiet] [--dir path/to/atlas]
  */
 
+import fs from "node:fs"
 import path from "node:path"
 
 import {
@@ -251,6 +252,11 @@ for (const [id, { file, data: r }] of reactionFiles) {
 
   for (const m of checkList(file, r, "methods")) if (!methodIds.has(m)) error(file, `unknown method \`${m}\``)
   checkRefs(file, checkList(file, r, "evaluations"), "evaluations: ")
+  for (const ev of checkList(file, r, "rmatrix")) {
+    if (!fs.existsSync(path.join(process.cwd(), "server", "evaluations", String(ev)))) {
+      error(file, `rmatrix: no evaluation \`${ev}\` in server/evaluations/`)
+    }
+  }
   checkRefs(file, checkList(file, r, "refs"), "refs: ")
   for (const rel of checkList(file, r, "related")) {
     if (!knownReaction(String(rel))) error(file, `related: unknown reaction \`${rel}\``)

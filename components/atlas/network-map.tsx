@@ -954,6 +954,15 @@ function ReactionPanel({
             <span className="tabular">{r.measurements === 0 ? "none listed yet" : r.measurements}</span>
           </Fact>
         )}
+        {r.rmatrix.length > 0 && (
+          <Fact label="R-matrix">
+            {r.rmatrix.map((ev) => (
+              <Link key={ev} href={`/evaluations/${ev}`} className="mr-3 text-link hover:underline">
+                Interactive evaluation →
+              </Link>
+            ))}
+          </Fact>
+        )}
       </dl>
 
       {r.statusNote && (

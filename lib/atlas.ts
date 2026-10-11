@@ -126,6 +126,7 @@ export interface Reaction {
   methods: string[]
   measurements: Measurement[]
   evaluations: string[]
+  rmatrix: string[]
   openQuestions: string[]
   related: string[]
   q: QValue | null
@@ -283,6 +284,8 @@ export interface MapReaction {
   halfLife: string | null
   measurements: number
   luna: boolean
+  /** The site's own R-matrix evaluations of this system. */
+  rmatrix: string[]
 }
 
 export interface MapCell {
@@ -339,6 +342,7 @@ export function getMapData(): MapData {
       halfLife: r.halfLife?.text ?? null,
       measurements: r.measurements.length,
       luna: r.luna,
+      rmatrix: r.rmatrix,
     }))
   return {
     families: atlas.families,

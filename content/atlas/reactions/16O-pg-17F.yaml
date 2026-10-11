@@ -45,3 +45,4 @@ evaluations: [adelberger2011, iliadis2008, acharya2025]
 open_questions:
   - Direct data closer to the Gamow window, to test the predicted rise of the S-factor at low energy.
 related: [17F-bp-17O, 15N-pg-16O, 17O-pa-14N]
+rmatrix: [17F]

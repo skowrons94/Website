@@ -77,3 +77,4 @@ open_questions:
   - The strength of the lowest resonance (E_cm ≈ 133 keV), where the direct LUNA value and the transfer data of Marshall et al. (2023) disagree.
   - The direct capture S-factor at the energies of the Gamow window, which so far comes from extrapolation.
 related: [23Na-pa-20Ne, 22Ne-pg-23Na, 24Mg-pg-25Al]
+rmatrix: [24Mg]

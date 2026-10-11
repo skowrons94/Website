@@ -1,7 +1,10 @@
+import fs from "node:fs"
+import path from "node:path"
+
 import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { ArrowLeft, ArrowRight } from "lucide-react"
+import { ArrowLeft, ArrowRight, SlidersHorizontal } from "lucide-react"
 
 import { Cite, ReferenceList } from "@/components/atlas/reference-list"
 import { LunaBadge, StatusBadge } from "@/components/atlas/status-badge"
@@ -172,6 +175,21 @@ function displayCode(code: string): string {
 }
 
 /* -- page ------------------------------------------------------------------ */
+
+/** The site's own R-matrix evaluations linked from a reaction (rmatrix: in its file). */
+function rmatrixEvaluations(ids: string[]) {
+  return ids.map((id) => {
+    const file = path.join(process.cwd(), "server", "evaluations", id, "info.json")
+    let reference: string | null = null
+    try {
+      const info = JSON.parse(fs.readFileSync(file, "utf8"))
+      reference = typeof info.reference === "string" && info.reference.startsWith("10.") ? info.reference : null
+    } catch {
+      /* an evaluation without info.json still links */
+    }
+    return { id, reference }
+  })
+}
 
 export default async function ReactionPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -373,6 +391,36 @@ export default async function ReactionPage({ params }: { params: Promise<{ id: s
           )}
 
           {/* -- for a specialist -------------------------------------------- */}
+          {r.rmatrix.length > 0 && (
+            <section className="mt-12 rounded-lg border border-border bg-card p-5 sm:p-6">
+              <div className="flex items-start gap-3">
+                <SlidersHorizontal className="mt-1 h-5 w-5 shrink-0 text-link" aria-hidden />
+                <div className="min-w-0">
+                  <h2 className="font-serif text-lg font-semibold tracking-tight">Try it: an R-matrix evaluation</h2>
+                  <p className="mt-1.5 text-pretty text-[0.95rem] leading-relaxed text-muted-foreground">
+                    An AZURE2 model of this system runs on this site. Change the energies and widths of the
+                    levels and watch the fit to the data and the extrapolation to stellar energies follow.
+                  </p>
+                  <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-[0.95rem]">
+                    {rmatrixEvaluations(r.rmatrix).map((ev) => (
+                      <li key={ev.id} className="flex flex-wrap items-baseline gap-x-2">
+                        <Link href={`/evaluations/${ev.id}`} className="font-medium text-link hover:underline">
+                          Open the <Sci>{ev.id.replace(/^(\d+)/, (m) => m.split("").map((d) => "⁰¹²³⁴⁵⁶⁷⁸⁹"[+d]).join(""))}</Sci>{" "}
+                          evaluation →
+                        </Link>
+                        {ev.reference && (
+                          <a href={`https://doi.org/${ev.reference}`} className="text-sm text-muted-foreground hover:text-foreground">
+                            doi:{ev.reference}
+                          </a>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </section>
+          )}
+
           {html && (
             <section className="mt-14">
               <SectionTitle id="details">Details</SectionTitle>

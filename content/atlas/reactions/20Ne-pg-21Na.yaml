@@ -73,3 +73,4 @@ open_questions:
   - The LUNA strength of the 368 keV resonance is three times more precise than earlier values and has not yet been checked by an independent measurement.
   - A combined R-matrix analysis of the capture data at all energies, to fix the shape of the S-factor near the threshold.
 related: [21Na-bp-21Ne, 21Ne-pg-22Na, 23Na-pa-20Ne, 19F-pg-20Ne]
+rmatrix: [21Na]

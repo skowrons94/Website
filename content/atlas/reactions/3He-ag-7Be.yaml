@@ -127,3 +127,4 @@ open_questions:
   - The energy dependence of the S-factor between 100 keV and 1 MeV, which controls the extrapolation to the solar Gamow window.
   - The disagreement in slope and normalization above 1 MeV between recoil-separator and γ-ray data.
 related: [3He-3He2p-4He, 7Be-pg-8B, 7Be-ec-7Li, 3H-ag-7Li, 7Be-np-7Li]
+rmatrix: [7Be]

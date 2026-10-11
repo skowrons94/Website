@@ -84,3 +84,4 @@ open_questions:
   - The 25 % normalisation difference between the measurements since 2023 and the older data sets.
   - The radiative width of the 422 keV resonance, which dominates the rate at higher temperatures.
 related: [13N-bp-13C, 13C-pg-14N, 14N-pg-15O]
+rmatrix: [13N]
