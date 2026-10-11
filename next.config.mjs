@@ -6,6 +6,8 @@ const nextConfig = {
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
   images: { unoptimized: true },
+  // No "X-Powered-By: Next.js" on every response.
+  poweredByHeader: false,
   // English pages and Italian pages (/it) have root layouts of their own, so
   // an address no route matches is answered by app/global-not-found.tsx.
   experimental: { globalNotFound: true },

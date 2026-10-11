@@ -10,3 +10,9 @@ npm-debug.log*
 **/.DS_Store
 **/__pycache__
 server/access.log
+
+# The GitHub Pages build's engine and its inputs (browser/README.md): large,
+# and nothing the server images use.
+build
+out
+public/azure2
