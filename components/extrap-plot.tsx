@@ -1,7 +1,7 @@
 "use client"
 
-import { Fragment, useEffect, useMemo, useRef, useState } from "react"
-import { Download, Loader2, ZoomOut } from "lucide-react"
+import { Fragment, memo, startTransition, useEffect, useMemo, useRef, useState } from "react"
+import { Download, ZoomOut } from "lucide-react"
 import { texPlain } from "@/components/tex"
 
 import { Badge } from "@/components/ui/badge"
@@ -14,7 +14,9 @@ import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { SegmentChart, type ChartBand, type ChartSeries } from "@/components/segment-chart"
 import { Sci } from "@/components/sci"
-import { extrapolationsCsvUrl, downloadLink, type DataSegment, type ExtrapSegment, type SchemePair } from "@/lib/api"
+import { extrapolationsCsvUrl, downloadLink, getExtrapolationGrid, type DataSegment, type ExtrapSegment, type SchemePair } from "@/lib/api"
+import { ProgressTimer, type Stage } from "@/components/evaluation-progress"
+import type { Activity } from "@/contexts/session-context"
 import { OVERLAY_LIMIT, observableLabel, quantityLabel } from "@/lib/viz"
 import { decimal } from "@/lib/i18n-eval"
 import { localePath } from "@/lib/locale"
@@ -59,8 +61,15 @@ interface Props {
   extrapolations: ExtrapSegment[]
   data: DataSegment[] | null
   pairs: SchemePair[]
-  sessionId: string
+  /** Null while the session reopens: the CSV and on-demand grids wait for it. */
+  sessionId: string | null
   calculating: boolean
+  /** The curves are those before the last edit (new ones on their way): drawn faded. */
+  stale?: boolean
+  /** What the tab waits for, for the progress timer. */
+  activity?: Activity | null
+  stage?: Stage
+  retryAt?: number | null
   evaluationId: string
   /** Elastic scattering only: cross sections, no Gamow window. */
   scatteringOnly?: boolean
@@ -82,6 +91,74 @@ function isAngularCurve(s: ExtrapSegment): boolean {
   if (e.length < 3 || a.length < 3) return s.angle_max - s.angle_min > 2 && Math.abs(s.energy_max - s.energy_min) < 1e-6
   return Math.max(...e) - Math.min(...e) <= 1e-3 * Math.max(Math.abs(Math.max(...e)), 1e-3) && Math.max(...a) - Math.min(...a) > 2
 }
+
+/**
+ * An energy × angle grid (⁶Li(p,α) on ⁷Be: 2.4–5.1 MeV × 0–180°): many
+ * energies and many angles in one segment. Drawn against energy as one line it
+ * zig-zags through every angle, so it is offered apart, on request, as a few
+ * angles or as a map. A newer server sends it without values (`grid`) and
+ * computes it when asked.
+ */
+function isGrid(s: ExtrapSegment): boolean {
+  if (s.grid) return true
+  if (s.is_angle_integrated) return false
+  const e = new Set((s.energies ?? []).filter(Number.isFinite).map((v) => v.toPrecision(6)))
+  const a = new Set((s.angles ?? []).filter((v) => v !== null && Number.isFinite(v)).map((v) => v.toPrecision(6)))
+  return e.size > 2 && a.size > 2
+}
+
+interface GridCut {
+  angle: number
+  energies: number[]
+  calculated: (number | null)[]
+  calculated_sfactor: (number | null)[]
+}
+/** What is known of one grid: a few angle cuts, and/or the whole map. */
+interface GridData {
+  cuts: GridCut[] | null
+  map: GridRows | null
+}
+
+interface GridRows {
+  angles: number[]
+  energies: number[]
+  /** value[angle row][energy column] (cross section, as sent), NaN where missing. */
+  values: number[][]
+  sfactor: number[][]
+}
+
+/** A grid's flat lists as rows by angle, energies sorted. */
+function gridRows(s: ExtrapSegment): GridRows {
+  const es = s.energies ?? []
+  const as = s.angles ?? []
+  const energies = [...new Set(es.filter(Number.isFinite).map((v) => Number(v.toPrecision(9))))].sort((x, y) => x - y)
+  const angles = [...new Set(as.filter((v) => v !== null && Number.isFinite(v)).map((v) => Number(v.toPrecision(9))))].sort((x, y) => x - y)
+  const ei = new Map(energies.map((v, i) => [v, i]))
+  const ai = new Map(angles.map((v, i) => [v, i]))
+  const values = angles.map(() => energies.map(() => NaN))
+  const sfactor = angles.map(() => energies.map(() => NaN))
+  for (let k = 0; k < es.length; k++) {
+    const i = ai.get(Number((as[k] ?? NaN).toPrecision(9)))
+    const j = ei.get(Number(es[k].toPrecision(9)))
+    if (i === undefined || j === undefined) continue
+    values[i][j] = s.calculated?.[k] ?? NaN
+    sfactor[i][j] = s.calculated_sfactor?.[k] ?? NaN
+  }
+  return { angles, energies, values, sfactor }
+}
+
+/** Up to `n` of a grid's angles, spread over its range (always its ends and 90° when present). */
+function spreadAngles(angles: number[], n = 5): number[] {
+  if (angles.length <= n) return angles
+  const lo = angles[0]
+  const hi = angles[angles.length - 1]
+  const want = Array.from({ length: n }, (_, i) => lo + ((hi - lo) * i) / (n - 1))
+  const near = (x: number) => angles.reduce((best, a) => (Math.abs(a - x) < Math.abs(best - x) ? a : best), angles[0])
+  return [...new Set(want.map(near))]
+}
+
+/** Index of a grid's angle cut, as a curve of its own (kept apart from the segments' indices). */
+const cutIndex = (segment: number, angle: number) => 1_000_000 + segment * 1000 + Math.round(angle)
 
 const TEMPERATURES = [0.01, 0.015, 0.02, 0.03, 0.05, 0.1, 0.2, 0.3, 0.5, 1, 2, 3]
 
@@ -126,9 +203,14 @@ export function ExtrapPlot({
   evaluationId,
   scatteringOnly = false,
   temperatures = [],
+  stale = false,
+  activity = null,
+  stage = "extrap",
+  retryAt = null,
 }: Props) {
   const lang = useLang()
   const t = useEvalDict().workspace
+  const lv = useEvalDict().live
   const [selected, setSelected] = useState<number[]>([])
   const [overlaid, setOverlaid] = useState<number[]>([])
   const [quantity, setQuantity] = useState<Quantity>(scatteringOnly ? "cross_section" : "sfactor")
@@ -155,20 +237,115 @@ export function ExtrapPlot({
       if (current.length > 0) return current
       // The headline reaction's own curve: capture or reaction, angle-integrated if any.
       const ok = (s: ExtrapSegment) =>
-        s.active && (s.energies?.length ?? 0) > 0 && (!entrance || s.entrance_key === entrance.number)
+        s.active && !isGrid(s) && (s.energies?.length ?? 0) > 0 && (!entrance || s.entrance_key === entrance.number)
       const first =
         extrapolations.find((s) => ok(s) && !scattering(s) && s.is_angle_integrated && s.observable === "total-capture") ??
         extrapolations.find((s) => ok(s) && !scattering(s) && s.is_angle_integrated) ??
         extrapolations.find((s) => ok(s) && !scattering(s)) ??
         extrapolations.find(ok) ??
-        extrapolations.find((s) => s.active && (s.energies?.length ?? 0) > 0) ??
-        extrapolations[0]
+        extrapolations.find((s) => s.active && !isGrid(s) && (s.energies?.length ?? 0) > 0) ??
+        extrapolations.find((s) => !isGrid(s))
       return first ? [first.index] : []
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [extrapolations])
 
-  const chosen = useMemo(() => extrapolations.filter((s) => selected.includes(s.index)), [extrapolations, selected])
+  /* -- energy × angle grids, on request ----------------------------------- */
+
+  const grids = useMemo(() => extrapolations.filter(isGrid), [extrapolations])
+  const lines = useMemo(() => extrapolations.filter((s) => !isGrid(s)), [extrapolations])
+  // What has been fetched of each grid a newer server computes on request.
+  const [fetched, setFetched] = useState<Record<number, GridData & { loading?: "angles" | "map"; failed?: boolean }>>({})
+  useEffect(() => setFetched({}), [extrapolations])
+  const rowsCache = useRef(new Map<ExtrapSegment, GridRows>())
+  /** A grid's angle cuts and map: from its own values (an older server), or as fetched. */
+  const dataOf = (s: ExtrapSegment): GridData => {
+    if (s.energies?.length) {
+      let rows = rowsCache.current.get(s)
+      if (!rows) {
+        rows = gridRows(s)
+        rowsCache.current.set(s, rows)
+      }
+      const r = rows
+      return {
+        cuts: spreadAngles(r.angles, 7).map((angle) => {
+          const i = r.angles.indexOf(angle)
+          return { angle, energies: r.energies, calculated: r.values[i], calculated_sfactor: r.sfactor[i] }
+        }),
+        map: r,
+      }
+    }
+    return fetched[s.index] ?? { cuts: null, map: null }
+  }
+  const fetchView = (s: ExtrapSegment, view: "angles" | "map", then: (data: GridData) => void) => {
+    if (!sessionId) return
+    setFetched((f) => ({ ...f, [s.index]: { ...(f[s.index] ?? { cuts: null, map: null }), loading: view, failed: false } }))
+    getExtrapolationGrid(sessionId, s.index, view)
+      .then((answer) => {
+        if (!answer) throw new Error("no grid")
+        setFetched((f) => {
+          const before = { ...(f[s.index] ?? { cuts: null, map: null }), loading: undefined, failed: false }
+          const next: GridData =
+            answer.view === "angles"
+              ? { ...before, cuts: answer.curves }
+              : {
+                  ...before,
+                  map: {
+                    angles: answer.angles,
+                    energies: answer.energies,
+                    values: answer.calculated.map((row) => row.map((v) => v ?? NaN)),
+                    sfactor: answer.calculated_sfactor.map((row) => row.map((v) => v ?? NaN)),
+                  },
+                }
+          then(next)
+          return { ...f, [s.index]: next }
+        })
+      })
+      .catch(() => setFetched((f) => ({ ...f, [s.index]: { ...(f[s.index] ?? { cuts: null, map: null }), loading: undefined, failed: true } })))
+  }
+  // Per grid: how it is shown (a few angles, or a map) and which angles.
+  const [gridView, setGridView] = useState<Record<number, { mode: "angles" | "map"; angles: number[] }>>({})
+  const firstAngles = (cuts: GridCut[]) => spreadAngles(cuts.map((c) => c.angle), 3)
+  const showGrid = (s: ExtrapSegment) => {
+    const known = dataOf(s)
+    if (known.cuts) setGridView((v) => ({ ...v, [s.index]: { mode: "angles", angles: firstAngles(known.cuts!) } }))
+    else fetchView(s, "angles", (d) => d.cuts && setGridView((v) => ({ ...v, [s.index]: { mode: "angles", angles: firstAngles(d.cuts!) } })))
+  }
+  const showMap = (s: ExtrapSegment) => {
+    const view = gridView[s.index] ?? { mode: "map", angles: [] }
+    if (dataOf(s).map) setGridView((v) => ({ ...v, [s.index]: { ...view, mode: "map" } }))
+    else fetchView(s, "map", () => setGridView((v) => ({ ...v, [s.index]: { ...view, mode: "map" } })))
+  }
+  /** The angle cuts asked for, as curves of their own (energy on x). */
+  const cuts = useMemo(() => {
+    const out: ExtrapSegment[] = []
+    for (const g of grids) {
+      const view = gridView[g.index]
+      if (!view || view.mode !== "angles") continue
+      for (const cut of dataOf(g).cuts ?? []) {
+        if (!view.angles.includes(cut.angle)) continue
+        out.push({
+          ...g,
+          index: cutIndex(g.index, cut.angle),
+          grid: null,
+          is_angle_integrated: false,
+          angle_min: cut.angle,
+          angle_max: cut.angle,
+          energies: cut.energies,
+          angles: cut.energies.map(() => cut.angle),
+          calculated: cut.calculated.map((v) => v ?? NaN),
+          calculated_sfactor: cut.calculated_sfactor.map((v) => v ?? NaN),
+        })
+      }
+    }
+    return out
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [grids, gridView, fetched])
+
+  const chosen = useMemo(
+    () => [...lines.filter((s) => selected.includes(s.index)), ...cuts],
+    [lines, selected, cuts],
+  )
   const chosenData = useMemo(() => (data ?? []).filter((s) => overlaid.includes(s.index)), [data, overlaid])
 
   const curveQuantity = (s: ExtrapSegment): Quantity =>
@@ -206,7 +383,11 @@ export function ExtrapPlot({
   }
   const fmtE = (v: number) => decimal(String(Number(v.toPrecision(4))), lang)
   /** What else tells this curve apart: its energy and angle sweep, its angle, or its observable. */
-  const curveDetail = (s: ExtrapSegment) => {
+  // The final state, where the name does not carry it already (label_plain does: "²²Ne(p,γ₁)²³Na → 440 keV").
+  const finalOf = (s: ExtrapSegment) =>
+    s.final_state && !s.label_plain?.includes("→") && !s.label_plain?.endsWith(", total") && s.final_state !== "all final states" ? ` · ${lv.finalState(s.final_state)}` : ""
+  const curveDetail = (s: ExtrapSegment): string => `${curveDetailBase(s)}${finalOf(s)}`
+  const curveDetailBase = (s: ExtrapSegment) => {
     if (isAngularCurve(s)) {
       const e = (s.energies ?? []).find((v) => Number.isFinite(v)) ?? s.energy_min
       return t.angularCurve(fmtE(e), decimal(String(Number(s.angle_min.toFixed(1))), lang), decimal(String(Number(s.angle_max.toFixed(1))), lang))
@@ -214,7 +395,9 @@ export function ExtrapPlot({
     if (!s.is_angle_integrated) return `${observableLabel(s.observable, lang)}, ${t.atAngle(decimal(String(Number(s.angle_min.toFixed(1))), lang))}`
     return observableLabel(s.observable, lang)
   }
+  // With its final state where that tells it apart ("²²Ne(p,γ₁)²³Na → 440 keV").
   const curveName = (s: ExtrapSegment) =>
+    (s.label_plain?.includes("→") ? s.label_plain : null) ??
     s.reaction ??
     (s.exit_key === -1 ? pairName(s.entrance_key, s.entrance) : `${pairName(s.entrance_key, s.entrance)} → ${pairName(s.exit_key, s.exit)}`)
   const curveLabel = (s: ExtrapSegment) => `${curveName(s)} · ${curveDetail(s)}`
@@ -404,16 +587,17 @@ export function ExtrapPlot({
           <Button variant="outline" size="sm" className="h-8 px-2.5" disabled={series.length === 0} onClick={() => downloadPng(exportCharts(), `${evaluationId}_extrapolations.png`)}>
             PNG
           </Button>
-          <Button asChild variant="outline" size="sm" className="h-8 px-2.5" disabled={chosen.length === 0}>
-            <a {...downloadLink(extrapolationsCsvUrl(sessionId, selected), `${evaluationId}_extrapolations.csv`)}>CSV</a>
-          </Button>
+          {sessionId ? (
+            <Button asChild variant="outline" size="sm" className="h-8 px-2.5" disabled={chosen.length === 0}>
+              <a {...downloadLink(extrapolationsCsvUrl(sessionId, selected), `${evaluationId}_extrapolations.csv`)}>CSV</a>
+            </Button>
+          ) : (
+            <Button variant="outline" size="sm" className="h-8 px-2.5" disabled>
+              CSV
+            </Button>
+          )}
         </div>
-        {calculating && (
-          <span className="flex min-h-10 items-center gap-2 text-sm text-muted-foreground" role="status">
-            <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
-            {t.calculating}
-          </span>
-        )}
+
       </div>
 
       {overLimit && <p className="text-xs text-muted-foreground">{mixed ? t.mixedNote : t.facets(series.length, OVERLAY_LIMIT, "series")}</p>}
@@ -469,7 +653,7 @@ export function ExtrapPlot({
                   </li>
                 ))}
               </ul>
-              <CardContent className={`h-[18rem] max-h-[55svh] min-h-[12rem] p-1.5 sm:p-3 lg:h-[26rem] lg:max-h-none ${calculating ? "opacity-45" : ""}`}>
+              <CardContent className={`h-[18rem] max-h-[55svh] min-h-[12rem] p-1.5 transition-opacity sm:p-3 lg:h-[26rem] lg:max-h-none ${calculating ? "opacity-45" : ""}`}>
                 <SegmentChart
                   series={series}
                   xLabel={allAngle ? t.angleAxis : t.energyAxis}
@@ -496,6 +680,10 @@ export function ExtrapPlot({
               {t.resetZoom}
             </Button>
           )}
+          {/* While new curves are calculated: the timer over the faded old ones, in view on a phone too. */}
+          <div className="pointer-events-none absolute inset-x-0 top-10 z-10 flex justify-center">
+            <ProgressTimer stage={stage} activity={calculating ? activity : null} retryAt={retryAt} note={stale ? lv.extrapStale : null} />
+          </div>
           {gw && gamowPair && !allAngle && (
             <p className="mt-2 text-xs text-muted-foreground">
               <Sci>
@@ -525,14 +713,16 @@ export function ExtrapPlot({
             </CardHeader>
             <CardContent className="max-h-80 min-h-0 flex-1 overflow-y-auto px-4 pb-4 sm:px-6 lg:max-h-none">
               <div className="space-y-2 pr-1">
-                {extrapolations.map((segment) => (
+                {lines.map((segment) => (
                   <div key={segment.index} className="flex items-start gap-2">
                     <Checkbox
                       id={`ex-${segment.index}`}
                       checked={selected.includes(segment.index)}
                       disabled={!segment.energies?.length}
                       onCheckedChange={(checked) =>
-                        setSelected((current) => (checked ? [...current, segment.index] : current.filter((i) => i !== segment.index)))
+                        startTransition(() =>
+                          setSelected((current) => (checked ? [...current, segment.index] : current.filter((i) => i !== segment.index))),
+                        )
                       }
                     />
                     <Label htmlFor={`ex-${segment.index}`} className="min-w-0 flex-1 cursor-pointer text-xs font-normal leading-tight">
@@ -563,6 +753,131 @@ export function ExtrapPlot({
           </Card>
         </div>
       </div>
+
+      {grids.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle role="heading" aria-level={3} className="text-base">
+              {lv.gridTitle}
+            </CardTitle>
+            <CardDescription>{lv.gridText(grids.length)}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-5">
+            {grids.map((g) => {
+              const view = gridView[g.index]
+              const known = dataOf(g)
+              const state = fetched[g.index]
+              const own = Boolean(g.energies?.length)
+              const ne = own ? (known.map?.energies.length ?? 0) : (g.grid?.n_energies ?? 0)
+              const na = own ? (known.map?.angles.length ?? 0) : (g.grid?.n_angles ?? 0)
+              return (
+                <div key={g.index} className="min-w-0 space-y-2 border-t pt-4 first:border-t-0 first:pt-0">
+                  <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                    <p className="min-w-0 text-sm">
+                      <span className="font-medium">
+                        <Sci>{curveName(g)}</Sci>
+                      </span>
+                      <span className="text-muted-foreground">
+                        {" "}
+                        · {observableLabel(g.observable, lang)}
+                        {finalOf(g)}
+                        {ne > 0 && na > 0 && (
+                          <>
+                            {" "}
+                            ·{" "}
+                            {lv.gridSummary(
+                              ne,
+                              na,
+                              fmtE(g.energy_min),
+                              fmtE(g.energy_max),
+                              decimal(String(Number(g.angle_min.toFixed(1))), lang),
+                              decimal(String(Number(g.angle_max.toFixed(1))), lang),
+                            )}
+                          </>
+                        )}
+                      </span>
+                    </p>
+                    <div className="flex items-center gap-1" role="group" aria-label={curveName(g)}>
+                      {!view ? (
+                        <Button variant="outline" size="sm" className="h-8" onClick={() => showGrid(g)} disabled={Boolean(state?.loading) || (!own && !sessionId)}>
+                          {state?.loading ? lv.gridLoading : lv.gridShow}
+                        </Button>
+                      ) : (
+                        <>
+                          <Button
+                            variant={view.mode === "angles" ? "secondary" : "ghost"}
+                            size="sm"
+                            className="h-8"
+                            aria-pressed={view.mode === "angles"}
+                            onClick={() => setGridView((v) => ({ ...v, [g.index]: { ...view, mode: "angles" } }))}
+                          >
+                            {lv.gridAngles}
+                          </Button>
+                          <Button
+                            variant={view.mode === "map" ? "secondary" : "ghost"}
+                            size="sm"
+                            className="h-8"
+                            aria-pressed={view.mode === "map"}
+                            disabled={state?.loading === "map"}
+                            onClick={() => showMap(g)}
+                          >
+                            {state?.loading === "map" ? lv.gridLoading : lv.gridMap}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8"
+                            onClick={() =>
+                              setGridView((v) => {
+                                const next = { ...v }
+                                delete next[g.index]
+                                return next
+                              })
+                            }
+                          >
+                            {lv.gridHide}
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                  {state?.failed && <p className="text-xs text-destructive">{t.unexpected}</p>}
+                  {view && known.cuts && view.mode === "angles" && (
+                    <div className="flex flex-wrap gap-1.5" role="group" aria-label={lv.gridAngles}>
+                      {known.cuts.map((c) => c.angle).map((angle) => {
+                        const on = view.angles.includes(angle)
+                        return (
+                          <button
+                            key={angle}
+                            type="button"
+                            aria-pressed={on}
+                            onClick={() =>
+                              startTransition(() =>
+                                setGridView((v) => ({
+                                  ...v,
+                                  [g.index]: { ...view, angles: on ? view.angles.filter((a) => a !== angle) : [...view.angles, angle].sort((x, y) => x - y) },
+                                })),
+                              )
+                            }
+                            className={`min-h-8 rounded-full border px-3 text-xs tabular-nums transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                              on ? "border-foreground/40 bg-muted font-medium" : "text-muted-foreground hover:bg-muted/60"
+                            }`}
+                          >
+                            θ = {decimal(String(Number(angle.toFixed(1))), lang)}°
+                          </button>
+                        )
+                      })}
+                    </div>
+                  )}
+                  {view && known.map && view.mode === "map" && (
+                    <GridMap rows={known.map} label={`${curveName(g)} · ${observableLabel(g.observable, lang)}`} aria={lv.gridMapAria(curveName(g))} lang={lang} />
+                  )}
+                </div>
+              )
+            })}
+          </CardContent>
+        </Card>
+      )}
 
       {lowest.length > 0 && (
         <Card>
@@ -629,3 +944,73 @@ export function ExtrapPlot({
     </div>
   )
 }
+
+/**
+ * A small map of an energy × angle grid: energy across, angle up, the cross
+ * section as a sequential colour on a log scale (lighter: smaller). At most
+ * ~120 × 37 cells, averaged from the full grid.
+ */
+const GridMap = memo(function GridMap({ rows, label, aria, lang }: { rows: GridRows; label: string; aria: string; lang: "en" | "it" }) {
+  const cols = Math.min(120, rows.energies.length)
+  const rowsN = Math.min(37, rows.angles.length)
+  const cells = useMemo(() => {
+    const out: { i: number; j: number; v: number }[] = []
+    const ce = rows.energies.length / cols
+    const ca = rows.angles.length / rowsN
+    for (let i = 0; i < rowsN; i++)
+      for (let j = 0; j < cols; j++) {
+        let sum = 0
+        let n = 0
+        for (let a = Math.floor(i * ca); a < Math.max(Math.floor(i * ca) + 1, Math.floor((i + 1) * ca)); a++)
+          for (let e = Math.floor(j * ce); e < Math.max(Math.floor(j * ce) + 1, Math.floor((j + 1) * ce)); e++) {
+            const v = rows.values[a]?.[e]
+            if (Number.isFinite(v) && v > 0) {
+              sum += Math.log10(v)
+              n++
+            }
+          }
+        if (n) out.push({ i, j, v: sum / n })
+      }
+    return out
+  }, [rows, cols, rowsN])
+  if (cells.length === 0) return null
+  let lo = Infinity
+  let hi = -Infinity
+  for (const c of cells) {
+    lo = Math.min(lo, c.v)
+    hi = Math.max(hi, c.v)
+  }
+  const W = 600
+  const H = 180
+  const cw = W / cols
+  const ch = H / rowsN
+  const fmt = (v: number) => decimal(String(Number(v.toPrecision(3))), lang)
+  const e0 = rows.energies[0]
+  const e1 = rows.energies[rows.energies.length - 1]
+  const a0 = rows.angles[0]
+  const a1 = rows.angles[rows.angles.length - 1]
+  const mix = (v: number) => `color-mix(in oklab, var(--viz-series-1) ${Math.round(12 + 88 * ((v - lo) / (hi - lo || 1)))}%, var(--viz-surface))`
+  return (
+    <figure className="min-w-0">
+      <svg viewBox={`-44 -6 ${W + 52} ${H + 34}`} className="h-auto w-full max-w-3xl" role="img" aria-label={aria}>
+        <title>{label}</title>
+        {cells.map((c) => (
+          <rect key={`${c.i}-${c.j}`} x={c.j * cw} y={H - (c.i + 1) * ch} width={cw + 0.5} height={ch + 0.5} fill={mix(c.v)} />
+        ))}
+        <rect x={0} y={0} width={W} height={H} fill="none" stroke="var(--viz-axis)" />
+        <text x={0} y={H + 16} fontSize={12} fill="var(--viz-text-muted)">{fmt(e0)}</text>
+        <text x={W} y={H + 16} fontSize={12} textAnchor="end" fill="var(--viz-text-muted)">{fmt(e1)} MeV</text>
+        <text x={W / 2} y={H + 16} fontSize={12} textAnchor="middle" fill="var(--viz-text-muted)">E (c.m.)</text>
+        <text x={-6} y={H} fontSize={12} textAnchor="end" fill="var(--viz-text-muted)">{fmt(a0)}°</text>
+        <text x={-6} y={10} fontSize={12} textAnchor="end" fill="var(--viz-text-muted)">{fmt(a1)}°</text>
+        <text x={-6} y={H / 2} fontSize={12} textAnchor="end" fill="var(--viz-text-muted)">θ</text>
+      </svg>
+      <figcaption className="mt-1 flex items-center gap-2 text-[11px] text-muted-foreground">
+        <span>{fmt(10 ** lo)}</span>
+        <span className="h-2 w-24 rounded-sm" style={{ background: `linear-gradient(to right, ${mix(lo)}, ${mix(hi)})` }} aria-hidden />
+        <span>{fmt(10 ** hi)}</span>
+        <span>dσ/dΩ (b/sr, log)</span>
+      </figcaption>
+    </figure>
+  )
+})

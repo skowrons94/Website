@@ -457,3 +457,17 @@ export function numberText(value: number, lang: Lang, digits = 3): string {
   } else text = String(Number(value.toPrecision(digits)))
   return decimal(text, lang).replace(/^-/, "−")
 }
+
+// --- r7 evalui ---
+/**
+ * A χ² for reading: two decimals up to 10 000, then whole numbers with their
+ * thousands grouped by a narrow space ("5 669 589"), never an exponent.
+ */
+export function chi2Text(value: number, lang: Lang): string {
+  if (!Number.isFinite(value)) return "—"
+  if (Math.abs(value) < 1e4) return decimal(value.toFixed(2), lang)
+  return Math.round(value)
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, " ")
+    .replace(/^-/, "−")
+}

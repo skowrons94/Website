@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useId, useMemo, useRef, useState, type RefObject } from "react"
+import { memo, useEffect, useId, useMemo, useRef, useState, type RefObject } from "react"
 
 import { useLang } from "@/components/lang-context"
 import { useEvalDict } from "@/components/eval-dict"
@@ -201,7 +201,7 @@ interface Hover {
   curveAt?: { x: number; values: { label: string; y: number; slot: number }[] }
 }
 
-export function SegmentChart({
+function SegmentChartImpl({
   series,
   xLabel,
   yLabel,
@@ -581,18 +581,43 @@ export function SegmentChart({
 
               {curves.map((c, i) =>
                 c.original ? (
+                  // The published fit: a wide, light, solid "ghost" under everything,
+                  // so it cannot be mistaken for the dashed model beyond the data.
                   <path
                     key={`o${i}`}
                     d={c.original}
                     fill="none"
                     stroke="var(--viz-text-muted)"
-                    strokeWidth={1.25}
-                    strokeDasharray="4 3"
-                    opacity={0.75}
+                    strokeWidth={4}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    opacity={0.3}
                   />
                 ) : null,
               )}
 
+              {/* Measurements, each with a thin halo. */}
+              {series.map((s, i) => {
+                const colour = `var(--viz-series-${(s.slot ?? i) + 1})`
+                return (
+                  <g key={`p${i}`}>
+                    {s.points.map((p, k) => {
+                      if (!usableX(p.x) || !usableY(p.y) || !p.error) return null
+                      const lo = logY && p.y - p.error <= 0 ? H + 3 : sy(p.y - p.error)
+                      return (
+                        <line key={k} x1={sx(p.x)} x2={sx(p.x)} y1={sy(p.y + p.error)} y2={lo} stroke={colour} strokeWidth={1} opacity={0.75} />
+                      )
+                    })}
+                    {s.points.map((p, k) =>
+                      usableX(p.x) && usableY(p.y) ? (
+                        <Marker key={`m${k}`} shape={seriesShape(s.slot ?? i)} x={sx(p.x)} y={sy(p.y)} r={r} fill={colour} halo />
+                      ) : null,
+                    )}
+                  </g>
+                )
+              })}
+
+              {/* The model above the measurements (dense data would bury it), with a thin halo. */}
               {curves.map((c, i) => {
                 const s = series[i]
                 const ink = colouredCurves ? `var(--viz-series-${(s.slot ?? i) + 1})` : "var(--viz-text)"
@@ -610,7 +635,7 @@ export function SegmentChart({
                         opacity={EXTENSION_OPACITY}
                       />
                     )}
-                    <path d={c.model} fill="none" stroke="var(--viz-surface)" strokeWidth={4.5} strokeLinejoin="round" opacity={0.8} />
+                    <path d={c.model} fill="none" stroke="var(--viz-surface)" strokeWidth={3.5} strokeLinejoin="round" opacity={0.7} />
                     <path
                       d={c.model}
                       fill="none"
@@ -619,27 +644,6 @@ export function SegmentChart({
                       strokeDasharray={dash || undefined}
                       strokeLinejoin="round"
                     />
-                  </g>
-                )
-              })}
-
-              {/* Measurements above the model lines, each with a thin halo. */}
-              {series.map((s, i) => {
-                const colour = `var(--viz-series-${(s.slot ?? i) + 1})`
-                return (
-                  <g key={`p${i}`}>
-                    {s.points.map((p, k) => {
-                      if (!usableX(p.x) || !usableY(p.y) || !p.error) return null
-                      const lo = logY && p.y - p.error <= 0 ? H + 3 : sy(p.y - p.error)
-                      return (
-                        <line key={k} x1={sx(p.x)} x2={sx(p.x)} y1={sy(p.y + p.error)} y2={lo} stroke={colour} strokeWidth={1} opacity={0.75} />
-                      )
-                    })}
-                    {s.points.map((p, k) =>
-                      usableX(p.x) && usableY(p.y) ? (
-                        <Marker key={`m${k}`} shape={seriesShape(s.slot ?? i)} x={sx(p.x)} y={sy(p.y)} r={r} fill={colour} halo />
-                      ) : null,
-                    )}
                   </g>
                 )
               })}
@@ -722,3 +726,23 @@ export function SegmentChart({
     </div>
   )
 }
+
+const sameRange = (a?: [number, number] | null, b?: [number, number] | null) =>
+  a === b || (Boolean(a) && Boolean(b) && a![0] === b![0] && a![1] === b![1])
+
+/**
+ * Memoised: a re-render of the plot view around it (a timer, a toggle
+ * elsewhere) does not redraw the SVG unless what it shows changed. Ranges
+ * compare by value and the export ref by nothing (it only collects the node).
+ */
+export const SegmentChart = memo(SegmentChartImpl, (a, b) => {
+  for (const key of Object.keys({ ...a, ...b }) as (keyof Props)[]) {
+    if (key === "svgRef") continue
+    if (key === "xDomain" || key === "yDomain") {
+      if (!sameRange(a[key] as [number, number] | null, b[key] as [number, number] | null)) return false
+      continue
+    }
+    if (a[key] !== b[key]) return false
+  }
+  return true
+})

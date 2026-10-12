@@ -1,17 +1,18 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
-import { Download, Loader2, Redo2, RotateCcw, SlidersHorizontal, Undo2, ZoomOut } from "lucide-react"
+import { startTransition, useEffect, useMemo, useRef, useState } from "react"
+import { Download, Redo2, RotateCcw, SlidersHorizontal, Undo2, ZoomOut } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { LevelControls } from "@/components/level-controls"
+import { ProgressTimer, type Stage } from "@/components/evaluation-progress"
+import type { Activity } from "@/contexts/session-context"
 import { EXTENSION_OPACITY, SegmentChart, extensionDash, type ChartSeries } from "@/components/segment-chart"
 import { DataTable } from "@/components/data-table"
 import { Sci } from "@/components/sci"
@@ -20,6 +21,7 @@ import {
   angleText,
   autoLog,
   axisLabel,
+  chi2Text,
   datasetName,
   energyText,
   hasRutherford,
@@ -104,6 +106,13 @@ interface Props {
   onSelectLevel?: (key: string | null) => void
   /** Total-χ² change per edited free parameter. */
   deltaChi2?: Record<number, number>
+  /** What the plot waits for, for the progress timer (null: nothing). */
+  activity?: Activity | null
+  stage?: Stage
+  /** The server is full: when the page tries again. */
+  retryAt?: number | null
+  /** The session is open (false: the shipped curves, edits wait for it). */
+  live?: boolean
 }
 
 type Point = { x: number; y: number }
@@ -235,9 +244,14 @@ export function DataPlot({
   selectedLevel,
   onSelectLevel,
   deltaChi2,
+  activity = null,
+  stage = "edit",
+  retryAt = null,
+  live = true,
 }: Props) {
   const lang = useLang()
   const t = useEvalDict().workspace
+  const lv = useEvalDict().live
   const [logXOverride, setLogX] = useState<boolean | null>(null)
   const [logYOverride, setLogY] = useState<boolean | null>(null)
   const [listOpen, setListOpen] = useState(false)
@@ -250,24 +264,17 @@ export function DataPlot({
   const canRutherford = useMemo(() => data.some(hasRutherford), [data])
   const charts = useRef(new Map<string, SVGSVGElement | null>())
 
-  // The dataset list starts open where there is room for it.
+  // The dataset list starts open where there is room for it, and when it is
+  // short: a long one (120 on ⁷Be) would stand between a keyboard and the sliders.
   useEffect(() => {
-    setListOpen(window.matchMedia("(min-width: 1024px)").matches)
+    setListOpen(window.matchMedia("(min-width: 1024px)").matches && data.length <= 8)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  // How long a recalculation takes: counted while it runs, the last kept.
-  const [elapsed, setElapsed] = useState(0)
-  const [lastTook, setLastTook] = useState<number | null>(null)
-  useEffect(() => {
-    if (!calculating) return
-    const start = performance.now()
-    setElapsed(0)
-    const id = setInterval(() => setElapsed((performance.now() - start) / 1000), 500)
-    return () => {
-      clearInterval(id)
-      setLastTook((performance.now() - start) / 1000)
-    }
-  }, [calculating])
+  // View switches redraw every panel: as transitions, so the switch itself paints at once.
+  const later =
+    <T,>(set: (value: T) => void) =>
+    (value: T) =>
+      startTransition(() => set(value))
 
   const chosen = useMemo(() => data.filter((segment) => selected.includes(segment.index)), [data, selected])
   const selectionKey = selected.join(",")
@@ -551,7 +558,9 @@ export function DataPlot({
   }, [scheme.levels, scheme.pairs, energyKey])
 
   const toggle = (index: number, checked: boolean) =>
-    onSelect(checked ? [...selected.filter((i) => i !== index), index] : selected.filter((i) => i !== index))
+    startTransition(() =>
+      onSelect(checked ? [...selected.filter((i) => i !== index), index] : selected.filter((i) => i !== index)),
+    )
 
   const listed = useMemo(() => {
     const needle = filter.trim().toLowerCase()
@@ -598,16 +607,21 @@ export function DataPlot({
   )
   const line = (dash: string, grey = false, faint = false) => (
     <svg width="22" height="10" aria-hidden className="shrink-0">
-      <line
-        x1={1}
-        x2={21}
-        y1={5}
-        y2={5}
-        stroke={grey ? "var(--viz-text-muted)" : "var(--viz-text)"}
-        strokeWidth={grey ? 1.25 : faint ? 1.4 : 1.6}
-        strokeDasharray={dash || undefined}
-        opacity={grey ? 0.85 : faint ? EXTENSION_OPACITY : 1}
-      />
+      {grey ? (
+        // The published fit: a wide, light "ghost" band under the model.
+        <line x1={1} x2={21} y1={5} y2={5} stroke="var(--viz-text-muted)" strokeWidth={4} strokeLinecap="round" opacity={0.3} />
+      ) : (
+        <line
+          x1={1}
+          x2={21}
+          y1={5}
+          y2={5}
+          stroke="var(--viz-text)"
+          strokeWidth={faint ? 1.4 : 1.6}
+          strokeDasharray={dash || undefined}
+          opacity={faint ? EXTENSION_OPACITY : 1}
+        />
+      )}
     </svg>
   )
   /** Datasets (markers), the model line(s), and the published fit once edited. */
@@ -637,7 +651,8 @@ export function DataPlot({
           </span>
         </li>
       ))}
-      {models.some((m) => m.extension.length > 0) && (
+      {/* Kept from the start (not when the smooth curve arrives), so the key does not jump. */}
+      {extend && fineStatus !== "failed" && segments.some((s) => xKind(s) !== "angle") && (
         <li className="flex min-w-0 items-center gap-1.5">
           {line(extensionDash(DASHES[0]), false, true)}
           <span className="min-w-0 truncate">{t.modelBeyond}</span>
@@ -645,8 +660,8 @@ export function DataPlot({
       )}
       {scheme.modified && models.some((m) => m.original?.length) && (
         <li className="flex min-w-0 items-center gap-1.5">
-          {line("4 3", true)}
-          <span>{t.publishedFit}</span>
+          {line("", true)}
+          <span>{lv.publishedFitLegend}</span>
         </li>
       )}
     </ul>
@@ -783,12 +798,19 @@ export function DataPlot({
     const d = now - before
     if (Math.abs(d) < 0.005) return <span className="text-muted-foreground">({t.chi2Same})</span>
     const better = d < 0
+    // Tenfold or more: a ratio in words reads better than a seven-digit difference.
+    const ratio = better ? before / Math.max(now, 1e-12) : now / Math.max(before, 1e-12)
+    const text =
+      ratio >= 10
+        ? (better ? lv.muchBetter : lv.muchWorse)(chi2Text(Number(ratio.toPrecision(2)), lang).replace(/[.,]00$/, ""))
+        : `${chi2Text(Math.abs(d), lang)} ${better ? t.better : t.worse}`
     return (
       <span className={`whitespace-nowrap font-medium ${better ? "text-emerald-700 dark:text-emerald-400" : "text-red-700 dark:text-red-400"}`}>
-        ({better ? "▼" : "▲"} {decimal(Math.abs(d).toFixed(2), lang)} {better ? t.better : t.worse})
+        ({better ? "▼" : "▲"} {text})
       </span>
     )
   }
+  const huge = scheme.modified && meanChi2 !== null && initialShown !== null && meanChi2 >= 10 * initialShown
 
   const chi2Line = (
     <p className="min-w-0 tabular-nums">
@@ -797,7 +819,7 @@ export function DataPlot({
           <a href={`${localePath(lang, "/glossary")}#chi-squared`} className="text-muted-foreground underline decoration-dotted underline-offset-4 hover:text-link">
             χ²/N
           </a>{" "}
-          <span className="font-semibold">{decimal(meanChi2.toFixed(2), lang)}</span>{" "}
+          <span className="font-semibold">{chi2Text(meanChi2, lang)}</span>{" "}
           <span className="text-muted-foreground">{t.chi2ShownShort}</span> {delta(meanChi2, initialShown)}
         </>
       ) : (
@@ -831,12 +853,13 @@ export function DataPlot({
   const chi2Notes = (
     <div className="space-y-1.5 text-xs leading-relaxed text-muted-foreground">
       <p>{t.chi2Plain}</p>
+      {huge && <p className="text-foreground/80">{lv.chi2Huge}</p>}
       {allChi2 !== null && allChi2 > 5 && <p>{t.chi2NormNote(allOne)}</p>}
       {allChi2 !== null && (
         <details>
           <summary className="cursor-pointer select-none text-foreground/80 marker:text-muted-foreground">{t.chi2AllSummary}</summary>
           <p className="mt-1 tabular-nums">
-            {t.chi2AllText(decimal(allChi2.toFixed(2), lang))} {delta(allChi2, initialAll)}
+            {t.chi2AllText(chi2Text(allChi2, lang))} {delta(allChi2, initialAll)}
           </p>
         </details>
       )}
@@ -845,6 +868,21 @@ export function DataPlot({
 
   return (
     <div className="space-y-4">
+      {/* The first stop in the plot view: past the view settings and the dataset list, straight to the sliders. */}
+      <a
+        href="#plot-levels"
+        onClick={(event) => {
+          // Focus moves with the reader, so the next Tab is inside the levels.
+          const target = document.getElementById("plot-levels")
+          if (!target) return
+          event.preventDefault()
+          target.focus({ preventScroll: true })
+          target.scrollIntoView({ block: "start" })
+        }}
+        className="sr-only w-fit rounded-md bg-card px-3 py-2 text-sm font-medium text-link ring-2 ring-ring focus:not-sr-only focus:inline-flex [&+*]:!mt-0 focus:[&+*]:!mt-4"
+      >
+        {lv.skipToLevels}
+      </a>
       {(anyScattering && quantity === "sfactor") || faceted || quantity === "rutherford" ? (
         <p className="text-xs text-muted-foreground">
           {anyScattering && quantity === "sfactor" && t.elasticNote}{" "}
@@ -868,7 +906,7 @@ export function DataPlot({
             <Label htmlFor="plot-quantity" className="text-xs">
               {t.quantity}
             </Label>
-            <Select value={quantity} onValueChange={(value: Quantity) => onQuantity(value)}>
+            <Select value={quantity} onValueChange={(value: Quantity) => startTransition(() => onQuantity(value))}>
               <SelectTrigger id="plot-quantity" className="w-44 max-w-full">
                 <SelectValue />
               </SelectTrigger>
@@ -880,25 +918,25 @@ export function DataPlot({
             </Select>
           </div>
           <div className="flex min-h-10 items-center gap-2">
-            <Switch id="logx" checked={mainAxes.logX} disabled={mainAxes.angle} onCheckedChange={setLogX} />
+            <Switch id="logx" checked={mainAxes.logX} disabled={mainAxes.angle} onCheckedChange={later(setLogX)} />
             <Label htmlFor="logx" className="text-sm">
               {t.logEnergy}
             </Label>
           </div>
           <div className="flex min-h-10 items-center gap-2">
-            <Switch id="logy" checked={mainAxes.logY} onCheckedChange={setLogY} />
+            <Switch id="logy" checked={mainAxes.logY} onCheckedChange={later(setLogY)} />
             <Label htmlFor="logy" className="text-sm">
               {t.logValue}
             </Label>
           </div>
           <div className="flex min-h-10 items-center gap-2">
-            <Switch id="extend" checked={extend} onCheckedChange={setExtend} />
+            <Switch id="extend" checked={extend} onCheckedChange={later(setExtend)} />
             <Label htmlFor="extend" className="text-sm" title={t.extendHint}>
               {t.extend}
             </Label>
           </div>
           <div className="flex min-h-10 items-center gap-2">
-            <Switch id="residuals" checked={showResiduals} onCheckedChange={setShowResiduals} />
+            <Switch id="residuals" checked={showResiduals} onCheckedChange={later(setShowResiduals)} />
             <Label htmlFor="residuals" className="text-sm">
               {t.residuals}
             </Label>
@@ -942,18 +980,14 @@ export function DataPlot({
                 {!faceted && panelData[0] && legendFor(panelData[0].panel.segments, panelData[0].models, panelData[0].many, false)}
                 {plot}
               </div>
-              {calculating && (
-                <div className="pointer-events-none absolute inset-x-0 top-8 flex justify-center">
-                  <span className="flex items-center gap-2 rounded-full border bg-card px-3 py-1 text-xs tabular-nums shadow-sm">
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
-                    {t.recalculating}
-                    {elapsed >= 1 && <span className="text-muted-foreground">· {t.elapsed(decimal(Math.floor(elapsed), lang))}</span>}
-                    {lastTook !== null && lastTook >= 2 && (
-                      <span className="text-muted-foreground">({t.lastTook(decimal(Math.round(lastTook), lang))})</span>
-                    )}
-                  </span>
-                </div>
-              )}
+              {/* Pinned over the plot (which is pinned under the header on a phone): always in view. */}
+              <div className="pointer-events-none absolute inset-x-0 top-1/2 z-10 flex -translate-y-1/2 justify-center">
+                <ProgressTimer
+                  stage={stage}
+                  activity={calculating || !live ? (activity ?? null) : null}
+                  retryAt={retryAt}
+                />
+              </div>
               {zoom && (
                 <Button variant="secondary" size="sm" className="absolute right-2 top-2 h-7 px-2 text-xs" onClick={() => setZoom(null)}>
                   <ZoomOut className="mr-1 h-3.5 w-3.5" aria-hidden />
@@ -1018,11 +1052,12 @@ export function DataPlot({
             <div className="grid max-h-72 gap-x-6 gap-y-2.5 overflow-y-auto px-4 pb-4 pt-3 sm:grid-cols-2">
               {listed.map((segment) => (
                 <div key={segment.index} className="flex items-start gap-2">
-                  <Checkbox
+                  <input
+                    type="checkbox"
                     id={`seg-${segment.index}`}
                     checked={selected.includes(segment.index)}
-                    onCheckedChange={(checked) => toggle(segment.index, Boolean(checked))}
-                    className="mt-0.5"
+                    onChange={(event) => toggle(segment.index, event.target.checked)}
+                    className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded-sm border-input-strong accent-[var(--viz-series-1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   />
                   <Label htmlFor={`seg-${segment.index}`} className="min-w-0 flex-1 cursor-pointer text-xs font-normal leading-snug">
                     <span className="block truncate font-medium">
@@ -1047,7 +1082,11 @@ export function DataPlot({
         </div>
 
         {/* The sliders: their own scrolling column beside the plot from lg. */}
-        <Card className="min-w-0 max-lg:order-3 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:self-start lg:overflow-y-auto">
+        <Card
+          id="plot-levels"
+          tabIndex={-1}
+          className="min-w-0 scroll-mt-24 outline-none focus-visible:ring-2 focus-visible:ring-ring max-lg:order-3 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:self-start lg:overflow-y-auto"
+        >
           <CardContent className="p-4 sm:p-5">
             <LevelControls
               scheme={scheme}
