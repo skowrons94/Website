@@ -1,6 +1,6 @@
 "use client"
 
-import { startTransition, useCallback, useEffect, useRef, useState } from "react"
+import { memo, startTransition, useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import dynamic from "next/dynamic"
 import Link from "next/link"
 import { AlertCircle, ArrowRight, Check, Link2, Loader2 } from "lucide-react"
@@ -38,6 +38,19 @@ const ExtrapPlotLazy = dynamic(() => import("@/components/extrap-plot").then((m)
 // code is already there.
 let ExtrapPlotLoaded: typeof import("@/components/extrap-plot").ExtrapPlot | null = null
 let DataPlotLoaded: typeof import("@/components/data-plot").DataPlot | null = null
+
+/**
+ * A tab's body, not rendered again while its tab is hidden: each answer of a
+ * drag re-rendered the hidden level scheme and extrapolations (ui r10 #3).
+ * Shown again, it renders with what is current. A placeholder (with its
+ * timer) is never frozen: it gives way to the content even while hidden.
+ */
+const Frozen = memo(
+  function Frozen({ children }: { active: boolean; children: ReactNode }) {
+    return <>{children}</>
+  },
+  (prev, next) => !prev.active && !next.active,
+)
 
 /** "data" is the old Data tab: now the table drawer of the plot view. */
 type Tab = "scheme" | "plot" | "extrap"
@@ -452,6 +465,13 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
         </p>
 
         <TabsContent value="scheme" className="mt-6" forceMount hidden={tab !== "scheme"}>
+          {/* The server is full: said here too (the plot and the extrapolations say it in their timer band). */}
+          {retryAt !== null && ready && (
+            <div className="mb-4 flex min-h-8 items-center">
+              <ProgressTimer stage="open" activity={activities.open ?? null} retryAt={retryAt} />
+            </div>
+          )}
+          <Frozen active={tab === "scheme" || !ready}>
           {body(
             ready && (
               <LevelScheme
@@ -465,10 +485,12 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
               />
             ),
           )}
+          </Frozen>
         </TabsContent>
 
         {visited.includes("plot") && (
         <TabsContent value="plot" className="mt-6" forceMount hidden={tab !== "plot"}>
+          <Frozen active={tab === "plot" || !ready || data === null}>
           {body(
             data === null ? (
               <Pending
@@ -510,11 +532,13 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
               />
             ),
           )}
+          </Frozen>
         </TabsContent>
         )}
 
         {visited.includes("extrap") && (
         <TabsContent value="extrap" className="mt-6" forceMount hidden={tab !== "extrap"}>
+          <Frozen active={tab === "extrap" || !ready || extrapolations === null}>
           {body(
             extrapolations === null && !(publishedExtrap && extrapCalculating) ? (
               <Pending
@@ -543,6 +567,7 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
               />
             ),
           )}
+          </Frozen>
         </TabsContent>
         )}
       </Tabs>
