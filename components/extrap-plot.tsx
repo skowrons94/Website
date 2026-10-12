@@ -16,7 +16,7 @@ import { SegmentChart, type ChartBand, type ChartSeries } from "@/components/seg
 import { extrapolationsCsvUrl, downloadLink, type DataSegment, type ExtrapSegment, type SchemePair } from "@/lib/api"
 import { OVERLAY_LIMIT, formatEnergy, observableLabel, quantityLabel } from "@/lib/viz"
 import { decimal, localePath } from "@/lib/i18n"
-import { axisLabel, pickUnit, quantityFor, rawValues, segmentTitle, segmentValues, sfactorUnit, type DisplayUnit } from "@/lib/eval-plot"
+import { autoLog, axisLabel, pickUnit, quantityFor, rawValues, segmentTitle, segmentValues, sfactorUnit, type DisplayUnit } from "@/lib/eval-plot"
 import { downloadPng, downloadSvg } from "@/lib/plot-export"
 import { useDict, useLang } from "@/components/lang-provider"
 
@@ -32,6 +32,8 @@ import { useDict, useLang } from "@/components/lang-provider"
  */
 
 interface Props {
+  /** The evaluation's headline reaction ("³He(α,γ)⁷Be"): the curve to open on. */
+  headline?: string | null
   extrapolations: ExtrapSegment[]
   data: DataSegment[] | null
   pairs: SchemePair[]
@@ -55,14 +57,14 @@ function gamow(pair: SchemePair, T9: number) {
   return { E0: 0.122 * Math.cbrt(z * T9 * T9), width: 0.2368 * Math.pow(z * T9 ** 5, 1 / 6) }
 }
 
-export function ExtrapPlot({ extrapolations, data, pairs, sessionId, calculating, evaluationId }: Props) {
+export function ExtrapPlot({ headline, extrapolations, data, pairs, sessionId, calculating, evaluationId }: Props) {
   const lang = useLang()
   const t = useDict().workspace
   const [selected, setSelected] = useState<number[]>([])
   const [overlaid, setOverlaid] = useState<number[]>([])
   const [quantity, setQuantity] = useState<Quantity>("sfactor")
-  const [logX, setLogX] = useState(true)
-  const [logY, setLogY] = useState(true)
+  const [logXOverride, setLogX] = useState<boolean | null>(null)
+  const [logYOverride, setLogY] = useState<boolean | null>(null)
   const [T9, setT9] = useState<string>("0.1")
   const [zoom, setZoom] = useState<[number, number] | null>(null)
   const [filter, setFilter] = useState("")
@@ -71,16 +73,27 @@ export function ExtrapPlot({ extrapolations, data, pairs, sessionId, calculating
   useEffect(() => {
     setSelected((current) => {
       if (current.length > 0) return current
-      // The first capture or reaction curve with values, angle-integrated if any.
-      const ok = (s: ExtrapSegment) => s.active && (s.energies?.length ?? 0) > 0
+      // The headline reaction's entrance pair ("³He(α,γ)" → α + ³He), then the
+      // first capture or reaction curve with values, angle-integrated if any.
+      const m = headline ? /^(.+?)\((.+?),/.exec(headline) : null
+      const entrance = m
+        ? pairs.find((p) => {
+            const parts = (p.label_plain ?? "").split(" + ")
+            return parts.includes(m[1]) && parts.includes(m[2])
+          })
+        : undefined
+      const ok = (s: ExtrapSegment) =>
+        s.active && (s.energies?.length ?? 0) > 0 && (!entrance || s.entrance_key === entrance.number)
       const first =
         extrapolations.find((s) => ok(s) && !scattering(s) && s.is_angle_integrated && s.observable === "total-capture") ??
         extrapolations.find((s) => ok(s) && !scattering(s) && s.is_angle_integrated) ??
         extrapolations.find((s) => ok(s) && !scattering(s)) ??
         extrapolations.find(ok) ??
+        extrapolations.find((s) => s.active && (s.energies?.length ?? 0) > 0) ??
         extrapolations[0]
       return first ? [first.index] : []
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [extrapolations])
 
   const chosen = useMemo(() => extrapolations.filter((s) => selected.includes(s.index)), [extrapolations, selected])
@@ -111,10 +124,17 @@ export function ExtrapPlot({ extrapolations, data, pairs, sessionId, calculating
   }, [chosen, chosenData, quantity])
   const unitFor = (q: Quantity, observable: string) => units.get(kind(q, observable)) ?? { factor: 1, unit: "" }
 
+  // "p + ²²Ne → γ₀ (…)": the entrance pair with both its nuclei.
+  const pairName = (key: number, fallback: string) => {
+    const pair = pairs.find((p) => p.number === key)
+    return pair && !pair.is_photon && pair.label_plain ? pair.label_plain : texPlain(fallback)
+  }
   const curveLabel = (segment: ExtrapSegment) =>
-    `${texPlain(segment.entrance)} → ${texPlain(segment.exit)} (${observableLabel(segment.observable, lang)}${
-      segment.is_angle_integrated ? "" : `, ${Number(segment.angle_min.toFixed(1))}°`
-    })`
+    segment.exit_key === -1
+      ? `${pairName(segment.entrance_key, segment.entrance)} (${observableLabel(segment.observable, lang)})`
+      : `${pairName(segment.entrance_key, segment.entrance)} → ${pairName(segment.exit_key, segment.exit)} (${observableLabel(segment.observable, lang)}${
+          segment.is_angle_integrated ? "" : `, ${Number(segment.angle_min.toFixed(1))}°`
+        })`
 
   const curveSeries = (segment: ExtrapSegment, slot: number): ChartSeries => {
     const q = curveQuantity(segment)
@@ -140,6 +160,10 @@ export function ExtrapPlot({ extrapolations, data, pairs, sessionId, calculating
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [chosen, chosenData, quantity, lang, units],
   )
+
+  // Linear or logarithmic from what is shown, unless the reader chose.
+  const logX = logXOverride ?? autoLog(series.flatMap((s) => [...s.curve.map((p) => p.x), ...s.points.map((p) => p.x)]), 20)
+  const logY = logYOverride ?? autoLog(series.flatMap((s) => [...s.curve.map((p) => p.y), ...s.points.map((p) => p.y)]), 10)
 
   const labelOf = (s: ExtrapSegment) => quantityLabel(curveQuantity(s), s.observable, lang, unitFor(curveQuantity(s), s.observable).unit)
   const labels = new Set([...chosen.map(labelOf), ...chosenData.map((s) => axisLabel(s, quantity, lang, unitFor(quantityFor(s, quantity) as Quantity, s.observable)))])
@@ -382,8 +406,12 @@ export function ExtrapPlot({ extrapolations, data, pairs, sessionId, calculating
                     <Label htmlFor={`ex-${segment.index}`} className="flex-1 cursor-pointer text-xs font-normal leading-tight">
                       <span className="block font-medium">
                         <Tex math={segment.entrance} />
-                        {" → "}
-                        <Tex math={segment.exit} />
+                        {segment.exit_key !== -1 && (
+                          <>
+                            {" → "}
+                            <Tex math={segment.exit} />
+                          </>
+                        )}
                       </span>
                       <span className="text-muted-foreground">
                         {observableLabel(segment.observable, lang)} · {decimal(formatEnergy(segment.energy_min), lang)}–
@@ -413,7 +441,7 @@ export function ExtrapPlot({ extrapolations, data, pairs, sessionId, calculating
                 return (
                   <li key={segment.index} className="flex flex-wrap items-baseline gap-x-2">
                     <span className="text-muted-foreground">
-                      <Tex math={segment.entrance} /> → <Tex math={segment.exit} />:
+                      {curveLabel(segment)}:
                     </span>
                     <span className="tabular-nums">
                       S(E<sub>min</sub> = {fmt(energy * 1000)} keV) ={" "}

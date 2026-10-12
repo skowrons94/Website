@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
+import { Fragment, useEffect, useMemo, useRef, useState } from "react"
 import { Download, Loader2, Redo2, RotateCcw, Undo2, ZoomOut } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
@@ -151,12 +151,15 @@ export function DataPlot({
   const unitOf = (s: DataSegment) => units.get(kindOf(s)) ?? { factor: 1, unit: "" }
 
   const groups = useMemo<Group[]>(() => {
+    // Panels share their axes only within one reaction and observable, where
+    // the values are comparable; the unit is shared per kind of quantity.
     const map = new Map<string, DataSegment[]>()
-    for (const s of chosen) map.set(kindOf(s), [...(map.get(kindOf(s)) ?? []), s])
+    const key = (s: DataSegment) => `${kindOf(s)}|${s.reaction ?? s.entrance_key}|${s.exit_key}`
+    for (const s of chosen) map.set(key(s), [...(map.get(key(s)) ?? []), s])
     return [...map.entries()].map(([key, segments]) => ({ key, segments }))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chosen, quantity])
-  const mixed = groups.length > 1
+  const mixed = new Set(chosen.map(kindOf)).size > 1
   const faceted = chosen.length > OVERLAY_LIMIT || mixed
   const anyScattering = chosen.some(isScattering)
 
@@ -318,14 +321,14 @@ export function DataPlot({
         </CardContent>
       </Card>
     ) : faceted ? (
-      <div className="space-y-4">
+      <div className="grid gap-x-3 gap-y-3 sm:grid-cols-2 2xl:grid-cols-3">
         {groups.map((group) => {
           const axes = axesFor(group.segments)
           const y = group.segments.length > 1 ? sharedY(group.segments, axes.logY) : null
           const x = zoom ?? (group.segments.length > 1 ? sharedX(group.segments, axes.logX) : null)
           const label = axisLabel(group.segments[0], quantity, lang, unitOf(group.segments[0]))
           return (
-            <div key={group.key} className="grid gap-x-3 gap-y-3 sm:grid-cols-2 2xl:grid-cols-3">
+            <Fragment key={group.key}>
               {group.segments.map((segment) => (
                 <figure key={segment.index} className="min-w-0 rounded-md border bg-card px-1 pb-1 pt-2">
                   <figcaption className="flex items-baseline gap-2 px-2 text-xs">
@@ -367,7 +370,7 @@ export function DataPlot({
                   )}
                 </figure>
               ))}
-            </div>
+            </Fragment>
           )
         })}
       </div>

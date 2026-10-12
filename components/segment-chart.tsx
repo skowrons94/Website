@@ -521,7 +521,13 @@ export function SegmentChart({
                 return (
                   <g key={b.label}>
                     <rect x={x0} y={0} width={x1 - x0} height={H} fill="var(--viz-text)" opacity={0.07} />
-                    <text x={Math.min(Math.max((x0 + x1) / 2, 40), W - 40)} y={13} textAnchor="middle" fontSize={11} fill="var(--viz-text-muted)">
+                    <text
+                      x={(x0 + x1) / 2 > W - 90 ? W - 4 : (x0 + x1) / 2 < 90 ? 4 : (x0 + x1) / 2}
+                      y={H - 6}
+                      textAnchor={(x0 + x1) / 2 > W - 90 ? "end" : (x0 + x1) / 2 < 90 ? "start" : "middle"}
+                      fontSize={11}
+                      fill="var(--viz-text-muted)"
+                    >
                       {b.label}
                     </text>
                   </g>
@@ -585,7 +591,7 @@ export function SegmentChart({
                 usableX(m.x) && usableY(m.y) ? (
                   <g key={m.label}>
                     <circle cx={sx(m.x)} cy={sy(m.y)} r={4} fill="var(--viz-surface)" stroke="var(--viz-text)" strokeWidth={1.5} />
-                    <text x={sx(m.x) + 8} y={sy(m.y) - 8} fontSize={11} fill="var(--viz-text)">
+                    <text x={sx(m.x) + 8} y={sy(m.y) < 18 ? sy(m.y) + 16 : sy(m.y) - 8} fontSize={11} fill="var(--viz-text)">
                       {m.label}
                     </text>
                   </g>

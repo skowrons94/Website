@@ -263,7 +263,8 @@ function Workspace({ id, known }: { id: string; known: boolean }) {
   const editLevel = (key: string) => {
     setSelectedLevel(key)
     setTab("plot")
-    window.scrollTo({ top: 0 })
+    // Back to the tabs, so the plot and the opened sliders are in view.
+    requestAnimationFrame(() => document.querySelector('[role="tablist"]')?.scrollIntoView({ block: "start" }))
   }
 
   return (
@@ -300,7 +301,7 @@ function Workspace({ id, known }: { id: string; known: boolean }) {
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
           {/* Scrolls sideways rather than wrapping on a narrow phone. */}
           <div className="-mx-1 max-w-full overflow-x-auto px-1 [scrollbar-width:none]">
-            <TabsList className="h-auto justify-start">
+            <TabsList className="h-auto scroll-mt-20 justify-start">
               <TabsTrigger value="scheme" className="min-h-9 whitespace-nowrap">
                 {t.tabs.scheme}
               </TabsTrigger>
@@ -376,6 +377,7 @@ function Workspace({ id, known }: { id: string; known: boolean }) {
               <Pending label={t.calculatingExtrap} failed={failed} onRetry={loadExtrapolations} retry={t.tryAgain} />
             ) : (
               <ExtrapPlot
+                headline={evaluation?.reactions?.[0]}
                 extrapolations={extrapolations}
                 data={data}
                 pairs={scheme?.pairs ?? []}
