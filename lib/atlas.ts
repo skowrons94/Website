@@ -87,6 +87,14 @@ export interface GamowWindow {
   E0: number
   /** keV, 1/e full width. */
   width: number
+  /**
+   * Endothermic reaction whose ordinary window would reach below the
+   * threshold: the window is then [lo, hi] above it (keV), and E0 its maximum.
+   */
+  thresholdLimited?: boolean
+  lo?: number
+  hi?: number
+  threshold?: number
 }
 
 export interface ThermalEnergy {

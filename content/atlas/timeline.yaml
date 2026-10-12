@@ -271,7 +271,7 @@ events:
     text_it: >-
       John Bahcall calcolò il tasso con cui i neutrini solari avrebbero
       trasformato il cloro in argon in una grande vasca sotterranea. Il tasso
-      era dominato dai rari neutrini di alta energia del decadimento del ⁸B, ed
+      era dominato dai rari neutrini di alta energia del decadimento dell'⁸B, ed
       era abbastanza grande da rendere l'esperimento realizzabile. Raymond Davis
       descrisse il rivelatore in un articolo gemello sulla stessa rivista.
     refs: [bahcall1964]
@@ -351,7 +351,7 @@ events:
 
   - year: 1989
     title: Kamiokande-II sees ⁸B solar neutrinos
-    title_it: Kamiokande-II vede i neutrini solari del ⁸B
+    title_it: Kamiokande-II vede i neutrini solari dell'⁸B
     category: observation
     text: >-
       The Kamiokande-II water detector measured high-energy solar neutrinos
@@ -360,7 +360,7 @@ events:
       seen at Homestake with a different technique.
     text_it: >-
       Il rivelatore ad acqua Kamiokande-II misurò in tempo reale i neutrini
-      solari di alta energia dal decadimento del ⁸B. In 450 giorni trovò circa
+      solari di alta energia dal decadimento dell'⁸B. In 450 giorni trovò circa
       metà del flusso previsto dal modello solare standard, confermando con una
       tecnica diversa il deficit visto a Homestake.
     refs: [hirata1989]
@@ -499,7 +499,7 @@ events:
     text_it: >-
       Il Sudbury Neutrino Observatory in Canada usò acqua pesante per misurare
       sia i neutrini elettronici sia il numero totale di neutrini di tutti i
-      tipi provenienti dal decadimento del ⁸B nel Sole. Il totale era in accordo
+      tipi provenienti dal decadimento dell'⁸B nel Sole. Il totale era in accordo
       con i modelli solari, ma solo circa un terzo arrivava come neutrini
       elettronici. Il problema dei neutrini solari era dovuto alla fisica dei
       neutrini, non al Sole.

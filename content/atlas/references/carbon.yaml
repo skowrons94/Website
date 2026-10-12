@@ -30,6 +30,14 @@ high1977:
   doi: 10.1016/0375-9474(77)90179-8
   checked: reference lists of arXiv 1905.02054 and 2507.18065 (with DOI) and IAEA EXFOR entry B0144 (in-beam γ-ray measurement at 90° and 270°), 2026-10-12
 
+becker1981:
+  authors: H. W. Becker, K. U. Kettner, C. Rolfs, H. P. Trautvetter
+  title: The ¹²C + ¹²C reaction at subcoulomb energies (II)
+  journal: Z. Phys. A 303, 305 (1981)
+  year: 1981
+  doi: 10.1007/BF01421528
+  checked: reference list of arXiv 1905.02054 (authors, title, pages 305–312, DOI) and the summary in arXiv nucl-ex/0702023 of the early data sets reaching E ≈ 2.5 MeV, 2026-10-12
+
 # --- Direct measurements since 2000 ----------------------------------------------
 
 spillane2007:
@@ -57,6 +65,33 @@ zickefoose2018:
   year: 2018
   doi: 10.1103/PhysRevC.97.065806
   checked: JINA Virtual Journal entry and Naples IRIS record (authors, DOI, abstract), 2026-10-12
+
+aguilera2006:
+  authors: E. F. Aguilera, P. Rosales, E. Martinez-Quiroz, G. Murillo, M. Fernández et al.
+  title: "New γ-ray measurements for ¹²C + ¹²C sub-Coulomb fusion: toward data unification"
+  journal: Phys. Rev. C 73, 064601 (2006)
+  year: 2006
+  doi: 10.1103/PhysRevC.73.064601
+  checked: TIB library record (title, authors, 2006, Phys. Rev. C) and the reference to it in arXiv 2006.06305 among the γ-ray measurements; article number as given in the round-2 review and consistent with the neighbouring record 064602; DOI from the APS scheme, 2026-10-12
+
+moralesgallegos2022:
+  authors: L. Morales-Gallegos, M. Aliotta, L. Gialanella et al.
+  title: Direct measurements of the ¹²C(¹²C,p)²³Na and ¹²C(¹²C,α)²⁰Ne reactions at low energies for nuclear astrophysics
+  journal: EPJ Web Conf. 260, 01006 (2022)
+  year: 2022
+  doi: 10.1051/epjconf/202226001006
+  # The full article, Eur. Phys. J. A 58 (2022), DOI 10.1140/epja/s10050-022-00717-7,
+  # was retracted in 2023 (retraction note 10.1140/epja/s10050-023-01022-7), so
+  # only the conference report is cited.
+  checked: EPJ Web of Conferences abstract page and DOAJ record (CIRCE, Caserta; ΔE–E telescopes; E = 2.51–4.36 MeV in 10–25 keV steps); EPJ A retraction note seen in search results, 2026-10-12
+
+zhang2020:
+  authors: N. T. Zhang et al.
+  title: Constraining the ¹²C + ¹²C astrophysical S-factors with the ¹²C + ¹³C measurements at very low energies
+  journal: Phys. Lett. B 801, 135170 (2020)
+  year: 2020
+  arxiv: "1909.07012"
+  checked: arXiv 1909.07012 (ar5iv; ¹²C(¹³C,p)²⁴Na by activation down to E = 2.323 MeV, counted underground; upper limit on ¹²C + ¹²C; against the hindrance maximum), DOAJ record of the Phys. Lett. B article and the INL repository record; DOI not shown by the records, so omitted, 2026-10-12
 
 tumino2018:
   authors: A. Tumino, C. Spitaleri, M. La Cognata, S. Cherubini, G. L. Guardo, M. Gulino, S. Hayakawa, I. Indelicato et al.
@@ -161,8 +196,9 @@ uzawa2025:
   title: Re-examination of fusion hindrance in astrophysical ¹²C + ¹²C and ¹²C + ¹³C reactions
   journal: Phys. Rev. C 112, L061601 (2025)
   year: 2025
+  doi: 10.1103/PhysRevC.112.L061601
   arxiv: "2507.18065"
-  checked: arXiv 2507.18065 abstract; journal reference from K. Hagino's 2026 talk slides (not seen on the APS page), 2026-10-12
+  checked: arXiv 2507.18065 abstract; journal reference from K. Hagino's publication list (Yukawa Institute) and his 2026 talk slides; DOI from the APS scheme, 2026-10-12
 
 woosley2002:
   authors: S. E. Woosley, A. Heger, T. A. Weaver
@@ -172,3 +208,21 @@ woosley2002:
   doi: 10.1103/RevModPhys.74.1015
   arxiv: astro-ph/0110015
   checked: arXiv astro-ph/0110015 listing and scinapse record with DOI; the carbon-burning row of its 15 M☉ table (T = 0.83 GK) as reproduced in the Utrecht stellar-evolution lecture notes, chapter 12, 2026-10-12
+
+pignatari2013:
+  authors: M. Pignatari, R. Hirschi, M. Wiescher et al.
+  title: The ¹²C + ¹²C reaction and the impact on nucleosynthesis in massive stars
+  journal: Astrophys. J. 762, 31 (2013)
+  year: 2013
+  doi: 10.1088/0004-637X/762/1/31
+  arxiv: "1212.3962"
+  checked: arXiv 1212.3962 listing and Hull repository record 561935 (title, journal, 25 M☉ models with the three channels varied); DOI from the IOP scheme for ApJ 762, 31, 2026-10-12
+
+cooper2009:
+  authors: R. L. Cooper, A. W. Steiner, E. F. Brown
+  title: Possible resonances in the ¹²C + ¹²C fusion rate and superburst ignition
+  journal: Astrophys. J. 702, 660 (2009)
+  year: 2009
+  doi: 10.1088/0004-637X/702/1/660
+  arxiv: "0903.3994"
+  checked: arXiv 0903.3994 abstract (superbursts on accreting neutron stars; Gamow peak near 1.5 MeV; ignition temperature 6 × 10⁸ K, 5 × 10⁸ K with a resonance) and the DOI record, 2026-10-12

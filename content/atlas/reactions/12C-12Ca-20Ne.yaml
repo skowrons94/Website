@@ -39,16 +39,28 @@ role_it: >-
   esploda. La stessa reazione innesca l'esplosione di una nana bianca in una
   supernova di tipo Ia e i rari e lunghi lampi X chiamati superburst sulle
   stelle di neutroni. Il suo tasso alle energie stellari è ancora incerto:
-  gli esperimenti non concordano, con differenze di fattori grandi.
+  gli esperimenti differiscono anche di fattori molto grandi.
 details: >-
   ¹²C + ¹²C forms ²⁴Mg at an excitation energy of about 13.9 MeV plus the
   centre-of-mass energy, which decays mainly by α emission to ²⁰Ne and by
   proton emission to ²³Na; the neutron channel to ²³Mg is closed below
-  2.6 MeV. The Gamow window for core carbon burning lies near 1.5–2.5 MeV.
+  2.6 MeV. The Gamow window for core carbon burning in a 15 M☉ star
+  (0.83 GK) spans about 1.7–2.6 MeV, with its peak at 2.1 MeV; at the
+  ignition of a superburst on an accreting neutron star, near 0.5 GK
+  (Cooper et al. 2009), it moves down to about 1.2–1.8 MeV.
   Unlike most heavy-ion systems, the excitation function shows pronounced
   resonant structure down to the lowest measured energies, which makes any
   extrapolation from the data uncertain (Spillane et al. 2007; Zickefoose et
-  al. 2018).
+  al. 2018; Morales-Gallegos et al. 2022). The cross section of the
+  neighbouring system ¹²C + ¹³C, which has no such resonances, has been
+  used to set an upper limit on the non-resonant part (Zhang et al. 2020).
+
+
+  The excitation function is conventionally shown as the modified
+  S-factor S*(E) = σ(E) E exp(87.21/√E + 0.46 E), with E in MeV, which
+  removes most of the strong energy dependence that remains in the
+  ordinary S-factor of this heavy system; the standard rate of Caughlan
+  and Fowler (1988) assumes a constant S* below the data.
 
 
   Below the data, two descriptions of the non-resonant trend compete. The
@@ -97,18 +109,25 @@ measurements:
     note: >-
       Early measurements of the α and p channels, by charged-particle or
       γ-ray spectroscopy (High and Čujec recorded the γ rays at 90° and
-      270°); together they covered the cross section down to about
-      2.5 MeV.
-    refs: [patterson1969, mazarakis1973, high1977, spillane2007]
+      270°; Becker et al. detected the particles); together they covered
+      the cross section down to about 2.5 MeV.
+    refs: [patterson1969, mazarakis1973, high1977, becker1981]
+  - year: 2006
+    method: direct-surface
+    note: >-
+      γ-ray measurement of the α and p channels, aimed at bringing the
+      earlier, mutually inconsistent data sets into agreement.
+    refs: [aguilera2006]
   - year: 2007
     facility: bochum
     method: direct-surface
     energy: "E = 2.10–4.75 MeV"
     note: >-
       γ-ray spectroscopy with thick carbon targets whose hydrogen
-      contamination was made very low. A strong resonance at 2.14 MeV, on
-      the high-energy tail of the Gamow peak, raises the α-channel rate by
-      about a factor of five near 0.8 GK.
+      contamination was made very low. A strong resonance at 2.14 MeV, at
+      the Gamow peak of core carbon burning (0.83 GK) and above the window
+      of superburst ignition (0.5 GK), raises the α-channel rate by about a
+      factor of five near 0.8 GK.
     refs: [spillane2007]
   - year: 2018
     facility: lns-catania
@@ -142,6 +161,30 @@ measurements:
       Pelletron on highly ordered pyrolytic graphite targets. The results
       disagree strongly with the Trojan Horse measurement.
     refs: [tan2020]
+  - year: 2020
+    method: activation
+    energy: "¹²C + ¹³C down to E = 2.32 MeV"
+    energy_it: "¹²C + ¹³C fino a E = 2,32 MeV"
+    note: >-
+      Not ¹²C + ¹²C itself: ¹²C(¹³C,p)²⁴Na measured by counting the ²⁴Na
+      activity in an underground counting laboratory. Models normalised to
+      these data give an upper limit on the non-resonant ¹²C + ¹²C cross
+      section at stellar energies and argue against the S-factor maximum of
+      the hindrance model.
+    refs: [zhang2020]
+  - year: 2022
+    facility: circe
+    method: direct-surface
+    energy: "E = 2.51–4.36 MeV"
+    energy_it: "E = 2,51–4,36 MeV"
+    note: >-
+      Protons and α particles identified with ΔE–E telescopes, in steps of
+      10–25 keV. The branching ratios of the individual proton and α groups
+      change strongly with energy, and the angular distributions (three
+      angles) are not isotropic, a possible cause of the disagreement
+      between data sets. The full journal article was retracted in 2023;
+      the conference report stands.
+    refs: [moralesgallegos2022]
   - year: 2025
     facility: andromede
     method: direct-surface
@@ -153,7 +196,7 @@ measurements:
       energies.
     refs: [nippert2025]
 evaluations: [caughlan1988, jiang2018, monpribat2022]
-refs: [jiang2007, uzawa2025, gesue2025]
+refs: [jiang2007, uzawa2025, gesue2025, cooper2009]
 open_questions:
   - Whether the S-factor falls at deep sub-barrier energies (fusion hindrance) or keeps rising; the answer depends on fitting choices and on which of the many data sets are used.
   - Whether resonances below 2 MeV exist and how strong they are, as the Trojan Horse analysis suggests and its critics dispute.

@@ -32,8 +32,8 @@ role_it: >-
   magnesio-24. L'equilibrio tra i due rami, e la velocità con cui il
   carbonio si fonde, fissano quanto sodio e quanto neon lascia una stella
   massiccia. Misurare la reazione alle energie del nucleo di una stella è
-  molto difficile, e i risultati dei diversi metodi non concordano ancora,
-  con differenze di fattori grandi.
+  molto difficile, e i risultati dei diversi metodi differiscono ancora
+  anche di fattori molto grandi.
 details: >-
   The proton channel (Q = 2.24 MeV) is measured either by detecting the
   protons, whose spectrum resolves the ²³Na final states, or through the γ
@@ -48,7 +48,12 @@ details: >-
 
 
   The excitation function shows resonances down to about 2.1 MeV
-  (Spillane et al. 2007; Zickefoose et al. 2018). Below the data the same
+  (Spillane et al. 2007; Zickefoose et al. 2018), with branching ratios
+  of the individual proton groups that change strongly from one energy to
+  the next (Morales-Gallegos et al. 2022). The Gamow window spans about
+  1.7–2.6 MeV for core carbon burning at 0.83 GK and about 1.2–1.8 MeV
+  for superburst ignition near 0.5 GK (Cooper et al. 2009), so direct
+  data cover only the upper half of the first and none of the second. Below the data the same
   questions apply as for the α channel: fusion hindrance or a rising
   S-factor, and the disputed Trojan Horse resonances (Tumino et al. 2018;
   Mukhamedzhanov et al. 2019). The p channel also serves as the mirror
@@ -75,7 +80,13 @@ measurements:
       Early measurements of the α and p channels by charged-particle or
       γ-ray spectroscopy; together they covered the cross section down to
       about 2.5 MeV.
-    refs: [patterson1969, mazarakis1973, high1977, spillane2007]
+    refs: [patterson1969, mazarakis1973, high1977, becker1981]
+  - year: 2006
+    method: direct-surface
+    note: >-
+      γ-ray measurement of the α and p channels, aimed at bringing the
+      earlier, mutually inconsistent data sets into agreement.
+    refs: [aguilera2006]
   - year: 2007
     facility: bochum
     method: direct-surface
@@ -122,6 +133,30 @@ measurements:
       SAND particle–γ coincidences; strong disagreement with the Trojan
       Horse result.
     refs: [tan2020]
+  - year: 2020
+    method: activation
+    energy: "¹²C + ¹³C down to E = 2.32 MeV"
+    energy_it: "¹²C + ¹³C fino a E = 2,32 MeV"
+    note: >-
+      Not ¹²C + ¹²C itself: ¹²C(¹³C,p)²⁴Na measured by counting the ²⁴Na
+      activity in an underground counting laboratory. Models normalised to
+      these data give an upper limit on the non-resonant ¹²C + ¹²C cross
+      section at stellar energies and argue against the S-factor maximum of
+      the hindrance model.
+    refs: [zhang2020]
+  - year: 2022
+    facility: circe
+    method: direct-surface
+    energy: "E = 2.51–4.36 MeV"
+    energy_it: "E = 2,51–4,36 MeV"
+    note: >-
+      Protons and α particles identified with ΔE–E telescopes, in steps of
+      10–25 keV. The branching ratios of the individual proton and α groups
+      change strongly with energy, and the angular distributions (three
+      angles) are not isotropic, a possible cause of the disagreement
+      between data sets. The full journal article was retracted in 2023;
+      the conference report stands.
+    refs: [moralesgallegos2022]
   - year: 2025
     facility: andromede
     method: direct-surface
@@ -132,7 +167,7 @@ measurements:
       3.23 MeV.
     refs: [nippert2025]
 evaluations: [caughlan1988, jiang2018, monpribat2022]
-refs: [jiang2007, uzawa2025, gesue2025]
+refs: [jiang2007, uzawa2025, gesue2025, cooper2009]
 open_questions:
   - The ground-state proton branch, which γ-ray and coincidence measurements do not see directly.
   - The p/α branching at the energies of carbon burning, which decides the sodium yield.

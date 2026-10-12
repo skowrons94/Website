@@ -16,9 +16,18 @@ export function formatQ(q: QValue, lang: Lang = "en"): string {
   return `${decimal(q.value.toFixed(3), lang)} MeV`
 }
 
-/** `27 ± 7 keV`: the Gamow peak and half its 1/e width. */
-export function formatGamow(w: { E0: number; width: number }, lang: Lang = "en"): string {
+/**
+ * `27 ± 7 keV`: the Gamow peak and half its 1/e width; for a window cut by the
+ * threshold of an endothermic reaction, the range above it, `2600–2835 keV`.
+ */
+export function formatGamow(
+  w: { E0: number; width: number; thresholdLimited?: boolean; lo?: number; hi?: number },
+  lang: Lang = "en",
+): string {
   const round = (x: number) => (x >= 100 ? Math.round(x / 5) * 5 : x >= 10 ? Math.round(x) : Number(x.toFixed(1)))
+  if (w.thresholdLimited && w.lo !== undefined && w.hi !== undefined) {
+    return decimal(`${round(w.lo)}–${round(w.hi)} keV`, lang)
+  }
   return decimal(`${round(w.E0)} ± ${round(w.width / 2)} keV`, lang)
 }
 

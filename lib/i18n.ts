@@ -440,7 +440,7 @@ const en = {
     methodsCardText: "How a cross section at stellar energies is measured, directly or indirectly, and where.",
     dataCard: "The data",
     dataCardText: (reactions: number, written: number, references: number) =>
-      `The whole atlas as one JSON file: ${reactions} reactions (${written} with an entry), ${references} references, with Q-values and Gamow windows computed from AME2020.`,
+      `The whole atlas as one JSON file: ${reactions} reactions${written === reactions ? "" : ` (${written} with an entry)`}, ${references} references, with Q-values and Gamow windows computed from AME2020.`,
     dataInEnglish: "",
     lunaMarks: "marks LUNA work throughout the atlas. Q-values from the AME2020 mass evaluation, half-lives from NUBASE2020.",
     measuredAtLuna: "Measured at LUNA",
@@ -1030,7 +1030,7 @@ const it: Dictionary = {
   atlas: {
     name: "Atlante delle reazioni",
     description:
-      "Le reazioni nucleari che alimentano le stelle e producono gli elementi: dove si trovano sulla carta dei nuclidi, quanto bene è noto ciascuna, e come è stata misurata.",
+      "Le reazioni nucleari che alimentano le stelle e producono gli elementi: dove si trovano sulla carta dei nuclidi, quanto bene è nota ciascuna, e come è stata misurata.",
     title: "Le reazioni nucleari che fanno brillare le stelle",
     history: "Una storia della disciplina",
     methodsLink: "Metodi e laboratori",
@@ -1047,7 +1047,7 @@ const it: Dictionary = {
     methodsCardText: "Come si misura una sezione d'urto alle energie stellari, in modo diretto o indiretto, e dove.",
     dataCard: "I dati",
     dataCardText: (reactions: number, written: number, references: number) =>
-      `L'intero atlante in un unico file JSON: ${reactions} reazioni (${written} con una scheda), ${references} riferimenti bibliografici, con valori Q e finestre di Gamow calcolati da AME2020.`,
+      `L'intero atlante in un unico file JSON: ${reactions} reazioni${written === reactions ? "" : ` (${written} con una scheda)`}, ${references} riferimenti bibliografici, con valori Q e finestre di Gamow calcolati da AME2020.`,
     dataInEnglish: "Il file è in inglese.",
     lunaMarks:
       "indica il lavoro di LUNA in tutto l'atlante. Valori Q dalla valutazione delle masse AME2020, tempi di dimezzamento da NUBASE2020.",

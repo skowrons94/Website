@@ -223,8 +223,10 @@ function IntroEn() {
   return (
     <>
       <p>
-        Stars shine because light nuclei fuse into heavier ones, and almost every element heavier than
-        helium was made this way. To model a star, or to read the composition of an old one, we need to
+        Stars shine because light nuclei fuse into heavier ones. Fusion in stars made most of the
+        elements from carbon up to iron; most of those beyond iron were made instead by neutron
+        captures, slow ones mainly in red giants and rapid ones in stellar explosions and neutron-star
+        mergers. To model a star, or to read the composition of an old one, we need to
         know how fast each of these reactions runs at the temperature inside it.
       </p>
       <p>
@@ -260,8 +262,10 @@ function IntroIt() {
   return (
     <>
       <p>
-        Le stelle brillano perché i nuclei leggeri si fondono in nuclei più pesanti, e quasi tutti gli
-        elementi più pesanti dell'elio sono nati così. Per costruire il modello di una stella, o per
+        Le stelle brillano perché i nuclei leggeri si fondono in nuclei più pesanti. La fusione nelle
+        stelle ha prodotto la maggior parte degli elementi dal carbonio al ferro; quasi tutti quelli più
+        pesanti del ferro sono nati invece da catture di neutroni, lente soprattutto nelle giganti rosse e rapide
+        nelle esplosioni stellari e nelle fusioni di stelle di neutroni. Per costruire il modello di una stella, o per
         interpretare la composizione di una stella antica, dobbiamo sapere con quale rapidità avviene
         ciascuna di queste reazioni alla temperatura che c'è al suo interno: il suo tasso di reazione.
       </p>

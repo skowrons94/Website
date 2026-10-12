@@ -103,7 +103,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "119–367 keV (effective)"
-    energy_it: "119–367 keV (efficace)"
+    energy_it: "119–367 keV (energia efficace)"
     note: >-
       Full account of the LUNA solid-target campaign with TiN targets and HPGe
       detectors. Because of the level structure of ¹⁵O, the extrapolated S(0)
