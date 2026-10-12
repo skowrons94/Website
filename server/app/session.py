@@ -5,11 +5,18 @@ stops touching it.  Each session owns exactly one worker, so two people (or two
 browser tabs) editing levels cannot overwrite each other's parameters -- which
 the previous single-shared-instance design could not avoid.
 
-Two invariants this module exists to keep:
+Three invariants this module exists to keep:
 
-* **One caller at a time per worker.**  The pipe to a worker carries one request
-  at a time, so two concurrent calls would interleave.  Every use goes through
-  :meth:`Session.use`, which holds the session's lock.
+* **One caller at a time per worker -- and only per worker.**  A session's
+  models live in separate processes (``engine.ROLES``: data, fine, extrap,
+  grid), and a pipe carries one request at a time, so each role has a lock
+  of its own (:meth:`Session.use`).  A background preparation of the
+  extrapolations therefore never holds up an edit, which needs the data
+  (and, once built, the fine) worker only.
+* **The latest edit wins.**  Edits are numbered as they arrive and applied
+  to the parameter vector at once; an edit still waiting for its
+  calculation when a newer one arrives is not calculated, and answers with
+  the newer one's result (:meth:`Session.edit`).
 * **The model's own values are kept.**  ``initial_params`` is captured when the
   session opens, so "reset" restores exactly what the evaluation shipped rather
   than whatever the files happen to say later.
@@ -28,13 +35,26 @@ import uuid
 from typing import Dict, List, Optional
 
 from app import cache
-from app.engine import PREPARE_STEPS, Engine, EngineError
+from app.engine import PREPARE_STEPS, ROLES, Engine, EngineError
 
 log = logging.getLogger(__name__)
 
 
 class SessionError(RuntimeError):
     """Raised when a session cannot be created or is no longer usable."""
+
+
+class CapacityError(SessionError):
+    """Every model slot is busy: the client should retry after a while
+    (HTTP 503 with ``Retry-After``), not reopen at once."""
+
+    def __init__(self, message, retry_after=10):
+        super().__init__(message)
+        self.retry_after = retry_after
+
+
+# Which worker each calculation runs on.
+ROLE_OF = {"data": "data", "fine": "fine", "extrap": "extrap", "grid": "grid"}
 
 
 class Session:
@@ -46,16 +66,27 @@ class Session:
     the two silently edits the wrong parameter.
     """
 
-    def __init__(self, session_id, evaluation, omp_threads=None, timeout=None):
+    def __init__(self, session_id, evaluation, omp_threads=None, timeout=None,
+                 prepare_threads=None, prepare_slots=None):
         self.id = session_id
         self.evaluation = evaluation
         self.created_at = time.time()
         self.last_used = time.time()
-        self._lock = threading.RLock()
-        self._waiting = 0
+        # Last sign of life from the page (a request or POST .../ping), and
+        # whether the page sends heartbeats at all (then it may be dropped
+        # soon after they stop; see SessionManager.reap).
+        self.last_seen = time.time()
+        self.heartbeat = False
+        self._locks = {role: threading.RLock() for role in ROLES}
+        self._params_lock = threading.Lock()
+        self._busy = 0                     # user requests using a worker
         self._closed = False
+        self._prepare_slots = prepare_slots
+        self.timeout = timeout or 600
 
         kwargs = {} if timeout is None else {"timeout": timeout}
+        if prepare_threads:
+            kwargs["prepare_threads"] = prepare_threads
         self.engine = Engine(evaluation.azr_path, evaluation.path,
                              omp_threads=omp_threads, **kwargs)
         info = self.engine.info
@@ -79,8 +110,20 @@ class Session:
         # calculated for: /fine and /data after an edit ask again for what
         # the edit's own response already calculated.
         self._memo = {}
-        # Preparation steps done (engine.PREPARE_STEPS).
+        # Preparation steps done (engine.PREPARE_STEPS), the one under way.
         self.prepared = set()
+        self.preparing = None
+        self._fine_built = False
+        # When each derived worker was last used (idle ones are closed).
+        self.role_used = {}
+
+        # Edits: numbered on arrival; the last one calculated and its answer.
+        self._edit_gen = 0
+        self._edit_lock = threading.Lock()
+        self._edit_done = threading.Condition()
+        self._done = (0, None)
+        self._edits_active = 0
+        self._seq = None
 
     # -- lifecycle ------------------------------------------------------------
 
@@ -89,29 +132,49 @@ class Session:
         return self._closed
 
     def touch(self):
-        self.last_used = time.time()
+        self.last_used = self.last_seen = time.time()
+
+    def ping(self):
+        """A heartbeat from the page: the visitor still has it open."""
+        self.heartbeat = True
+        self.last_seen = time.time()
 
     def idle_for(self) -> float:
         return time.time() - self.last_used
 
+    def unseen_for(self) -> float:
+        return time.time() - self.last_seen
+
+    def busy(self) -> bool:
+        """Is a visitor's request using this session right now?  (A
+        background preparation does not count.)"""
+        return self._busy > 0 or self._edits_active > 0
+
     def close(self):
-        with self._lock:
-            if self._closed:
-                return
-            self._closed = True
-            try:
-                self.engine.close()
-            except Exception:            # never let cleanup raise
-                log.exception("error closing AZURE2 for session %s", self.id)
+        """Stop the workers.  Takes no lock: a calculation under way on
+        another thread gets an error from its worker rather than keeping the
+        session (and its memory) alive until it ends."""
+        if self._closed:
+            return
+        self._closed = True
+        with self._edit_done:
+            self._edit_done.notify_all()
+        try:
+            self.engine.close()
+        except Exception:            # never let cleanup raise
+            log.exception("error closing AZURE2 for session %s", self.id)
 
     # -- guarded access -------------------------------------------------------
 
-    def use(self):
-        """Context manager serializing access to the AZURE2 worker.
+    def use(self, role="data", background=False):
+        """Context manager serializing access to one of the session's
+        workers (``engine.ROLES``); different roles run concurrently.
 
-        ``with session.use():`` around every block that talks to AZURE2.
+        ``with session.use("fine"):`` around a block that talks to that
+        worker.  ``background`` marks a use no visitor is waiting for (a
+        preparation), which does not keep the session from being evicted.
         """
-        return _SessionUse(self)
+        return _SessionUse(self, role, background)
 
     def _check_alive(self):
         if self._closed:
@@ -122,7 +185,19 @@ class Session:
             self._closed = True
             raise SessionError("the AZURE2 process for this session has exited")
 
+    def role_busy(self, role) -> bool:
+        lock = self._locks[role]
+        if lock.acquire(blocking=False):
+            lock.release()
+            return False
+        return True
+
     # -- parameters -----------------------------------------------------------
+
+    def snapshot(self) -> tuple:
+        """The parameter vector now, as an immutable copy."""
+        with self._params_lock:
+            return tuple(self.params)
 
     def set_parameters(self, updates):
         """Apply ``{free_index: value}`` updates to the working vector.
@@ -130,9 +205,10 @@ class Session:
         Returns the number of parameters actually changed.  An out-of-range or
         non-free index is an error rather than a silent no-op, because the
         caller believing it edited a level it did not is the worst outcome.
+        Nothing is applied unless every update is valid.
         """
         n = len(self.params)
-        changed = 0
+        clean = {}
         for raw_index, value in updates.items():
             index = int(raw_index)
             if index < 0 or index >= n:
@@ -148,49 +224,129 @@ class Session:
             if not math.isfinite(value):
                 raise ValueError(
                     f"value for parameter {index} must be finite")
-            if self.params[index] != value:
-                self.params[index] = value
-                changed += 1
+            clean[index] = value
+        changed = 0
+        with self._params_lock:
+            for index, value in clean.items():
+                if self.params[index] != value:
+                    self.params[index] = value
+                    changed += 1
         return changed
 
     def reset_parameters(self):
         """Restore the parameters captured when the session opened."""
-        self.params = list(self.initial_params)
+        with self._params_lock:
+            self.params = list(self.initial_params)
 
     @property
     def is_modified(self) -> bool:
-        return self.params != self.initial_params
+        return list(self.snapshot()) != self.initial_params
+
+    # -- edits: the latest wins -------------------------------------------------
+
+    @property
+    def generation(self) -> int:
+        return self._edit_gen
+
+    def begin_edit(self, updates=None, reset=False, seq=None) -> int:
+        """Apply an edit (or a reset) to the parameters at once and number it.
+
+        ``seq``, when the client numbers its edits, drops an edit that
+        arrives after a later one (a reordered request) instead of letting
+        it overwrite newer values.  Returns the edit's generation.
+        """
+        with self._params_lock:
+            stale = (seq is not None and self._seq is not None and seq < self._seq)
+        if not stale:
+            if reset:
+                self.reset_parameters()
+            else:
+                self.set_parameters(updates or {})
+        with self._params_lock:
+            if seq is not None and not stale:
+                self._seq = seq
+            if not stale:
+                self._edit_gen += 1
+            return self._edit_gen if not stale else -1
+
+    def edit(self, gen, calculate, wait_superseded=True):
+        """Calculate edit ``gen`` -- ``calculate(params)`` -- unless a newer
+        edit has arrived meanwhile.
+
+        Returns ``(result, superseded)``.  A superseded edit is not
+        calculated: it waits for the newest one and returns its result
+        (``wait_superseded``), or returns ``None`` at once.
+        """
+        with self._edit_done:
+            self._edits_active += 1
+        try:
+            if gen >= 0:
+                with self._edit_lock:
+                    with self._params_lock:
+                        latest, params = self._edit_gen, tuple(self.params)
+                    if gen == latest:
+                        try:
+                            result = calculate(params)
+                        except BaseException:
+                            self._finish(latest, None)
+                            raise
+                        self._finish(latest, result)
+                        return result, False
+            if not wait_superseded:
+                return None, True
+            with self._edit_done:
+                target = self._edit_gen
+                self._edit_done.wait_for(
+                    lambda: self._done[0] >= target or self._closed,
+                    timeout=self.timeout)
+                return self._done[1], True
+        finally:
+            with self._edit_done:
+                self._edits_active -= 1
+
+    def _finish(self, gen, result):
+        with self._edit_done:
+            if gen >= self._done[0]:
+                self._done = (gen, result)
+            self._edit_done.notify_all()
 
     # -- calculations ---------------------------------------------------------
 
-    def calculate_data(self):
+    def calculate_data(self, params=None):
         """Cross sections and S-factors for every data segment, at the current
         parameters.  Returns ``(mu, mu_sfactor)``."""
-        return self._cached("data", self.engine.calculate_data)
+        return self._cached("data", self.engine.calculate_data, params)
 
-    def calculate_extrapolations(self):
+    def calculate_extrapolations(self, params=None):
         """Energies, angles, cross sections and S-factors for every
         extrapolation segment.  Returns ``(energies, angles, mu, mu_sfactor)``."""
-        return self._cached("extrap", self.engine.calculate_extrapolations)
+        return self._cached("extrap", self.engine.calculate_extrapolations, params)
 
-    def calculate_fine(self):
+    def calculate_fine(self, params=None):
         """The model on a fine grid per data segment, at the current
         parameters: ``(index, energies, mu, mu_sfactor, angles, axes)``."""
-        return self._cached("fine", self.engine.calculate_fine)
+        result = self._cached("fine", self.engine.calculate_fine, params)
+        return result
 
-    def fine_ready(self) -> bool:
+    def calculate_grid(self, params=None):
+        """The extrapolations' energy × angle grids
+        (:func:`app.engine.grid_curves`)."""
+        return self._cached("grid", self.engine.calculate_grid, params)
+
+    def fine_ready(self, params=None) -> bool:
         """Can the fine grid be calculated without first building its model?
 
         True at the shipped parameters when the cache holds it, or once the
-        worker has built the derived model; used to decide whether an edit's
-        response may include the fine curves without a long wait.
+        worker has built the derived model (and is not busy building it);
+        used to decide whether an edit's response may include the fine
+        curves without a long wait.
         """
-        if not self.is_modified and cache.read(self.evaluation.path, self.params, "fine") is not None:
+        params = self.snapshot() if params is None else params
+        if list(params) == self.initial_params and \
+                cache.read(self.evaluation.path, params, "fine", unedited=True) is not None:
             return True
-        try:
-            return self.engine.fine_ready()
-        except EngineError:
-            return False
+        return (self._fine_built and self.preparing != "fine"
+                and self.engine.has_role("fine"))
 
     def peek(self, key):
         """``key``'s result if it can be had without the worker -- the
@@ -200,113 +356,236 @@ class Session:
         if self._closed:
             raise SessionError("session has been closed")
         self.touch()
-        params = tuple(self.params)
+        params = self.snapshot()
         memo = self._memo.get(key)
         if memo is not None and memo[0] == params:
             return memo[1]
         if list(params) != self.initial_params:
             return None
-        hit = cache.read(self.evaluation.path, list(params), key)
+        hit = cache.read(self.evaluation.path, list(params), key, unedited=True)
         if hit is not None:
             self._memo[key] = (params, hit)
         return hit
 
-    def prepare(self, step):
+    def prepare(self, step, background=False):
         """Build one derived model ahead of need (``engine.PREPARE_STEPS``),
-        so that the first edit does not wait for it.  Idempotent."""
-        if step not in PREPARE_STEPS:
+        so that the first edit does not wait for it.  Idempotent; holds only
+        that model's lock (and a machine-wide preparation slot)."""
+        if step not in ROLES:
             raise ValueError(f"unknown preparation step: {step}")
         if step in self.prepared:
             return False
+        slots = self._prepare_slots
+        if slots is not None:
+            slots.acquire()
         try:
-            self.engine.prepare(step)
-        except EngineError as err:
-            if not self.engine.is_alive():
-                self._closed = True
-                raise SessionError(str(err)) from err
-            # The model could not be built; the calculation that needs it
-            # will report that when it is asked for.
-            log.warning("session %s (%s): preparing %s failed: %s",
-                        self.id, self.evaluation.id, step, err)
-        self.prepared.add(step)
-        return True
+            with self.use(step, background=background):
+                if step in self.prepared:
+                    return False
+                self.preparing = step
+                started = time.time()
+                try:
+                    self.engine.prepare(step)
+                except EngineError as err:
+                    if not self.engine.is_alive():
+                        self._closed = True
+                        raise SessionError(str(err)) from err
+                    # The model could not be built; the calculation that needs it
+                    # will report that when it is asked for.
+                    log.warning("session %s (%s): preparing %s failed: %s",
+                                self.id, self.evaluation.id, step, err)
+                finally:
+                    self.preparing = None
+                self.prepared.add(step)
+                self.role_used[step] = time.time()
+                if step == "fine":
+                    self._fine_built = True
+                log.info("session %s (%s): prepared %s in %.1f s", self.id,
+                         self.evaluation.id, step, time.time() - started)
+                return True
+        finally:
+            if slots is not None:
+                slots.release()
 
-    def busy_elsewhere(self) -> bool:
-        """Is another request waiting for this session's worker?  A
-        background preparation then lets it go first."""
-        return self._waiting > 0
+    def prepare_all(self, steps=PREPARE_STEPS, quiet=0.5):
+        """Prepare ``steps`` in order, in the background, giving way to edits:
+        a step starts only once no edit is being calculated (for ``quiet``
+        seconds).  Returns when done, or when the session closes."""
+        for step in steps:
+            waited = 0.0
+            while not self._closed and waited < 120:
+                if self._edits_active == 0:
+                    time.sleep(quiet)
+                    if self._edits_active == 0:
+                        break
+                time.sleep(0.05)
+                waited += 0.05
+            if self._closed:
+                return
+            try:
+                self.prepare(step, background=True)
+            except SessionError:
+                return
+            except Exception:
+                log.exception("session %s: background preparation of %s failed",
+                              self.id, step)
 
-    def _cached(self, key, method):
+    def start_preparation(self, steps=PREPARE_STEPS):
+        """:meth:`prepare_all` on a thread of its own."""
+        thread = threading.Thread(target=self.prepare_all, args=(tuple(steps),),
+                                  name=f"prepare-{self.id[:8]}", daemon=True)
+        thread.start()
+        return thread
+
+    def close_idle_role(self, role, ttl) -> bool:
+        """Stop a derived worker (extrap, grid) unused for ``ttl`` seconds,
+        to give its memory back; the next request starts it again."""
+        if role == "data" or not self.engine.has_role(role):
+            return False
+        if time.time() - self.role_used.get(role, self.created_at) <= ttl:
+            return False
+        lock = self._locks[role]
+        if not lock.acquire(blocking=False):
+            return False
+        try:
+            self.engine.close_role(role)
+            self.prepared.discard(role)
+            for key in list(self._memo):
+                if ROLE_OF.get(key) == role:
+                    self._memo.pop(key, None)
+            if role == "fine":
+                self._fine_built = False
+            return True
+        finally:
+            lock.release()
+
+    def status(self) -> dict:
+        return {
+            "prepared": [s for s in ROLES if s in self.prepared],
+            "preparing": self.preparing,
+            "running": [r for r in ROLES if self.engine.has_role(r)],
+            "busy": [r for r in ROLES if self.role_busy(r)],
+            "modified": self.is_modified,
+            "generation": self._edit_gen,
+            "fine_ready": self.fine_ready(),
+        }
+
+    def _cached(self, key, method, params=None):
         """At the evaluation's own parameters, answer from ``app.cache`` when
         it can and fill it when it cannot; after an edit, calculate -- once
-        per parameter vector."""
-        params = tuple(self.params)
+        per parameter vector.  Holds the lock of the worker ``key`` runs on."""
+        role = ROLE_OF[key]
+        params = self.snapshot() if params is None else tuple(params)
         memo = self._memo.get(key)
         if memo is not None and memo[0] == params:
             return memo[1]
-        if self.is_modified:
-            result = self._engine_call(method)
-        else:
-            result = cache.read(self.evaluation.path, self.params, key)
+        with self.use(role):
+            memo = self._memo.get(key)
+            if memo is not None and memo[0] == params:
+                return memo[1]
+            unedited = list(params) == self.initial_params
+            result = None
+            if unedited:
+                result = cache.read(self.evaluation.path, params, key, unedited=True)
             if result is None:
-                result = self._engine_call(method)
-                cache.write(self.evaluation.path, self.params, key, result)
-        self._memo[key] = (params, result)
-        return result
+                result = self._engine_call(method, params)
+                if unedited:
+                    cache.write(self.evaluation.path, params, key, result, unedited=True)
+                if role != "data":
+                    self.role_used[role] = time.time()
+                if key == "fine":
+                    self._fine_built = True
+            self._memo[key] = (params, result)
+            return result
 
-    def _engine_call(self, method):
+    def _engine_call(self, method, params):
         """Run one engine call, reporting a lost worker as a dead session.
 
         A worker that has died cannot be revived -- its model state is gone --
         so the session is closed and the client is told to reopen, which is what
-        the 409 in the routes means.
+        the 409 in the routes means.  A derived worker (fine, extrap, grid)
+        that dies is only that: the next call starts it again.
         """
         try:
-            return method(self.params)
+            return method(list(params))
         except EngineError as err:
-            self._closed = True
-            raise SessionError(str(err)) from err
+            if not self.engine.is_alive():
+                self._closed = True
+                raise SessionError(str(err)) from err
+            raise
 
 
 _WAITING = threading.Lock()
 
 
 class _SessionUse:
-    def __init__(self, session):
+    def __init__(self, session, role="data", background=False):
+        if role not in session._locks:
+            raise ValueError(f"unknown role: {role}")
         self._session = session
+        self._role = role
+        self._background = background
 
     def __enter__(self):
         session = self._session
-        with _WAITING:
-            session._waiting += 1
-        try:
-            session._lock.acquire()
-        finally:
+        if not self._background:
             with _WAITING:
-                session._waiting -= 1
+                session._busy += 1
         try:
-            self._session._check_alive()
-        except Exception:
-            self._session._lock.release()
+            session._locks[self._role].acquire()
+        except BaseException:
+            self._leave()
             raise
-        return self._session
+        try:
+            session._check_alive()
+        except Exception:
+            session._locks[self._role].release()
+            self._leave()
+            raise
+        return session
+
+    def _leave(self):
+        if not self._background:
+            with _WAITING:
+                self._session._busy -= 1
 
     def __exit__(self, *exc):
-        self._session.touch()
-        self._session._lock.release()
+        if not self._background:
+            self._session.touch()
+        self._session._locks[self._role].release()
+        self._leave()
         return False
 
 
 class SessionManager:
-    """Creates, tracks and reaps :class:`Session` objects."""
+    """Creates, tracks and reaps :class:`Session` objects.
 
-    def __init__(self, ttl=1800, max_sessions=8, reaper_interval=60,
-                 omp_threads=None, timeout=None):
+    Lifetimes: a session whose page sends heartbeats (``POST
+    /api/sessions/<id>/ping``) is closed ``heartbeat_ttl`` seconds after
+    they stop (the tab is gone), or after ``idle_ttl`` seconds of
+    heartbeats with no use; a session without heartbeats (an older page)
+    after ``ttl`` seconds without a request.  The extrapolations' workers,
+    the largest, are closed after ``role_ttl`` seconds unused.
+    """
+
+    def __init__(self, ttl=600, max_sessions=8, reaper_interval=60,
+                 omp_threads=None, timeout=None, heartbeat_ttl=120,
+                 idle_ttl=3600, role_ttl=300, prepare_threads=None,
+                 prepare_concurrency=None, auto_prepare=False, retry_after=15,
+                 spares=None, spare_delay=20):
         self.ttl = ttl
         self.max_sessions = max_sessions
         self.reaper_interval = reaper_interval
         self.omp_threads = omp_threads
         self.timeout = timeout
+        self.heartbeat_ttl = heartbeat_ttl
+        self.idle_ttl = idle_ttl
+        self.role_ttl = role_ttl
+        self.prepare_threads = prepare_threads
+        self.auto_prepare = auto_prepare
+        self.retry_after = retry_after
+        self.prepare_slots = (threading.BoundedSemaphore(prepare_concurrency)
+                              if prepare_concurrency else None)
         self._sessions: Dict[str, Session] = {}
         self._lock = threading.Lock()
         self._stop = threading.Event()
@@ -316,6 +595,20 @@ class SessionManager:
         # the in-flight spawns every concurrent request would see the same
         # "there is room" snapshot and the cap would not bind at all.
         self._pending = 0
+        # Spare sessions: opened and prepared ahead of any visitor, for the
+        # evaluations whose opening and preparation are slow (⁷Be, ²⁴Mg:
+        # 3 s to open and 10-40 s to prepare), and handed to the next
+        # visitor as they are -- at the shipped parameters, never used --
+        # so the scheme comes at once and the first edit takes what an edit
+        # takes.  ``spares`` maps an evaluation id to how many to keep.
+        self.spares = dict(spares or {})
+        # Optional: evaluation -> how many spares, asked again at each open
+        # (an evaluation warmed after startup gets its spare then).
+        self.spare_policy = None
+        self.spare_delay = spare_delay
+        self._spare = {}                    # evaluation id -> [Session]
+        self._spare_building = set()
+        self._spare_evaluations = {}
 
     # -- reaper ---------------------------------------------------------------
 
@@ -333,17 +626,39 @@ class SessionManager:
             except Exception:
                 log.exception("session reaper failed")
 
+    def expired(self, session) -> bool:
+        if session.closed:
+            return True
+        if session.busy():
+            return False
+        if session.heartbeat:
+            return (session.unseen_for() > self.heartbeat_ttl
+                    or session.idle_for() > self.idle_ttl)
+        return session.idle_for() > self.ttl
+
     def reap(self) -> int:
-        """Close every session idle for longer than the TTL."""
+        """Close every expired session (see the class docstring), and the
+        idle extrapolation workers of the others."""
         with self._lock:
-            expired = [s for s in self._sessions.values()
-                       if s.idle_for() > self.ttl or s.closed]
+            expired = [s for s in self._sessions.values() if self.expired(s)]
             for session in expired:
                 self._sessions.pop(session.id, None)
+            alive = list(self._sessions.values())
         for session in expired:
-            log.info("reaping idle session %s (%s), idle %.0fs",
-                     session.id, session.evaluation.id, session.idle_for())
+            log.info("reaping idle session %s (%s), idle %.0fs, unseen %.0fs",
+                     session.id, session.evaluation.id, session.idle_for(),
+                     session.unseen_for())
             session.close()
+        if self.role_ttl:
+            for session in alive:
+                for role in ("grid", "extrap"):
+                    try:
+                        if session.close_idle_role(role, self.role_ttl):
+                            log.info("closed idle %s worker of session %s (%s)",
+                                     role, session.id, session.evaluation.id)
+                    except Exception:
+                        log.exception("closing the %s worker of %s failed",
+                                      role, session.id)
         return len(expired)
 
     # -- lifecycle ------------------------------------------------------------
@@ -358,21 +673,40 @@ class SessionManager:
         simultaneous request pass the same check and blow straight through it --
         with a cap of 3, ten concurrent opens produced ten workers.
 
-        If the cap is reached the least-recently-used *unlocked* session is
-        evicted; if every session is genuinely busy the request is refused rather
-        than starving the ones already running.
+        A spare session of this evaluation, when one is ready, is handed over
+        instead (and another one built a little later).  If the cap is
+        reached a spare of another evaluation, else the least-recently-used
+        session that no visitor is waiting on, is closed; if every session is
+        genuinely busy the request is refused at once (:class:`CapacityError`,
+        a 503) rather than starving the ones already running.
         """
         self.reap()
+        if self.spare_policy is not None:
+            try:
+                self.spares[evaluation.id] = self.spare_policy(evaluation)
+            except Exception:
+                log.exception("spare policy failed for %s", evaluation.id)
+
+        spare = self._take_spare(evaluation.id)
+        if spare is not None:
+            log.info("opened session %s for %s from a spare (%d/%d slots in use)",
+                     spare.id, evaluation.id, len(self._sessions), self.max_sessions)
+            self._replenish_later(evaluation)
+            return spare
 
         victim = self._reserve_slot()
         if victim is not None:
-            log.info("evicting LRU session %s to make room", victim.id)
+            log.info("evicting %s %s (%s) to make room",
+                     "spare" if victim.id.startswith("spare-") else "LRU session",
+                     victim.id, victim.evaluation.id)
             victim.close()
 
         session_id = uuid.uuid4().hex
         try:
             session = Session(session_id, evaluation,
-                              omp_threads=self.omp_threads, timeout=self.timeout)
+                              omp_threads=self.omp_threads, timeout=self.timeout,
+                              prepare_threads=self.prepare_threads,
+                              prepare_slots=self.prepare_slots)
         except Exception as err:
             with self._lock:
                 self._pending -= 1
@@ -385,43 +719,121 @@ class SessionManager:
         log.info("opened session %s for %s (%d/%d slots in use)",
                  session_id, evaluation.id, len(self._sessions),
                  self.max_sessions)
+        if self.auto_prepare:
+            session.start_preparation()
+        if self.spares.get(evaluation.id):
+            self._replenish_later(evaluation)
         return session
+
+    # -- spares ----------------------------------------------------------------
+
+    def _spare_count(self) -> int:
+        return sum(len(v) for v in self._spare.values())
+
+    def _take_spare(self, evaluation_id) -> Optional[Session]:
+        with self._lock:
+            pool = self._spare.get(evaluation_id) or []
+            while pool:
+                spare = pool.pop(0)
+                if spare.closed or not spare.engine.is_alive():
+                    continue
+                spare.id = uuid.uuid4().hex
+                spare.touch()
+                spare.created_at = time.time()
+                spare.role_used = {role: time.time() for role in spare.role_used}
+                self._sessions[spare.id] = spare
+                return spare
+        return None
+
+    def start_spares(self, evaluations):
+        """Build the configured spares (on a thread; at startup)."""
+        for evaluation in evaluations:
+            if self.spares.get(evaluation.id):
+                self._spare_evaluations[evaluation.id] = evaluation
+                self._replenish_later(evaluation, delay=0)
+
+    def _replenish_later(self, evaluation, delay=None):
+        if not self.spares.get(evaluation.id) or self._stop.is_set():
+            return
+        with self._lock:
+            if evaluation.id in self._spare_building:
+                return
+            self._spare_building.add(evaluation.id)
+        delay = self.spare_delay if delay is None else delay
+        thread = threading.Thread(target=self._replenish, args=(evaluation, delay),
+                                  name=f"spare-{evaluation.id}", daemon=True)
+        thread.start()
+
+    def _replenish(self, evaluation, delay):
+        """Build spares of ``evaluation`` up to its count -- after ``delay``
+        seconds, so the visitor who just took one does not share the CPU with
+        its replacement -- while there is room under the cap."""
+        try:
+            if delay and self._stop.wait(delay):
+                return
+            while not self._stop.is_set():
+                with self._lock:
+                    have = len([s for s in self._spare.get(evaluation.id, []) if not s.closed])
+                    room = (len(self._sessions) + self._pending + self._spare_count()
+                            < self.max_sessions)
+                    if have >= self.spares.get(evaluation.id, 0) or not room:
+                        return
+                    self._pending += 1
+                try:
+                    spare = Session(f"spare-{uuid.uuid4().hex}", evaluation,
+                                    omp_threads=self.omp_threads, timeout=self.timeout,
+                                    prepare_threads=self.prepare_threads,
+                                    prepare_slots=self.prepare_slots)
+                except Exception:
+                    log.exception("could not open a spare session of %s", evaluation.id)
+                    with self._lock:
+                        self._pending -= 1
+                    return
+                spare.prepare_all(quiet=0)
+                with self._lock:
+                    self._pending -= 1
+                    if self._stop.is_set():
+                        spare.close()
+                        return
+                    self._spare.setdefault(evaluation.id, []).append(spare)
+                log.info("spare session of %s ready (prepared: %s)", evaluation.id,
+                         ", ".join(sorted(spare.prepared)))
+        finally:
+            with self._lock:
+                self._spare_building.discard(evaluation.id)
 
     def _reserve_slot(self) -> Optional[Session]:
         """Take one worker slot, evicting if needed.
 
-        Returns a session the caller must close (evicted to make room), or
-        ``None``.  Raises :class:`SessionError` if no slot can be freed.  The
+        Returns a session the caller must close (a spare of another
+        evaluation, or the LRU idle one, evicted to make room), or ``None``.
+        Raises :class:`CapacityError` if no slot can be freed.  The
         reservation is counted in ``_pending`` so concurrent callers see it.
         """
         with self._lock:
-            if len(self._sessions) + self._pending < self.max_sessions:
+            if len(self._sessions) + self._pending + self._spare_count() < self.max_sessions:
                 self._pending += 1
                 return None
 
-            victim = self._evict_candidate()
+            victim = None
+            for pool in self._spare.values():
+                if pool:
+                    victim = pool.pop()
+                    break
             if victim is None:
-                raise SessionError(
-                    f"all {self.max_sessions} model slots are busy; "
-                    "please try again shortly")
-            self._sessions.pop(victim.id, None)
+                victim = self._evict_candidate()
+                if victim is None:
+                    raise CapacityError(
+                        f"all {self.max_sessions} model slots are busy; "
+                        "please try again shortly", retry_after=self.retry_after)
+                self._sessions.pop(victim.id, None)
             self._pending += 1
             return victim
 
     def _evict_candidate(self) -> Optional[Session]:
-        """The least-recently-used session that nobody is mid-request on.
-
-        "Idle" means the session's lock is free: every use of a worker holds it,
-        so a session whose lock can be taken is not being calculated on right
-        now.  (Comparing ``idle_for() > 0`` instead would match essentially every
-        session, since time always advances, and would happily evict a worker
-        out from under a running calculation.)  Caller holds ``_lock``.
-        """
-        free = []
-        for session in self._sessions.values():
-            if session._lock.acquire(blocking=False):
-                session._lock.release()
-                free.append(session)
+        """The least-recently-used session that no visitor is mid-request on
+        (a background preparation does not count).  Caller holds ``_lock``."""
+        free = [s for s in self._sessions.values() if not s.busy()]
         if not free:
             return None
         return min(free, key=lambda s: s.last_used)
@@ -441,11 +853,14 @@ class SessionManager:
             session.close()
 
     def close_all(self):
-        """Shut down every session this manager owns."""
+        """Shut down every session this manager owns, spares included."""
         self._stop.set()
         with self._lock:
             sessions = list(self._sessions.values())
             self._sessions.clear()
+            for pool in self._spare.values():
+                sessions += pool
+            self._spare.clear()
         for session in sessions:
             session.close()
 
@@ -454,5 +869,8 @@ class SessionManager:
             sessions = list(self._sessions.values())
         return [{"id": s.id, "evaluation": s.evaluation.id,
                  "idle_seconds": round(s.idle_for(), 1),
+                 "heartbeat": s.heartbeat,
+                 "prepared": sorted(s.prepared),
+                 "running": [r for r in ROLES if s.engine.has_role(r)],
                  "modified": s.is_modified}
                 for s in sessions]

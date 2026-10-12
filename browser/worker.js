@@ -7,13 +7,16 @@
  *               { progress: "..." } while starting up
  *
  * Everything is loaded from this file's own directory, laid out by
- * browser/assemble.mjs:
+ * browser/assemble.py:
  *
  *   pyodide/            Pyodide core
  *   wheels/             numpy, mpmath, Flask and its dependencies
  *   runtime.zip         pyazr (+ _azure2 wasm), server/app, bridge.py
  *   manifest.json       the wheel file names
  *   evaluations/<id>.zip
+ *   evaluations/<id>/initial.json   scheme, data and smooth curves at the
+ *                                   shipped parameters, fetched by the page
+ *                                   itself before this worker starts
  */
 
 const BASE = self.location.href.replace(/[^/]*$/, "")

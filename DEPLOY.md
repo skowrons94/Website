@@ -8,11 +8,25 @@ The whole site runs as three containers from `docker-compose.yml`: Caddy
 
 - Ubuntu 22.04/24.04 or Debian 12, 2+ vCPU.
 - **Memory: 4 GB or more, plus 2–4 GB of swap.** The site, Caddy and the idle
-  API use about 250 MB, and an open evaluation 35–100 MB (with its plot
-  curves ready for an edit, up to ~0.4 GB for ⁷Be). The exception is the ⁷Be
-  extrapolations: once shown they keep one worker at about 1.6 GB until the
-  visitor closes the tab. With less memory the kernel kills that worker and the
-  page says the session expired; the rest of the site keeps running.
+  API use about 250 MB. An open evaluation, prepared for edits (its data model,
+  plot curves and extrapolations, each a worker process), uses:
+
+  | ⁷Be | ²⁴Mg | ¹⁴N | ²³Na, ²¹Na | ¹³N, ¹⁷F, ⁸Be |
+  |---|---|---|---|---|
+  | 0.87 GB (+0.15 GB while its 2-D grids are shown) | 0.43 GB | 0.29 GB | 0.24 GB | 0.18–0.20 GB |
+
+  plus, by default, one spare prepared session each of ⁷Be and ²⁴Mg
+  (`AZURE2_SPARES`, 1.3 GB together; `0` turns them off). The extrapolations'
+  worker is closed after 5 minutes unused (`AZURE2_ROLE_TTL`), which takes
+  ⁷Be back to about 0.5 GB. **Sizing `AZURE2_MAX_SESSIONS`** (which counts
+  the spares): plan 0.9 GB per slot if visitors mostly open ⁷Be, about 0.35 GB
+  otherwise — so per GB left after the site and the spares, about 1 slot for
+  ⁷Be-heavy traffic and 3 for the rest. On 4 GB: `AZURE2_MAX_SESSIONS=4`
+  with spares, 6 without. On 8 GB: 8 (the default). A full server answers a
+  new visitor at once with "busy, retry in 15 s" (HTTP 503) instead of
+  hanging, after first evicting a spare of another evaluation and then the
+  least recently used idle session. A tab closed without notice (crash,
+  phone) is noticed within 2 minutes (heartbeats).
 - **Disk: 5 GB free** for the images (about 650 MB) and the build cache.
 - Install Docker Engine and the Compose plugin:
 
@@ -68,7 +82,8 @@ After changing it, rebuild the site (`make deploy`); a restart is not enough.
 | `ACME_EMAIL` | your address, for certificate expiry warnings |
 | `BUILD_JOBS` | `2` on a VPS with 2 GB of RAM or less; leave unset otherwise |
 | `AZURE2_UID`, `AZURE2_GID` | the owner of `server/evaluations` (`make env` fills these in; check with `stat -c '%u:%g' server/evaluations`) |
-| `AZURE2_MAX_SESSIONS` | how many evaluations may be open at once (default 8); lower it on a small box |
+| `AZURE2_MAX_SESSIONS` | how many evaluations may be open at once, spares included (default 8); see the memory table in section 1 |
+| `AZURE2_SPARES` | `auto` (default) keeps one prepared ⁷Be and ²⁴Mg session ready (1.3 GB); `0` on a box under 4 GB |
 
 Clone as the user that will run `make`, not as root, so the evaluations
 directory belongs to that user and `make env` picks the right ID.
@@ -163,7 +178,8 @@ docker run --rm -v website_caddy_data:/d -v "$PWD":/b alpine \
 | Build dies with `Killed` or `c++: fatal error` | Out of memory compiling AZURE2. Set `BUILD_JOBS=2` (or `1`) in `.env`, add swap, run `make deploy` again. |
 | Build fails with `429 Too Many Requests` from Docker Hub | Too many anonymous image pulls. Wait an hour, or `docker login`. |
 | `/evaluations` says the server cannot be reached | The API is down: `make check`, then `make logs-azure2`. |
-| An evaluation says "all model slots are busy" | `AZURE2_MAX_SESSIONS` visitors have evaluations open. Raise it if memory allows; idle sessions are closed after `AZURE2_SESSION_TTL` seconds. |
-| ⁷Be extrapolations end with "session expired" | The worker was killed for lack of memory (`dmesg | grep -i oom`). Add RAM or swap. |
+| An evaluation says "all model slots are busy" | `AZURE2_MAX_SESSIONS` visitors are calculating at once (idle ones are evicted for a newcomer). Raise it if memory allows (section 1). |
+| ⁷Be extrapolations end with "session expired" | The worker was killed for lack of memory (`dmesg | grep -i oom`). Add RAM or swap, or set `AZURE2_SPARES=0`. |
+| After a deploy the first visitor of ⁷Be waits ~20 s | The caches are cold: `make warm` (it also measures the timings the page shows, and writes `initial.json`). |
 | `git pull` refuses: local changes to `server/evaluations/.../output/intEC.*` | AZURE2 rewrote a cached integral file. `git checkout -- server/evaluations` and pull again. |
 | Started on the wrong domain | Fix `SITE_DOMAIN` in `.env`, then `docker compose up -d caddy`. |

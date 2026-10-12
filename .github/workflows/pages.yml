@@ -75,7 +75,8 @@ jobs:
           python -c "import pyazr, pyazr._azure2; print('pyazr', pyazr.__version__)"
 
       - name: Precompute the evaluations
-        run: python browser/precompute.py server/evaluations build/azure2/evaluations
+        # --timings: measure the typical timings the page shows (initial.json).
+        run: python browser/precompute.py --timings server/evaluations build/azure2/evaluations
 
       # -- WebAssembly engine -------------------------------------------------
       - name: Cache the WebAssembly build

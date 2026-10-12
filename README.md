@@ -113,10 +113,16 @@ message. Put `BUILD_JOBS=2` in `.env` and it fits.
 
 | | |
 |---|---|
-| `AZURE2_MAX_SESSIONS` | how many evaluations may be open at once. Each is a worker process holding a model (and, once used, one more for the plots' curves and one for the extrapolations: AZURE2 does not keep two models of one process apart). Measured: the API idles at ~45 MB and an open session costs 35–100 MB depending on the model, so 8 open evaluations fit in well under 1 GB. The exceptions are `7Be`: its plot curves take the worker to ~0.4 GB once the Plot tab is open, and its **extrapolations** to ~1.6 GB once they have been shown, until the session closes. This is what bounds memory; see DEPLOY.md. |
-| `AZURE2_SESSION_TTL` | seconds before an abandoned session is reaped. |
-| `AZURE2_OMP_THREADS` | OpenMP threads per worker. Total load is sessions × threads, so `1` is the right default until the box is large. |
+| `AZURE2_MAX_SESSIONS` | how many evaluations may be open at once (spare sessions included). Each is a few worker processes (the model, its plot curves, its extrapolations: AZURE2 does not keep two models of one process apart): 0.2–0.3 GB for most evaluations, 0.43 GB for ²⁴Mg and 0.87 GB for ⁷Be with everything prepared. DEPLOY.md has the table and how many fit per GB. |
+| `AZURE2_SESSION_TTL` | seconds before a session of a page that sends no heartbeat is reaped (600); a page that pings is closed `AZURE2_HEARTBEAT_TTL` (120) seconds after its pings stop. |
+| `AZURE2_SPARES` | `auto` (default): keep one session of each slow evaluation (⁷Be, ²⁴Mg) opened and prepared for the next visitor, so their first edit takes ~2 s instead of 20–60 s; `0` to turn off; or `7Be:1,24Mg:1`. |
+| `AZURE2_OMP_THREADS` | OpenMP threads per worker for calculations. Edits do not run in parallel in AZURE2, so `1` is right. |
+| `AZURE2_PREPARE_THREADS` | OpenMP threads while a worker *builds* a model (external-capture integrals), which does scale: all cores by default. |
 | `AZURE2_THREADS` | Waitress' HTTP threads. Unrelated to the above — these serve requests, they do not run AZURE2. |
+
+server/README.md documents the API, the scheduling (per-worker locks, the
+latest edit wins, background preparation) and the rest of the knobs
+(`server/config.py`).
 
 ## Adding content
 
@@ -395,10 +401,11 @@ dataset AZURE2 folds with the target or the detector (`<targetInt>`), where the
 curve does not reproduce the data-mode values, keeps its own line through its
 points; one whose energy shift moves it next to a narrow resonance gets the
 curve shifted. At the shipped parameters the curves come from
-`precomputed.json` (`make warm`); once the Plot tab is open the page asks the
-server to build the derived models in the background (`POST
-/api/sessions/<id>/prepare`), so the first edit answers with the new curve in
-about two seconds rather than first building them.
+`precomputed.json` (`make warm`, which also writes `initial.json`, what the page
+draws before its session has started, with the evaluation's typical timings);
+as soon as a session opens the server builds the derived models in the
+background, one worker each, so an edit never waits for the extrapolations' model
+and the first one answers with the new curve in about two seconds.
 
 #### Total capture and `split_total_capture`
 
@@ -459,9 +466,9 @@ extrapolations, downloads — with three differences:
 - The first evaluation a visitor opens takes about ten seconds: Python and the
   engine (about 20 MB, cached by the browser afterwards) are loaded then.
 - Results at an evaluation's own parameters were calculated when the site was
-  built, so they appear at once. After an edit the browser recalculates, on one
-  core: from under a second (¹⁴N data) to several minutes (the ⁷Be
-  extrapolations, which carry external-capture integrals).
+  built, so they appear at once (²⁴Mg: data, curves and extrapolations in
+  0.1–0.2 s each). After an edit the browser recalculates, on one core: from
+  under a second (¹⁴N data) to a minute or more for ⁷Be.
 - An evaluation added under `server/evaluations/` appears after the next build,
   not immediately.
 

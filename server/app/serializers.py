@@ -14,12 +14,32 @@ import math
 import os
 from typing import Dict, List, Optional
 
+import numpy as np
+
 from app.evaluations import exfor_code
 from app.labels import pair_plain, reaction_plain
 
+# Significant digits of every number on the wire.  The engine's ~17 digits
+# tripled the payloads (⁷Be's extrapolations: 9.6 MB) and no plot or χ²
+# shown needs them; the χ² is computed before rounding.  The CSV export
+# keeps full precision (``digits=None``).
+DIGITS = 7
 
-def _floats(values) -> Optional[List[float]]:
-    """A numpy array (or None) as a plain JSON list.
+
+def _round(array, digits):
+    """``array`` rounded to ``digits`` significant digits (non-finite kept)."""
+    with np.errstate(divide="ignore", invalid="ignore", over="ignore"):
+        magnitude = np.floor(np.log10(np.abs(array)))
+        magnitude[~np.isfinite(magnitude)] = 0
+        scale = 10.0 ** (digits - 1 - magnitude)
+        rounded = np.round(array * scale) / scale
+    ok = np.isfinite(rounded)
+    return np.where(ok, rounded, array)
+
+
+def _floats(values, digits=DIGITS) -> Optional[List[float]]:
+    """A numpy array (or None) as a plain JSON list, to ``digits``
+    significant digits (``None``: all of them).
 
     A NaN or an infinity (AZURE2 returns them, e.g. for a few points of the 7Be
     extrapolations) becomes null: Python would write them as bare NaN/Infinity,
@@ -27,7 +47,22 @@ def _floats(values) -> Optional[List[float]]:
     """
     if values is None:
         return None
-    return [f if math.isfinite(f) else None for f in map(float, values)]
+    if not isinstance(values, np.ndarray) and any(v is None for v in values):
+        return [None if v is None else (_floats([v], digits) or [None])[0] for v in values]
+    array = np.asarray(values, dtype=float).ravel()
+    finite = np.isfinite(array)
+    if digits is not None and len(array):
+        array = _round(array, digits)
+    out = array.tolist()
+    if not finite.all():
+        for k in np.flatnonzero(~finite):
+            out[k] = None
+    return out
+
+
+def _raw(values) -> Optional[List[float]]:
+    """Full precision (for the χ²)."""
+    return _floats(values, None)
 
 
 def _label_for(key: int, labels) -> str:
@@ -104,14 +139,15 @@ def channel_quantity(level, channel, pair):
     return "width", "eV"
 
 
-def scheme_to_dict(session, labels) -> Dict:
+def scheme_to_dict(session, labels, params=None) -> Dict:
     """The level scheme, with each editable quantity's parameter slot.
 
     Widths and energies report their *current* value: for a free parameter that
-    is the working vector's entry (which the user may have changed), and for a
-    fixed one the model's own constant.
+    is the working vector's entry (which the user may have changed; or
+    ``params``, the vector an edit was calculated for), and for a fixed one
+    the model's own constant.
     """
-    params = session.params
+    params = list(session.params if params is None else params)
 
     def current(free_index, fallback):
         if free_index is None:
@@ -199,8 +235,10 @@ def scheme_to_dict(session, labels) -> Dict:
     return {
         "pairs": pairs,
         "levels": levels,
-        "n_free": len(session.params),
-        "modified": session.is_modified,
+        "n_free": len(params),
+        "modified": (params != list(session.initial_params)
+                     if hasattr(session, "initial_params")
+                     else bool(getattr(session, "is_modified", False))),
     }
 
 
@@ -328,9 +366,9 @@ def data_to_dict(session, labels, mu, mu_sfactor) -> List[Dict]:
 
     for i, segment in enumerate(datasets):
         norm = segment.norm or 1.0
-        observed = _floats(m_cross[i])
-        errors = _floats(m_cross_err[i])
-        calculated = _floats(mu[i])
+        observed = _raw(m_cross[i])
+        errors = _raw(m_cross_err[i])
+        calculated = _raw(mu[i])
         chi2, counted = chi2_sum(observed, errors, calculated, norm)
         entrance = by_key.get(segment.entrance_key)
         exit_ = by_key.get(segment.exit_key)
@@ -377,11 +415,11 @@ def data_to_dict(session, labels, mu, mu_sfactor) -> List[Dict]:
             "chi2_points": counted,
             "energies": _floats(m_energies[i]),
             "angles": _floats(m_angles[i]),
-            "cross_sections": observed,
-            "cross_sections_errors": errors,
+            "cross_sections": _floats(m_cross[i]),
+            "cross_sections_errors": _floats(m_cross_err[i]),
             "sfactor": _floats(m_sfactor[i]),
             "sfactor_errors": _floats(m_sfactor_err[i]),
-            "calculated": calculated,
+            "calculated": _floats(mu[i]),
             "calculated_sfactor": _floats(mu_sfactor[i]),
         })
 
@@ -484,13 +522,67 @@ def fine_to_dict(session, fine_result, mu, mu_sfactor) -> Dict:
 
 # -- extrapolations -----------------------------------------------------------
 
+_SUBSCRIPT = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
+
+
+def _subscript(label) -> str:
+    """The subscript of a LaTeX pair label (``\\gamma_{1}`` -> ``₁``)."""
+    import re
+    match = re.search(r"_\{?(\d+)\}?", label or "")
+    return match.group(1).translate(_SUBSCRIPT) if match else ""
+
+
+def final_state(entrance, exit_, total=False) -> Dict:
+    """What an extrapolation ends in, for telling apart segments that differ
+    only in it (¹⁴N, ²¹Na and ²³Na have several "Angle-integrated" lines,
+    one per γ transition): the residual's excitation energy, a short text
+    and the reaction with the exit subscripted, e.g. ``'²²Ne(p,γ₁)²³Na'``.
+    """
+    from app.labels import nuclide_plain
+    out = {"exit_excitation": None, "final_state": None, "label_plain": None}
+    if entrance is None or entrance.is_photon:
+        return out
+    reaction = reaction_plain(entrance, exit_, total=total)
+    if total or exit_ is None:
+        out.update(final_state="all final states", label_plain=f"{reaction}, total")
+        return out
+    exc = float(exit_.excitation or 0.0)
+    if exit_.is_photon:
+        residual = nuclide_plain(entrance.Z1 + entrance.Z2, entrance.A1 + entrance.A2)
+    else:
+        heavy = max((exit_.Z1, exit_.A1), (exit_.Z2, exit_.A2), key=lambda z: (z[1], z[0]))
+        residual = nuclide_plain(*heavy)
+    if exc == 0:
+        level = "g.s."
+    elif exc < 1:
+        level = f"{exc * 1000:.0f} keV"
+    else:
+        level = f"{exc:.3f} MeV"
+    state = f"{residual} {level}"
+    sub = _subscript(exit_.label)
+    label = reaction
+    if sub and ")" in reaction:
+        j = reaction.index(")")
+        label = reaction[:j] + sub + reaction[j:]
+    if sub or exc:
+        label = f"{label} → {level}"
+    out.update(exit_excitation=exc, final_state=state, label_plain=label)
+    return out
+
+
 def extrapolations_to_dict(session, labels, energies, angles, mu,
-                           mu_sfactor) -> List[Dict]:
+                           mu_sfactor, digits=DIGITS) -> List[Dict]:
     """Every extrapolation segment and the curve calculated on its grid.
 
     AZURE2 reports extrapolation segments in ``<segmentsTest>`` order, so the
     parsed metadata and the calculated arrays line up by index.
+
+    An energy × angle grid (``grid`` is set; ``app.fine.is_grid``) comes
+    with empty arrays: it is fetched on request from
+    ``/api/sessions/<id>/extrapolations/<index>/grid`` (:func:`grid_to_dict`).
     """
+    from app import fine
+
     segments = []
     tests = session.extrapolations
     energies = _aligned(tests, energies)
@@ -507,7 +599,21 @@ def extrapolations_to_dict(session, labels, energies, angles, mu,
         # pair; every energy the page shows is centre-of-mass, so the limits
         # are converted (AZURE2's own calculated energies already are).
         lab_to_cm = _lab_to_cm(pairs.get(segment.entrance_key))
-        segments.append({
+        line = [int(segment.active), segment.entrance_key, segment.exit_key,
+                segment.energy_min, segment.energy_max, segment.energy_step,
+                segment.angle_min, segment.angle_max, segment.angle_step,
+                _OBSERVABLE_CODE.get(segment.observable, -1)]
+        grid = None
+        if segment.active and fine.is_grid(line):
+            grid = {
+                "n_energies": fine._points(segment.energy_min, segment.energy_max,
+                                           segment.energy_step),
+                "n_angles": fine._points(segment.angle_min, segment.angle_max,
+                                         segment.angle_step),
+                "views": ["angles", "map"],
+                "angles": fine.grid_angles(segment.angle_min, segment.angle_max),
+            }
+        entry = {
             "index": i,
             "key": segment.key,
             "name": segment.name,
@@ -533,13 +639,69 @@ def extrapolations_to_dict(session, labels, energies, angles, mu,
             "angle_max": segment.angle_max,
             "angle_step": segment.angle_step,
             "is_angle_integrated": segment.is_angle_integrated,
-            "energies": _floats(energies[i]),
-            "angles": _floats(angles[i]),
-            "calculated": _floats(mu[i]),
-            "calculated_sfactor": _floats(mu_sfactor[i]),
-        })
+            "grid": grid,
+            "energies": _floats(energies[i], digits),
+            "angles": _floats(angles[i], digits),
+            "calculated": _floats(mu[i], digits),
+            "calculated_sfactor": _floats(mu_sfactor[i], digits),
+        }
+        entry.update(final_state(entrance, exit_, total=segment.exit_key == -1))
+        segments.append(entry)
 
     return segments
+
+
+# <segmentsTest> observable codes (pyazr's names back to the file's numbers).
+_OBSERVABLE_CODE = {
+    "angle-integrated": 0, "differential": 1, "phase-shift": 2,
+    "angular-distribution": 3, "total-capture": 4, "differential-cm": 5,
+    "analyzing-power": 7,
+}
+
+
+def grid_to_dict(session, index, grid_result, view, digits=DIGITS) -> Dict:
+    """One energy × angle extrapolation grid (segment ``index``), as
+
+    * ``view="angles"``: ``{"view": "angles", "curves": [{"angle": θ,
+      "energies": [...], "calculated": [...], "calculated_sfactor": [...]},
+      ...]}`` -- a few representative c.m. angles at the segment's own
+      energy step;
+    * ``view="map"``: ``{"view": "map", "energies": [nE], "angles": [nθ],
+      "calculated": [[nE] per angle], "calculated_sfactor": [[nE] per
+      angle]}`` -- row ``k`` is angle ``angles[k]``, every 5°, on about 60
+      energies (null where AZURE2 gives no finite value, e.g. Rutherford
+      scattering at 0°).
+
+    Energies are c.m. MeV, angles c.m. degrees.
+    """
+    if view not in ("angles", "map"):
+        raise ValueError("'view' must be 'angles' or 'map'")
+    tests = session.extrapolations
+    if not 0 <= index < len(tests):
+        raise IndexError(f"extrapolation index {index} out of range")
+    active = [i for i, t in enumerate(tests) if t.active]
+    if index not in active:
+        raise ValueError(f"extrapolation {index} is not active")
+    plan, energies, angles, mu, sfactor = grid_result
+    rank = active.index(index)
+    entry = plan[rank] if rank < len(plan) else None
+    if entry is None:
+        raise ValueError(f"extrapolation {index} is not an energy × angle grid")
+    out = {"index": index, "view": view}
+    rows = [(angle, slot) for angle, slot in entry[view] if slot < len(mu)]
+    if view == "angles":
+        out["curves"] = [{"angle": angle,
+                          "energies": _floats(energies[slot], digits),
+                          "calculated": _floats(mu[slot], digits),
+                          "calculated_sfactor": _floats(sfactor[slot], digits)}
+                         for angle, slot in rows]
+        return out
+    n = min((len(mu[slot]) for _, slot in rows), default=0)
+    out["energies"] = _floats(energies[rows[0][1]][:n], digits) if rows else []
+    out["angles"] = [angle for angle, _ in rows]
+    out["calculated"] = [_floats(mu[slot][:n], digits) for _, slot in rows]
+    out["calculated_sfactor"] = [_floats(sfactor[slot][:n], digits) for _, slot in rows]
+    return out
 
 
 def _lab_to_cm(pair) -> float:
@@ -582,3 +744,39 @@ def extrapolations_to_csv(segments, selected=None) -> str:
         lines.append("")
 
     return "\n".join(lines)
+
+
+# -- compact payloads (opt-in: ?compact=1) -----------------------------------------
+
+# The measurement itself, which an edit does not change: a compact edit
+# response leaves it out (the page has it from /data).
+MEASURED_KEYS = ("energies", "angles", "cross_sections", "cross_sections_errors",
+                 "sfactor", "sfactor_errors")
+
+
+def _constant(values) -> bool:
+    if not isinstance(values, list) or len(values) < 2:
+        return False
+    first = values[0]
+    if isinstance(first, bool) or not isinstance(first, (int, float)) and first is not None:
+        return False
+    return all(v == first and type(v) is type(first) for v in values)
+
+
+def compact(value):
+    """A payload with every array of one repeated number -- an
+    extrapolation's ``angles`` (all 0°), a single-energy angular
+    distribution's ``energies`` -- written as ``{"fill": value, "n":
+    length}``.  Applied only when the client asks (``?compact=1``)."""
+    if isinstance(value, dict):
+        return {k: ({"fill": v[0], "n": len(v)} if _constant(v) else compact(v))
+                for k, v in value.items()}
+    if isinstance(value, list):
+        return [compact(v) for v in value]
+    return value
+
+
+def without_measurements(segments) -> List[Dict]:
+    """Data segments without the measured arrays (``MEASURED_KEYS``)."""
+    return [{k: v for k, v in segment.items() if k not in MEASURED_KEYS}
+            for segment in segments]

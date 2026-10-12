@@ -16,13 +16,15 @@ Two things differ from the server:
 * **Precomputed results.**  ``precompute.py`` runs every evaluation natively at
   build time and stores the data and extrapolation curves at the shipped
   parameters.  While a session's parameters are the shipped ones, those are
-  returned instead of recalculated; the first edit switches to the engine.
+  returned instead of recalculated (matched by the model's fingerprint: the
+  WebAssembly engine reads some parameters back a few ulps away from the
+  native one, see ``app.cache``); the first edit switches to the engine.
   An extrapolation with external capture takes minutes in a browser, so this is
   what makes opening one immediate.
 """
 
 from app import session as session_module
-from app.engine import (PREPARE_STEPS, EngineError, _dispatch, fine_curves,
+from app.engine import (ROLES, EngineError, _dispatch, fine_curves,
                         fine_model, model_info, opened)
 from app.session import SessionManager
 
@@ -35,7 +37,7 @@ from app.session import SessionManager
 class InProcessEngine:
     """:class:`app.engine.Engine`'s interface, with the model in this process."""
 
-    def __init__(self, azr_path, cwd, omp_threads=None, timeout=None):
+    def __init__(self, azr_path, cwd, omp_threads=None, timeout=None, **_):
         import pyazr
         try:
             self._azr = opened(pyazr.azure2(azr_path, cwd=cwd))
@@ -58,6 +60,9 @@ class InProcessEngine:
     def calculate_extrapolations(self, params):
         return self._run("extrap", params)
 
+    def calculate_grid(self, params):
+        return self._run("grid", params)
+
     def calculate_fine(self, params):
         try:
             return fine_curves(self._fine, self._azr_path, self._cwd, params)
@@ -65,7 +70,7 @@ class InProcessEngine:
             raise EngineError(f"{type(err).__name__}: {err}") from err
 
     def prepare(self, step):
-        if step not in PREPARE_STEPS:
+        if step not in ROLES:
             raise ValueError(f"unknown preparation step: {step}")
         try:
             if step == "fine":
@@ -78,6 +83,20 @@ class InProcessEngine:
     def fine_ready(self):
         return "model" in self._fine
 
+    def has_role(self, role):
+        if role == "data":
+            return not self._closed
+        if role == "fine":
+            return "model" in self._fine
+        return "model" in getattr(self._azr, f"_{role}_state", {})
+
+    def close_role(self, role):
+        # One process: nothing to give back separately.
+        pass
+
+    def pids(self):
+        return {}
+
     def is_alive(self):
         return not self._closed
 
@@ -86,6 +105,7 @@ class InProcessEngine:
             self._closed = True
             for model in (self._azr, self._fine.get("model"),
                           getattr(self._azr, "_extrap_state", {}).get("model"),
+                          getattr(self._azr, "_grid_state", {}).get("model"),
                           getattr(self._azr, "_data_state", {}).get("model")):
                 try:
                     if model is not None:
@@ -112,7 +132,9 @@ def start(evaluations_dir, max_sessions=4):
     app.config.update(EVALUATIONS_DIR=evaluations_dir)
     # No reaper thread (a page has none to spare, and the tab's lifetime bounds
     # the sessions anyway); create() still reaps synchronously.
-    app.extensions["sessions"] = SessionManager(ttl=24 * 3600, max_sessions=max_sessions)
+    # Nor background preparation: one worker answers every request in turn.
+    app.extensions["sessions"] = SessionManager(ttl=24 * 3600, max_sessions=max_sessions,
+                                                role_ttl=0, auto_prepare=False)
     app.register_blueprint(bp)
     _client = app.test_client()
 

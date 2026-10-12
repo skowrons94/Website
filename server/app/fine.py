@@ -540,10 +540,87 @@ def _collapsible(t) -> bool:
             and float(t[7]) > float(t[6]))
 
 
+# -- the extrapolations' derived models -----------------------------------------
+
+# Energy × angle grids (a differential line over a range of energies *and*
+# angles: ⁷Be's ⁶Li(p,α) at 2.8-6 MeV × 0-180°, 58,101 points) are not
+# calculated with the other extrapolations: they were three quarters of ⁷Be's
+# extrapolation points and most of its time and payload.  They are calculated
+# on request (:func:`grid_model`) as a few representative angles and as a
+# coarse energy × angle map.
+GRID_ANGLES = (20.0, 45.0, 70.0, 90.0, 110.0, 135.0, 160.0)
+MAP_ANGLE_STEP = 5.0     # degrees
+MAP_ENERGIES = 61        # energies per map row
+
+# A total capture shipped on a short grid (²²Ne(p,γ): 1-100 keV, 10 points,
+# while its partial captures run to 3 MeV) is drawn on a longer one: log-
+# spaced from ``CAPTURE_LOG_FROM`` (c.m. MeV) up to the partials' maximum,
+# plus the partials' own uniform grid -- the shipped points are kept.
+CAPTURE_LOG_FROM = 0.030
+CAPTURE_LOG_PER_PIECE = 24
+
+
+def _points(lo, hi, step) -> int:
+    if step <= 0 or hi <= lo:
+        return 1
+    return int(math.floor((hi - lo) / step + 1e-9)) + 1
+
+
+def is_grid(t) -> bool:
+    """A differential line over a range of energies and of angles."""
+    try:
+        code = int(float(t[9]))
+        return (code in (1, 5)
+                and _points(float(t[3]), float(t[4]), float(t[5])) > 1
+                and float(t[8]) > 0 and float(t[7]) > float(t[6]))
+    except (IndexError, ValueError):
+        return False
+
+
+def _capture_extension(t, tests, lab_factor, photons) -> List[Tuple[float, float, float]]:
+    """Extra ``(lo, hi, step)`` lab-energy pieces for a total-capture line
+    that stops well below the partial captures of its entrance pair (lines
+    to a photon pair in ``photons``; ``[]`` when it does not)."""
+    try:
+        if int(float(t[9])) != 4:
+            return []
+        lo, hi = float(t[3]), float(t[4])
+        siblings = [u for u in tests if u is not t and u[1] == t[1]
+                    and int(float(u[2])) in photons
+                    and int(float(u[9])) in (0, 4) and float(u[4]) > float(u[3])]
+        if not siblings:
+            return []
+        top = max(float(u[4]) for u in siblings)
+        if top < 2 * hi:
+            return []
+        step = min(float(u[5]) for u in siblings if float(u[4]) == top)
+    except (IndexError, ValueError):
+        return []
+    pieces = []
+    start = max(lo, CAPTURE_LOG_FROM / lab_factor)
+    if top > start:
+        k = max(1, math.ceil(math.log(top / start) / math.log(PIECE_RATIO)))
+        for i in range(k):
+            a = start * (top / start) ** (i / k)
+            b = start * (top / start) ** ((i + 1) / k)
+            pieces.append((a, b, (b - a) / CAPTURE_LOG_PER_PIECE))
+    if step > 0 and top > hi:
+        pieces.append((hi, top, step))
+    return pieces
+
+
+def _pair_facts(azr_path):
+    """``(E_cm / E_lab per pair key as a string, the photon pairs' keys)``."""
+    pairs = model_pairs(azr_path)
+    return ({str(key): _lab_factor(pair) for key, pair in pairs.items()},
+            {key for key, pair in pairs.items() if pair.get("photon")})
+
+
 def extrap_needs_model(azr_path, captures, split) -> bool:
     """Should the extrapolations be calculated by :func:`extrap_model` rather
-    than by the evaluation's own file: a total capture to split, or an
-    angle-integrated line to collapse to one angle."""
+    than by the evaluation's own file: a total capture to split or to extend,
+    an angle-integrated line to collapse to one angle, or an energy × angle
+    grid to leave out."""
     try:
         with open(azr_path) as f:
             tests = _active_tests(f.read())
@@ -551,7 +628,10 @@ def extrap_needs_model(azr_path, captures, split) -> bool:
         return False
     if not tests:
         return False
-    if any(_collapsible(t) for t in tests):
+    if any(_collapsible(t) or is_grid(t) for t in tests):
+        return True
+    _, photons = _pair_facts(azr_path)
+    if any(_capture_extension(t, tests, 1.0, photons) for t in tests):
         return True
     return bool(split and len(captures) > 1 and any(
         int(float(t[9])) == 4 and int(float(t[2])) == -1 for t in tests))
@@ -559,7 +639,7 @@ def extrap_needs_model(azr_path, captures, split) -> bool:
 
 def extrap_model(azr_path, workdir, captures):
     """The evaluation's own extrapolations as AZURE2 can calculate them
-    quickly and right, the numbers unchanged:
+    quickly and right, the numbers at the shipped grid points unchanged:
 
     * an angle-integrated (or total-capture) line declared over a range of
       angles is calculated at its first angle only (:func:`_collapsible`) --
@@ -567,21 +647,28 @@ def extrap_model(azr_path, workdir, captures):
     * with ``captures`` (two or more capture pairs: the evaluation splits its
       total capture), every active total-capture line becomes one
       angle-integrated line per capture pair, summed back by the caller;
+    * a total capture shipped on a much shorter grid than the other lines of
+      its entrance pair gets extra pieces up to theirs
+      (:func:`_capture_extension`), joined back by the caller;
+    * an energy × angle grid (:func:`is_grid`) is left out: it is calculated
+      on request by :func:`grid_model`;
     * inactive lines, which AZURE2 does not calculate, are dropped.
 
-    Returns ``(path, slots)``: ``slots[j]`` lists the derived segments that
-    make up the ``j``-th *active* extrapolation segment.
+    Returns ``(path, plan)``: ``plan[j]`` is, for the ``j``-th *active*
+    extrapolation segment, a list of pieces -- each a list of derived
+    segments summed together, the pieces then joined along the energy --
+    or ``None`` for a grid left out.
     """
     with open(azr_path) as f:
         text = f.read()
     tests = _active_tests(text)
     if tests is None:
         return None, []
-    lines, slots = [], []
-    for t in tests:
-        t = list(t)
-        if _collapsible(t):
-            t[7], t[8] = t[6], "0"
+    factors, photons = _pair_facts(azr_path)
+    lines, plan = [], []
+
+    def add(t):
+        """One line (or one per capture pair): its slots."""
         if int(float(t[9])) == 4 and int(float(t[2])) == -1 and len(captures) > 1:
             group = []
             for key in captures:
@@ -589,14 +676,85 @@ def extrap_model(azr_path, workdir, captures):
                 u[2], u[9] = str(key), "0"
                 group.append(len(lines))
                 lines.append(" ".join(u))
-            slots.append(group)
-        else:
-            slots.append([len(lines)])
-            lines.append(" ".join(t))
+            return group
+        lines.append(" ".join(t))
+        return [len(lines) - 1]
+
+    for original in tests:
+        t = list(original)
+        if is_grid(t):
+            plan.append(None)
+            continue
+        if _collapsible(t):
+            t[7], t[8] = t[6], "0"
+        pieces = [add(t)]
+        for lo, hi, step in _capture_extension(original, tests, factors.get(t[1], 1.0),
+                                               photons):
+            u = list(t)
+            u[3], u[4], u[5] = f"{lo:.9g}", f"{hi:.9g}", f"{step:.9g}"
+            pieces.append(add(u))
+        plan.append(pieces)
+    if not lines:
+        return None, plan
     text = _with_tests(text, lines)
     if text is None:
         return None, []
-    return _write_model(text, workdir, "extrap.azr"), slots
+    return _write_model(text, workdir, "extrap.azr"), plan
+
+
+def grid_angles(lo, hi) -> List[float]:
+    """The representative angles of a grid over ``[lo, hi]`` degrees."""
+    inside = [a for a in GRID_ANGLES if lo <= a <= hi]
+    if len(inside) >= 3:
+        return inside
+    return sorted({lo, (lo + hi) / 2, hi})
+
+
+def map_angles(lo, hi) -> List[float]:
+    n = max(1, int(math.floor((hi - lo) / MAP_ANGLE_STEP + 1e-9)))
+    return [lo + i * (hi - lo) / n for i in range(n + 1)]
+
+
+def grid_model(azr_path, workdir):
+    """The energy × angle grids of the extrapolations (:func:`is_grid`),
+    each as one line per representative angle (:func:`grid_angles`, at the
+    shipped energy step) and one per map angle (:func:`map_angles`, every
+    ``MAP_ANGLE_STEP`` degrees, ``MAP_ENERGIES`` energies).
+
+    Returns ``(path, plan)``: ``plan[j]`` for the ``j``-th active
+    extrapolation segment is ``None`` (not a grid) or ``{"angles": [(angle,
+    slot), ...], "map": [(angle, slot), ...]}``.
+    """
+    with open(azr_path) as f:
+        text = f.read()
+    tests = _active_tests(text)
+    if tests is None:
+        return None, []
+    lines, plan = [], []
+    for t in tests:
+        if not is_grid(t):
+            plan.append(None)
+            continue
+        e_lo, e_hi, e_step = float(t[3]), float(t[4]), float(t[5])
+        a_lo, a_hi = float(t[6]), float(t[7])
+        coarse = max(e_step, (e_hi - e_lo) / (MAP_ENERGIES - 1))
+        entry = {"angles": [], "map": []}
+        for view, angles, step in (("angles", grid_angles(a_lo, a_hi), e_step),
+                                   ("map", map_angles(a_lo, a_hi), coarse)):
+            for angle in angles:
+                u = list(t)
+                u[5] = f"{step:.9g}"
+                u[6] = u[7] = f"{angle:.6g}"
+                u[8] = "0"
+                entry[view].append((angle, len(lines)))
+                lines.append(" ".join(u))
+        plan.append(entry)
+    if not lines:
+        return None, plan
+    text = _with_tests(text, lines)
+    if text is None:
+        return None, []
+    return _write_model(text, workdir, "grid.azr"), plan
 
 
 def _expand(listing: str) -> List[int]:

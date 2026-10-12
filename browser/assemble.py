@@ -34,13 +34,36 @@ PURE = ("flask", "werkzeug", "jinja2", "itsdangerous", "click", "blinker",
         "flask-cors", "mpmath")
 
 
-def add_tree(z, source, prefix):
+# Directories whose files the page never reads: AZURE2's check files (``checks``
+# of the model and of every derived one -- 47 MB of ¹⁴N's raw 52 MB).  They are
+# shipped empty, so AZURE2 finds them.
+EMPTY_DIRS = ("checks",)
+SKIP_FILES = (".lock", ".probe")
+SKIP_PREFIXES = (".precomputed-", ".fine-", ".initial-")
+
+
+def unused(source):
+    """Files of an evaluation the page never reads: its own extrapolations'
+    integrals when a derived model calculates them (``extrapolations/``),
+    and ``initial.json``, which the page fetches on its own."""
+    out = {os.path.join(source, "initial.json")}
+    if os.path.exists(os.path.join(source, "extrapolations", "extrap.azr")):
+        out.add(os.path.join(source, "output", "intEC.extrap"))
+    return out
+
+
+def add_tree(z, source, prefix, empty=(), skip=()):
     for dirpath, dirnames, filenames in os.walk(source):
-        dirnames[:] = [d for d in dirnames if d != "__pycache__"]
-        for name in filenames:
-            if name.endswith((".pyc", ".c", ".pyi")):
-                continue
+        dirnames.sort()
+        for d in [d for d in dirnames if d in empty]:
+            rel = os.path.relpath(os.path.join(dirpath, d), source)
+            z.writestr(os.path.join(prefix, rel) + "/", b"")
+        dirnames[:] = [d for d in dirnames if d != "__pycache__" and d not in empty]
+        for name in sorted(filenames):
             path = os.path.join(dirpath, name)
+            if name.endswith((".pyc", ".c", ".pyi")) or name in SKIP_FILES \
+                    or name.startswith(SKIP_PREFIXES) or path in skip:
+                continue
             z.write(path, os.path.join(prefix, os.path.relpath(path, source)))
 
 
@@ -104,12 +127,17 @@ def main():
         if not os.path.isdir(source):
             continue
         with zipfile.ZipFile(os.path.join(a.out, "evaluations", entry + ".zip"), "w",
-                             zipfile.ZIP_DEFLATED) as z:
-            add_tree(z, source, "")
-        # The .azr file is also offered for download as it is.
+                             zipfile.ZIP_DEFLATED, compresslevel=9) as z:
+            add_tree(z, source, "", empty=EMPTY_DIRS, skip=unused(source))
+        # The .azr file is also offered for download as it is, and the
+        # initial payload (app/initial.py) is fetched by the page directly,
+        # before Pyodide starts: azure2/evaluations/<id>/initial.json.
+        os.makedirs(os.path.join(a.out, "evaluations", entry), exist_ok=True)
         for azr in glob.glob(os.path.join(source, "*.azr")):
-            os.makedirs(os.path.join(a.out, "evaluations", entry), exist_ok=True)
             shutil.copy(azr, os.path.join(a.out, "evaluations", entry))
+        if os.path.exists(os.path.join(source, "initial.json")):
+            shutil.copy(os.path.join(source, "initial.json"),
+                        os.path.join(a.out, "evaluations", entry, "initial.json"))
 
     total = sum(os.path.getsize(os.path.join(d, f))
                 for d, _, fs in os.walk(a.out) for f in fs)

@@ -46,6 +46,10 @@ server/evaluations/*/fine/
 server/evaluations/*/datamodel/
 server/evaluations/*/extrap/
 server/evaluations/*/extrapolations/
+server/evaluations/*/extrapolations-grid/
+# What a page draws before its session starts (server/app/initial.py)
+server/evaluations/*/initial.json
+server/evaluations/*/.initial-*
 
 # Written by scripts/search-index.mjs before every build.
 public/search/
