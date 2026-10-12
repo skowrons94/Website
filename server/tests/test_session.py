@@ -527,3 +527,24 @@ def test_open_reports_spare_and_status_reports_progress(client):
     status = c.get(f"/api/sessions/{r['session_id']}/status").get_json()
     assert status["pending"] == ["data", "fine", "extrap"]
     assert status["from_spare"] is False and status["builds"] == 0
+
+
+def test_spare_being_built_gives_way_to_a_visitor(fake):
+    """At the cap, a spare still being built is stopped for a visitor of
+    another evaluation rather than refusing them."""
+    FakeEngine.delays.update(prepare={"fine": 2.0})
+    manager = session_module.SessionManager(max_sessions=1, spares={"Y": 1},
+                                            spare_delay=0, spare_quiet=0)
+    try:
+        other = Evaluation(id="Y", path=fake.path, azr_path=fake.azr_path, title="Y",
+                           channels=[])
+        manager.start_spares([other])
+        assert _wait(lambda: any(r["session"] is not None
+                                 for r in manager._wip.get("Y", [])))
+        building = manager._wip["Y"][0]["session"]
+        session = manager.create(fake)
+        assert not session.closed and building.closed
+        assert _wait(lambda: not manager._wip.get("Y"))
+        assert manager._pending == 0 and not manager._spare.get("Y")
+    finally:
+        manager.close_all()

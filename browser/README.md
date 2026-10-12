@@ -17,9 +17,10 @@ azure2/build.sh     compile pyazr's engine module (_azure2) to WebAssembly
 azure2/omp.h        single-thread stand-in for OpenMP
 precompute.py       run every evaluation natively at its shipped parameters
 assemble.py         lay out public/azure2/: Pyodide, the engine, the evaluations
-worker.js           the Web Worker: loads everything, answers requests
-bridge.py           the Flask app in the worker, with an in-process engine
-../lib/browser-engine.ts   the page's side: sends requests to the worker
+worker.js           a Web Worker: loads everything, answers requests
+bridge.py           the Flask app in the worker, with an in-process engine,
+                    and the per-role calculations of the other workers
+../lib/browser-engine.ts   the page's side: the workers, and which asks what
 ```
 
 The site is built in this mode with `STATIC_EXPORT=1 API_BASE=browser`. In
@@ -29,10 +30,45 @@ the list never starts the engine.
 
 ## What differs from the server
 
-**One process.** A page cannot start processes, so the model lives in the
-worker's interpreter (`InProcessEngine`, with the interface of
-`server/app/engine.py`'s `Engine`). The worker handles one request at a time,
-which is what pyazr's per-call change of working directory requires.
+**First paint without Python.** The scheme, the data and the smooth curves at
+the published parameters (`evaluations/<id>/initial.json`) and the published
+extrapolations (`evaluations/<id>/extrapolations.json`) are static files the
+page fetches itself (`browserRequest` maps `/initial` to them), so the plot is
+up in well under a second, before any worker has started; the sliders come
+alive when the model has opened.
+
+**One worker per model.** A page cannot start processes, so each model lives
+in a worker's interpreter (`InProcessEngine`, with the interface of
+`server/app/engine.py`'s `Engine`), and each worker handles one request at a
+time, which is what pyazr's per-call change of working directory requires.
+AZURE2 keeps state across the models of one interpreter -- only the one
+initialised last calculates right -- so a single worker holding the data and
+the smooth-curve models initialised each again whenever the other had been
+used: 3 s + 18 s on every ⁷Be edit. As on the server, where each role is a
+process, the page runs one worker per role (`lib/browser-engine.ts`):
+
+| worker | holds | started |
+|---|---|---|
+| `azure2-data` | the Flask app (sessions, serializers) and the data model | on opening |
+| `azure2-fine` | the smooth curves' model | once the data worker has the files |
+| `azure2-extrap` | the extrapolations' model | likewise; built after the smooth curves' |
+| `azure2-grid` | the energy × angle grids' model | when a grid is first shown |
+
+The data worker answers `500 {code: "delegate", role}` for what another
+calculates (`app.engine.Delegated`). The page then has that role's worker
+calculate it (`bridge.role_calc`) at the session's parameters -- it keeps a
+copy, edited in step with the data worker's (same rules as
+`Session.begin_edit`) -- hands the pickled result to the data worker
+(`bridge.inject`, kept only if those are still its parameters) and asks again.
+An edit's smooth curve is calculated alongside its data; a burst of edits
+calculates only the latest parameters. ⁷Be: an edit 22 s → 1.5–2 s.
+
+Each worker is a Pyodide of its own, about 150–250 MB (⁷Be's three: about
+0.6 GB; four with a grid open). The files are downloaded once: the role
+workers start when the data worker has the runtime and the evaluation, the
+zips are kept in the Cache Storage under the hash `assemble.py` writes to
+`manifest.json` (a new build is fetched anew), and Pyodide's own files come
+from the browser's HTTP cache.
 
 **One thread.** WebAssembly side modules have no OpenMP; `omp.h` makes every
 parallel region run on one thread, so the engine calls take 2–6× what they take
@@ -62,10 +98,10 @@ which is published next to the zip as `evaluations/<id>/initial.json` for the
 page to fetch before the worker has even started. ⁷Be's zip went from 9.5 to
 6.0 MB, ¹⁴N's from 5.7 to 1.6 MB.
 
-The server's background preparation is not used here: one worker answers every
-request in turn, and a preparation under way would hold up the first edit.
-After an edit the previous smooth curve stays up, faded, until the new one is
-calculated.
+The models are prepared in the background as on the server, each in its own
+worker: the data model as soon as the session opens, the smooth curves' as
+soon as their worker has started, then the extrapolations'. After an edit the
+previous smooth curve stays up, faded, until the new one is calculated.
 
 **Numbers.** The WebAssembly engine and the native one agree to better than
 10⁻⁶ (relative) on ¹³N, ¹⁴N, ²¹Na, ²³Na and ²⁴Mg. On ⁷Be, ⁸Be and ¹⁷F they
