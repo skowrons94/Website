@@ -42,6 +42,12 @@ details: >-
   ¹⁰B(n,α) and ²³⁵U(n,f), gave a thermal cross section of 1.809 ± 0.045 b and
   a 492.7 keV resonance whose low-energy tail lies below the evaluations,
   and Maxwellian-averaged cross sections from it (Torres-Sánchez et al. 2023).
+
+
+  The protons it releases are not simply lost. Captured by ¹²C they make
+  ¹³C again, through ¹²C(p,γ)¹³N(β⁺)¹³C, and so a little of the neutron
+  source; captured by ¹⁸O they open the chain ¹⁸O(p,α)¹⁵N(α,γ)¹⁹F, by which
+  AGB stars make fluorine.
 status: improving
 status_note: >-
   Recent activation and time-of-flight data disagree with older ones in the
@@ -78,7 +84,7 @@ measurements:
       section 1.809 ± 0.045 b, consistent with ENDF/B-VIII.0 and JEFF-3.3;
       first two resonances resolved; MACS derived.
     refs: [torressanchez2023]
-evaluations: [bao2000, dillmann2008]
+evaluations: [bao2000, dillmann2014, dillmann2008]
 open_questions:
   - The cross section between about 10 and 100 keV, where the measurements of different groups still differ.
 related: [13C-an-16O, 22Ne-ng-23Ne, 16O-ng-17O]

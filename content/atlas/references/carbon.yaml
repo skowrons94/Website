@@ -81,9 +81,19 @@ moralesgallegos2022:
   year: 2022
   doi: 10.1051/epjconf/202226001006
   # The full article, Eur. Phys. J. A 58 (2022), DOI 10.1140/epja/s10050-022-00717-7,
-  # was retracted in 2023 (retraction note 10.1140/epja/s10050-023-01022-7), so
-  # only the conference report is cited.
+  # was retracted in 2023 (retraction note 10.1140/epja/s10050-023-01022-7,
+  # Eur. Phys. J. A 59, 120); the corrected article is moralesgallegos2024.
   checked: EPJ Web of Conferences abstract page and DOAJ record (CIRCE, Caserta; ΔE–E telescopes; E = 2.51–4.36 MeV in 10–25 keV steps); EPJ A retraction note seen in search results, 2026-10-12
+
+moralesgallegos2024:
+  authors: L. Morales-Gallegos et al.
+  title: Direct measurements of the ¹²C+¹²C reactions cross-sections towards astrophysical energies
+  journal: Eur. Phys. J. A 60, 11 (2024)
+  year: 2024
+  doi: 10.1140/epja/s10050-024-01233-6
+  # The corrected article, republished after the retraction of Eur. Phys. J. A
+  # 58 (2022) (retraction note Eur. Phys. J. A 59, 120 (2023)).
+  checked: Springer article page, University of Edinburgh Research Explorer and INIS records (published 22 January 2024; CIRCE, E = 2.51–4.36 MeV; three angles, non-isotropic angular distributions), by web search, 2026-10-12
 
 zhang2020:
   authors: N. T. Zhang et al.

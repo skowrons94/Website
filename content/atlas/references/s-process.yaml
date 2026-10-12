@@ -46,10 +46,35 @@ dillmann2008:
 straniero2006:
   authors: O. Straniero, R. Gallino, S. Cristallo
   title: s process in low-mass asymptotic giant branch stars
-  journal: Nucl. Phys. A 777 (2006)
+  journal: Nucl. Phys. A 777, 311 (2006)
   year: 2006
+  doi: 10.1016/j.nuclphysa.2005.01.011
   arxiv: astro-ph/0501405
-  checked: arXiv astro-ph/0501405 (abstract; ¹³C pocket burning radiatively at kT ≈ 8 keV, ²²Ne(α,n) in the pulses, ¹⁴N(n,p) as poison) and JINA Virtual Journal listing (Nucl. Phys. A 777); first page not confirmed, 2026-10-12
+  checked: arXiv astro-ph/0501405 (abstract; ¹³C pocket burning radiatively at kT ≈ 8 keV, ²²Ne(α,n) in the pulses, ¹⁴N(n,p) as poison) and JINA Virtual Journal listing (Nucl. Phys. A 777); pages 311–339 and DOI from the arXiv journal reference, by web search, 2026-10-12
+
+dillmann2014:
+  authors: I. Dillmann, T. Szücs, R. Plag, Z. Fülöp, F. Käppeler, A. Mengoni, T. Rauscher
+  title: The Karlsruhe Astrophysical Database of Nucleosynthesis in Stars project – status and prospects
+  journal: Nucl. Data Sheets 120, 171 (2014)
+  year: 2014
+  arxiv: "1408.3688"
+  checked: arXiv 1408.3688 and University of Basel repository record (pp. 171–174, authors); KADoNiS v1.0 project page, by web search, 2026-10-12
+
+carlson2018:
+  authors: A. D. Carlson et al.
+  title: Evaluation of the neutron data standards
+  journal: Nucl. Data Sheets 148, 143 (2018)
+  year: 2018
+  doi: 10.1016/j.nds.2018.02.002
+  checked: ANU and OSTI repository records (pp. 143–188, DOI; the Maxwellian-averaged ¹⁹⁷Au(n,γ) cross section at 30 keV evaluated as a non-traditional standard) and the IAEA standards table (620 ± 11 mb), by web search, 2026-10-12
+
+lugaro2011:
+  authors: M. Lugaro, A. Chieffi
+  title: Radioactivities in low- and intermediate-mass stars
+  journal: Lect. Notes Phys. 812, 83 (2011)
+  year: 2011
+  arxiv: "1010.1304"
+  checked: arXiv 1010.1304 (about 40% of ⁸⁴Kr(n,γ) captures feed the 4.5 h isomer of ⁸⁵Kr, about 80% of which decays to ⁸⁵Rb; ⁸⁵Kr ground state 10.7 yr); volume and page from the Astronomy with Radioactivities book, by web search, 2026-10-12
 
 # --- Neutron poisons --------------------------------------------------------------
 
@@ -69,6 +94,28 @@ torressanchez2023:
   doi: 10.1103/PhysRevC.107.064617
   arxiv: "2212.05128"
   checked: University of Granada repository record (first author, arXiv 2212.05128), KIT and Vienna records (abstract); DOI by APS scheme, 2026-10-12
+
+beer2002:
+  authors: H. Beer, P. V. Sedyshev, W. Rochow, P. Mohr, H. Oberhummer
+  title: Neutron capture measurements of the noble gas isotopes ²²Ne, ⁴⁰Ar and ⁷⁸,⁸⁰,⁸⁴,⁸⁶Kr in the keV energy region
+  journal: Nucl. Phys. A 705, 239 (2002)
+  year: 2002
+  checked: TU Darmstadt and University of Basel repository records (authors, title, volume) and an EXFOR entry citing Nucl. Phys. A 705, 239 with Maxwellian-averaged cross sections of ²²Ne, by web search, 2026-10-12
+
+tomyo2003:
+  authors: A. Tomyo, Y. Nagai, Y. Nobuhara, T. Shima, H. Makii, K. Mishima, M. Igashira
+  title: Neutron capture cross section measurement of ²⁰,²²Ne for stellar nucleosynthesis
+  journal: Nucl. Phys. A 718 (2003)
+  year: 2003
+  checked: EXFOR entry (authors, Tokyo Institute of Technology, Maxwellian-averaged cross sections of ²²Ne from s- and p-wave direct capture plus resonances) and ETDE/OSTI record (title, journal); first page not confirmed; the group's ApJ 623, L153 (2005) time-of-flight letter is cited in reviews but was not seen, by web search, 2026-10-12
+
+massimi2012:
+  authors: C. Massimi et al. (n_TOF Collaboration)
+  title: Resonance neutron-capture cross sections of stable magnesium isotopes and their astrophysical implications
+  journal: Phys. Rev. C 85, 044615 (2012)
+  year: 2012
+  doi: 10.1103/PhysRevC.85.044615
+  checked: University of Seville and Hertfordshire repository records (n_TOF capture data with a shape analysis together with transmission data; MACS at 30 keV 3.8 ± 0.2, 4.1 ± 0.6 and 0.14 ± 0.01 mb for ²⁴,²⁵,²⁶Mg; ²⁵Mg the most important poison in massive stars of solar metallicity); DOI by APS scheme, by web search, 2026-10-12
 
 heil2014:
   authors: M. Heil et al.
@@ -211,6 +258,22 @@ domingopardo2006:
   doi: 10.1103/PhysRevC.74.025807
   arxiv: nucl-ex/0610040
   checked: arXiv nucl-ex/0610040 and HAL in2p3-00098239 and Hertfordshire records (pulse-height weighting at n_TOF; rate at kT = 5–8 keV about 16% above the accepted value; s fraction of solar Bi 19 ± 3%); DOI by APS scheme, 2026-10-12
+
+ratzel2004:
+  authors: U. Ratzel, C. Arlandini, F. Käppeler et al.
+  title: Nucleosynthesis at the termination point of the s process
+  journal: Phys. Rev. C 70, 065803 (2004)
+  year: 2004
+  doi: 10.1103/PhysRevC.70.065803
+  checked: ResearchGate and library records (December 2004, DOI; abstract on stellar cross sections of ²⁰⁸Pb(n,γ) and ²⁰⁹Bi(n,γ)²¹⁰Bi, capture to the ²¹⁰Bi ground state that decays to ²¹⁰Po, the isomer quickly depopulated to the ground state at s-process temperatures), by web search, 2026-10-12
+
+jung1992:
+  authors: M. Jung, F. Bosch et al.
+  title: First observation of bound-state β⁻ decay
+  journal: Phys. Rev. Lett. 69, 2164 (1992)
+  year: 1992
+  doi: 10.1103/PhysRevLett.69.2164
+  checked: reviews arXiv nucl-th/9611029 and 2003.05201 (bare ¹⁶³Dy⁶⁶⁺ in the GSI ESR, t½ = 47 +5/−4 d, Q of the bound-state channel 50.3 keV) and an archive record of the title and authors; volume and page as cited in the literature, DOI by APS scheme, by web search, 2026-10-12
 
 # --- Facilities --------------------------------------------------------------------
 

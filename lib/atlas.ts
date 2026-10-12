@@ -44,6 +44,8 @@ export interface Temperature {
   label: string
   /** GK. */
   T9: number
+  /** The reactions of the network it applies to; all when absent. */
+  reactions?: string[]
 }
 
 export interface Network {
@@ -492,6 +494,10 @@ export interface SEdge {
   from: string
   to: string
   kind: "n" | "beta-" | "ec" | "alpha"
+  /** A decay arm that carries under a tenth of the decays (¹²⁸I → ¹²⁸Te). */
+  minor?: boolean
+  /** A decay that happens only in the hot, ionised star (¹⁶³Dy → ¹⁶³Ho). */
+  stellar?: boolean
 }
 
 export interface SPath {

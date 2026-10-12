@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import katex from "katex"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 
 import { ChartDiagram } from "@/components/atlas/chart-diagram"
@@ -66,6 +67,7 @@ export function GlossaryPage({ lang }: { lang: Lang }) {
               </p>
               {term.id === "chart" && <ChartDiagram lang={lang} className="mt-5 max-w-md" />}
               {term.id === "luna" && <LunaFigure lang={lang} className="mt-5 max-w-xl" />}
+              {term.id === "macs" && <MacsFormula lang={lang} />}
               {term.id === "status" && (
                 <ul className="mt-5 space-y-2.5">
                   {STATUSES.map((s) => (
@@ -105,5 +107,24 @@ export function GlossaryPage({ lang }: { lang: Lang }) {
         ))}
       </dl>
     </Container>
+  )
+}
+
+/** The definition of the MACS, typeset by KaTeX on the server. */
+function MacsFormula({ lang }: { lang: Lang }) {
+  const html = katex.renderToString(
+    String.raw`\langle\sigma\rangle_{kT} = \frac{2}{\sqrt{\pi}}\,\frac{1}{(kT)^2}\int_0^\infty \sigma(E)\,E\,e^{-E/kT}\,\mathrm{d}E`,
+    { displayMode: true, output: "html", throwOnError: false },
+  )
+  const it = lang === "it"
+  return (
+    <figure className="mt-5 max-w-[42rem]">
+      <div className="overflow-x-auto rounded-md border border-border/70 bg-card px-4 py-1 text-[0.95rem]" dangerouslySetInnerHTML={{ __html: html }} />
+      <figcaption className="mt-2 text-sm leading-relaxed text-muted-foreground">
+        {it
+          ? "σ(E) è la sezione d'urto all'energia E del neutrone (nel centro di massa), kT l'energia termica."
+          : "σ(E) is the cross section at neutron energy E (centre of mass), kT the thermal energy."}
+      </figcaption>
+    </figure>
   )
 }

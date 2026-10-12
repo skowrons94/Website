@@ -512,6 +512,52 @@ methods:
     refs: [casey2017, zylstra2017]
     examples: [3H-dn-4He, 2H-dn-3He]
 
+  - id: photonuclear
+    name: Photonuclear reactions
+    name_it: Reazioni fotonucleari
+    summary: >-
+      When the target of a neutron capture is too radioactive to make into a
+      sample, the reaction can be studied backwards: γ-rays knock a neutron out
+      of the product nucleus, and what that reveals about the nucleus is used
+      to calculate the capture.
+    summary_it: >-
+      Quando il bersaglio di una cattura di neutroni è troppo radioattivo per
+      farne un campione, la reazione si può studiare all'indietro: i raggi γ
+      strappano un neutrone al nucleo prodotto, e quello che si impara sul
+      nucleo serve a calcolare la cattura.
+    details: >-
+      Monoenergetic, polarised photon beams from laser Compton backscattering,
+      such as HIγS at the Triangle Universities Nuclear Laboratory, measure the
+      (γ,n) cross section of the capture product from the neutron separation
+      energy upwards; with (γ,γ′) data below it they fix the γ-ray strength
+      function, the main uncertainty of statistical-model capture cross
+      sections. The result is a constrained calculation, not a measurement of
+      the capture itself; the ⁸⁵Kr branch point is an example (Raut et al.
+      2013).
+    details_it: >-
+      Fasci di fotoni monoenergetici e polarizzati prodotti per diffusione
+      Compton inversa di luce laser, come HIγS al Triangle Universities Nuclear
+      Laboratory, misurano la sezione d'urto (γ,n) del prodotto della cattura a
+      partire dall'energia di separazione del neutrone; insieme ai dati (γ,γ′)
+      al di sotto di essa fissano la funzione di intensità γ, la principale
+      incertezza delle sezioni d'urto di cattura del modello statistico. Il
+      risultato è un calcolo vincolato, non una misura della cattura stessa;
+      il punto di diramazione ⁸⁵Kr ne è un esempio (Raut et al. 2013).
+    strengths:
+      - Needs no radioactive sample of the capturing nucleus.
+      - Constrains the γ-ray strength, the weakest input of the statistical model.
+    strengths_it:
+      - Non serve un campione radioattivo del nucleo che cattura.
+      - Vincola l'intensità γ, il dato più debole del modello statistico.
+    limits:
+      - Gives the capture cross section only through a model.
+      - Probes the product nucleus, not the stellar reaction at stellar energies.
+    limits_it:
+      - Dà la sezione d'urto di cattura solo attraverso un modello.
+      - Studia il nucleo prodotto, non la reazione stellare alle energie stellari.
+    refs: [raut2013]
+    examples: [85Kr-ng-86Kr]
+
   - id: theory
     name: Calculation from theory
     name_it: Calcolo teorico

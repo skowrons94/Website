@@ -580,14 +580,20 @@ terms:
     term_it: Densità di neutroni
     text: >-
       The number of free neutrons per cubic centimetre in a star. In the
-      s-process it is low, up to about 10⁸ per cubic centimetre, so a nucleus
-      waits years between two captures; in the r-process it is many orders of
-      magnitude higher. Branch points of the s-process measure it.
+      s-process it is low: about 10⁷ per cubic centimetre in the ¹³C pocket of
+      an AGB star, where a typical nucleus waits about a century between two
+      captures, up to about 10¹⁰ in the brief ²²Ne bursts of the thermal
+      pulses, and about 10¹¹–10¹² in the carbon-burning shell of a massive
+      star. In the r-process it is higher still by many orders of magnitude,
+      above 10²⁰. Branch points of the s-process measure it.
     text_it: >-
       Il numero di neutroni liberi per centimetro cubo in una stella. Nel
-      processo s è bassa, fino a circa 10⁸ per centimetro cubo, così un nucleo
-      aspetta anni tra due catture; nel processo r è più alta di molti ordini
-      di grandezza. I punti di diramazione del processo s la misurano.
+      processo s è bassa: circa 10⁷ per centimetro cubo nella tasca di ¹³C di
+      una stella AGB, dove un nucleo tipico aspetta circa un secolo tra due
+      catture, fino a circa 10¹⁰ nei brevi lampi del ²²Ne durante gli impulsi
+      termici, e circa 10¹¹–10¹² nel guscio in cui brucia il carbonio di una
+      stella massiccia. Nel processo r è più alta ancora di molti ordini di
+      grandezza, oltre 10²⁰. I punti di diramazione del processo s la misurano.
     see: [branch-point, s-process, r-process]
 
   - id: magic-numbers
@@ -634,15 +640,15 @@ terms:
     term: s-only and r-only isotopes
     term_it: Isotopi solo s e solo r
     text: >-
-      A stable isotope is s-only when a stable neighbour with the same mass
-      number and one proton less shields it from the decays that follow the
+      A stable isotope is s-only when a stable isobar of lower Z (a nucleus
+      with the same mass number and fewer protons) shields it from the decays that follow the
       r-process, while the s-process path passes through it; samarium-148
       and lead-204 are examples. An r-only isotope is a neutron-rich one the
       s-process path skips, such as ytterbium-176. Their abundances separate
       the two processes.
     text_it: >-
-      Un isotopo stabile è solo s quando un vicino stabile con lo stesso
-      numero di massa e un protone in meno lo scherma dai decadimenti che
+      Un isotopo stabile è solo s quando un isobaro stabile con Z minore (un
+      nucleo con lo stesso numero di massa e meno protoni) lo scherma dai decadimenti che
       seguono il processo r, mentre il percorso del processo s lo attraversa;
       il samario-148 e il piombo-204 ne sono esempi. Un isotopo solo r è un
       isotopo ricco di neutroni che il percorso del processo s salta, come
@@ -658,14 +664,18 @@ terms:
       Maxwell–Boltzmann distribution. The Maxwellian-averaged cross section is
       the capture cross section averaged over that distribution at a given
       temperature, which is what stellar models need. By convention it is
-      quoted at a thermal energy kT = 30 keV, about 350 million kelvin.
+      quoted at a thermal energy kT = 30 keV, about 350 million kelvin. The
+      measured values are collected in KADoNiS, the Karlsruhe Astrophysical
+      Database of Nucleosynthesis in Stars (Dillmann et al. 2014).
     text_it: >-
       In una stella i neutroni hanno la distribuzione di energie di un gas
       caldo, la distribuzione di Maxwell–Boltzmann. La sezione d'urto mediata
       su una maxwelliana è la sezione d'urto di cattura mediata su quella
       distribuzione a una data temperatura, ed è ciò che serve ai modelli
       stellari. Per convenzione si cita a un'energia termica kT = 30 keV,
-      circa 350 milioni di kelvin.
+      circa 350 milioni di kelvin. I valori misurati sono raccolti in KADoNiS,
+      il Karlsruhe Astrophysical Database of Nucleosynthesis in Stars
+      (Dillmann et al. 2014).
     see: [cross-section, time-of-flight, activation]
 
   - id: time-of-flight

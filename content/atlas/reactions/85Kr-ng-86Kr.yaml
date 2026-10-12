@@ -39,7 +39,10 @@ details: >-
   ⁸⁵Kr sits at the branching that feeds the s-process side of the N = 50
   closed shell, where ⁸⁶Kr, ⁸⁷Rb and ⁸⁸Sr have magic neutron number; the
   branching is a classic neutron-density indicator (Käppeler et al. 2011).
-  There is no direct measurement, and the stellar cross section comes from
+  Not all the flow reaches the 10.7 yr ground state: about 40–60% of the
+  captures on ⁸⁴Kr make ⁸⁵Kr in its 4.5 h isomeric state, and about 80% of
+  those decay straight to ⁸⁵Rb, bypassing the branching (Lugaro and Chieffi
+  2011). There is no direct measurement, and the stellar cross section comes from
   statistical-model calculations. Raut et al. (2013) constrained it indirectly: they measured
   the photodisintegration ⁸⁶Kr(γ,n) at HIγS with monoenergetic photons from
   the neutron separation energy (9.86 MeV) to 13 MeV, combined it with
@@ -60,19 +63,19 @@ status_plain: >-
 status_plain_it: >-
   Mai misurata direttamente: il tasso di questo gas radioattivo si ricava da
   calcoli e da esperimenti indiretti.
-methods: [theory]
+methods: [photonuclear, theory]
 measurements:
   - year: 2013
     facility: other
     lab: HIγS, Triangle Universities Nuclear Laboratory
-    method: theory
+    method: photonuclear
     energy: "⁸⁶Kr(γ,n), photons from 9.86 to 13 MeV"
     energy_it: "⁸⁶Kr(γ,n), fotoni da 9,86 a 13 MeV"
     note: >-
       Photodisintegration of ⁸⁶Kr with monoenergetic photons; with
       ⁸⁶Kr(γ,γ′) it fixes the dipole strength used to predict ⁸⁵Kr(n,γ).
     refs: [raut2013]
-evaluations: [bao2000, dillmann2008, kaeppeler2011]
+evaluations: [bao2000, dillmann2008, kaeppeler2011, lugaro2011]
 open_questions:
   - A direct measurement of the capture cross section on a ⁸⁵Kr sample.
 related: [63Ni-ng-64Ni, 151Sm-ng-152Sm, 22Ne-an-25Mg, 13C-an-16O]

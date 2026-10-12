@@ -342,9 +342,15 @@ networks:
       La ¹³C(α,n)¹⁶O fornisce i neutroni nelle stelle AGB di piccola massa, la
       ²²Ne(α,n)²⁵Mg nelle stelle massicce; la ²²Ne(α,γ)²⁶Mg compete con la
       seconda.
+    # Each source burns at its own temperature: ¹³C(α,n) between the pulses
+    # in the pocket (≈ 90 MK, kT ≈ 8 keV), ²²Ne(α,n) and its competitor
+    # ²²Ne(α,γ) in the thermal pulses (≈ 0.27 GK, kT ≈ 23 keV) and at the end
+    # of core helium burning in massive stars (≈ 0.3 GK) (straniero2006,
+    # kaeppeler2011); `reactions` limits a temperature to those reactions.
     temperatures:
-      - { label: AGB ¹³C pocket, label_it: "tasca di ¹³C nelle AGB", T9: 0.09 }
-      - { label: "massive star, He core end", label_it: "stella massiccia, fine della combustione centrale dell'elio", T9: 0.3 }
+      - { label: AGB ¹³C pocket, label_it: "tasca di ¹³C nelle AGB", T9: 0.09, reactions: [13C-an-16O] }
+      - { label: AGB thermal pulse, label_it: "impulso termico nelle AGB", T9: 0.27, reactions: [22Ne-an-25Mg, 22Ne-ag-26Mg] }
+      - { label: "massive star, He core end", label_it: "stella massiccia, fine della combustione centrale dell'elio", T9: 0.3, reactions: [22Ne-an-25Mg, 22Ne-ag-26Mg, 17O-an-20Ne] }
     reactions: [13C-an-16O, 22Ne-an-25Mg, 22Ne-ag-26Mg, 17O-an-20Ne]
 
   - id: neutron-poisons
@@ -354,19 +360,21 @@ networks:
     summary: >-
       Light nuclei that are far more abundant than iron capture some of the
       neutrons before the heavy seeds can. ¹⁴N(n,p)¹⁴C competes in the ¹³C
-      pocket of AGB stars; ²²Ne and ¹⁶O capture neutrons in massive stars,
+      pocket of AGB stars; ²⁵Mg, made by the neutron source itself, ²²Ne and
+      ¹⁶O capture neutrons in massive stars,
       and the ¹⁷O made from ¹⁶O can give its neutron back through
       ¹⁷O(α,n)²⁰Ne.
     summary_it: >-
       Nuclei leggeri, molto più abbondanti del ferro, catturano parte dei
       neutroni prima che possano farlo i semi pesanti. La ¹⁴N(n,p)¹⁴C compete
-      nella tasca di ¹³C delle stelle AGB; ²²Ne e ¹⁶O catturano neutroni nelle
-      stelle massicce, e l'¹⁷O prodotto dall'¹⁶O può restituire il suo
+      nella tasca di ¹³C delle stelle AGB; il ²⁵Mg, prodotto dalla stessa
+      sorgente di neutroni, il ²²Ne e l'¹⁶O catturano neutroni nelle stelle
+      massicce, e l'¹⁷O prodotto dall'¹⁶O può restituire il suo
       neutrone attraverso la ¹⁷O(α,n)²⁰Ne.
     temperatures:
-      - { label: AGB ¹³C pocket, label_it: "tasca di ¹³C nelle AGB", T9: 0.09 }
-      - { label: "massive star, core helium burning", label_it: "stella massiccia, combustione centrale dell'elio", T9: 0.3 }
-    reactions: [14N-np-14C, 22Ne-ng-23Ne, 16O-ng-17O]
+      - { label: AGB ¹³C pocket, label_it: "tasca di ¹³C nelle AGB", T9: 0.09, reactions: [14N-np-14C] }
+      - { label: "massive star, core helium burning", label_it: "stella massiccia, combustione centrale dell'elio", T9: 0.3, reactions: [22Ne-ng-23Ne, 16O-ng-17O, 25Mg-ng-26Mg] }
+    reactions: [14N-np-14C, 22Ne-ng-23Ne, 16O-ng-17O, 25Mg-ng-26Mg]
 
   - id: s-main
     family: s-process
@@ -381,7 +389,7 @@ networks:
       Nelle stelle AGB di piccola massa i neutroni della tasca di ¹³C e,
       brevemente, del ²²Ne negli impulsi termici portano i semi di ferro fino
       al piombo e al bismuto. Questa componente produce la maggior parte dei
-      nuclei del processo s sopra la massa 90.
+      nuclei del processo s con numero di massa superiore a 90.
     temperatures:
       - { label: AGB ¹³C pocket, label_it: "tasca di ¹³C nelle AGB", T9: 0.09 }
       - { label: AGB thermal pulse, label_it: "impulso termico nelle AGB", T9: 0.27 }
@@ -400,8 +408,8 @@ networks:
       Nelle stelle di più di circa dieci masse solari la ²²Ne(α,n)²⁵Mg libera
       neutroni alla fine della combustione centrale dell'elio e di nuovo nei
       gusci in cui brucia il carbonio. I neutroni per seme sono troppo pochi
-      per arrivare lontano: questa componente produce nuclei fino alla massa
-      90 circa, dal rame allo stronzio.
+      per arrivare lontano: questa componente produce nuclei fino a un numero
+      di massa di circa 90, dal rame allo stronzio.
     temperatures:
       - { label: "massive star, core helium burning", label_it: "stella massiccia, combustione centrale dell'elio", T9: 0.3 }
       - { label: "massive star, shell carbon burning", label_it: "stella massiccia, combustione del carbonio nei gusci", T9: 1.04 }

@@ -51,7 +51,7 @@ details: >-
   Unlike most heavy-ion systems, the excitation function shows pronounced
   resonant structure down to the lowest measured energies, which makes any
   extrapolation from the data uncertain (Spillane et al. 2007; Zickefoose et
-  al. 2018; Morales-Gallegos et al. 2022). The cross section of the
+  al. 2018; Morales-Gallegos et al. 2024). The cross section of the
   neighbouring system ¹²C + ¹³C, which has no such resonances, has been
   used to set an upper limit on the non-resonant part (Zhang et al. 2020).
 
@@ -182,9 +182,9 @@ measurements:
       10–25 keV. The branching ratios of the individual proton and α groups
       change strongly with energy, and the angular distributions (three
       angles) are not isotropic, a possible cause of the disagreement
-      between data sets. The full journal article was retracted in 2023;
-      the conference report stands.
-    refs: [moralesgallegos2022]
+      between data sets. The first journal article (Eur. Phys. J. A 58, 2022)
+      was retracted in 2023; the corrected article appeared in 2024.
+    refs: [moralesgallegos2022, moralesgallegos2024]
   - year: 2025
     facility: andromede
     method: direct-surface

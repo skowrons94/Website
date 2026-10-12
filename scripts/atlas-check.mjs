@@ -155,6 +155,10 @@ const listedReactions = new Set()
       if (!(typeof t?.T9 === "number" && t.T9 > 0)) error(file, `${where}temperatures[${j}].T9 must be a positive number (GK)`)
       if (!isText(t?.label)) warn(file, `${where}temperatures[${j}] has no label`)
       checkTranslations(file, t, ["label"], `${where}temperatures[${j}]: `)
+      if (t?.reactions !== undefined) {
+        if (!Array.isArray(t.reactions)) error(file, `${where}temperatures[${j}].reactions must be a list of reaction ids`)
+        else for (const id of t.reactions) if (!(Array.isArray(n.reactions) && n.reactions.includes(id))) error(file, `${where}temperatures[${j}].reactions: \`${id}\` is not in this network`)
+      }
     }
     for (const id of checkList(file, n, "reactions", where)) listedReactions.add(String(id))
   })

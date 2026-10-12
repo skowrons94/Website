@@ -40,7 +40,10 @@ details: >-
   uncertainty of 3.9–6.7%, the MACS at 30 keV agrees with ENDF/B-VII.0 and is
   4.7% above the activation value (Lederer et al. 2011); at GELINA, 3.5–84 keV
   normalised to the saturated 4.9 eV resonance, the results differ by more
-  than 5% from the astrophysical reference (Massimi et al. 2014).
+  than 5% from the astrophysical reference (Massimi et al. 2014). The 2017
+  evaluation of the IAEA neutron data standards then adopted the
+  Maxwellian-averaged cross section at kT = 30 keV as a standard in its own
+  right, 620 ± 11 mb (Carlson et al. 2018), 6.5% above the 1988 reference.
 status: well-known
 status_note: >-
   Known to a few percent; a difference of about 5% between the 1988
@@ -78,5 +81,5 @@ measurements:
       Two C₆D₆ detectors at about 13 m, total energy method, normalised to
       the 4.9 eV resonance; more than 5% from the astrophysical reference.
     refs: [massimi2014]
-evaluations: [bao2000, dillmann2008]
+evaluations: [carlson2018, bao2000, dillmann2014, dillmann2008]
 related: [151Sm-ng-152Sm, 209Bi-ng-210Bi, 56Fe-ng-57Fe]

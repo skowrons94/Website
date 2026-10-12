@@ -1,0 +1,76 @@
+id: 25Mg-ng-26Mg
+label: ²⁵Mg(n,γ)²⁶Mg
+kind: capture
+target: 25Mg
+projectile: n
+ejectile: g
+product: 26Mg
+networks: [neutron-poisons]
+importance: major
+summary: >-
+  Magnesium-25 captures a neutron. In massive stars it is the strongest
+  neutron poison, and the neutron source makes it itself.
+summary_it: >-
+  Il magnesio-25 cattura un neutrone. Nelle stelle massicce è il veleno
+  neutronico più forte, e lo produce la stessa sorgente di neutroni.
+role: >-
+  In a massive star almost every neutron comes from ²²Ne(α,n)²⁵Mg, so each
+  neutron released leaves behind a magnesium-25 nucleus. Magnesium-25 then
+  competes with the iron seeds for the next neutrons: in stars with about the
+  Sun's composition it is the most important poison of the weak s-process.
+  How readily it captures decides how many neutrons are left for the iron,
+  and so how much copper, gallium, germanium and the other weak-component
+  nuclei the star makes.
+role_it: >-
+  In una stella massiccia quasi tutti i neutroni vengono dalla
+  ²²Ne(α,n)²⁵Mg, quindi ogni neutrone liberato lascia dietro di sé un nucleo
+  di magnesio-25. Il magnesio-25 compete poi con i semi di ferro per i
+  neutroni successivi: nelle stelle con una composizione simile a quella del
+  Sole è il veleno più importante del processo s debole. Quanto facilmente
+  cattura decide quanti neutroni restano al ferro, e quindi quanto rame,
+  gallio, germanio e quanti altri nuclei della componente debole la stella
+  produce.
+details: >-
+  The stellar cross section is dominated by a few s- and p-wave resonances in
+  the keV region. At n_TOF the capture yields of the three stable magnesium
+  isotopes were measured with C₆D₆ detectors and analysed together with
+  transmission data on natural magnesium; the Maxwellian-averaged cross
+  section of ²⁵Mg at kT = 30 keV is 4.1 ± 0.6 mb (Massimi et al. 2012). New
+  capture data from n_TOF and transmission data from GELINA on enriched
+  ²⁵Mg then fixed the spins and parities of the ²⁶Mg states above the neutron
+  threshold, the same states that the neutron source ²²Ne(α,n)²⁵Mg populates
+  (Massimi et al. 2017).
+status: improving
+status_note: >-
+  Resonance parameters from n_TOF capture and GELINA transmission data give
+  the stellar cross section to about 15% at kT = 30 keV.
+status_note_it: >-
+  I parametri delle risonanze ottenuti dai dati di cattura di n_TOF e di
+  trasmissione di GELINA danno la sezione d'urto stellare a circa il 15% a
+  kT = 30 keV.
+status_plain: >-
+  Measured with neutron beams at CERN and Geel; known to about 15%.
+status_plain_it: >-
+  Misurata con fasci di neutroni al CERN e a Geel; nota a circa il 15%.
+methods: [neutron-beams]
+measurements:
+  - year: 2012
+    facility: n-tof
+    method: neutron-beams
+    energy: "resolved resonances (neutron energy)"
+    energy_it: "risonanze risolte (energia del neutrone)"
+    note: >-
+      Capture on ²⁴,²⁵,²⁶Mg with C₆D₆ detectors, shape analysis together with
+      transmission data; MACS at 30 keV 4.1 ± 0.6 mb for ²⁵Mg.
+    refs: [massimi2012]
+  - year: 2017
+    facility: n-tof
+    method: neutron-beams
+    energy: "resolved resonances, with transmission at GELINA"
+    energy_it: "risonanze risolte, con la trasmissione a GELINA"
+    note: >-
+      Capture at n_TOF and transmission at GELINA on enriched ²⁵Mg: spins and
+      parities of the ²⁶Mg states above the neutron threshold.
+    refs: [massimi2017]
+evaluations: [bao2000, dillmann2014]
+related: [22Ne-an-25Mg, 22Ne-ng-23Ne, 16O-ng-17O]

@@ -30,7 +30,14 @@ role_it: >-
   decide quanta parte del bismuto del Sistema Solare è stata prodotta dal
   processo s, e quindi quanta ne resta da spiegare al processo rapido r.
 details: >-
-  The capture resonances of ²⁰⁹Bi were measured at n_TOF with the
+  Capture on ²⁰⁹Bi feeds both the 5.0 d ground state of ²¹⁰Bi, which
+  β⁻-decays to ²¹⁰Po, and a long-lived isomer (t½ ≈ 3 × 10⁶ yr in the
+  laboratory). Activation at Karlsruhe measured the stellar cross sections of
+  ²⁰⁸Pb and ²⁰⁹Bi at the termination of the path and the partial cross
+  section to the ground state; at s-process temperatures the isomer is
+  quickly depopulated to the ground state, so the cycle closes through
+  ²¹⁰Po (Ratzel et al. 2004). ²⁰⁹Bi itself is only quasi-stable: it
+  α-decays with t½ ≈ 2 × 10¹⁹ yr. The capture resonances of ²⁰⁹Bi were measured at n_TOF with the
   pulse-height weighting technique, with a set-up of
   practically negligible neutron sensitivity. In the stellar range
   kT = 5–8 keV the new rate is about 16% higher than the value used before;
@@ -45,6 +52,14 @@ status_note_it: >-
   stellare alle basse temperature di circa il 16%.
 methods: [neutron-beams]
 measurements:
+  - year: 2004
+    facility: karlsruhe-vdg
+    method: activation
+    energy: "quasi-Maxwellian kT = 25 keV"
+    note: >-
+      Stellar cross sections of ²⁰⁸Pb and ²⁰⁹Bi at the end of the path; the
+      partial cross section to the ²¹⁰Bi ground state, which feeds ²¹⁰Po.
+    refs: [ratzel2004]
   - year: 2006
     facility: n-tof
     method: neutron-beams
@@ -54,5 +69,5 @@ measurements:
       Pulse-height weighting with low neutron sensitivity; rate at
       kT = 5–8 keV about 16% higher; s fraction of solar Bi 19 ± 3%.
     refs: [domingopardo2006]
-evaluations: [bao2000, dillmann2008]
+evaluations: [bao2000, dillmann2014, dillmann2008]
 related: [197Au-ng-198Au, 151Sm-ng-152Sm]

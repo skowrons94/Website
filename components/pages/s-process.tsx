@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { ArrowLeft, ArrowRight, MoveHorizontal } from "lucide-react"
+import { ArrowLeft, ArrowRight, ChevronDown } from "lucide-react"
 
 import { Cite, ReferenceList } from "@/components/atlas/reference-list"
 import { SProcessInset, SProcessLegend, SProcessOverview, type Inset } from "@/components/atlas/s-process-chart"
@@ -26,12 +26,12 @@ const TEXT = {
     description:
       "How slow neutron captures in giant stars build about half of the nuclei between iron and bismuth: the path on the chart of nuclides, its branch points, and how the captures are measured.",
     lead:
-      "About half of the nuclei heavier than iron were built one neutron at a time, inside giant stars, over thousands of years. This page follows that path across the chart of nuclides, from iron to lead and bismuth.",
+      "About half of the nuclei heavier than iron were built one neutron at a time, inside giant stars, over the hundred thousand years or so of their last bright phase. Most of the strontium and barium in the Solar System, and much of its lead, were made this way. This page follows that path across the chart of nuclides, from iron to lead and bismuth.",
     back: "Reaction atlas",
     overviewTitle: "The path on the chart of nuclides",
     overviewLabel:
       "Chart of nuclides from iron (Z = 26) to bismuth (Z = 83), with the s-process path drawn as a line through the stable nuclei it visits, the closed neutron shells N = 50, 82 and 126 shaded, s-only nuclei highlighted and three regions marked A, B and C.",
-    scrollHint: "Scroll sideways to follow the path",
+    tapHint: "The boxes A, B and C are links to the close-ups further down.",
     insetsTitle: "Three branch points, close up",
     reactionsTitle: "The reactions in the atlas",
     reactionsText:
@@ -39,7 +39,7 @@ const TEXT = {
     references: "References",
     sources: "Sources",
     pathNote: (nodes: number, sOnly: number) =>
-      `The path is computed by this site from the NUBASE2020 half-lives and AME2020 masses with one simple rule: a nucleus that lives longer than a year captures a neutron, one that lives less decays (by β⁻ where the masses allow, by electron capture otherwise), and at the classic branch points it does both. It visits ${nodes} nuclides; ${sOnly} stable nuclei on it are shielded from the r-process by a stable isobar. Real stellar half-lives and neutron densities move the branchings; the rule shows the shape, not the abundances.`,
+      `The path is computed by this site from the NUBASE2020 half-lives and AME2020 masses with one simple rule: a nucleus that lives longer than a year captures a neutron, one that lives less decays (by β⁻ where the masses allow, by electron capture otherwise), and at the classic branch points it does both. Where a short-lived nucleus decays both ways (⁶⁴Cu, ¹²⁸I, ¹⁵²Eu, ¹⁶⁴Ho), both arms are drawn, a weak one dashed; ¹⁶³Dy, stable in the laboratory, decays to ¹⁶³Ho only in the hot, ionised star, and is drawn so. It visits ${nodes} nuclides; ${sOnly} stable nuclei on it are shielded from the r-process by a stable isobar of lower Z, among them ¹⁵²Gd and ¹⁶⁴Er. ¹⁴⁸Nd, ¹⁸⁶W and ⁹⁶Zr, usually counted as r-only, drop out of that class here only because the branches at ¹⁴⁷Nd, ¹⁸⁵W and ⁹⁵Zr are drawn. Real stellar half-lives and neutron densities move the branchings; the rule shows the shape, not the abundances.`,
   },
   it: {
     eyebrow: "Atlante delle reazioni",
@@ -47,12 +47,12 @@ const TEXT = {
     description:
       "Come le catture lente di neutroni nelle stelle giganti costruiscono circa metà dei nuclei tra il ferro e il bismuto: il percorso sulla carta dei nuclidi, i suoi punti di diramazione e come si misurano le catture.",
     lead:
-      "Circa metà dei nuclei più pesanti del ferro è stata costruita un neutrone alla volta, dentro stelle giganti, nel corso di migliaia di anni. Questa pagina segue quel percorso sulla carta dei nuclidi, dal ferro fino al piombo e al bismuto.",
+      "Circa metà dei nuclei più pesanti del ferro è stata costruita un neutrone alla volta, dentro stelle giganti, nel corso dei centomila anni circa della loro ultima fase luminosa. Così sono nati la maggior parte dello stronzio e del bario del Sistema Solare, e buona parte del suo piombo. Questa pagina segue quel percorso sulla carta dei nuclidi, dal ferro fino al piombo e al bismuto.",
     back: "Atlante delle reazioni",
     overviewTitle: "Il percorso sulla carta dei nuclidi",
     overviewLabel:
       "Carta dei nuclidi dal ferro (Z = 26) al bismuto (Z = 83), con il percorso del processo s tracciato come una linea attraverso i nuclei stabili che visita, i gusci di neutroni chiusi N = 50, 82 e 126 ombreggiati, i nuclei solo s evidenziati e tre regioni indicate con A, B e C.",
-    scrollHint: "Scorri di lato per seguire il percorso",
+    tapHint: "I riquadri A, B e C sono link agli ingrandimenti più in basso.",
     insetsTitle: "Tre punti di diramazione, da vicino",
     reactionsTitle: "Le reazioni nell'atlante",
     reactionsText:
@@ -60,7 +60,7 @@ const TEXT = {
     references: "Bibliografia",
     sources: "Fonti",
     pathNote: (nodes: number, sOnly: number) =>
-      `Il percorso è calcolato da questo sito dai tempi di dimezzamento di NUBASE2020 e dalle masse di AME2020 con una sola regola semplice: un nucleo che vive più di un anno cattura un neutrone, uno che vive meno decade (β⁻ dove le masse lo permettono, altrimenti per cattura elettronica), e nei classici punti di diramazione fa entrambe le cose. Visita ${nodes} nuclidi; ${sOnly} nuclei stabili lungo il percorso sono schermati dal processo r da un isobaro stabile. I tempi di dimezzamento stellari e le densità di neutroni reali spostano le diramazioni; la regola mostra la forma, non le abbondanze.`,
+      `Il percorso è calcolato da questo sito dai tempi di dimezzamento di NUBASE2020 e dalle masse di AME2020 con una sola regola semplice: un nucleo che vive più di un anno cattura un neutrone, uno che vive meno decade (β⁻ dove le masse lo permettono, altrimenti per cattura elettronica), e nei classici punti di diramazione fa entrambe le cose. Dove un nucleo di vita breve decade nei due modi (⁶⁴Cu, ¹²⁸I, ¹⁵²Eu, ¹⁶⁴Ho) sono disegnati entrambi i rami, quello debole tratteggiato; il ¹⁶³Dy, stabile in laboratorio, decade in ¹⁶³Ho solo nella stella calda e ionizzata, ed è disegnato così. Visita ${nodes} nuclidi; ${sOnly} nuclei stabili lungo il percorso sono schermati dal processo r da un isobaro stabile con Z minore, tra cui il ¹⁵²Gd e il ¹⁶⁴Er. Il ¹⁴⁸Nd, il ¹⁸⁶W e il ⁹⁶Zr, di solito considerati solo r, escono da questa classe qui soltanto perché sono disegnate le diramazioni a ¹⁴⁷Nd, ¹⁸⁵W e ⁹⁵Zr. I tempi di dimezzamento stellari e le densità di neutroni reali spostano le diramazioni; la regola mostra la forma, non le abbondanze.`,
   },
 } as const
 
@@ -83,9 +83,11 @@ const ORDER = [
   "b2fh1957",
   "straniero2006",
   "domingopardo2006",
+  "ratzel2004",
   "clayton1961",
   "mohr2016",
   "raut2013",
+  "lugaro2011",
   "abbondanno2004",
   "wisshak2006",
   "heil2008lu",
@@ -100,6 +102,7 @@ const ORDER = [
   "reifarth2009",
   "tessler2015",
   "dillmann2008",
+  "dillmann2014",
 ]
 
 export const sProcessMetadata = (lang: Lang): Metadata =>
@@ -183,7 +186,11 @@ export function SProcessPage({ lang }: { lang: Lang }) {
       <section className="mt-10" aria-labelledby="overview-heading">
         <H2 id="overview-heading">{t.overviewTitle}</H2>
         <figure className="mt-5">
-          <div className="relative rounded-lg border border-border" style={{ background: "var(--viz-surface)" }}>
+          {/* a phone: the path in four pieces, each filling the width */}
+          <div className="rounded-lg border border-border p-2 md:hidden" style={{ background: "var(--viz-surface)" }}>
+            <SProcessOverview lang={lang} insets={insets} label={t.overviewLabel} describedBy="overview-description" pieces />
+          </div>
+          <div className="relative hidden rounded-lg border border-border md:block" style={{ background: "var(--viz-surface)" }}>
             <div
               className="overflow-x-auto overscroll-x-contain rounded-lg p-2 [scrollbar-width:thin]"
               tabIndex={0}
@@ -192,15 +199,8 @@ export function SProcessPage({ lang }: { lang: Lang }) {
             >
               <SProcessOverview lang={lang} insets={insets} label={t.overviewLabel} describedBy="overview-description" />
             </div>
-            <span
-              aria-hidden
-              className="pointer-events-none absolute inset-y-0 right-0 w-8 rounded-r-lg bg-gradient-to-l from-[var(--viz-surface)] to-transparent md:hidden"
-            />
           </div>
-          <p className="mt-2 inline-flex items-center gap-1.5 text-xs text-muted-foreground md:hidden">
-            <MoveHorizontal className="h-3.5 w-3.5" aria-hidden />
-            {t.scrollHint}
-          </p>
+          <p className="mt-2 text-xs text-muted-foreground">{t.tapHint}</p>
           <figcaption className="mt-3 space-y-3">
             <SProcessLegend lang={lang} />
             <p id="overview-description" className="max-w-[46rem] text-pretty text-sm leading-relaxed text-muted-foreground">
@@ -316,6 +316,19 @@ const TOC_IT = [
   { id: "measuring", label: "Come si misurano le catture" },
 ]
 
+/** Technical paragraphs, folded away for a general reader. */
+function ForSpecialists({ lang, children }: { lang: Lang; children: React.ReactNode }) {
+  return (
+    <details className="group mt-5 max-w-[46rem] rounded-lg border border-border/80">
+      <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+        {dict(lang).atlas.forSpecialists}
+        <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden />
+      </summary>
+      <div className="px-4 pb-5 [&>div]:mt-1">{children}</div>
+    </details>
+  )
+}
+
 function InsetFigure({ inset, lang, children }: { inset: Inset; lang: Lang; children: React.ReactNode }) {
   return (
     <figure id={inset.id} className="mt-6 scroll-mt-24 rounded-lg border border-border p-3 sm:p-4" style={{ background: "var(--viz-surface)" }}>
@@ -349,14 +362,20 @@ function BodyEn({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
             the chart. While the isotopes stay stable, it keeps capturing. When it reaches a radioactive one, that
             nucleus usually decays by β⁻ emission, in minutes to days, long before the next neutron arrives,
             and becomes the next element up. In the stars where the s-process runs the neutron density is
-            modest, at most about 10<sup>8</sup> neutrons per cubic centimetre {c("straniero2006")}: with a typical
-            capture cross section of a tenth of a barn, a nucleus waits about a decade between two captures.
+            modest: about 10<sup>7</sup> neutrons per cubic centimetre in the ¹³C pocket of an AGB star, up to
+            about 10<sup>10</sup> in its brief ²²Ne bursts {c("straniero2006")}, and about 10<sup>11</sup>–10
+            <sup>12</sup> in the carbon-burning shell of a massive star {c("kaeppeler2011")}. With a typical capture
+            cross section of a tenth of a barn, a nucleus in the pocket waits about a century between two captures.
           </P>
           <P>
             The path therefore zigzags along the valley of stable nuclei, from iron through krypton, strontium,
-            tin and barium to lead and bismuth. <Sci>²⁰⁹Bi</Sci> is the last stable nucleus it reaches; one more
+            tin and barium to lead and bismuth. <Sci>²⁰⁹Bi</Sci> is the last nucleus it reaches that practically
+            does not decay: it is only quasi-stable, with an α half-life of about 2 × 10<sup>19</sup> years. One more
             capture gives <Sci>²¹⁰Bi</Sci>, which decays to <Sci>²¹⁰Po</Sci>, whose α decay returns the matter to{" "}
-            <Sci>²⁰⁶Pb</Sci>, so the s-process ends in a lead–bismuth cycle {c("domingopardo2006")}.
+            <Sci>²⁰⁶Pb</Sci>, so the s-process ends in a lead–bismuth cycle {c("domingopardo2006")}. In the laboratory
+            part of the captures make a long-lived isomer of <Sci>²¹⁰Bi</Sci> (about 3 million years); in the star
+            thermal photons empty it quickly into the five-day ground state, so the cycle still closes through{" "}
+            <Sci>²¹⁰Po</Sci> {c("ratzel2004")}.
           </P>
         </div>
       </section>
@@ -388,6 +407,15 @@ function BodyEn({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
         <H2 id="components">Two kinds of stars: the main and the weak component</H2>
         <div className={prose}>
           <P>
+            Two kinds of stars run the s-process. Most of it happens in stars of one to three times the mass of the
+            Sun near the end of their lives, when they have swollen into red giants; the rest in stars of more than
+            about ten solar masses, before they explode. The first build nuclei all the way to lead, the second
+            mostly up to strontium.
+          </P>
+        </div>
+        <ForSpecialists lang={lang}>
+          <div className={prose}>
+          <P>
             The <b>main component</b>, which makes most s-process nuclei heavier than strontium, comes from
             low-mass {term("agb-star", "AGB stars")}. After each {term("thermal-pulse", "thermal pulse")}, a helium flash
             in the shell around the core, some protons are mixed down into the helium-rich layer and form a thin{" "}
@@ -405,7 +433,8 @@ function BodyEn({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
             <Sci>¹⁶O</Sci> and <Sci>²²Ne</Sci> themselves, compete for the neutrons ({r("16O-ng-17O")}, {r("22Ne-ng-23Ne")}){" "}
             {c("mohr2016")}.
           </P>
-        </div>
+          </div>
+        </ForSpecialists>
       </section>
 
       <section className="mt-14" aria-labelledby="s-and-r">
@@ -448,16 +477,17 @@ function BodyEn({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
           <Sci>
             ⁸⁵Kr (10.7 yr in the laboratory) either decays to ⁸⁵Rb or captures to ⁸⁶Kr; ⁸⁷Kr then decays to ⁸⁷Rb, with the magic
             N = 50. The more neutrons, the more ⁸⁶Kr and ⁸⁷Rb are made, so the branching gauges the neutron density, higher in
-            the ²²Ne bursts than in the ¹³C pocket. ⁸⁵Kr(n,γ) has never been measured directly; it was constrained through the
+            the ²²Ne bursts than in the ¹³C pocket. Only part of the flow reaches the 10.7 yr ground state: about half of the
+            captures on ⁸⁴Kr make the 4.5 h isomer ⁸⁵Krᵐ, which mostly decays straight to ⁸⁵Rb. ⁸⁵Kr(n,γ) has never been measured directly; it was constrained through the
             photodisintegration of ⁸⁶Kr, and krypton in stardust grains from AGB stars tests it
           </Sci>{" "}
-          {c("raut2013", "kaeppeler2011")}.
+          {c("raut2013", "lugaro2011", "kaeppeler2011")}.
         </InsetFigure>
 
         <InsetFigure inset={sm} lang={lang}>
           <Sci>
             Branchings at ¹⁴⁷Nd, ¹⁴⁷Pm and ¹⁴⁸Pm let part of the flow bypass ¹⁴⁸Sm, but not ¹⁵⁰Sm; both are s-only, so their
-            abundance ratio measures the neutron density. At ¹⁵¹Sm (90 yr) the path forks again towards ¹⁵²Sm or ¹⁵¹Eu. Its
+            abundance ratio measures the neutron density. At ¹⁵¹Sm (94.6 yr) the path forks again towards ¹⁵²Sm or ¹⁵¹Eu. Its
             capture cross section was measured on radioactive samples at n_TOF and Karlsruhe
           </Sci>{" "}
           {c("kaeppeler2011", "abbondanno2004", "wisshak2006")}.
@@ -465,8 +495,9 @@ function BodyEn({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
 
         <InsetFigure inset={lu} lang={lang}>
           <Sci>
-            ¹⁷⁶Lu lives 37 billion years in the laboratory, but its capture also feeds a short-lived isomer (3.68 h), and in a
-            star thermal photons connect the two states, so its effective half-life falls steeply with temperature, to days.
+            ¹⁷⁶Lu lives 37 billion years in the laboratory. Capture on ¹⁷⁵Lu feeds both this ground state and a short-lived
+            isomer, ¹⁷⁶Luᵐ (3.66 h), which decays to ¹⁷⁶Hf; in a star thermal photons connect the two states, so the effective
+            half-life of ¹⁷⁶Lu falls steeply with temperature, to days.
             ¹⁷⁶Lu and its daughter ¹⁷⁶Hf are both s-only, shielded by ¹⁷⁶Yb: their ratio is an s-process thermometer
           </Sci>{" "}
           {c("beer1980", "heil2008lu")}.
@@ -476,6 +507,15 @@ function BodyEn({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
       <section className="mt-14" aria-labelledby="measuring">
         <H2 id="measuring">How the captures are measured</H2>
         <div className={prose}>
+          <P>
+            Everything on this page rests on laboratory measurements of how readily each nucleus captures a
+            neutron at the energies neutrons have inside a star, around 30 keV, the energy of a gas at about 350
+            million degrees. Two kinds of experiment measure it: one times the flight of each neutron, the other
+            irradiates a sample and counts what it has become.
+          </P>
+        </div>
+        <ForSpecialists lang={lang}>
+          <div className={prose}>
           <P>
             Stars do not have neutrons of a single energy: their energies follow the thermal (Maxwell–Boltzmann)
             distribution of the gas. What a star needs is the {term("macs", "Maxwellian-averaged cross section (MACS)")}, the
@@ -509,10 +549,11 @@ function BodyEn({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
           </P>
           <P>
             The measured values are collected in KADoNiS, the Karlsruhe Astrophysical Database of Nucleosynthesis in
-            Stars, which continues the compilation of Bao and colleagues {c("dillmann2008")}. The neutron sources and
+            Stars, which continues the compilation of Bao and colleagues {c("dillmann2008", "dillmann2014")}. The neutron sources and
             poisons, and the captures with entries of their own, are listed below.
           </P>
-        </div>
+          </div>
+        </ForSpecialists>
       </section>
     </>
   )
@@ -540,16 +581,22 @@ function BodyIt({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
             a destra sulla carta. Finché gli isotopi restano stabili, continua a catturare. Quando ne raggiunge uno
             radioattivo, quel nucleo di solito decade per emissione β⁻, in un tempo che va da minuti a giorni,
             molto prima che arrivi il neutrone successivo, e diventa l&apos;elemento seguente. Nelle stelle in cui
-            avviene il processo s la densità di neutroni è modesta, al massimo circa 10<sup>8</sup> neutroni per
-            centimetro cubo {c("straniero2006")}: con una tipica sezione d&apos;urto di cattura di un decimo di barn, un
-            nucleo aspetta circa dieci anni tra una cattura e l&apos;altra.
+            avviene il processo s la densità di neutroni è modesta: circa 10<sup>7</sup> neutroni per centimetro
+            cubo nella tasca di ¹³C di una stella AGB, fino a circa 10<sup>10</sup> nei suoi brevi lampi del ²²Ne{" "}
+            {c("straniero2006")}, e circa 10<sup>11</sup>–10<sup>12</sup> nel guscio in cui brucia il carbonio di una
+            stella massiccia {c("kaeppeler2011")}. Con una tipica sezione d&apos;urto di cattura di un decimo di barn,
+            un nucleo nella tasca aspetta circa un secolo tra una cattura e l&apos;altra.
           </P>
           <P>
             Il percorso procede quindi a zigzag lungo la valle dei nuclei stabili, dal ferro attraverso il kripton,
             lo stronzio, lo stagno e il bario fino al piombo e al bismuto. Il <Sci>²⁰⁹Bi</Sci> è l&apos;ultimo nucleo
-            stabile che raggiunge; un&apos;altra cattura dà il <Sci>²¹⁰Bi</Sci>, che decade in <Sci>²¹⁰Po</Sci>, il cui
+            che raggiunge a non decadere in pratica: è solo quasi stabile, con un tempo di dimezzamento α di circa
+            2 × 10<sup>19</sup> anni. Un&apos;altra cattura dà il <Sci>²¹⁰Bi</Sci>, che decade in <Sci>²¹⁰Po</Sci>, il cui
             decadimento α riporta la materia al <Sci>²⁰⁶Pb</Sci>: il processo s finisce in un ciclo piombo–bismuto{" "}
-            {c("domingopardo2006")}.
+            {c("domingopardo2006")}. In laboratorio una parte delle catture produce un isomero a vita lunga del{" "}
+            <Sci>²¹⁰Bi</Sci> (circa 3 milioni di anni); nella stella i fotoni termici lo svuotano in fretta nello stato
+            fondamentale, che vive cinque giorni, e il ciclo si chiude comunque attraverso il <Sci>²¹⁰Po</Sci>{" "}
+            {c("ratzel2004")}.
           </P>
         </div>
       </section>
@@ -582,6 +629,15 @@ function BodyIt({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
         <H2 id="components">Due tipi di stelle: la componente principale e quella debole</H2>
         <div className={prose}>
           <P>
+            Due tipi di stelle fanno funzionare il processo s. La maggior parte avviene in stelle da una a tre volte
+            la massa del Sole verso la fine della loro vita, quando si sono gonfiate in giganti rosse; il resto in
+            stelle di più di circa dieci masse solari, prima che esplodano. Le prime costruiscono nuclei fino al
+            piombo, le seconde soprattutto fino allo stronzio.
+          </P>
+        </div>
+        <ForSpecialists lang={lang}>
+          <div className={prose}>
+          <P>
             La <b>componente principale</b>, che produce la maggior parte dei nuclei del processo s più pesanti dello
             stronzio, viene dalle {term("agb-star", "stelle AGB")} di piccola massa. Dopo ogni{" "}
             {term("thermal-pulse", "impulso termico")}, un lampo dell&apos;elio nel guscio intorno al nucleo, alcuni
@@ -597,11 +653,12 @@ function BodyIt({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
             La <b>componente debole</b> viene dalle stelle massicce. Lì il <Sci>²²Ne</Sci> libera neutroni verso la
             fine della combustione centrale dell&apos;elio (kT ≈ 26 keV) e di nuovo nel guscio in cui brucia il
             carbonio (kT ≈ 90 keV) {c("mohr2016")}. I neutroni per seme di ferro sono troppo pochi per andare lontano,
-            e la componente debole produce soprattutto nuclei più leggeri della massa 90, dal rame allo stronzio{" "}
-            {c("kaeppeler2011")}. Nuclei leggeri abbondanti, lo stesso <Sci>²²Ne</Sci> e l&apos;<Sci>¹⁶O</Sci>,
+            e la componente debole produce soprattutto nuclei con numero di massa inferiore a 90, dal rame allo stronzio{" "}
+            {c("kaeppeler2011")}. Nuclei leggeri abbondanti, lo stesso <Sci>²²Ne</Sci> e il <Sci>¹⁶O</Sci>,
             competono per i neutroni ({r("16O-ng-17O")}, {r("22Ne-ng-23Ne")}) {c("mohr2016")}.
           </P>
-        </div>
+          </div>
+        </ForSpecialists>
       </section>
 
       <section className="mt-14" aria-labelledby="s-and-r">
@@ -614,15 +671,15 @@ function BodyIt({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
             costante, finché ogni catena incontra il primo nucleo stabile sulla sua strada. Un nucleo stabile che
             ha un vicino stabile con la stessa massa e carica minore è quindi schermato: i decadimenti del processo
             r si fermano al vicino. Se il percorso del processo s lo attraversa, è un nucleo{" "}
-            {term("s-only", "solo s")}, prodotto soltanto dal processo s. Ne sono esempi <Sci>¹⁴⁸Sm</Sci> e{" "}
-            <Sci>¹⁵⁰Sm</Sci>, schermati da <Sci>¹⁴⁸Nd</Sci> e <Sci>¹⁵⁰Nd</Sci>, e il <Sci>²⁰⁴Pb</Sci>, schermato dal{" "}
+            {term("s-only", "solo s")}, prodotto soltanto dal processo s. Ne sono esempi il <Sci>¹⁴⁸Sm</Sci> e il{" "}
+            <Sci>¹⁵⁰Sm</Sci>, schermati dal <Sci>¹⁴⁸Nd</Sci> e dal <Sci>¹⁵⁰Nd</Sci>, e il <Sci>²⁰⁴Pb</Sci>, schermato dal{" "}
             <Sci>²⁰⁴Hg</Sci> {c("kaeppeler2011")}. Le loro abbondanze solari misurano direttamente il processo s,
             senza il contributo del processo r.
           </P>
           <P>
             Al contrario, gli isotopi stabili più ricchi di neutroni di un elemento sono spesso saltati dal processo
-            s, perché l&apos;isotopo che li precede decade prima di poter catturare. Sono nuclei solo r, come{" "}
-            <Sci>¹⁵⁰Nd</Sci> e <Sci>¹⁷⁶Yb</Sci>. Gli isotopi stabili più rari, ricchi di protoni, non sono raggiunti da
+            s, perché l&apos;isotopo che li precede decade prima di poter catturare. Sono nuclei solo r, come il{" "}
+            <Sci>¹⁵⁰Nd</Sci> e il <Sci>¹⁷⁶Yb</Sci>. Gli isotopi stabili più rari, ricchi di protoni, non sono raggiunti da
             nessuno dei due; appartengono al processo p. Nella carta i nuclei solo s trovati dalla regola sono pieni
             in arancione.
           </P>
@@ -644,20 +701,22 @@ function BodyIt({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
 
         <InsetFigure inset={kr} lang={lang}>
           <Sci>
-            Il ⁸⁵Kr (10,7 anni in laboratorio) decade in ⁸⁵Rb oppure cattura e diventa ⁸⁶Kr; il ⁸⁷Kr decade poi in ⁸⁷Rb, con il
-            numero magico N = 50. Più neutroni ci sono, più ⁸⁶Kr e ⁸⁷Rb si producono, quindi la diramazione misura la densità di
-            neutroni, più alta nei lampi del ²²Ne che nella tasca di ¹³C. La ⁸⁵Kr(n,γ) non è mai stata misurata direttamente; è
-            stata vincolata attraverso la fotodisintegrazione del ⁸⁶Kr, e il kripton nei grani di polvere stellare delle stelle
-            AGB la mette alla prova
+            L&apos;⁸⁵Kr (10,7 anni in laboratorio) decade in ⁸⁵Rb oppure cattura e diventa ⁸⁶Kr; l&apos;⁸⁷Kr decade poi in ⁸⁷Rb, con
+            il numero magico N = 50. Più neutroni ci sono, più ⁸⁶Kr e ⁸⁷Rb si producono, quindi la diramazione misura la
+            densità di neutroni, più alta nei lampi del ²²Ne che nella tasca di ¹³C. Solo una parte del flusso raggiunge lo
+            stato fondamentale da 10,7 anni: circa metà delle catture sull&apos;⁸⁴Kr produce l&apos;isomero ⁸⁵Krᵐ, che vive 4,5 ore
+            e decade per lo più direttamente in ⁸⁵Rb. L&apos;⁸⁵Kr(n,γ) non è mai stata misurata direttamente; è stata vincolata
+            attraverso la fotodisintegrazione dell&apos;⁸⁶Kr, e il kripton nei grani di polvere stellare delle stelle AGB la
+            mette alla prova
           </Sci>{" "}
-          {c("raut2013", "kaeppeler2011")}.
+          {c("raut2013", "lugaro2011", "kaeppeler2011")}.
         </InsetFigure>
 
         <InsetFigure inset={sm} lang={lang}>
           <Sci>
             Le diramazioni a ¹⁴⁷Nd, ¹⁴⁷Pm e ¹⁴⁸Pm fanno sì che parte del flusso salti il ¹⁴⁸Sm, ma non il ¹⁵⁰Sm; entrambi sono solo
-            s, quindi il rapporto tra le loro abbondanze misura la densità di neutroni. Al ¹⁵¹Sm (90 anni) il percorso si
-            biforca di nuovo verso il ¹⁵²Sm o l&apos;¹⁵¹Eu. La sua sezione d&apos;urto di cattura è stata misurata su campioni
+            s, quindi il rapporto tra le loro abbondanze misura la densità di neutroni. Al ¹⁵¹Sm (94,6 anni) il percorso si
+            biforca di nuovo verso il ¹⁵²Sm o il ¹⁵¹Eu. La sua sezione d&apos;urto di cattura è stata misurata su campioni
             radioattivi a n_TOF e a Karlsruhe
           </Sci>{" "}
           {c("kaeppeler2011", "abbondanno2004", "wisshak2006")}.
@@ -665,9 +724,9 @@ function BodyIt({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
 
         <InsetFigure inset={lu} lang={lang}>
           <Sci>
-            Il ¹⁷⁶Lu vive 37 miliardi di anni in laboratorio, ma la sua cattura alimenta anche un isomero di vita breve (3,68 h),
-            e in una stella i fotoni termici collegano i due stati, così la sua vita media efficace crolla con la temperatura,
-            fino a pochi giorni. Il ¹⁷⁶Lu e suo figlio ¹⁷⁶Hf sono entrambi solo s, schermati dal ¹⁷⁶Yb: il loro rapporto è un
+            Il ¹⁷⁶Lu vive 37 miliardi di anni in laboratorio. La cattura sul ¹⁷⁵Lu alimenta sia questo stato fondamentale sia un
+            isomero di vita breve, il ¹⁷⁶Luᵐ (3,66 ore), che decade in ¹⁷⁶Hf; in una stella i fotoni termici collegano i due
+            stati, così il tempo di dimezzamento efficace del ¹⁷⁶Lu crolla con la temperatura, fino a pochi giorni. Il ¹⁷⁶Lu e suo figlio ¹⁷⁶Hf sono entrambi solo s, schermati dal ¹⁷⁶Yb: il loro rapporto è un
             termometro del processo s
           </Sci>{" "}
           {c("beer1980", "heil2008lu")}.
@@ -677,6 +736,15 @@ function BodyIt({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
       <section className="mt-14" aria-labelledby="measuring">
         <H2 id="measuring">Come si misurano le catture</H2>
         <div className={prose}>
+          <P>
+            Tutto ciò che c&apos;è in questa pagina si basa su misure di laboratorio di quanto facilmente ciascun
+            nucleo cattura un neutrone alle energie che i neutroni hanno dentro una stella, intorno a 30 keV,
+            l&apos;energia di un gas a circa 350 milioni di gradi. Due tipi di esperimento la misurano: uno cronometra
+            il volo di ciascun neutrone, l&apos;altro irraggia un campione e conta in che cosa si è trasformato.
+          </P>
+        </div>
+        <ForSpecialists lang={lang}>
+          <div className={prose}>
           <P>
             Nelle stelle i neutroni non hanno una sola energia: le loro energie seguono la distribuzione termica
             (di Maxwell–Boltzmann) del gas. Quello che serve a una stella è la{" "}
@@ -710,10 +778,11 @@ function BodyIt({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
           </P>
           <P>
             I valori misurati sono raccolti in KADoNiS, il Karlsruhe Astrophysical Database of Nucleosynthesis in Stars,
-            che prosegue la compilazione di Bao e colleghi {c("dillmann2008")}. Le sorgenti e i veleni neutronici, e le
+            che prosegue la compilazione di Bao e colleghi {c("dillmann2008", "dillmann2014")}. Le sorgenti e i veleni neutronici, e le
             catture che hanno una scheda propria, sono elencati qui sotto.
           </P>
-        </div>
+          </div>
+        </ForSpecialists>
       </section>
     </>
   )

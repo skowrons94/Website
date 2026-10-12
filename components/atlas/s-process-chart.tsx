@@ -1,4 +1,4 @@
-import { getSProcessPath, type SCell, type SEdge, type SPath } from "@/lib/atlas"
+import { getSProcessPath, type SCell, type SPath } from "@/lib/atlas"
 import { decimal, type Lang } from "@/lib/i18n"
 
 /**
@@ -13,25 +13,29 @@ import { decimal, type Lang } from "@/lib/i18n"
  * insets redraw three branchings with labels.
  */
 
-/** `10.7 yr`, `37.6 Gyr`, `5.37 d`: short enough for a 44 px cell. */
-export function compactHalfLife(seconds: number | null, lang: Lang): string {
-  if (seconds === null || !Number.isFinite(seconds)) return ""
+/**
+ * A half-life short enough for an inset cell: `10.7 yr`, `37.6 Gyr` in
+ * English; in Italian the unit is a word, on a line of its own (`10,7` /
+ * `anni`, `49,7` / `mld di anni`).
+ */
+export function compactHalfLife(seconds: number | null, lang: Lang): { value: string; unit: string } | null {
+  if (seconds === null || !Number.isFinite(seconds)) return null
   const u =
     lang === "it"
-      ? { s: "s", min: "min", h: "h", d: "g", y: "a", ky: "ka", My: "Ma", Gy: "Ga" }
+      ? { s: "secondi", min: "minuti", h: "ore", d: "giorni", y: "anni", ky: "mila anni", My: "mln di anni", Gy: "mld di anni" }
       : { s: "s", min: "min", h: "h", d: "d", y: "yr", ky: "kyr", My: "Myr", Gy: "Gyr" }
   const Y = 365.2422 * 86400
-  const fmt = (v: number) => decimal(String(Number(v.toPrecision(v < 100 ? 3 : 3))), lang)
-  if (seconds < 60) return `${fmt(seconds)} ${u.s}`
-  if (seconds < 3600) return `${fmt(seconds / 60)} ${u.min}`
-  if (seconds < 86400) return `${fmt(seconds / 3600)} ${u.h}`
-  if (seconds < Y) return `${fmt(seconds / 86400)} ${u.d}`
+  const fmt = (v: number) => decimal(String(Number(v.toPrecision(3))), lang)
+  const r = (value: number, unit: string) => ({ value: fmt(value), unit })
+  if (seconds < 60) return r(seconds, u.s)
+  if (seconds < 3600) return r(seconds / 60, u.min)
+  if (seconds < 86400) return r(seconds / 3600, u.h)
+  if (seconds < Y) return r(seconds / 86400, u.d)
   const y = seconds / Y
-  if (y < 1e3) return `${fmt(y)} ${u.y}`
-  if (y < 1e6) return `${fmt(y / 1e3)} ${u.ky}`
-  if (y < 1e9) return `${fmt(y / 1e6)} ${u.My}`
-  if (y < 1e13) return `${fmt(y / 1e9)} ${u.Gy}`
-  return `> 10^13 ${u.y}`
+  if (y < 1e3) return r(y, u.y)
+  if (y < 1e6) return r(y / 1e3, u.ky)
+  if (y < 1e9) return r(y / 1e6, u.My)
+  return r(y / 1e9, u.Gy)
 }
 
 /** A nuclide name in SVG: the mass number raised, in the surrounding font. */
@@ -75,55 +79,158 @@ function cellPaint(c: SCell) {
 
 /* -- the overview ----------------------------------------------------------- */
 
+/**
+ * On a phone the whole chart, 100 columns wide, would shrink to 3 px cells or
+ * open on its empty upper-left corner. The path is cut instead into four
+ * pieces along the valley, each drawn at the same scale and filling the
+ * width: no sideways scrolling, nothing empty.
+ */
+const PIECES: { z: [number, number]; n: [number, number] }[] = [
+  { z: [26, 41], n: [28, 57] },
+  { z: [40, 57], n: [50, 84] },
+  { z: [57, 72], n: [78, 109] },
+  { z: [72, 84], n: [102, 127] },
+]
+
 export function SProcessOverview({
   lang,
   insets,
   label,
   describedBy,
+  pieces = false,
 }: {
   lang: Lang
   insets: Inset[]
   label: string
   describedBy?: string
+  /** Draw the path in four stacked pieces (for a phone) instead of whole. */
+  pieces?: boolean
 }) {
   const path = getSProcessPath(lang)
+  if (!pieces)
+    return (
+      <OverviewSvg
+        path={path}
+        lang={lang}
+        insets={insets}
+        label={label}
+        describedBy={describedBy}
+        z={[path.zMin, path.zMax]}
+        n={[path.nMin, path.nMax]}
+        className="block h-auto w-full min-w-[40rem]"
+      />
+    )
+  // The same scale for every piece: each is as wide, relative to the widest,
+  // as its own drawing (left margin 34, pitch 7, right margin 14 or 36).
+  const width = (p: (typeof PIECES)[number]) => 34 + (p.n[1] - p.n[0] + 1) * 7 + (p.n[1] >= 127 ? 36 : 14)
+  const widest = Math.max(...PIECES.map(width))
+  const it = lang === "it"
+  return (
+    <div role="img" aria-label={label} aria-describedby={describedBy} className="space-y-1">
+      {PIECES.map((piece, i) => {
+        const from = path.cells.find((c) => c.Z === piece.z[0])?.symbol
+        const to = path.cells.find((c) => c.Z === piece.z[1])?.symbol
+        return (
+          <div key={i} className={i > 0 ? "border-t border-border/60 pt-1" : undefined}>
+            <OverviewSvg
+              path={path}
+              lang={lang}
+              insets={insets}
+              z={piece.z}
+              n={piece.n}
+              piece={`${i + 1}/${PIECES.length} · ${from}–${to}`}
+              neutronsLabel={i === PIECES.length - 1 ? (it ? "neutroni N →" : "neutrons N →") : undefined}
+              style={{ width: `${(width(piece) / widest) * 100}%` }}
+              className="block h-auto"
+            />
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+function OverviewSvg({
+  path,
+  lang,
+  insets,
+  label,
+  describedBy,
+  z: [z0, z1],
+  n: [n0, n1],
+  piece,
+  neutronsLabel,
+  className,
+  style,
+}: {
+  path: SPath
+  lang: Lang
+  insets: Inset[]
+  label?: string
+  describedBy?: string
+  z: [number, number]
+  n: [number, number]
+  /** "2/4 · Zr–La": the piece of a cut chart; no title, no description. */
+  piece?: string
+  neutronsLabel?: string
+  className?: string
+  style?: React.CSSProperties
+}) {
   const P = 7 // pitch, user units (≈ px at the natural size)
   const S = 6 // cell side
-  const n0 = path.nMin
-  const n1 = path.nMax
-  const z0 = path.zMin
-  const z1 = path.zMax
+  const whole = piece === undefined
   const L = 34
-  const T = 40
-  const R = 14
-  const B = 34
+  const T = whole ? 46 : 32
+  const endRight = !whole && n1 >= 127 && z1 >= 83
+  const R = endRight ? 36 : 14
+  const B = whole ? 34 : neutronsLabel ? 30 : 20
   const W = L + (n1 - n0 + 1) * P + R
   const H = T + (z1 - z0 + 1) * P + B
   const x = (N: number) => L + (N - n0) * P + P / 2
   const y = (Z: number) => T + (z1 - Z) * P + P / 2
+  const inside = (c: { Z: number; N: number }) => c.Z >= z0 && c.Z <= z1 && c.N >= n0 && c.N <= n1
+  const cells = whole ? path.cells : path.cells.filter(inside)
   const byCode = new Map(path.cells.map((c) => [c.code, c]))
-  const ends = (e: SEdge) => [byCode.get(e.from), byCode.get(e.to)] as const
+  const gridTop = T
   const gridBottom = T + (z1 - z0 + 1) * P
+  const gridRight = L + (n1 - n0 + 1) * P
   // The leftmost drawn cell of each labelled row.
   const rowStart = new Map<number, number>()
-  for (const c of path.cells) rowStart.set(c.Z, Math.min(rowStart.get(c.Z) ?? Infinity, c.N))
+  for (const c of cells) rowStart.set(c.Z, Math.min(rowStart.get(c.Z) ?? Infinity, c.N))
+  const clip = `s-clip-${z0}-${n0}`
+  const tick0 = Math.ceil(n0 / 10) * 10
+  const ticks = Array.from({ length: Math.max(0, Math.floor(n1 / 10) - tick0 / 10 + 1) }, (_, i) => tick0 + i * 10)
+  const shown = (N: number, Z: number) => N >= n0 && N <= n1 && Z >= z0 && Z <= z1
 
   return (
     <svg
       viewBox={`0 0 ${W} ${H}`}
       width={W}
       height={H}
-      role="img"
-      aria-label={label}
-      aria-describedby={describedBy}
-      className="block h-auto w-full min-w-[40rem] select-none"
+      role={whole ? "img" : undefined}
+      aria-hidden={whole ? undefined : true}
+      aria-label={whole ? label : undefined}
+      aria-describedby={whole ? describedBy : undefined}
+      className={`${className ?? ""} select-none`}
+      style={style}
       fontFamily="inherit"
     >
-      <title>{label}</title>
+      {whole && label && <title>{label}</title>}
+      <defs>
+        <clipPath id={clip}>
+          <rect x={L - 2} y={gridTop - 4} width={gridRight - L + 4} height={gridBottom - gridTop + 8} />
+        </clipPath>
+      </defs>
       <rect x="0" y="0" width={W} height={H} fill="var(--viz-surface)" />
 
+      {piece && (
+        <text x={2} y={12} fontSize={10.5} fill="var(--viz-text-muted)" className="tabular">
+          {piece}
+        </text>
+      )}
+
       {/* closed neutron shells */}
-      {MAGIC.map((m) => (
+      {MAGIC.filter((m) => m.N >= n0 && m.N <= n1).map((m) => (
         <g key={m.N}>
           <rect
             x={x(m.N) - P / 2}
@@ -133,17 +240,25 @@ export function SProcessOverview({
             fill="var(--viz-series-3)"
             fillOpacity={0.16}
           />
-          <text x={x(m.N)} y={T - 22} textAnchor="middle" fontSize={11.5} fontWeight={600} fill="var(--viz-text)">
-            N = {m.N}
-          </text>
-          <text x={x(m.N)} y={T - 8} textAnchor="middle" fontSize={11} fill="var(--viz-text-muted)">
-            {m.peak}
-          </text>
+          {whole ? (
+            <>
+              <text x={x(m.N)} y={T - 24} textAnchor="middle" fontSize={11.5} fontWeight={600} fill="var(--viz-text)">
+                N = {m.N}
+              </text>
+              <text x={x(m.N)} y={T - 9} textAnchor="middle" fontSize={11} fill="var(--viz-text-muted)">
+                {m.peak}
+              </text>
+            </>
+          ) : (
+            <text x={x(m.N)} y={T - 7} textAnchor="middle" fontSize={10.5} fontWeight={600} fill="var(--viz-text)">
+              N = {m.N}
+            </text>
+          )}
         </g>
       ))}
 
       {/* N ticks */}
-      {Array.from({ length: Math.floor(n1 / 10) - Math.ceil(n0 / 10) + 1 }, (_, i) => (Math.ceil(n0 / 10) + i) * 10).map((N) => (
+      {ticks.map((N) => (
         <g key={N}>
           <line x1={x(N)} x2={x(N)} y1={gridBottom + 1} y2={gridBottom + 5} stroke="var(--viz-axis)" strokeWidth={1} />
           <text x={x(N)} y={gridBottom + 16} textAnchor="middle" fontSize={11} fill="var(--viz-text-muted)" className="tabular">
@@ -151,13 +266,15 @@ export function SProcessOverview({
           </text>
         </g>
       ))}
-      <text x={W - R} y={H - 3} textAnchor="end" fontSize={10.5} fill="var(--viz-text-muted)">
-        {lang === "it" ? "neutroni N →" : "neutrons N →"}
-      </text>
+      {(whole || neutronsLabel) && (
+        <text x={W - R} y={H - 3} textAnchor="end" fontSize={10.5} fill="var(--viz-text-muted)">
+          {neutronsLabel ?? (lang === "it" ? "neutroni N →" : "neutrons N →")}
+        </text>
+      )}
 
       {/* cells */}
       <g>
-        {path.cells.map((c) => {
+        {cells.map((c) => {
           const paint = cellPaint(c)
           return (
             <rect
@@ -176,10 +293,12 @@ export function SProcessOverview({
       </g>
 
       {/* the path */}
-      <g fill="none" stroke="var(--viz-series-1)" strokeWidth={1.25} strokeLinecap="round">
+      <g fill="none" stroke="var(--viz-series-1)" strokeWidth={1.25} strokeLinecap="round" clipPath={whole ? undefined : `url(#${clip})`}>
         {path.edges.map((e, i) => {
-          const [a, b] = ends(e)
+          const a = byCode.get(e.from)
+          const b = byCode.get(e.to)
           if (!a || !b) return null
+          if (!whole && !inside(a) && !inside(b)) return null
           if (e.kind === "alpha") {
             const mx = (x(a.N) + x(b.N)) / 2 + 16
             const my = (y(a.Z) + y(b.Z)) / 2
@@ -191,7 +310,17 @@ export function SProcessOverview({
               />
             )
           }
-          return <line key={i} x1={x(a.N)} y1={y(a.Z)} x2={x(b.N)} y2={y(b.Z)} />
+          return (
+            <line
+              key={i}
+              x1={x(a.N)}
+              y1={y(a.Z)}
+              x2={x(b.N)}
+              y2={y(b.Z)}
+              strokeOpacity={e.minor ? 0.45 : undefined}
+              strokeDasharray={e.minor ? "1.5 1.5" : undefined}
+            />
+          )
         })}
       </g>
 
@@ -206,37 +335,54 @@ export function SProcessOverview({
           fontSize={11}
           fill="var(--viz-text-muted)"
         >
-          {path.cells.find((c) => c.Z === Z)?.symbol}
+          {cells.find((c) => c.Z === Z)?.symbol}
         </text>
       ))}
       {/* the start and the end, named in full */}
-      <Nuclide x={x(56 - 26) - 4} y={y(27) - 2} A={56} symbol="Fe" anchor="middle" />
-      <Nuclide x={x(126) - 10} y={y(83) - 8} A={209} symbol="Bi" anchor="end" />
+      {shown(30, 26) && <Nuclide x={x(30) - 4} y={y(27) - 2} A={56} symbol="Fe" anchor="middle" />}
+      {shown(126, 83) &&
+        (endRight ? (
+          <Nuclide x={x(127) + 6} y={y(83) + 4} A={209} symbol="Bi" />
+        ) : (
+          <Nuclide x={x(126) - 10} y={y(83) - 8} A={209} symbol="Bi" anchor="end" />
+        ))}
 
-      {/* where the insets are */}
-      {insets.map((inset) => {
-        const left = x(inset.n[0]) - P / 2 - 2
-        const right = x(inset.n[1]) + P / 2 + 2
-        const top = y(inset.z[1]) - P / 2 - 2
-        const bottom = y(inset.z[0]) + P / 2 + 2
-        return (
-          <a key={inset.id} href={`#${inset.id}`} aria-label={inset.label}>
-            <rect
-              x={left}
-              y={top}
-              width={right - left}
-              height={bottom - top}
-              fill="none"
-              stroke="var(--viz-text)"
-              strokeWidth={1}
-              rx={2}
-            />
-            <text x={right + 3} y={bottom + 1} fontSize={11} fontWeight={700} fill="var(--viz-text)">
-              {inset.letter}
-            </text>
-          </a>
-        )
-      })}
+      {/* where the insets are: each box is a link to its close-up */}
+      {insets
+        .filter((inset) => inset.n[0] >= n0 && inset.n[1] <= n1 && inset.z[0] >= z0 && inset.z[1] <= z1)
+        .map((inset) => {
+          const left = x(inset.n[0]) - P / 2 - 2
+          const right = x(inset.n[1]) + P / 2 + 2
+          const top = y(inset.z[1]) - P / 2 - 2
+          const bottom = y(inset.z[0]) + P / 2 + 2
+          return (
+            <a key={inset.id} href={`#${inset.id}`} aria-label={inset.label} className="group">
+              <rect
+                x={left - 4}
+                y={top - 4}
+                width={right - left + 22}
+                height={bottom - top + 8}
+                fill="none"
+                pointerEvents="all"
+              />
+              <rect
+                x={left}
+                y={top}
+                width={right - left}
+                height={bottom - top}
+                fill="var(--viz-text)"
+                fillOpacity={0}
+                stroke="var(--viz-text)"
+                strokeWidth={1}
+                rx={2}
+                className="transition-[fill-opacity] group-hover:[fill-opacity:0.06] group-focus-visible:[fill-opacity:0.1]"
+              />
+              <text x={right + 3} y={bottom + 1} fontSize={11.5} fontWeight={700} fill="hsl(var(--link))" textDecoration="underline">
+                {inset.letter}
+              </text>
+            </a>
+          )
+        })}
     </svg>
   )
 }
@@ -247,8 +393,8 @@ export function SProcessInset({ inset, lang, label }: { inset: Inset; lang: Lang
   const path: SPath = getSProcessPath(lang)
   const [z0, z1] = inset.z
   const [n0, n1] = inset.n
-  const P = 52 // pitch
-  const C = 46 // cell
+  const P = 58 // pitch
+  const C = 52 // cell
   const L = 30
   const T = 6
   const B = 22
@@ -345,7 +491,10 @@ export function SProcessInset({ inset, lang, label }: { inset: Inset; lang: Lang
         // ¹⁵¹Eu) are stable for this purpose: no half-life shown.
         const ancient = c.seconds !== null && c.seconds > 1e12 * 365.2422 * 86400
         const only = it ? { s: "solo s", r: "solo r" } : { s: "s-only", r: "r-only" }
-        const sub = sOnly ? only.s : rOnly ? only.r : c.stable || ancient ? "" : compactHalfLife(c.seconds, lang)
+        const half = c.stable || ancient ? null : compactHalfLife(c.seconds, lang)
+        // One line under the name, or two in Italian (the number, then the unit as a word).
+        const lines = sOnly ? [only.s] : rOnly ? [only.r] : half ? (it ? [half.value, half.unit] : [`${half.value} ${half.unit}`]) : []
+        const sub = lines.length > 0
         return (
           <g key={c.code}>
             <rect
@@ -362,7 +511,7 @@ export function SProcessInset({ inset, lang, label }: { inset: Inset; lang: Lang
             />
             <text
               x={x(c.N)}
-              y={y(c.Z) - (sub ? 5 : 0)}
+              y={y(c.Z) - (lines.length === 2 ? 9 : sub ? 5 : 0)}
               textAnchor="middle"
               dominantBaseline="central"
               fontSize={14}
@@ -374,11 +523,19 @@ export function SProcessInset({ inset, lang, label }: { inset: Inset; lang: Lang
               </tspan>
               <tspan dy={4.5}>{c.symbol}</tspan>
             </text>
-            {sub && (
-              <text x={x(c.N)} y={y(c.Z) + 12} textAnchor="middle" dominantBaseline="central" fontSize={10} fill="var(--viz-text-muted)">
-                {sub}
+            {lines.map((line, i) => (
+              <text
+                key={i}
+                x={x(c.N)}
+                y={y(c.Z) + (lines.length === 2 ? 7 + i * 11 : 12)}
+                textAnchor="middle"
+                dominantBaseline="central"
+                fontSize={i === 1 ? 9.5 : 10}
+                fill="var(--viz-text-muted)"
+              >
+                {line}
               </text>
-            )}
+            ))}
           </g>
         )
       })}
@@ -406,6 +563,7 @@ export function SProcessInset({ inset, lang, label }: { inset: Inset; lang: Lang
               y1={ay + uy * reach}
               x2={bx - ux * (reach + 1)}
               y2={by - uy * (reach + 1)}
+              strokeDasharray={e.minor || e.stellar ? "4 3" : undefined}
               markerEnd={`url(#${marker})`}
             />
           )
