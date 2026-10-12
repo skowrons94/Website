@@ -25,6 +25,7 @@ import {
   resetParameters,
   setParameters,
   withBusyRetry,
+  normaliseTimings,
   type DataSegment,
   type Evaluation,
   type ExtrapSegment,
@@ -189,8 +190,8 @@ type Job =
 
 /** How long a hidden tab keeps its session before handing it back (it reopens on return). */
 const HIDDEN_CLOSE_MS = 5 * 60_000
-/** Heartbeat while the page is visible. */
-const PING_MS = 60_000
+/** Heartbeat while the page is visible, unless the server asks for another interval. */
+const PING_MS = 30_000
 
 export function SessionProvider({ children }: { children: ReactNode }) {
   const unexpected = useEvalDict().workspace.unexpected
@@ -263,6 +264,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   sessionRef.current = sessionId
   /** Handed back to the server while the tab was hidden: reopened on the next need. */
   const dormant = useRef(false)
+  const heartbeat = useRef(PING_MS)
 
   /* -- the progress timer's clock ------------------------------------------- */
 
@@ -322,7 +324,11 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         .then((initial) => {
           if (!initial || evaluationId.current !== id) return
           setModern(true)
-          typical.current = { ...(initial.evaluation?.timings ?? {}), ...(initial.timings ?? {}), ...typical.current }
+          typical.current = {
+            ...normaliseTimings(initial.evaluation?.timings),
+            ...normaliseTimings(initial.timings),
+            ...typical.current,
+          }
           // Only while what is on screen is still the published fit.
           if (schemeRef.current?.modified) return
           if (!schemeRef.current) {
@@ -354,7 +360,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       try {
         const opened = await withBusyRetry(() => openEvaluation(id), onBusy)
         ok = true
-        if (opened.evaluation.timings) typical.current = { ...opened.evaluation.timings, ...typical.current }
+        typical.current = { ...normaliseTimings(opened.evaluation.timings), ...normaliseTimings(opened.timings), ...typical.current }
+        if (opened.heartbeat_interval) heartbeat.current = opened.heartbeat_interval * 1000
         // Curves already drawn from the shipped snapshot are the session's own
         // (same parameters): kept rather than asked for again.
         const keep = first && !opened.scheme.modified && !(schemeRef.current?.modified ?? false)
@@ -683,15 +690,20 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     const ping = () => {
       if (!pinging || document.visibilityState !== "visible" || dormant.current) return
       pingSession(sessionId)
-        .then((supported) => {
-          if (!supported) pinging = false
+        .then((status) => {
+          if (!status) pinging = false
         })
         .catch((err) => {
-          // Let go of by the server: reopened when next needed.
-          if (err instanceof ApiError && err.sessionExpired) dormant.current = true
+          // Let go of by the server (its heartbeat timed out while the tab
+          // was hidden, say): reopened at once, with the changes.
+          if (err instanceof ApiError && err.sessionExpired && sessionRef.current === sessionId) {
+            dormant.current = true
+            void revive()
+          }
         })
     }
-    const beat = setInterval(ping, PING_MS)
+    ping()
+    const beat = setInterval(ping, heartbeat.current)
     const release = () => closeSessionBeacon(sessionId)
     const onVisibility = () => {
       if (document.visibilityState === "hidden") {

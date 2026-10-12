@@ -228,21 +228,47 @@ export interface ExtrapSegment {
   calculated: number[] | null
   calculated_sfactor: number[] | null
   /**
-   * The residual nucleus' final state, when the server names it ("g.s.",
-   * "0.429 MeV", "γ₁ → 440 keV"): tells apart the several "angle-integrated"
-   * curves of one reaction (absent from an older API).
+   * What the curve ends in, when the server names it: the residual and its
+   * state ("²³Na g.s.", "²³Na 440 keV", "all final states"), telling apart
+   * the several "angle-integrated" curves of one reaction (absent from an
+   * older API).
    */
   final_state?: string | null
-  /** Its excitation energy (MeV), when known. */
-  final_state_energy?: number | null
+  /** Its excitation energy (MeV). */
+  exit_excitation?: number | null
+  /** The reaction with its exit and state: "²²Ne(p,γ₁)²³Na → 440 keV". */
+  label_plain?: string | null
   /**
-   * An energy × angle grid sent without its values (the server computes it on
-   * demand, getExtrapolationGrid); `energies` etc. are then null.
+   * An energy × angle grid, sent without its values (`energies` etc. empty):
+   * computed on request (getExtrapolationGrid). Null for an ordinary curve.
    */
-  grid?: boolean
-  n_energies?: number
-  n_angles?: number
+  grid?: ExtrapGridInfo | null
 }
+
+export interface ExtrapGridInfo {
+  n_energies: number
+  n_angles: number
+  views?: ("angles" | "map")[]
+  /** The representative c.m. angles the "angles" view gives. */
+  angles?: number[]
+}
+
+/** One energy × angle grid as the server sends it on request. */
+export type ExtrapGrid =
+  | {
+      index: number
+      view: "angles"
+      curves: { angle: number; energies: number[]; calculated: (number | null)[]; calculated_sfactor: (number | null)[] }[]
+    }
+  | {
+      index: number
+      view: "map"
+      energies: number[]
+      angles: number[]
+      /** One row per angle, over `energies`. */
+      calculated: (number | null)[][]
+      calculated_sfactor: (number | null)[][]
+    }
 
 export interface OpenedSession {
   session_id: string
@@ -250,6 +276,19 @@ export interface OpenedSession {
   scheme: Scheme
   n_data_segments: number
   n_extrapolations: number
+  /** Seconds between heartbeats the server asks for (a newer API). */
+  heartbeat_interval?: number
+  timings?: Timings | null
+}
+
+/** What a newer server reports of a session (/status, and the heartbeat's answer). */
+export interface SessionStatus {
+  prepared?: string[]
+  preparing?: string | string[] | null
+  busy?: string[]
+  modified?: boolean
+  generation?: number
+  fine_ready?: boolean
 }
 
 export interface SchemeAndData {
@@ -262,7 +301,8 @@ export interface SchemeAndData {
 /**
  * Typical durations (seconds) of each operation for one evaluation, as the
  * server measured them: what the progress timer's first estimate comes from.
- * Every key is optional.
+ * Every key is optional; normaliseTimings turns the server's names
+ * ("prepare.data", "extrap" after an edit) into these.
  */
 export interface Timings {
   open?: number
@@ -288,6 +328,30 @@ export interface InitialState {
   data?: DataSegment[] | null
   fine?: FineResponse | null
   timings?: Timings | null
+}
+
+/** The server's timing names as the page uses them ("prepare.data" → prepare_data; its "extrap" is after an edit). */
+export function normaliseTimings(raw: Record<string, unknown> | null | undefined): Timings {
+  const out: Timings = {}
+  if (!raw) return out
+  // The server writes {prepare: {data, fine, extrap}, open, edit, extrap, grid}.
+  let server = false
+  const take = (prefix: string, value: unknown) => {
+    if (typeof value === "number" && Number.isFinite(value)) out[prefix] = value
+    else if (value && typeof value === "object") {
+      server = true
+      for (const [k, v] of Object.entries(value)) take(`${prefix}_${k}`, v)
+    }
+  }
+  for (const [key, value] of Object.entries(raw)) {
+    if (key.includes(".")) server = true
+    take(key.replace(/\./g, "_"), value)
+  }
+  if (server && out.extrap !== undefined) {
+    out.extrap_edit = out.extrap_edit ?? out.extrap
+    delete out.extrap
+  }
+  return out
 }
 
 /** Thrown for any non-2xx response, carrying the server's message and status. */
@@ -421,7 +485,9 @@ async function optional<T>(feature: string, call: () => Promise<T>): Promise<T |
   try {
     return await call()
   } catch (err) {
-    if (err instanceof ApiError && err.missing) {
+    // A route the server has (`code` set, e.g. an initial snapshot "not
+    // prepared" yet) is asked again next time; only a missing route is remembered.
+    if (err instanceof ApiError && err.missing && !err.body?.code) {
       absent.add(feature)
       try {
         sessionStorage.setItem(ABSENT_KEY, JSON.stringify([...absent]))
@@ -521,9 +587,8 @@ export function getExtrapolations(sessionId: string): Promise<ExtrapSegment[]> {
  * that sends grids in full with the other extrapolations). `angles` asks for
  * a few c.m. angles only.
  */
-export function getExtrapolationGrid(sessionId: string, index: number, angles?: number[]): Promise<ExtrapSegment | null> {
-  const query = angles && angles.length ? `?angles=${angles.join(",")}` : ""
-  return optional("grid", () => request<ExtrapSegment>(`/api/sessions/${sessionId}/extrapolations/${index}${query}`))
+export function getExtrapolationGrid(sessionId: string, index: number, view: "angles" | "map"): Promise<ExtrapGrid | null> {
+  return optional("grid", () => request<ExtrapGrid>(`/api/sessions/${sessionId}/extrapolations/${index}/grid?view=${view}`))
 }
 
 /** The answer to an edit, or word that a newer edit replaced it on the server. */
@@ -566,9 +631,8 @@ export function resetParameters(sessionId: string, signal?: AbortSignal): Promis
  * Tell the server this session is still looked at (false: this API has no
  * heartbeat; it then keeps sessions by their last request, as before).
  */
-export async function pingSession(sessionId: string): Promise<boolean> {
-  const answer = await optional("ping", () => request<unknown>(`/api/sessions/${sessionId}/ping`, { method: "POST" }))
-  return answer !== null
+export async function pingSession(sessionId: string): Promise<SessionStatus | null> {
+  return optional("ping", () => request<SessionStatus>(`/api/sessions/${sessionId}/ping`, { method: "POST" }))
 }
 
 /** Release a session from a page that is going away (survives unload). */

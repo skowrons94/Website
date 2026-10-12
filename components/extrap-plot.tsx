@@ -107,6 +107,18 @@ function isGrid(s: ExtrapSegment): boolean {
   return e.size > 2 && a.size > 2
 }
 
+interface GridCut {
+  angle: number
+  energies: number[]
+  calculated: (number | null)[]
+  calculated_sfactor: (number | null)[]
+}
+/** What is known of one grid: a few angle cuts, and/or the whole map. */
+interface GridData {
+  cuts: GridCut[] | null
+  map: GridRows | null
+}
+
 interface GridRows {
   angles: number[]
   energies: number[]
@@ -242,61 +254,87 @@ export function ExtrapPlot({
 
   const grids = useMemo(() => extrapolations.filter(isGrid), [extrapolations])
   const lines = useMemo(() => extrapolations.filter((s) => !isGrid(s)), [extrapolations])
-  // Values of grids the server computes on demand, by segment index.
-  const [fetched, setFetched] = useState<Record<number, ExtrapSegment | "loading" | "failed">>({})
+  // What has been fetched of each grid a newer server computes on request.
+  const [fetched, setFetched] = useState<Record<number, GridData & { loading?: "angles" | "map"; failed?: boolean }>>({})
   useEffect(() => setFetched({}), [extrapolations])
-  const gridOf = (s: ExtrapSegment): ExtrapSegment | null => {
-    if (s.energies?.length) return s
-    const f = fetched[s.index]
-    return f && typeof f === "object" ? f : null
-  }
-  // Per grid: how it is shown (off, a few angles, a map) and which angles.
-  const [gridView, setGridView] = useState<Record<number, { mode: "angles" | "map"; angles: number[] }>>({})
   const rowsCache = useRef(new Map<ExtrapSegment, GridRows>())
-  const rowsOf = (s: ExtrapSegment) => {
-    let r = rowsCache.current.get(s)
-    if (!r) {
-      r = gridRows(s)
-      rowsCache.current.set(s, r)
+  /** A grid's angle cuts and map: from its own values (an older server), or as fetched. */
+  const dataOf = (s: ExtrapSegment): GridData => {
+    if (s.energies?.length) {
+      let rows = rowsCache.current.get(s)
+      if (!rows) {
+        rows = gridRows(s)
+        rowsCache.current.set(s, rows)
+      }
+      const r = rows
+      return {
+        cuts: spreadAngles(r.angles, 7).map((angle) => {
+          const i = r.angles.indexOf(angle)
+          return { angle, energies: r.energies, calculated: r.values[i], calculated_sfactor: r.sfactor[i] }
+        }),
+        map: r,
+      }
     }
-    return r
+    return fetched[s.index] ?? { cuts: null, map: null }
   }
-  const showGrid = (s: ExtrapSegment) => {
-    const full = gridOf(s)
-    if (full) {
-      setGridView((v) => ({ ...v, [s.index]: { mode: "angles", angles: spreadAngles(rowsOf(full).angles, 3) } }))
-      return
-    }
+  const fetchView = (s: ExtrapSegment, view: "angles" | "map", then: (data: GridData) => void) => {
     if (!sessionId) return
-    setFetched((f) => ({ ...f, [s.index]: "loading" }))
-    getExtrapolationGrid(sessionId, s.index)
+    setFetched((f) => ({ ...f, [s.index]: { ...(f[s.index] ?? { cuts: null, map: null }), loading: view, failed: false } }))
+    getExtrapolationGrid(sessionId, s.index, view)
       .then((answer) => {
-        setFetched((f) => ({ ...f, [s.index]: answer ?? "failed" }))
-        if (answer) setGridView((v) => ({ ...v, [s.index]: { mode: "angles", angles: spreadAngles(gridRows(answer).angles, 3) } }))
+        if (!answer) throw new Error("no grid")
+        setFetched((f) => {
+          const before = { ...(f[s.index] ?? { cuts: null, map: null }), loading: undefined, failed: false }
+          const next: GridData =
+            answer.view === "angles"
+              ? { ...before, cuts: answer.curves }
+              : {
+                  ...before,
+                  map: {
+                    angles: answer.angles,
+                    energies: answer.energies,
+                    values: answer.calculated.map((row) => row.map((v) => v ?? NaN)),
+                    sfactor: answer.calculated_sfactor.map((row) => row.map((v) => v ?? NaN)),
+                  },
+                }
+          then(next)
+          return { ...f, [s.index]: next }
+        })
       })
-      .catch(() => setFetched((f) => ({ ...f, [s.index]: "failed" })))
+      .catch(() => setFetched((f) => ({ ...f, [s.index]: { ...(f[s.index] ?? { cuts: null, map: null }), loading: undefined, failed: true } })))
+  }
+  // Per grid: how it is shown (a few angles, or a map) and which angles.
+  const [gridView, setGridView] = useState<Record<number, { mode: "angles" | "map"; angles: number[] }>>({})
+  const firstAngles = (cuts: GridCut[]) => spreadAngles(cuts.map((c) => c.angle), 3)
+  const showGrid = (s: ExtrapSegment) => {
+    const known = dataOf(s)
+    if (known.cuts) setGridView((v) => ({ ...v, [s.index]: { mode: "angles", angles: firstAngles(known.cuts!) } }))
+    else fetchView(s, "angles", (d) => d.cuts && setGridView((v) => ({ ...v, [s.index]: { mode: "angles", angles: firstAngles(d.cuts!) } })))
+  }
+  const showMap = (s: ExtrapSegment) => {
+    const view = gridView[s.index] ?? { mode: "map", angles: [] }
+    if (dataOf(s).map) setGridView((v) => ({ ...v, [s.index]: { ...view, mode: "map" } }))
+    else fetchView(s, "map", () => setGridView((v) => ({ ...v, [s.index]: { ...view, mode: "map" } })))
   }
   /** The angle cuts asked for, as curves of their own (energy on x). */
   const cuts = useMemo(() => {
     const out: ExtrapSegment[] = []
     for (const g of grids) {
       const view = gridView[g.index]
-      const full = gridOf(g)
-      if (!view || view.mode !== "angles" || !full) continue
-      const rows = rowsOf(full)
-      for (const angle of view.angles) {
-        const i = rows.angles.indexOf(angle)
-        if (i < 0) continue
+      if (!view || view.mode !== "angles") continue
+      for (const cut of dataOf(g).cuts ?? []) {
+        if (!view.angles.includes(cut.angle)) continue
         out.push({
-          ...full,
-          index: cutIndex(g.index, angle),
-          grid: false,
-          angle_min: angle,
-          angle_max: angle,
-          energies: rows.energies,
-          angles: rows.energies.map(() => angle),
-          calculated: rows.values[i],
-          calculated_sfactor: rows.sfactor[i],
+          ...g,
+          index: cutIndex(g.index, cut.angle),
+          grid: null,
+          is_angle_integrated: false,
+          angle_min: cut.angle,
+          angle_max: cut.angle,
+          energies: cut.energies,
+          angles: cut.energies.map(() => cut.angle),
+          calculated: cut.calculated.map((v) => v ?? NaN),
+          calculated_sfactor: cut.calculated_sfactor.map((v) => v ?? NaN),
         })
       }
     }
@@ -345,10 +383,9 @@ export function ExtrapPlot({
   }
   const fmtE = (v: number) => decimal(String(Number(v.toPrecision(4))), lang)
   /** What else tells this curve apart: its energy and angle sweep, its angle, or its observable. */
-  const finalOf = (s: ExtrapSegment) => {
-    const label = s.final_state ?? (s.final_state_energy != null ? (s.final_state_energy < 1e-4 ? lv.groundState : `${fmtE(s.final_state_energy * 1000)} keV`) : null)
-    return label ? ` · ${lv.finalState(label)}` : ""
-  }
+  // The final state, where the name does not carry it already (label_plain does: "²²Ne(p,γ₁)²³Na → 440 keV").
+  const finalOf = (s: ExtrapSegment) =>
+    s.final_state && !s.label_plain?.includes("→") && !s.label_plain?.endsWith(", total") && s.final_state !== "all final states" ? ` · ${lv.finalState(s.final_state)}` : ""
   const curveDetail = (s: ExtrapSegment): string => `${curveDetailBase(s)}${finalOf(s)}`
   const curveDetailBase = (s: ExtrapSegment) => {
     if (isAngularCurve(s)) {
@@ -358,7 +395,9 @@ export function ExtrapPlot({
     if (!s.is_angle_integrated) return `${observableLabel(s.observable, lang)}, ${t.atAngle(decimal(String(Number(s.angle_min.toFixed(1))), lang))}`
     return observableLabel(s.observable, lang)
   }
+  // With its final state where that tells it apart ("²²Ne(p,γ₁)²³Na → 440 keV").
   const curveName = (s: ExtrapSegment) =>
+    (s.label_plain?.includes("→") ? s.label_plain : null) ??
     s.reaction ??
     (s.exit_key === -1 ? pairName(s.entrance_key, s.entrance) : `${pairName(s.entrance_key, s.entrance)} → ${pairName(s.exit_key, s.exit)}`)
   const curveLabel = (s: ExtrapSegment) => `${curveName(s)} · ${curveDetail(s)}`
@@ -726,11 +765,11 @@ export function ExtrapPlot({
           <CardContent className="space-y-5">
             {grids.map((g) => {
               const view = gridView[g.index]
-              const full = gridOf(g)
+              const known = dataOf(g)
               const state = fetched[g.index]
-              const rows = full ? rowsOf(full) : null
-              const ne = rows?.energies.length ?? g.n_energies ?? 0
-              const na = rows?.angles.length ?? g.n_angles ?? 0
+              const own = Boolean(g.energies?.length)
+              const ne = own ? (known.map?.energies.length ?? 0) : (g.grid?.n_energies ?? 0)
+              const na = own ? (known.map?.angles.length ?? 0) : (g.grid?.n_angles ?? 0)
               return (
                 <div key={g.index} className="min-w-0 space-y-2 border-t pt-4 first:border-t-0 first:pt-0">
                   <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
@@ -760,8 +799,8 @@ export function ExtrapPlot({
                     </p>
                     <div className="flex items-center gap-1" role="group" aria-label={curveName(g)}>
                       {!view ? (
-                        <Button variant="outline" size="sm" className="h-8" onClick={() => showGrid(g)} disabled={state === "loading" || (!full && !sessionId)}>
-                          {state === "loading" ? lv.gridLoading : lv.gridShow}
+                        <Button variant="outline" size="sm" className="h-8" onClick={() => showGrid(g)} disabled={Boolean(state?.loading) || (!own && !sessionId)}>
+                          {state?.loading ? lv.gridLoading : lv.gridShow}
                         </Button>
                       ) : (
                         <>
@@ -779,9 +818,10 @@ export function ExtrapPlot({
                             size="sm"
                             className="h-8"
                             aria-pressed={view.mode === "map"}
-                            onClick={() => setGridView((v) => ({ ...v, [g.index]: { ...view, mode: "map" } }))}
+                            disabled={state?.loading === "map"}
+                            onClick={() => showMap(g)}
                           >
-                            {lv.gridMap}
+                            {state?.loading === "map" ? lv.gridLoading : lv.gridMap}
                           </Button>
                           <Button
                             variant="ghost"
@@ -801,10 +841,10 @@ export function ExtrapPlot({
                       )}
                     </div>
                   </div>
-                  {state === "failed" && <p className="text-xs text-destructive">{t.unexpected}</p>}
-                  {view && rows && view.mode === "angles" && (
+                  {state?.failed && <p className="text-xs text-destructive">{t.unexpected}</p>}
+                  {view && known.cuts && view.mode === "angles" && (
                     <div className="flex flex-wrap gap-1.5" role="group" aria-label={lv.gridAngles}>
-                      {spreadAngles(rows.angles, 7).map((angle) => {
+                      {known.cuts.map((c) => c.angle).map((angle) => {
                         const on = view.angles.includes(angle)
                         return (
                           <button
@@ -829,8 +869,8 @@ export function ExtrapPlot({
                       })}
                     </div>
                   )}
-                  {view && rows && view.mode === "map" && (
-                    <GridMap rows={rows} label={`${curveName(g)} · ${observableLabel(g.observable, lang)}`} aria={lv.gridMapAria(curveName(g))} lang={lang} />
+                  {view && known.map && view.mode === "map" && (
+                    <GridMap rows={known.map} label={`${curveName(g)} · ${observableLabel(g.observable, lang)}`} aria={lv.gridMapAria(curveName(g))} lang={lang} />
                   )}
                 </div>
               )
