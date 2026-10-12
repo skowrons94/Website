@@ -62,8 +62,7 @@ status_note_it: >-
 methods: [direct-underground, direct-surface, activation, inverse-kinematics]
 measurements:
   - year: 2004
-    facility: other
-    lab: "Weizmann Institute of Science, Rehovot"
+    facility: weizmann
     method: activation
     energy: "420–950 keV"
     note: >-
@@ -75,6 +74,7 @@ measurements:
     facility: luna-400
     method: activation
     energy: "127, 148 and 169 keV"
+    energy_it: "127, 148 e 169 keV"
     note: >-
       Windowless gas target, high beam intensity and low-background γ counting
       of the ⁷Be produced; cross sections with 4 % total uncertainty.
@@ -91,14 +91,14 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "93, 106 and 170 keV"
+    energy_it: "93, 106 e 170 keV"
     note: >-
       Prompt γ-rays and ⁷Be activity measured simultaneously; the two methods
       agree, branching ratios between the two γ transitions measured to 5–8 %,
       extrapolated S(0) = 0.560 ± 0.017 keV b.
     refs: [confortola2007]
   - year: 2007
-    facility: other
-    lab: "CENPA, University of Washington, Seattle"
+    facility: cenpa
     method: direct-surface
     energy: "0.33–1.23 MeV"
     note: >-
@@ -109,6 +109,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "beam energies 220, 250 and 400 keV"
+    energy_it: "energie del fascio 220, 250 e 400 keV"
     note: >-
       Full account of the LUNA prompt-γ experiment and its systematic
       uncertainties, together with the activation results, and S-factor
@@ -118,6 +119,7 @@ measurements:
     facility: erna
     method: inverse-kinematics
     energy: "around and above 1 MeV"
+    energy_it: "intorno a 1 MeV e oltre"
     note: >-
       Direct detection of the ⁷Be recoils with the ERNA separator, with
       coincident γ-rays; above 1 MeV the cross section differs from earlier
@@ -127,6 +129,7 @@ measurements:
     facility: notre-dame
     method: direct-surface
     energy: "about 0.3–1.5 MeV"
+    energy_it: "circa 0,3–1,5 MeV"
     note: >-
       Prompt γ-ray measurement with the HIPPO helium-jet gas target over a wide
       energy window.

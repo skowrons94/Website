@@ -60,6 +60,7 @@ measurements:
   - year: 1998
     method: theory
     energy: "solar energies"
+    energy_it: "energie solari"
     note: >-
       Potential-model calculation with several high-precision nucleon-nucleon
       interactions, the axial two-body current tuned to the Gamow–Teller matrix

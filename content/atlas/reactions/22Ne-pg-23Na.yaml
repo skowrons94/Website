@@ -74,6 +74,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "Eₚ = 186 keV resonance"
+    energy_it: "risonanza a Eₚ = 186 keV"
     note: >-
       Feasibility study for the underground campaign, including the beam-induced
       background. First direct observation of the 186 keV resonance, with a lower
@@ -83,6 +84,7 @@ measurements:
     facility: hzdr
     method: direct-surface
     energy: "Eₚ = 436–1279 keV (five resonances)"
+    energy_it: "Eₚ = 436–1279 keV (cinque risonanze)"
     note: >-
       Strengths of the 436, 639 and 661 keV resonances relative to those at 479
       and 1279 keV, with a ²²Ne-implanted tantalum target. Consistent with but
@@ -93,6 +95,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "Eₚ = 156.2, 189.5 and 259.7 keV"
+    energy_it: "Eₚ = 156,2; 189,5 e 259,7 keV"
     note: >-
       First direct observation of the three resonances, with strengths known to
       2–7 %, and much lower upper limits on three tentative resonances; the full
@@ -104,6 +107,7 @@ measurements:
     facility: tunl-lena
     method: direct-surface
     energy: "Eₚ below 200 keV (ECR ion source) and higher energies (1 MV accelerator)"
+    energy_it: "Eₚ sotto 200 keV (sorgente ionica ECR) ed energie più alte (acceleratore da 1 MV)"
     note: >-
       Independent measurement of the low-energy resonances with ²²Ne implanted in
       tantalum backings.
@@ -112,6 +116,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "Eₚ = 71 and 105 keV, and off-resonance"
+    energy_it: "Eₚ = 71 e 105 keV, e fuori risonanza"
     note: >-
       Upper limits of 6 × 10⁻¹¹ and 7 × 10⁻¹¹ eV (90 % CL)
       on the two suggested resonances, and the off-resonance S-factor at very low
@@ -122,6 +127,7 @@ measurements:
     facility: dragon
     method: inverse-kinematics
     energy: "E_cm = 149–1222 keV (resonances); 282–511 keV (non-resonant)"
+    energy_it: "E_cm = 149–1222 keV (risonanze); 282–511 keV (non risonante)"
     note: >-
       First measurement in inverse kinematics, a ²²Ne beam on a windowless H₂
       target, with different systematic uncertainties from all earlier work. The
@@ -133,6 +139,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "direct capture down to Eₚ = 188 keV"
+    energy_it: "cattura diretta fino a Eₚ = 188 keV"
     note: >-
       Full account of the high-statistics LUNA data: new γ-decay branchings for
       the resonances at Eₚ = 156.2 and 259.7 keV, and partial cross sections for

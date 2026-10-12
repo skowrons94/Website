@@ -54,6 +54,7 @@ measurements:
     lab: "LANSCE, Los Alamos National Laboratory, Los Alamos NM"
     method: neutron-beams
     energy: "25 meV to 13.5 keV (neutron energy)"
+    energy_it: "da 25 meV a 13,5 keV (energia del neutrone)"
     note: >-
       Time-of-flight measurement with a ⁷Be sample, normalized to the thermal
       cross section measured at the Omega West Reactor; it stops below the BBN
@@ -63,6 +64,7 @@ measurements:
     facility: n-tof
     method: neutron-beams
     energy: "thermal to about 325 keV (neutron energy)"
+    energy_it: "da energie termiche a circa 325 keV (energia del neutrone)"
     note: >-
       High-purity ⁷Be target implanted at ISOLDE, the EAR2 flight path and a
       silicon telescope; the cross section is higher than the evaluations at

@@ -67,6 +67,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "E_cm below 352 keV, and the 368 keV resonance"
+    energy_it: "E_cm sotto 352 keV, e la risonanza a 368 keV"
     note: >-
       First measurement of direct capture below E_cm = 352 keV, with a windowless
       gas target and two HPGe detectors. Resonance strength
@@ -78,6 +79,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "E_cm ≈ 368 keV resonance (366 keV in the report) and direct capture below 400 keV"
+    energy_it: "risonanza a E_cm ≈ 368 keV (366 keV nell'articolo) e cattura diretta sotto 400 keV"
     note: >-
       Conference report on the LUNA campaign with a windowless gas target and
       two HPGe detectors, the campaign published in Masha et al. (2023); it

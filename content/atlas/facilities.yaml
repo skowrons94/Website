@@ -28,6 +28,12 @@
 # their summaries give no numbers. The entries after `nif` were added for
 # laboratories that appear in reaction files; they carry only the facts
 # (name, place, kind of machine) that were not in doubt and no numbers.
+# csnsm-orsay, cenbg, riken and gsi (2026-10-12) replace the free-text `lab`
+# of measurements whose papers name the laboratory: Hammache et al. 1998 and
+# 2001 (CENBG and CSNSM), Chafa et al. 2005 (CSNSM), Motobayashi et al. 1994
+# (RIKEN RIPS; see also the review arXiv nucl-ex/9712002), Schümann et al.
+# 2003/2006 and Hammache et al. 2010 (GSI). CSNSM became part of IJCLab in
+# 2020.
 
 facilities:
   - id: luna-50
@@ -37,8 +43,8 @@ facilities:
     country: Italy
     country_it: Italia
     underground: true
-    depth: about 1400 m of rock, 3800 m w.e.
-    depth_it: circa 1400 m di roccia, 3800 m w.e.
+    depth: about 1400 m of rock, 3800 metres water equivalent
+    depth_it: circa 1400 m di roccia, 3800 metri di acqua equivalente
     accelerator: 50 kV ion accelerator with a windowless gas target
     accelerator_it: acceleratore di ioni da 50 kV con bersaglio gassoso senza finestre
     years: described in 1994; first result on ³He(³He,2p)⁴He in 1999
@@ -76,8 +82,8 @@ facilities:
     country: Italy
     country_it: Italia
     underground: true
-    depth: about 1400 m of rock, 3800 m w.e.
-    depth_it: circa 1400 m di roccia, 3800 m w.e.
+    depth: about 1400 m of rock, 3800 metres water equivalent
+    depth_it: circa 1400 m di roccia, 3800 metri di acqua equivalente
     accelerator: 400 kV electrostatic accelerator (LUNA II)
     accelerator_it: acceleratore elettrostatico da 400 kV (LUNA II)
     years: in operation from the early 2000s (facility paper 2003)
@@ -113,8 +119,8 @@ facilities:
     country: Italy
     country_it: Italia
     underground: true
-    depth: about 1400 m of rock, 3800 m w.e.
-    depth_it: circa 1400 m di roccia, 3800 m w.e.
+    depth: about 1400 m of rock, 3800 metres water equivalent
+    depth_it: circa 1400 m di roccia, 3800 metri di acqua equivalente
     accelerator: 3.5 MV Singletron (High Voltage Engineering Europa), terminal voltage 0.3–3.5 MV, ECR ion source
     accelerator_it: >-
       Singletron da 3,5 MV (High Voltage Engineering Europa), tensione di
@@ -156,8 +162,8 @@ facilities:
     country: China
     country_it: Cina
     underground: true
-    depth: about 2400 m of marble, 6720 m w.e.
-    depth_it: circa 2400 m di marmo, 6720 m w.e.
+    depth: about 2400 m of marble, 6720 metres water equivalent
+    depth_it: circa 2400 m di marmo, 6720 metri di acqua equivalente
     accelerator: 400 kV high-current platform with ECR ion sources (H⁺, He⁺, He²⁺)
     accelerator_it: >-
       piattaforma da 400 kV ad alta corrente con sorgenti di ioni ECR (H⁺, He⁺,
@@ -195,8 +201,8 @@ facilities:
     country: United States
     country_it: Stati Uniti
     underground: true
-    depth: 4850 ft level, 4300 m w.e.
-    depth_it: livello 4850 ft, 4300 m w.e.
+    depth: 4850 ft level, 4300 metres water equivalent
+    depth_it: livello 4850 ft, 4300 metri di acqua equivalente
     accelerator: JN Van de Graaff, about 150 kV to 1.1 MV, moved from Notre Dame
     accelerator_it: Van de Graaff JN, da circa 150 kV a 1,1 MV, trasferito da Notre Dame
     years: first beam 2017, inaugurated July 2017
@@ -771,3 +777,76 @@ facilities:
       isotopica. Dal 2009 ospita anche il separatore di rinculo ERNA per le
       misure di cattura di elio.
     refs: [broggini2019]
+
+  - id: csnsm-orsay
+    name: CSNSM, Orsay
+    lab: Centre de Sciences Nucléaires et de Sciences de la Matière (CNRS/IN2P3 and Université Paris-Sud), since 2020 part of IJCLab
+    lab_it: Centre de Sciences Nucléaires et de Sciences de la Matière (CNRS/IN2P3 e Université Paris-Sud), dal 2020 parte di IJCLab
+    location: Orsay
+    country: France
+    country_it: Francia
+    underground: false
+    summary: >-
+      A laboratory near Paris with low-energy accelerators and an ion
+      implanter. Proton captures on radioactive ⁷Be targets and on ¹⁷O were
+      measured here.
+    summary_it: >-
+      Un laboratorio vicino a Parigi con acceleratori di bassa energia e un
+      impiantatore ionico. Qui sono state misurate catture protoniche su
+      bersagli radioattivi di ⁷Be e sull'¹⁷O.
+    refs: [hammache2001, chafa2005]
+
+  - id: cenbg
+    name: CENBG, Bordeaux-Gradignan
+    lab: Centre d'Études Nucléaires de Bordeaux Gradignan (CNRS/IN2P3)
+    location: Gradignan, Bordeaux
+    country: France
+    country_it: Francia
+    underground: false
+    accelerator: Van de Graaff
+    summary: >-
+      A nuclear physics laboratory near Bordeaux. Its Van de Graaff
+      accelerator was used for one of the direct measurements of ⁷Be(p,γ)⁸B
+      with a radioactive target.
+    summary_it: >-
+      Un laboratorio di fisica nucleare vicino a Bordeaux. Il suo acceleratore
+      Van de Graaff è stato usato per una delle misure dirette di ⁷Be(p,γ)⁸B
+      con un bersaglio radioattivo.
+    refs: [hammache1998]
+
+  - id: riken
+    name: RIKEN, Wako
+    lab: RIKEN (today the RIKEN Nishina Center for Accelerator-Based Science)
+    lab_it: RIKEN (oggi RIKEN Nishina Center for Accelerator-Based Science)
+    location: Wako, Saitama
+    country: Japan
+    country_it: Giappone
+    underground: false
+    summary: >-
+      A Japanese national research institute whose accelerators make beams of
+      short-lived nuclei by fragmenting heavier ones in flight. The first
+      Coulomb-dissociation measurement of ⁸B was done here with the RIPS
+      fragment separator.
+    summary_it: >-
+      Un istituto di ricerca nazionale giapponese i cui acceleratori producono
+      fasci di nuclei a vita breve frammentando in volo nuclei più pesanti. Qui
+      è stata fatta, con il separatore di frammenti RIPS, la prima misura della
+      dissociazione coulombiana del ⁸B.
+    refs: [motobayashi1994]
+
+  - id: gsi
+    name: GSI, Darmstadt
+    lab: GSI Helmholtzzentrum für Schwerionenforschung
+    location: Darmstadt
+    country: Germany
+    country_it: Germania
+    underground: false
+    summary: >-
+      A heavy-ion accelerator laboratory. Its fragment separator delivers fast
+      beams of short-lived nuclei, which were used to measure the Coulomb
+      dissociation of ⁸B and the break-up of ⁶Li.
+    summary_it: >-
+      Un laboratorio di acceleratori di ioni pesanti. Il suo separatore di
+      frammenti fornisce fasci veloci di nuclei a vita breve, usati per misurare
+      la dissociazione coulombiana del ⁸B e la rottura del ⁶Li.
+    refs: [schumann2006, hammache2010]

@@ -61,6 +61,7 @@ measurements:
     lab: "TUNL Low-Energy Beam Facility, Durham NC"
     method: direct-surface
     energy: "110–650 keV (laboratory)"
+    energy_it: "110–650 keV (laboratorio)"
     note: >-
       Total cross sections of both channels from a simultaneous fit of angular
       distributions and normalization data, with about 2 % uncertainty and a
@@ -69,6 +70,7 @@ measurements:
   - year: 2014
     method: thm
     energy: "BBN energies"
+    energy_it: "energie della BBN"
     note: >-
       Trojan Horse determination of the bare S-factors of both channels,
       free of electron screening, and new reaction rates for BBN.

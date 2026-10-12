@@ -49,6 +49,7 @@ measurements:
     facility: tunl-lena
     method: direct-surface
     energy: "95 keV resonance (proton energy)"
+    energy_it: "risonanza a 95 keV (energia del protone)"
     note: >-
       Intense beams from an electron-cyclotron-resonance ion source and
       γγ-coincidence detection on anodised tantalum targets enriched to
@@ -71,6 +72,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "resonances at 151, 215, 274 and 334 keV (proton energy)"
+    energy_it: "risonanze a 151, 215, 274 e 334 keV (energia del protone)"
     note: >-
       Second LUNA campaign, with a HPGe detector, on the higher-energy
       resonances; it confirmed the

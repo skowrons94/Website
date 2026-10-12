@@ -55,16 +55,17 @@ measurements:
     facility: tunl-lena
     method: direct-surface
     energy: "140–540 keV (proton energy)"
+    energy_it: "140–540 keV (energia del protone)"
     note: >-
       Proton beams of up to 100 µA on tantalum backings anodised in
       ¹⁷O-enriched water; new thermonuclear rate including the 183 keV
       resonance.
     refs: [fox2005]
   - year: 2005
-    facility: other
-    lab: "CSNSM, Orsay"
+    facility: csnsm-orsay
     method: activation
     energy: "around Ep = 194 keV"
+    energy_it: "intorno a Ep = 194 keV"
     note: >-
       The (p,γ) channel of the 183 keV resonance measured by ¹⁸F activation,
       together with the (p,α) channel.
@@ -98,6 +99,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "nova Gamow window"
+    energy_it: "finestra di Gamow delle novae"
     note: >-
       Full analysis of the LUNA campaign with prompt γ-ray detection and
       activation; recommended rate with which the oxygen and fluorine isotopes
@@ -107,6 +109,7 @@ measurements:
     facility: tunl-lena
     method: direct-surface
     energy: "170–530 keV (proton energy)"
+    energy_it: "170–530 keV (energia del protone)"
     note: >-
       Beam currents up to 2 mA; ωγ = (1.86 ± 0.13) µeV for the resonance at
       Ep = 193 keV and (13.70 ± 0.96) meV at 518 keV, and a direct-capture
@@ -116,6 +119,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "64.5 keV resonance"
+    energy_it: "risonanza a 64,5 keV"
     note: >-
       First direct measurement of the 64.5 keV resonance, the lowest strength
       ever measured directly: ωγ = 30 ± 6 (stat) ± 2 (syst) peV. The proton

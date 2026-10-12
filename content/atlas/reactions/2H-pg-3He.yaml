@@ -69,6 +69,7 @@ measurements:
     lab: "Triangle Universities Nuclear Laboratory, Durham NC"
     method: direct-surface
     energy: "below 80 keV"
+    energy_it: "sotto 80 keV"
     note: >-
       Cross sections, S-factors and analyzing powers with polarized and
       unpolarized beams; the extracted S(0) was about 25 % below the value then
@@ -79,6 +80,7 @@ measurements:
     facility: luna-50
     method: direct-underground
     energy: "down to 2.5 keV"
+    energy_it: "fino a 2,5 keV"
     note: >-
       Windowless gas target and segmented 4π BGO detector; first data inside and
       below the solar Gamow peak, with about 10 % accuracy.
@@ -86,14 +88,14 @@ measurements:
   - year: 2016
     method: theory
     energy: "BBN range"
+    energy_it: "intervallo della BBN"
     note: >-
       Ab initio calculation with the AV18 and Urbana IX interactions and
       relativistic corrections to the one-body current; S-factor about 10 %
       above the adopted fits.
     refs: [marcucci2016]
   - year: 2019
-    facility: other
-    lab: "Jožef Stefan Institute, Ljubljana"
+    facility: jsi-ljubljana
     method: direct-surface
     energy: "47–210 keV"
     note: >-
@@ -105,6 +107,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "BBN range"
+    energy_it: "intervallo della BBN"
     note: >-
       High-purity D₂ gas target, intense proton beam and a HPGe detector, after a
       commissioning campaign that brought the systematic uncertainty below 3 %.

@@ -54,13 +54,14 @@ status_note_it: >-
   I dati diretti arrivano a 70 keV; l'incertezza residua viene dalla
   suddivisione nelle singole transizioni γ e dall'estrapolazione alle energie
   solari.
-methods: [direct-underground, direct-surface, anc]
+methods: [direct-underground, direct-surface, activation, lifetime, anc]
 measurements:
   - year: 2001
     facility: other
     lab: "Triangle Universities Nuclear Laboratory, Durham NC"
-    method: direct-surface
+    method: lifetime
     energy: "259 keV resonance (Doppler-shift attenuation)"
+    energy_it: "risonanza a 259 keV (attenuazione dello spostamento Doppler)"
     note: >-
       Mean lifetime of the 6793 keV state of ¹⁵O, τ ≈ 1.6 fs (90 % C.L.), from
       the Doppler-shift attenuation method. The value implies a much smaller
@@ -68,8 +69,10 @@ measurements:
       data.
     refs: [bertone2001]
   - year: 2003
+    facility: texas-am
     method: anc
     energy: "proton-transfer reactions"
+    energy_it: "reazioni di trasferimento di protoni"
     note: >-
       Asymptotic normalisation coefficients for ¹⁴N + p → ¹⁵O from
       proton-transfer reactions, which fix the normalisation of the direct
@@ -79,6 +82,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "140–400 keV (proton energy)"
+    energy_it: "140–400 keV (energia del protone)"
     note: >-
       First underground measurement with a solid TiN target and a HPGe detector,
       separating the γ-ray transitions; total S(0) = 1.7 ± 0.2 keV b from an
@@ -89,6 +93,7 @@ measurements:
     lab: "Triangle Universities Nuclear Laboratory, Durham NC"
     method: direct-surface
     energy: "155–524 keV (proton energy)"
+    energy_it: "155–524 keV (energia del protone)"
     note: >-
       Direct measurement of the individual transitions at the surface; the
       extrapolated total S(0) is close to 1.7 keV b, in agreement with the LUNA
@@ -98,6 +103,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "119–367 keV (effective)"
+    energy_it: "119–367 keV (efficace)"
     note: >-
       Full account of the LUNA solid-target campaign with TiN targets and HPGe
       detectors. Because of the level structure of ¹⁵O, the extrapolated S(0)
@@ -107,13 +113,15 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "down to 70 keV"
+    energy_it: "fino a 70 keV"
     note: >-
       Windowless nitrogen gas target and 4π BGO summing detector; the cross
       section was measured down to 70 keV, where it is 0.24 pb.
     refs: [lemut2006]
   - year: 2008
-    method: direct-surface
+    method: lifetime
     energy: "278 keV resonance (proton energy; Doppler-shift attenuation)"
+    energy_it: "risonanza a 278 keV (energia del protone; attenuazione dello spostamento Doppler)"
     note: >-
       New Doppler-shift attenuation measurement of the 6792 keV state at the
       same resonance: the finite lifetime reported in 2001 is not confirmed,
@@ -123,6 +131,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "proton energies 359, 380 and 399 keV"
+    energy_it: "energie del protone 359, 380 e 399 keV"
     note: >-
       A composite germanium detector reduced the summing corrections; new cross
       sections for capture to the ground state and to the 5181, 6172 and
@@ -139,8 +148,9 @@ measurements:
     refs: [wagner2018]
   - year: 2021
     facility: notre-dame
-    method: direct-surface
+    method: lifetime
     energy: "Doppler-shift attenuation"
+    energy_it: "attenuazione dello spostamento Doppler"
     note: >-
       Lifetimes of several excited states of ¹⁵O; τ = 0.6 ± 0.4 fs for the
       6792 keV state, below the 2001 value and consistent with the 2008 limit.
@@ -158,6 +168,7 @@ measurements:
     facility: notre-dame
     method: direct-surface
     energy: "0.27–1.07 MeV (proton energy)"
+    energy_it: "0,27–1,07 MeV (energia del protone)"
     note: >-
       New data in an energy range where few measurements existed, analysed
       with a multichannel R-matrix fit of the ground-state and 6.79 MeV
@@ -168,6 +179,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "about 100–370 keV (campaign under way)"
+    energy_it: "circa 100–370 keV (campagna in corso)"
     note: >-
       Description of a new LUNA campaign with solid nitrogen targets and a 4π
       BGO detector, which aims at total and partial cross sections for a rate

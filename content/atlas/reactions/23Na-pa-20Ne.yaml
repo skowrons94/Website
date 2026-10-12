@@ -60,6 +60,7 @@ measurements:
   - year: 2004
     method: anc
     energy: "²³Na(³He,d)²⁴Mg at E(³He) = 20 MeV, θlab = 5°–35°"
+    energy_it: "²³Na(³He,d)²⁴Mg a E(³He) = 20 MeV, θlab = 5°–35°"
     note: >-
       Proton-transfer spectroscopy of the states of ²⁴Mg near the proton
       threshold; a state corresponding to a previously unobserved resonance at
@@ -70,6 +71,7 @@ measurements:
     facility: tunl-lena
     method: direct-surface
     energy: "E_cm = 138 keV resonance"
+    energy_it: "risonanza a E_cm = 138 keV"
     note: >-
       The upper limit on the (p,γ) strength of this resonance, combined with its
       α-particle branching ratio, gives an upper limit of 0.88 × 10⁻⁹ eV on the
@@ -80,6 +82,7 @@ measurements:
     lab: "TUNL, Durham"
     method: anc
     energy: "states of ²⁴Mg near the proton threshold"
+    energy_it: "stati del ²⁴Mg vicino alla soglia protonica"
     note: >-
       ²³Na(³He,d)²⁴Mg proton transfer: new proton widths for the near-threshold
       states, in tension with the strength of the 133 keV resonance measured at

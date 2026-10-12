@@ -5,7 +5,7 @@ target: 3He
 projectile: 1H
 ejectile: "e+ nu"
 product: 4He
-networks: [pp3]
+networks: [hep]
 importance: minor
 summary: >-
   A ³He nucleus captures a proton and becomes ⁴He directly, emitting a positron

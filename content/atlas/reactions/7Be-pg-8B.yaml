@@ -61,6 +61,7 @@ measurements:
     lab: "Argonne National Laboratory, Argonne IL"
     method: direct-surface
     energy: "low energies and the 1⁺ resonance"
+    energy_it: "basse energie e la risonanza 1⁺"
     note: >-
       Radioactive ⁷Be target, ⁸B detected through the delayed α particles from
       its β decay; the ⁷Be areal density determined with two independent
@@ -68,18 +69,17 @@ measurements:
       normalization.
     refs: [filippone1983]
   - year: 1994
-    facility: other
-    lab: "RIKEN, Wako"
+    facility: riken
     method: coulomb-dissociation
     energy: "⁸B beam at about 50 MeV/u"
+    energy_it: "fascio di ⁸B a circa 50 MeV/u"
     note: >-
       First Coulomb-dissociation experiment: break-up of ⁸B into ⁷Be + p in the
       Coulomb field of a heavy target, converted to the low-energy capture
       cross section.
     refs: [motobayashi1994]
   - year: 1998
-    facility: other
-    lab: "CENBG 4 MV Van de Graaff, Bordeaux"
+    facility: cenbg
     method: direct-surface
     energy: "0.35–1.4 MeV"
     note: >-
@@ -88,18 +88,17 @@ measurements:
       15–20 % below the value recommended at the time.
     refs: [hammache1998]
   - year: 2001
-    facility: other
-    lab: "PAPAP accelerator, Orsay"
+    facility: csnsm-orsay
     method: direct-surface
     energy: "111.7, 134.7 and 185.8 keV"
+    energy_it: "111,7; 134,7 e 185,8 keV"
     note: >-
       A 132 mCi ⁷Be target, intense proton beams and a large-acceptance
       solenoidal spectrometer; S(0) = 18.5 ± 2.4 eV b from these data and
       18.8 ± 1.7 eV b combined with the 1998 results.
     refs: [hammache2001]
   - year: 2003
-    facility: other
-    lab: "Weizmann Institute of Science, Rehovot"
+    facility: weizmann
     method: direct-surface
     note: >-
       ⁷Be implanted in the backing and a raster-scanned proton beam, which
@@ -107,17 +106,16 @@ measurements:
       21.2 ± 0.7 eV b in the arXiv version (an erratum followed in 2004).
     refs: [baby2003]
   - year: 2003
-    facility: other
-    lab: "GSI, Darmstadt"
+    facility: gsi
     method: coulomb-dissociation
     energy: "⁸B beam at 254 MeV/u"
+    energy_it: "fascio di ⁸B a 254 MeV/u"
     note: >-
       Exclusive Coulomb-dissociation measurement at high beam energy; the full
       analysis followed in 2006.
     refs: [schumann2003, schumann2006]
   - year: 2003
-    facility: other
-    lab: "CENPA, University of Washington, Seattle"
+    facility: cenpa
     method: direct-surface
     note: >-
       Precision measurement with a ⁷Be target made at TRIUMF; S(0) =
@@ -125,10 +123,10 @@ measurements:
       21.4 eV b.
     refs: [junghans2003]
   - year: 2010
-    facility: other
-    lab: "CENPA, University of Washington, Seattle"
+    facility: cenpa
     method: direct-surface
     energy: "below the 1⁺ resonance"
+    energy_it: "sotto la risonanza 1⁺"
     note: >-
       Reanalysis of the earlier data with a more detailed target analysis and
       improved stopping powers: S(0) = 21.5 ± 0.6 (expt) ± 0.6 (theor) eV b,

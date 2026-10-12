@@ -46,6 +46,7 @@ measurements:
   - year: 2008
     method: thm
     energy: "20 and 90 keV resonances"
+    energy_it: "risonanze a 20 e 90 keV"
     note: >-
       First experimental evaluation of the 20 keV resonance, whose
       contribution came out about 35 % larger than previously estimated; the
@@ -56,6 +57,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "Ep = 151 keV resonance"
+    energy_it: "risonanza a Ep = 151 keV"
     note: >-
       Commissioning of a silicon-detector setup for α particles underground:
       ωγ = 164.2 ± 0.9 (stat) +12.1/−11.7 (syst) meV and a new resonance

@@ -44,6 +44,7 @@ measurements:
   - year: 1990
     method: direct-surface
     energy: "low-energy (p,γ) resonances"
+    energy_it: "risonanze (p,γ) di bassa energia"
     note: >-
       γ-ray decay schemes of low-energy resonances, including a newly observed
       ²⁶Mg(p,γ)²⁷Al resonance; measured together with ²⁵Mg(p,γ) and
@@ -53,6 +54,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "E_cm = 326 keV resonance"
+    energy_it: "risonanza a E_cm = 326 keV"
     note: >-
       Resonance strength measured underground, more precise than earlier values,
       for use as a normalisation reference.

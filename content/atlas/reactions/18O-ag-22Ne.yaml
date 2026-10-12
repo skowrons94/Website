@@ -49,6 +49,7 @@ measurements:
     lab: "Forschungszentrum Karlsruhe, Karlsruhe"
     method: direct-surface
     energy: "E(α,lab) ≈ 470 and 566 keV resonances"
+    energy_it: "risonanze a E(α,lab) ≈ 470 e 566 keV"
     note: >-
       First direct partial strengths of the two weak resonances,
       0.48 ± 0.16 µeV and 0.71 ± 0.17 µeV.

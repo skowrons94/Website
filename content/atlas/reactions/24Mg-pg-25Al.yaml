@@ -50,6 +50,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "E_cm = 214 keV resonance"
+    energy_it: "risonanza a E_cm = 214 keV"
     note: >-
       Resonance strength measured underground with several techniques, more
       precise than earlier values; also intended as a reference for lower-energy

@@ -54,10 +54,10 @@ status_note_it: >-
 methods: [direct-underground, direct-surface, inverse-kinematics, thm]
 measurements:
   - year: 2005
-    facility: other
-    lab: "CSNSM, Orsay"
+    facility: csnsm-orsay
     method: direct-surface
     energy: "around Ep = 194 keV"
+    energy_it: "intorno a Ep = 194 keV"
     note: >-
       Discovery of the resonance at E_R(lab) = 194.1 ± 0.6 keV in the (p,α)
       channel, with strength 1.6 ± 0.2 meV; the (p,γ) channel was measured by
@@ -68,6 +68,7 @@ measurements:
     lab: "Holifield Radioactive Ion Beam Facility, Oak Ridge"
     method: inverse-kinematics
     energy: "183 keV resonance"
+    energy_it: "risonanza a 183 keV"
     note: >-
       Heavy-ion ¹⁷O beam on a windowless hydrogen gas target, with α and ¹⁴N
       detected in coincidence by silicon strip detectors inside the gas:
@@ -85,6 +86,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "Ep = 194.8 keV resonance"
+    energy_it: "risonanza a Ep = 194,8 keV"
     note: >-
       Commissioning of a silicon-detector setup for α particles underground:
       ωγ = 1.68 ± 0.03 (stat) ± 0.12 (syst) meV and Ep = 194.8 ± 0.3 keV, the
@@ -94,6 +96,7 @@ measurements:
   - year: 2015
     method: thm
     energy: "65 and 183 keV resonances"
+    energy_it: "risonanze a 65 e 183 keV"
     note: >-
       Improved Trojan-Horse analysis of narrow-resonance strengths; the 65 keV
       strength was used to renormalise the same resonance in the (p,γ)
@@ -103,6 +106,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "64.5 keV resonance"
+    energy_it: "risonanza a 64,5 keV"
     note: >-
       Direct measurement of the 64.5 keV resonance: ωγ = 10.0 ± 1.4 (stat)
       ± 0.7 (syst) neV and Γp = 35 ± 5 (stat) ± 3 (syst) neV, about twice the

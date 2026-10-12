@@ -55,6 +55,7 @@ measurements:
   - year: 2008
     method: anc
     energy: "transfer reactions; R-matrix fit"
+    energy_it: "reazioni di trasferimento; fit R-matrix"
     note: >-
       Asymptotic normalisation coefficients for ¹⁵N + p → ¹⁶O fix the direct
       capture to the ¹⁶O ground state. The R-matrix fit gives about one CN
@@ -74,6 +75,7 @@ measurements:
     facility: notre-dame
     method: direct-surface
     energy: "130–1800 keV (proton energy)"
+    energy_it: "130–1800 keV (energia del protone)"
     note: >-
       Measurement across both broad resonances, at Ep = 338 and 1028 keV, and
       below them; a multilevel R-matrix analysis gives S(0) = 39.6 keV b.

@@ -51,6 +51,7 @@ measurements:
   - year: 1994
     method: direct-surface
     energy: "120–950 keV (proton energy)"
+    energy_it: "120–950 keV (energia del protone)"
     note: >-
       Cross sections for capture to the first six states of ¹⁴N, most of them
       for the first time; resonances at Ep = 450.4 and 557.6 ± 0.5 keV; total
@@ -60,6 +61,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "down to 60 keV"
+    energy_it: "fino a 60 keV"
     note: >-
       Prompt γ-ray detection with overall systematic uncertainties of 7–8 %;
       the S-factor is about 30 % lower than most earlier data.

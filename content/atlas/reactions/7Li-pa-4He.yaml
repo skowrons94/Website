@@ -54,6 +54,7 @@ measurements:
     lab: "Ruhr-Universität Bochum and Universität Münster"
     method: direct-surface
     energy: "10–1450 keV (whole data set)"
+    energy_it: "10–1450 keV (intero insieme di dati)"
     note: >-
       Proton, deuteron and lithium beams with atomic and molecular targets,
       to compare electron screening in ⁶Li and ⁷Li reactions; the low-energy

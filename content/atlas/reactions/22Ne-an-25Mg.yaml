@@ -77,8 +77,7 @@ measurements:
       ¹³C(α,n)¹⁶O, with new rates for each.
     refs: [drotleff1993]
   - year: 2001
-    facility: other
-    lab: "Dynamitron, Universität Stuttgart, Stuttgart"
+    facility: stuttgart-dynamitron
     method: direct-surface
     energy: "E(α,lab) = 0.57–1.47 MeV"
     note: >-
@@ -91,6 +90,7 @@ measurements:
     facility: n-tof
     method: neutron-beams
     energy: "²⁵Mg + n, thermal to about 300 keV neutron energy"
+    energy_it: "²⁵Mg + n, energia del neutrone da valori termici a circa 300 keV"
     note: >-
       ²⁵Mg(n,γ) and total cross sections fitted together in an R-matrix
       analysis gave unambiguous spin-parity assignments for ²⁶Mg states above
@@ -101,6 +101,7 @@ measurements:
     facility: texas-am
     method: anc
     energy: "²²Ne(⁶Li,d)²⁶Mg in inverse kinematics"
+    energy_it: "²²Ne(⁶Li,d)²⁶Mg in cinematica inversa"
     note: >-
       Deuterons and ²⁶Mg recoils detected in coincidence with the TIARA array
       and the MDM spectrometer; a new neutron/γ decay branching ratio for a key
@@ -110,6 +111,7 @@ measurements:
     facility: texas-am
     method: anc
     energy: "²²Ne(⁶Li,d) and ²²Ne(⁷Li,t), 1.0 MeV/u ²²Ne beam"
+    energy_it: "²²Ne(⁶Li,d) e ²²Ne(⁷Li,t), fascio di ²²Ne da 1,0 MeV/u"
     note: >-
       Partial α widths of ²⁶Mg resonances in the Gamow window; the derived
       (α,n) and (α,γ) rates differ significantly from earlier values.

@@ -58,6 +58,7 @@ measurements:
   - year: 2021
     method: thm
     energy: "²H(²⁷Al,α²⁴Mg)n, E up to 1.5 MeV"
+    energy_it: "²H(²⁷Al,α²⁴Mg)n, E fino a 1,5 MeV"
     note: >-
       First Trojan Horse study of the reaction; a group of resonances appears
       close to the 70–120 keV Gamow window of hydrogen burning.
@@ -65,6 +66,7 @@ measurements:
   - year: 2022
     method: thm
     energy: "E = 84.3 keV resonance and its neighbours"
+    energy_it: "risonanza a E = 84,3 keV e le vicine"
     note: >-
       Contribution of the 84.3 keV resonance determined and upper limits set on
       the nearby resonances; new recommended reaction rate.

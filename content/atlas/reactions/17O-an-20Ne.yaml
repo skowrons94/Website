@@ -67,6 +67,7 @@ measurements:
     facility: dragon
     method: inverse-kinematics
     energy: "¹⁷O(α,γ)²¹Ne resonances between 612 and 1318 keV"
+    energy_it: "risonanze di ¹⁷O(α,γ)²¹Ne tra 612 e 1318 keV"
     note: >-
       Competing (α,γ) channel: upper limit ωγ < 140 neV (95% CL) for the 612 keV
       resonance; the new (α,γ) rate is lower than earlier ones and increases the

@@ -60,6 +60,7 @@ measurements:
     lab: "100 kV accelerator, Ruhr-Universität Bochum"
     method: direct-surface
     energy: "5–60 keV (d beam) and 10–40 keV (³He beam)"
+    energy_it: "5–60 keV (fascio di d) e 10–40 keV (fascio di ³He)"
     note: >-
       Both ³He(d,p)⁴He and d(³He,p)⁴He, with the LUNA setup; Uₑ = 219 ± 7 eV
       and 109 ± 9 eV, above the atomic-physics values of 120 and 65 eV.
@@ -67,6 +68,7 @@ measurements:
   - year: 2005
     method: thm
     energy: "from 600 keV down to astrophysical energies"
+    energy_it: "da 600 keV fino alle energie astrofisiche"
     note: >-
       Trojan Horse measurement through the three-body reaction
       ⁶Li(³He,pα)⁴He at 5 and 6 MeV; the bare S-factor was extracted in the

@@ -133,7 +133,27 @@ networks:
       miniera di Homestake.
     temperatures:
       - { label: centre of the Sun, label_it: "centro del Sole", T9: 0.0157 }
-    reactions: [3He-ag-7Be, 7Be-pg-8B, 8B-bp-8Be, 3He-hep-4He]
+    reactions: [3He-ag-7Be, 7Be-pg-8B, 8B-bp-8Be]
+
+  # hep is a termination of its own, not part of pp-III: ³He + p → ⁴He + e⁺ν
+  # competes with ³He + ³He and ³He + ⁴He for the ³He made in pp-I
+  # (Adelberger et al. 2011, Rev. Mod. Phys. 83, 195, Fig. 1; expert review
+  # 2026-10-12).
+  - id: hep
+    family: pp
+    name: hep
+    name_it: hep
+    summary: >-
+      The rarest termination: a ³He nucleus captures a proton and becomes ⁴He
+      directly, through the weak interaction. It adds nothing to the Sun's
+      energy, but emits the most energetic solar neutrinos.
+    summary_it: >-
+      La conclusione più rara: un nucleo di ³He cattura un protone e diventa
+      direttamente ⁴He, tramite l'interazione debole. Non aggiunge nulla
+      all'energia del Sole, ma emette i neutrini solari più energetici.
+    temperatures:
+      - { label: centre of the Sun, label_it: "centro del Sole", T9: 0.0157 }
+    reactions: [3He-hep-4He]
 
   - id: cno1
     family: cno

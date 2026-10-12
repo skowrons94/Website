@@ -58,6 +58,7 @@ measurements:
     facility: luna-50
     method: direct-underground
     energy: "down to about 21 keV"
+    energy_it: "fino a circa 21 keV"
     note: >-
       First data inside the solar Gamow peak, no evidence for a low-energy
       resonance; tentative S(0) = 5.1 ± 0.1 MeV b after the screening
@@ -67,6 +68,7 @@ measurements:
     facility: luna-50
     method: direct-underground
     energy: "down to 20.76 keV"
+    energy_it: "fino a 20,76 keV"
     note: >-
       Full analysis of the first LUNA campaign; electron screening observed
       clearly for this reaction, larger than expected, and dominating the
@@ -76,14 +78,14 @@ measurements:
     facility: luna-50
     method: direct-underground
     energy: "down to 16.5 keV"
+    energy_it: "fino a 16,5 keV"
     note: >-
       New detector setup; data down to the lower edge of the solar Gamow peak,
       with no sign of the narrow resonance proposed to reduce the ⁷Be and ⁸B
       neutrino fluxes.
     refs: [bonetti1999]
   - year: 2004
-    facility: other
-    lab: "OCEAN, Research Center for Nuclear Physics, Osaka"
+    facility: rcnp-osaka
     method: direct-surface
     energy: "30–50 keV"
     note: >-
@@ -92,10 +94,10 @@ measurements:
       earlier data.
     refs: [kudomi2004]
   - year: 2017
-    facility: other
-    lab: "OMEGA laser, Laboratory for Laser Energetics, Rochester NY"
+    facility: omega
     method: plasma
     energy: "low centre-of-mass energy, plasma"
+    energy_it: "bassa energia nel centro di massa, plasma"
     note: >-
       Proton spectra from ³He+³He fusion in high-energy-density plasmas; the
       measured shape is proposed as a benchmark for the analysis of
