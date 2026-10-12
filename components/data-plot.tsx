@@ -76,6 +76,9 @@ import { localePath } from "@/lib/locale"
  * are folded behind a "View" button.
  */
 
+/** The largest share of the window the pinned plot band may take on a phone. */
+const PIN_SHARE = 0.6
+
 interface Props {
   data: DataSegment[]
   /** The model on a fine grid, by segment index (null: not loaded yet). */
@@ -264,6 +267,13 @@ export function DataPlot({
   const [zoom, setZoom] = useState<[number, number] | null>(null)
   const canRutherford = useMemo(() => data.some(hasRutherford), [data])
   const charts = useRef(new Map<string, SVGSVGElement | null>())
+  // On a phone the plot band is pinned under the header only when it fits:
+  // at most PIN_SHARE of the window, so the sliders always have room (with
+  // enlarged text it can be taller than the screen). Its height is published
+  // as --pin-h on the grid, for the scroll margins of what scrolls under it.
+  const gridRef = useRef<HTMLDivElement>(null)
+  const bandRef = useRef<HTMLDivElement>(null)
+  const [pinned, setPinned] = useState(false)
 
   // The dataset list starts open where there is room for it, and when it is
   // short: a long one (120 on ⁷Be) would stand between a keyboard and the sliders.
@@ -314,6 +324,31 @@ export function DataPlot({
   }, [chosen, quantity])
   const faceted = panels.length > 1
   const anyScattering = chosen.some(isScattering)
+
+  useEffect(() => {
+    const band = bandRef.current
+    const grid = gridRef.current
+    if (!band || !grid) return
+    const wide = window.matchMedia("(min-width: 1024px)")
+    let last = ""
+    const update = () => {
+      const h = band.offsetHeight
+      const fits = !faceted && !wide.matches && h > 0 && h <= PIN_SHARE * window.innerHeight
+      const value = fits ? `${h}px` : "0px"
+      if (value !== last) grid.style.setProperty("--pin-h", (last = value))
+      setPinned(fits)
+    }
+    update()
+    const observer = new ResizeObserver(update)
+    observer.observe(band)
+    window.addEventListener("resize", update)
+    wide.addEventListener("change", update)
+    return () => {
+      observer.disconnect()
+      window.removeEventListener("resize", update)
+      wide.removeEventListener("change", update)
+    }
+  }, [faceted])
 
   const values = useMemo(() => {
     const out = new Map<number, ReturnType<typeof segmentValues>>()
@@ -927,7 +962,11 @@ export function DataPlot({
         {announcement}
       </p>
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,24rem)] lg:gap-x-6 lg:gap-y-4">
+      <div
+        ref={gridRef}
+        data-pin-scope
+        className="grid gap-4 [--pin-h:0px] lg:grid-cols-[minmax(0,1fr)_minmax(20rem,24rem)] lg:gap-x-6 lg:gap-y-4"
+      >
         {/* The view settings: a toolbar from lg, behind "View" on a phone. */}
         <div
           id="plot-view"
@@ -1002,10 +1041,14 @@ export function DataPlot({
           </div>
 
           <div
+            ref={bandRef}
+            data-pinned={pinned || undefined}
             className={
               faceted
                 ? "min-w-0 max-lg:order-1"
-                : "z-20 -mx-1 min-w-0 self-start bg-background px-1 pb-2 pt-1 max-lg:order-1 max-lg:[@media(min-height:600px)]:sticky max-lg:[@media(min-height:600px)]:top-[var(--header-h,4rem)] lg:static lg:mx-0 lg:p-0"
+                : `z-20 -mx-1 min-w-0 self-start bg-background px-1 pb-2 pt-1 max-lg:order-1 lg:static lg:mx-0 lg:p-0 ${
+                    pinned ? "max-lg:sticky max-lg:top-[var(--header-h,4rem)]" : ""
+                  }`
             }
           >
             <div className="relative">
@@ -1082,7 +1125,7 @@ export function DataPlot({
         <Card
           id="plot-levels"
           tabIndex={-1}
-          className="min-w-0 scroll-mt-24 outline-none focus-visible:ring-2 focus-visible:ring-ring max-lg:order-3 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:self-start lg:overflow-y-auto"
+          className="min-w-0 scroll-mt-[calc(var(--header-h,4rem)+var(--pin-h,0px)+0.5rem)] outline-none focus-visible:ring-2 focus-visible:ring-ring max-lg:order-3 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:self-start lg:overflow-y-auto"
         >
           <CardContent className="p-4 sm:p-5">
             <LevelControls

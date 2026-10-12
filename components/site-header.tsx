@@ -174,6 +174,7 @@ export function SiteHeader({
     item("/atlas/timeline", t.timeline, d.timeline),
     item("/atlas/s-process", t.sProcess, d.sProcess),
     item("/atlas/rates", t.rates, t.ratesDescription),
+    item("/atlas/rates/curiosities", t.curiosities, t.curiositiesDescription),
     item("/about", t.about, t.aboutDescription),
   ]
   const bar: Item[] = [research, atlas, evaluations, publications, software, cv]
@@ -187,8 +188,10 @@ export function SiteHeader({
   const isActive = (href: string) => {
     const on = pathname === href || pathname.startsWith(`${href}/`)
     if (!on) return false
-    if (href === atlas.href) return !learn.some((l) => pathname === l.href || pathname.startsWith(`${l.href}/`))
-    return true
+    const under = (l: Item) => pathname === l.href || pathname.startsWith(`${l.href}/`)
+    if (href === atlas.href) return !learn.some(under)
+    // The most specific item only: the curiosities, not also "Reaction rates".
+    return !learn.some((l) => l.href.length > href.length && l.href.startsWith(`${href}/`) && under(l))
   }
   const learnActive = learn.some((l) => isActive(l.href))
 

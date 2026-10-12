@@ -10,6 +10,7 @@ import { SiteHeader } from "@/components/site-header"
 import { ThemeProvider } from "@/components/theme-provider"
 import { chromeStrings } from "@/lib/chrome-strings"
 import { getProfile } from "@/lib/content"
+import { evaluationIds } from "@/lib/evaluation-meta"
 import { mono, sans, serif } from "@/lib/fonts"
 import type { Lang } from "@/lib/i18n"
 
@@ -44,7 +45,7 @@ export default function GlobalNotFound() {
     <html lang="en" suppressHydrationWarning>
       <body className={`${sans.variable} ${serif.variable} ${mono.variable} font-sans`}>
         <ThemeProvider attribute={["class", "data-theme"]} defaultTheme="system" enableSystem disableTransitionOnChange>
-          <NotFoundClient pages={{ en: <Page lang="en" />, it: <Page lang="it" /> }} />
+          <NotFoundClient pages={{ en: <Page lang="en" />, it: <Page lang="it" /> }} evaluations={evaluationIds()} />
         </ThemeProvider>
       </body>
     </html>

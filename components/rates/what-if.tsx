@@ -338,7 +338,7 @@ export function ResultStrip({
 }
 
 /** A REACLIB set's source: author and year, or the title when the label has no author (bet+, ec, ks03). */
-export function SourceCell({ sources }: { sources: RateSource[] }) {
+export function SourceCell({ sources, lang }: { sources: RateSource[]; lang: Lang }) {
   return (
     <>
       {sources.map((s) => {
@@ -355,6 +355,7 @@ export function SourceCell({ sources }: { sources: RateSource[] }) {
               <Sci>{text}</Sci>
             )}
             {s.ref && s.author && <span className="text-muted-foreground">, {s.ref}</span>}
+            {s.note && <span className="text-muted-foreground">; {lang === "it" ? (s.note_it ?? s.note) : s.note}</span>}
           </span>
         )
       })}

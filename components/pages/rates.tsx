@@ -119,11 +119,11 @@ function How({ lang }: { lang: Lang }) {
         <Sci>{"¹³N"}</Sci> captures a proton long before it decays.
       </P>
       <P>
-        "What if" reruns the burn in a one-zone model: fixed temperature and density, the scenario's initial
+        &ldquo;What if&rdquo; reruns the burn in a one-zone model: fixed temperature and density, the scenario's initial
         composition, and the network integrated in time with an implicit method, in a separate thread of your browser.
         The result is compared with the burn at the original rates. A one-zone model shows which reactions matter, and
-        how much; it does not replace a model of a star. Each scenario's values and their source are under "Where these
-        numbers come from".
+        how much; it does not replace a model of a star. Each scenario's values and their source are under &ldquo;Where these
+        numbers come from&rdquo;.
       </P>
     </>
   )

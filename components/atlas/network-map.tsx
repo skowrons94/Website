@@ -960,7 +960,7 @@ export function NetworkMap({ data, below }: { data: MapData; below?: React.React
       </div>
 
       {/* -- side panel; a drawer below lg ------------------------------------- */}
-      <aside className="lg:sticky lg:top-24">
+      <div className="lg:sticky lg:top-24">
         {selected || selectedCell ? (
           <>
             <button
@@ -1023,7 +1023,7 @@ export function NetworkMap({ data, below }: { data: MapData; below?: React.React
             <p className="mt-4">{t.selectArrow}</p>
           </div>
         )}
-      </aside>
+      </div>
 
       {/* -- the family in words: the table view of the map -------------------- */}
       <section className="mt-12 lg:col-span-2" aria-labelledby="family-heading">

@@ -138,7 +138,7 @@ threads:
     period: 2023 — present
     period_it: 2023 — oggi
     role: Spokesperson
-    role_it: Spokesperson
+    role_it: Portavoce
     summary: >-
       Measuring how long a nuclear state lives when the answer is a fraction of a
       femtosecond, and what that says about the Sun.
@@ -276,8 +276,8 @@ outlook:
         nuclear reaction cross sections in R-matrix theory, in which I take
         part, and of my work on the IAEA INDEN-LE committee. AZURE2 and the
         evaluations on this site, which anyone can open, change and rerun in the
-        browser, are a working prototype; the rates explorer shows where such
-        evaluations end up, in the reaction rates of stellar models.
+        browser, are a working prototype; the rates explorer is built to show
+        where such evaluations end up, in the reaction rates of stellar models.
       text_it: >-
         La teoria R-matrix è il punto in cui la teoria incontra ogni dettaglio
         sperimentale: risoluzione, effetti del bersaglio, normalizzazioni,
@@ -290,8 +290,9 @@ outlook:
         metodi quantistici, a cui partecipo, e del mio lavoro nel comitato
         INDEN-LE della IAEA. AZURE2 e le valutazioni di questo sito, che
         chiunque può aprire, modificare e ricalcolare nel browser, ne sono un
-        prototipo funzionante; l'esploratore dei tassi mostra dove finiscono
-        queste valutazioni, nei tassi di reazione dei modelli stellari.
+        prototipo funzionante; l'esploratore dei tassi è pensato per mostrare
+        dove finiscono queste valutazioni, nei tassi di reazione dei modelli
+        stellari.
     - lead: New observables, underground.
       lead_it: Nuove osservabili, sotto terra.
       text: >-

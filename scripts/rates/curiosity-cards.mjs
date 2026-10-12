@@ -93,7 +93,7 @@ function svg(spec, c, lang, ratio) {
 ${text}
 ${bar(by, labels[0], 1, "#8b857d")}
 ${bar(by + 40, labels[1], ratio, ratio >= 1 ? "#6d4bb8" : "#8a5a2b")}
-<text x="80" y="${by + 112}" font-family="${SANS}" font-size="21" fill="${MUTED}">${esc(c.caveat)}</text>
+<text x="80" y="${by + 112}" font-family="${SANS}" font-size="21" fill="${MUTED}">${esc(c.shortCaveat)}</text>
 <text x="80" y="${by + 146}" font-family="${SANS}" font-size="21" fill="${ACCENT}">${esc(url.replace(/^https?:\/\//, ""))}</text>
 </svg>`
 }

@@ -44,6 +44,9 @@ export interface RateSource {
   ref?: string
   year?: string
   url?: string | null
+  /** what the source is, where its title could mislead (a rate from theory) */
+  note?: string
+  note_it?: string
 }
 
 export interface Reaction {

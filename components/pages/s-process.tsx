@@ -251,7 +251,7 @@ export function SProcessPage({ lang }: { lang: Lang }) {
               className="overflow-x-auto overscroll-x-contain rounded-lg p-2 [scrollbar-width:thin]"
               tabIndex={0}
               role="region"
-              aria-label={t.overviewTitle}
+              aria-label={`${t.overviewTitle}: ${lang === "it" ? "grafico scorrevole" : "scrollable chart"}`}
             >
               <SProcessOverview lang={lang} insets={insets} label={t.overviewLabel} describedBy="overview-description" />
             </div>
