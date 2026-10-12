@@ -231,6 +231,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   // smooth curve): one clock for both.
   const curveClock = useRef<number | null>(null)
   const burstEnd = useRef(0)
+  /** The estimate (from `started`, the curve's clock) the last edit counted down to, its curve included. */
+  const curveEstimate = useRef<{ started: number; estimate: number | null } | null>(null)
   const [sessionId, setSessionId] = useState<string | null>(null)
   const [evaluation, setEvaluation] = useState<Evaluation | null>(null)
   const [scheme, setScheme] = useState<Scheme | null>(null)
@@ -331,7 +333,33 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     measured: Timings
   }>({ pending: [], preparing: null, elapsed: 0, builds: 1, at: 0, spare: false, measured: {} })
   /** How long building `step` takes: as last measured on this server, else the typical timing. */
-  const stepCost = useCallback((step: string) => prep.current.measured[`prepare_${step}`] ?? typical.current[`prepare_${step}`] ?? 0, [])
+  /**
+   * How much slower than its typical timings the machine is running now (1
+   * when it is not, at most 4): on the server, the preparations it last
+   * measured against their typical durations; in the browser, this visit's
+   * opening (Python and AZURE2 starting) against its typical one. Typical
+   * timings are scaled by it, measured ones are taken as they are: under
+   * load a second edit was estimated at its quiet-machine 2 s and took 7 s,
+   * and the in-browser ⁷Be smooth curve at 13 s and took 21 s.
+   */
+  const slowdown = useCallback(() => {
+    const ratios: number[] = []
+    const pair = (m: number | undefined, t: number | undefined, min: number) => {
+      if (m && t && t >= min) ratios.push(m / t)
+    }
+    if (IN_BROWSER) pair(measured.current.open, typical.current.open, 1)
+    else for (const s of ["data", "fine", "extrap"]) pair(prep.current.measured[`prepare_${s}`], typical.current[`prepare_${s}`], 0.5)
+    return Math.min(4, Math.max(1, ...ratios))
+  }, [])
+  /** A typical timing, scaled by the machine's present slowdown. */
+  const typicalOf = useCallback((key: string) => {
+    const t = typical.current[key]
+    return t === undefined ? undefined : t * slowdown()
+  }, [slowdown])
+  const stepCost = useCallback(
+    (step: string) => prep.current.measured[`prepare_${step}`] ?? typicalOf(`prepare_${step}`) ?? 0,
+    [typicalOf],
+  )
   /**
    * Seconds until `step` (data, fine, extrap) is built: the step under way
    * counted down from its start (never below zero: past its usual duration
@@ -389,16 +417,28 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       key: string = kind,
       extra = 0,
       flag = false,
-      options: { since?: number; wait?: string[]; note?: string | null; restart?: boolean } = {},
+      options: {
+        since?: number
+        wait?: string[]
+        note?: string | null
+        restart?: boolean
+        tail?: number
+        /** The estimate of the clock it goes on from (an edit's, for its smooth curve). */
+        carry?: number | null
+      } = {},
     ) => {
-      const base = measured.current[key] ?? typical.current[key] ?? null
+      // `tail`: what follows on the same clock (an edit's smooth curve).
+      const own = measured.current[key] ?? typicalOf(key) ?? null
+      const base = own === null && !options.tail ? null : (own ?? 0) + (options.tail ?? 0)
       const now = performance.now()
       const previous = options.restart ? undefined : activitiesRef.current[kind]
       // One clock per thing the reader waits for: from an edit to its smooth
       // curve (`since`); each request of a drag has its own (`restart`).
       const started = previous?.started ?? options.since ?? now
       const elapsed = (now - started) / 1000
-      const estimate = base === null && extra === 0 ? null : elapsed + (base ?? 0) + extra
+      const fresh = base === null && extra === 0 ? null : elapsed + (base ?? 0) + extra
+      // Handed over without a model to wait for: the same countdown goes on.
+      const estimate = options.carry != null && !flag ? options.carry : fresh
       const activity: Activity = {
         started,
         estimate: previous?.estimate != null && estimate !== null ? Math.max(previous.estimate, estimate) : estimate,
@@ -412,7 +452,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       setActivities((current) => ({ ...current, [kind]: activity }))
       return now
     },
-    [],
+    [typicalOf],
   )
   /** Set a running activity's estimate (seconds from its start) and note. */
   const adjust = useCallback((kind: ActivityKind, started: number, estimate: number | null, note?: string | null) => {
@@ -453,7 +493,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
             preparing = false
           }
         } else if (!a.wait && estimate === null) {
-          const base = measured.current[kind] ?? typical.current[kind] ?? null
+          const base = measured.current[kind] ?? typicalOf(kind) ?? null
           if (base !== null) estimate = Math.max(elapsed + 1, base)
         }
         if (estimate !== a.estimate || wait !== a.wait || a.key !== key || Boolean(a.busy) !== busy) {
@@ -464,7 +504,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       if (changed) activitiesRef.current = next
       return changed ? next : current
     })
-  }, [prepLeft])
+  }, [prepLeft, typicalOf])
   /** Take a report of the server's preparation (/open, /status, the heartbeat). */
   const takeStatus = useCallback(
     (status: (SessionStatus & { prepared?: string[] }) | null | undefined) => {
@@ -501,9 +541,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   /** Seconds left of a preparation sent at `since`, by its typical duration. */
   const remaining = useCallback((since: number | null, key: string) => {
     if (since === null) return 0
-    const total = typical.current[key]
+    const total = typicalOf(key)
     return total ? Math.max(0, total - (performance.now() - since) / 1000) : 0
-  }, [])
+  }, [typicalOf])
 
   /* -- errors --------------------------------------------------------------- */
 
@@ -711,12 +751,15 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     // goes on from the edit's.
     const recent = curveClock.current !== null && (activitiesRef.current.edit || performance.now() - burstEnd.current < 3000)
     const since = recent ? curveClock.current! : undefined
+    const carried = curveEstimate.current
+    const carry = recent && carried && carried.started === since ? carried.estimate : null
     const wait = prepLeft("fine")
     const waiting = wait > 0 || unbuilt("fine")
-    const after = measured.current.fine ?? typical.current.fine ?? (typical.current.edit ?? 0) * 0.6
+    const after = measured.current.fine ?? typicalOf("fine") ?? (typicalOf("edit") ?? 0) * 0.6
     const started = begin("fine", "fine", wait + (measured.current.fine === undefined && typical.current.fine === undefined ? after : 0), waiting, {
       since,
       wait: ["fine"],
+      carry,
     })
     let ok = false
     try {
@@ -782,6 +825,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   const queue = useRef<{ inflight: AbortController | null; pending: Job[] }>({ inflight: null, pending: [] })
   const editsDone = useRef(0)
+  /** The last edit's answer came without its smooth curve (it follows on the same clock). */
+  const curveFollows = useRef(true)
   const seq = useRef(0)
 
   /** Take a server's answer to an edit as the new state. */
@@ -804,6 +849,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       schemeRef.current = result.scheme
       setData(result.data)
       setFine(result.fine, true)
+      curveFollows.current = !result.fine
       if (result.fine) curveClock.current = null
       // Extrapolations were computed from the old parameters: kept on screen,
       // faded, and fetched again when their tab is shown.
@@ -844,9 +890,13 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     const jobStart = performance.now()
     curveClock.current = jobStart
     const waiting = first && (wait > 0 || waitSteps.some(unbuilt))
+    // Its smooth curve, when it comes after the points, is on the same clock:
+    // counted in from the start, so the hand-over does not jump.
+    const tail = curveFollows.current && fineRef.current !== null ? (measured.current.fine ?? typicalOf("fine") ?? 0) : 0
     const started = begin("edit", "edit", wait, waiting, {
       since: jobStart,
       restart: true,
+      tail,
       wait: waitSteps,
       note: waiting && !prep.current.spare ? r9.noSpare : null,
     })
@@ -914,12 +964,15 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       else {
         // The burst is answered; its clock goes on only into the smooth curve.
         burstEnd.current = performance.now()
+        const last = activitiesRef.current.edit
+        // Only an estimate that counted the curve in is carried on into it.
+        curveEstimate.current = last && tail > 0 ? { started: last.started, estimate: last.estimate } : null
         finish("edit", "edit", started, false)
         setCalculating(false)
       }
       void started
     }
-  }, [begin, finish, handle, onBusy, revive, take, remaining, prepLeft, unbuilt, r9])
+  }, [begin, finish, handle, onBusy, revive, take, remaining, prepLeft, unbuilt, r9, typicalOf])
 
   const enqueue = useCallback(
     (job: Job) => {
