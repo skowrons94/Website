@@ -290,7 +290,11 @@ def test_503_when_every_slot_is_busy(client):
     assert r.headers["Retry-After"] == "7"
     assert r.get_json()["code"] == "busy"
     busy.join()
-    # Idle again: the next visitor evicts it.
+    # Idle, but used a moment ago: still protected (the page is open).
+    assert c.post("/api/evaluations/X/open").status_code == 503
+    # Unseen for evict_after seconds: the next visitor evicts it.
+    manager.evict_after = 0.2
+    time.sleep(0.3)
     r = c.post("/api/evaluations/X/open")
     assert r.status_code == 201
     assert c.get(f"/api/sessions/{sid}/status").status_code == 409
@@ -404,3 +408,122 @@ def test_spare_of_another_evaluation_gives_way(fake):
         assert spare.closed and not session.closed
     finally:
         manager.close_all()
+
+
+# -- eviction and spares: the visitor first ----------------------------------------
+
+def _wait(predicate, timeout=5.0):
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        if predicate():
+            return True
+        time.sleep(0.02)
+    return False
+
+
+def test_session_that_pinged_recently_is_not_evicted(fake):
+    """A session whose page pinged a second ago is never closed to make room
+    (r8: one was); the newcomer gets a 503 instead.  Once the page has been
+    quiet for evict_after seconds (a hidden tab stops pinging) it can go,
+    least recently seen first."""
+    manager = session_module.SessionManager(max_sessions=2, evict_after=0.4)
+    try:
+        a = manager.create(fake)
+        b = manager.create(fake)
+        a.ping()
+        b.ping()
+        with pytest.raises(session_module.CapacityError):
+            manager.create(fake)
+        assert not a.closed and not b.closed
+        time.sleep(0.5)
+        b.ping()                              # b's page is still open
+        c = manager.create(fake)
+        assert a.closed and not b.closed and not c.closed
+    finally:
+        manager.close_all()
+
+
+def test_visitor_takes_over_a_spare_being_built(fake):
+    """A visitor arriving while the spare is still being prepared gets that
+    session (its preparation goes on as theirs) instead of a second build
+    competing with it for the cores."""
+    FakeEngine.delays.update(prepare={"fine": 0.6})
+    built = []
+    real_init = FakeEngine.__init__
+
+    def counting_init(self, *args, **kwargs):
+        built.append(self)
+        real_init(self, *args, **kwargs)
+    FakeEngine.__init__ = counting_init
+    manager = session_module.SessionManager(max_sessions=4, spares={"X": 1},
+                                            spare_delay=0, spare_quiet=0.3)
+    try:
+        manager.start_spares([fake])
+        assert _wait(lambda: any(r["session"] is not None
+                                 for r in manager._wip.get("X", [])))
+        session = manager.create(fake)
+        assert session.from_spare and not session.id.startswith("spare-")
+        assert len(built) == 1                 # no second build beside it
+        assert manager.get(session.id) is session
+        assert _wait(lambda: "extrap" in session.prepared)
+        assert session.status()["from_spare"] is True
+        # The replacement comes only once that preparation is over.
+        assert _wait(lambda: manager._spare.get("X"))
+        assert manager._spare["X"][0] is not session
+        assert manager._pending == 0
+    finally:
+        FakeEngine.__init__ = real_init
+        manager.close_all()
+
+
+def test_spare_waits_for_visitor_preparation(fake):
+    """A replacement spare is not built while a visitor's own model is being
+    prepared, and one under way is paused meanwhile."""
+    FakeEngine.delays.update(prepare={"fine": 0.8})
+    manager = session_module.SessionManager(max_sessions=4, spares={"Y": 1},
+                                            spare_delay=0, spare_quiet=0.2)
+    paused = []
+    real_pause = session_module.Session.pause
+    session_module.Session.pause = lambda self: (paused.append(self.id), real_pause(self))
+    try:
+        visitor = manager.create(fake)                 # a cold session of X
+        worker = threading.Thread(target=visitor.prepare_all, kwargs={"quiet": 0})
+        worker.start()
+        assert _wait(lambda: visitor.preparing == "fine")
+        other = Evaluation(id="Y", path=fake.path, azr_path=fake.azr_path, title="Y",
+                           channels=[])
+        manager.start_spares([other])
+        time.sleep(0.3)
+        # The visitor is preparing: no spare has even been started.
+        assert not manager._wip.get("Y") and not manager._spare.get("Y")
+        worker.join()
+        assert _wait(lambda: manager._spare.get("Y"))
+        spare = manager._spare["Y"][0]
+        # Its first step started only after the visitor's last one ended.
+        ends = sorted(c[2] for c in FakeEngine.calls if c[0] == "prepare_extrap")
+        fine = sorted(c[2] for c in FakeEngine.calls if c[0] == "prepare_fine")
+        assert len(fine) == 2 and fine[1] >= ends[0]
+        assert spare.prepared >= {"data", "fine", "extrap"}
+
+        # A spare being built when a visitor starts preparing is paused.
+        manager.spares["Y"] = 2
+        manager._replenish_later(other, delay=0)
+        assert _wait(lambda: any(r["session"] is not None
+                                 for r in manager._wip.get("Y", [])))
+        manager._visitor_working(+1)
+        building = [r["session"] for r in manager._wip["Y"]]
+        assert building and building[0].id in paused
+        manager._visitor_working(-1)
+        assert not building[0]._paused
+    finally:
+        session_module.Session.pause = real_pause
+        manager.close_all()
+
+
+def test_open_reports_spare_and_status_reports_progress(client):
+    c, manager = client
+    r = c.post("/api/evaluations/X/open").get_json()
+    assert r["from_spare"] is False and "prepared" in r and "builds" in r
+    status = c.get(f"/api/sessions/{r['session_id']}/status").get_json()
+    assert status["pending"] == ["data", "fine", "extrap"]
+    assert status["from_spare"] is False and status["builds"] == 0

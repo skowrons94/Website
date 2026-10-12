@@ -131,9 +131,12 @@ def write_initial(evaluation, timings, out):
     session = _session(evaluation)
     try:
         payload = initial_module.build(session, evaluation.labels, timings)
+        extrap = initial_module.build_extrapolations(session, evaluation.labels)
     finally:
         session.close()
     initial_module.write(evaluation.path, payload)
+    if extrap is not None:
+        initial_module.write(evaluation.path, extrap, initial_module.EXTRAP_FILE)
     print(f"{evaluation.id:6s} initial.json "
           f"({', '.join(p for p in initial_module.PARTS if p in payload)})", file=out, flush=True)
 
@@ -146,7 +149,8 @@ def warm(root, out=sys.stdout, only=None, force=False, timings=True):
             fill(evaluation, out)
             stored = initial_module.read(evaluation.path)
             if not force and stored is not None and all(p in stored for p in initial_module.PARTS) \
-                    and (stored.get("timings") or not timings):
+                    and (stored.get("timings") or not timings) \
+                    and initial_module.has_extrapolations(evaluation.path):
                 print(f"{evaluation.id:6s} initial.json valid", file=out, flush=True)
                 continue
             measured = measure(evaluation, out) if timings else (stored or {}).get("timings")

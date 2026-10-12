@@ -122,3 +122,33 @@ class EnginePairs(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class FinalStates(unittest.TestCase):
+    """What an extrapolation ends in, derived from each exit pair (r8: the
+    heavier of the pair was taken, so ⁶Li(p,α)³He read "⁴He g.s.")."""
+
+    @staticmethod
+    def pair(z1, a1, z2, a2, label, exc=0.0, photon=False):
+        from types import SimpleNamespace
+        return SimpleNamespace(Z1=z1, A1=a1, Z2=z2, A2=a2, label=label,
+                               excitation=exc, is_photon=photon)
+
+    def test_residual_is_b_of_a_a_b_b(self):
+        from app.serializers import final_state
+        p_li6 = self.pair(1, 1, 3, 6, "p_{0}")
+        a_he3 = self.pair(2, 4, 2, 3, "\\alpha_{0}")
+        out = final_state(p_li6, a_he3)
+        self.assertEqual(out["final_state"], "³He g.s.")
+        self.assertEqual(out["label_plain"], "⁶Li(p,α₀)³He")
+        he3_a = self.pair(2, 3, 2, 4, "\\alpha_{0}")       # ³He(α,α)³He
+        self.assertEqual(final_state(he3_a, he3_a)["final_state"], "³He g.s.")
+
+    def test_ground_state_named_once(self):
+        from app.serializers import final_state
+        p_c12 = self.pair(1, 1, 6, 12, "p_{0}")
+        out = final_state(p_c12, p_c12)
+        self.assertNotIn("→", out["label_plain"])
+        p1 = self.pair(1, 1, 6, 12, "p_{1}", exc=4.439)
+        self.assertTrue(out["final_state"].startswith("¹²C"))
+        self.assertTrue(final_state(p_c12, p1)["label_plain"].endswith("→ 4.439 MeV"))

@@ -17,7 +17,7 @@ from typing import Dict, List, Optional
 import numpy as np
 
 from app.evaluations import exfor_code
-from app.labels import pair_plain, reaction_plain
+from app.labels import _split, pair_plain, reaction_plain
 
 # Significant digits of every number on the wire.  The engine's ~17 digits
 # tripled the payloads (⁷Be's extrapolations: 9.6 MB) and no plot or χ²
@@ -550,8 +550,9 @@ def final_state(entrance, exit_, total=False) -> Dict:
     if exit_.is_photon:
         residual = nuclide_plain(entrance.Z1 + entrance.Z2, entrance.A1 + entrance.A2)
     else:
-        heavy = max((exit_.Z1, exit_.A1), (exit_.Z2, exit_.A2), key=lambda z: (z[1], z[0]))
-        residual = nuclide_plain(*heavy)
+        # The residual B of A(a,b)B, as the reaction is written: not simply
+        # the heavier of the pair (⁶Li(p,α)³He ends in ³He, not ⁴He).
+        residual = nuclide_plain(*_split(exit_)[1])
     if exc == 0:
         level = "g.s."
     elif exc < 1:
@@ -564,7 +565,8 @@ def final_state(entrance, exit_, total=False) -> Dict:
     if sub and ")" in reaction:
         j = reaction.index(")")
         label = reaction[:j] + sub + reaction[j:]
-    if sub or exc:
+    # The level is named once: "(p,p₀)" already says the ground state.
+    if exc:
         label = f"{label} → {level}"
     out.update(exit_excitation=exc, final_state=state, label_plain=label)
     return out
@@ -646,6 +648,13 @@ def extrapolations_to_dict(session, labels, energies, angles, mu,
             "calculated_sfactor": _floats(mu_sfactor[i], digits),
         }
         entry.update(final_state(entrance, exit_, total=segment.exit_key == -1))
+        # A curve extended beyond the file's grid (a total capture carried
+        # down to the Gamow window, app.fine.extrap_model) states the range
+        # it actually covers.
+        calc = [x for x in (entry["energies"] or []) if x is not None]
+        if calc:
+            entry["energy_min"] = min(entry["energy_min"], min(calc))
+            entry["energy_max"] = max(entry["energy_max"], max(calc))
         segments.append(entry)
 
     return segments
