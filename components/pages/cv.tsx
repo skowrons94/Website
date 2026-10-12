@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { Download } from "lucide-react"
 
-import { Container, PageHeader } from "@/components/page-header"
+import { Container } from "@/components/page-header"
 import {
   getExperience,
   getProfile,
@@ -25,8 +25,8 @@ function Section({
   children: React.ReactNode
 }) {
   return (
-    <section className="border-t border-border/70 pt-8 print:pt-5">
-      <h2 className="mb-6 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground print:mb-4">
+    <section className="border-t border-border/70 pt-8 print:pt-3">
+      <h2 className="mb-6 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground print:mb-2.5">
         {title}
       </h2>
       {children}
@@ -34,29 +34,37 @@ function Section({
   )
 }
 
+/** "Oct 2023 — May 2025" breaks after the dash if at all, never inside a date. */
+const keepDates = (text: string | number) => String(text ?? "").replace(/(\p{L}+\.?) (\d{4})/gu, "$1\u00a0$2")
+
 /**
  * Two-column on wide screens, stacked below sm. The period column is fixed so
  * every row in every section lines up on the same axis.
  */
 function Timeline({ entries }: { entries: TimelineEntry[] }) {
   return (
-    <ol className="space-y-7 print:space-y-[1.1rem]">
+    <ol className="space-y-7 print:space-y-[0.8rem]">
       {entries.map((entry, i) => (
-        <li key={i} className="break-inside-avoid sm:grid sm:grid-cols-[10.5rem_1fr] sm:gap-6">
+        // An entry stays whole on paper unless it has a list of its own, which
+        // may run on to the next page rather than leave this one half empty.
+        <li
+          key={i}
+          className={`${entry.bullets ? "" : "break-inside-avoid"} sm:grid sm:grid-cols-[10.5rem_1fr] sm:gap-6 print:grid-cols-[7.5rem_1fr] print:gap-4`}
+        >
           <p className="text-sm text-muted-foreground sm:pt-0.5">
-            {entry.period}
+            {keepDates(entry.period)}
           </p>
           <div className="mt-1 sm:mt-0">
             <h3 className="font-serif text-[1.05rem] font-semibold tracking-tight">
               <Sci>{entry.title}</Sci>
             </h3>
             {entry.detail && (
-              <p className="mt-1 text-pretty text-[0.95rem] leading-relaxed text-muted-foreground">
+              <p className="mt-1 max-w-[68ch] text-pretty text-[0.95rem] leading-relaxed text-muted-foreground">
                 <Sci>{entry.detail}</Sci>
               </p>
             )}
             {entry.bullets && (
-              <ul className="mt-3 space-y-1.5 text-[0.925rem] leading-relaxed text-muted-foreground">
+              <ul className="mt-3 max-w-[68ch] space-y-1.5 text-[0.925rem] leading-relaxed text-muted-foreground">
                 {entry.bullets.map((bullet, j) => (
                   <li key={j} className="flex gap-2.5">
                     <span className="select-none text-muted-foreground/50">—</span>
@@ -76,10 +84,10 @@ function Timeline({ entries }: { entries: TimelineEntry[] }) {
 
 function Talks({ entries }: { entries: TalkEntry[] }) {
   return (
-    <ol className="space-y-6 print:space-y-[1.1rem]">
+    <ol className="space-y-6 print:space-y-[0.8rem]">
       {entries.map((entry, i) => (
-        <li key={i} className="break-inside-avoid sm:grid sm:grid-cols-[10.5rem_1fr] sm:gap-6">
-          <p className="text-sm text-muted-foreground sm:pt-0.5">{entry.date}</p>
+        <li key={i} className="break-inside-avoid sm:grid sm:grid-cols-[10.5rem_1fr] sm:gap-6 print:grid-cols-[7.5rem_1fr] print:gap-4">
+          <p className="text-sm text-muted-foreground sm:pt-0.5">{keepDates(entry.date)}</p>
           <div className="mt-1 sm:mt-0">
             <h3 className="text-pretty font-serif text-[1.05rem] font-semibold tracking-tight">
               <Sci>{entry.event}</Sci>
@@ -93,7 +101,7 @@ function Talks({ entries }: { entries: TalkEntry[] }) {
               </p>
             )}
             {entry.title && (
-              <p className="mt-1 text-pretty text-[0.95rem] italic leading-relaxed text-muted-foreground">
+              <p className="mt-1 max-w-[68ch] text-pretty text-[0.95rem] italic leading-relaxed text-muted-foreground">
                 <Sci>{entry.title}</Sci>
               </p>
             )}
@@ -117,6 +125,7 @@ export function CVPage({ lang }: { lang: Lang }) {
 
   return (
     <Container wide>
+      <div className="cv-page">
       {/* On paper the page has no header or footer, so the name and how to
           reach him go on top. */}
       <p className="mb-4 hidden text-sm print:block">
@@ -124,10 +133,13 @@ export function CVPage({ lang }: { lang: Lang }) {
         {profile.email && <> · {profile.email}</>}
         {site && <> · {site}</>}
       </p>
-      <PageHeader
-        title={t.title}
-        lead={`${profile.role} · ${profile.affiliation}`}
-      />
+      {/* PageHeader's markup, a size smaller on paper. */}
+      <div className="mb-12 border-b border-border/70 pb-8 print:mb-6 print:pb-4">
+        <h1 className="font-serif text-3xl font-semibold tracking-tight sm:text-4xl print:text-[1.75rem]">{t.title}</h1>
+        <p className="mt-4 max-w-2xl text-pretty text-[1.0625rem] leading-relaxed text-muted-foreground print:mt-2">
+          {profile.role} · {profile.affiliation}
+        </p>
+      </div>
 
       <div className="mb-14 flex flex-wrap items-center gap-x-6 gap-y-3 print:hidden">
         {profile.cv.file && (
@@ -147,7 +159,7 @@ export function CVPage({ lang }: { lang: Lang }) {
         </Link>
       </div>
 
-      <div className="space-y-12 print:space-y-8">
+      <div className="space-y-12 print:space-y-5">
         <Section title={t.employment}>
           <Timeline entries={cv.employment} />
         </Section>
@@ -182,17 +194,18 @@ export function CVPage({ lang }: { lang: Lang }) {
           <Timeline entries={cv.outreach} />
         </Section>
         <Section title={t.skills}>
-          <dl className="space-y-5 print:space-y-[0.9rem]">
+          <dl className="space-y-5 print:space-y-[0.7rem]">
             {cv.skills.map((skill) => (
-              <div key={skill.label} className="break-inside-avoid sm:grid sm:grid-cols-[10.5rem_1fr] sm:gap-6">
+              <div key={skill.label} className="break-inside-avoid sm:grid sm:grid-cols-[10.5rem_1fr] sm:gap-6 print:grid-cols-[7.5rem_1fr] print:gap-4">
                 <dt className="text-sm text-muted-foreground">{skill.label}</dt>
-                <dd className="mt-1 text-pretty text-[0.95rem] leading-relaxed sm:mt-0">
+                <dd className="mt-1 max-w-[68ch] text-pretty text-[0.95rem] leading-relaxed sm:mt-0">
                   <Sci>{skill.items}</Sci>
                 </dd>
               </div>
             ))}
           </dl>
         </Section>
+      </div>
       </div>
     </Container>
   )

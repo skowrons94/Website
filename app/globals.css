@@ -235,6 +235,13 @@ sub {
   }
 }
 
+/* Running text keeps a reading measure (about 68 characters a line, which in
+   this serif is 64ch) however wide the column; tables and display maths may
+   still use the column's full width. */
+.prose-note > :where(p, ul, ol, blockquote, dl, h2, h3, h4) {
+  max-width: 64ch;
+}
+
 .prose-note :where(h1, h2, h3, h4, th, code, pre, kbd) {
   font-family: var(--font-sans), system-ui, sans-serif;
 }
@@ -329,6 +336,27 @@ sub {
 [data-pub][hidden],
 [data-pub-section][hidden] {
   display: none !important;
+}
+
+/*
+ * Reduced motion.
+ *
+ * For anyone who has asked their system for less motion: no transitions, no
+ * animations (spinners stand still, menus and chevrons switch rather than
+ * slide), no smooth scrolling. Durations go to near zero rather than `none`,
+ * so code waiting for a transitionend or animationend still hears it.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /*
@@ -444,6 +472,18 @@ sub {
 
   .heading-anchor {
     display: none !important;
+  }
+
+  /* The CV (components/pages/cv.tsx) is the page most often printed: a
+     smaller type size and tighter rhythm than the rest, which brings it to
+     about five pages with the first one full. */
+  :root:has(.cv-page) {
+    font-size: 10pt;
+  }
+
+  div:has(> .cv-page) {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
   }
 
   /* Navigation means nothing on paper: the in-page jump lists, the tables of

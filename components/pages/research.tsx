@@ -50,7 +50,8 @@ export function ResearchPage({ lang }: { lang: Lang }) {
               </p>
             </header>
 
-            <div className="mt-6 space-y-5 text-pretty leading-[1.75] text-foreground/90">
+            {/* A reading measure, not the column: about 68 characters a line (58ch of Inter, whose zero is wider than its average letter). */}
+            <div className="mt-6 max-w-[58ch] space-y-5 text-pretty leading-[1.75] text-foreground/90">
               {thread.body.map((paragraph, i) => (
                 <p key={i}>
                   <Sci>{paragraph}</Sci>
@@ -59,7 +60,7 @@ export function ResearchPage({ lang }: { lang: Lang }) {
             </div>
 
             {thread.highlights && (
-              <ul className="mt-7 space-y-2.5 border-l-2 border-border pl-5 text-[0.95rem] leading-relaxed text-muted-foreground">
+              <ul className="mt-7 max-w-[58ch] space-y-2.5 border-l-2 border-border pl-5 text-[0.95rem] leading-relaxed text-muted-foreground">
                 {thread.highlights.map((item, i) => (
                   <li key={i}>
                     <Sci>{item}</Sci>
