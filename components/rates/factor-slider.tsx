@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { useEffect, useRef, useState } from "react"
 
 import { Sci } from "@/components/sci"
 import { localePath, type Lang } from "@/lib/locale"
@@ -15,8 +16,8 @@ export function factorText(v: number, lang: Lang): string {
 }
 
 /**
- * One multiplier, ÷10 to ×10 on a log slider, with a stepper [÷2] ×1 [×2]
- * and a reset that appears once the value is not 1: a reaction's rate
+ * One multiplier, ÷10 to ×10 on a log slider, with a stepper [÷2] [×2], the
+ * value as a pill ("now ×2") and a reset that appears once the value is not 1: a reaction's rate
  * (linked to its atlas page when it has one) or an initial abundance.
  */
 export function FactorSlider({
@@ -37,7 +38,30 @@ export function FactorSlider({
   as?: "div" | "li"
 }) {
   const t = ratesDict(lang)
-  const set = (v: number) => onChange(Number(Math.min(10, Math.max(0.1, v)).toPrecision(3)))
+  const clamp = (v: number) => Number(Math.min(10, Math.max(0.1, v)).toPrecision(3))
+  const set = (v: number) => onChange(clamp(v))
+  // the slider moves with the hand; the page hears of it at most every
+  // 120 ms (always the latest value), so a drag does not re-render the whole
+  // explorer at every input event
+  const [shown, setShown] = useState(value)
+  const pending = useRef<number | null>(null)
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(() => {
+    if (pending.current === null) setShown(value)
+  }, [value])
+  useEffect(() => () => void (timer.current && clearTimeout(timer.current)), [])
+  const drag = (v: number) => {
+    const x = clamp(v)
+    setShown(x)
+    pending.current = x
+    if (timer.current) return
+    timer.current = setTimeout(function flush() {
+      timer.current = null
+      const p = pending.current
+      pending.current = null
+      if (p !== null) onChange(p)
+    }, 120)
+  }
   const step =
     "min-h-9 min-w-9 rounded-md border border-border px-2 text-sm text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-40"
   return (
@@ -67,12 +91,6 @@ export function FactorSlider({
           >
             {t.half}
           </button>
-          <span
-            className={`tabular min-w-[3.5rem] text-center text-sm ${value !== 1 ? "font-semibold text-foreground" : "text-muted-foreground"}`}
-            aria-hidden
-          >
-            {factorText(value, lang)}
-          </span>
           <button
             type="button"
             onClick={() => set(value * 2)}
@@ -82,6 +100,16 @@ export function FactorSlider({
           >
             {t.double}
           </button>
+          <span
+            className={`tabular ml-1 inline-flex min-h-7 min-w-[4.75rem] items-center justify-center rounded-full px-2.5 text-xs ${
+              shown !== 1
+                ? "bg-[var(--rates-changed)] font-semibold text-[var(--viz-surface)]"
+                : "bg-secondary text-muted-foreground"
+            }`}
+            aria-hidden
+          >
+            {t.nowFactor(factorText(shown, lang))}
+          </span>
           <button
             type="button"
             onClick={() => onChange(1)}
@@ -96,11 +124,12 @@ export function FactorSlider({
       <LogSlider
         label={<Sci>{`${label}, ${t.factor}`}</Sci>}
         hideLabel
-        value={value}
+        value={shown}
         min={0.1}
         max={10}
-        onChange={(x) => set(x)}
-        valueText={factorText(value, lang)}
+        onChange={drag}
+        valueText={factorText(shown, lang)}
+        keyStep={0.05}
       />
     </Tag>
   )

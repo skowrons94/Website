@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { Loader2, X } from "lucide-react"
 
 import { Sci } from "@/components/sci"
@@ -57,6 +58,7 @@ export function ReactionPicker({
           <span className="font-serif font-semibold">
             <Sci>{r.label}</Sci>
           </span>
+          <LunaMark reaction={r} lang={lang} inverted={on} />
           {f !== 1 && (
             <span
               className={`tabular rounded px-1 text-[0.7rem] font-medium ${on ? "bg-background/20" : "bg-[var(--rates-changed)] text-[var(--viz-surface)]"}`}
@@ -119,6 +121,25 @@ export function ReactionPicker({
         </div>
       )}
     </div>
+  )
+}
+
+/** "LUNA" beside a reaction measured at LUNA (the atlas' measurements, in the network file). */
+export function LunaMark({ reaction, lang, inverted = false }: { reaction: Reaction; lang: Lang; inverted?: boolean }) {
+  const luna = reaction.measured?.filter((m) => m.luna) ?? []
+  if (!luna.length) return null
+  const t = ratesDict(lang)
+  const refs = [...new Set(luna.flatMap((m) => m.refs.map((r) => r.short)))].join("; ")
+  return (
+    <abbr
+      title={t.lunaChipTitle(refs)}
+      className={`rounded-sm border px-1 font-sans text-[0.62rem] font-semibold tracking-[0.06em] no-underline ${
+        inverted ? "border-background/50 text-background" : "border-[var(--viz-series-1)] text-[var(--viz-series-1)]"
+      }`}
+    >
+      {t.lunaChip}
+      <span className="sr-only">: {t.lunaChipTitle(refs)}</span>
+    </abbr>
   )
 }
 
@@ -211,23 +232,40 @@ export function StatusLine({
 }
 
 /**
- * On a phone the results sit below the controls: this strip stays at the
- * bottom of the screen while the what-if section is in view and shows the
- * three biggest effects of the current change, or the calculation's timer.
+ * On a phone the results sit below the controls: once the reader has changed
+ * something, this strip stays at the bottom of the screen while the what-if
+ * section is in view and shows the three biggest effects of the change, or
+ * the calculation's timer. It hides while the full results (`watch`, an
+ * element id) are on screen, and before any change it is not there at all.
  */
 export function ResultStrip({
   rows,
   busy,
   href,
   lang,
+  active,
+  watch,
 }: {
   rows: ChangeRow[]
   busy: boolean
   href: string
   lang: Lang
+  /** a change has been made */
+  active: boolean
+  /** the id of the results the strip stands in for */
+  watch?: string
 }) {
   const t = ratesDict(lang)
   const s = useElapsed(busy)
+  const [covered, setCovered] = useState(false)
+  useEffect(() => {
+    const el = watch ? document.getElementById(watch) : null
+    if (!el || typeof IntersectionObserver === "undefined") return
+    const io = new IntersectionObserver((entries) => setCovered(entries[0]?.isIntersecting ?? false), { threshold: 0.15 })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [watch])
+  if (!active || covered) return null
   return (
     <div className="sticky bottom-0 z-20 -mx-5 mt-6 border-t border-border bg-background/95 px-5 py-2.5 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:-mx-8 sm:px-8 lg:hidden">
       <div className="flex items-center gap-3">

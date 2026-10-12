@@ -16,10 +16,9 @@ import {
   type Baseline,
   type SensitivityFile,
 } from "@/lib/rates/client"
-import { closes, dominantPath, integratedFlows, slowest } from "@/lib/rates/flow"
+import { bottleneck, closes, dominantPath, heaviestProduct, integratedFlows, pathStart } from "@/lib/rates/flow"
 import { ratesDict } from "@/lib/rates/i18n"
-import { networkProvider } from "@/lib/rates/rate-provider"
-import { compiled, requestKey, type RunResult } from "@/lib/rates/run"
+import { compiled, historyOf, providerFor, requestKey, type RunResult } from "@/lib/rates/run"
 import type { Network, Reaction, Scenario } from "@/lib/rates/schema"
 import { lifetimes } from "@/lib/rates/solver"
 import { ChangeBars, type ChangeRow } from "./change-bars"
@@ -40,7 +39,8 @@ import {
   shortName,
   type Conditions,
 } from "./scenario-panel"
-import { ChangesList, ReactionPicker, ResultStrip, SourceCell, StatusLine } from "./what-if"
+import { ChangesList, LunaMark, ReactionPicker, ResultStrip, SourceCell, StatusLine } from "./what-if"
+import { LunaPanel } from "./luna-panel"
 
 export interface NetworkTab {
   id: string
@@ -59,6 +59,30 @@ function unitOf(r: Reaction, t: ReturnType<typeof ratesDict>) {
   if (n === 1) return t.units1
   if (n === 2 && r.densExp === 1) return t.units2
   return t.units3
+}
+
+/**
+ * `value`, passed on at most every `ms` (the latest one always arrives), as a
+ * transition: a slider drag re-renders the controls at every input event and
+ * the results only a few times a second, each render interruptible.
+ */
+function useThrottled<T>(value: T, ms: number): T {
+  const [out, setOut] = useState(value)
+  const last = useRef(0)
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const latest = useRef(value)
+  latest.current = value
+  useEffect(() => {
+    if (Object.is(value, out) || timer.current) return
+    const wait = Math.max(0, ms - (performance.now() - last.current))
+    timer.current = setTimeout(() => {
+      timer.current = null
+      last.current = performance.now()
+      startTransition(() => setOut(latest.current))
+    }, wait)
+  }, [value, out, ms])
+  useEffect(() => () => void (timer.current && clearTimeout(timer.current)), [])
+  return useDeferredValue(out)
 }
 
 /** Three colour slots; a pick takes the first free one and keeps it. */
@@ -95,7 +119,7 @@ function parseHash(h: string) {
     const v = Number(f)
     if (id && v > 0 && v !== 1) scale[decodeURIComponent(id)] = Math.min(10, Math.max(0.1, v))
   }
-  return { net, site: params.get("site") ?? null, scale }
+  return { net, site: params.get("site") ?? null, scale, luna: params.get("luna") === "1" }
 }
 
 /** Everything the explorer shows first for a network, from its files alone (no worker). */
@@ -120,7 +144,8 @@ function initState(n: Network, baseline: Baseline | null, h: ReturnType<typeof p
     shown: fill3((n.ui.show ?? []).slice(0, 3)),
     active: Object.keys(scale)[0] ?? n.ui.key?.[0] ?? null,
     base: fresh,
-    mod: Object.keys(scale).length ? null : fresh,
+    mod: Object.keys(scale).length || h?.luna ? null : fresh,
+    luna: Boolean(h?.luna) && n.reactions.some((r) => r.alternatives?.length),
   }
 }
 
@@ -159,6 +184,13 @@ export function RatesExplorer({
   // reads this deferred copy, which React renders when it has time
   const condD = useDeferredValue(cond)
   const [scale, setScale] = useState<Record<string, number>>(init0?.scale ?? {})
+  // the rates from the site's own evaluations instead of REACLIB's (LunaPanel)
+  const [luna, setLuna] = useState(init0?.luna ?? false)
+  // a factor slider moves `scale` at every input event: what only needs the
+  // result (the burns, the waiting times, the rows of the charts) reads these
+  // deferred copies, which React renders when the drag leaves it time
+  const scaleD = useThrottled(scale, 150)
+  const lunaD = useDeferredValue(luna)
   const [mode, setMode] = useState<"absolute" | "relative">("absolute")
   const [refId, setRefId] = useState<string | null>(init0?.refId ?? null)
   const [slots, setSlots] = useState<(string | null)[]>(init0?.slots ?? [null, null, null])
@@ -198,7 +230,9 @@ export function RatesExplorer({
         if (!live) return
         const n = d.network
         const h = pending.current && pending.current.net === n.id ? pending.current : null
-        pending.current = null
+        // only the load it was meant for consumes a shared setting: the
+        // preloaded first network may resolve first and must not clear it
+        if (h) pending.current = null
         const st = initState(n, d.baseline, h)
         setData(d)
         setScenarioId(st.scenarioId)
@@ -208,6 +242,7 @@ export function RatesExplorer({
         setSlots(st.slots)
         setShown(st.shown)
         setActive(st.active)
+        setLuna(st.luna)
         setBase(st.base)
         setMod(st.mod)
         setSens(null)
@@ -220,9 +255,18 @@ export function RatesExplorer({
 
   const network = data?.network?.id === netId ? data.network : null
   const scenario = network?.scenarios.find((s) => s.id === scenarioId) ?? null
-  const provider = useMemo(() => (network ? networkProvider(network) : null), [network])
+  const altIds = useMemo(
+    () => network?.reactions.filter((r) => r.alternatives?.length).map((r) => r.id) ?? [],
+    [network],
+  )
+  const alts = useMemo(() => (lunaD ? altIds : []), [lunaD, altIds])
+  const provider = useMemo(() => (network ? providerFor(network, luna ? altIds : []) : null), [network, luna, altIds])
+  const providerD = useMemo(() => (network ? providerFor(network, alts) : null), [network, alts])
+  const providerReaclib = useMemo(() => (network ? providerFor(network) : null), [network])
   const byId = useMemo(() => new Map(network?.reactions.map((r) => [r.id, r]) ?? []), [network])
-  const changed = Object.values(scale).some((v) => v !== 1)
+  // `changed`: the controls (immediate); `changedD`: what the results show
+  const changed = Object.values(scale).some((v) => v !== 1) || luna
+  const changedD = Object.values(scaleD).some((v) => v !== 1) || lunaD
 
   // keep the address in step (replace, so the back button leaves the page)
   useEffect(() => {
@@ -231,23 +275,38 @@ export function RatesExplorer({
       .filter(([, v]) => v !== 1)
       .map(([id, v]) => `${id}:${v}`)
       .join(",")
-    const h = `#${network.id}${scenario.id !== network.scenarios[0].id ? `&site=${scenario.id}` : ""}${s ? `&s=${s}` : ""}`
+    const h = `#${network.id}${scenario.id !== network.scenarios[0].id ? `&site=${scenario.id}` : ""}${s ? `&s=${s}` : ""}${luna ? "&luna=1" : ""}`
     if (window.location.hash !== h) window.history.replaceState(null, "", h)
-  }, [network, scenario, scale])
+  }, [network, scenario, scale, luna])
 
-  // -- the burns, in the worker (debounced; a newer request supersedes) ------
+  // -- the burns, in the worker: throttled, the latest request wins ----------
+  // A drag changes the request many times a second. The first change is sent
+  // after 40 ms, later ones at most every 150 ms, each time the latest; the
+  // worker drops a queued request that a newer one supersedes, and a result
+  // that arrives after a newer request was made is not shown.
   const seq = useRef(0)
+  const latest = useRef<(() => void) | null>(null)
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const lastPost = useRef(0)
+  useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current)
+    },
+    [],
+  )
   useEffect(() => {
     if (!network || !scenario || !condD) return
     const my = ++seq.current
     const baseReq = conditionsRequest(network, scenario, condD, {})
-    const modReq = conditionsRequest(network, scenario, condD, scale)
+    const modReq = conditionsRequest(network, scenario, condD, scaleD, alts)
+    const isChanged = changedD
+    const baseline = data?.baseline
     setBusy(true)
     setRunError(null)
-    const timer = setTimeout(async () => {
+    latest.current = async () => {
       try {
-        const b = await runBurn(network, baseReq, data?.baseline)
-        const m = changed ? await runBurn(network, modReq, data?.baseline) : b
+        const b = await runBurn(network, baseReq, baseline)
+        const m = isChanged ? await runBurn(network, modReq, baseline) : b
         if (my !== seq.current) return
         // a result redraws much of the page: as a transition, React renders it
         // in slices and a drag in progress keeps the main thread
@@ -261,42 +320,55 @@ export function RatesExplorer({
         setRunError(e instanceof Error ? e.message : String(e))
         setBusy(false)
       }
-    }, 40)
-    return () => clearTimeout(timer)
+    }
+    if (timer.current === null) {
+      const since = performance.now() - lastPost.current
+      timer.current = setTimeout(
+        () => {
+          timer.current = null
+          lastPost.current = performance.now()
+          latest.current?.()
+        },
+        Math.max(40, 150 - since),
+      )
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [network, scenario, condD, scale])
+  }, [network, scenario, condD, scaleD, alts])
 
   // -- waiting times and the path of the flow at the chosen conditions ---------
+  // (at the start of the burn: for a nova, at its peak)
+  const tBurn = base?.tFinal ?? condD?.time_s ?? 0
   const life = useMemo(() => {
-    if (!network || !scenario || !condD) return null
+    if (!network || !scenario || !condD || !providerD || !providerReaclib) return null
     const c = compiled(network)
-    const opts = {
-      history: { kind: "constant" as const, T9: condD.T9, rho: condD.rho },
-      screening: condD.screening,
-    }
+    const history = { kind: "constant" as const, T9: condD.T9, rho: condD.rho }
     const X = composition(network, scenario, condD)
-    const taus = lifetimes(c, { ...opts, scale }, X)
-    const taus0 = changed ? lifetimes(c, opts, X) : taus
-    const first = network.ui.cycle?.[0]
-    const start = first ? network.reactions.find((r) => r.id === first)?.target : undefined
+    const taus = lifetimes(c, { history, screening: condD.screening, scale: scaleD, provider: providerD }, X)
+    const taus0 = changedD
+      ? lifetimes(c, { history, screening: condD.screening, provider: providerReaclib }, X)
+      : taus
+    const cycle = (network.ui.cycle ?? []).map((id) => network.reactions.findIndex((r) => r.id === id)).filter((i) => i >= 0)
+    const fuel = network.nuclei.findIndex((n) => n.name === network.ui.fuel)
+    const start = pathStart(c, taus, cycle, tBurn, fuel)
     const path = start === undefined ? [] : dominantPath(c, taus, start)
-    return { taus, taus0, path, closed: closes(c, path), slow: slowest(path) }
-  }, [network, scenario, condD, scale, changed])
+    const closed = closes(c, path)
+    const slow = bottleneck(path, taus, closed, cycle, tBurn, fuel)
+    return { taus, taus0, path, closed, slow }
+  }, [network, scenario, condD, scaleD, changedD, providerD, providerReaclib, tBurn])
 
   const flows = useMemo(() => {
-    if (!network || !condD || !mod || !base) return null
+    if (!network || !scenario || !condD || !mod || !base || !providerD || !providerReaclib) return null
     const c = compiled(network)
-    const opts = {
-      history: { kind: "constant" as const, T9: condD.T9, rho: condD.rho },
-      screening: condD.screening,
-    }
+    const opts = { history: historyOf(scenario, condD.T9, condD.rho), screening: condD.screening }
     if (mod.track || base.track) return null
     return {
-      now: integratedFlows(c, { ...opts, scale }, mod.t, mod.X),
-      base: changed ? integratedFlows(c, opts, base.t, base.X) : null,
+      now: integratedFlows(c, { ...opts, scale: scaleD, provider: providerD }, mod.t, mod.X),
+      base: changedD ? integratedFlows(c, { ...opts, provider: providerReaclib }, base.t, base.X) : null,
     }
+    // the burns' own conditions: a result arrives after the conditions that
+    // asked for it, so these must not be read from an older render
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [network, mod, base])
+  }, [network, mod, base, scenario, condD])
 
   useEffect(() => {
     if (!sensOpen || !network) return
@@ -317,7 +389,7 @@ export function RatesExplorer({
     const stepIds = allSteps
       ? network.reactions.map((r) => r.id)
       : [...new Set([...pathIds, ...(network.ui.cycle ?? []), ...keyIds])]
-    const slowId = life.slow ? network.reactions[life.slow.reaction].id : null
+    const slowId = life.slow.step ? network.reactions[life.slow.step.reaction].id : null
     const lifeRows: LifeRow[] = stepIds
       .map((id) => network.reactions.findIndex((r) => r.id === id))
       .filter((i) => i >= 0)
@@ -328,16 +400,20 @@ export function RatesExplorer({
           label: r.label,
           target: nucleus(r.target).label,
           tau: life.taus[i],
-          ...(changed && life.taus0[i] !== life.taus[i] ? { tau0: life.taus0[i] } : {}),
+          ...(changedD && life.taus0[i] !== life.taus[i] ? { tau0: life.taus0[i] } : {}),
           atlas: r.atlas,
           bottleneck: r.id === slowId,
           slot: slots.indexOf(r.id),
-          scaled: scale[r.id],
+          scaled: scaleD[r.id],
         }
       })
     const pathText = life.path.map((p) => nucleus(p.nucleus).label).join(" → ")
+    // where an open path ends (⁴He for the pp chain)
+    const last = life.path[life.path.length - 1]
+    const endIdx = !life.closed && last ? heaviestProduct(compiled(network), last.reaction) : undefined
+    const pathEnd = endIdx !== undefined ? nucleus(endIdx).label : null
     const changes: ChangeRow[] = []
-    if (base && mod && changed) {
+    if (base && mod && changedD) {
       network.nuclei.forEach((n, i) => {
         const a = base.final[i]
         const b = mod.final[i]
@@ -360,12 +436,12 @@ export function RatesExplorer({
           slot,
           t: mod.t,
           X: mod.X.map((x) => x[i]),
-          ...(changed && base ? { baseT: base.t, baseX: base.X.map((x) => x[i]) } : {}),
+          ...(changedD && base ? { baseT: base.t, baseX: base.X.map((x) => x[i]) } : {}),
         })
       })
     }
-    return { lifeRows, pathText, changes, evo }
-  }, [network, life, allSteps, slots, scale, changed, base, mod, shown])
+    return { lifeRows, pathText, pathEnd, changes, evo }
+  }, [network, life, allSteps, slots, scaleD, changedD, base, mod, shown])
   const lifeRefs = useMemo(
     () => [
       { t: mod?.tFinal ?? condD?.time_s ?? 0, label: t.burnRef },
@@ -374,6 +450,33 @@ export function RatesExplorer({
     [mod, condD, t],
   )
   const waits = useCallback((n: string) => L(t.waits(n)), [L, t])
+
+  // the rate chart's inputs, stable between renders so its memo holds while
+  // a factor slider moves (only the deferred scale reaches it)
+  const keyIdsAll = network?.ui.key
+  const ratesShown = useMemo(() => {
+    if (!network) return []
+    const keyIds = keyIdsAll ?? []
+    const picked = slots.filter((x): x is string => x !== null)
+    const plotted = network.reactions.filter(isTwoBody)
+    return allRates
+      ? plotted
+      : plotted.filter((r) => keyIds.includes(r.id) || picked.includes(r.id) || (scaleD[r.id] ?? 1) !== 1)
+  }, [network, keyIdsAll, slots, allRates, scaleD])
+  const handleRange = useMemo<[number, number]>(() => {
+    const sT = network?.scenarios.map((x) => x.T9) ?? [0.01, 1]
+    return [Math.max(0.003, Math.min(...sT) / 2.5), Math.min(10, Math.max(...sT) * 4)]
+  }, [network])
+  const markers = useMemo<Marker[]>(() => {
+    if (!network || !cond) return []
+    const out: Marker[] = network.scenarios.map((x) => ({ T9: x.T9, label: shortName(x, lang) }))
+    out.push({ T9: cond.T9, label: t.now, current: true })
+    return out
+  }, [network, cond, lang, t])
+  const setT = useCallback(
+    (T9: number) => setCond((c) => (c ? { ...c, T9: Math.min(handleRange[1], Math.max(handleRange[0], T9)) } : c)),
+    [handleRange],
+  )
 
   if (error) return <p className="text-sm text-destructive">{error}</p>
   if (!network || !scenario || !cond || !provider || !life || !derived) {
@@ -384,7 +487,7 @@ export function RatesExplorer({
     )
   }
 
-  const { lifeRows, pathText, changes, evo } = derived
+  const { lifeRows, pathText, pathEnd, changes, evo } = derived
   const sName = (s: Scenario) => (it ? s.name_it : s.name)
   const custom = !sameConditions(cond, fromScenario(scenario))
 
@@ -392,20 +495,9 @@ export function RatesExplorer({
   const plotted = network.reactions.filter(isTwoBody)
   const keyIds = network.ui.key ?? []
   const picked = slots.filter((s): s is string => s !== null)
-  const ratesShown = allRates
-    ? plotted
-    : plotted.filter((r) => keyIds.includes(r.id) || picked.includes(r.id) || (scale[r.id] ?? 1) !== 1)
   const reference = (refId && byId.get(refId)) || null
-  const sT = network.scenarios.map((s) => s.T9)
-  const T9range = rangeOf(Math.min(Math.max(0.003, Math.min(...sT) / 2.5), cond.T9), Math.max(Math.min(10, Math.max(...sT) * 4), cond.T9))
-  const handleRange: [number, number] = [Math.max(0.003, Math.min(...sT) / 2.5), Math.min(10, Math.max(...sT) * 4)]
-  const markers: Marker[] = network.scenarios.map((s) => ({
-    T9: s.T9,
-    label: shortName(s, lang),
-  }))
-  markers.push({ T9: cond.T9, label: t.now, current: true })
+  const T9range = rangeOf(Math.min(handleRange[0], cond.T9), Math.max(handleRange[1], cond.T9))
   const full = picked.length >= 3
-  const setT = (T9: number) => setCond({ ...cond, T9: Math.min(handleRange[1], Math.max(handleRange[0], T9)) })
   const gamowReaction = picked.map((id) => byId.get(id)!).find((r) => r && gamowEnergy(network, r) !== null) ?? null
 
   const runTime = mod ? duration(mod.tFinal, lang) : ""
@@ -458,7 +550,7 @@ export function RatesExplorer({
           network: network.id,
           provenance: network.provenance,
           scenario: scenario.id,
-          request: conditionsRequest(network, scenario, cond, scale),
+          request: conditionsRequest(network, scenario, cond, scale, luna ? altIds : []),
           nuclei: network.nuclei.map((n) => n.name),
           unchanged: base,
           changed: mod,
@@ -469,8 +561,11 @@ export function RatesExplorer({
     )}`
 
   const tabBar = (
-    <nav aria-label={t.networks} className="-mx-3 overflow-x-auto px-3 [scrollbar-width:none] sm:mx-0 sm:px-0">
-      <ul className="flex w-max gap-1.5 sm:w-auto sm:flex-wrap">
+    <nav
+      aria-label={t.networks}
+      className="relative -mx-3 overflow-x-auto px-3 [mask-image:linear-gradient(to_right,#000_85%,transparent)] [scrollbar-width:none] sm:mx-0 sm:px-0 sm:[mask-image:none]"
+    >
+      <ul className="flex w-max gap-1.5 pr-10 sm:w-auto sm:flex-wrap sm:pr-0">
         {tabs.map((tab) => (
           <li key={tab.id}>
             <a
@@ -502,23 +597,39 @@ export function RatesExplorer({
   )
 
   const sensTable = sens?.scenarios[scenario.id] ?? null
+  const slowR = life.slow.step ? network.reactions[life.slow.step.reaction] : null
+  const idleList = life.slow.idle
+    .map((p) => `${network.reactions[p.reaction].label} (${duration(life.taus[p.reaction], lang)})`)
+    .join(", ")
   const headline =
-    life.slow && Number.isFinite(life.slow.tau) ? (
-      <p className="max-w-[52rem] text-pretty leading-relaxed sm:text-[1.0625rem]">
-        <span className="mr-2 rounded bg-foreground px-1.5 py-0.5 text-xs font-medium uppercase tracking-[0.1em] text-background">
-          {t.headlineShort}
-        </span>
-        <Sci>
-          {L(t.headline(sName(scenario), network.reactions[life.slow.reaction].label, duration(life.slow.tau, lang)))}
-        </Sci>{" "}
-        <a
-          href="#what-if"
-          onClick={() => setActive(network.reactions[life.slow!.reaction].id)}
-          className="text-link underline-offset-4 hover:underline"
-        >
-          {t.tryIt} ↓
-        </a>
-      </p>
+    slowR && Number.isFinite(life.slow.tau) ? (
+      <div className="max-w-[52rem] space-y-1">
+        <p className="text-pretty leading-relaxed sm:text-[1.0625rem]">
+          <span className="mr-2 rounded bg-foreground px-1.5 py-0.5 text-xs font-medium uppercase tracking-[0.1em] text-background">
+            {t.headlineShort}
+          </span>
+          <Sci>{L(t.headline(sName(scenario), slowR.label, duration(life.slow.tau, lang), life.closed))}</Sci>{" "}
+          <a
+            href="#what-if"
+            onClick={() => setActive(slowR.id)}
+            className="text-link underline-offset-4 hover:underline"
+          >
+            {t.tryIt} ↓
+          </a>
+        </p>
+        {(idleList || life.slow.leak.length > 0) && (
+          <p className="text-pretty text-sm text-muted-foreground">
+            <Sci>
+              {[
+                idleList ? L(t.headlineIdle(idleList)) : "",
+                life.slow.leak.length ? L(t.headlineLeak(network.reactions[life.slow.leak[0].reaction].label)) : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+            </Sci>
+          </p>
+        )}
+      </div>
     ) : null
 
   return (
@@ -538,7 +649,7 @@ export function RatesExplorer({
           tabs={tabBar}
         />
 
-        {headline && <div className="hidden sm:block">{headline}</div>}
+        {headline}
 
         <section id="rates-vs-temperature" aria-labelledby="rates-vs-temperature-title" className="scroll-mt-24">
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
@@ -587,7 +698,7 @@ export function RatesExplorer({
                   reactions={ratesShown}
                   slots={slots}
                   provider={provider}
-                  scale={scale}
+                  scale={scaleD}
                   mode={mode}
                   reference={reference}
                   T9range={T9range}
@@ -611,7 +722,11 @@ export function RatesExplorer({
                 />
               </div>
               <p className="mt-2 text-xs text-muted-foreground">{t.scrubHint}</p>
-              {headline && <div className="mt-4 sm:hidden">{headline}</div>}
+              {t.notation[network.id] && (
+                <p className="mt-1 max-w-[46rem] text-pretty text-xs text-muted-foreground">
+                  <Sci>{t.notation[network.id]}</Sci>
+                </p>
+              )}
             </div>
 
             <aside className="min-w-0 space-y-5 lg:pt-12">
@@ -640,6 +755,7 @@ export function RatesExplorer({
                           <span className="min-w-0 flex-1">
                             <Sci>{r.label}</Sci>
                           </span>
+                          <LunaMark reaction={r} lang={lang} />
                           <span className="tabular hidden text-muted-foreground lg:inline">
                             <Sci>{sci(v, lang, 2)}</Sci>
                           </span>
@@ -670,10 +786,7 @@ export function RatesExplorer({
               </div>
             </aside>
           </div>
-          <div className="mt-4 max-w-[46rem] space-y-1.5 text-sm text-muted-foreground">
-            <p className="text-pretty">
-              <Sci>{t.notation}</Sci>
-            </p>
+          <div className="mt-4 max-w-[46rem] text-muted-foreground">
             <p className="text-pretty text-xs">
               <Sci>{t.decaysNote}</Sci>
             </p>
@@ -710,7 +823,18 @@ export function RatesExplorer({
               refs={lifeRefs}
             />
             <p className="mt-3 max-w-[46rem] text-pretty text-xs text-muted-foreground">
-              <Sci>{`${pathText ? `${t.pathNote(pathText)} ` : ""}${t.lifeFine}`}</Sci>
+              <Sci>
+                {[
+                  pathText ? (pathEnd ? t.pathEnd(pathText, pathEnd) : t.pathNote(pathText)) : "",
+                  network.id === "pp" ? t.pathPp : "",
+                  t.lifeFine,
+                  network.id === "pp" || (network.id === "mgal" && scenario.id === "massive-25")
+                    ? (t.lifeFineNet[network.id] ?? "")
+                    : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+              </Sci>
             </p>
           </div>
           {life.path.length > 1 && (
@@ -729,13 +853,13 @@ export function RatesExplorer({
                     closed={life.closed}
                     flows={flows?.now ?? null}
                     flowsBase={flows?.base ?? null}
-                    slowest={life.slow?.reaction ?? null}
+                    slowest={life.slow.step?.reaction ?? null}
                     label={t.ringLabel(pathText)}
                     slowestWord={t.ringSlowest}
                   />
                 </div>
               </div>
-              {changed && <p className="mt-2 text-xs text-muted-foreground">{t.ringChangedKey}</p>}
+              {changedD && <p className="mt-2 text-xs text-muted-foreground">{t.ringChangedKey}</p>}
             </div>
           )}
         </div>
@@ -755,6 +879,18 @@ export function RatesExplorer({
               lang={lang}
             />
             <ChangesList scale={scale} byId={byId} setFactor={setFactor} reset={() => setScale({})} lang={lang} />
+            {altIds.length > 0 && (
+              <LunaPanel
+                network={network}
+                ids={altIds}
+                on={luna}
+                setOn={setLuna}
+                T9={cond.T9}
+                X={mod && lunaD ? mod.final : null}
+                Xbase={base?.final ?? null}
+                lang={lang}
+              />
+            )}
           </div>
 
           <div id="what-if-results" className="relative min-w-0 scroll-mt-24 space-y-8">
@@ -766,17 +902,17 @@ export function RatesExplorer({
                 mod ? (
                   <span>
                     {mod.stopped === "until" ? L(t.stoppedUntil(fuelLabel, runTime)) : t.stoppedTime(runTime)}{" "}
-                    {changed || custom ? t.calculated(mod.ms, mod.steps) : t.precomputed}
+                    {changedD || custom ? t.calculated(mod.ms, mod.steps) : t.precomputed}
                   </span>
                 ) : null
               }
             />
             <div className={`space-y-8 transition-opacity motion-reduce:transition-none ${busy ? "opacity-55" : ""}`}>
-              <div className="relative rounded-lg border border-border bg-card p-3 sm:p-4">
+              <div id="what-changes" className="relative rounded-lg border border-border bg-card p-3 sm:p-4">
                 <BusyLine busy={busy} />
                 <h3 className="font-serif text-lg font-semibold tracking-tight">{t.changedTitle}</h3>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {t.changedLead(runTime, changed ? baseTime : undefined)}
+                  {t.changedLead(runTime, changedD ? baseTime : undefined)}
                 </p>
                 <div className="mt-3">
                   {changes.length ? (
@@ -809,7 +945,7 @@ export function RatesExplorer({
                 <h3 className="font-serif text-lg font-semibold tracking-tight">{t.evolutionTitle}</h3>
                 <p className="mt-1 text-sm text-muted-foreground">
                   {t.evolutionLead}
-                  {changed && ` ${t.evolutionChanged}`}
+                  {changedD && ` ${t.evolutionChanged}`}
                 </p>
                 <div
                   className="mt-3 rounded-lg border border-border p-2 sm:p-3"
@@ -884,7 +1020,14 @@ export function RatesExplorer({
             </div>
           )}
         </div>
-        <ResultStrip rows={changes} busy={busy} href="#what-if-results" lang={lang} />
+        <ResultStrip
+          rows={changes}
+          busy={busy}
+          href="#what-if-results"
+          lang={lang}
+          active={changed}
+          watch="what-changes"
+        />
       </Figure>
 
       {/* -- for specialists ------------------------------------------------------------- */}
@@ -900,6 +1043,9 @@ export function RatesExplorer({
                   <Sci>{network.ui.notes[lang]}</Sci>
                 </>
               )}
+            </p>
+            <p className="text-pretty leading-relaxed text-muted-foreground">
+              <Sci>{t.builtBy}</Sci> <Sci>{t.gamowResonances}</Sci>
             </p>
             <ul className="space-y-1.5 font-mono text-[0.8rem] leading-relaxed">
               <li>
@@ -951,7 +1097,11 @@ export function RatesExplorer({
                         <span className="block font-mono text-[0.7rem] text-muted-foreground">{r.id}</span>
                       </td>
                       <td className="px-3 py-1.5 font-mono">
-                        {r.rate.kind === "reaclib" ? r.rate.sets.map((s) => `${s.set}${s.flag}`).join(" ") : "table"}
+                        {luna && altIds.includes(r.id)
+                          ? "AZURE2 (LUNA)"
+                          : r.rate.kind === "reaclib"
+                            ? r.rate.sets.map((s) => `${s.set}${s.flag}`).join(" ")
+                            : "table"}
                       </td>
                       <td className="tabular px-3 py-1.5 text-right">{dec(r.Q_MeV.toFixed(3), lang)}</td>
                       <td className="tabular px-3 py-1.5 text-right">
