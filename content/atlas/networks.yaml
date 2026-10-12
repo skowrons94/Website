@@ -67,6 +67,20 @@ families:
       l'elio non si accende. Tre nuclei di elio formano il carbonio, e il carbonio
       cattura elio per formare l'ossigeno: il rapporto tra i due decide gran parte
       di ciò che segue.
+  - id: carbon
+    name: Carbon burning
+    name_it: La combustione del carbonio
+    summary: >-
+      After helium burning, the core of a star of more than about eight solar
+      masses is made of carbon and oxygen. It contracts and heats until two
+      carbon nuclei fuse, making neon, sodium and magnesium. The same fusion
+      ignites type Ia supernovae and the X-ray superbursts of neutron stars.
+    summary_it: >-
+      Dopo la combustione dell'elio, il nucleo di una stella di più di circa
+      otto masse solari è fatto di carbonio e ossigeno. Si contrae e si scalda
+      finché due nuclei di carbonio non si fondono, producendo neon, sodio e
+      magnesio. La stessa fusione innesca le supernovae di tipo Ia e i
+      superburst X delle stelle di neutroni.
   - id: neutrons
     name: Neutron sources
     name_it: Le sorgenti di neutroni
@@ -266,6 +280,29 @@ networks:
     temperatures:
       - { label: core helium burning, label_it: "combustione centrale dell'elio", T9: 0.2 }
     reactions: [4He-aa-12C, 12C-ag-16O, 16O-ag-20Ne, 14N-ag-18F, 18F-bp-18O, 18O-ag-22Ne]
+
+  # Carbon burning: core temperature of a 15 M☉ star from the burning-stage
+  # table of Woosley, Heger and Weaver (2002, Rev. Mod. Phys. 74, 1015;
+  # T = 0.83 GK). The protons of the p channel are captured by the ashes,
+  # among them ²³Na (textbook carbon burning, e.g. Iliadis, Nuclear Physics of
+  # Stars, 2nd ed. 2015), so the two ²³Na + p reactions of the NeNa cycle are
+  # listed here as well.
+  - id: carbon-burning
+    family: carbon
+    name: Carbon burning
+    name_it: Combustione del carbonio
+    summary: >-
+      Two ¹²C nuclei fuse into an excited ²⁴Mg, which breaks up into ²⁰Ne and
+      an alpha particle or into ²³Na and a proton; rarely, above 2.6 MeV, into
+      ²³Mg and a neutron. Protons captured on ²³Na give ²⁰Ne or ²⁴Mg.
+    summary_it: >-
+      Due nuclei di ¹²C si fondono in un ²⁴Mg eccitato, che si spezza in ²⁰Ne e
+      una particella alfa oppure in ²³Na e un protone; raramente, sopra
+      2,6 MeV, in ²³Mg e un neutrone. I protoni catturati dal ²³Na danno ²⁰Ne
+      o ²⁴Mg.
+    temperatures:
+      - { label: "core carbon burning, 15 M☉ star", label_it: "combustione centrale del carbonio, stella di 15 M☉", T9: 0.83 }
+    reactions: [12C-12Ca-20Ne, 12C-12Cp-23Na, 12C-12Cn-23Mg, 23Na-pa-20Ne, 23Na-pg-24Mg]
 
   - id: neutron-sources
     family: neutrons

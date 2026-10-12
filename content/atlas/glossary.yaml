@@ -493,3 +493,38 @@ terms:
       prodotti dà la sezione d'urto. DRAGON a TRIUMF, ERNA e St. George ne sono
       esempi.
     see: [inverse-kinematics]
+
+  - id: fusion-hindrance
+    term: Fusion hindrance
+    term_it: Soppressione della fusione
+    text: >-
+      A fall of the fusion probability of two heavy nuclei, at energies far
+      below the Coulomb barrier, faster than the usual models predict. If it
+      happens for two carbon nuclei, the S-factor reaches a maximum and then
+      drops towards stellar energies, and carbon burns more slowly than the
+      standard rate says. Whether it does is still debated.
+    text_it: >-
+      Una diminuzione della probabilità di fusione di due nuclei pesanti, a
+      energie molto sotto la barriera coulombiana, più rapida di quanto
+      prevedono i modelli usuali. Se avviene per due nuclei di carbonio, il
+      fattore S raggiunge un massimo e poi cala verso le energie stellari, e il
+      carbonio brucia più lentamente di quanto dica il tasso standard. Se
+      avvenga davvero è ancora discusso.
+    see: [s-factor]
+
+  - id: superburst
+    term: Superburst
+    term_it: Superburst
+    text: >-
+      A rare, very long X-ray burst from a neutron star that pulls matter
+      from a companion star. Ordinary X-ray bursts, from helium and hydrogen
+      burning near the surface, last seconds to minutes; superbursts last
+      hours and are thought to start when carbon ignites deeper down, in the
+      ashes of earlier bursts.
+    text_it: >-
+      Un lampo X raro e molto lungo emesso da una stella di neutroni che
+      sottrae materia a una stella compagna. I lampi X ordinari, dovuti alla
+      combustione di elio e idrogeno vicino alla superficie, durano da secondi
+      a minuti; i superburst durano ore e si pensa che comincino quando il
+      carbonio si accende più in profondità, nelle ceneri dei lampi
+      precedenti.

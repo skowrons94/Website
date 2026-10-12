@@ -1,0 +1,161 @@
+id: 12C-12Ca-20Ne
+label: ¹²C(¹²C,α)²⁰Ne
+kind: fusion
+target: 12C
+projectile: 12C
+ejectile: 4He
+product: 20Ne
+networks: [carbon-burning]
+importance: key
+summary: >-
+  Two carbon nuclei fuse, and the compound nucleus breaks up into neon-20 and
+  a helium nucleus. This is the main way carbon burns in stars.
+summary_it: >-
+  Due nuclei di carbonio si fondono, e il nucleo composto si spezza in
+  neon-20 e un nucleo di elio. È il modo principale in cui il carbonio brucia
+  nelle stelle.
+role: >-
+  When a star of more than about eight solar masses has used up its helium,
+  its core is mostly carbon and oxygen. The core contracts and heats until
+  carbon nuclei collide hard enough to fuse. Each fusion makes a highly
+  excited magnesium-24, which at once falls apart, most often into neon-20
+  and an alpha particle or into sodium-23 and a proton. The neon left by this
+  branch is the fuel of the next stage, neon burning. How fast carbon fuses
+  decides how long carbon burning lasts, how hot it must be, and so the inner
+  structure of the star before it explodes. The same reaction starts the
+  explosion of a white dwarf in a type Ia supernova and the rare, long X-ray
+  flashes called superbursts on neutron stars. Its rate at stellar energies
+  is still uncertain: experiments disagree by large factors.
+role_it: >-
+  Quando una stella di più di circa otto masse solari ha esaurito l'elio, il
+  suo nucleo è fatto soprattutto di carbonio e ossigeno. Il nucleo si contrae
+  e si scalda finché i nuclei di carbonio non si urtano abbastanza forte da
+  fondersi. Ogni fusione produce un magnesio-24 molto eccitato, che si spezza
+  subito, il più delle volte in neon-20 e una particella alfa oppure in
+  sodio-23 e un protone. Il neon lasciato da questo ramo è il combustibile
+  della fase successiva, la combustione del neon. La velocità con cui il
+  carbonio si fonde decide quanto dura la combustione del carbonio, quanto
+  deve essere calda, e quindi la struttura interna della stella prima che
+  esploda. La stessa reazione innesca l'esplosione di una nana bianca in una
+  supernova di tipo Ia e i rari e lunghi lampi X chiamati superburst sulle
+  stelle di neutroni. Il suo tasso alle energie stellari è ancora incerto:
+  gli esperimenti non concordano, con differenze di fattori grandi.
+details: >-
+  ¹²C + ¹²C forms ²⁴Mg at an excitation energy of about 13.9 MeV plus the
+  centre-of-mass energy, which decays mainly by α emission to ²⁰Ne and by
+  proton emission to ²³Na; the neutron channel to ²³Mg is closed below
+  2.6 MeV. The Gamow window for core carbon burning lies near 1.5–2.5 MeV.
+  Unlike most heavy-ion systems, the excitation function shows pronounced
+  resonant structure down to the lowest measured energies, which makes any
+  extrapolation from the data uncertain (Spillane et al. 2007; Zickefoose et
+  al. 2018).
+
+
+  Below the data, two descriptions of the non-resonant trend compete. The
+  fusion-hindrance model (Jiang et al. 2007) predicts that the S-factor
+  passes through a maximum and falls at deep sub-barrier energies; the rates
+  of Jiang et al. (2018) and Monpribat et al. (2022) are built on it, as
+  alternatives to the standard rate of Caughlan and Fowler (1988).
+  The particle–γ coincidence measurements at Orsay (STELLA, Fruet et al.
+  2020; Nippert et al. 2025) and at Notre Dame (Tan et al. 2020) remove
+  most of the background from hydrogen and deuterium in the target that
+  limited earlier singles measurements; the STELLA data support the
+  hindrance trend. A refit of the same data sets with a free exponent in the
+  logarithmic-slope parametrisation finds no hindrance (Uzawa and Hagino
+  2025), so the question remains open.
+
+
+  The Trojan Horse measurement of Tumino et al. (2018), through
+  ¹²C(¹⁴N,α²⁰Ne)²H and ¹²C(¹⁴N,p²³Na)²H in quasi-free kinematics, reported
+  resonances between 0.8 and 2.7 MeV that raise the rate by more than a
+  factor of 25 near 0.5 GK. Mukhamedzhanov et al. (2019) argued that the
+  rise is an artefact of the plane-wave approximation used in the analysis
+  and disappears when Coulomb–nuclear distortions are included; the direct
+  coincidence data of Tan et al. (2020) disagree strongly with the Trojan
+  Horse result. LUNA is preparing a direct measurement of the γ rays from
+  the α and p channels at the underground Bellotti Ion Beam Facility, with an
+  HPGe detector inside an active NaI(Tl) veto (Gesuè et al. 2025).
+status: uncertain
+status_note: >-
+  Direct measurements reach only the upper part of the energies at which
+  carbon burns in massive stars, and the measured cross section is full of
+  resonances. The
+  ways of extending it downwards, and an indirect measurement that reaches
+  those energies, disagree by orders of magnitude.
+status_note_it: >-
+  Le misure dirette arrivano solo alla parte più alta delle energie a cui il
+  carbonio brucia nelle stelle massicce, e la sezione d'urto misurata è piena
+  di risonanze. I
+  modi di prolungarla verso il basso, e una misura indiretta che raggiunge
+  quelle energie, differiscono di ordini di grandezza.
+methods: [direct-surface, thm, theory]
+measurements:
+  - year: 1969
+    method: direct-surface
+    energy: "down to E ≈ 2.5 MeV"
+    energy_it: "fino a E ≈ 2,5 MeV"
+    note: >-
+      Early measurements of the α and p channels, by charged-particle or
+      γ-ray spectroscopy (High and Čujec recorded the γ rays at 90° and
+      270°); together they covered the cross section down to about
+      2.5 MeV.
+    refs: [patterson1969, mazarakis1973, high1977, spillane2007]
+  - year: 2007
+    facility: bochum
+    method: direct-surface
+    energy: "E = 2.10–4.75 MeV"
+    note: >-
+      γ-ray spectroscopy with thick carbon targets whose hydrogen
+      contamination was made very low. A strong resonance at 2.14 MeV, on
+      the high-energy tail of the Gamow peak, raises the α-channel rate by
+      about a factor of five near 0.8 GK.
+    refs: [spillane2007]
+  - year: 2018
+    facility: lns-catania
+    method: thm
+    energy: "E = 0.8–2.7 MeV, from ¹²C(¹⁴N,α²⁰Ne)²H"
+    energy_it: "E = 0,8–2,7 MeV, da ¹²C(¹⁴N,α²⁰Ne)²H"
+    note: >-
+      Several resonances across the Gamow window; the combined α and p rate
+      is more than 25 times the reference rate near 0.5 GK. The analysis was
+      disputed by Mukhamedzhanov et al. (2019), who found that the rise
+      disappears once Coulomb–nuclear distortions are included.
+    refs: [tumino2018, mukhamedzhanov2019]
+  - year: 2020
+    facility: andromede
+    method: direct-surface
+    energy: "into the Gamow window of massive stars"
+    energy_it: "fino alla finestra di Gamow delle stelle massicce"
+    note: >-
+      STELLA: particle–γ coincidences between the silicon array and LaBr₃
+      detectors, with a rotating target, remove the ambiguities of γ-only or
+      particle-only measurements. The data span more than eight orders of
+      magnitude and support the fusion-hindrance model.
+    refs: [fruet2020, heine2018]
+  - year: 2020
+    facility: notre-dame
+    method: direct-surface
+    energy: "thick-target yield in 50 keV steps"
+    energy_it: "resa su bersaglio spesso a passi di 50 keV"
+    note: >-
+      Particle–γ coincidences with the SAND silicon array at the 5U
+      Pelletron on highly ordered pyrolytic graphite targets. The results
+      disagree strongly with the Trojan Horse measurement.
+    refs: [tan2020]
+  - year: 2025
+    facility: andromede
+    method: direct-surface
+    energy: "E ≈ 2.2–2.6 MeV"
+    note: >-
+      Refined STELLA excitation function near its lowest coincidence
+      points: a lower average S-factor than standard extrapolations, and no
+      confirmation of an overall rise of the S-factor at deep sub-barrier
+      energies.
+    refs: [nippert2025]
+evaluations: [caughlan1988, jiang2018, monpribat2022]
+refs: [jiang2007, uzawa2025, gesue2025]
+open_questions:
+  - Whether the S-factor falls at deep sub-barrier energies (fusion hindrance) or keeps rising; the answer depends on fitting choices and on which of the many data sets are used.
+  - Whether resonances below 2 MeV exist and how strong they are, as the Trojan Horse analysis suggests and its critics dispute.
+  - Direct data below 2.1 MeV, the aim of the underground LUNA campaign.
+related: [12C-12Cp-23Na, 12C-12Cn-23Mg, 12C-ag-16O, 23Na-pa-20Ne]

@@ -1,0 +1,140 @@
+id: 12C-12Cp-23Na
+label: ¹²C(¹²C,p)²³Na
+kind: fusion
+target: 12C
+projectile: 12C
+ejectile: 1H
+product: 23Na
+networks: [carbon-burning]
+importance: key
+summary: >-
+  Two carbon nuclei fuse, and the compound nucleus breaks up into sodium-23
+  and a proton. Together with the branch to neon-20, it is how carbon burns
+  in stars.
+summary_it: >-
+  Due nuclei di carbonio si fondono, e il nucleo composto si spezza in
+  sodio-23 e un protone. Insieme al ramo verso il neon-20, è il modo in cui
+  il carbonio brucia nelle stelle.
+role: >-
+  Carbon fusion has two main outcomes: neon-20 with an alpha particle, and
+  sodium-23 with a proton. This branch makes sodium. The protons it frees do
+  not survive long in the hot core: they are captured by the nuclei around
+  them, and on sodium-23 they make neon-20 or magnesium-24. The
+  balance between the two branches, and how fast carbon fuses at all, sets
+  how much sodium and neon a massive star leaves behind. Measuring the
+  reaction at the energies of a stellar core is very hard, and the results
+  of different methods still disagree by large factors.
+role_it: >-
+  La fusione del carbonio ha due esiti principali: neon-20 con una
+  particella alfa, e sodio-23 con un protone. Questo ramo produce sodio. I
+  protoni che libera non sopravvivono a lungo nel nucleo caldo della stella:
+  vengono catturati dai nuclei vicini, e sul sodio-23 producono neon-20 o
+  magnesio-24. L'equilibrio tra i due rami, e la velocità con cui il
+  carbonio si fonde, fissano quanto sodio e quanto neon lascia una stella
+  massiccia. Misurare la reazione alle energie del nucleo di una stella è
+  molto difficile, e i risultati dei diversi metodi non concordano ancora,
+  con differenze di fattori grandi.
+details: >-
+  The proton channel (Q = 2.24 MeV) is measured either by detecting the
+  protons, whose spectrum resolves the ²³Na final states, or through the γ
+  rays of ²³Na, mainly the 440 keV line from its first excited state, which
+  cannot see the decays that feed the ground state directly. Hydrogen and deuterium in the carbon target
+  produce a beam-induced background that dominates singles measurements at
+  the lowest energies (Zickefoose et al. 2018). Particle–γ coincidences
+  (Fruet et al. 2020; Tan et al. 2020; Nippert et al. 2025) select the
+  protons in coincidence with the de-excitation γ rays and suppress this
+  background, at the cost of the ground-state branch, which must be
+  inferred.
+
+
+  The excitation function shows resonances down to about 2.1 MeV
+  (Spillane et al. 2007; Zickefoose et al. 2018). Below the data the same
+  questions apply as for the α channel: fusion hindrance or a rising
+  S-factor, and the disputed Trojan Horse resonances (Tumino et al. 2018;
+  Mukhamedzhanov et al. 2019). The p channel also serves as the mirror
+  reference for extrapolating the n channel, ¹²C(¹²C,n)²³Mg (Bucher et al.
+  2015). LUNA is preparing a direct measurement of the γ rays of the p and
+  α channels below 2.1 MeV at the underground Bellotti Ion Beam Facility,
+  with an HPGe detector inside an active NaI(Tl) veto (Gesuè et al. 2025).
+status: uncertain
+status_note: >-
+  The measured cross section is full of resonances, direct data reach only
+  the upper part of the energies that matter in stars, and the ways of
+  extending them downwards disagree by orders of magnitude.
+status_note_it: >-
+  La sezione d'urto misurata è piena di risonanze, i dati diretti arrivano
+  solo alla parte più alta delle energie che contano nelle stelle, e i modi
+  di prolungarli verso il basso differiscono di ordini di grandezza.
+methods: [direct-surface, thm, theory]
+measurements:
+  - year: 1969
+    method: direct-surface
+    energy: "down to E ≈ 2.5 MeV"
+    energy_it: "fino a E ≈ 2,5 MeV"
+    note: >-
+      Early measurements of the α and p channels by charged-particle or
+      γ-ray spectroscopy; together they covered the cross section down to
+      about 2.5 MeV.
+    refs: [patterson1969, mazarakis1973, high1977, spillane2007]
+  - year: 2007
+    facility: bochum
+    method: direct-surface
+    energy: "E = 2.10–4.75 MeV"
+    note: >-
+      γ-ray spectroscopy of both channels on targets with very low hydrogen
+      contamination; new resonances at and below 3 MeV, the strongest at
+      2.14 MeV.
+    refs: [spillane2007]
+  - year: 2018
+    method: direct-surface
+    energy: "E = 2.00–4.00 MeV"
+    note: >-
+      Proton spectroscopy: broad resonances above 3.00 MeV, and data
+      compatible with the resonance structure near 2.1 MeV. The low-energy
+      points are limited by count rate and possible background from hydrogen
+      in the target; the authors judge any extrapolation highly uncertain.
+    refs: [zickefoose2018]
+  - year: 2018
+    facility: lns-catania
+    method: thm
+    energy: "E = 0.8–2.7 MeV, from ¹²C(¹⁴N,p²³Na)²H"
+    energy_it: "E = 0,8–2,7 MeV, da ¹²C(¹⁴N,p²³Na)²H"
+    note: >-
+      Several resonances across the Gamow window and a combined rate more
+      than 25 times the reference rate near 0.5 GK; disputed by
+      Mukhamedzhanov et al. (2019).
+    refs: [tumino2018, mukhamedzhanov2019]
+  - year: 2020
+    facility: andromede
+    method: direct-surface
+    energy: "into the Gamow window of massive stars"
+    energy_it: "fino alla finestra di Gamow delle stelle massicce"
+    note: >-
+      STELLA particle–γ coincidences; the data support the fusion-hindrance
+      model.
+    refs: [fruet2020, heine2018]
+  - year: 2020
+    facility: notre-dame
+    method: direct-surface
+    energy: "thick-target yield in 50 keV steps"
+    energy_it: "resa su bersaglio spesso a passi di 50 keV"
+    note: >-
+      SAND particle–γ coincidences; strong disagreement with the Trojan
+      Horse result.
+    refs: [tan2020]
+  - year: 2025
+    facility: andromede
+    method: direct-surface
+    energy: "E ≈ 2.2–2.6 MeV"
+    note: >-
+      Refined STELLA excitation function: a lower average S-factor than
+      standard extrapolations, and a low proton-to-α branching ratio at
+      3.23 MeV.
+    refs: [nippert2025]
+evaluations: [caughlan1988, jiang2018, monpribat2022]
+refs: [jiang2007, uzawa2025, gesue2025]
+open_questions:
+  - The ground-state proton branch, which γ-ray and coincidence measurements do not see directly.
+  - The p/α branching at the energies of carbon burning, which decides the sodium yield.
+  - Whether the S-factor falls (fusion hindrance) or keeps rising below the data.
+related: [12C-12Ca-20Ne, 12C-12Cn-23Mg, 23Na-pa-20Ne, 23Na-pg-24Mg, 12C-ag-16O]

@@ -5,7 +5,7 @@ target: 23Na
 projectile: 1H
 ejectile: g
 product: 24Mg
-networks: [nena]
+networks: [nena, carbon-burning]
 importance: key
 summary: >-
   A proton capture that destroys sodium and makes magnesium. It competes with
@@ -94,5 +94,5 @@ evaluations: [angulo1999, acharya2025]
 open_questions:
   - The strength of the lowest resonance (E_cm ≈ 133 keV), where the direct LUNA value and the transfer data of Marshall et al. (2023) disagree.
   - The direct capture S-factor at the energies of the Gamow window, which so far comes from extrapolation.
-related: [23Na-pa-20Ne, 22Ne-pg-23Na, 24Mg-pg-25Al]
+related: [23Na-pa-20Ne, 22Ne-pg-23Na, 24Mg-pg-25Al, 12C-12Cp-23Na]
 rmatrix: [24Mg]

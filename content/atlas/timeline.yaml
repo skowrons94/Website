@@ -579,6 +579,25 @@ events:
     reactions: [14N-pg-15O]
 
   - year: 2007
+    title: ¹²C + ¹²C fusion measured near the Gamow window
+    title_it: La fusione ¹²C + ¹²C misurata vicino alla finestra di Gamow
+    category: experiment
+    text: >-
+      At the Bochum Dynamitron, Spillane and colleagues measured carbon
+      fusion down to 2.1 MeV, using carbon targets almost free of hydrogen.
+      They found a strong resonance at 2.14 MeV that raises the rate of one
+      branch about fivefold near 0.8 GK, and showed how uncertain any
+      extrapolation to lower energies is.
+    text_it: >-
+      Al Dynamitron di Bochum, Spillane e colleghi misurarono la fusione del
+      carbonio fino a 2,1 MeV, con bersagli di carbonio quasi privi di
+      idrogeno. Trovarono una forte risonanza a 2,14 MeV, che aumenta di circa
+      cinque volte il tasso di uno dei rami intorno a 0,8 GK, e mostrarono
+      quanto sia incerta ogni estrapolazione a energie più basse.
+    refs: [spillane2007]
+    reactions: [12C-12Ca-20Ne, 12C-12Cp-23Na]
+
+  - year: 2007
     month: 8
     title: Borexino detects ⁷Be solar neutrinos in real time
     title_it: Borexino rivela in tempo reale i neutrini solari del ⁷Be
@@ -691,6 +710,26 @@ events:
       della sua incertezza sui modelli stellari.
     refs: [deboer2017]
     reactions: [12C-ag-16O]
+
+  - year: 2018
+    month: 5
+    title: Trojan Horse resonances in carbon fusion, and a debate
+    title_it: Risonanze nella fusione del carbonio con il cavallo di Troia, e un dibattito
+    category: experiment
+    text: >-
+      Using the indirect Trojan Horse method at the LNS in Catania, Tumino
+      and colleagues reported resonances in carbon fusion at the energies of
+      stellar cores, raising the rate more than 25-fold near 0.5 GK. The
+      analysis was soon challenged, and direct measurements in 2020 at Orsay
+      and Notre Dame did not see such a rise.
+    text_it: >-
+      Con il metodo indiretto del cavallo di Troia, ai LNS di Catania, Tumino
+      e colleghi riportarono risonanze nella fusione del carbonio alle
+      energie dei nuclei stellari, che aumentano il tasso di oltre 25 volte
+      intorno a 0,5 GK. L'analisi fu presto contestata, e le misure dirette
+      del 2020 a Orsay e a Notre Dame non videro un tale aumento.
+    refs: [tumino2018, mukhamedzhanov2019, fruet2020, tan2020]
+    reactions: [12C-12Ca-20Ne, 12C-12Cp-23Na]
 
   - year: 2019
     month: 7

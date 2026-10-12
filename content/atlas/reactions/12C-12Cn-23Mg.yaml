@@ -1,0 +1,71 @@
+id: 12C-12Cn-23Mg
+label: ¹²C(¹²C,n)²³Mg
+kind: fusion
+target: 12C
+projectile: 12C
+ejectile: n
+product: 23Mg
+networks: [carbon-burning]
+importance: minor
+summary: >-
+  A rare outcome of carbon fusion: magnesium-23 and a neutron. It needs extra
+  energy, so it happens only in the hottest carbon-burning environments.
+summary_it: >-
+  Un esito raro della fusione del carbonio: magnesio-23 e un neutrone.
+  Richiede energia in più, quindi avviene solo negli ambienti più caldi in
+  cui brucia il carbonio.
+role: >-
+  Unlike the two main branches, this one takes energy instead of releasing
+  it: the colliding carbon nuclei must bring in at least about 2.6 MeV
+  between them. At the temperatures of ordinary carbon burning very few
+  collisions are that energetic, so the branch is small. It matters for the
+  elements made where carbon burns hotter: in the explosions of the very
+  massive first stars it helps set how much sodium and aluminium is made. The magnesium-23 it makes is radioactive and decays within
+  seconds to sodium-23. Direct measurements have reached the energies at
+  which it operates in stars.
+role_it: >-
+  A differenza dei due rami principali, questo assorbe energia invece di
+  liberarla: i nuclei di carbonio che si scontrano devono portare almeno
+  circa 2,6 MeV. Alle temperature della normale combustione del carbonio
+  pochissime collisioni sono così energetiche, quindi il ramo è piccolo.
+  Conta per gli elementi prodotti dove il carbonio brucia più caldo: nelle
+  esplosioni delle prime stelle, molto massicce, contribuisce a fissare
+  quanto sodio e quanto alluminio viene prodotto. Il magnesio-23 che produce è
+  radioattivo e decade in pochi secondi in sodio-23. Le misure dirette hanno
+  raggiunto le energie a cui la reazione opera nelle stelle.
+details: >-
+  The channel is endothermic (Q = −2.60 MeV) and closed below that energy,
+  so its Gamow window is cut off at threshold. Bucher et al. (2015) measured
+  it directly at the Notre Dame FN tandem into the astrophysical energy
+  range, with a neutron detector whose efficiency was simulated and checked
+  with monoenergetic neutrons, and cross-checked the cross section by
+  counting the ²³Mg activity. Their extrapolation to lower energies uses
+  data on the mirror proton channel, ¹²C(¹²C,p)²³Na; they quote a rate uncertainty smaller than astrophysical models
+  require, and find the channel important for sodium and aluminium
+  production in Population III pair-instability supernovae.
+status: improving
+status_note: >-
+  A direct measurement has reached stellar energies, and the extrapolation
+  below it leans on the better-measured proton channel; how far that holds
+  depends on the same open questions as carbon fusion as a whole.
+status_note_it: >-
+  Una misura diretta ha raggiunto le energie stellari, e l'estrapolazione al
+  di sotto si appoggia sul canale protonico, misurato meglio; quanto regga
+  dipende dalle stesse questioni aperte della fusione del carbonio nel suo
+  insieme.
+methods: [direct-surface, activation]
+measurements:
+  - year: 2015
+    facility: notre-dame
+    method: direct-surface
+    energy: "deep into the astrophysical energy range"
+    energy_it: "fino in profondità nell'intervallo di energie astrofisiche"
+    note: >-
+      First direct measurement at stellar energies, by neutron counting
+      checked against the ²³Mg activity; the extrapolation uses the mirror
+      reaction ¹²C(¹²C,p)²³Na.
+    refs: [bucher2015]
+evaluations: [caughlan1988]
+open_questions:
+  - The validity of the mirror-channel extrapolation, which inherits the resonance structure and the hindrance question of ¹²C(¹²C,p)²³Na.
+related: [12C-12Cp-23Na, 12C-12Ca-20Ne]

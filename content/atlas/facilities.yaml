@@ -34,6 +34,8 @@
 # (RIKEN RIPS; see also the review arXiv nucl-ex/9712002), Schümann et al.
 # 2003/2006 and Hammache et al. 2010 (GSI). CSNSM became part of IJCLab in
 # 2020.
+# andromede (2026-10-12): Heine et al. 2018 (STELLA at Andromède, IPN Orsay)
+# and EPJ Web Conf. (HIAS 2025) 00029 for the ¹²C + ¹²C runs there.
 
 facilities:
   - id: luna-50
@@ -777,6 +779,36 @@ facilities:
       isotopica. Dal 2009 ospita anche il separatore di rinculo ERNA per le
       misure di cattura di elio.
     refs: [broggini2019]
+
+  - id: andromede
+    name: Andromède, Orsay
+    lab: Institut de Physique Nucléaire d'Orsay (IPN Orsay)
+    location: Orsay
+    country: France
+    country_it: Francia
+    underground: false
+    summary: >-
+      An accelerator at Orsay that hosts STELLA, a station built to measure
+      the fusion of light nuclei such as carbon with carbon at very low
+      energies, where the reaction is extremely rare.
+    summary_it: >-
+      Un acceleratore a Orsay che ospita STELLA, una stazione costruita per
+      misurare la fusione di nuclei leggeri, come carbonio con carbonio, a
+      energie molto basse, dove la reazione è rarissima.
+    details: >-
+      STELLA combines a silicon array for the charged particles with LaBr₃
+      detectors of the UK FATIMA array for the γ rays, with nanosecond
+      timing that separates protons from α particles, and a rotating target
+      that withstands beam currents above 10 µA. It is designed for cross
+      sections down to tens of picobarns.
+    details_it: >-
+      STELLA unisce una schiera di rivelatori al silicio per le particelle
+      cariche ai rivelatori LaBr₃ della schiera britannica FATIMA per i raggi
+      γ, con una risoluzione temporale del nanosecondo che separa i protoni
+      dalle particelle α, e un bersaglio rotante che sopporta correnti di
+      fascio superiori a 10 µA. È progettata per sezioni d'urto fino a decine
+      di picobarn.
+    refs: [heine2018]
 
   - id: csnsm-orsay
     name: CSNSM, Orsay

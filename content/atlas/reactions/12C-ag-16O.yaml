@@ -132,4 +132,4 @@ open_questions:
   - Direct data below 1 MeV, which need an underground accelerator able to deliver intense α beams, or high-intensity γ beams for the inverse reaction ¹⁶O(γ,α)¹²C.
   - The E2 ground-state S-factor, whose extrapolation depends on the ANC of the 6.92 MeV subthreshold state and on the interference with the direct capture.
   - The contribution of the 6.05 MeV cascade at low energy, where the DRAGON and ERNA analyses differ.
-related: [4He-aa-12C, 16O-ag-20Ne]
+related: [4He-aa-12C, 16O-ag-20Ne, 12C-12Ca-20Ne, 12C-12Cp-23Na]

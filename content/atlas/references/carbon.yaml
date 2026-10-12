@@ -1,0 +1,174 @@
+# References for carbon burning (¹²C + ¹²C).
+# Verified by web search on 2026-10-12. Direct access to arxiv.org, doi.org and
+# the publishers was blocked from the build container, so `checked` names the
+# records that confirmed each entry. A DOI is given only where a record showed
+# it, or where it follows the APS scheme from a confirmed APS journal
+# reference. Titles are given as the confirming record printed them.
+
+# --- Early direct measurements --------------------------------------------------
+
+patterson1969:
+  authors: J. R. Patterson, H. Winkler, C. S. Zaidins
+  title: Experimental investigation of the stellar nuclear reaction ¹²C + ¹²C at low energies
+  journal: Astrophys. J. 157, 367 (1969)
+  year: 1969
+  checked: citation (authors, title, volume, page) from the reference lists of arXiv 1905.02054, 1810.07887 and nucl-ex/0702023; DOI not shown by any record found, so omitted, 2026-10-12
+
+mazarakis1973:
+  authors: M. G. Mazarakis, W. E. Stephens
+  title: Experimental measurements of the ¹²C + ¹²C nuclear reactions at low energies
+  journal: Phys. Rev. C 7, 1280 (1973)
+  year: 1973
+  doi: 10.1103/PhysRevC.7.1280
+  checked: APS Phys. Rev. C vol. 7 issue 4 listing and the reference lists of arXiv 2609.25996 and nucl-ex/0702023; DOI from the APS scheme, 2026-10-12
+
+high1977:
+  authors: M. D. High, B. Čujec
+  title: The ¹²C + ¹²C sub-Coulomb fusion cross section
+  journal: Nucl. Phys. A 282, 181 (1977)
+  year: 1977
+  doi: 10.1016/0375-9474(77)90179-8
+  checked: reference lists of arXiv 1905.02054 and 2507.18065 (with DOI) and IAEA EXFOR entry B0144 (in-beam γ-ray measurement at 90° and 270°), 2026-10-12
+
+# --- Direct measurements since 2000 ----------------------------------------------
+
+spillane2007:
+  authors: T. Spillane, F. Raiola, C. Rolfs, F. Strieder, S. Zeng, H.-W. Becker et al.
+  title: Study of the ¹²C + ¹²C fusion reactions near the Gamow energy
+  journal: Phys. Rev. Lett. 98, 122501 (2007)
+  year: 2007
+  doi: 10.1103/PhysRevLett.98.122501
+  arxiv: nucl-ex/0702023
+  checked: arXiv nucl-ex/0702023 listing and abstract (E = 2.10–4.75 MeV, γ-ray spectroscopy, resonance at 2.14 MeV, factor 5 near 8×10⁸ K), Naples IRIS record; Bochum Dynamitron tandem from the search summary of the paper; DOI from the APS scheme, 2026-10-12
+
+bucher2015:
+  authors: B. Bucher, X. D. Tang, X. Fang et al.
+  title: First direct measurement of ¹²C(¹²C,n)²³Mg at stellar energies
+  journal: Phys. Rev. Lett. 114, 251102 (2015)
+  year: 2015
+  doi: 10.1103/PhysRevLett.114.251102
+  arxiv: "1507.03980"
+  checked: arXiv 1507.03980 listing and abstract, Monash and Hull repository records; Notre Dame FN tandem from the group's 2010 APS DNP abstract on the same study; DOI from the APS scheme, 2026-10-12
+
+zickefoose2018:
+  authors: J. Zickefoose, A. Di Leva, F. Strieder, L. Gialanella, G. Imbriani, N. De Cesare, C. Rolfs, J. Schweitzer, T. Spillane, O. Straniero, F. Terrasi
+  title: Measurement of the ¹²C(¹²C,p)²³Na cross section near the Gamow energy
+  journal: Phys. Rev. C 97, 065806 (2018)
+  year: 2018
+  doi: 10.1103/PhysRevC.97.065806
+  checked: JINA Virtual Journal entry and Naples IRIS record (authors, DOI, abstract), 2026-10-12
+
+tumino2018:
+  authors: A. Tumino, C. Spitaleri, M. La Cognata, S. Cherubini, G. L. Guardo, M. Gulino, S. Hayakawa, I. Indelicato et al.
+  title: An increase in the ¹²C + ¹²C fusion rate from resonances at astrophysical energies
+  journal: Nature 557, 687 (2018)
+  year: 2018
+  doi: 10.1038/s41586-018-0149-4
+  checked: RePEc/IDEAS record (DOI, title, abstract), the publisher correction record (Nature 561, DOI 10.1038/s41586-018-0269-x) and the authors' reply arXiv 1807.06148 for the author list; LNS tandem and 30 MeV ¹⁴N beam from a Tumino conference talk, 2026-10-12
+
+mukhamedzhanov2019:
+  authors: A. M. Mukhamedzhanov, D. Y. Pang, A. S. Kadyrov
+  title: Astrophysical factors of ¹²C + ¹²C fusion extracted using the Trojan horse method
+  journal: Phys. Rev. C 99, 064618 (2019)
+  year: 2019
+  doi: 10.1103/PhysRevC.99.064618
+  arxiv: "1806.08828"
+  checked: APS accepted-manuscript page (title, authors, DOI, abstract) and the Texas A&M Cyclotron Institute progress reports 2018–2020, 2026-10-12
+
+fruet2020:
+  authors: G. Fruet, S. Courtin, M. Heine et al. (STELLA collaboration)
+  title: Advances in the direct study of carbon burning in massive stars
+  journal: Phys. Rev. Lett. 124, 192701 (2020)
+  year: 2020
+  doi: 10.1103/PhysRevLett.124.192701
+  checked: White Rose record 161875 with abstract and DOI, REF 2021 output records; Andromède facility from EPJ Web Conf. (HIAS 2025) 00029, 2026-10-12
+
+tan2020:
+  authors: W. P. Tan et al.
+  title: New measurement of ¹²C + ¹²C fusion reaction at astrophysical energies
+  journal: Phys. Rev. Lett. 124, 192702 (2020)
+  year: 2020
+  doi: 10.1103/PhysRevLett.124.192702
+  arxiv: "2005.03196"
+  checked: arXiv 2005.03196 abstract (Notre Dame 5U Pelletron, SAND, particle–γ coincidences, disagreement with the Trojan Horse result), IAEA EXFOR entry C2574 and JINA Virtual Journal listing with DOI, 2026-10-12
+
+heine2018:
+  authors: M. Heine et al.
+  title: The STELLA apparatus for particle-gamma coincidence fusion measurements with nanosecond timing
+  journal: Nucl. Instrum. Methods A 903, 1 (2018)
+  year: 2018
+  doi: 10.1016/j.nima.2018.06.058
+  arxiv: "1802.07679"
+  checked: HAL record hal-01724871, arXiv 1802.07679 and White Rose record 137500, 2026-10-12
+
+nippert2025:
+  authors: J. Nippert, S. Courtin, M. Heine, D. G. Jenkins, P. Adsley et al. (STELLA collaboration)
+  title: Refining the deep sub-barrier ¹²C + ¹²C fusion excitation function with the STELLA apparatus
+  journal: Phys. Rev. C 111, 065804 (2025)
+  year: 2025
+  doi: 10.1103/PhysRevC.111.065804
+  arxiv: "2509.14717"
+  checked: arXiv 2509.14717, HAL record hal-05104930 and White Rose record 234979 (DOI, abstract), 2026-10-12
+
+gesue2025:
+  authors: R. M. Gesuè, S. Turkat, J. Skowronski, M. Aliotta et al. (LUNA Collaboration)
+  title: Detector characterization for a new ¹²C + ¹²C reaction study at LUNA
+  journal: J. Phys. G 52, 105103 (2025)
+  year: 2025
+  doi: 10.1088/1361-6471/ade0dc
+  arxiv: "2601.05285"
+  # A LUNA Collaboration paper, but without `luna: true`: the flag lists a
+  # reaction under "LUNA results", and this paper characterizes the detector
+  # for a measurement still to come.
+  checked: arXiv 2601.05285 listing and abstract, Naples IRIS record; journal reference as in content/publications.yaml, 2026-10-12
+
+# --- Rates, models and reviews ---------------------------------------------------
+
+caughlan1988:
+  authors: G. R. Caughlan, W. A. Fowler
+  title: Thermonuclear reaction rates V
+  journal: At. Data Nucl. Data Tables 40, 283 (1988)
+  year: 1988
+  checked: citation from arXiv 2406.13458 and 1012.3258 (the standard ¹²C + ¹²C rate of stellar models) and the online CF88 mirror; DOI not shown by any record found, so omitted, 2026-10-12
+
+jiang2007:
+  authors: C. L. Jiang et al.
+  title: Expectations for ¹²C and ¹⁶O induced fusion cross sections at energies of astrophysical interest
+  journal: Phys. Rev. C 75, 015803 (2007)
+  year: 2007
+  doi: 10.1103/PhysRevC.75.015803
+  checked: IAEA INIS record (title, journal, Argonne affiliation, abstract) and the summary in arXiv 2507.18065; DOI from the APS scheme, 2026-10-12
+
+jiang2018:
+  authors: C. L. Jiang, D. Santiago-Gonzalez, S. Almaraz-Calderon, K. E. Rehm et al.
+  title: Reaction rate for carbon burning in massive stars
+  journal: Phys. Rev. C 97, 012801 (2018)
+  year: 2018
+  doi: 10.1103/PhysRevC.97.012801
+  checked: APS accepted-manuscript page and INL repository record, 2026-10-12
+
+monpribat2022:
+  authors: E. Monpribat, S. Martinet, S. Courtin, M. Heine, S. Ekström, D. G. Jenkins, A. Choplin et al.
+  title: "A new ¹²C + ¹²C nuclear reaction rate: impact on stellar evolution"
+  journal: Astron. Astrophys. 660, A47 (2022)
+  year: 2022
+  doi: 10.1051/0004-6361/202141858
+  arxiv: "2111.15224"
+  checked: arXiv 2111.15224, White Rose record 187718 and Texas A&M publication record with DOI, 2026-10-12
+
+uzawa2025:
+  authors: K. Uzawa, K. Hagino
+  title: Re-examination of fusion hindrance in astrophysical ¹²C + ¹²C and ¹²C + ¹³C reactions
+  journal: Phys. Rev. C 112, L061601 (2025)
+  year: 2025
+  arxiv: "2507.18065"
+  checked: arXiv 2507.18065 abstract; journal reference from K. Hagino's 2026 talk slides (not seen on the APS page), 2026-10-12
+
+woosley2002:
+  authors: S. E. Woosley, A. Heger, T. A. Weaver
+  title: The evolution and explosion of massive stars
+  journal: Rev. Mod. Phys. 74, 1015 (2002)
+  year: 2002
+  doi: 10.1103/RevModPhys.74.1015
+  arxiv: astro-ph/0110015
+  checked: arXiv astro-ph/0110015 listing and scinapse record with DOI; the carbon-burning row of its 15 M☉ table (T = 0.83 GK) as reproduced in the Utrecht stellar-evolution lecture notes, chapter 12, 2026-10-12

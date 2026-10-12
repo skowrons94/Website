@@ -5,7 +5,7 @@ target: 23Na
 projectile: 1H
 ejectile: 4He
 product: 20Ne
-networks: [nena]
+networks: [nena, carbon-burning]
 importance: key
 summary: >-
   The reaction that closes the NeNa cycle. A proton hits ²³Na and an alpha
@@ -94,4 +94,4 @@ open_questions:
   - A direct observation of the 133 keV resonance in the (p,α) channel, the aim of the planned LUNA campaign.
   - The proton width of the 133 keV state, where transfer data and the direct (p,γ) strength disagree.
   - The ratio of the (p,α) and (p,γ) rates near 0.05–0.1 GK, which decides whether material cycles back to neon or leaks to magnesium.
-related: [23Na-pg-24Mg, 20Ne-pg-21Na, 22Ne-pg-23Na]
+related: [23Na-pg-24Mg, 20Ne-pg-21Na, 22Ne-pg-23Na, 12C-12Cp-23Na]
