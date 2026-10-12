@@ -201,4 +201,8 @@ open_questions:
   - Whether the S-factor falls at deep sub-barrier energies (fusion hindrance) or keeps rising; the answer depends on fitting choices and on which of the many data sets are used.
   - Whether resonances below 2 MeV exist and how strong they are, as the Trojan Horse analysis suggests and its critics dispute.
   - Direct data below 2.1 MeV, the aim of the underground LUNA campaign.
+open_questions_it:
+  - "Se il fattore S diminuisca a energie molto al di sotto della barriera (soppressione della fusione) o continui a crescere; la risposta dipende dalle scelte di fit e da quali dei numerosi insiemi di dati si usano."
+  - "Se esistano risonanze sotto 2 MeV e quanto siano intense, come suggerisce l'analisi con il metodo del cavallo di Troia e come contestano i suoi critici."
+  - "Dati diretti sotto 2,1 MeV, l'obiettivo della campagna sotterranea di LUNA."
 related: [12C-12Cp-23Na, 12C-12Cn-23Mg, 12C-ag-16O, 23Na-pa-20Ne]

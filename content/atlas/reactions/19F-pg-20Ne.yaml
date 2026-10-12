@@ -49,6 +49,14 @@ status_note: >-
 status_note_it: >-
   I dati sotterranei arrivano ora a 186 keV; più in basso il tasso dipende da
   risonanze deboli non ancora misurate direttamente, e dal rapporto (p,γ)/(p,α).
+status_plain: >-
+  Measured underground down to fairly low energies. Below them the rate
+  depends on weak resonances not yet seen directly, and on how often this
+  reaction wins over its competitor ¹⁹F(p,α)¹⁶O.
+status_plain_it: >-
+  Misurata sotto terra fino a energie piuttosto basse. Più in basso il tasso
+  dipende da risonanze deboli non ancora osservate direttamente, e da quanto
+  spesso questa reazione prevale sulla concorrente ¹⁹F(p,α)¹⁶O.
 methods: [direct-underground, direct-surface]
 measurements:
   - year: 2008
@@ -76,4 +84,7 @@ evaluations: [acharya2025]
 open_questions:
   - The strength of the lowest-energy resonances and the non-resonant contribution.
   - The leakage ratio (p,γ)/(p,α) at the temperatures of hot hydrogen burning.
+open_questions_it:
+  - "L'intensità delle risonanze di energia più bassa e il contributo non risonante."
+  - "Il rapporto di fuga (p,γ)/(p,α) alle temperature della combustione dell'idrogeno ad alta temperatura."
 related: [19F-pa-16O, 18O-pg-19F, 20Ne-pg-21Na]

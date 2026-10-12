@@ -133,4 +133,8 @@ open_questions:
   - The ANC and the exact energy of the 1/2⁺ state at 6.356 MeV in ¹⁷O, which control the extrapolation below 230 keV.
   - Absolute normalisation of the direct data, which depends on target stoichiometry under beam and on the neutron-detection efficiency as a function of neutron energy and angle.
   - Consistent data over a wide energy range, overlapping the underground and surface measurements, to constrain the R-matrix fit.
+open_questions_it:
+  - "L'ANC e l'energia esatta dello stato 1/2⁺ a 6,356 MeV nel ¹⁷O, che controllano l'estrapolazione sotto 230 keV."
+  - "La normalizzazione assoluta dei dati diretti, che dipende dalla stechiometria del bersaglio sotto fascio e dall'efficienza di rivelazione dei neutroni in funzione della loro energia e del loro angolo."
+  - "Dati coerenti su un ampio intervallo di energia, che si sovrappongano alle misure sotterranee e a quelle di superficie, per vincolare il fit R-matrix."
 related: [13C-pg-14N, 22Ne-an-25Mg, 17O-an-20Ne]

@@ -83,4 +83,6 @@ measurements:
 evaluations: [adelberger2011, acharya2025]
 open_questions:
   - The electron-screening correction needed to compare direct data at the lowest energies with Trojan-Horse results.
+open_questions_it:
+  - "La correzione per lo schermaggio elettronico necessaria per confrontare i dati diretti alle energie più basse con i risultati del metodo del cavallo di Troia."
 related: [15N-pg-16O, 12C-pg-13N, 14N-pg-15O]

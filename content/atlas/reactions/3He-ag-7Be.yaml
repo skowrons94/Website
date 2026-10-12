@@ -147,5 +147,8 @@ evaluations: [adelberger2011, acharya2025, descouvemont2004, iliadis2020]
 open_questions:
   - The energy dependence of the S-factor between 100 keV and 1 MeV, which controls the extrapolation to the solar Gamow window.
   - The disagreement in slope and normalization above 1 MeV between recoil-separator and γ-ray data.
+open_questions_it:
+  - "L'andamento in energia del fattore S tra 100 keV e 1 MeV, che controlla l'estrapolazione alla finestra di Gamow solare."
+  - "Il disaccordo di pendenza e di normalizzazione sopra 1 MeV tra i dati ottenuti con separatori di rinculo e quelli con raggi γ."
 related: [3He-3He2p-4He, 7Be-pg-8B, 7Be-ec-7Li, 3H-ag-7Li, 7Be-np-7Li]
 rmatrix: [7Be]

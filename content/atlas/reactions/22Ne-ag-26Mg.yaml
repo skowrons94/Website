@@ -89,4 +89,7 @@ evaluations: [angulo1999, adsley2021]
 open_questions:
   - The strengths of the resonances below 830 keV, in particular at E = 334 keV, where direct sensitivity must improve by orders of magnitude to reach the indirect estimates.
   - Spin-parity assignments of the ²⁶Mg states in the Gamow window, which decide whether a state can be populated in α capture.
+open_questions_it:
+  - "Le intensità delle risonanze sotto 830 keV, in particolare a E = 334 keV, dove la sensibilità delle misure dirette deve migliorare di ordini di grandezza per raggiungere le stime indirette."
+  - "Le assegnazioni di spin e parità degli stati del ²⁶Mg nella finestra di Gamow, che decidono se uno stato può essere popolato nella cattura α."
 related: [22Ne-an-25Mg, 18O-ag-22Ne]

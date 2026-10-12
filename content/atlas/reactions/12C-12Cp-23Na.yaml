@@ -172,4 +172,8 @@ open_questions:
   - The ground-state proton branch, which γ-ray and coincidence measurements do not see directly.
   - The p/α branching at the energies of carbon burning, which decides the sodium yield.
   - Whether the S-factor falls (fusion hindrance) or keeps rising below the data.
+open_questions_it:
+  - "Il ramo protonico verso lo stato fondamentale, che le misure di raggi γ e in coincidenza non vedono direttamente."
+  - "Il rapporto di diramazione p/α alle energie della combustione del carbonio, che decide la resa di sodio."
+  - "Se il fattore S diminuisca (soppressione della fusione) o continui a crescere al di sotto dei dati."
 related: [12C-12Ca-20Ne, 12C-12Cn-23Mg, 23Na-pa-20Ne, 23Na-pg-24Mg, 12C-ag-16O]

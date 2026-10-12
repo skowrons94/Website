@@ -55,6 +55,12 @@ status_note: >-
 status_note_it: >-
   Nota solo dalla teoria; i calcoli con modelli di potenziale e con teorie di
   campo efficaci concordano entro le loro piccole incertezze.
+status_plain: >-
+  Far too slow ever to be measured in a laboratory, so the rate comes from
+  theory; different calculations agree closely.
+status_plain_it: >-
+  Troppo lenta per essere misurata in laboratorio, quindi il tasso viene
+  dalla teoria; calcoli diversi concordano bene.
 methods: [theory]
 measurements:
   - year: 1998
@@ -79,4 +85,6 @@ measurements:
 evaluations: [adelberger2011, acharya2025]
 open_questions:
   - The size of two-body axial-current contributions at higher orders of effective field theory, which dominates the theoretical uncertainty.
+open_questions_it:
+  - "L'entità dei contributi delle correnti assiali a due corpi agli ordini superiori della teoria di campo efficace, che domina l'incertezza teorica."
 related: [1H-pep-2H, 2H-pg-3He, 3He-hep-4He]

@@ -3,6 +3,7 @@ import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 
 import { ChartDiagram } from "@/components/atlas/chart-diagram"
+import { LunaFigure } from "@/components/atlas/luna-figure"
 import { STATUSES, StatusBadge } from "@/components/atlas/status-badge"
 import { Container, PageHeader } from "@/components/page-header"
 import { Sci } from "@/components/sci"
@@ -64,6 +65,7 @@ export function GlossaryPage({ lang }: { lang: Lang }) {
                 <Sci>{term.text}</Sci>
               </p>
               {term.id === "chart" && <ChartDiagram lang={lang} className="mt-5 max-w-md" />}
+              {term.id === "luna" && <LunaFigure lang={lang} className="mt-5 max-w-xl" />}
               {term.id === "status" && (
                 <ul className="mt-5 space-y-2.5">
                   {STATUSES.map((s) => (

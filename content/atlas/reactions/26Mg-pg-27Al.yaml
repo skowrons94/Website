@@ -62,4 +62,6 @@ measurements:
 evaluations: [angulo1999]
 open_questions:
   - Direct measurements of the resonances below E_cm = 326 keV, which dominate the rate in hot-bottom burning.
+open_questions_it:
+  - "Misure dirette delle risonanze sotto E_cm = 326 keV, che dominano il tasso nella combustione alla base dell'inviluppo (hot-bottom burning)."
 related: [26Al-bp-26Mg, 25Mg-pg-26Al, 27Al-pg-28Si, 27Al-pa-24Mg, 22Ne-ag-26Mg]

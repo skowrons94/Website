@@ -75,4 +75,7 @@ evaluations: [angulo1999, iliadis2010]
 open_questions:
   - Direct observation of the low-energy resonances in the (p,α) channel, which requires the low background of an underground laboratory.
   - The ratio of the (p,α) and (p,γ) rates on ²⁷Al, which decides whether the MgAl cycle closes or leaks to silicon.
+open_questions_it:
+  - "L'osservazione diretta delle risonanze a bassa energia nel canale (p,α), che richiede il basso fondo di un laboratorio sotterraneo."
+  - "Il rapporto tra i tassi (p,α) e (p,γ) sul ²⁷Al, che decide se il ciclo MgAl si chiude o sfugge verso il silicio."
 related: [27Al-pg-28Si, 24Mg-pg-25Al, 23Na-pa-20Ne]

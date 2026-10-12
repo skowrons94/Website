@@ -87,4 +87,7 @@ measurements:
 open_questions:
   - The contribution of low-energy resonances to the separate α channels.
   - The ratio to ¹⁹F(p,γ)²⁰Ne, which decides how much material leaks from the CNO cycles towards neon.
+open_questions_it:
+  - "Il contributo delle risonanze a bassa energia ai singoli canali α."
+  - "Il rapporto con ¹⁹F(p,γ)²⁰Ne, che decide quanta materia sfugge dai cicli CNO verso il neon."
 related: [19F-pg-20Ne, 18O-pg-19F, 15N-pa-12C]

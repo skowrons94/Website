@@ -49,6 +49,14 @@ status_note_it: >-
   La risonanza rilevante per le novae è misurata direttamente a circa il 7 %; a
   temperature più basse dominano l'incertezza la risonanza a 64,5 keV, misurata
   direttamente una sola volta, e la componente di cattura diretta.
+status_plain: >-
+  Well measured at the temperatures of nova explosions; at the lower
+  temperatures of ordinary stars it depends on a very weak resonance
+  measured directly only once.
+status_plain_it: >-
+  Ben misurata alle temperature delle esplosioni di nova; alle temperature
+  più basse delle stelle ordinarie dipende da una risonanza molto debole
+  misurata direttamente una sola volta.
 methods: [direct-underground, direct-surface, inverse-kinematics, activation]
 measurements:
   - year: 2005
@@ -130,4 +138,7 @@ evaluations: [acharya2025]
 open_questions:
   - The direct-capture S-factor between the low-energy resonances.
   - The strength of the 64.5 keV resonance, where the direct result is about twice the value from indirect data.
+open_questions_it:
+  - "Il fattore S della cattura diretta tra le risonanze a bassa energia."
+  - "L'intensità della risonanza a 64,5 keV, per la quale il risultato diretto è circa il doppio del valore ricavato da dati indiretti."
 related: [17O-pa-14N, 18F-bp-18O, 18O-pa-15N]

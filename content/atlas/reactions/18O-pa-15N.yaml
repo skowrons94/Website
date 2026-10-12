@@ -41,6 +41,12 @@ status_note: >-
 status_note_it: >-
   I dati diretti arrivano ora a 55 keV; la risonanza a 20 keV, che conta alle
   temperature più basse, è nota solo dai dati col metodo del cavallo di Troia.
+status_plain: >-
+  Measured directly down to low energies; a resonance that matters in the
+  coolest environments is known only from an indirect method.
+status_plain_it: >-
+  Misurata direttamente fino a basse energie; una risonanza che conta negli
+  ambienti più freddi è nota solo da un metodo indiretto.
 methods: [direct-surface, direct-underground, thm]
 measurements:
   - year: 2008
@@ -77,4 +83,7 @@ evaluations: [acharya2025]
 open_questions:
   - The strength of the 20 keV resonance, known only from Trojan-Horse data.
   - The 90 keV resonance, whose direct LUNA strength is ten times the earlier value, while the Trojan-Horse analysis found it negligible.
+open_questions_it:
+  - "L'intensità della risonanza a 20 keV, nota solo dai dati del metodo del cavallo di Troia."
+  - "La risonanza a 90 keV, la cui intensità misurata direttamente a LUNA è dieci volte il valore precedente, mentre l'analisi con il cavallo di Troia la trovava trascurabile."
 related: [18O-pg-19F, 17O-pg-18F, 18F-bp-18O, 15N-pa-12C]

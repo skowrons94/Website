@@ -137,4 +137,7 @@ evaluations: [adelberger2011, acharya2025]
 open_questions:
   - The theoretical energy dependence used to extrapolate the direct data to solar energies.
   - The spread of about 15 % between the S(0) values of the modern direct experiments.
+open_questions_it:
+  - "L'andamento in energia teorico usato per estrapolare i dati diretti alle energie solari."
+  - "La dispersione di circa il 15 % tra i valori di S(0) degli esperimenti diretti moderni."
 related: [3He-ag-7Be, 8B-bp-8Be, 7Be-ec-7Li, 3He-hep-4He]

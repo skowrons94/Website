@@ -60,4 +60,6 @@ measurements:
 evaluations: [angulo1999, iliadis2010]
 open_questions:
   - The strength of the lowest resonances, which control the rate at the start of helium burning.
+open_questions_it:
+  - "L'intensità delle risonanze più basse, che controllano il tasso all'inizio della combustione dell'elio."
 related: [18F-bp-18O, 18O-ag-22Ne, 22Ne-an-25Mg, 14N-pg-15O]

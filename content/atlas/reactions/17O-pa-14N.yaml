@@ -117,4 +117,7 @@ evaluations: [adelberger2011]
 open_questions:
   - The difference of about a factor of 3 between the LUNA and Trojan-Horse strengths of the 64.5 keV resonance.
   - The subthreshold state of ¹⁸F, whose contribution at solar energies Solar Fusion II discusses together with the 65 keV resonance.
+open_questions_it:
+  - "La differenza di circa un fattore 3 tra l'intensità della risonanza a 64,5 keV misurata da LUNA e quella ricavata con il metodo del cavallo di Troia."
+  - "Lo stato sotto soglia del ¹⁸F, il cui contributo alle energie solari è discusso in Solar Fusion II insieme alla risonanza a 65 keV."
 related: [17O-pg-18F, 16O-pg-17F, 17F-bp-17O, 14N-pg-15O]

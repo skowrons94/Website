@@ -51,6 +51,13 @@ status_note_it: >-
   I dati sotterranei arrivano ora sotto E_cm = 352 keV e la forza della
   risonanza a 368 keV è nota a circa il 5 %; l'estrapolazione a bassa energia si
   basa ancora sulla separazione della cattura diretta dallo stato sotto soglia.
+status_plain: >-
+  Measured underground at low energies, and its main resonance is known to
+  about 5 %; the extension to the lowest energies still depends on a model.
+status_plain_it: >-
+  Misurata sotto terra a basse energie, e la sua risonanza principale è nota
+  a circa il 5 %; il prolungamento alle energie più basse dipende ancora da
+  un modello.
 methods: [direct-underground, direct-surface]
 measurements:
   - year: 2018
@@ -91,5 +98,9 @@ open_questions:
   - The contribution of the subthreshold 2425 keV state relative to direct capture at E_cm below 300 keV, which sets the rate at the lowest temperatures.
   - The LUNA strength of the 368 keV resonance is three times more precise than earlier values and has not yet been checked by an independent measurement.
   - A combined R-matrix analysis of the capture data at all energies, to fix the shape of the S-factor near the threshold.
+open_questions_it:
+  - "Il contributo dello stato sotto soglia a 2425 keV rispetto alla cattura diretta per E_cm sotto 300 keV, che fissa il tasso alle temperature più basse."
+  - "L'intensità della risonanza a 368 keV misurata da LUNA è tre volte più precisa dei valori precedenti e non è ancora stata verificata da una misura indipendente."
+  - "Un'analisi R-matrix combinata dei dati di cattura a tutte le energie, per fissare la forma del fattore S vicino alla soglia."
 related: [21Na-bp-21Ne, 21Ne-pg-22Na, 23Na-pa-20Ne, 19F-pg-20Ne]
 rmatrix: [21Na]

@@ -3,6 +3,7 @@ import Link from "next/link"
 import { ArrowLeft, ChevronRight, ExternalLink } from "lucide-react"
 
 import { LunaBadge } from "@/components/atlas/status-badge"
+import { LunaFigure } from "@/components/atlas/luna-figure"
 import { Container, PageHeader } from "@/components/page-header"
 import { Sci } from "@/components/sci"
 import { getAtlas, type Facility, type Method, type Reaction } from "@/lib/atlas"
@@ -271,6 +272,7 @@ export function MethodsPage({ lang }: { lang: Lang }) {
         <section key={g.id} id={g.id} className="mt-20 scroll-mt-24">
           <h2 className="font-serif text-2xl font-semibold tracking-tight">{g.title}</h2>
           <p className="mt-2 max-w-2xl text-pretty leading-relaxed text-muted-foreground">{g.lead}</p>
+          {g.id === "underground" && <LunaFigure lang={lang} className="mt-6 max-w-3xl" />}
           <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {g.facilities.map((f) => (
               <FacilityCard key={f.id} facility={f} reactions={measuredAt(f)} lang={lang} />

@@ -5,10 +5,11 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { ArrowRight, Maximize2, Minimize2, X } from "lucide-react"
 
 import { LunaBadge, StatusBadge, StatusLegend } from "@/components/atlas/status-badge"
+import { linkTerms } from "@/components/atlas/linked-text"
 import { Term } from "@/components/atlas/term"
 import { useDict, useLang } from "@/components/lang-provider"
 import { Sci } from "@/components/sci"
-import type { MapData, MapReaction } from "@/lib/atlas"
+import type { MapCell, MapData, MapReaction } from "@/lib/atlas"
 import { formatGamow, formatQ, formatTemperature, kindLabel } from "@/lib/atlas-format"
 import { decimal, localePath, withoutArticle } from "@/lib/i18n"
 import { OVERLAY_LIMIT } from "@/lib/viz"
@@ -189,6 +190,9 @@ export function NetworkMap({ data }: { data: MapData }) {
   const [disabled, setDisabled] = useState<Set<string>>(() => new Set())
   const [whole, setWhole] = useState(false)
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  // A nuclide tapped on the chart: the drawer lists its reactions, which helps
+  // where the arrows are short and close together (a phone).
+  const [cellCode, setCellCode] = useState<string | null>(null)
   const [tip, setTip] = useState<{ id: string; x: number; y: number } | null>(null)
 
   const frameRef = useRef<HTMLDivElement>(null)
@@ -206,6 +210,19 @@ export function NetworkMap({ data }: { data: MapData }) {
   )
   const byId = useMemo(() => new Map(reactions.map((r) => [r.id, r])), [reactions])
   const selected = selectedId ? byId.get(selectedId) ?? null : null
+  const selectedCell = !selected && cellCode ? cells.find((c) => c.code === cellCode) ?? null : null
+  const cellReactions = useMemo(
+    () => (cellCode ? reactions.filter((r) => r.from.code === cellCode || r.to.code === cellCode) : []),
+    [cellCode, reactions],
+  )
+  const involved = useMemo(() => {
+    const set = new Set<string>()
+    for (const r of reactions) {
+      set.add(r.from.code)
+      set.add(r.to.code)
+    }
+    return set
+  }, [reactions])
 
   // The phone drawer is a modal dialog; on a wide screen the panel is a column.
   const [wide, setWide] = useState(false)
@@ -403,6 +420,7 @@ export function NetworkMap({ data }: { data: MapData }) {
       }
       returnFocusRef.current = r.id
       setSelectedId(r.id)
+      setCellCode(null)
       setTip(null)
     },
     [slotOf, familyId, chooseFamily],
@@ -416,6 +434,7 @@ export function NetworkMap({ data }: { data: MapData }) {
 
   const close = useCallback(() => {
     setSelectedId(null)
+    setCellCode(null)
     const id = returnFocusRef.current
     if (id) {
       const el = frameRef.current?.querySelector<SVGGElement>(`[data-reaction="${CSS.escape(id)}"]`)
@@ -423,22 +442,23 @@ export function NetworkMap({ data }: { data: MapData }) {
     }
   }, [])
 
+  const panelOpen = Boolean(selectedId || cellCode)
   useEffect(() => {
-    if (!selectedId) return
+    if (!panelOpen) return
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") close()
     }
     document.addEventListener("keydown", onKey)
     return () => document.removeEventListener("keydown", onKey)
-  }, [selectedId, close])
+  }, [panelOpen, close])
 
   useEffect(() => {
-    if (selectedId) panelRef.current?.focus({ preventScroll: true })
-  }, [selectedId])
+    if (selectedId || cellCode) panelRef.current?.focus({ preventScroll: true })
+  }, [selectedId, cellCode])
 
   // On a phone the open drawer is modal: the page behind does not scroll, and
   // Tab cycles inside the drawer.
-  const modal = Boolean(selectedId) && !wide
+  const modal = panelOpen && !wide
   useEffect(() => {
     if (!modal) return
     const body = document.body
@@ -570,7 +590,12 @@ export function NetworkMap({ data }: { data: MapData }) {
     <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start lg:gap-10 xl:grid-cols-[minmax(0,1fr)_21rem]">
       <div className="min-w-0">
         {/* -- process picker ------------------------------------------------ */}
-        <div role="group" aria-label={t.process} className="flex scroll-mt-24 flex-wrap gap-1.5">
+        <div className="relative -mx-5 sm:mx-0">
+        <div
+          role="group"
+          aria-label={t.process}
+          className="flex scroll-mt-24 snap-x gap-1.5 overflow-x-auto px-5 pb-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0 [&::-webkit-scrollbar]:hidden"
+        >
           {families.map((f) => (
             <button
               key={f.id}
@@ -578,7 +603,7 @@ export function NetworkMap({ data }: { data: MapData }) {
               aria-pressed={f.id === family?.id}
               onClick={() => chooseFamily(f.id)}
               className={cn(
-                "min-h-10 rounded-full border px-2.5 py-1 text-[0.8125rem] sm:min-h-0 transition-colors sm:px-3 sm:py-1.5 sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "min-h-10 shrink-0 snap-start whitespace-nowrap rounded-full border px-2.5 py-1 text-[0.8125rem] sm:min-h-0 transition-colors sm:px-3 sm:py-1.5 sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 f.id === family?.id
                   ? "border-foreground bg-foreground text-background"
                   : "border-border text-muted-foreground hover:border-foreground/40 hover:text-foreground",
@@ -587,6 +612,8 @@ export function NetworkMap({ data }: { data: MapData }) {
               <Sci>{withoutArticle(f.name)}</Sci>
             </button>
           ))}
+        </div>
+        <span aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-background to-transparent sm:hidden" />
         </div>
 
         {/* -- networks of the family: toggles, and the legend ------------------ */}
@@ -664,9 +691,21 @@ export function NetworkMap({ data }: { data: MapData }) {
             <g aria-hidden>
               {cells.map((c) => {
                 const active = activeCodes.has(c.code)
+                const clickable = involved.has(c.code)
                 return (
                   <rect
                     key={c.code}
+                    className={clickable ? "cursor-pointer" : undefined}
+                    onClick={
+                      clickable
+                        ? () => {
+                            returnFocusRef.current = null
+                            setSelectedId(null)
+                            setCellCode(c.code)
+                            setTip(null)
+                          }
+                        : undefined
+                    }
                     x={c.N - CELL / 2}
                     y={maxZ - c.Z - CELL / 2}
                     width={CELL}
@@ -844,7 +883,7 @@ export function NetworkMap({ data }: { data: MapData }) {
 
       {/* -- side panel; a drawer below lg ------------------------------------- */}
       <aside className="lg:sticky lg:top-24">
-        {selected ? (
+        {selected || selectedCell ? (
           <>
             <button
               type="button"
@@ -858,11 +897,22 @@ export function NetworkMap({ data }: { data: MapData }) {
               tabIndex={-1}
               role="dialog"
               aria-modal={modal ? true : undefined}
-              aria-label={selected.label}
+              aria-label={selected ? selected.label : selectedCell ? cellName(selectedCell) : undefined}
               className="fixed inset-x-0 bottom-0 z-50 max-h-[78vh] overflow-y-auto overscroll-contain rounded-t-xl border-t border-border bg-background px-5 pb-8 pt-3 shadow-2xl outline-none lg:static lg:z-auto lg:max-h-[calc(100vh-8rem)] lg:rounded-lg lg:border lg:bg-card lg:p-6 lg:shadow-none"
             >
               <div aria-hidden className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-muted-foreground/40 lg:hidden" />
-              <ReactionPanel reaction={selected} networks={networks} onClose={close} />
+              {selected ? (
+                <ReactionPanel reaction={selected} networks={networks} onClose={close} />
+              ) : (
+                selectedCell && (
+                  <CellPanel
+                    cell={selectedCell}
+                    reactions={cellReactions}
+                    onPick={(r) => select(r)}
+                    onClose={close}
+                  />
+                )
+              )}
             </div>
           </>
         ) : (
@@ -968,6 +1018,10 @@ function ReactionPanel({
   const lang = useLang()
   const t = useDict().atlas
   const names = r.networks.map((id) => networks.find((n) => n.id === id)?.name ?? id)
+  // Glossary links, once each in the panel; the fact labels link their own.
+  const seen = new Set<string>(["gamow", "q"])
+  const summary = linkTerms(r.summary, lang, seen)
+  const role = linkTerms(r.role, lang, seen)
   return (
     <div>
       <div className="flex items-start justify-between gap-3">
@@ -994,18 +1048,14 @@ function ReactionPanel({
       </div>
 
       {r.summary ? (
-        <p className="mt-4 text-pretty text-[0.95rem] leading-relaxed">
-          <Sci>{r.summary}</Sci>
-        </p>
+        <p className="mt-4 text-pretty text-[0.95rem] leading-relaxed">{summary}</p>
       ) : (
         <p className="mt-4 text-[0.95rem] leading-relaxed text-muted-foreground">
           {t.panelPending}
         </p>
       )}
       {r.role && (
-        <p className="mt-3 text-pretty text-sm leading-relaxed text-muted-foreground">
-          <Sci>{r.role}</Sci>
-        </p>
+        <p className="mt-3 text-pretty text-sm leading-relaxed text-muted-foreground">{role}</p>
       )}
 
       <dl className="mt-5 divide-y divide-border/70 border-y border-border/70">
@@ -1014,7 +1064,8 @@ function ReactionPanel({
         </Fact>
         {r.q && (
           <Fact label={t.qValue} term="q-value">
-            <span className="tabular">{formatQ(r.q, lang)}</span>
+            <span className="tabular">{formatQ(r.q, lang)}</span>{" "}
+            <span className="text-xs text-muted-foreground">· {r.q.value < 0 ? t.qNeeded : t.qReleased}</span>
             {r.q.annihilation && (
               <span className="block text-xs leading-snug text-muted-foreground">
                 {t.qShort(decimal(r.q.kinetic.toFixed(3), lang))}
@@ -1035,9 +1086,17 @@ function ReactionPanel({
               {r.gamow.map((g) => (
                 <li key={`${g.T9}-${g.label}`}>
                   <span className="tabular">{formatGamow(g, lang)}</span>
+                  {g.thresholdLimited && g.threshold !== undefined && (
+                    <span className="text-xs">
+                      {" "}
+                      <Term id="threshold" lang={lang}>
+                        {t.thresholdLimited(decimal((g.threshold / 1000).toFixed(2), lang))}
+                      </Term>
+                    </span>
+                  )}
                   <span className="text-xs text-muted-foreground">
                     {" "}
-                    <Sci>{`${g.label}, ${formatTemperature(g.T9, lang)}`}</Sci>
+                    {linkTerms(g.label, lang, seen)}, {linkTerms(formatTemperature(g.T9, lang), lang, seen)}
                   </span>
                 </li>
               ))}
@@ -1067,9 +1126,9 @@ function ReactionPanel({
         )}
       </dl>
 
-      {r.statusNote && (
+      {(r.statusPlain || r.statusNote) && (
         <p className="mt-4 text-pretty text-xs leading-relaxed text-muted-foreground">
-          <Sci>{r.statusNote}</Sci>
+          {linkTerms(r.statusPlain || r.statusNote, lang, seen)}
         </p>
       )}
 
@@ -1080,6 +1139,99 @@ function ReactionPanel({
         {r.hasFile ? t.fullEntry : t.soFar}
         <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
       </Link>
+    </div>
+  )
+}
+
+/* -- a nuclide's reactions ---------------------------------------------------- */
+
+const SUP = "⁰¹²³⁴⁵⁶⁷⁸⁹"
+/** `¹⁴N`; the neutron is `n`. */
+function cellName(c: MapCell): string {
+  if (c.Z === 0) return "n"
+  return `${String(c.A).replace(/\d/g, (d) => SUP[Number(d)])}${c.symbol}`
+}
+
+function CellPanel({
+  cell,
+  reactions,
+  onPick,
+  onClose,
+}: {
+  cell: MapCell
+  reactions: MapReaction[]
+  onPick: (r: MapReaction) => void
+  onClose: () => void
+}) {
+  const lang = useLang()
+  const t = useDict().atlas
+  const name = cellName(cell)
+  const into = reactions.filter((r) => r.to.code === cell.code)
+  const outOf = reactions.filter((r) => r.from.code === cell.code)
+  const list = (items: MapReaction[]) => (
+    <ul className="mt-2 divide-y divide-border/70 border-y border-border/70">
+      {items.map((r) => (
+        <li key={r.id} className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => onPick(r)}
+            className="flex min-h-11 min-w-0 flex-1 flex-col items-start py-2 text-left"
+          >
+            <span className="font-serif text-[0.95rem] font-semibold hover:text-link">
+              <Sci>{r.label}</Sci>
+            </span>
+            {r.line && (
+              <span className="text-pretty text-xs leading-snug text-muted-foreground">
+                <Sci>{r.line}</Sci>
+              </span>
+            )}
+          </button>
+          <Link
+            href={localePath(lang, `/atlas/${r.id}`)}
+            aria-label={`${t.fullEntry}: ${r.label}`}
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-link"
+          >
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </li>
+      ))}
+    </ul>
+  )
+  return (
+    <div>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">{t.nuclide}</p>
+          <h3 className="mt-1 font-serif text-2xl font-semibold tracking-tight">
+            <Sci>{name}</Sci>
+          </h3>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {cell.stable ? t.stableNuclide : `${t.radioactive}${cell.halfLife ? `, t½ = ` : ""}`}
+            {!cell.stable && cell.halfLife && <Sci>{cell.halfLife}</Sci>}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label={t.close}
+          className="-mr-2 -mt-1 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
+        >
+          <X className="h-[1.125rem] w-[1.125rem]" />
+        </button>
+      </div>
+      {outOf.length > 0 && (
+        <section className="mt-5">
+          <h4 className="text-xs uppercase tracking-[0.1em] text-muted-foreground"><Sci>{t.cellFrom(name)}</Sci></h4>
+          {list(outOf)}
+        </section>
+      )}
+      {into.length > 0 && (
+        <section className="mt-5">
+          <h4 className="text-xs uppercase tracking-[0.1em] text-muted-foreground"><Sci>{t.cellTo(name)}</Sci></h4>
+          {list(into)}
+        </section>
+      )}
+      {reactions.length === 0 && <p className="mt-4 text-sm text-muted-foreground">{t.cellNone}</p>}
     </div>
   )
 }

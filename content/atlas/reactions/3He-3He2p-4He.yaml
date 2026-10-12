@@ -107,4 +107,7 @@ evaluations: [adelberger2011, acharya2025]
 open_questions:
   - The origin of the electron-screening enhancement, which is larger than expected.
   - The shape of the three-body proton spectrum and its effect on detection efficiencies.
+open_questions_it:
+  - "L'origine dell'aumento dovuto allo schermaggio elettronico, più grande del previsto."
+  - "La forma dello spettro dei protoni a tre corpi e il suo effetto sulle efficienze di rivelazione."
 related: [3He-ag-7Be, 2H-pg-3He, 3He-dp-4He]

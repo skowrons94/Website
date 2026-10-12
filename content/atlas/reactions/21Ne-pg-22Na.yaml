@@ -61,4 +61,7 @@ evaluations: [angulo1999]
 open_questions:
   - The origin of the discrepancy between the new and the earlier strengths of the 272.3 and 352.6 keV resonances.
   - An independent measurement of the 272.3 and 352.6 keV strengths with a different target and detection technique.
+open_questions_it:
+  - "L'origine della discrepanza tra le nuove e le precedenti intensità delle risonanze a 272,3 e 352,6 keV."
+  - "Una misura indipendente delle intensità a 272,3 e 352,6 keV con un bersaglio e una tecnica di rivelazione diversi."
 related: [21Na-bp-21Ne, 22Na-bp-22Ne, 20Ne-pg-21Na, 22Ne-pg-23Na]

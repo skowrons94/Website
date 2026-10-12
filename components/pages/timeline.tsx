@@ -24,6 +24,7 @@ export function TimelinePage({ lang }: { lang: Lang }) {
     text: e.text,
     categories: e.categories,
     luna: e.luna,
+    highlight: e.highlight,
     url: e.url,
     reactions: e.reactions.map((id) => ({
       id,

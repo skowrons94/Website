@@ -46,6 +46,12 @@ status_note_it: >-
   I dati sotterranei arrivano ora a 60 keV con un'incertezza sistematica del 7–8
   %; il tasso è più basso che nelle compilazioni basate sui dati del 1994, e i
   parametri delle risonanze sono stati rivisti.
+status_plain: >-
+  Measured underground down to low energies with an uncertainty under 10 %;
+  the rate came out lower than in the older tables.
+status_plain_it: >-
+  Misurata sotto terra fino a basse energie con un'incertezza sotto il 10 %;
+  il tasso è risultato più basso che nelle tabelle precedenti.
 methods: [direct-underground, direct-surface, anc]
 measurements:
   - year: 1994
@@ -80,5 +86,8 @@ evaluations: [acharya2025]
 open_questions:
   - The branching of the capture to the excited states of ¹⁴N below 300 keV, where only the LUNA data exist.
   - The cause of the 20–30 % difference between the recent data and the 1994 data set.
+open_questions_it:
+  - "La diramazione della cattura verso gli stati eccitati del ¹⁴N sotto 300 keV, dove esistono solo i dati di LUNA."
+  - "La causa della differenza del 20–30 % tra i dati recenti e l'insieme di dati del 1994."
 related: [12C-pg-13N, 13N-bp-13C, 14N-pg-15O]
 rmatrix: [14N]

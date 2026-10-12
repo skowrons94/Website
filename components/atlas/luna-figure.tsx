@@ -1,0 +1,148 @@
+import { Sci } from "@/components/sci"
+import { dict, type Lang } from "@/lib/i18n"
+import { cn } from "@/lib/utils"
+
+/**
+ * Why LUNA is underground, as one schematic picture: cosmic-ray muons rain on
+ * the mountain, about 1400 m of rock (3800 m w.e.) stops all but about one in
+ * a million, and in the halls below two accelerators (LUNA 400 kV and the
+ * 3.5 MV LUNA-MV of the Bellotti Ion Beam Facility) send their beams onto a
+ * target surrounded by a detector. Numbers as in facilities.yaml and the
+ * glossary; not to scale. The numbered labels are explained in an HTML list
+ * under the picture, which stays legible on a phone; the colours are the
+ * chart tokens, so the drawing follows the theme.
+ */
+
+const MOUNTAIN =
+  "M0,300 L60,262 L110,228 L160,178 L215,128 L262,82 L300,46 L338,72 L382,104 L430,140 L486,182 L548,226 L600,252 L640,266 L640,360 L0,360 Z"
+
+// Muons: [x0, y0, x1, y1, through]; the last one reaches the halls.
+const MUONS: [number, number, number, number, boolean][] = [
+  [118, 4, 150, 214, false],
+  [214, 4, 236, 150, false],
+  [292, 4, 282, 120, false],
+  [452, 4, 420, 196, false],
+  [560, 4, 520, 246, false],
+  [372, 4, 344, 304, true],
+]
+
+function Marker({ x, y, n }: { x: number; y: number; n: number }) {
+  return (
+    <g>
+      <circle cx={x} cy={y} r={11} fill="var(--viz-text)" />
+      <text x={x} y={y + 0.5} textAnchor="middle" dominantBaseline="central" fontSize={13} fontWeight={600} fill="var(--viz-surface)">
+        {n}
+      </text>
+    </g>
+  )
+}
+
+export function LunaFigure({ lang, className }: { lang: Lang; className?: string }) {
+  const t = dict(lang).atlas.lunaFigure
+  const muon = "var(--viz-series-2)"
+  const beam = "var(--viz-series-1)"
+  return (
+    <figure className={cn("rounded-lg border border-border p-3 sm:p-4", className)} style={{ background: "var(--viz-surface)" }}>
+      <svg viewBox="0 0 640 360" role="img" aria-labelledby="luna-figure-title" className="block h-auto w-full">
+        <title id="luna-figure-title">{t.alt}</title>
+        <defs>
+          <marker id="luna-muon-head" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 Z" fill={muon} />
+          </marker>
+          <marker id="luna-depth-head" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 Z" fill="var(--viz-text-muted)" />
+          </marker>
+        </defs>
+
+        {/* the mountain */}
+        <path d={MOUNTAIN} fill="var(--atlas-cell-strong)" stroke="var(--viz-text-muted)" strokeWidth={1.2} />
+        <text x={560} y={300} textAnchor="middle" fontSize={14} fill="var(--viz-text-muted)">
+          {t.rock}
+        </text>
+
+        {/* muons: most stop in the rock, about one in a million reaches the halls */}
+        {MUONS.map(([x0, y0, x1, y1, through], i) => (
+          <g key={i}>
+            <line
+              x1={x0}
+              y1={y0}
+              x2={x1}
+              y2={y1}
+              stroke={muon}
+              strokeWidth={through ? 1.6 : 2}
+              strokeDasharray={through ? "5 4" : undefined}
+              markerEnd="url(#luna-muon-head)"
+            />
+            {!through && (
+              <g stroke={muon} strokeWidth={2}>
+                <line x1={x1 - 5} y1={y1 + 6} x2={x1 + 5} y2={y1 + 16} />
+                <line x1={x1 + 5} y1={y1 + 6} x2={x1 - 5} y2={y1 + 16} />
+              </g>
+            )}
+          </g>
+        ))}
+        <Marker x={88} y={30} n={1} />
+
+        {/* depth */}
+        <line
+          x1={300}
+          y1={52}
+          x2={300}
+          y2={292}
+          stroke="var(--viz-text-muted)"
+          strokeWidth={1.4}
+          markerStart="url(#luna-depth-head)"
+          markerEnd="url(#luna-depth-head)"
+        />
+        <rect x={250} y={178} width={100} height={26} rx={4} fill="var(--atlas-cell-strong)" />
+        <text x={300} y={196} textAnchor="middle" fontSize={16} fontWeight={600} fill="var(--viz-text)">
+          ≈ 1400 m
+        </text>
+        <Marker x={238} y={191} n={2} />
+
+        {/* the motorway tunnel and the halls */}
+        <line x1={0} y1={338} x2={168} y2={338} stroke="var(--viz-text-muted)" strokeWidth={1.2} strokeDasharray="7 5" />
+        <line x1={492} y1={338} x2={640} y2={338} stroke="var(--viz-text-muted)" strokeWidth={1.2} strokeDasharray="7 5" />
+        <rect x={168} y={298} width={324} height={54} rx={8} fill="var(--viz-surface)" stroke="var(--viz-text-muted)" strokeWidth={1.2} />
+
+        {/* LUNA 400 kV */}
+        <rect x={180} y={311} width={46} height={28} rx={4} fill={beam} />
+        <line x1={226} y1={325} x2={268} y2={325} stroke={beam} strokeWidth={2.5} />
+        <circle cx={278} cy={325} r={10} fill="none" stroke="var(--viz-text)" strokeWidth={2} />
+        <circle cx={278} cy={325} r={2.5} fill="var(--viz-text)" />
+        <Marker x={203} y={290} n={3} />
+
+        {/* LUNA-MV, Bellotti Ion Beam Facility */}
+        <rect x={326} y={307} width={84} height={36} rx={5} fill={beam} />
+        <line x1={410} y1={325} x2={456} y2={325} stroke={beam} strokeWidth={2.5} />
+        <circle cx={466} cy={325} r={10} fill="none" stroke="var(--viz-text)" strokeWidth={2} />
+        <circle cx={466} cy={325} r={2.5} fill="var(--viz-text)" />
+        <Marker x={368} y={290} n={4} />
+        <Marker x={466} y={290} n={5} />
+
+        <text x={84} y={356} textAnchor="middle" fontSize={12} fill="var(--viz-text-muted)">
+          {t.tunnel}
+        </text>
+      </svg>
+
+      <figcaption className="mt-3 text-sm leading-relaxed text-muted-foreground">
+        <ol className="space-y-1.5">
+          {t.items.map((item, i) => (
+            <li key={i} className="flex gap-2.5 text-pretty">
+              <span
+                aria-hidden
+                className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-foreground text-[0.6875rem] font-semibold text-background"
+              >
+                {i + 1}
+              </span>
+              <span>
+                <Sci>{item}</Sci>
+              </span>
+            </li>
+          ))}
+        </ol>
+        <p className="mt-2 text-xs">{t.note}</p>
+      </figcaption>
+    </figure>
+  )
+}

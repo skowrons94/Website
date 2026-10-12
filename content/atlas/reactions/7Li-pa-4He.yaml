@@ -72,4 +72,6 @@ measurements:
 evaluations: [descouvemont2004]
 open_questions:
   - The electron-screening potential extracted from low-energy data, which exceeds the atomic-physics estimate.
+open_questions_it:
+  - "Il potenziale di schermaggio elettronico ricavato dai dati a bassa energia, che supera la stima della fisica atomica."
 related: [7Be-ec-7Li, 3H-ag-7Li, 3He-ag-7Be]

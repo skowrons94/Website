@@ -12,6 +12,8 @@
 #              except a facility opening, which may cite an official page via url
 #   url        optional official page (Nobel Prize pages, facility pages)
 #   reactions  optional reaction ids from networks.yaml
+#   highlight  optional true: one of the eight events of the "Highlights" filter,
+#              the short version of the story (the atlas' start-here card)
 #   title_it, text_it   the Italian title and text, for /it/atlas/timeline
 #              (the English is shown where they are missing; the anchor of an
 #              event is always made from the English title)
@@ -23,6 +25,7 @@ events:
   - year: 1920
     month: 8
     title: Eddington proposes that stars burn hydrogen into helium
+    highlight: true
     title_it: Eddington propone che le stelle brucino idrogeno in elio
     category: theory
     text: >-
@@ -42,6 +45,7 @@ events:
 
   - year: 1928
     title: Gamow explains how particles cross the Coulomb barrier
+    highlight: true
     title_it: Gamow spiega come le particelle attraversano la barriera coulombiana
     category: theory
     text: >-
@@ -111,9 +115,10 @@ events:
 
   - year: 1939
     month: 3
-    title: Bethe's "Energy production in stars"
+    title: Bethe’s “Energy production in stars”
+    highlight: true
     title_it: >-
-      "Energy production in stars" di Bethe
+      “Energy production in stars” di Bethe
     category: theory
     text: >-
       Hans Bethe worked out the carbon–nitrogen cycle in detail and estimated
@@ -241,6 +246,7 @@ events:
   - year: 1957
     month: 10
     title: The B²FH paper
+    highlight: true
     title_it: L'articolo B²FH
     category: theory
     text: >-
@@ -280,6 +286,7 @@ events:
   - year: 1968
     month: 5
     title: Davis detects solar neutrinos, and the solar neutrino problem begins
+    highlight: true
     title_it: Davis rivela i neutrini solari, e nasce il problema dei neutrini solari
     category: observation
     text: >-
@@ -403,6 +410,7 @@ events:
   - year: 1994
     month: 10
     title: LUNA, the first underground accelerator
+    highlight: true
     title_it: LUNA, il primo acceleratore sotterraneo
     category: luna
     text: >-
@@ -488,6 +496,7 @@ events:
 
   - year: 2002
     title: SNO shows that solar neutrinos change flavour
+    highlight: true
     title_it: SNO mostra che i neutrini solari cambiano sapore
     category: observation
     text: >-
@@ -769,6 +778,7 @@ events:
   - year: 2020
     month: 11
     title: Borexino detects CNO neutrinos
+    highlight: true
     title_it: Borexino rivela i neutrini CNO
     category: observation
     text: >-

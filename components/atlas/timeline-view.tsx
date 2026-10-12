@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { ExternalLink } from "lucide-react"
 
 import { LunaBadge } from "@/components/atlas/status-badge"
@@ -18,12 +18,15 @@ export interface TimelineItem {
   text: string
   categories: string[]
   luna: boolean
+  highlight: boolean
   url: string | null
   reactions: { id: string; label: string }[]
   refs: { key: string; label: string; href?: string }[]
 }
 
 const CATEGORIES = ["theory", "experiment", "observation", "facility", "luna"]
+/** Not a category: the few events marked `highlight` in timeline.yaml. */
+const HIGHLIGHTS = "highlights"
 
 /**
  * The history of the field as one vertical line, grouped by decade, with chips
@@ -51,7 +54,7 @@ export function TimelineView({ events }: { events: TimelineItem[] }) {
   // so the page itself stays static.
   useEffect(() => {
     const value = new URLSearchParams(window.location.search).get("only")
-    if (value && CATEGORIES.includes(value)) setOnly(value)
+    if (value && (CATEGORIES.includes(value) || value === HIGHLIGHTS)) setOnly(value)
   }, [])
 
   const choose = (value: string | null) => {
@@ -65,7 +68,12 @@ export function TimelineView({ events }: { events: TimelineItem[] }) {
   }
 
   const visible = useMemo(
-    () => (only ? events.filter((e) => e.categories.includes(only)) : events),
+    () =>
+      only === HIGHLIGHTS
+        ? events.filter((e) => e.highlight)
+        : only
+          ? events.filter((e) => e.categories.includes(only))
+          : events,
     [events, only],
   )
 
@@ -80,6 +88,45 @@ export function TimelineView({ events }: { events: TimelineItem[] }) {
     return groups
   }, [visible])
 
+  const highlights = useMemo(() => events.filter((e) => e.highlight).length, [events])
+
+  // The decade in view, marked in the bar (aria-current) and kept visible in
+  // it when the bar scrolls sideways on a phone.
+  const [current, setCurrent] = useState<number | null>(null)
+  const bar = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const headings = decades
+      .map((d) => document.getElementById(`d${d.decade}`))
+      .filter((el): el is HTMLElement => el !== null)
+    if (headings.length === 0 || typeof IntersectionObserver === "undefined") return
+    const pick = () => {
+      // The last heading above a line just under the sticky bar.
+      const line = (bar.current?.getBoundingClientRect().bottom ?? 0) + 24
+      let found = decades[0]?.decade ?? null
+      for (const el of headings) {
+        if (el.getBoundingClientRect().top <= line) found = Number(el.id.slice(1))
+      }
+      setCurrent(found)
+    }
+    pick()
+    const observer = new IntersectionObserver(pick, { rootMargin: "0px 0px -60% 0px", threshold: [0, 1] })
+    for (const el of headings) observer.observe(el)
+    window.addEventListener("scroll", pick, { passive: true })
+    return () => {
+      observer.disconnect()
+      window.removeEventListener("scroll", pick)
+    }
+  }, [decades])
+  useEffect(() => {
+    const row = bar.current?.querySelector<HTMLElement>("[data-scroll-row]")
+    const link = row?.querySelector<HTMLElement>('[aria-current="true"]')
+    if (!row || !link || row.scrollWidth <= row.clientWidth) return
+    const left = link.offsetLeft - row.offsetLeft
+    if (left < row.scrollLeft || left + link.offsetWidth > row.scrollLeft + row.clientWidth) {
+      row.scrollTo({ left: Math.max(0, left - 16), behavior: "smooth" })
+    }
+  }, [current])
+
   const counts = useMemo(() => {
     const c = new Map<string, number>()
     for (const e of events) for (const k of e.categories) c.set(k, (c.get(k) ?? 0) + 1)
@@ -89,24 +136,46 @@ export function TimelineView({ events }: { events: TimelineItem[] }) {
   return (
     <div>
       {/* -- filters and the decade bar ------------------------------------ */}
-      <div className="sticky top-16 z-20 -mx-5 border-b border-border/70 bg-background/95 px-5 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/85 sm:-mx-8 sm:px-8">
-        <div role="group" aria-label={t.show} className="flex flex-wrap gap-1.5">
-          <Chip on={only === null} onClick={() => choose(null)}>
-            {t.all} <span className="tabular opacity-70">{events.length}</span>
-          </Chip>
-          {CATEGORIES.filter((c) => counts.get(c)).map((c) => (
-            <Chip key={c} on={only === c} onClick={() => choose(only === c ? null : c)}>
-              {label(c)} <span className="tabular opacity-70">{counts.get(c)}</span>
+      {/* On a phone, filters and decades are one row that scrolls sideways;
+          from sm up, two rows. */}
+      <div
+        ref={bar}
+        className="sticky top-16 z-20 -mx-5 border-b border-border/70 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/85 sm:-mx-8"
+      >
+        <div
+          data-scroll-row
+          className="flex snap-x items-center gap-1.5 overflow-x-auto whitespace-nowrap px-5 py-2.5 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:whitespace-normal sm:px-8 sm:py-3 [&::-webkit-scrollbar]:hidden"
+        >
+          <div role="group" aria-label={t.show} className="flex shrink-0 gap-1.5 sm:flex-wrap">
+            {highlights > 0 && (
+              <Chip on={only === HIGHLIGHTS} onClick={() => choose(only === HIGHLIGHTS ? null : HIGHLIGHTS)}>
+                {t.highlights} <span className="tabular opacity-70">{highlights}</span>
+              </Chip>
+            )}
+            <Chip on={only === null} onClick={() => choose(null)}>
+              {t.all} <span className="tabular opacity-70">{events.length}</span>
             </Chip>
-          ))}
+            {CATEGORIES.filter((c) => counts.get(c)).map((c) => (
+              <Chip key={c} on={only === c} onClick={() => choose(only === c ? null : c)}>
+                {label(c)} <span className="tabular opacity-70">{counts.get(c)}</span>
+              </Chip>
+            ))}
+          </div>
+          <span aria-hidden className="mx-1 h-5 w-px shrink-0 bg-border sm:hidden" />
+          <nav aria-label={t.decades} className="flex shrink-0 gap-x-1 text-xs text-muted-foreground sm:basis-full sm:flex-wrap sm:gap-x-1.5">
+            {decades.map((d) => (
+              <a
+                key={d.decade}
+                href={`#d${d.decade}`}
+                aria-current={current === d.decade ? "true" : undefined}
+                className="tabular inline-flex min-h-10 snap-start items-center rounded-full px-2 underline-offset-2 hover:text-foreground hover:underline aria-[current=true]:bg-secondary aria-[current=true]:font-medium aria-[current=true]:text-foreground sm:min-h-7"
+              >
+                {d.decade ? t.decade(d.decade) : t.undated}
+              </a>
+            ))}
+          </nav>
         </div>
-        <nav aria-label={t.decades} className="mt-1.5 flex gap-x-3.5 overflow-x-auto whitespace-nowrap pb-0.5 text-xs text-muted-foreground [scrollbar-width:none]">
-          {decades.map((d) => (
-            <a key={d.decade} href={`#d${d.decade}`} className="tabular inline-block py-1.5 underline-offset-2 hover:text-foreground hover:underline">
-              {d.decade ? t.decade(d.decade) : t.undated}
-            </a>
-          ))}
-        </nav>
+        <span aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-background to-transparent sm:hidden" />
       </div>
 
       {/* -- the line -------------------------------------------------------- */}
@@ -242,7 +311,7 @@ function Chip({
       aria-pressed={on}
       onClick={onClick}
       className={cn(
-        "inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3 py-1 text-sm sm:min-h-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        "inline-flex min-h-10 shrink-0 snap-start items-center gap-1.5 rounded-full border px-3 py-1 text-sm sm:min-h-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         on
           ? "border-foreground bg-foreground text-background"
           : "border-border text-muted-foreground hover:border-foreground/40 hover:text-foreground",

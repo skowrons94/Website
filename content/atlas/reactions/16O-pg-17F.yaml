@@ -44,6 +44,14 @@ status_note_it: >-
   Una reazione di cattura diretta non risonante il cui andamento in energia è
   fissato dalla teoria; il tasso è noto a circa il 7 %, limitato dalla
   normalizzazione dei dati in superficie.
+status_plain: >-
+  Known to about 7 %: how the cross section changes with energy is well
+  understood from theory, and the remaining uncertainty is in the overall
+  scale of the measurements.
+status_plain_it: >-
+  Nota a circa il 7 %: come la sezione d'urto varia con l'energia è ben
+  compreso dalla teoria, e l'incertezza residua riguarda la scala
+  complessiva delle misure.
 methods: [direct-surface, theory]
 measurements:
   - year: 1997
@@ -57,5 +65,7 @@ measurements:
 evaluations: [adelberger2011, iliadis2008, acharya2025]
 open_questions:
   - Direct data closer to the Gamow window, to test the predicted rise of the S-factor at low energy.
+open_questions_it:
+  - "Dati diretti più vicini alla finestra di Gamow, per verificare l'aumento previsto del fattore S a bassa energia."
 related: [17F-bp-17O, 15N-pg-16O, 17O-pa-14N]
 rmatrix: [17F]
