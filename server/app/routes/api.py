@@ -211,7 +211,12 @@ def open_evaluation(evaluation_id):
     503 + Retry-After when every slot is busy.
     """
     evaluation = evaluations_module.get(_root(), evaluation_id)
+    client = _client_token()
     session = _manager().create(evaluation)
+    if client and not _manager().attach_client(client, session):
+        # The page was left while this /open was on its way.
+        _manager().close(session.id)
+        return jsonify({"error": "the page that asked for this session has gone"}), 410
     stored = initial_module.read(evaluation.path) or {}
     payload = {
         "session_id": session.id,
@@ -264,6 +269,21 @@ def close_session_beacon(session_id):
     """
     _manager().close(session_id)
     return jsonify({"closed": True})
+
+
+def _client_token():
+    token = request.args.get("client", "")
+    return token if 8 <= len(token) <= 64 and token.isalnum() else ""
+
+
+@bp.route("/clients/<token>/close", methods=["POST"])
+def close_client(token):
+    """Close every session a page opened (``?client=<token>`` on /open), for
+    the page's ``sendBeacon`` on unload: it also catches a session whose
+    /open had not answered yet, which the page could not name."""
+    if not (8 <= len(token) <= 64 and token.isalnum()):
+        return jsonify({"closed": 0})
+    return jsonify({"closed": _manager().close_client(token)})
 
 
 @bp.route("/sessions/<session_id>/ping", methods=["POST"])

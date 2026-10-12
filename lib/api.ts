@@ -569,9 +569,33 @@ export function getInitial(id: string, signal?: AbortSignal): Promise<InitialSta
   return optional("initial", () => request<InitialState>(`/api/evaluations/${encodeURIComponent(id)}/initial`, { signal }))
 }
 
+/*
+ * One token per page view, sent with every /open: leaving the page releases
+ * every session opened under it with one beacon -- including one whose /open
+ * was still on its way, which no session id could name yet. A page restored
+ * from the back/forward cache takes a new token (its old sessions are gone).
+ */
+const newToken = () =>
+  typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID().replace(/-/g, "")
+    : Math.random().toString(36).slice(2) + Date.now().toString(36)
+let clientToken = ""
+function pageToken(): string {
+  if (clientToken || typeof window === "undefined") return clientToken
+  clientToken = newToken()
+  window.addEventListener("pagehide", () => {
+    navigator.sendBeacon?.(`${API_BASE}/api/clients/${clientToken}/close`, new Blob([], { type: "text/plain" }))
+  })
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted) clientToken = newToken()
+  })
+  return clientToken
+}
+
 export function openEvaluation(id: string): Promise<OpenedSession> {
+  const token = IN_BROWSER ? "" : pageToken()
   return request<OpenedSession>(
-    `/api/evaluations/${encodeURIComponent(id)}/open`,
+    `/api/evaluations/${encodeURIComponent(id)}/open${token ? `?client=${token}` : ""}`,
     { method: "POST" },
   )
 }

@@ -548,3 +548,53 @@ def test_spare_being_built_gives_way_to_a_visitor(fake):
         assert manager._pending == 0 and not manager._spare.get("Y")
     finally:
         manager.close_all()
+
+
+# -- sessions released by page token (routes.api.close_client) -------------------
+
+class _FakeSession:
+    def __init__(self, sid, heartbeat=False):
+        import time as _t
+        self.id = sid
+        self.closed_ = False
+        self.heartbeat = heartbeat
+        self.last_seen = self.last_used = _t.time() - 30
+
+    def close(self):
+        self.closed_ = True
+
+    def busy(self):
+        return False
+
+    def unseen_for(self):
+        import time as _t
+        return _t.time() - self.last_seen
+
+    def idle_for(self):
+        import time as _t
+        return _t.time() - self.last_used
+
+
+def test_close_client_closes_its_sessions_and_refuses_late_opens():
+    from app.session import SessionManager
+    manager = SessionManager()
+    a, b, other = _FakeSession("a"), _FakeSession("b"), _FakeSession("c")
+    for s in (a, b, other):
+        manager._sessions[s.id] = s
+    assert manager.attach_client("page1token", a)
+    assert manager.attach_client("page1token", b)
+    assert manager.attach_client("page2token", other)
+    assert manager.close_client("page1token") == 2
+    assert a.closed_ and b.closed_ and not other.closed_
+    # An /open of the departed page that finishes afterwards is refused.
+    late = _FakeSession("d")
+    assert not manager.attach_client("page1token", late)
+
+
+def test_session_that_never_pinged_is_evictable_sooner():
+    from app.session import SessionManager
+    manager = SessionManager(evict_after=60)
+    silent, live = _FakeSession("silent"), _FakeSession("live", heartbeat=True)
+    manager._sessions = {"silent": silent, "live": live}
+    # Both last seen 30 s ago: only the one without a heartbeat may go.
+    assert manager._evict_candidate() is silent

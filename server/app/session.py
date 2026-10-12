@@ -1061,9 +1061,14 @@ class SessionManager:
         seen -- a request or a heartbeat -- for ``evict_after`` seconds: a
         page that is open and visible is never closed under its reader.
         Caller holds ``_lock``."""
+        # A page that is open pings at once; a session that has never pinged
+        # belongs to a page that went away before it could (or to a client
+        # without heartbeats) and is protected only briefly.
+        def grace(s):
+            return self.evict_after if s.heartbeat else min(self.evict_after, 15.0)
         free = [s for s in self._sessions.values()
-                if not s.busy() and s.unseen_for() >= self.evict_after
-                and s.idle_for() >= self.evict_after]
+                if not s.busy() and s.unseen_for() >= grace(s)
+                and s.idle_for() >= grace(s)]
         if not free:
             return None
         return min(free, key=lambda s: max(s.last_seen, s.last_used))
@@ -1081,6 +1086,41 @@ class SessionManager:
             session = self._sessions.pop(session_id, None)
         if session is not None:
             session.close()
+
+    # -- sessions by page (see routes.api.close_client) --------------------------
+
+    _GONE_TTL = 600.0
+
+    def attach_client(self, token, session) -> bool:
+        """Record that the page ``token`` opened ``session``; False if that
+        page has already gone (the caller then closes the session)."""
+        with self._lock:
+            clients = self.__dict__.setdefault("_clients", {})
+            gone = self.__dict__.setdefault("_gone_clients", {})
+            now = time.time()
+            for t in [t for t, at in gone.items() if now - at > self._GONE_TTL]:
+                del gone[t]
+            if token in gone:
+                return False
+            clients.setdefault(token, set()).add(session.id)
+            return True
+
+    def close_client(self, token) -> int:
+        """Close every session the page ``token`` opened, and refuse any it
+        still has on the way.  Returns how many were closed."""
+        with self._lock:
+            clients = self.__dict__.setdefault("_clients", {})
+            gone = self.__dict__.setdefault("_gone_clients", {})
+            gone[token] = time.time()
+            ids = clients.pop(token, set())
+        closed = 0
+        for session_id in ids:
+            with self._lock:
+                present = session_id in self._sessions
+            if present:
+                self.close(session_id)
+                closed += 1
+        return closed
 
     def close_all(self):
         """Shut down every session this manager owns, spares included."""
