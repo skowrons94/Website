@@ -25,9 +25,10 @@
  *   calculated alongside its data, not after it.
  * - Each worker is a Pyodide of its own with its model: ¹³N's three workers
  *   take about 0.7 GB in all, ⁷Be's 1.5 GB. A phone or a small machine
- *   starts the extrapolations' worker only when they are first shown. The runtime and the evaluation are downloaded once: the role
- *   workers start when the data worker has them (worker.js keeps the zips in
- *   the Cache Storage; Pyodide's own files are in the HTTP cache).
+ *   starts the extrapolations' worker only when they are first shown.
+ * - Everything is downloaded once: the role workers start when the data
+ *   worker has the runtime and the evaluation, and worker.js keeps the large
+ *   files (Pyodide, NumPy, the zips) in the Cache Storage.
  */
 
 const ROOT = `${process.env.BASE_PATH ?? ""}/azure2`

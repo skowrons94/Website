@@ -68,10 +68,10 @@ grows to about 0.7 GB with ¹³N's three workers, 1.0 GB with ²⁴Mg's and
 1.5 GB with ⁷Be's (Chromium; a fourth with a grid open). So a phone (a
 coarse pointer) or a machine reporting under 8 GB (`navigator.deviceMemory`)
 starts the extrapolations' worker only when they are first shown. The files are downloaded once: the role
-workers start when the data worker has the runtime and the evaluation, the
-zips are kept in the Cache Storage under the hash `assemble.py` writes to
-`manifest.json` (a new build is fetched anew), and Pyodide's own files come
-from the browser's HTTP cache.
+workers start when the data worker has the runtime and the evaluation, and
+the large files (Pyodide's WebAssembly and standard library, NumPy, the zips)
+are kept in the Cache Storage under the hash `assemble.py` writes to
+`manifest.json` (a new build is fetched anew).
 
 **One thread.** WebAssembly side modules have no OpenMP; `omp.h` makes every
 parallel region run on one thread, so the engine calls take 2–6× what they take

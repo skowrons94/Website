@@ -146,10 +146,12 @@ def main():
             shutil.copy(os.path.join(source, "initial-extrapolations.json"),
                         os.path.join(a.out, "evaluations", entry, "extrapolations.json"))
 
-    # The wheels, and a hash of each zip: the workers keep the zips in the
+    # The wheels, and a hash of the large files: the workers keep them in the
     # Cache Storage under it (worker.js), so a new build is fetched anew.
     hashes = {}
-    for name in ["runtime.zip"] + sorted(
+    big = ["pyodide/pyodide.asm.wasm", "pyodide/python_stdlib.zip",
+           "wheels/" + os.path.basename(a.numpy)]
+    for name in big + ["runtime.zip"] + sorted(
             "evaluations/" + n for n in os.listdir(os.path.join(a.out, "evaluations"))
             if n.endswith(".zip")):
         with open(os.path.join(a.out, name), "rb") as f:

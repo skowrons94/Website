@@ -33,9 +33,9 @@
  *                                   shipped parameters, fetched by the page
  *                                   itself before any worker starts
  *
- * The zips are kept in the Cache Storage (by their hash), so the second and
- * third worker -- and the next visit -- unpack them without downloading
- * them again; Pyodide's own files come from the browser's HTTP cache.
+ * The large files (Pyodide's WebAssembly and standard library, NumPy, the
+ * zips) are kept in the Cache Storage under their hash, so the second and
+ * third worker -- and the next visit -- do not download them again.
  */
 
 const BASE = self.location.href.replace(/[^/]*$/, "")
@@ -51,40 +51,59 @@ function progress(text) {
   self.postMessage({ progress: text })
 }
 
-/** A file of this build, from the Cache Storage when it holds this version. */
-async function fetchBytes(name) {
+const netFetch = self.fetch.bind(self)
+
+/**
+ * A file of this build (`name` relative to this directory), from the Cache
+ * Storage when it holds this version (manifest.json's hash), else from the
+ * network, then kept there.
+ */
+async function cachedResponse(name) {
   const hash = manifest?.hashes?.[name]
   const url = `${BASE}${name}${hash ? `?v=${hash}` : ""}`
   let cache = null
   try {
     cache = hash && self.caches ? await caches.open(CACHE) : null
     const hit = cache && (await cache.match(url))
-    if (hit) return new Uint8Array(await hit.arrayBuffer())
+    if (hit) return hit
   } catch {
     cache = null // no Cache Storage here (an insecure origin, private mode)
   }
-  const response = await fetch(url)
+  const response = await netFetch(url)
   if (!response.ok) throw new Error(`${name}: HTTP ${response.status}`)
-  const bytes = new Uint8Array(await response.arrayBuffer())
   if (cache) {
     try {
       // Older versions of this file go.
       for (const old of await cache.keys()) {
         if (old.url.split("?")[0] === url.split("?")[0] && old.url !== url) await cache.delete(old)
       }
-      await cache.put(url, new Response(bytes.slice()))
+      await cache.put(url, response.clone())
     } catch {
       /* full or blocked: the HTTP cache still has it */
     }
   }
-  return bytes
+  return response
+}
+
+async function fetchBytes(name) {
+  return new Uint8Array(await (await cachedResponse(name)).arrayBuffer())
+}
+
+// Pyodide's own downloads (its WebAssembly, the standard library, NumPy) go
+// through the Cache Storage too: the second and third worker would otherwise
+// download the 8.6 MB engine again.
+self.fetch = (input, init) => {
+  const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url
+  const name = url.startsWith(BASE) ? url.slice(BASE.length).split("?")[0] : null
+  if (name && manifest?.hashes?.[name]) return cachedResponse(name)
+  return netFetch(input, init)
 }
 
 async function boot() {
   progress("Loading Python")
+  manifest = await (await netFetch(`${BASE}manifest.json`, { cache: "no-cache" })).json()
   importScripts(`${BASE}pyodide/pyodide.js`)
   const pyodide = await loadPyodide({ indexURL: `${BASE}pyodide/` })
-  manifest = await (await fetch(`${BASE}manifest.json`, { cache: "no-cache" })).json()
 
   progress("Loading NumPy and Flask")
   await pyodide.loadPackage(manifest.wheels.map((w) => `${BASE}wheels/${w}`))
