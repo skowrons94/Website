@@ -119,6 +119,17 @@ class Session:
         self._fine_built = False
         # Handed over from a spare (ready, or still being prepared).
         self.from_spare = False
+        # The page that opened it (``?client=`` on /open), if it said.
+        self.client = None
+        # Called with (key, seconds) when a step is measured (prepare_<step>),
+        # so the manager keeps the last duration of each step on this server.
+        self.on_measured = None
+        # Paused at some point during the step under way (its duration then
+        # says nothing about how long the step takes).
+        self._paused_in_step = False
+        # When each step started (time.time()), and how long it took.
+        self.step_started = {}
+        self.step_took = {}
         # Called with +1/-1 around a visitor's own preparation (not a
         # spare's), so the manager can give it the machine (SessionManager).
         self.on_visitor_work = None
@@ -177,6 +188,8 @@ class Session:
         if sig is None or self._paused == stop or (stop and self._closed):
             return
         self._paused = stop
+        if stop:
+            self._paused_in_step = True
         try:
             pids = self.engine.pids() if hasattr(self.engine, "pids") else {}
         except Exception:
@@ -431,6 +444,8 @@ class Session:
                     return False
                 self.preparing = step
                 started = self._step_started = time.time()
+                self.step_started[step] = started
+                self._paused_in_step = self._paused
                 try:
                     self.engine.prepare(step)
                 except EngineError as err:
@@ -448,8 +463,15 @@ class Session:
                 self.role_used[step] = time.time()
                 if step == "fine":
                     self._fine_built = True
+                took = time.time() - started
+                self.step_took[step] = round(took, 2)
                 log.info("session %s (%s): prepared %s in %.1f s", self.id,
-                         self.evaluation.id, step, time.time() - started)
+                         self.evaluation.id, step, took)
+                if self.on_measured is not None and not self._paused_in_step:
+                    try:
+                        self.on_measured(f"prepare_{step}", took)
+                    except Exception:
+                        log.exception("recording a timing failed")
                 return True
         finally:
             if slots is not None:
@@ -523,6 +545,11 @@ class Session:
             "preparing_elapsed": (round(time.time() - started, 1)
                                   if started and self.preparing else None),
             "pending": [s for s in PREPARE_STEPS if s not in self.prepared],
+            # When each step started (epoch seconds; ``now`` is the server's
+            # clock, to compare with) and how long the finished ones took.
+            "step_started": {k: round(v, 2) for k, v in self.step_started.items()},
+            "step_took": dict(self.step_took),
+            "now": round(time.time(), 2),
             "from_spare": self.from_spare,
             "paused": self._paused,
             "running": [r for r in ROLES if self.engine.has_role(r)],
@@ -694,6 +721,11 @@ class SessionManager:
         if evict_after is None:
             evict_after = max(60.0, 2 * max(5, heartbeat_ttl // 4))
         self.evict_after = evict_after
+        # The last measured duration of each step on this server, by
+        # evaluation: {"7Be": {"open_cold": 2.1, "prepare_fine": 13.0}}.
+        # The page's timer counts down from these (live, unlike the
+        # warm-up's timings in initial.json).
+        self._measured: Dict[str, Dict[str, float]] = {}
 
     # -- reaper ---------------------------------------------------------------
 
@@ -711,11 +743,45 @@ class SessionManager:
             except Exception:
                 log.exception("session reaper failed")
 
+    def record(self, evaluation_id, key, seconds):
+        """Keep ``seconds`` as the last measured duration of ``key``
+        (open_cold, prepare_<step>) for ``evaluation_id``."""
+        with self._lock:
+            self._measured.setdefault(evaluation_id, {})[key] = round(float(seconds), 2)
+
+    def measured(self, evaluation_id) -> Dict[str, float]:
+        with self._lock:
+            return dict(self._measured.get(evaluation_id, {}))
+
+    def availability(self, evaluation_id) -> Dict:
+        """What a page about to open ``evaluation_id`` can expect: a spare
+        ready (opening takes a moment) or being built (it is handed over
+        unfinished), or neither (a cold open), and the builds sharing the
+        cores now."""
+        with self._lock:
+            ready = any(not s.closed for s in self._spare.get(evaluation_id, []))
+            building = any(not r["claimed"] and not r.get("cancelled")
+                           for r in self._wip.get(evaluation_id, []))
+            full = (len(self._sessions) + self._pending + self._spare_count()
+                    >= self.max_sessions)
+        return {"spare_ready": ready, "spare_building": building,
+                "full": full, "builds": self.builds(),
+                "measured": self.measured(evaluation_id)}
+
+    def _measuring(self, session):
+        evaluation_id = session.evaluation.id
+        session.on_measured = lambda key, seconds: self.record(evaluation_id, key, seconds)
+
     def expired(self, session) -> bool:
         if session.closed:
             return True
         if session.busy():
             return False
+        if session.client and not session.heartbeat:
+            # Opened by a page that sends heartbeats (it named itself on
+            # /open) but never pinged: the page moved on while the session
+            # was opening (a client-side navigation), so nobody will.
+            return session.unseen_for() > self.heartbeat_ttl
         if session.heartbeat:
             return (session.unseen_for() > self.heartbeat_ttl
                     or session.idle_for() > self.idle_ttl)
@@ -795,6 +861,7 @@ class SessionManager:
 
         session_id = uuid.uuid4().hex
         self._visitor_working(+1)
+        opening = time.time()
         try:
             session = Session(session_id, evaluation,
                               omp_threads=self.omp_threads, timeout=self.timeout,
@@ -808,6 +875,8 @@ class SessionManager:
         finally:
             self._visitor_working(-1)
         session.on_visitor_work = self._visitor_working
+        self.record(evaluation.id, "open_cold", time.time() - opening)
+        self._measuring(session)
 
         with self._lock:
             self._pending -= 1
@@ -965,10 +1034,13 @@ class SessionManager:
             record = {"session": None, "claimed": False, "counted": True}
             self._wip.setdefault(evaluation.id, []).append(record)
         try:
+            opening = time.time()
             spare = Session(f"spare-{uuid.uuid4().hex}", evaluation,
                             omp_threads=self.omp_threads, timeout=self.timeout,
                             prepare_threads=self.prepare_threads,
                             prepare_slots=self.prepare_slots)
+            self.record(evaluation.id, "open_cold", time.time() - opening)
+            self._measuring(spare)
         except Exception:
             log.exception("could not open a spare session of %s", evaluation.id)
             with self._wip_cond:
@@ -1103,6 +1175,7 @@ class SessionManager:
             if token in gone:
                 return False
             clients.setdefault(token, set()).add(session.id)
+            session.client = token
             return True
 
     def close_client(self, token) -> int:

@@ -15,6 +15,7 @@ Shape of a client's interaction:
                                               an energy × angle grid, on request
     GET  /api/sessions/<sid>/fine             the model on an extended fine grid
     POST /api/sessions/<sid>/prepare          build the derived models (waits for them)
+    GET  /api/evaluations/<id>/availability   spare ready or not, live timings
     GET  /api/sessions/<sid>/status           what is prepared, what is being built
     POST /api/sessions/<sid>/ping             heartbeat: the page is still open
 
@@ -26,6 +27,7 @@ status codes, is in server/README.md ("API").
 import logging
 import os
 import threading
+import time
 from datetime import datetime
 
 from flask import Blueprint, current_app, jsonify, request, send_file
@@ -202,6 +204,25 @@ def initial_extrapolations(evaluation_id):
     return response
 
 
+@bp.route("/evaluations/<evaluation_id>/availability", methods=["GET"])
+def evaluation_availability(evaluation_id):
+    """``{spare_ready, spare_building, full, builds, measured}``: whether an
+    /open now would get a prepared spare, one still being built, or start
+    cold, and the last measured durations (``open_cold``, ``open_spare``,
+    ``prepare_<step>``) on this server -- the page's first estimate.
+    Not cached."""
+    evaluation = evaluations_module.get(_root(), evaluation_id)
+    manager = _manager()
+    if hasattr(manager, "availability"):
+        payload = manager.availability(evaluation.id)
+    else:
+        payload = {"spare_ready": False, "spare_building": False, "full": False,
+                   "builds": 0, "measured": {}}
+    response = jsonify(payload)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
 @bp.route("/evaluations/<evaluation_id>/open", methods=["POST"])
 def open_evaluation(evaluation_id):
     """Launch an AZURE2 instance for this evaluation and return its session.
@@ -212,7 +233,10 @@ def open_evaluation(evaluation_id):
     """
     evaluation = evaluations_module.get(_root(), evaluation_id)
     client = _client_token()
+    asked = time.time()
     session = _manager().create(evaluation)
+    if session.from_spare and hasattr(_manager(), "record"):
+        _manager().record(evaluation.id, "open_spare", time.time() - asked)
     if client and not _manager().attach_client(client, session):
         # The page was left while this /open was on its way.
         _manager().close(session.id)
@@ -233,6 +257,8 @@ def open_evaluation(evaluation_id):
         "prepared": sorted(session.prepared),
         "preparing": session.preparing,
         "builds": _manager().builds(),
+        # The last measured duration of each step on this server (live).
+        "measured": _measured(evaluation.id),
     }
     if not stored or "fine" not in stored or not initial_module.has_extrapolations(evaluation.path):
         # The first session of a model writes its initial.json.
@@ -298,11 +324,20 @@ def ping_session(session_id):
     return jsonify(_status(session))
 
 
+def _measured(evaluation_id):
+    manager = _manager()
+    return manager.measured(evaluation_id) if hasattr(manager, "measured") else {}
+
+
 def _status(session):
     status = session.status()
     # Model builds running on the machine (this one's included): how much
-    # the cores are shared, which the page's estimate scales by.
+    # the cores are shared.
     status["builds"] = _manager().builds()
+    # The last measured duration of each step on this server, for this
+    # evaluation (``prepare_<step>``, ``open_cold``, ``open_spare``): the
+    # page counts the step under way down from it.
+    status["measured"] = _measured(session.evaluation.id)
     return status
 
 
