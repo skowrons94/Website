@@ -68,6 +68,8 @@ export interface Publication {
   highlight?: boolean
   /** Free text shown in place of a journal, e.g. "under review at Nature Physics". */
   status?: string
+  /** Topic tags; `luna` marks a paper of the LUNA collaboration (the LUNA filter). */
+  tags?: string[]
 }
 
 export interface Profile {

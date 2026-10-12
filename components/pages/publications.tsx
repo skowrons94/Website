@@ -18,6 +18,9 @@ const isFirstAuthor = (p: Publication) => /^J\. Skowronski\b/.test(p.authors.tri
 /** Submitted but not out yet: shown apart, and not counted as peer reviewed. */
 const isUnderReview = (p: Publication) => Boolean(p.status) && !p.journal
 
+/** A LUNA collaboration paper: tagged by hand in publications.yaml. */
+const isLuna = (p: Publication) => Boolean(p.tags?.includes("luna"))
+
 function Entry({ publication, lang }: { publication: Publication; lang: Lang }) {
   const link = publication.doi
     ? `https://doi.org/${publication.doi}`
@@ -27,7 +30,10 @@ function Entry({ publication, lang }: { publication: Publication; lang: Lang }) 
 
   return (
     <li
+      data-pub=""
       data-first={isFirstAuthor(publication) ? "true" : "false"}
+      data-luna={isLuna(publication) ? "true" : "false"}
+      data-year={publication.year}
       className={`py-5 ${
         publication.highlight ? "border-l-2 border-foreground/25 pl-5" : "pl-[calc(1.25rem+2px)]"
       }`}
@@ -96,21 +102,15 @@ function Section({
   lang: Lang
 }) {
   if (entries.length === 0) return null
-  const first = entries.filter(isFirstAuthor).length
   return (
-    <section
-      aria-labelledby={`pubs-${id}`}
-      data-has-first={first > 0 ? "true" : "false"}
-      className="break-inside-auto"
-    >
+    <section aria-labelledby={`pubs-${id}`} data-pub-section="" className="break-inside-auto">
       <h2
         id={`pubs-${id}`}
         className="mb-4 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground"
       >
         {title}
         <span className="ml-2 tabular font-normal normal-case tracking-normal">
-          <span data-count="all">({entries.length})</span>
-          <span data-count="first">({first})</span>
+          <span data-count="">({entries.length})</span>
         </span>
       </h2>
       {note && <p className="-mt-2 mb-3 max-w-2xl text-sm text-muted-foreground">{note}</p>}
@@ -163,11 +163,8 @@ export function PublicationsPage({ lang }: { lang: Lang }) {
       )}
 
       <PublicationFilter
-        label={t.filter}
-        options={[
-          { id: "all", label: t.all, count: all.length },
-          { id: "first", label: t.firstAuthor, count: all.filter(isFirstAuthor).length },
-        ]}
+        lang={lang}
+        items={all.map((p) => ({ year: p.year, first: isFirstAuthor(p), luna: isLuna(p) }))}
       >
         <div className="space-y-14">
           {SECTIONS.map((kind) => (

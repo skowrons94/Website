@@ -5,6 +5,9 @@
 #   highlight: true                    marks it as a first-author / key paper
 #   status:    shown instead of the journal, for anything not yet out
 #   status_it: the same, in Italian, for /it/publications (titles stay as published)
+#   tags:      [luna] for a paper of the LUNA collaboration (measured at, or about,
+#              the LUNA accelerators); drives the "LUNA" filter. Tag only what is
+#              certain: LUNA in the title, the atlas' LUNA flag, or the paper itself.
 
 publications:
   - kind: article
@@ -28,6 +31,7 @@ publications:
     journal: Nucl. Instrum. Methods Phys. Res. A 1092, 171767
     doi: 10.1016/j.nima.2026.171767
     year: 2026
+    tags: [luna]
 
   - kind: article
     highlight: true
@@ -50,6 +54,7 @@ publications:
     journal: Phys. Rev. C 112, L052801
     doi: 10.1103/vqt1-jxpw
     year: 2025
+    tags: [luna]
 
   - kind: article
     authors: R. M. Gesuè, et al.
@@ -57,6 +62,7 @@ publications:
     journal: J. Phys. G, Nucl. Part. Phys. 52, 105103
     doi: 10.1088/1361-6471/ade0dc
     year: 2025
+    tags: [luna]
 
   - kind: article
     highlight: true
@@ -74,6 +80,7 @@ publications:
     journal: Eur. Phys. J. A 61, 191
     doi: 10.1140/epja/s10050-025-01658-7
     year: 2025
+    tags: [luna]
 
   - kind: article
     highlight: true
@@ -107,6 +114,7 @@ publications:
     journal: Eur. Phys. J. A 61, 45
     doi: 10.1140/epja/s10050-025-01512-w
     year: 2025
+    tags: [luna]
 
   - kind: article
     authors: D. Rapagnani, et al.
@@ -139,6 +147,7 @@ publications:
     journal: Phys. Rev. Lett. 133, 052701
     doi: 10.1103/PhysRevLett.133.052701
     year: 2024
+    tags: [luna]
 
   - kind: article
     authors: M. P. Takács, et al.
@@ -146,6 +155,7 @@ publications:
     journal: Phys. Rev. C 109, 064627
     doi: 10.1103/PhysRevC.109.064627
     year: 2024
+    tags: [luna]
 
   - kind: article
     authors: C. Ananna, et al.
@@ -153,6 +163,7 @@ publications:
     journal: Universe 10(5), 228
     doi: 10.3390/universe10050228
     year: 2024
+    tags: [luna]
 
   - kind: article
     authors: R. Buompane, et al.
@@ -168,6 +179,7 @@ publications:
     journal: Phys. Rev. Lett. 131, 162701
     doi: 10.1103/PhysRevLett.131.162701
     year: 2023
+    tags: [luna]
 
   - kind: article
     highlight: true
@@ -176,6 +188,7 @@ publications:
     journal: J. Phys. G, Nucl. Part. Phys. 50, 045201
     doi: 10.1088/1361-6471/acb961
     year: 2023
+    tags: [luna]
 
   - kind: article
     highlight: true
@@ -194,13 +207,15 @@ publications:
     journal: Phys. Rev. C 108, L052801
     doi: 10.1103/PhysRevC.108.L052801
     year: 2023
+    tags: [luna]
 
   - kind: article
     authors: C. Ananna, et al.
     title: Recent results and future perspectives with solid targets at LUNA
-    journal: Front. Astron. Space Sci. 10
+    journal: Front. Astron. Space Sci. 10, 1325053
     doi: 10.3389/fspas.2023.1325053
     year: 2023
+    tags: [luna]
 
   - kind: article
     authors: M. Ballan, et al.
@@ -215,6 +230,7 @@ publications:
     journal: Eur. Phys. J. A 58, 194
     doi: 10.1140/epja/s10050-022-00827-2
     year: 2022
+    tags: [luna]
 
   - kind: article
     authors: C. Ananna, et al.
@@ -226,7 +242,7 @@ publications:
   - kind: article
     authors: S. Capra, et al.
     title: First in-beam test of the GALTRACE innovative silicon detector array
-    journal: Il Nuovo Cimento C 34, 4
+    journal: Il Nuovo Cimento C 44, 34
     doi: 10.1393/ncc/i2021-21034-5
     year: 2021
 
@@ -237,6 +253,7 @@ publications:
     journal: EPJ Web Conf. 279, 03002
     doi: 10.1051/epjconf/202327903002
     year: 2023
+    tags: [luna]
 
   - kind: proceedings
     highlight: true
@@ -245,6 +262,7 @@ publications:
     journal: J. Phys. Conf. Ser. 2586, 012103
     doi: 10.1088/1742-6596/2586/1/012103
     year: 2023
+    tags: [luna]
 
   - kind: proceedings
     highlight: true
@@ -253,6 +271,7 @@ publications:
     journal: EPJ Web Conf. 260, 11008
     doi: 10.1051/epjconf/202226011008
     year: 2022
+    tags: [luna]
 
   - kind: proceedings
     authors: S. Capra, et al.

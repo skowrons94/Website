@@ -322,21 +322,13 @@ sub {
 }
 
 /*
- * Publications: "first author" filter (components/publication-filter.tsx).
- * The list is server-rendered; the filter only sets data-pub-filter.
+ * Publications filter (components/publication-filter.tsx): it sets `hidden`
+ * on the entries and sections that do not match; this keeps them hidden
+ * whatever display a utility class gives them.
  */
-[data-pub-filter] [data-count="first"] {
-  display: none;
-}
-[data-pub-filter="first"] [data-count="all"] {
-  display: none;
-}
-[data-pub-filter="first"] [data-count="first"] {
-  display: inline;
-}
-[data-pub-filter="first"] [data-first="false"],
-[data-pub-filter="first"] [data-has-first="false"] {
-  display: none;
+[data-pub][hidden],
+[data-pub-section][hidden] {
+  display: none !important;
 }
 
 /*
@@ -409,6 +401,15 @@ sub {
     word-break: break-all;
   }
 
+  /* A reference that shows its DOI or arXiv number already says where it
+     lives: no address after the number, nor after the title it links to. */
+  main a.font-mono[href^="https://doi.org/"]::after,
+  main a.font-mono[href^="https://arxiv.org/"]::after,
+  main li:has(a.font-mono[href^="https://doi.org/"]) a[href^="https://doi.org/"]::after,
+  main li:has(a.font-mono[href^="https://arxiv.org/"]) a[href^="https://arxiv.org/"]::after {
+    content: none;
+  }
+
   h1,
   h2,
   h3,
@@ -442,6 +443,12 @@ sub {
   }
 
   .heading-anchor {
+    display: none !important;
+  }
+
+  /* Navigation means nothing on paper: the in-page jump lists, the tables of
+     contents, the "Previous / Next in …" cards under a reaction. */
+  main nav {
     display: none !important;
   }
 }
