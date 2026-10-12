@@ -27,7 +27,7 @@ sys.path.insert(0, HERE)
 import numpy as np  # noqa: E402
 
 from app import evaluations as evaluations_module  # noqa: E402
-from app.engine import _dispatch  # noqa: E402
+from app.engine import _dispatch, fine_curves  # noqa: E402
 from app import cache  # noqa: E402
 
 
@@ -41,7 +41,7 @@ def main(source, destination):
         if os.path.exists(target):
             shutil.rmtree(target)
         shutil.copytree(evaluation.path, target,
-                        ignore=shutil.ignore_patterns("checks", "__pycache__", ".precomputed-*"))
+                        ignore=shutil.ignore_patterns("checks", "__pycache__", ".precomputed-*", ".lock", ".fine-*"))
         os.makedirs(os.path.join(target, "checks"), exist_ok=True)
 
         t = time.time()
@@ -52,6 +52,13 @@ def main(source, destination):
         azr.close()
         cache.write(target, params, "data", data)
         cache.write(target, params, "extrap", extrap)
+        # The model on a fine grid per data segment (app/fine.py); this also
+        # leaves its external-capture integrals in fine/output/ for the page.
+        state = {}
+        cache.write(target, params, "fine",
+                    fine_curves(state, os.path.join(target, evaluation.azr_filename), target, params))
+        if state.get("model") is not None:
+            state["model"].close()
         print(f"{evaluation.id}: {time.time() - t:.1f} s", flush=True)
 
     with open(os.path.join(destination, "index.json"), "w") as f:

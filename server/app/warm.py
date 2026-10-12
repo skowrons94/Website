@@ -4,7 +4,8 @@
     make warm                     # docker compose exec azure2 python3 -m app.warm
 
 Run it after a deploy or after editing an evaluation, so that even the first
-visitor gets the data and extrapolation curves at once.  Evaluations whose cache
+visitor gets the data and extrapolation curves, and the model on a fine grid
+(``app.fine``), at once.  Evaluations whose cache
 is already valid are skipped.  One model is open at a time, so the memory needed
 is that of the largest evaluation alone.
 """
@@ -32,7 +33,8 @@ def warm(root, out=sys.stdout):
                             timeout=Config.CALL_TIMEOUT)
             params = np.asarray(engine.info.params, dtype=np.float64)
             for key, method in (("data", engine.calculate_data),
-                                ("extrap", engine.calculate_extrapolations)):
+                                ("extrap", engine.calculate_extrapolations),
+                                ("fine", engine.calculate_fine)):
                 if cache.read(evaluation.path, params, key) is not None:
                     print(f"{evaluation.id:6s} {key:6s} cached", file=out, flush=True)
                     continue

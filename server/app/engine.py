@@ -123,6 +123,7 @@ def _worker(conn, azr_path, cwd, omp_threads):
             pass
         return
 
+    fine = {}
     while True:
         try:
             command, payload = conn.recv()
@@ -135,14 +136,52 @@ def _worker(conn, azr_path, cwd, omp_threads):
             break
 
         try:
-            conn.send(("ok", _dispatch(azr, command, payload)))
+            if command == "fine":
+                result = fine_curves(fine, azr_path, cwd, payload)
+            elif command == "fine_ready":
+                result = "model" in fine
+            else:
+                result = _dispatch(azr, command, payload)
+            conn.send(("ok", result))
         except BaseException as err:
             conn.send(("error", f"{type(err).__name__}: {err}"))
 
-    try:
-        azr.close()
-    except Exception:
-        pass
+    for model in (azr, fine.get("model")):
+        try:
+            if model is not None:
+                model.close()
+        except Exception:
+            pass
+
+
+def fine_curves(state, azr_path, cwd, params):
+    """The model on a fine grid per data segment (see :mod:`app.fine`).
+
+    ``state`` keeps the derived model between calls: building it runs AZURE2's
+    INITIALIZE, external-capture integrals included, which is slow the first
+    time and is then reused for every later parameter vector.  Returns
+    ``(index, energies, mu, mu_sfactor)``; ``index[i]`` is data segment ``i``'s
+    slot in the other three, or ``None``.
+    """
+    import pyazr
+    from pyazr.datasets import SegmentSet
+    from app import fine
+
+    if "model" not in state:
+        segments = SegmentSet.from_file(azr_path)
+        workdir = fine.workdir_for(cwd)
+        with fine.building(workdir):
+            path, index = fine.derived_model(azr_path, cwd, segments, workdir)
+            model = (pyazr.azure2(path, cwd=cwd, data_mode=False)
+                     if path else None)
+        state["index"] = index
+        state["model"] = model
+    model = state["model"]
+    if model is None:
+        return state["index"], [], [], []
+    params = np.asarray(params, dtype=np.float64)
+    return (state["index"], model.calculate_energies(params),
+            model.calculate(params), model.calculate_sfactor(params))
 
 
 def _dispatch(azr, command, params):
@@ -217,6 +256,15 @@ class Engine:
     def calculate_extrapolations(self, params):
         """``(energies, angles, mu, mu_sfactor)`` on the extrapolation grids."""
         return self._call("extrap", params)
+
+    def calculate_fine(self, params):
+        """``(index, energies, mu, mu_sfactor)``: the model on a fine grid per
+        data segment (:func:`fine_curves`)."""
+        return self._call("fine", params)
+
+    def fine_ready(self) -> bool:
+        """Has the fine-grid model been built (so a calculation is cheap)?"""
+        return bool(self._call("fine_ready", []))
 
     def _call(self, command, params):
         if not self.is_alive():
