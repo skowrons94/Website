@@ -57,7 +57,8 @@ function ProgressTimerImpl({ stage, activity, variant = "overlay", retryAt = nul
   const over = left !== null && left < 0
   const label = activity?.preparing ? t.stagePreparing : t.stages[stage]
   const secs = (s: number) => (s >= 90 ? t.minutes(decimal(Math.round(s / 60), lang)) : t.seconds(decimal(Math.max(1, Math.round(s)), lang)))
-  const busy = retryAt !== null ? Math.max(0, Math.ceil((retryAt - Date.now()) / 1000)) : null
+  // Counting down to the retry; once it is under way, back to the stage.
+  const busy = retryAt !== null && retryAt > Date.now() ? Math.max(1, Math.ceil((retryAt - Date.now()) / 1000)) : null
 
   const bucket = Math.floor(elapsed / 15)
   useEffect(() => {
