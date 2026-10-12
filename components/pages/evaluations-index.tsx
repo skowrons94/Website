@@ -11,6 +11,7 @@ import { useLang } from "@/components/lang-context"
 import { useEvalDict } from "@/components/eval-dict"
 import { evaluationDownloadUrl, listEvaluations, type Evaluation } from "@/lib/api"
 import { localePath } from "@/lib/locale"
+import { decimal } from "@/lib/i18n-eval"
 
 /** What the page knows about an evaluation before the API answers. */
 export interface CardMeta {
@@ -66,6 +67,7 @@ const nuclide = (id: string) =>
 export function EvaluationsIndex({ initial = [] }: { initial?: CardMeta[] }) {
   const lang = useLang()
   const t = useEvalDict().evaluations
+  const words = useEvalDict().live
   const to = (path: string) => localePath(lang, path)
   const [live, setLive] = useState<Evaluation[] | null>(null)
   const [failed, setFailed] = useState(false)
@@ -99,6 +101,8 @@ export function EvaluationsIndex({ initial = [] }: { initial?: CardMeta[] }) {
       status: known?.status ?? api?.status ?? null,
       filename: api?.filename ?? known?.filename ?? `${id}.azr`,
       channels: api?.channels ?? null,
+      // A newer API says how long opening usually takes.
+      opens: api?.timings?.open ?? null,
     }
   })
 
@@ -175,6 +179,15 @@ export function EvaluationsIndex({ initial = [] }: { initial?: CardMeta[] }) {
                 {lead && (
                   <p className="mt-2 text-sm text-muted-foreground">
                     <Sci>{t.compound(nucleus)}</Sci>
+                  </p>
+                )}
+                {/* What the reaction is for, in one plain sentence (from the reaction atlas). */}
+                {words.purposes[card.id] && (
+                  <p className="mt-2 text-pretty text-sm leading-snug text-foreground/85">
+                    <Sci>{words.purposes[card.id]}</Sci>
+                    {card.opens != null && (
+                      <span className="text-muted-foreground"> · {words.opensIn(decimal(Math.max(1, Math.round(card.opens)), lang))}</span>
+                    )}
                   </p>
                 )}
                 <p className="mt-2 text-sm text-muted-foreground">

@@ -507,3 +507,25 @@ sub {
     display: none !important;
   }
 }
+
+/* --- r7 evalui --- */
+/* The progress timer's bar once the wait runs past its estimate: a slow sweep
+   (components/evaluation-progress.tsx); still under reduced motion. */
+@keyframes progress-sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(300%);
+  }
+}
+.progress-sweep {
+  animation: progress-sweep 1.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .progress-sweep {
+    animation: none;
+    width: 100%;
+    opacity: 0.35;
+  }
+}

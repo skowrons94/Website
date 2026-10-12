@@ -15,6 +15,8 @@ export function decimal(text: string | number, lang: Lang): string {
   return lang === "en" ? String(text) : String(text).replace(/(\d)\.(\d)/g, "$1,$2")
 }
 
+const sup = (id: string) => id.replace(/^(\d+)/, (m) => m.replace(/\d/g, (d) => "⁰¹²³⁴⁵⁶⁷⁸⁹"[Number(d)]))
+
 const en = {
   /* -- evaluations -------------------------------------------------------- */
   evaluations: {
@@ -106,7 +108,7 @@ const en = {
 
   /* -- the evaluation workspace ------------------------------------------- */
   workspace: {
-    starting: (id: string) => `Starting AZURE2 for ${id}…`,
+    starting: (id: string) => `Starting the calculation for ${sup(id)}…`,
     loadingEngine: "Loading the engine…",
     inBrowser: "AZURE2 runs in your browser; the first evaluation takes a few seconds to load.",
     progress: {} as Record<string, string>,
@@ -118,7 +120,7 @@ const en = {
     reopen: "Reopen",
     tabs: { scheme: "Level scheme", data: "Data", plot: "Plot & data", extrap: "Extrapolations", extrapShort: "Extrap." },
     calculatingData: "Calculating data segments…",
-    calculatingExtrap: "Calculating extrapolations… a model with external capture can take a minute.",
+    calculatingExtrap: "The curves beyond the data take longer than the plot: for some models up to a minute.",
     // level scheme
     levelScheme: "Level scheme",
     schemeSummary: (levels: number, pairs: number, free: number) =>
@@ -393,6 +395,62 @@ const en = {
     above: (pair: string, energy: string) => `${pair} threshold · ${energy} MeV`,
     listLegend: "● energy fitted · ○ widths fitted · grey: fixed",
   },
+
+  // --- r7 evalui ---
+  live: {
+    stages: {
+      open: "Getting the model ready…",
+      edit: "Recalculating…",
+      data: "Calculating the curves…",
+      fine: "Calculating the smooth curve…",
+      extrap: "Calculating the extrapolations…",
+    } as Record<"open" | "edit" | "data" | "fine" | "extrap", string>,
+    stagePreparing: "Getting the model ready…",
+    firstChange: "First change on this model: the server is still preparing it. Later changes are much quicker.",
+    seconds: (n: string) => `${n} s`,
+    minutes: (n: string) => `${n} min`,
+    elapsedLong: (t: string) => `${t} so far`,
+    left: (t: string) => `about ${t} left`,
+    longer: "taking longer than usual",
+    busy: (n: string) => `The server is busy. Trying again in ${n} s…`,
+    extrapStale: "Shown meanwhile, faded: the extrapolations before your change.",
+    previewNote: "The published fit is shown while the calculation starts; a change you make now is sent as soon as it is ready.",
+    skipToLevels: "Skip to the levels",
+    skipToPlot: "Back to the plot",
+    nFreeParams: (n: number) => `${n} free`,
+    publishedFitLegend: "published fit (before your change)",
+    muchWorse: (x: string) => `much worse, ×${x}`,
+    muchBetter: (x: string) => `much better, ÷${x}`,
+    chi2Huge:
+      "Large here because these data have very small error bars: a small shift of a narrow resonance moves the line off many points at once.",
+    gridTitle: "Energy × angle grids",
+    gridText: (n: number) =>
+      `${n === 1 ? "This curve is" : "These curves are"} a differential cross section on a grid of energies and angles: shown on request, as a few angles or as a map.`,
+    gridShow: "Show",
+    gridHide: "Hide",
+    gridAngles: "Angles",
+    gridMap: "Map",
+    gridMapAria: (name: string) => `Map of ${name}: energy across, angle up, colour the cross section (logarithmic).`,
+    gridLoading: "Calculating this grid…",
+    gridSummary: (ne: number, na: number, e0: string, e1: string, a0: string, a1: string) =>
+      `${ne} energies (${e0}–${e1} MeV) × ${na} angles (${a0}–${a1}°)`,
+    finalState: (label: string) => `to ${label}`,
+    groundState: "ground state",
+    background: "Background (far above the data)",
+    showMore: (n: number) => `Show ${n} more`,
+    showFewer: "Show fewer",
+    opensIn: (s: string) => `opens in about ${s} s`,
+    purposes: {
+      "13N": "The first step of the CN cycle, which burns hydrogen in stars; with the next proton capture it sets the carbon-12 to carbon-13 ratio seen in red giants.",
+      "14N": "The step of the CN cycle that destroys carbon-13 and makes nitrogen-14.",
+      "17F": "The slowest step of the second CNO cycle.",
+      "21Na": "The first and slowest step of the NeNa cycle.",
+      "23Na": "The main way stars make sodium-23, the only stable sodium isotope, while they burn hydrogen.",
+      "24Mg": "Proton scattering on sodium-23: the magnesium-24 levels through which ²³Na(p,γ)²⁴Mg destroys sodium in stars.",
+      "7Be": "Opens the branches of the pp chain that emit the ⁷Be and ⁸B solar neutrinos, and made most of the lithium after the Big Bang.",
+      "8Be": "Alpha–alpha scattering: the beryllium-8 states behind the first step of the triple-alpha process, which makes the carbon in stars.",
+    } as Record<string, string>,
+  },
 }
 
 export type EvalDictionary = typeof en
@@ -490,7 +548,7 @@ const it: EvalDictionary = {
 
   /* -- the evaluation workspace ------------------------------------------- */
   workspace: {
-    starting: (id: string) => `Avvio di AZURE2 per ${id}…`,
+    starting: (id: string) => `Avvio del calcolo per ${sup(id)}…`,
     loadingEngine: "Caricamento del motore di calcolo…",
     inBrowser: "AZURE2 gira nel tuo browser; la prima valutazione richiede qualche secondo per caricarsi.",
     progress: {
@@ -506,9 +564,9 @@ const it: EvalDictionary = {
     evaluations: "Valutazioni",
     expired: "Questa sessione è scaduta sul server.",
     reopen: "Riapri",
-    tabs: { scheme: "Schema dei livelli", data: "Dati", plot: "Grafico e dati", extrap: "Estrapolazioni", extrapShort: "Estrap." },
+    tabs: { scheme: "Schema dei livelli", data: "Dati", plot: "Grafico e dati", extrap: "Estrapolazioni", extrapShort: "Oltre i dati" },
     calculatingData: "Calcolo dei segmenti di dati…",
-    calculatingExtrap: "Calcolo delle estrapolazioni… con la cattura esterna può servire un minuto.",
+    calculatingExtrap: "Le curve oltre i dati richiedono più tempo del grafico: per alcuni modelli fino a un minuto.",
     levelScheme: "Schema dei livelli",
     schemeSummary: (levels: number, pairs: number, free: number) =>
       `${levels} livelli su ${pairs} coppie di particelle · ${free} parametri R-matrix liberi`,
@@ -717,19 +775,19 @@ const it: EvalDictionary = {
     excitation: "Energia di eccitazione",
     cm: (pair: string) => `in ${pair}`,
     aria: (n: number) => `Diagramma dei livelli con ${n} livelli. Usa le frecce per passare da un livello all'altro e Invio per selezionarlo.`,
-    status: { free: "energia adattata", partial: "larghezze adattate", fixed: "fisso" } as Record<"free" | "partial" | "fixed", string>,
+    status: { free: "energia libera nel fit", partial: "solo larghezze libere", fixed: "fisso" } as Record<"free" | "partial" | "fixed", string>,
     levelAria: (jpi: string, energy: string, status: string, widths: string) =>
       `livello ${jpi} a ${energy} MeV, ${status}${widths ? `, ${widths}` : ""}`,
     thresholdAria: (pair: string, energy: string) => `soglia ${pair} a ${energy} MeV`,
     background: (n: number, energy: string) => `${n} pol${n === 1 ? "o" : "i"} di fondo a ${energy} MeV`,
     backgroundShort: (n: number, energy: string) => `${n} poli di fondo · ${energy} MeV`,
-    legendEnergyFree: "energia adattata",
-    legendWidthsFree: "larghezze/ANC adattate",
+    legendEnergyFree: "energia libera nel fit",
+    legendWidthsFree: "larghezze/ANC libere nel fit",
     legendFixed: "fisso",
     legendAnc: "ANC (sotto soglia)",
     legendThreshold: "soglia di particella",
     legendWidth: "±Γ/2",
-    legendData: "dati adattati",
+    legendData: "dati del fit",
     zoomHint: "Trascina lungo l'asse delle energie per ingrandire.",
     zoomData: "Zoom sui dati",
     zoomReset: "Schema intero",
@@ -752,20 +810,20 @@ const it: EvalDictionary = {
     levelInDiagram: "Selezionato nel diagramma",
     // --- evaluations (round 4) ---
     groundState: "stato fondamentale",
-    keyEnergyFree: "energia adattata",
-    keyWidthsFree: "larghezze adattate, energia fissa",
+    keyEnergyFree: "energia libera nel fit",
+    keyWidthsFree: "solo larghezze libere, energia fissa",
     keyFixed: "fisso",
     plainThreshold: "linea tratteggiata: una soglia di particella — sopra di essa il nucleo può spezzarsi in quella coppia",
     plainWidth: "banda ombreggiata: la larghezza Γ del livello (quanto vive poco), ±Γ/2",
     plainWideWidth: (w: string) => `freccia, e “Γ ${w}” accanto all'energia: una larghezza troppo grande da ombreggiare`,
-    plainData: "barra blu sull'asse di destra: le energie coperte dai dati adattati",
-    plainAnc: "cerchio vuoto: uno stato legato, adattato tramite il suo ANC",
+    plainData: "barra blu sull'asse di destra: le energie coperte dai dati del fit",
+    plainAnc: "cerchio vuoto: uno stato legato, libero nel fit tramite il suo ANC",
     plainBar: "barretta: come decade il livello, la quota di ciascun canale (Γc/Γ)",
-    plainEffective: "livello tratteggiato: un polo efficace — molto sopra i dati adattati, o doppione di un altro della stessa spin-parità; i dati non lo misurano come stato",
+    plainEffective: "livello tratteggiato: un polo efficace — molto sopra i dati del fit, o doppione di un altro della stessa spin-parità; i dati non lo misurano come stato",
     glossary: "glossario",
     wideWidth: (w: string) => `Γ ${w}`,
     noteAbove: (max: string) =>
-      `Polo efficace: sta molto sopra i dati adattati (che arrivano a ${max} MeV), quindi agisce sul fit dall'esterno dell'intervallo misurato, come un polo di fondo; i suoi parametri non sono quelli di uno stato misurato qui.`,
+      `Polo efficace: sta molto sopra i dati del fit (che arrivano a ${max} MeV), quindi agisce sul fit dall'esterno dell'intervallo misurato, come un polo di fondo; i suoi parametri non sono quelli di uno stato misurato qui.`,
     noteOverlap: (jpi: string, energy: string) =>
       `Polo efficace: si sovrappone, entro le larghezze, all'altro polo ${jpi} a ${energy} MeV. Due poli della stessa spin-parità così vicini agiscono insieme (uno stato largo e il suo fondo), quindi nessuno dei due da solo è uno stato del nucleo.`,
     notePhoton: (particle: string, photon: string) =>
@@ -777,7 +835,63 @@ const it: EvalDictionary = {
     backgroundRow: (n: number, energy: string) => `${n} poli di fondo a ${energy} MeV (fissi, molto sopra i dati)`,
     columnWidth: "Γ (keV)",
     above: (pair: string, energy: string) => `soglia ${pair} · ${energy} MeV`,
-    listLegend: "● energia adattata · ○ larghezze adattate · grigio: fisso",
+    listLegend: "● energia libera nel fit · ○ solo larghezze libere · grigio: fisso",
+  },
+
+  // --- r7 evalui ---
+  live: {
+    stages: {
+      open: "Preparazione del modello…",
+      edit: "Ricalcolo…",
+      data: "Calcolo delle curve…",
+      fine: "Calcolo della curva continua…",
+      extrap: "Calcolo delle estrapolazioni…",
+    },
+    stagePreparing: "Preparazione del modello…",
+    firstChange: "Prima modifica su questo modello: il server lo sta ancora preparando. Le modifiche successive sono molto più rapide.",
+    seconds: (n: string) => `${n} s`,
+    minutes: (n: string) => `${n} min`,
+    elapsedLong: (t: string) => `${t} finora`,
+    left: (t: string) => `ancora circa ${t}`,
+    longer: "più del solito",
+    busy: (n: string) => `Il server è occupato. Nuovo tentativo tra ${n} s…`,
+    extrapStale: "Nel frattempo, sbiadite: le estrapolazioni prima della tua modifica.",
+    previewNote: "Mentre il calcolo si avvia è mostrato il fit pubblicato; una modifica fatta ora parte appena è pronto.",
+    skipToLevels: "Vai ai livelli",
+    skipToPlot: "Torna al grafico",
+    nFreeParams: (n: number) => (n === 1 ? "1 parametro libero" : `${n} parametri liberi`),
+    publishedFitLegend: "fit pubblicato (prima della tua modifica)",
+    muchWorse: (x: string) => `molto peggio, ×${x}`,
+    muchBetter: (x: string) => `molto meglio, ÷${x}`,
+    chi2Huge:
+      "Qui è grande perché questi dati hanno barre d'errore piccolissime: spostare di poco una risonanza stretta allontana la linea da molti punti insieme.",
+    gridTitle: "Griglie energia × angolo",
+    gridText: (n: number) =>
+      `${n === 1 ? "Questa curva è" : "Queste curve sono"} una sezione d'urto differenziale su una griglia di energie e angoli: mostrate a richiesta, per alcuni angoli o come mappa.`,
+    gridShow: "Mostra",
+    gridHide: "Nascondi",
+    gridAngles: "Angoli",
+    gridMap: "Mappa",
+    gridMapAria: (name: string) => `Mappa di ${name}: energia in orizzontale, angolo in verticale, colore la sezione d'urto (logaritmica).`,
+    gridLoading: "Calcolo di questa griglia…",
+    gridSummary: (ne: number, na: number, e0: string, e1: string, a0: string, a1: string) =>
+      `${ne} energie (${e0}–${e1} MeV) × ${na} angoli (${a0}–${a1}°)`,
+    finalState: (label: string) => `verso ${label}`,
+    groundState: "stato fondamentale",
+    background: "Fondo (molto sopra i dati)",
+    showMore: (n: number) => `Mostra altri ${n}`,
+    showFewer: "Mostra meno",
+    opensIn: (s: string) => `si apre in circa ${s} s`,
+    purposes: {
+      "13N": "Il primo passo del ciclo CN, che brucia idrogeno nelle stelle; con la cattura protonica successiva fissa il rapporto tra carbonio-12 e carbonio-13 osservato nelle giganti rosse.",
+      "14N": "Il passo del ciclo CN che distrugge il carbonio-13 e produce azoto-14.",
+      "17F": "Il passo più lento del secondo ciclo CNO.",
+      "21Na": "Il primo e più lento passo del ciclo NeNa.",
+      "23Na": "Il modo principale in cui le stelle producono il sodio-23, l'unico isotopo stabile del sodio, mentre bruciano idrogeno.",
+      "24Mg": "Diffusione di protoni sul sodio-23: i livelli del magnesio-24 attraverso cui ²³Na(p,γ)²⁴Mg distrugge il sodio nelle stelle.",
+      "7Be": "Apre i rami della catena pp che emettono i neutrini solari del ⁷Be e dell'⁸B, e dopo il Big Bang produsse la maggior parte del litio.",
+      "8Be": "Diffusione alfa–alfa: gli stati del berillio-8 alla base del primo passo del processo tre alfa, che produce il carbonio nelle stelle.",
+    },
   },
 }
 

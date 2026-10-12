@@ -1,9 +1,11 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { startTransition, useCallback, useEffect, useRef, useState } from "react"
 import dynamic from "next/dynamic"
 import Link from "next/link"
 import { AlertCircle, ArrowRight, Check, Link2, Loader2 } from "lucide-react"
+
+import { ProgressTimer } from "@/components/evaluation-progress"
 
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -26,10 +28,10 @@ const LevelScheme = dynamic(() => import("@/components/level-scheme").then((m) =
   loading: () => <Placeholder busy />,
 })
 const DataPlot = dynamic(() => import("@/components/data-plot").then((m) => m.DataPlot), {
-  loading: () => <Placeholder busy />,
+  loading: () => <Placeholder busy tall />,
 })
 const ExtrapPlot = dynamic(() => import("@/components/extrap-plot").then((m) => m.ExtrapPlot), {
-  loading: () => <Placeholder busy />,
+  loading: () => <Placeholder busy tall />,
 })
 
 /** "data" is the old Data tab: now the table drawer of the plot view. */
@@ -106,7 +108,17 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
   const lang = useLang()
   const t = useEvalDict().workspace
   const initial = useRef<UrlState | null>(null)
-  const [tab, setTab] = useState<Tab>("scheme")
+  const [tab, setTabNow] = useState<Tab>("scheme")
+  // Tabs once shown stay mounted (hidden), so coming back redraws nothing and
+  // asks the server for nothing; the switch itself is a transition, so the
+  // click paints at once.
+  const [visited, setVisited] = useState<Tab[]>(["scheme"])
+  const setTab = useCallback((next: Tab) => {
+    startTransition(() => {
+      setTabNow(next)
+      setVisited((list) => (list.includes(next) ? list : [...list, next]))
+    })
+  }, [])
   const [tableOpen, setTableOpen] = useState(false)
   const [selected, setSelected] = useState<number[]>([])
   const [quantity, setQuantity] = useState<Quantity>(defaultQuantity)
@@ -121,13 +133,18 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
     scheme,
     data,
     extrapolations,
+    extrapStale,
     fine,
     fineStatus,
     fineStale,
     initialData,
     initialFine,
+    modern,
     loading,
     calculating,
+    extrapCalculating,
+    activities,
+    retryAt,
     error,
     errorStatus,
     expired,
@@ -149,7 +166,8 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
   useEffect(() => {
     const state = readUrl()
     initial.current = state
-    setTab(state.tab)
+    setTabNow(state.tab)
+    setVisited((list) => (list.includes(state.tab) ? list : [...list, state.tab]))
     setTableOpen(state.table)
     if (state.ds) setSelected(state.ds)
     if (state.q) setQuantity(state.q)
@@ -208,20 +226,33 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
   useEffect(() => {
     if (!sessionId) return
     const restoring = Boolean(initial.current?.params) && !appliedParams.current
-    if ((tab === "plot" || tab === "extrap") && data === null && !calculating && !restoring) loadData()
-    if (tab === "extrap" && extrapolations === null && data !== null && !calculating) loadExtrapolations()
+    if ((tab === "plot" || tab === "extrap") && data === null && !calculating && !restoring && !error) loadData()
+    // Extrapolations on their tab: first time, and again after an edit (the
+    // previous ones stay up, faded, meanwhile).
+    if (tab === "extrap" && (extrapolations === null || extrapStale) && data !== null && !calculating && !extrapCalculating && !error)
+      loadExtrapolations()
     // The smooth model curves, once the data are in (after an edit the
     // server sends them along when they are cheap; otherwise ask again).
     if (tab === "plot" && data !== null && !calculating && fineStatus === "idle" && !restoring) loadFine()
-  }, [tab, sessionId, data, extrapolations, loadData, loadExtrapolations, loadFine, fineStatus, calculating])
+  }, [tab, sessionId, data, extrapolations, extrapStale, loadData, loadExtrapolations, loadFine, fineStatus, calculating, extrapCalculating, error])
 
-  // Ahead of the first edit: what the plot's sliders will need once the plot
-  // is up, and the extrapolations' model once they have been looked at.
+  // Ahead of the first edit. A newer server prepares each model in its own
+  // process, edits first: ask for all of them as soon as the session is open
+  // (the extrapolations' model then waits for nobody, even when the reader
+  // edits before opening that tab). An older one holds the session while it
+  // prepares: the plot's models once the plot is up, the extrapolations'
+  // once they have been looked at.
   useEffect(() => {
-    if (!sessionId || calculating) return
+    if (!sessionId) return
+    if (modern) {
+      prepare(["data", "fine"])
+      prepare(["extrap"])
+      return
+    }
+    if (calculating) return
     if (tab === "plot" && data !== null && fineStatus !== "loading") prepare(["data", "fine"])
     if (extrapolations !== null) prepare(["extrap"])
-  }, [tab, sessionId, data, extrapolations, fineStatus, calculating, prepare])
+  }, [tab, sessionId, modern, data, extrapolations, fineStatus, calculating, prepare])
 
   // The plot opens on the headline reaction, unless the link chose.
   useEffect(() => {
@@ -277,7 +308,9 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
 
   if (errorStatus === 404 && !scheme) return <NotFoundState id={id} heading={known ? "h2" : "h1"} />
 
-  const ready = Boolean(scheme && evaluation && sessionId)
+  // Drawn as soon as the scheme is known: from the shipped snapshot, before
+  // the session is open (edits made meanwhile wait for it).
+  const ready = Boolean(scheme && (evaluation || known))
   const opening = !ready && !error
   const unavailable = !ready && Boolean(error)
   // A calculation that failed leaves its tab without results; offer to run it
@@ -285,7 +318,8 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
   const failed = Boolean(error) && !calculating && !expired
 
   const starting = (
-    <Placeholder busy>
+    <Placeholder busy={!activities.open && retryAt === null} tall={tab !== "scheme"}>
+      {(activities.open || retryAt !== null) && <ProgressTimer stage="open" activity={activities.open ?? null} retryAt={retryAt} variant="block" />}
       <p className="text-sm">{t.starting(id)}</p>
       {IN_BROWSER && (
         <p className="max-w-sm text-center text-xs">
@@ -316,6 +350,11 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
   )
 
   const body = (content: React.ReactNode) => (opening ? starting : unavailable ? down : content)
+
+  const plotActivity = activities.edit ?? activities.data ?? (data === null ? activities.open : undefined) ?? null
+  const plotStage = activities.edit ? "edit" : activities.data ? "data" : "open"
+  const extrapActivity = activities.extrap ?? (!sessionId ? activities.open : undefined) ?? (calculating ? activities.edit : undefined) ?? null
+  const extrapStage = activities.extrap ? "extrap" : !sessionId ? "open" : "edit"
 
   const editLevel = (key: string) => {
     setSelectedLevel(key)
@@ -380,13 +419,14 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
           {copied ? t.copied : ""}
         </p>
 
-        <TabsContent value="scheme" className="mt-6">
+        <TabsContent value="scheme" className="mt-6" forceMount hidden={tab !== "scheme"}>
           {body(
             ready && (
               <LevelScheme
                 scheme={scheme!}
-                evaluation={evaluation!}
-                sessionId={sessionId!}
+                evaluation={evaluation}
+                evaluationId={id}
+                sessionId={sessionId}
                 selectedLevel={selectedLevel}
                 onSelectLevel={setSelectedLevel}
                 onEditLevel={editLevel}
@@ -395,10 +435,17 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
           )}
         </TabsContent>
 
-        <TabsContent value="plot" className="mt-6">
+        {visited.includes("plot") && (
+        <TabsContent value="plot" className="mt-6" forceMount hidden={tab !== "plot"}>
           {body(
             data === null ? (
-              <Pending label={t.calculatingData} failed={failed} onRetry={loadData} retry={t.tryAgain} />
+              <Pending
+                label={t.calculatingData}
+                failed={failed}
+                onRetry={loadData}
+                retry={t.tryAgain}
+                timer={<ProgressTimer stage={plotStage} activity={plotActivity} retryAt={retryAt} variant="block" />}
+              />
             ) : (
               <DataPlot
                 data={data}
@@ -424,30 +471,47 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
                 selectedLevel={selectedLevel}
                 onSelectLevel={setSelectedLevel}
                 deltaChi2={deltaChi2}
+                activity={plotActivity}
+                stage={plotStage}
+                retryAt={retryAt}
+                live={Boolean(sessionId)}
               />
             ),
           )}
         </TabsContent>
+        )}
 
-        <TabsContent value="extrap" className="mt-6">
+        {visited.includes("extrap") && (
+        <TabsContent value="extrap" className="mt-6" forceMount hidden={tab !== "extrap"}>
           {body(
             extrapolations === null ? (
-              <Pending label={t.calculatingExtrap} failed={failed} onRetry={loadExtrapolations} retry={t.tryAgain} />
+              <Pending
+                label={t.calculatingExtrap}
+                failed={failed}
+                onRetry={loadExtrapolations}
+                retry={t.tryAgain}
+                timer={<ProgressTimer stage={extrapStage} activity={extrapActivity} retryAt={retryAt} variant="block" />}
+              />
             ) : (
               <ExtrapPlot
+                stale={extrapStale}
+                activity={extrapActivity}
+                stage={extrapStage}
+                retryAt={retryAt}
                 headline={evaluation?.reactions?.[0]}
                 scatteringOnly={scatteringOnly}
                 temperatures={temperatures}
                 extrapolations={extrapolations}
                 data={data}
                 pairs={scheme?.pairs ?? []}
-                sessionId={sessionId!}
-                calculating={calculating}
+                sessionId={sessionId}
+                calculating={extrapCalculating || extrapStale}
                 evaluationId={id}
               />
             ),
           )}
         </TabsContent>
+        )}
       </Tabs>
     </div>
   )
@@ -463,13 +527,17 @@ function scrollToTabs() {
   window.scrollTo({ top: Math.max(0, tabs.getBoundingClientRect().top + window.scrollY - header - 12) })
 }
 
-/** Reserved space while something loads, so the footer does not jump. */
-function Placeholder({ children, busy = false }: { children?: React.ReactNode; busy?: boolean }) {
+/**
+ * Reserved space while something loads, so the footer does not jump: as tall
+ * as the plot view it stands for (`tall`) on a wide screen. What it waits for
+ * sits at its top, where a phone shows it without scrolling.
+ */
+function Placeholder({ children, busy = false, tall = false }: { children?: React.ReactNode; busy?: boolean; tall?: boolean }) {
   const t = useEvalDict().workspace
   return (
     <div
       role="status"
-      className="flex min-h-[32rem] flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border/80 text-muted-foreground"
+      className={`flex min-h-[20rem] flex-col items-center justify-start gap-3 rounded-lg border border-dashed border-border/80 px-3 pt-10 text-muted-foreground sm:min-h-[32rem] sm:pt-16 ${tall ? "lg:min-h-[48rem]" : ""}`}
     >
       {busy && <Loader2 className="h-6 w-6 animate-spin" aria-hidden />}
       {children ?? (busy && <p className="text-sm">{t.loadingView}</p>)}
@@ -482,15 +550,18 @@ function Pending({
   failed,
   onRetry,
   retry,
+  timer,
 }: {
   label: string
   failed: boolean
   onRetry: () => void
   retry: string
+  /** The progress timer of what is awaited (stage, elapsed, estimate). */
+  timer?: React.ReactNode
 }) {
   if (failed) {
     return (
-      <div className="flex min-h-[32rem] items-center justify-center">
+      <div className="flex min-h-[20rem] items-start justify-center pt-10 sm:min-h-[32rem] lg:min-h-[48rem]">
         <Button variant="outline" onClick={onRetry}>
           {retry}
         </Button>
@@ -498,9 +569,10 @@ function Pending({
     )
   }
   return (
-    <Placeholder>
-      <span className="flex items-center gap-2 text-sm">
-        <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+    <Placeholder tall>
+      {timer}
+      <span className="flex max-w-md items-center gap-2 text-center text-xs">
+        {!timer && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
         {label}
       </span>
     </Placeholder>

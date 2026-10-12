@@ -50,6 +50,8 @@ export interface Evaluation {
   /** Who did the R-matrix analysis; `author` carries the same for older clients. */
   analysis?: string | null
   paper?: { authors: string; title?: string | null; journal?: string | null; year?: number | null } | null
+  /** Typical timings of this evaluation's operations (a newer API). */
+  timings?: Timings | null
 }
 
 /** What a channel parameter physically is; the unit travels with the value. */
@@ -225,6 +227,21 @@ export interface ExtrapSegment {
   angles: number[] | null
   calculated: number[] | null
   calculated_sfactor: number[] | null
+  /**
+   * The residual nucleus' final state, when the server names it ("g.s.",
+   * "0.429 MeV", "γ₁ → 440 keV"): tells apart the several "angle-integrated"
+   * curves of one reaction (absent from an older API).
+   */
+  final_state?: string | null
+  /** Its excitation energy (MeV), when known. */
+  final_state_energy?: number | null
+  /**
+   * An energy × angle grid sent without its values (the server computes it on
+   * demand, getExtrapolationGrid); `energies` etc. are then null.
+   */
+  grid?: boolean
+  n_energies?: number
+  n_angles?: number
 }
 
 export interface OpenedSession {
@@ -242,21 +259,85 @@ export interface SchemeAndData {
   fine?: FineResponse
 }
 
+/**
+ * Typical durations (seconds) of each operation for one evaluation, as the
+ * server measured them: what the progress timer's first estimate comes from.
+ * Every key is optional.
+ */
+export interface Timings {
+  open?: number
+  data?: number
+  fine?: number
+  edit?: number
+  extrap?: number
+  /** Extrapolations after an edit (the model already built). */
+  extrap_edit?: number
+  prepare_data?: number
+  prepare_fine?: number
+  prepare_extrap?: number
+  [key: string]: number | undefined
+}
+
+/**
+ * What a page can draw before any session exists (GET /evaluations/<id>/initial):
+ * the shipped scheme and the cached curves at the published parameters.
+ */
+export interface InitialState {
+  evaluation?: Evaluation
+  scheme: Scheme
+  data?: DataSegment[] | null
+  fine?: FineResponse | null
+  timings?: Timings | null
+}
+
 /** Thrown for any non-2xx response, carrying the server's message and status. */
 export class ApiError extends Error {
   status: number
-  constructor(message: string, status: number) {
+  /** The parsed JSON body, when there was one. */
+  body: Record<string, unknown> | null
+  /** Seconds the server asked to wait (a 503's Retry-After). */
+  retryAfter: number | null
+  constructor(message: string, status: number, body: Record<string, unknown> | null = null, retryAfter: number | null = null) {
     super(message)
     this.name = "ApiError"
     this.status = status
+    this.body = body
+    this.retryAfter = retryAfter
   }
-  /** A 409 means the session expired and the evaluation must be reopened. */
+  /** A newer edit of the same session replaced this one on the server (latest wins): not an error. */
+  get superseded() {
+    return this.status === 409 && Boolean(this.body?.superseded)
+  }
+  /** A 409 (other than a superseded edit) means the session expired and the evaluation must be reopened. */
   get sessionExpired() {
-    return this.status === 409
+    return this.status === 409 && !this.superseded
+  }
+  /** The server is full (503): worth retrying after `retryAfter` seconds. */
+  get busy() {
+    return this.status === 503
+  }
+  /** The request was cancelled by the page (a newer one replaced it). */
+  get aborted() {
+    return this.status === -1
+  }
+  /** The route does not exist on this server (an older API): fall back. */
+  get missing() {
+    return this.status === 404 || this.status === 405
   }
 }
 
 /* -- plumbing -------------------------------------------------------------- */
+
+/** Seconds from a Retry-After header (delta-seconds or an HTTP date), else null. */
+function retryAfterOf(value: string | null, body: Record<string, unknown> | null): number | null {
+  const fromBody = Number(body?.retry_after)
+  if (Number.isFinite(fromBody) && fromBody > 0) return fromBody
+  if (!value) return null
+  const n = Number(value)
+  if (Number.isFinite(n)) return Math.max(0, n)
+  const at = Date.parse(value)
+  return Number.isFinite(at) ? Math.max(0, (at - Date.now()) / 1000) : null
+}
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   if (IN_BROWSER) {
@@ -268,23 +349,29 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     }
     if (r.status >= 400) {
       let message = `Request failed (${r.status})`
+      let body: Record<string, unknown> | null = null
       try {
-        message = JSON.parse(r.text)?.error ?? message
+        body = JSON.parse(r.text)
+        message = (body?.error as string) ?? message
       } catch {
         /* keep the status-based message */
       }
-      throw new ApiError(message, r.status)
+      throw new ApiError(message, r.status, body)
     }
     return JSON.parse(r.text) as T
   }
 
   let response: Response
   try {
+    // A JSON content type only with a body: a bodiless GET or POST stays a
+    // "simple" cross-origin request (no preflight), so a route an older API
+    // lacks answers a plain 404 rather than failing its preflight.
     response = await fetch(`${API_BASE}${path}`, {
       ...init,
-      headers: { "Content-Type": "application/json", ...(init?.headers || {}) },
+      headers: { ...(init?.body ? { "Content-Type": "application/json" } : {}), ...(init?.headers || {}) },
     })
-  } catch {
+  } catch (err) {
+    if (err instanceof DOMException && err.name === "AbortError") throw new ApiError("aborted", -1)
     // Status 0 = unreachable. The message never names the API's address: in a
     // development build that is http://localhost:…, which means nothing to a
     // visitor (the pages show their own friendly copy for this case anyway).
@@ -296,16 +383,59 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
       response.status === 502 || response.status === 503 || response.status === 504
         ? "The evaluation server is not available right now. Please try again in a minute."
         : `Request failed (${response.status})`
+    let body: Record<string, unknown> | null = null
     try {
-      const body = await response.json()
-      if (body?.error) message = body.error
+      body = await response.json()
+      if (body?.error) message = body.error as string
     } catch {
       /* keep the status-based message */
     }
-    throw new ApiError(message, response.status)
+    throw new ApiError(message, response.status, body, retryAfterOf(response.headers.get("Retry-After"), body))
   }
 
-  return response.json() as Promise<T>
+  try {
+    return (await response.json()) as T
+  } catch (err) {
+    if (err instanceof DOMException && err.name === "AbortError") throw new ApiError("aborted", -1)
+    throw err
+  }
+}
+
+/**
+ * Optional routes of a newer API, remembered once a server has answered 404
+ * for them, so the page stops asking (and falls back to what it did before).
+ */
+const ABSENT_KEY = "azure2-api-absent"
+const absent = new Set<string>(
+  (() => {
+    // Remembered for the tab's visit, so each page does not ask (and 404) again.
+    try {
+      return JSON.parse(sessionStorage.getItem(ABSENT_KEY) ?? "[]") as string[]
+    } catch {
+      return []
+    }
+  })(),
+)
+async function optional<T>(feature: string, call: () => Promise<T>): Promise<T | null> {
+  if (absent.has(feature)) return null
+  try {
+    return await call()
+  } catch (err) {
+    if (err instanceof ApiError && err.missing) {
+      absent.add(feature)
+      try {
+        sessionStorage.setItem(ABSENT_KEY, JSON.stringify([...absent]))
+      } catch {
+        /* storage blocked: ask again next page */
+      }
+      return null
+    }
+    throw err
+  }
+}
+/** Whether this server is known to lack an optional route. */
+export function lacks(feature: "initial" | "ping" | "grid"): boolean {
+  return absent.has(feature)
 }
 
 /* -- evaluations ----------------------------------------------------------- */
@@ -316,6 +446,14 @@ export function listEvaluations(): Promise<Evaluation[]> {
 
 export function getEvaluation(id: string): Promise<Evaluation> {
   return request<Evaluation>(`/api/evaluations/${encodeURIComponent(id)}`)
+}
+
+/**
+ * The shipped scheme and cached curves of an evaluation, without a session
+ * (null from an API that does not offer it): drawn while the session opens.
+ */
+export function getInitial(id: string, signal?: AbortSignal): Promise<InitialState | null> {
+  return optional("initial", () => request<InitialState>(`/api/evaluations/${encodeURIComponent(id)}/initial`, { signal }))
 }
 
 export function openEvaluation(id: string): Promise<OpenedSession> {
@@ -379,24 +517,90 @@ export function getExtrapolations(sessionId: string): Promise<ExtrapSegment[]> {
 }
 
 /**
+ * One energy × angle extrapolation grid, computed on demand (null from an API
+ * that sends grids in full with the other extrapolations). `angles` asks for
+ * a few c.m. angles only.
+ */
+export function getExtrapolationGrid(sessionId: string, index: number, angles?: number[]): Promise<ExtrapSegment | null> {
+  const query = angles && angles.length ? `?angles=${angles.join(",")}` : ""
+  return optional("grid", () => request<ExtrapSegment>(`/api/sessions/${sessionId}/extrapolations/${index}${query}`))
+}
+
+/** The answer to an edit, or word that a newer edit replaced it on the server. */
+export type EditResult = (SchemeAndData & { superseded?: false }) | { superseded: true }
+
+/**
  * Apply parameter edits, keyed by free index, and get the recalculated curves
  * back in the same response — one round trip, so concurrent edits cannot
- * interleave into a stale plot.
+ * interleave into a stale plot. `seq` numbers the page's edits so a server
+ * that keeps only the latest can drop older ones; such a dropped edit comes
+ * back `{ superseded: true }` (a 409 marked so, or a 200 with that status).
  */
-export function setParameters(
+export async function setParameters(
   sessionId: string,
   updates: Record<number, number>,
-): Promise<SchemeAndData> {
-  return request<SchemeAndData>(`/api/sessions/${sessionId}/parameters`, {
+  options: { seq?: number; signal?: AbortSignal } = {},
+): Promise<EditResult> {
+  try {
+    const result = await request<SchemeAndData & { status?: string; superseded?: boolean }>(`/api/sessions/${sessionId}/parameters`, {
+      method: "POST",
+      body: JSON.stringify(options.seq === undefined ? { updates } : { updates, seq: options.seq }),
+      signal: options.signal,
+    })
+    if (result.status === "superseded" || result.superseded === true || !result.scheme) return { superseded: true }
+    return result as SchemeAndData
+  } catch (err) {
+    if (err instanceof ApiError && err.superseded) return { superseded: true }
+    throw err
+  }
+}
+
+export function resetParameters(sessionId: string, signal?: AbortSignal): Promise<SchemeAndData> {
+  return request<SchemeAndData>(`/api/sessions/${sessionId}/reset`, {
     method: "POST",
-    body: JSON.stringify({ updates }),
+    signal,
   })
 }
 
-export function resetParameters(sessionId: string): Promise<SchemeAndData> {
-  return request<SchemeAndData>(`/api/sessions/${sessionId}/reset`, {
-    method: "POST",
-  })
+/**
+ * Tell the server this session is still looked at (false: this API has no
+ * heartbeat; it then keeps sessions by their last request, as before).
+ */
+export async function pingSession(sessionId: string): Promise<boolean> {
+  const answer = await optional("ping", () => request<unknown>(`/api/sessions/${sessionId}/ping`, { method: "POST" }))
+  return answer !== null
+}
+
+/** Release a session from a page that is going away (survives unload). */
+export function closeSessionBeacon(sessionId: string): void {
+  if (IN_BROWSER) return
+  navigator.sendBeacon?.(`${API_BASE}/api/sessions/${sessionId}/close`, new Blob([], { type: "text/plain" }))
+}
+
+/**
+ * Run `call`, and while the server answers 503 (full) wait as it asks
+ * (Retry-After, else a growing pause) and try again, telling `onWait` how long.
+ */
+export async function withBusyRetry<T>(
+  call: () => Promise<T>,
+  onWait: (seconds: number | null) => void,
+  { attempts = 8, signal }: { attempts?: number; signal?: AbortSignal } = {},
+): Promise<T> {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      const result = await call()
+      onWait(null)
+      return result
+    } catch (err) {
+      if (!(err instanceof ApiError && err.busy) || attempt >= attempts - 1 || signal?.aborted) {
+        onWait(null)
+        throw err
+      }
+      const seconds = Math.min(60, Math.max(2, err.retryAfter ?? 5 * 2 ** Math.min(attempt, 3)))
+      onWait(seconds)
+      await new Promise((resolve) => setTimeout(resolve, seconds * 1000))
+    }
+  }
 }
 
 export function closeSession(sessionId: string): Promise<{ closed: boolean }> {

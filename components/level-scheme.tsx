@@ -41,6 +41,7 @@ import {
 import { useLang } from "@/components/lang-context"
 import { findBackground, formatLevelEnergy } from "@/lib/level-layout"
 import { useEvalDict } from "@/components/eval-dict"
+import { decimal } from "@/lib/i18n-eval"
 
 /**
  * The level scheme, built to stay readable when the model is crowded.
@@ -53,8 +54,11 @@ import { useEvalDict } from "@/components/eval-dict"
 
 interface Props {
   scheme: Scheme
-  evaluation: Evaluation
-  sessionId: string
+  /** Null while only the shipped snapshot is drawn (the session's metadata not in yet). */
+  evaluation: Evaluation | null
+  evaluationId: string
+  /** Null until the session is open: the scheme export waits for it. */
+  sessionId: string | null
   /** The selected level ("<jgroup>-<level>"), shared with the plot's sliders. */
   selectedLevel?: string | null
   onSelectLevel?: (key: string | null) => void
@@ -77,10 +81,11 @@ function jpiLatex(jpi: string): string {
   return jpi.replace(/([+-])$/, "^{$1}")
 }
 
-export function LevelScheme({ scheme, evaluation, sessionId, selectedLevel: shared, onSelectLevel, onEditLevel }: Props) {
+export function LevelScheme({ scheme, evaluation, evaluationId, sessionId, selectedLevel: shared, onSelectLevel, onEditLevel }: Props) {
   const lang = useLang()
   const t = useEvalDict().workspace
   const l = useEvalDict().levels
+  const live = useEvalDict().live
   // Controlled by the workspace when it passes a selection, else local.
   const [localSelection, setLocalSelection] = useState<string | null>(null)
   const selectedLevel = shared !== undefined ? shared : localSelection
@@ -220,7 +225,7 @@ export function LevelScheme({ scheme, evaluation, sessionId, selectedLevel: shar
                             )
 
   // keV precision, as in the diagram and the sliders.
-  const energyText = (v: number) => formatLevelEnergy(v)
+  const energyText = (v: number) => decimal(formatLevelEnergy(v), lang)
   // Background poles fold away at the end of the table, as in the diagram.
   const background = useMemo(() => findBackground(scheme.levels), [scheme.levels])
   const shownLevels = filtered.filter((level) => !background?.keys.has(keyOf(level)))
@@ -252,7 +257,7 @@ export function LevelScheme({ scheme, evaluation, sessionId, selectedLevel: shar
         </span>
           <span className="ml-auto flex items-center gap-1 text-xs text-muted-foreground">
             {level.energy_fixed ? <Lock className="h-3 w-3" aria-hidden /> : <Unlock className="h-3 w-3" aria-hidden />}
-            {free > 0 ? `${free} ${t.freeWord}` : t.fixedWord}
+            {free > 0 ? live.nFreeParams(free) : t.fixedWord}
           </span>
         </button>
         {open && <div className="px-4 pb-3 pl-11 text-sm">{channelList(channels)}</div>}
@@ -354,16 +359,23 @@ export function LevelScheme({ scheme, evaluation, sessionId, selectedLevel: shar
           </p>
         </div>
         <div className="flex min-w-0 flex-wrap items-center gap-2">
-          <Button asChild variant="outline" size="sm" className="h-auto min-h-9 max-w-full whitespace-normal">
-            <a {...downloadLink(schemeExportUrl(sessionId), `${evaluation.id}_level_scheme.txt`)}>
+          {sessionId ? (
+            <Button asChild variant="outline" size="sm" className="h-auto min-h-9 max-w-full whitespace-normal">
+              <a {...downloadLink(schemeExportUrl(sessionId), `${evaluationId}_level_scheme.txt`)}>
+                <FileText className="mr-2 h-4 w-4" />
+                {t.exportScheme}
+              </a>
+            </Button>
+          ) : (
+            <Button variant="outline" size="sm" className="h-auto min-h-9 max-w-full whitespace-normal" disabled>
               <FileText className="mr-2 h-4 w-4" />
               {t.exportScheme}
-            </a>
-          </Button>
+            </Button>
+          )}
           <Button asChild size="sm" className="h-auto min-h-9 max-w-full whitespace-normal [overflow-wrap:anywhere]">
-            <a href={evaluationDownloadUrl(evaluation.id, evaluation.filename)} download>
+            <a href={evaluationDownloadUrl(evaluationId, evaluation?.filename ?? `${evaluationId}.azr`)} download>
               <Download className="mr-2 h-4 w-4" />
-              {t.downloadFile(evaluation.filename)}
+              {t.downloadFile(evaluation?.filename ?? `${evaluationId}.azr`)}
             </a>
           </Button>
         </div>
@@ -563,15 +575,15 @@ export function LevelScheme({ scheme, evaluation, sessionId, selectedLevel: shar
                   {!pair.is_photon && (
                     <>
                       <dt>{t.separation}</dt>
-                      <dd className="text-right text-foreground">{formatLevelEnergy(pair.separation_energy)}</dd>
+                      <dd className="text-right text-foreground">{energyText(pair.separation_energy)}</dd>
                     </>
                   )}
                   <dt>{t.excitation}</dt>
-                  <dd className="text-right text-foreground">{formatLevelEnergy(pair.excitation)}</dd>
+                  <dd className="text-right text-foreground">{energyText(pair.excitation)}</dd>
                   {pair.channel_radius > 0 && (
                     <>
                       <dt>{t.radius}</dt>
-                      <dd className="text-right text-foreground">{pair.channel_radius.toFixed(2)}</dd>
+                      <dd className="text-right text-foreground">{decimal(pair.channel_radius.toFixed(2), lang)}</dd>
                     </>
                   )}
                 </dl>
@@ -614,14 +626,14 @@ export function LevelScheme({ scheme, evaluation, sessionId, selectedLevel: shar
                       {pair.is_photon ? t.photon : t.particle}
                     </td>
                     <td className="px-2 py-2 text-right tabular-nums">
-                      {pair.is_photon ? "—" : formatLevelEnergy(pair.separation_energy)}
+                      {pair.is_photon ? "—" : energyText(pair.separation_energy)}
                     </td>
                     <td className="px-2 py-2 text-right tabular-nums">
-                      {formatLevelEnergy(pair.excitation)}
+                      {energyText(pair.excitation)}
                     </td>
                     <td className="px-2 py-2 text-right tabular-nums">
                       {pair.channel_radius > 0
-                        ? pair.channel_radius.toFixed(2)
+                        ? decimal(pair.channel_radius.toFixed(2), lang)
                         : "—"}
                     </td>
                   </tr>

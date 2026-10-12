@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
+import { memo, useEffect, useMemo, useRef, useState } from "react"
 import { ChevronDown, ChevronRight, RotateCcw } from "lucide-react"
 import { Tex, Unit, texPlain, unitPlain } from "@/components/tex"
 
@@ -8,8 +8,10 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import type { Scheme } from "@/lib/api"
+import { currentValues } from "@/contexts/session-context"
+import { numberText } from "@/lib/eval-plot"
 import { decimal } from "@/lib/i18n-eval"
-import { formatLevelEnergy, jpiPlain, levelKey } from "@/lib/level-layout"
+import { findBackground, formatLevelEnergy, jpiPlain, levelKey } from "@/lib/level-layout"
 import { formatQuantity, quantitySymbol, significant } from "@/lib/viz"
 import { useLang } from "@/components/lang-context"
 import { useEvalDict } from "@/components/eval-dict"
@@ -128,9 +130,10 @@ function parseNumber(text: string): number | null {
   return Number.isFinite(value) ? value : null
 }
 
-export function LevelControls({ scheme, onChange, onReset, disabled, selectedLevel, onSelectLevel, deltaChi2, defaultOpen }: Props) {
+function LevelControlsImpl({ scheme, onChange, onReset, disabled, selectedLevel, onSelectLevel, deltaChi2, defaultOpen }: Props) {
   const t = useEvalDict().workspace
   const l = useEvalDict().levels
+  const lv = useEvalDict().live
   const lang = useLang()
   const num = (s: string) => decimal(s, lang)
 
@@ -161,7 +164,7 @@ export function LevelControls({ scheme, onChange, onReset, disabled, selectedLev
           value: channel.width,
           initial: channel.initial_width,
           unit: channel.unit,
-          detail: `ℓ = ${channel.L}, s = ${channel.S}`,
+          detail: `ℓ = ${channel.L}, s = ${decimal(String(channel.S), lang)}`,
         })
       }
       if (controls.length > 0) {
@@ -169,7 +172,7 @@ export function LevelControls({ scheme, onChange, onReset, disabled, selectedLev
       }
     }
     return list.sort((a, b) => a.energy - b.energy)
-  }, [scheme, t])
+  }, [scheme, t, lang])
 
   // Open one level so the panel is never a wall of collapsed rows: the most
   // informative one (the resonance in the plotted range) when the plot says.
@@ -194,28 +197,53 @@ export function LevelControls({ scheme, onChange, onReset, disabled, selectedLev
     return () => cancelAnimationFrame(id)
   }, [selectedLevel, groups])
 
-  // Local values keep the slider responsive while the server catches up; they
-  // resync whenever the authoritative scheme changes (including on reset).
+  // Local values keep the slider where the reader put it while the server
+  // catches up. A value leaves the draft once the server's scheme carries it,
+  // or, when nothing is on its way any more (`disabled` off) and the field was
+  // not touched just now, when the server says otherwise (a reset, an undo).
+  // An answer to an older edit arriving mid-drag never moves the thumb back.
   const [draft, setDraft] = useState<Record<number, number>>({})
+  const touched = useRef(new Map<number, number>())
   useEffect(() => {
-    setDraft({})
-  }, [scheme])
+    const server = currentValues(scheme)
+    const now = performance.now()
+    setDraft((current) => {
+      let changed = false
+      const next: Record<number, number> = {}
+      for (const [key, value] of Object.entries(current)) {
+        const k = Number(key)
+        const there = server[k]
+        const reached = there !== undefined && Math.abs(there - value) <= 1e-9 * Math.max(1, Math.abs(value))
+        const recent = now - (touched.current.get(k) ?? -Infinity) < 800
+        if (!reached && (disabled || recent)) next[k] = value
+        else changed = true
+      }
+      return changed ? next : current
+    })
+  }, [scheme, disabled])
 
-  // Recalculation is a round trip to AZURE2, so dragging is debounced; without
-  // this a single drag would queue dozens of full R-matrix evaluations.
+  // Edits go out at most every 150 ms while a slider moves; the session keeps
+  // only the latest of those waiting for the server, so a drag costs one
+  // calculation at a time and ends on the value the thumb was released at.
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  useEffect(
-    () => () => {
-      if (timer.current) clearTimeout(timer.current)
-    },
-    [],
-  )
+  const outgoing = useRef<Record<number, number>>({})
+  const flush = () => {
+    if (timer.current) clearTimeout(timer.current)
+    timer.current = null
+    const updates = outgoing.current
+    outgoing.current = {}
+    if (Object.keys(updates).length > 0) onChange(updates)
+  }
+  const flushRef = useRef(flush)
+  flushRef.current = flush
+  useEffect(() => () => flushRef.current(), [])
 
   const setValue = (freeIndex: number, value: number, immediate = false) => {
+    touched.current.set(freeIndex, performance.now())
     setDraft((current) => ({ ...current, [freeIndex]: value }))
-    if (timer.current) clearTimeout(timer.current)
-    if (immediate) onChange({ [freeIndex]: value })
-    else timer.current = setTimeout(() => onChange({ [freeIndex]: value }), 200)
+    outgoing.current[freeIndex] = value
+    if (immediate) flush()
+    else if (!timer.current) timer.current = setTimeout(flush, 150)
   }
 
   const toggle = (key: string) => {
@@ -224,45 +252,12 @@ export function LevelControls({ scheme, onChange, onReset, disabled, selectedLev
     if (opening) onSelectLevel?.(key)
   }
 
-  const total = groups.reduce((sum, group) => sum + group.controls.length, 0)
+  // Background poles (fixed, far above the data) fold away under their own heading.
+  const background = useMemo(() => findBackground(scheme.levels), [scheme.levels])
+  const main = groups.filter((g) => !background?.keys.has(g.key))
+  const back = groups.filter((g) => background?.keys.has(g.key))
 
-  if (total === 0) {
-    return <p className="text-sm text-muted-foreground">{t.noFreeParameters}</p>
-  }
-
-  return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex min-w-0 flex-wrap items-center gap-2">
-          <h2 className="text-base font-semibold">{t.interactiveLevels}</h2>
-          <Badge variant="secondary" className="text-xs">
-            {t.nFree(total)}
-          </Badge>
-          {scheme.modified && (
-            <Badge variant="outline" className="text-xs">
-              {t.modified}
-            </Badge>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setOpen(open.length === groups.length ? [] : groups.map((g) => g.key))}
-          >
-            {open.length === groups.length ? t.collapseAll : t.expandAll}
-          </Button>
-          {onReset && (
-            <Button variant="outline" size="sm" onClick={onReset} disabled={disabled || !scheme.modified}>
-              <RotateCcw className="mr-2 h-3.5 w-3.5" />
-              {t.reset}
-            </Button>
-          )}
-        </div>
-      </div>
-
-      <div className="divide-y rounded-md border">
-        {groups.map((group) => {
+  const renderGroup = (group: LevelGroup) => {
           const expanded = open.includes(group.key)
           const isSelected = selectedLevel === group.key
           const touched = group.controls.some(
@@ -322,8 +317,55 @@ export function LevelControls({ scheme, onChange, onReset, disabled, selectedLev
               )}
             </div>
           )
-        })}
+  }
+
+  const total = groups.reduce((sum, group) => sum + group.controls.length, 0)
+
+  if (total === 0) {
+    return <p className="text-sm text-muted-foreground">{t.noFreeParameters}</p>
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <h2 className="text-base font-semibold">{t.interactiveLevels}</h2>
+          <Badge variant="secondary" className="text-xs">
+            {t.nFree(total)}
+          </Badge>
+          {scheme.modified && (
+            <Badge variant="outline" className="text-xs">
+              {t.modified}
+            </Badge>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 px-2 text-xs"
+            onClick={() => setOpen(open.length === groups.length ? [] : groups.map((g) => g.key))}
+          >
+            {open.length === groups.length ? t.collapseAll : t.expandAll}
+          </Button>
+          {onReset && (
+            <Button variant="outline" size="sm" onClick={onReset} disabled={disabled || !scheme.modified}>
+              <RotateCcw className="mr-2 h-3.5 w-3.5" />
+              {t.reset}
+            </Button>
+          )}
+        </div>
       </div>
+
+      <div className="divide-y rounded-md border">{main.map(renderGroup)}</div>
+      {back.length > 0 && (
+        <details className="rounded-md border" open={back.some((g) => g.key === selectedLevel) || undefined}>
+          <summary className="flex min-h-11 cursor-pointer select-none items-center px-3 text-sm text-muted-foreground">
+            {lv.background} · {t.nParameters(back.reduce((n, g) => n + g.controls.length, 0))}
+          </summary>
+          <div className="divide-y border-t">{back.map(renderGroup)}</div>
+        </details>
+      )}
       <span className="sr-only" aria-live="polite">
         {selectedLevel && groups.some((g) => g.key === selectedLevel) ? l.levelInDiagram : ""}
       </span>
@@ -432,7 +474,7 @@ function ParameterControl({
               {t.changed}
               {delta !== undefined && Number.isFinite(delta) && (
                 <span className="ml-1 tabular-nums">
-                  · {l.deltaChi2(`${delta > 0 ? "+" : delta < 0 ? "−" : "±"}${num(significant(Math.abs(delta), 2))}`)}
+                  · {l.deltaChi2(`${delta > 0 ? "+" : delta < 0 ? "−" : "±"}${numberText(Math.abs(delta), lang, 2)}`)}
                 </span>
               )}
             </Badge>
@@ -534,3 +576,6 @@ function ParameterControl({
     </div>
   )
 }
+
+/** Memoised: the plot's own re-renders (toggles, timers) leave the sliders alone. */
+export const LevelControls = memo(LevelControlsImpl)

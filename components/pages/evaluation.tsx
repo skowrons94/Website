@@ -238,15 +238,17 @@ function EvaluationIntro({
         <>
           Lo schema dei livelli mostra le energie a cui può esistere {cnIt.the}
           {cn} ({g("excited-state", "stati eccitati")}, ciascuno con la sua {g("spin-parity", "spin-parità Jπ")}); nel
-          grafico i punti sono le misure e la linea è il modello {g("r-matrix", "R-matrix")}, {shown}. Sposta un cursore e
-          guarda se la linea passa ancora per i punti: più basso è il {g("chi-squared", "χ²")}, migliore è il fit.
+          grafico i punti sono le misure e la linea è il modello {g("r-matrix", "R-matrix")}, {shown}. Apri <span className="text-foreground">Grafico e dati</span>,
+          sposta un cursore e guarda se la linea passa ancora per i punti: più basso è il {g("chi-squared", "χ²")},
+          migliore è il fit.
         </>
       ) : (
         <>
           The level scheme shows the energies at which {cn} can exist ({g("excited-state", "excited states")}, each with its{" "}
           {g("spin-parity", "spin-parity Jπ")}); in the plot the dots are measurements and the line is the{" "}
-          {g("r-matrix", "R-matrix")} model, {shown}. Drag a slider and see whether the line still passes through the dots:
-          the lower the {g("chi-squared", "χ²")}, the better the fit.
+          {g("r-matrix", "R-matrix")} model, {shown}. Open <span className="text-foreground">Plot &amp; data</span>, drag a
+          slider and see whether the line still passes through the dots: the lower the {g("chi-squared", "χ²")}, the
+          better the fit.
         </>
       )}
     </p>
