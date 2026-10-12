@@ -41,7 +41,7 @@ function groups(lang: Lang): { title: string; links: { href: string; label: stri
 // Roomy tap targets wherever the pointer is a finger (a tablet is as wide as a
 // laptop), a compact list once there is a mouse.
 const LINK =
-  "inline-flex min-h-10 items-center text-muted-foreground transition-colors hover:text-foreground [@media(pointer:fine)]:min-h-8"
+  "inline-flex min-h-10 max-w-full items-center [overflow-wrap:anywhere] text-muted-foreground transition-colors hover:text-foreground [@media(pointer:fine)]:min-h-8"
 
 export function SiteFooter({ profile, lang }: { profile: Profile; lang: Lang }) {
   const t = dict(lang).footer
@@ -65,7 +65,7 @@ export function SiteFooter({ profile, lang }: { profile: Profile; lang: Lang }) 
         </div>
 
         {groups(lang).map((group) => (
-          <nav key={group.title} aria-label={group.title} className="text-sm">
+          <nav key={group.title} aria-label={group.title} className="min-w-0 text-sm">
             <h2 className="mb-2 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
               {group.title}
             </h2>
@@ -81,7 +81,7 @@ export function SiteFooter({ profile, lang }: { profile: Profile; lang: Lang }) 
           </nav>
         ))}
 
-        <nav aria-label={t.elsewhere} className="text-sm">
+        <nav aria-label={t.elsewhere} className="min-w-0 text-sm">
           <h2 className="mb-2 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
             {t.elsewhere}
           </h2>
