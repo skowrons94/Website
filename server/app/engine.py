@@ -146,12 +146,83 @@ def _worker(conn, azr_path, cwd, omp_threads):
         except BaseException as err:
             conn.send(("error", f"{type(err).__name__}: {err}"))
 
-    for model in (azr, fine.get("model")):
+    for model in (azr, fine.get("model"), getattr(azr, "_extrap_state", {}).get("model"),
+                  getattr(azr, "_data_state", {}).get("model")):
         try:
             if model is not None:
                 model.close()
         except Exception:
             pass
+
+
+def data_curves(state, azr_path, cwd, params):
+    """``(mu, mu_sfactor)`` per data segment of a model whose total capture
+    sums several capture pairs, from the split model of
+    :func:`app.fine.split_data_model` (built once and kept in ``state``).
+
+    Returns ``None`` when the model cannot be split, and the caller falls
+    back on a fresh initialization of its own model (:func:`_fresh_data`).
+    """
+    import pyazr
+    from app import fine
+
+    if "model" not in state:
+        captures = fine.capture_keys(azr_path)
+        workdir = fine.workdir_for(cwd, "datamodel")
+        with fine.building(workdir):
+            path, groups = fine.split_data_model(azr_path, workdir, captures)
+            model = pyazr.azure2(path, cwd=cwd) if path else None
+        state["model"], state["groups"] = model, groups
+    model, groups = state["model"], state["groups"]
+    if model is None:
+        return None
+    params = np.asarray(params, dtype=np.float64)
+    if len(params) != len(model.params):
+        return None
+    mu = model.calculate(params)
+    sfactor = model.calculate_sfactor(params)
+    return ([fine.sum_slots(mu, g) for g in groups],
+            [fine.sum_slots(sfactor, g) for g in groups])
+
+
+def _needs_split(azr) -> bool:
+    needs = getattr(azr, "_needs_split", None)
+    if needs is None:
+        from app import fine
+        try:
+            needs = fine.summed(azr.datasets, fine.capture_keys(azr.file))
+        except Exception:
+            needs = False
+        azr._needs_split = needs
+    return needs
+
+
+def _output_dir(azr):
+    """The model's output directory, as AZURE2 resolves it (cwd-relative)."""
+    import re
+    try:
+        with open(azr.file) as f:
+            config = re.search(r"<config>\n(.*?)</config>", f.read(), flags=re.S)
+        row = config.group(1).split("\n")[1].split("#")[0].strip()
+    except (OSError, AttributeError, IndexError):
+        return None
+    return row if os.path.isabs(row) else os.path.join(azr.cwd, row)
+
+
+def _fresh_data(azr):
+    """Initialize the model again without a stored ``intEC.dat``: right for
+    a summed total capture, at the cost of the integrals (the fallback when
+    no split model can be written)."""
+    if getattr(azr, "_fresh_ec", False):
+        return
+    output = _output_dir(azr)
+    if output:
+        try:
+            os.remove(os.path.join(output, "intEC.dat"))
+        except OSError:
+            pass
+    azr.data_mode()
+    azr._fresh_ec = True
 
 
 def fine_curves(state, azr_path, cwd, params):
@@ -160,8 +231,9 @@ def fine_curves(state, azr_path, cwd, params):
     ``state`` keeps the derived model between calls: building it runs AZURE2's
     INITIALIZE, external-capture integrals included, which is slow the first
     time and is then reused for every later parameter vector.  Returns
-    ``(index, energies, mu, mu_sfactor)``; ``index[i]`` is data segment ``i``'s
-    slot in the other three, or ``None``.
+    ``(index, energies, mu, mu_sfactor, angles, axes)``: ``index[i]`` is data
+    segment ``i``'s slot in the other lists, or ``None``; ``axes[j]`` says
+    whether slot ``j`` runs along the energy or the (c.m.) angle.
     """
     import pyazr
     from pyazr.datasets import SegmentSet
@@ -177,21 +249,86 @@ def fine_curves(state, azr_path, cwd, params):
         state["index"] = index
         state["model"] = model
     model = state["model"]
+    planned = state["index"]
+    index = [None] * len(planned)
     if model is None:
-        return state["index"], [], [], []
+        return index, [], [], [], [], []
     params = np.asarray(params, dtype=np.float64)
-    return (state["index"], model.calculate_energies(params),
-            model.calculate(params), model.calculate_sfactor(params))
+    energies = model.calculate_energies(params)
+    angles = model.calculate_angles(params)
+    mu = model.calculate(params)
+    sfactor = model.calculate_sfactor(params)
+    out = ([], [], [], [], [])
+    for i, item in enumerate(planned):
+        if not item:
+            continue
+        slots = item["slots"]
+        if max(slots) >= len(mu):
+            continue
+        index[i] = len(out[0])
+        first = slots[0]
+        out[0].append(np.asarray(energies[first], dtype=float))
+        out[1].append(fine.sum_slots(mu, slots))
+        out[2].append(fine.sum_slots(sfactor, slots))
+        out[3].append(np.asarray(angles[first], dtype=float))
+        out[4].append(item["axis"])
+    return (index,) + out
+
+
+def extrap_curves(state, azr_path, cwd, params):
+    """The evaluation's extrapolations: ``(energies, angles, mu, mu_sfactor)``
+    per *active* ``<segmentsTest>`` line, in file order.
+
+    Calculated by a second model in extrapolation mode, so the data model is
+    never re-initialized (a summed-capture model could not be, safely).  When
+    the extrapolations include a total capture over several capture pairs,
+    that model is a derived copy with one line per pair (summed here), whose
+    integrals live in ``extrap/`` next to the evaluation and are reused safely.
+    """
+    import pyazr
+    from pyazr.datasets import TestSegmentSet
+    from app import fine
+
+    if "model" not in state:
+        captures = fine.capture_keys(azr_path)
+        tests = TestSegmentSet.from_file(azr_path)
+        slots = None
+        if fine.summed(tests, captures):
+            workdir = fine.workdir_for(cwd, "extrap")
+            with fine.building(workdir):
+                path, slots = fine.extrap_model(azr_path, workdir, captures)
+                model = pyazr.azure2(path, cwd=cwd, data_mode=False) if path else None
+        else:
+            model = pyazr.azure2(azr_path, cwd=cwd, data_mode=False)
+        state["model"], state["slots"] = model, slots
+    model, slots = state["model"], state["slots"]
+    if model is None:
+        return [], [], [], []
+    params = np.asarray(params, dtype=np.float64)
+    energies = model.calculate_energies(params)
+    angles = model.calculate_angles(params)
+    mu = model.calculate(params)
+    sfactor = model.calculate_sfactor(params)
+    if slots is None:
+        return energies, angles, mu, sfactor
+    out = ([], [], [], [])
+    for group in slots:
+        if max(group) >= len(mu):
+            break
+        out[0].append(energies[group[0]])
+        out[1].append(angles[group[0]])
+        out[2].append(fine.sum_slots(mu, group))
+        out[3].append(fine.sum_slots(sfactor, group))
+    return out
 
 
 def _dispatch(azr, command, params):
     """Run one command against the engine.
 
-    Both calculations set the mode first.  Switching re-runs AZURE2's
-    INITIALIZE, which is the expensive half of opening a model, so the switch is
-    skipped when the engine is already in the mode asked for -- pyazr tracks it
-    on ``azr.mode``, so there is no second copy of that state to fall out of
-    step.
+    The data model stays in data mode for its whole life; the extrapolations
+    are calculated by a second model kept on it (:func:`extrap_curves`), and
+    a model whose data include a total capture over several capture pairs by
+    a third, split one (:func:`data_curves`).
 
     The parameter vector is converted here rather than trusted from the wire:
     the engine's ``update_segments`` reads its argument through the buffer
@@ -204,13 +341,25 @@ def _dispatch(azr, command, params):
     if command == "data":
         if azr.mode != "data":
             azr.data_mode()
+        if _needs_split(azr):
+            # A total capture over several capture pairs: AZURE2's own
+            # calculation of it is unreliable (app.fine.summed).
+            state = getattr(azr, "_data_state", None)
+            if state is None:
+                state = {}
+                azr._data_state = state
+            result = data_curves(state, azr.file, azr.cwd, params)
+            if result is not None:
+                return result
+            _fresh_data(azr)
         return (azr.calculate(params), azr.calculate_sfactor(params))
 
     if command == "extrap":
-        if azr.mode != "extrap":
-            azr.extrap_mode()
-        return (azr.calculate_energies(params), azr.calculate_angles(params),
-                azr.calculate(params), azr.calculate_sfactor(params))
+        state = getattr(azr, "_extrap_state", None)
+        if state is None:
+            state = {}
+            azr._extrap_state = state
+        return extrap_curves(state, azr.file, azr.cwd, params)
 
     raise ValueError(f"unknown command: {command}")
 
@@ -258,8 +407,8 @@ class Engine:
         return self._call("extrap", params)
 
     def calculate_fine(self, params):
-        """``(index, energies, mu, mu_sfactor)``: the model on a fine grid per
-        data segment (:func:`fine_curves`)."""
+        """``(index, energies, mu, mu_sfactor, angles, axes)``: the model on a
+        fine grid per data segment (:func:`fine_curves`)."""
         return self._call("fine", params)
 
     def fine_ready(self) -> bool:

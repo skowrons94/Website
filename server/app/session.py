@@ -167,7 +167,7 @@ class Session:
 
     def calculate_fine(self):
         """The model on a fine grid per data segment, at the current
-        parameters: ``(index, energies, mu, mu_sfactor)``."""
+        parameters: ``(index, energies, mu, mu_sfactor, angles, axes)``."""
         return self._cached("fine", self.engine.calculate_fine)
 
     def fine_ready(self) -> bool:
