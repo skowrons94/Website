@@ -153,15 +153,15 @@ export function TimelineView({ events }: { events: TimelineItem[] }) {
           <div role="group" aria-label={t.show} className="flex shrink-0 gap-1.5 lg:min-w-0 lg:shrink lg:flex-wrap">
             {highlights > 0 && (
               <Chip on={only === HIGHLIGHTS} onClick={() => choose(only === HIGHLIGHTS ? null : HIGHLIGHTS)}>
-                {t.highlights} <span className="tabular opacity-90">{highlights}</span>
+                {t.highlights} <span className="tabular">{highlights}</span>
               </Chip>
             )}
             <Chip on={only === null} onClick={() => choose(null)}>
-              {t.all} <span className="tabular opacity-90">{events.length}</span>
+              {t.all} <span className="tabular">{events.length}</span>
             </Chip>
             {CATEGORIES.filter((c) => counts.get(c)).map((c) => (
               <Chip key={c} on={only === c} onClick={() => choose(only === c ? null : c)}>
-                {label(c)} <span className="tabular opacity-90">{counts.get(c)}</span>
+                {label(c)} <span className="tabular">{counts.get(c)}</span>
               </Chip>
             ))}
           </div>
