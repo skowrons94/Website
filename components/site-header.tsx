@@ -31,7 +31,7 @@ export function SiteHeader({ name, lang }: { name: string; lang: Lang }) {
     pathname === href || pathname.startsWith(`${href}/`)
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/85">
+    <header className="sticky top-0 z-40 print:hidden border-b border-border/70 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/85">
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-5 sm:px-8 xl:max-w-7xl">
         <Link
           href={localePath(lang, "/")}
@@ -41,17 +41,20 @@ export function SiteHeader({ name, lang }: { name: string; lang: Lang }) {
           {name}
         </Link>
 
-        <nav aria-label={t.label} className="ml-auto hidden items-center gap-4 md:flex lg:gap-6">
+        <nav aria-label={t.label} className="ml-auto hidden items-center gap-3.5 md:flex lg:gap-6">
           {NAV.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               aria-current={isActive(item.href) ? "page" : undefined}
+              // A 40px-tall target, and the current section marked the same
+              // way here and in the menu: foreground ink plus a rule under it.
               className={cn(
-                "text-sm transition-colors hover:text-foreground",
+                "relative inline-flex h-10 items-center text-sm transition-colors hover:text-foreground",
+                "after:absolute after:inset-x-0 after:bottom-1 after:h-0.5 after:rounded-full after:content-['']",
                 isActive(item.href)
-                  ? "font-medium text-foreground"
-                  : "text-muted-foreground",
+                  ? "font-medium text-foreground after:bg-foreground"
+                  : "text-muted-foreground after:bg-transparent hover:after:bg-border",
               )}
             >
               {item.short ? (
@@ -92,10 +95,10 @@ export function SiteHeader({ name, lang }: { name: string; lang: Lang }) {
                 aria-current={isActive(item.href) ? "page" : undefined}
                 onClick={() => setOpen(false)}
                 className={cn(
-                  "border-b border-border/50 py-3 text-sm last:border-0",
+                  "-ml-3 flex min-h-12 items-center border-b border-l-2 border-b-border/50 pl-[calc(0.75rem-2px)] text-[0.9375rem] last:border-b-0",
                   isActive(item.href)
-                    ? "font-medium text-foreground"
-                    : "text-muted-foreground",
+                    ? "border-l-foreground font-medium text-foreground"
+                    : "border-l-transparent text-muted-foreground hover:text-foreground",
                 )}
               >
                 {item.label}

@@ -15,6 +15,9 @@ RUN npm ci --ignore-scripts
 
 ARG API_BASE=""
 ENV API_BASE=${API_BASE}
+# Optional absolute origin (https://example.com): hreflang and og:image.
+ARG SITE_URL=""
+ENV SITE_URL=${SITE_URL}
 COPY . .
 RUN npm run build
 

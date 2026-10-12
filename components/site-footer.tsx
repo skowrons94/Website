@@ -35,14 +35,15 @@ function groups(lang: Lang): { title: string; links: { href: string; label: stri
   ]
 }
 
-// Roomy tap targets on a phone, a compact list once there is a pointer.
+// Roomy tap targets wherever the pointer is a finger (a tablet is as wide as a
+// laptop), a compact list once there is a mouse.
 const LINK =
-  "inline-block py-2.5 text-muted-foreground transition-colors hover:text-foreground sm:py-1"
+  "inline-flex min-h-10 items-center text-muted-foreground transition-colors hover:text-foreground [@media(pointer:fine)]:min-h-8"
 
 export function SiteFooter({ profile, lang }: { profile: Profile; lang: Lang }) {
   const t = dict(lang).footer
   return (
-    <footer className="mt-24 border-t border-border/70">
+    <footer className="mt-24 border-t border-border/70 print:hidden">
       <div className="mx-auto grid max-w-6xl grid-cols-2 gap-x-8 gap-y-10 px-5 py-12 sm:px-8 lg:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))] xl:max-w-7xl">
         <div className="col-span-2 space-y-1 text-sm text-muted-foreground lg:col-span-1">
           <p className="font-medium text-foreground">{profile.name}</p>
@@ -53,7 +54,7 @@ export function SiteFooter({ profile, lang }: { profile: Profile; lang: Lang }) 
           <p>
             <a
               href={`mailto:${profile.email}`}
-              className="inline-block break-all py-2.5 text-link underline-offset-2 hover:underline sm:py-0"
+              className="inline-flex min-h-10 items-center break-all text-link underline-offset-2 hover:underline [@media(pointer:fine)]:min-h-0"
             >
               {profile.email}
             </a>
@@ -91,6 +92,11 @@ export function SiteFooter({ profile, lang }: { profile: Profile; lang: Lang }) 
             ))}
           </ul>
         </nav>
+      </div>
+      <div className="border-t border-border/50">
+        <p className="mx-auto max-w-6xl px-5 py-5 text-xs text-muted-foreground sm:px-8 xl:max-w-7xl">
+          © {new Date().getFullYear()} {profile.name}
+        </p>
       </div>
     </footer>
   )

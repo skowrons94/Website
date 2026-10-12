@@ -39,6 +39,10 @@ services:
         # Empty: the client calls /api on its own origin, so no hostname is
         # compiled into the bundle and the image is domain-agnostic.
         API_BASE: ""
+        # Optional, e.g. https://example.com: makes the hreflang links absolute
+        # and turns on the social-preview image, which must be an absolute URL.
+        # Empty keeps the image domain-agnostic, without the preview image.
+        SITE_URL: ${SITE_URL:-}
     restart: unless-stopped
     expose:
       - "3000"
