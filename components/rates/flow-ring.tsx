@@ -66,7 +66,11 @@ export const FlowRing = memo(function FlowRing({
         }
       : { x: 34 + ((W - 68) * i) / Math.max(1, n - 1), y: cy },
   )
-  const node = 19
+  // a long chain in a narrow box: smaller nodes, and the step labels take
+  // turns above and below the arrows
+  const gap = closed ? Infinity : (W - 68) / Math.max(1, n - 1)
+  const node = Math.max(13, Math.min(19, gap / 2 - 8))
+  const crowded = gap < 72
   const ref = flowsBase ?? flows
   const fmax = Math.max(...path.map((p) => ref[p.reaction]), 1e-300)
   const w = (F: number) => 1.5 + 10 * Math.sqrt(Math.max(0, F) / fmax)
@@ -197,20 +201,21 @@ export const FlowRing = memo(function FlowRing({
             </g>
           )
         })}
-        {edges.map(({ p, a, b }) => {
+        {edges.map(({ p, a, b }, ei) => {
           const mx = (a.x + b.x) / 2
           const my = (a.y + b.y) / 2
           const ox = closed ? (mx - cx) / (Math.hypot(mx - cx, my - cy) || 1) : 0
           const oy = closed ? (my - cy) / (Math.hypot(mx - cx, my - cy) || 1) : -1
           const isSlow = p.reaction === slowest
           const r = network.reactions[p.reaction]
+          const below = crowded && ei % 2 === 1
           const lx = mx + ox * (closed ? -24 : 18)
-          const ly = my + oy * (closed ? -24 : 18)
+          const ly = below ? my + 18 : my + oy * (closed ? -24 : 18)
           const f = factor(p.reaction)
           // the second line ("slowest", "×1.3") goes further from the arrow:
           // inwards on a ring, above the label on a chain
           const sx = closed ? mx - ox * 38 : lx
-          const sy = closed ? my - oy * 38 : ly - 13
+          const sy = closed ? my - oy * 38 : below ? ly + 13 : ly - 13
           const second = [isSlow ? slowestWord : "", f !== null ? times(f) : ""].filter(Boolean).join(" · ")
           return (
             <g key={`t${p.reaction}`}>
