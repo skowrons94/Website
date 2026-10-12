@@ -923,6 +923,16 @@ export function NetworkMap({ data }: { data: MapData }) {
             <p className="mt-2">
               <Sci>{family?.summary}</Sci>
             </p>
+            {family?.links.map((l) => (
+              <Link
+                key={l.href}
+                href={localePath(lang, l.href)}
+                className="mt-3 inline-flex min-h-8 items-center gap-1.5 font-medium text-link underline-offset-4 hover:underline"
+              >
+                {t.familyPageLink(l.name)}
+                <ArrowRight className="h-4 w-4" aria-hidden />
+              </Link>
+            ))}
             <p className="mt-4">{t.selectArrow}</p>
           </div>
         )}
@@ -936,6 +946,21 @@ export function NetworkMap({ data }: { data: MapData }) {
         <p className="mt-3 max-w-3xl text-pretty leading-relaxed text-muted-foreground">
           <Sci>{family?.summary}</Sci>
         </p>
+        {family && family.links.length > 0 && (
+          <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-1">
+            {family.links.map((l) => (
+              <li key={l.href}>
+                <Link
+                  href={localePath(lang, l.href)}
+                  className="group inline-flex min-h-8 items-center gap-1.5 text-[0.95rem] font-medium text-link underline-offset-4 hover:underline"
+                >
+                  {t.familyPageLink(l.name)}
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
         <div className="mt-8 grid gap-x-10 gap-y-10 md:grid-cols-2">
           {familyNetworks.map((n, i) => (
             <div key={n.id}>
