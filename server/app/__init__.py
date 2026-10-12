@@ -34,7 +34,9 @@ def create_app(config=Config):
         prepare_concurrency=app.config["PREPARE_CONCURRENCY"],
         auto_prepare=app.config["AUTO_PREPARE"],
         retry_after=app.config["RETRY_AFTER"],
-        spare_delay=app.config.get("SPARE_DELAY", 20),
+        spare_delay=app.config.get("SPARE_DELAY", 3),
+        spare_wait=app.config.get("SPARE_WAIT", 20),
+        evict_after=app.config.get("EVICT_AFTER") or None,
     )
     if app.config.get("GZIP"):
         install_gzip(app, app.config.get("GZIP_LEVEL", 5))

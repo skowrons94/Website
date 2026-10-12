@@ -35,7 +35,16 @@ evicted, worker died): reopen and re-apply the edits. **503** `code: "busy"`
 with `Retry-After` (seconds, also in the body as `retry_after`) — every slot
 is serving a visitor; retry after that long, do not reopen in a loop. **500**
 `code: "worker"` — one derived worker failed; the session is fine and the next
-request starts it again. 400 for a malformed request.
+request starts it again (`code: "delegate"` is the in-browser build's own,
+see browser/README.md). 400 for a malformed request.
+
+`/open` also says whether the session came from a spare and what is
+prepared (`from_spare`, `prepared`, `preparing`, `builds`); `/status` and the
+heartbeat add `preparing_elapsed` and `pending` (steps still to build) and
+`builds` (model builds running on the machine): the page's timer scales its
+estimate by them. `GET /evaluations/<id>/initial/extrapolations` gives the
+extrapolations at the shipped parameters, which the page shows faded while a
+visitor's own are calculated.
 
 ### Edits: the latest wins
 
@@ -63,6 +72,12 @@ is ignored rather than overwriting newer values; `seq` is echoed back.
   opened and prepared, at the shipped parameters and never used, and handed to
   the next visitor (`AZURE2_SPARES`, see config.py). Their first edit then
   takes what any edit takes: ⁷Be 2.0 s, ²⁴Mg 2.4 s, against 65 s and 23 s.
+  The visitor comes first: a replacement is built only once no visitor's own
+  session has been opening or preparing for 2 s, one spare at a time, and a
+  spare being built is paused (SIGSTOP) while a visitor prepares. A visitor
+  who arrives while a spare is being built takes it over, its preparation
+  going on as theirs (`from_spare` in `/open` and `/status`), instead of a
+  second build competing with it. `AZURE2_SPARES=7Be:2` keeps two.
 - **Threads.** A worker computes with `AZURE2_OMP_THREADS` (1) and builds a
   model with `AZURE2_PREPARE_THREADS` (every core): AZURE2's INITIALIZE (the
   external-capture integrals) scales with threads, `update_segments` (an edit)
@@ -72,8 +87,11 @@ is ignored rather than overwriting newer values; `seq` is echoed back.
   request; one that never pings after `AZURE2_SESSION_TTL` (600 s) without a
   request. The extrapolations' workers are closed after `AZURE2_ROLE_TTL`
   (300 s) unused and started again when asked (a few seconds; the integrals
-  are on disk). A new visitor evicts a spare of another evaluation, then the
-  least-recently-used session nobody is waiting on; if there is none, 503.
+  are on disk). A new visitor evicts a spare of another evaluation (or stops
+  one being built), then the session seen least recently -- never one seen
+  (a request or a heartbeat) within `AZURE2_EVICT_AFTER` seconds (default
+  60: a visible page pings every 30 s); if there is none, 503. The reaper
+  rebuilds spares evicted this way once there is room.
 
 ## Payloads
 

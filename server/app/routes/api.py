@@ -34,7 +34,7 @@ from werkzeug.exceptions import HTTPException
 from app import evaluations as evaluations_module
 from app import initial as initial_module
 from app import serializers
-from app.engine import PREPARE_STEPS, ROLES, EngineError
+from app.engine import PREPARE_STEPS, ROLES, Delegated, EngineError
 from app.session import CapacityError, SessionError
 
 log = logging.getLogger(__name__)
@@ -70,6 +70,13 @@ def _worker_failed(err):
     # the next request); the session itself is fine.
     log.warning("worker error on %s: %s", request.path, err)
     return jsonify({"error": str(err), "code": "worker"}), 500
+
+
+@bp.errorhandler(Delegated)
+def _delegated(err):
+    # The in-browser build only (browser/bridge.py): this calculation runs
+    # in another Web Worker, which the page asks and then retries.
+    return jsonify({"error": str(err), "code": "delegate", "role": err.role}), 500
 
 
 @bp.errorhandler(SessionError)
@@ -114,13 +121,21 @@ def _session_and_labels(session_id):
 @bp.route("/evaluations", methods=["GET"])
 def list_evaluations():
     found = evaluations_module.discover(_root())
-    return jsonify([e.to_dict() for e in found])
+    return jsonify([_with_timings(e) for e in found])
+
+
+def _with_timings(evaluation):
+    """``to_dict`` plus the typical timings stored with ``initial.json``,
+    for the list's "ready in about N s"."""
+    out = evaluation.to_dict()
+    out["timings"] = (initial_module.read(evaluation.path) or {}).get("timings")
+    return out
 
 
 @bp.route("/evaluations/<evaluation_id>", methods=["GET"])
 def get_evaluation(evaluation_id):
     evaluation = evaluations_module.get(_root(), evaluation_id)
-    return jsonify(evaluation.to_dict())
+    return jsonify(_with_timings(evaluation))
 
 
 @bp.route("/evaluations/<evaluation_id>/download", methods=["GET"])
@@ -162,7 +177,27 @@ def initial_evaluation(evaluation_id):
         return jsonify({"error": "no initial payload for this evaluation yet",
                         "code": "not_prepared"}), 404
     parts = [p for p in request.args.get("parts", "").split(",") if p.strip()]
-    response = jsonify(initial_module.select(payload, parts))
+    if parts:
+        response = jsonify(initial_module.select(payload, parts))
+    else:
+        # The whole file, as stored (serialising ⁷Be's again took 0.36 s).
+        response = current_app.response_class(initial_module.read_bytes(evaluation.path),
+                                              mimetype="application/json")
+    response.headers["Cache-Control"] = "public, max-age=300"
+    return response
+
+
+@bp.route("/evaluations/<evaluation_id>/initial/extrapolations", methods=["GET"])
+def initial_extrapolations(evaluation_id):
+    """The extrapolations at the shipped parameters, without a session
+    (``app.initial``): shown, faded, while a visitor's own are calculated
+    after an edit.  404 ``not_prepared`` until the first session wrote them."""
+    evaluation = evaluations_module.get(_root(), evaluation_id)
+    raw = initial_module.read_extrapolations(evaluation.path)
+    if raw is None:
+        return jsonify({"error": "no published extrapolations stored yet",
+                        "code": "not_prepared"}), 404
+    response = current_app.response_class(raw, mimetype="application/json")
     response.headers["Cache-Control"] = "public, max-age=300"
     return response
 
@@ -187,8 +222,14 @@ def open_evaluation(evaluation_id):
         "generation": session.generation,
         "heartbeat_interval": _heartbeat_interval(),
         "timings": stored.get("timings"),
+        # Whether this visitor got a spare (prepared, or still being
+        # prepared) and what is left to build: the page's first estimate.
+        "from_spare": session.from_spare,
+        "prepared": sorted(session.prepared),
+        "preparing": session.preparing,
+        "builds": _manager().builds(),
     }
-    if not stored or "fine" not in stored:
+    if not stored or "fine" not in stored or not initial_module.has_extrapolations(evaluation.path):
         # The first session of a model writes its initial.json.
         try:
             threading.Thread(target=_ensure_initial, args=(session, evaluation.labels),
@@ -234,7 +275,15 @@ def ping_session(session_id):
     while it is visible.  Returns ``/status``; 409 if the session is gone."""
     session = _manager().get(session_id)
     session.ping()
-    return jsonify(session.status())
+    return jsonify(_status(session))
+
+
+def _status(session):
+    status = session.status()
+    # Model builds running on the machine (this one's included): how much
+    # the cores are shared, which the page's estimate scales by.
+    status["builds"] = _manager().builds()
+    return status
 
 
 @bp.route("/sessions/<session_id>/status", methods=["GET"])
@@ -244,7 +293,8 @@ def session_status(session_id):
     (the page can say "preparing the model for edits"), which workers run
     and which are calculating."""
     session = _manager().get(session_id)
-    return jsonify(session.status())
+    session.touch()
+    return jsonify(_status(session))
 
 
 @bp.route("/sessions", methods=["GET"])

@@ -451,6 +451,17 @@ const en = {
       "8Be": "Alpha–alpha scattering: the beryllium-8 states behind the first step of the triple-alpha process, which makes the carbon in stars.",
     } as Record<string, string>,
   },
+
+  // --- r9 eval ---
+  r9: {
+    almost: "almost done",
+    worse: "much worse",
+    better: "much better",
+    sharing: "the server is preparing other models too",
+    noSpare: "First change on this model: it is still being prepared for you. Later changes are much quicker.",
+    publishedShown: "Published curves shown, faded; yours appear when ready.",
+    gridSummaryOne: (ne: number, e0: string, e1: string, a: string) => `${ne} energies (${e0}–${e1} MeV) at ${a}°`,
+  },
 }
 
 export type EvalDictionary = typeof en
@@ -892,6 +903,17 @@ const it: EvalDictionary = {
       "7Be": "Apre i rami della catena pp che emettono i neutrini solari del ⁷Be e dell'⁸B, e dopo il Big Bang produsse la maggior parte del litio.",
       "8Be": "Diffusione alfa–alfa: gli stati del berillio-8 alla base del primo passo del processo tre alfa, che produce il carbonio nelle stelle.",
     },
+  },
+
+  // --- r9 eval ---
+  r9: {
+    almost: "quasi finito",
+    worse: "molto peggio",
+    better: "molto meglio",
+    sharing: "il server sta preparando anche altri modelli",
+    noSpare: "Prima modifica su questo modello: lo stiamo ancora preparando per te. Le modifiche successive sono molto più rapide.",
+    publishedShown: "Sono mostrate, sbiadite, le curve pubblicate; le tue compaiono appena pronte.",
+    gridSummaryOne: (ne: number, e0: string, e1: string, a: string) => `${ne} energie (${e0}–${e1} MeV) a ${a}°`,
   },
 }
 

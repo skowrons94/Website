@@ -40,7 +40,15 @@ export function rootMetadata(lang: Lang): Metadata {
     description: profile.tagline,
     authors: [{ name: profile.name }],
     ...(process.env.SITE_URL ? { metadataBase: new URL(process.env.SITE_URL) } : {}),
-    icons: { apple: `${BASE}/apple-touch-icon.png` },
+    // Small icons (the old favicon.ico was 410 kB, the largest file of a first
+    // visit), and under the base path on GitHub Pages.
+    icons: {
+      icon: [
+        { url: `${BASE}/favicon.ico`, sizes: "16x16 32x32 48x48" },
+        { url: `${BASE}/icon.png`, type: "image/png", sizes: "96x96" },
+      ],
+      apple: `${BASE}/apple-touch-icon.png`,
+    },
     openGraph: {
       title,
       description: profile.tagline,

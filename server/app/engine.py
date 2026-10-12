@@ -55,6 +55,18 @@ class EngineError(RuntimeError):
     """Raised when the worker cannot be started, has died, or reported a failure."""
 
 
+class Delegated(EngineError):
+    """A calculation this engine leaves to another worker: the in-browser
+    build runs each derived model in a Web Worker of its own
+    (browser/bridge.py), so its data worker answers "ask the ``role``
+    worker" (HTTP 500, ``code: "delegate"``) and the page does, hands the
+    result back and asks again.  Never raised on the server."""
+
+    def __init__(self, role):
+        super().__init__(f"calculated by the {role} worker")
+        self.role = role
+
+
 @dataclass
 class ModelInfo:
     """Everything about a model that does not change while a session is open.

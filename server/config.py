@@ -50,9 +50,24 @@ class Config:
     # costs the memory of an open session (DEPLOY.md) and counts against
     # MAX_SESSIONS (a visitor's session evicts a spare of another
     # evaluation first).
+    #
+    # A visitor's own preparation comes first: a replacement spare is built
+    # only once no visitor's session has been opening or preparing for a
+    # couple of seconds, and a spare being built is paused (SIGSTOP) while
+    # one does.  A visitor who arrives while a spare of that evaluation is
+    # still being built takes it over (waiting up to SPARE_WAIT seconds for
+    # its worker to start) rather than starting a second build beside it.
+    # A host with memory to spare can keep more than one ("7Be:2"), which
+    # serves that many visitors arriving together.
     SPARES = os.environ.get("AZURE2_SPARES", "auto")
     SPARE_THRESHOLD = _int("AZURE2_SPARE_THRESHOLD", 6)
-    SPARE_DELAY = _int("AZURE2_SPARE_DELAY", 20)
+    SPARE_DELAY = _int("AZURE2_SPARE_DELAY", 3)
+    SPARE_WAIT = _int("AZURE2_SPARE_WAIT", 20)
+
+    # A session seen (a request or a heartbeat) within EVICT_AFTER seconds is
+    # never evicted to make room for a new visitor, who gets a 503 instead;
+    # 0 means twice the heartbeat interval (HEARTBEAT_TTL / 4), at least 60 s.
+    EVICT_AFTER = _int("AZURE2_EVICT_AFTER", 0)
 
     # OpenMP threads per worker.  Every session is a separate process, so left
     # unset each one claims all the cores and MAX_SESSIONS of them contend for

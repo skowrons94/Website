@@ -976,17 +976,18 @@ export function DataPlot({
             }
           >
             <div className="relative">
-              <div className={`space-y-1.5 transition-opacity duration-150 ${calculating ? "opacity-45" : ""}`} aria-busy={calculating}>
+              {/*
+                The timer in a band of its own above the plot (which is pinned
+                under the header on a phone, so it is always in view): never
+                over the data, and the plot is not dimmed -- the curve follows
+                the slider, the one being replaced drawn faded.
+              */}
+              <div className="flex min-h-8 items-center px-0.5" aria-live="off">
+                <ProgressTimer stage={stage} activity={activity ?? null} retryAt={retryAt} />
+              </div>
+              <div className="space-y-1.5" aria-busy={calculating}>
                 {!faceted && panelData[0] && legendFor(panelData[0].panel.segments, panelData[0].models, panelData[0].many, false)}
                 {plot}
-              </div>
-              {/* Pinned over the plot (which is pinned under the header on a phone): always in view. */}
-              <div className="pointer-events-none absolute inset-x-0 top-1/2 z-10 flex -translate-y-1/2 justify-center">
-                <ProgressTimer
-                  stage={stage}
-                  activity={calculating || !live ? (activity ?? null) : null}
-                  retryAt={retryAt}
-                />
               </div>
               {zoom && (
                 <Button variant="secondary" size="sm" className="absolute right-2 top-2 h-7 px-2 text-xs" onClick={() => setZoom(null)}>

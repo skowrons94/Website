@@ -279,12 +279,26 @@ export interface OpenedSession {
   /** Seconds between heartbeats the server asks for (a newer API). */
   heartbeat_interval?: number
   timings?: Timings | null
+  /** This visitor got a spare session (prepared, or still being prepared) (a newer API). */
+  from_spare?: boolean
+  /** Preparation steps already done, and the one under way. */
+  prepared?: string[]
+  preparing?: string | null
+  /** Model builds running on the server now (this one's included). */
+  builds?: number
 }
 
 /** What a newer server reports of a session (/status, and the heartbeat's answer). */
 export interface SessionStatus {
   prepared?: string[]
   preparing?: string | string[] | null
+  /** Seconds the step under way has been running. */
+  preparing_elapsed?: number | null
+  /** Steps the background has still to build. */
+  pending?: string[]
+  from_spare?: boolean
+  /** Model builds running on the server now (they share its cores). */
+  builds?: number
   busy?: string[]
   modified?: boolean
   generation?: number
@@ -391,6 +405,39 @@ export class ApiError extends Error {
 }
 
 /* -- plumbing -------------------------------------------------------------- */
+
+/**
+ * A compact payload (`?compact=1`) back to the full one: an array of one
+ * repeated value is sent as `{fill, n}` (an extrapolation's angles, all 0°).
+ */
+export function expand<T>(value: T): T {
+  if (Array.isArray(value)) return value.map(expand) as T
+  if (value && typeof value === "object") {
+    const o = value as Record<string, unknown>
+    const keys = Object.keys(o)
+    if (keys.length === 2 && "fill" in o && typeof o.n === "number") return Array(o.n).fill(o.fill) as T
+    const out: Record<string, unknown> = {}
+    for (const k of keys) out[k] = expand(o[k])
+    return out as T
+  }
+  return value
+}
+
+/** The measured arrays a compact edit leaves out (the server's MEASURED_KEYS). */
+const MEASURED = ["energies", "angles", "cross_sections", "cross_sections_errors", "sfactor", "sfactor_errors"] as const
+
+/** An edit's data segments (compact: without the measurements, which never change) with the measurements put back. */
+export function withMeasurements(next: DataSegment[], previous: DataSegment[] | null): DataSegment[] {
+  if (!previous) return next
+  const before = new Map(previous.map((s) => [s.index, s]))
+  return next.map((s) => {
+    const old = before.get(s.index)
+    if (!old || (s as Partial<DataSegment>).energies !== undefined) return s
+    const out: DataSegment = { ...s }
+    for (const k of MEASURED) (out as unknown as Record<string, unknown>)[k] = old[k]
+    return out
+  })
+}
 
 /** Seconds from a Retry-After header (delta-seconds or an HTTP date), else null. */
 function retryAfterOf(value: string | null, body: Record<string, unknown> | null): number | null {
@@ -579,7 +626,19 @@ export function prepareSession(sessionId: string, steps?: ("data" | "fine" | "ex
 }
 
 export function getExtrapolations(sessionId: string): Promise<ExtrapSegment[]> {
-  return request<ExtrapSegment[]>(`/api/sessions/${sessionId}/extrapolations`)
+  return request<ExtrapSegment[]>(`/api/sessions/${sessionId}/extrapolations?compact=1`).then(expand)
+}
+
+/**
+ * The extrapolations at the published parameters, without a session (null
+ * from an API that does not store them): shown faded while a reader's own,
+ * after an edit, are calculated.
+ */
+export async function getPublishedExtrapolations(id: string): Promise<ExtrapSegment[] | null> {
+  const stored = await optional("published-extrap", () =>
+    request<{ extrapolations: ExtrapSegment[] }>(`/api/evaluations/${encodeURIComponent(id)}/initial/extrapolations`),
+  ).catch(() => null)
+  return stored?.extrapolations ? expand(stored.extrapolations) : null
 }
 
 /**
@@ -588,7 +647,9 @@ export function getExtrapolations(sessionId: string): Promise<ExtrapSegment[]> {
  * a few c.m. angles only.
  */
 export function getExtrapolationGrid(sessionId: string, index: number, view: "angles" | "map"): Promise<ExtrapGrid | null> {
-  return optional("grid", () => request<ExtrapGrid>(`/api/sessions/${sessionId}/extrapolations/${index}/grid?view=${view}`))
+  return optional("grid", () =>
+    request<ExtrapGrid>(`/api/sessions/${sessionId}/extrapolations/${index}/grid?view=${view}&compact=1`).then(expand),
+  )
 }
 
 /** The answer to an edit, or word that a newer edit replaced it on the server. */
@@ -604,27 +665,37 @@ export type EditResult = (SchemeAndData & { superseded?: false }) | { superseded
 export async function setParameters(
   sessionId: string,
   updates: Record<number, number>,
-  options: { seq?: number; signal?: AbortSignal } = {},
+  options: { seq?: number; signal?: AbortSignal; measured?: DataSegment[] | null } = {},
 ): Promise<EditResult> {
+  // Compact when the page has the measurements already: an edit's answer
+  // then carries only what was calculated (⁷Be: 351 → 188 kB, 92 → 38 kB gzip).
+  const compact = options.measured ? "?compact=1" : ""
   try {
-    const result = await request<SchemeAndData & { status?: string; superseded?: boolean }>(`/api/sessions/${sessionId}/parameters`, {
+    const result = await request<SchemeAndData & { status?: string; superseded?: boolean }>(`/api/sessions/${sessionId}/parameters${compact}`, {
       method: "POST",
       body: JSON.stringify(options.seq === undefined ? { updates } : { updates, seq: options.seq }),
       signal: options.signal,
     })
     if (result.status === "superseded" || result.superseded === true || !result.scheme) return { superseded: true }
-    return result as SchemeAndData
+    return complete(result as SchemeAndData, options.measured ?? null)
   } catch (err) {
     if (err instanceof ApiError && err.superseded) return { superseded: true }
     throw err
   }
 }
 
-export function resetParameters(sessionId: string, signal?: AbortSignal): Promise<SchemeAndData> {
-  return request<SchemeAndData>(`/api/sessions/${sessionId}/reset`, {
+function complete(result: SchemeAndData, measured: DataSegment[] | null): SchemeAndData {
+  if (!measured) return result
+  const full = expand(result)
+  return { ...full, data: withMeasurements(full.data, measured) }
+}
+
+export async function resetParameters(sessionId: string, signal?: AbortSignal, measured: DataSegment[] | null = null): Promise<SchemeAndData> {
+  const result = await request<SchemeAndData>(`/api/sessions/${sessionId}/reset${measured ? "?compact=1" : ""}`, {
     method: "POST",
     signal,
   })
+  return complete(result, measured)
 }
 
 /**
@@ -633,6 +704,11 @@ export function resetParameters(sessionId: string, signal?: AbortSignal): Promis
  */
 export async function pingSession(sessionId: string): Promise<SessionStatus | null> {
   return optional("ping", () => request<SessionStatus>(`/api/sessions/${sessionId}/ping`, { method: "POST" }))
+}
+
+/** What a newer server says of a session's preparation (null from an older one). */
+export function getSessionStatus(sessionId: string): Promise<SessionStatus | null> {
+  return optional("status", () => request<SessionStatus>(`/api/sessions/${sessionId}/status`))
 }
 
 /** Release a session from a page that is going away (survives unload). */

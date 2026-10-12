@@ -29,6 +29,8 @@ calculate the wrong segments.
 
 import logging
 import math
+import os
+import signal
 import threading
 import time
 import uuid
@@ -113,7 +115,14 @@ class Session:
         # Preparation steps done (engine.PREPARE_STEPS), the one under way.
         self.prepared = set()
         self.preparing = None
+        self._step_started = None
         self._fine_built = False
+        # Handed over from a spare (ready, or still being prepared).
+        self.from_spare = False
+        # Called with +1/-1 around a visitor's own preparation (not a
+        # spare's), so the manager can give it the machine (SessionManager).
+        self.on_visitor_work = None
+        self._paused = False
         # When each derived worker was last used (idle ones are closed).
         self.role_used = {}
 
@@ -150,12 +159,43 @@ class Session:
         background preparation does not count.)"""
         return self._busy > 0 or self._edits_active > 0
 
+    @property
+    def is_spare(self) -> bool:
+        return self.id.startswith("spare-")
+
+    def pause(self):
+        """Stop this session's worker processes (SIGSTOP) -- a spare being
+        built while a visitor's own model is prepared -- so the visitor gets
+        the cores.  :meth:`resume` lets them go on."""
+        self._signal(True)
+
+    def resume(self):
+        self._signal(False)
+
+    def _signal(self, stop):
+        sig = getattr(signal, "SIGSTOP" if stop else "SIGCONT", None)
+        if sig is None or self._paused == stop or (stop and self._closed):
+            return
+        self._paused = stop
+        try:
+            pids = self.engine.pids() if hasattr(self.engine, "pids") else {}
+        except Exception:
+            pids = {}
+        for pid in (pids or {}).values():
+            if pid:
+                try:
+                    os.kill(pid, sig)
+                except OSError:
+                    pass
+
     def close(self):
         """Stop the workers.  Takes no lock: a calculation under way on
         another thread gets an error from its worker rather than keeping the
         session (and its memory) alive until it ends."""
         if self._closed:
             return
+        if self._paused:
+            self.resume()
         self._closed = True
         with self._edit_done:
             self._edit_done.notify_all()
@@ -375,7 +415,14 @@ class Session:
             raise ValueError(f"unknown preparation step: {step}")
         if step in self.prepared:
             return False
-        slots = self._prepare_slots
+        # A spare's build is throttled by the manager instead (it waits for
+        # the machine to be free of visitors, and is paused while one
+        # prepares): it must not hold a slot a visitor is waiting for.
+        visitor = not self.is_spare
+        slots = self._prepare_slots if visitor else None
+        hook = self.on_visitor_work if visitor else None
+        if hook is not None:
+            hook(+1)
         if slots is not None:
             slots.acquire()
         try:
@@ -383,7 +430,7 @@ class Session:
                 if step in self.prepared:
                     return False
                 self.preparing = step
-                started = time.time()
+                started = self._step_started = time.time()
                 try:
                     self.engine.prepare(step)
                 except EngineError as err:
@@ -396,6 +443,7 @@ class Session:
                                 self.id, self.evaluation.id, step, err)
                 finally:
                     self.preparing = None
+                    self._step_started = None
                 self.prepared.add(step)
                 self.role_used[step] = time.time()
                 if step == "fine":
@@ -406,11 +454,15 @@ class Session:
         finally:
             if slots is not None:
                 slots.release()
+            if hook is not None:
+                hook(-1)
 
-    def prepare_all(self, steps=PREPARE_STEPS, quiet=0.5):
+    def prepare_all(self, steps=PREPARE_STEPS, quiet=0.5, gate=None):
         """Prepare ``steps`` in order, in the background, giving way to edits:
         a step starts only once no edit is being calculated (for ``quiet``
-        seconds).  Returns when done, or when the session closes."""
+        seconds) and ``gate()``, when given, is true (a spare waits for the
+        visitors' own preparations).  Returns when done, or when the session
+        closes."""
         for step in steps:
             waited = 0.0
             while not self._closed and waited < 120:
@@ -420,6 +472,8 @@ class Session:
                         break
                 time.sleep(0.05)
                 waited += 0.05
+            while gate is not None and not self._closed and self.is_spare and not gate():
+                time.sleep(0.1)
             if self._closed:
                 return
             try:
@@ -460,9 +514,17 @@ class Session:
             lock.release()
 
     def status(self) -> dict:
+        started = self._step_started
         return {
             "prepared": [s for s in ROLES if s in self.prepared],
             "preparing": self.preparing,
+            # How long the step under way has run, and what the background
+            # still has to build: the page's timer scales its estimate by it.
+            "preparing_elapsed": (round(time.time() - started, 1)
+                                  if started and self.preparing else None),
+            "pending": [s for s in PREPARE_STEPS if s not in self.prepared],
+            "from_spare": self.from_spare,
+            "paused": self._paused,
             "running": [r for r in ROLES if self.engine.has_role(r)],
             "busy": [r for r in ROLES if self.role_busy(r)],
             "modified": self.is_modified,
@@ -572,7 +634,8 @@ class SessionManager:
                  omp_threads=None, timeout=None, heartbeat_ttl=120,
                  idle_ttl=3600, role_ttl=300, prepare_threads=None,
                  prepare_concurrency=None, auto_prepare=False, retry_after=15,
-                 spares=None, spare_delay=20):
+                 spares=None, spare_delay=3, evict_after=None, spare_wait=20,
+                 spare_quiet=2.0):
         self.ttl = ttl
         self.max_sessions = max_sessions
         self.reaper_interval = reaper_interval
@@ -609,6 +672,28 @@ class SessionManager:
         self._spare = {}                    # evaluation id -> [Session]
         self._spare_building = set()
         self._spare_evaluations = {}
+        # Spares being built: evaluation id -> [record], a record being
+        # {"session": Session or None while its worker starts, "claimed":
+        # bool}.  A visitor who arrives meanwhile takes the one under way
+        # (waiting up to ``spare_wait`` seconds for its worker to start)
+        # rather than starting a second, competing build.
+        self._wip = {}
+        self._wip_cond = threading.Condition(self._lock)
+        # One spare is built at a time (each build takes every core).
+        self._spare_build = threading.Lock()
+        self.spare_wait = spare_wait
+        # Visitors' own preparations under way (their sessions opening or
+        # building models): spares are built only when there is none (for
+        # ``spare_quiet`` seconds), and paused while one runs.
+        self._visitor_work = 0
+        self._visitor_quiet_since = time.time()
+        self.spare_quiet = spare_quiet
+        # A session seen (a request or a heartbeat) within ``evict_after``
+        # seconds is never evicted to make room: a visible page pings every
+        # heartbeat_ttl/4 seconds.  None: twice that interval, at least 60 s.
+        if evict_after is None:
+            evict_after = max(60.0, 2 * max(5, heartbeat_ttl // 4))
+        self.evict_after = evict_after
 
     # -- reaper ---------------------------------------------------------------
 
@@ -649,6 +734,9 @@ class SessionManager:
                      session.id, session.evaluation.id, session.idle_for(),
                      session.unseen_for())
             session.close()
+        # Spares evicted to make room come back once there is room again.
+        for evaluation in list(self._spare_evaluations.values()):
+            self._replenish_later(evaluation, delay=0)
         if self.role_ttl:
             for session in alive:
                 for role in ("grid", "extrap"):
@@ -688,9 +776,13 @@ class SessionManager:
                 log.exception("spare policy failed for %s", evaluation.id)
 
         spare = self._take_spare(evaluation.id)
+        if spare is None:
+            spare = self._claim_building(evaluation.id)
         if spare is not None:
-            log.info("opened session %s for %s from a spare (%d/%d slots in use)",
-                     spare.id, evaluation.id, len(self._sessions), self.max_sessions)
+            log.info("opened session %s for %s from a spare%s (%d/%d slots in use)",
+                     spare.id, evaluation.id,
+                     "" if PREPARE_STEPS[-1] in spare.prepared else " still being prepared",
+                     len(self._sessions), self.max_sessions)
             self._replenish_later(evaluation)
             return spare
 
@@ -702,6 +794,7 @@ class SessionManager:
             victim.close()
 
         session_id = uuid.uuid4().hex
+        self._visitor_working(+1)
         try:
             session = Session(session_id, evaluation,
                               omp_threads=self.omp_threads, timeout=self.timeout,
@@ -712,6 +805,9 @@ class SessionManager:
                 self._pending -= 1
             raise SessionError(
                 f"could not start AZURE2 for {evaluation.id}: {err}") from err
+        finally:
+            self._visitor_working(-1)
+        session.on_visitor_work = self._visitor_working
 
         with self._lock:
             self._pending -= 1
@@ -737,13 +833,82 @@ class SessionManager:
                 spare = pool.pop(0)
                 if spare.closed or not spare.engine.is_alive():
                     continue
-                spare.id = uuid.uuid4().hex
-                spare.touch()
-                spare.created_at = time.time()
-                spare.role_used = {role: time.time() for role in spare.role_used}
-                self._sessions[spare.id] = spare
+                self._adopt(spare)
                 return spare
         return None
+
+    def _adopt(self, spare):
+        """Make a spare a visitor's session (caller holds ``_lock``)."""
+        spare.id = uuid.uuid4().hex
+        spare.from_spare = True
+        spare.touch()
+        spare.created_at = time.time()
+        spare.role_used = {role: time.time() for role in spare.role_used}
+        spare.on_visitor_work = self._visitor_working
+        self._sessions[spare.id] = spare
+
+    def _claim_building(self, evaluation_id) -> Optional[Session]:
+        """Take a spare of ``evaluation_id`` that is still being built, if
+        there is one: its preparation goes on, now as this visitor's (and
+        with priority).  Waits up to ``spare_wait`` seconds for its worker to
+        start."""
+        deadline = time.time() + self.spare_wait
+        with self._wip_cond:
+            while True:
+                records = [r for r in self._wip.get(evaluation_id, [])
+                           if not r["claimed"] and not r.get("cancelled")]
+                if not records:
+                    return None
+                ready = [r for r in records if r["session"] is not None
+                         and not r["session"].closed]
+                if ready:
+                    record = ready[0]
+                    record["claimed"] = True
+                    spare = record["session"]
+                    if record["counted"]:
+                        record["counted"] = False
+                        self._pending -= 1
+                    self._adopt(spare)
+                    break
+                left = deadline - time.time()
+                if left <= 0:
+                    return None
+                self._wip_cond.wait(min(left, 0.5))
+        spare.resume()
+        return spare
+
+    def _visitor_working(self, delta):
+        """A visitor's preparation starts (+1) or ends (-1): spares being
+        built are paused while any runs."""
+        with self._lock:
+            self._visitor_work += delta
+            n = self._visitor_work
+            if n == 0:
+                self._visitor_quiet_since = time.time()
+            building = [r["session"] for records in self._wip.values() for r in records
+                        if r["session"] is not None and not r["claimed"]]
+        for spare in building:
+            if n > 0 and not spare._paused:
+                log.info("pausing the spare %s (%s) while a visitor prepares",
+                         spare.id, spare.evaluation.id)
+                spare.pause()
+            elif n == 0 and spare._paused:
+                log.info("resuming the spare %s (%s)", spare.id, spare.evaluation.id)
+                spare.resume()
+
+    def visitors_quiet(self) -> bool:
+        """No visitor's preparation has run for ``spare_quiet`` seconds."""
+        with self._lock:
+            return (self._visitor_work == 0
+                    and time.time() - self._visitor_quiet_since >= self.spare_quiet)
+
+    def builds(self) -> int:
+        """Model builds running now, spares included (paused ones not)."""
+        with self._lock:
+            sessions = list(self._sessions.values())
+            sessions += [r["session"] for records in self._wip.values() for r in records
+                         if r["session"] is not None and not r["claimed"]]
+        return sum(1 for s in sessions if s.preparing and not s._paused)
 
     def start_spares(self, evaluations):
         """Build the configured spares (on a thread; at startup)."""
@@ -765,42 +930,81 @@ class SessionManager:
         thread.start()
 
     def _replenish(self, evaluation, delay):
-        """Build spares of ``evaluation`` up to its count -- after ``delay``
-        seconds, so the visitor who just took one does not share the CPU with
-        its replacement -- while there is room under the cap."""
+        """Build spares of ``evaluation`` up to its count, while there is
+        room under the cap -- after ``delay`` seconds, and only once no
+        visitor's own preparation has run for ``spare_quiet`` seconds (a
+        visitor never shares the cores with a spare: one being built is
+        paused while a visitor prepares, see :meth:`_visitor_working`)."""
         try:
             if delay and self._stop.wait(delay):
                 return
             while not self._stop.is_set():
-                with self._lock:
-                    have = len([s for s in self._spare.get(evaluation.id, []) if not s.closed])
-                    room = (len(self._sessions) + self._pending + self._spare_count()
-                            < self.max_sessions)
-                    if have >= self.spares.get(evaluation.id, 0) or not room:
+                while not self.visitors_quiet() or not self._spare_build.acquire(blocking=False):
+                    if self._stop.wait(0.25):
                         return
-                    self._pending += 1
                 try:
-                    spare = Session(f"spare-{uuid.uuid4().hex}", evaluation,
-                                    omp_threads=self.omp_threads, timeout=self.timeout,
-                                    prepare_threads=self.prepare_threads,
-                                    prepare_slots=self.prepare_slots)
-                except Exception:
-                    log.exception("could not open a spare session of %s", evaluation.id)
-                    with self._lock:
-                        self._pending -= 1
-                    return
-                spare.prepare_all(quiet=0)
-                with self._lock:
-                    self._pending -= 1
-                    if self._stop.is_set():
-                        spare.close()
+                    if not self._build_one_spare(evaluation):
                         return
-                    self._spare.setdefault(evaluation.id, []).append(spare)
-                log.info("spare session of %s ready (prepared: %s)", evaluation.id,
-                         ", ".join(sorted(spare.prepared)))
+                finally:
+                    self._spare_build.release()
         finally:
             with self._lock:
                 self._spare_building.discard(evaluation.id)
+
+    def _build_one_spare(self, evaluation) -> bool:
+        """Build one spare of ``evaluation`` (see :meth:`_replenish`):
+        False when there is nothing (more) to build or no room."""
+        with self._lock:
+            have = len([s for s in self._spare.get(evaluation.id, []) if not s.closed])
+            have += len([r for r in self._wip.get(evaluation.id, []) if not r["claimed"]])
+            room = (len(self._sessions) + self._pending + self._spare_count()
+                    < self.max_sessions)
+            if have >= self.spares.get(evaluation.id, 0) or not room:
+                return False
+            self._pending += 1
+            record = {"session": None, "claimed": False, "counted": True}
+            self._wip.setdefault(evaluation.id, []).append(record)
+        try:
+            spare = Session(f"spare-{uuid.uuid4().hex}", evaluation,
+                            omp_threads=self.omp_threads, timeout=self.timeout,
+                            prepare_threads=self.prepare_threads,
+                            prepare_slots=self.prepare_slots)
+        except Exception:
+            log.exception("could not open a spare session of %s", evaluation.id)
+            with self._wip_cond:
+                if record["counted"]:
+                    self._pending -= 1
+                self._wip[evaluation.id].remove(record)
+                self._wip_cond.notify_all()
+            return False
+        with self._wip_cond:
+            record["session"] = spare
+            self._wip_cond.notify_all()
+            paused = self._visitor_work > 0
+            cancelled = record.get("cancelled")
+            if cancelled:
+                self._wip[evaluation.id].remove(record)
+        if cancelled:
+            spare.close()
+            return False
+        if paused:
+            spare.pause()
+        spare.prepare_all(quiet=0, gate=lambda: self._visitor_work == 0)
+        with self._wip_cond:
+            self._wip[evaluation.id].remove(record)
+            if record["counted"]:
+                self._pending -= 1
+            if record["claimed"]:
+                log.info("spare session of %s, taken while being built, is prepared (%s)",
+                         evaluation.id, ", ".join(sorted(spare.prepared)))
+                return True
+            if self._stop.is_set() or spare.closed:
+                spare.close()
+                return False
+            self._spare.setdefault(evaluation.id, []).append(spare)
+        log.info("spare session of %s ready (prepared: %s)", evaluation.id,
+                 ", ".join(sorted(spare.prepared)))
+        return True
 
     def _reserve_slot(self) -> Optional[Session]:
         """Take one worker slot, evicting if needed.
@@ -821,6 +1025,12 @@ class SessionManager:
                     victim = pool.pop()
                     break
             if victim is None:
+                # A spare still being built gives way too: its build stops.
+                cancelled = self._cancel_wip()
+                if cancelled is not None:
+                    self._pending += 1
+                    return cancelled[0]
+            if victim is None:
                 victim = self._evict_candidate()
                 if victim is None:
                     raise CapacityError(
@@ -830,13 +1040,33 @@ class SessionManager:
             self._pending += 1
             return victim
 
+    def _cancel_wip(self):
+        """Stop a spare still being built, to free its slot (caller holds
+        ``_lock``): ``(session or None while its worker starts,)``, or None
+        if there is none.  Its build thread notices and lets it go."""
+        for records in self._wip.values():
+            for record in records:
+                if record["claimed"] or record.get("cancelled"):
+                    continue
+                record["cancelled"] = True
+                if record["counted"]:
+                    record["counted"] = False
+                    self._pending -= 1
+                return (record["session"],)
+        return None
+
     def _evict_candidate(self) -> Optional[Session]:
-        """The least-recently-used session that no visitor is mid-request on
-        (a background preparation does not count).  Caller holds ``_lock``."""
-        free = [s for s in self._sessions.values() if not s.busy()]
+        """The session seen least recently, among those no visitor is
+        mid-request on (a background preparation does not count) and not
+        seen -- a request or a heartbeat -- for ``evict_after`` seconds: a
+        page that is open and visible is never closed under its reader.
+        Caller holds ``_lock``."""
+        free = [s for s in self._sessions.values()
+                if not s.busy() and s.unseen_for() >= self.evict_after
+                and s.idle_for() >= self.evict_after]
         if not free:
             return None
-        return min(free, key=lambda s: s.last_used)
+        return min(free, key=lambda s: max(s.last_seen, s.last_used))
 
     def get(self, session_id) -> Session:
         with self._lock:
@@ -861,6 +1091,8 @@ class SessionManager:
             for pool in self._spare.values():
                 sessions += pool
             self._spare.clear()
+            sessions += [r["session"] for records in self._wip.values() for r in records
+                         if r["session"] is not None and not r["claimed"]]
         for session in sessions:
             session.close()
 

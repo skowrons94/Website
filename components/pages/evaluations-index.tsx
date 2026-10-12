@@ -9,7 +9,8 @@ import { Sci } from "@/components/sci"
 import { Tex, texPlain } from "@/components/tex"
 import { useLang } from "@/components/lang-context"
 import { useEvalDict } from "@/components/eval-dict"
-import { evaluationDownloadUrl, listEvaluations, type Evaluation } from "@/lib/api"
+import { IN_BROWSER, evaluationDownloadUrl, listEvaluations, type Evaluation } from "@/lib/api"
+import { typicalTimings } from "@/lib/eval-timings"
 import { localePath } from "@/lib/locale"
 import { decimal } from "@/lib/i18n-eval"
 
@@ -101,8 +102,9 @@ export function EvaluationsIndex({ initial = [] }: { initial?: CardMeta[] }) {
       status: known?.status ?? api?.status ?? null,
       filename: api?.filename ?? known?.filename ?? `${id}.azr`,
       channels: api?.channels ?? null,
-      // A newer API says how long opening usually takes.
-      opens: api?.timings?.open ?? null,
+      // How long opening usually takes: the server's own timings (a newer
+      // API), else those shipped with the site (the browser build's own).
+      opens: (IN_BROWSER ? null : api?.timings?.open) ?? typicalTimings(id, IN_BROWSER).open ?? null,
     }
   })
 

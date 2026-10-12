@@ -27,12 +27,17 @@ import { localePath } from "@/lib/locale"
 const LevelScheme = dynamic(() => import("@/components/level-scheme").then((m) => m.LevelScheme), {
   loading: () => <Placeholder busy />,
 })
-const DataPlot = dynamic(() => import("@/components/data-plot").then((m) => m.DataPlot), {
+const DataPlotLazy = dynamic(() => import("@/components/data-plot").then((m) => m.DataPlot), {
   loading: () => <Placeholder busy tall />,
 })
-const ExtrapPlot = dynamic(() => import("@/components/extrap-plot").then((m) => m.ExtrapPlot), {
+const ExtrapPlotLazy = dynamic(() => import("@/components/extrap-plot").then((m) => m.ExtrapPlot), {
   loading: () => <Placeholder busy tall />,
 })
+// Fetched while the reader looks at another tab, then rendered directly: a
+// lazy component shows its "Loading the view…" for a moment even when its
+// code is already there.
+let ExtrapPlotLoaded: typeof import("@/components/extrap-plot").ExtrapPlot | null = null
+let DataPlotLoaded: typeof import("@/components/data-plot").DataPlot | null = null
 
 /** "data" is the old Data tab: now the table drawer of the plot view. */
 type Tab = "scheme" | "plot" | "extrap"
@@ -133,6 +138,7 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
     scheme,
     data,
     extrapolations,
+    publishedExtrap,
     extrapStale,
     fine,
     fineStatus,
@@ -246,13 +252,35 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
     if (!sessionId) return
     if (modern) {
       prepare(["data", "fine"])
-      prepare(["extrap"])
+      // After the edit's models, or now when the reader looks at the extrapolations.
+      prepare(["extrap"], tab === "extrap")
       return
     }
     if (calculating) return
     if (tab === "plot" && data !== null && fineStatus !== "loading") prepare(["data", "fine"])
     if (extrapolations !== null) prepare(["extrap"])
   }, [tab, sessionId, modern, data, extrapolations, fineStatus, calculating, prepare])
+
+  // The other tabs' code, fetched while the reader looks at this one, so a
+  // tab switch never shows "Loading the view…".
+  const [, setViewsLoaded] = useState(0)
+  const ready0 = Boolean(scheme)
+  useEffect(() => {
+    if (!ready0 || (ExtrapPlotLoaded && DataPlotLoaded)) return
+    const idle = (window as Window & { requestIdleCallback?: (f: () => void) => number }).requestIdleCallback ?? ((f: () => void) => setTimeout(f, 1500))
+    idle(() => {
+      void Promise.all([
+        import("@/components/data-plot").then((m) => (DataPlotLoaded = m.DataPlot)),
+        import("@/components/extrap-plot").then((m) => (ExtrapPlotLoaded = m.ExtrapPlot)),
+      ]).then(() => setViewsLoaded((n) => n + 1))
+    })
+  }, [ready0])
+  // Chosen when the tab is first shown, and kept (a swap would remount the plot).
+  const views = useRef<{ data?: typeof DataPlotLazy; extrap?: typeof ExtrapPlotLazy }>({})
+  if (visited.includes("plot")) views.current.data ??= DataPlotLoaded ?? DataPlotLazy
+  if (visited.includes("extrap")) views.current.extrap ??= ExtrapPlotLoaded ?? ExtrapPlotLazy
+  const DataPlot = views.current.data ?? DataPlotLazy
+  const ExtrapPlot = views.current.extrap ?? ExtrapPlotLazy
 
   // The plot opens on the headline reaction, unless the link chose.
   useEffect(() => {
@@ -354,8 +382,9 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
   const body = (content: React.ReactNode) => (opening ? starting : unavailable ? down : content)
 
   // An edit made while the session still opens waits for it: the opening is what the timer shows then.
-  const plotActivity = activities.edit ?? activities.data ?? activities.open ?? null
-  const plotStage = activities.edit ? "edit" : activities.data ? "data" : "open"
+  // One clock: an edit, then its smooth curve (the clock carried over).
+  const plotActivity = activities.edit ?? activities.fine ?? activities.data ?? activities.open ?? null
+  const plotStage = activities.edit ? "edit" : activities.fine ? "fine" : activities.data ? "data" : "open"
   const extrapActivity = activities.extrap ?? (!sessionId ? activities.open : undefined) ?? (calculating ? activities.edit : undefined) ?? null
   const extrapStage = activities.extrap ? "extrap" : !sessionId ? "open" : "edit"
 
@@ -487,7 +516,7 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
         {visited.includes("extrap") && (
         <TabsContent value="extrap" className="mt-6" forceMount hidden={tab !== "extrap"}>
           {body(
-            extrapolations === null ? (
+            extrapolations === null && !(publishedExtrap && extrapCalculating) ? (
               <Pending
                 label={t.calculatingExtrap}
                 failed={failed}
@@ -497,18 +526,19 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
               />
             ) : (
               <ExtrapPlot
-                stale={extrapStale}
+                stale={extrapStale || extrapolations === null}
+                published={extrapolations === null}
                 activity={extrapActivity}
                 stage={extrapStage}
                 retryAt={retryAt}
                 headline={evaluation?.reactions?.[0]}
                 scatteringOnly={scatteringOnly}
                 temperatures={temperatures}
-                extrapolations={extrapolations}
+                extrapolations={extrapolations ?? publishedExtrap!}
                 data={data}
                 pairs={scheme?.pairs ?? []}
                 sessionId={sessionId}
-                calculating={extrapCalculating || extrapStale}
+                calculating={extrapCalculating || extrapStale || extrapolations === null}
                 evaluationId={id}
               />
             ),

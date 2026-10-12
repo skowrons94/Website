@@ -1,6 +1,6 @@
 "use client"
 
-import { memo, useEffect, useState } from "react"
+import { memo, useEffect, useRef, useState } from "react"
 import { Loader2 } from "lucide-react"
 
 import type { Activity } from "@/contexts/session-context"
@@ -11,8 +11,15 @@ import { decimal } from "@/lib/i18n-eval"
 /**
  * How long the page has been waiting, and for how much longer it probably
  * will: the stage, the seconds so far, an estimate (from the last time the
- * same thing took in this visit, else the server's typical timing), and a
- * thin bar that fills towards the estimate and turns indeterminate past it.
+ * same thing took in this visit, else the server's typical timing, else the
+ * typical timings shipped with the site), and a thin bar that fills towards
+ * the estimate.
+ *
+ * One clock per thing the reader waits for: the activity's `started` is when
+ * they asked (an edit followed by more edits and by its smooth curve keeps
+ * the first edit's clock), and the bar never moves back when the estimate
+ * grows. Past the estimate it says "almost done", and "taking longer than
+ * usual" only once the estimate is exceeded by half.
  *
  * It keeps its own clock, so its once-a-second tick re-renders this small
  * component only, never the plot around it. The bar's motion is a CSS
@@ -26,8 +33,11 @@ export type Stage = "open" | "edit" | "data" | "fine" | "extrap"
 interface Props {
   stage: Stage
   activity: Activity | null
-  /** "overlay": a pill pinned over the plot; "block": a card in place of the content. */
-  variant?: "overlay" | "block"
+  /**
+   * "band": one line in the band reserved above a plot (never over the data);
+   * "block": a card in place of the content.
+   */
+  variant?: "band" | "block"
   /** The server is full: when the page tries again (Date.now()). */
   retryAt?: number | null
   /** A line under the timer (e.g. that the previous result is shown meanwhile). */
@@ -44,17 +54,23 @@ function useTick(running: boolean, ms: number) {
   }, [running, ms])
 }
 
-function ProgressTimerImpl({ stage, activity, variant = "overlay", retryAt = null, note = null, className = "" }: Props) {
+function ProgressTimerImpl({ stage, activity, variant = "band", retryAt = null, note = null, className = "" }: Props) {
   const lang = useLang()
-  const t = useEvalDict().live
+  const dict = useEvalDict()
+  const t = dict.live
+  const r9 = dict.r9
   const running = Boolean(activity) || retryAt !== null
   useTick(running, 1000)
   // Announced once per stage start, then every 15 s.
   const [spoken, setSpoken] = useState("")
+  // The bar never moves back (an estimate that grows, a clock carried over).
+  const shown = useRef<{ started: number; fraction: number }>({ started: -1, fraction: 0 })
   const elapsed = activity ? Math.max(0, (performance.now() - activity.started) / 1000) : 0
   const estimate = activity?.estimate ?? null
   const left = estimate !== null ? estimate - elapsed : null
-  const over = left !== null && left < 0
+  // Past the estimate: "almost done"; past it by half: "longer than usual".
+  const late = left !== null && left < 0
+  const over = estimate !== null && elapsed > estimate * 1.5 + 1
   const label = activity?.preparing ? t.stagePreparing : t.stages[stage]
   const secs = (s: number) => (s >= 90 ? t.minutes(decimal(Math.round(s / 60), lang)) : t.seconds(decimal(Math.max(1, Math.round(s)), lang)))
   // Counting down to the retry; once it is under way, back to the stage.
@@ -80,7 +96,13 @@ function ProgressTimerImpl({ stage, activity, variant = "overlay", retryAt = nul
   )
   if (!running) return live
 
-  const fraction = estimate && estimate > 0 ? Math.min(1, elapsed / estimate) : null
+  let fraction: number | null = null
+  if (activity && estimate && estimate > 0) {
+    const raw = Math.min(0.97, elapsed / estimate)
+    if (shown.current.started !== activity.started) shown.current = { started: activity.started, fraction: 0 }
+    fraction = Math.max(shown.current.fraction, raw)
+    shown.current.fraction = fraction
+  }
   const text =
     busy !== null ? (
       <span>{t.busy(decimal(busy, lang))}</span>
@@ -89,7 +111,7 @@ function ProgressTimerImpl({ stage, activity, variant = "overlay", retryAt = nul
         <span className="font-medium text-foreground">{label}</span>
         {elapsed >= 1 && <span className="text-muted-foreground">· {secs(elapsed)}</span>}
         {left !== null && elapsed >= 1 && (
-          <span className="text-muted-foreground">· {over ? t.longer : t.left(secs(left))}</span>
+          <span className="text-muted-foreground">· {over ? t.longer : late ? r9.almost : t.left(secs(left!))}</span>
         )}
       </>
     )
@@ -107,25 +129,41 @@ function ProgressTimerImpl({ stage, activity, variant = "overlay", retryAt = nul
     </span>
   )
 
-  const prepNote = activity?.preparing ? t.firstChange : null
+  const prepNote = activity?.preparing ? (activity.note ?? t.firstChange) : (activity?.note ?? null)
+  const sideNote = prepNote ?? note
+
+  if (variant === "band") {
+    // One line in a band of its own above the plot: never over the data.
+    return (
+      <>
+        {live}
+        <div className={`flex w-full min-w-0 flex-col justify-center gap-[3px] text-xs tabular-nums ${className}`}>
+          <span className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5">
+            <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-muted-foreground motion-reduce:animate-none" aria-hidden />
+            {text}
+            {sideNote && (
+              <span className="min-w-0 truncate text-muted-foreground max-sm:hidden" title={sideNote}>
+                — {sideNote}
+              </span>
+            )}
+          </span>
+          {bar}
+        </div>
+      </>
+    )
+  }
 
   return (
     <>
       {live}
-    <div
-      className={
-        variant === "overlay"
-          ? `pointer-events-none flex w-[min(22rem,calc(100%-1rem))] flex-col gap-1 rounded-xl border bg-card/95 px-3 py-1.5 text-xs tabular-nums shadow-sm backdrop-blur-sm ${className}`
-          : `flex w-full max-w-md flex-col gap-1.5 rounded-lg border bg-card px-4 py-3 text-sm tabular-nums ${className}`
-      }
-    >
-      <span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
-        <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-muted-foreground motion-reduce:animate-none" aria-hidden />
-        {text}
-      </span>
-      {bar}
-      {(prepNote || note) && <span className="text-[11px] leading-snug text-muted-foreground">{prepNote ?? note}</span>}
-    </div>
+      <div className={`flex w-full max-w-md flex-col gap-1.5 rounded-lg border bg-card px-4 py-3 text-sm tabular-nums ${className}`}>
+        <span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+          <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-muted-foreground motion-reduce:animate-none" aria-hidden />
+          {text}
+        </span>
+        {bar}
+        {sideNote && <span className="text-[11px] leading-snug text-muted-foreground">{sideNote}</span>}
+      </div>
     </>
   )
 }

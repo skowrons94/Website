@@ -66,6 +66,8 @@ interface Props {
   calculating: boolean
   /** The curves are those before the last edit (new ones on their way): drawn faded. */
   stale?: boolean
+  /** The curves shown are the published ones (the reader's own are being calculated). */
+  published?: boolean
   /** What the tab waits for, for the progress timer. */
   activity?: Activity | null
   stage?: Stage
@@ -102,9 +104,14 @@ function isAngularCurve(s: ExtrapSegment): boolean {
 function isGrid(s: ExtrapSegment): boolean {
   if (s.grid) return true
   if (s.is_angle_integrated) return false
+  // One laboratory angle (¹³N at 55°): an excitation function, whose c.m.
+  // angle merely drifts with the energy -- a line, not a grid.
+  if (Math.abs(s.angle_max - s.angle_min) < 1e-9) return false
+  const n = (s.energies ?? []).length
   const e = new Set((s.energies ?? []).filter(Number.isFinite).map((v) => v.toPrecision(6)))
   const a = new Set((s.angles ?? []).filter((v) => v !== null && Number.isFinite(v)).map((v) => v.toPrecision(6)))
-  return e.size > 2 && a.size > 2
+  // A grid repeats each energy at every angle: distinct energies × angles ≈ points.
+  return e.size > 2 && a.size > 2 && e.size * a.size <= 1.5 * n
 }
 
 interface GridCut {
@@ -204,6 +211,7 @@ export function ExtrapPlot({
   scatteringOnly = false,
   temperatures = [],
   stale = false,
+  published = false,
   activity = null,
   stage = "extrap",
   retryAt = null,
@@ -211,6 +219,7 @@ export function ExtrapPlot({
   const lang = useLang()
   const t = useEvalDict().workspace
   const lv = useEvalDict().live
+  const r9 = useEvalDict().r9
   const [selected, setSelected] = useState<number[]>([])
   const [overlaid, setOverlaid] = useState<number[]>([])
   const [quantity, setQuantity] = useState<Quantity>(scatteringOnly ? "cross_section" : "sfactor")
@@ -413,6 +422,8 @@ export function ExtrapPlot({
       slot,
       points: [],
       curve: xs.map((x, i) => ({ x: x ?? NaN, y: (values?.[i] ?? NaN) * k })),
+      // Curves about to be replaced (before the edit, or the published ones) are drawn faded.
+      faded: stale,
     }
   }
 
@@ -439,7 +450,7 @@ export function ExtrapPlot({
       }),
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [chosen, chosenData, quantity, lang, units],
+    [chosen, chosenData, quantity, lang, units, stale],
   )
   const series = items.map((i) => i.series)
 
@@ -605,6 +616,16 @@ export function ExtrapPlot({
 
       <div className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] [&>*]:min-w-0">
         <div className="relative min-w-0">
+          {/* While new curves are calculated: the timer in a band of its own above the plot (never over the curves), the old ones faded below. */}
+          <div className="mb-1.5 flex min-h-[2.25rem] items-end px-1" aria-live="off">
+            <ProgressTimer
+              stage={stage}
+              activity={calculating ? activity : null}
+              retryAt={retryAt}
+              note={stale ? (published ? r9.publishedShown : lv.extrapStale) : null}
+            />
+          </div>
+          {published && calculating && <p className="-mt-1 mb-1.5 px-1 text-xs text-muted-foreground sm:hidden">{r9.publishedShown}</p>}
           {series.length === 0 ? (
             <Card>
               <CardContent className="py-16 text-center text-sm text-muted-foreground">{t.selectExtrap}</CardContent>
@@ -653,7 +674,7 @@ export function ExtrapPlot({
                   </li>
                 ))}
               </ul>
-              <CardContent className={`h-[18rem] max-h-[55svh] min-h-[12rem] p-1.5 transition-opacity sm:p-3 lg:h-[26rem] lg:max-h-none ${calculating ? "opacity-45" : ""}`}>
+              <CardContent className="h-[18rem] max-h-[55svh] min-h-[12rem] p-1.5 sm:p-3 lg:h-[26rem] lg:max-h-none" aria-busy={calculating}>
                 <SegmentChart
                   series={series}
                   xLabel={allAngle ? t.angleAxis : t.energyAxis}
@@ -680,10 +701,7 @@ export function ExtrapPlot({
               {t.resetZoom}
             </Button>
           )}
-          {/* While new curves are calculated: the timer over the faded old ones, in view on a phone too. */}
-          <div className="pointer-events-none absolute inset-x-0 top-10 z-10 flex justify-center">
-            <ProgressTimer stage={stage} activity={calculating ? activity : null} retryAt={retryAt} note={stale ? lv.extrapStale : null} />
-          </div>
+
           {gw && gamowPair && !allAngle && (
             <p className="mt-2 text-xs text-muted-foreground">
               <Sci>
@@ -785,14 +803,16 @@ export function ExtrapPlot({
                           <>
                             {" "}
                             ·{" "}
-                            {lv.gridSummary(
-                              ne,
-                              na,
-                              fmtE(g.energy_min),
-                              fmtE(g.energy_max),
-                              decimal(String(Number(g.angle_min.toFixed(1))), lang),
-                              decimal(String(Number(g.angle_max.toFixed(1))), lang),
-                            )}
+                            {Math.abs(g.angle_max - g.angle_min) < 1e-9
+                              ? r9.gridSummaryOne(ne, fmtE(g.energy_min), fmtE(g.energy_max), decimal(String(Number(g.angle_min.toFixed(1))), lang))
+                              : lv.gridSummary(
+                                  ne,
+                                  na,
+                                  fmtE(g.energy_min),
+                                  fmtE(g.energy_max),
+                                  decimal(String(Number(g.angle_min.toFixed(1))), lang),
+                                  decimal(String(Number(g.angle_max.toFixed(1))), lang),
+                                )}
                           </>
                         )}
                       </span>
