@@ -7,7 +7,8 @@
  *
  * The three series hues are a validated categorical palette: these plots are
  * scatter-shaped, so the all-pairs colorblind separation applies and only three
- * slots clear it (light: worst CVD dE 9.2 / normal dE 24.0; dark: 9.4 / 20.9).
+ * slots clear it (light: worst CVD dE 9.4 / normal dE 22.4, every hue >= 3:1 on the surface;
+ * dark: 9.4 / 20.9).
  * The dark column is the same three hues re-stepped for the dark surface, not an
  * automatic inversion. Adding a fourth would fail the floor -- charts fold to
  * small multiples instead (see lib/viz.ts).
@@ -20,7 +21,7 @@
   --viz-axis: #b8b8b3;
   --viz-series-1: #2a78d6;
   --viz-series-2: #eb6834;
-  --viz-series-3: #1baf7a;
+  --viz-series-3: #15a372;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -76,11 +77,15 @@
     --destructive-foreground: 0 0% 100%;
     --border: 38 12% 89%;
     --input: 38 12% 89%;
+    /* Borders and tracks a control is recognised by (inputs, selects, the
+       unchecked switch, slider tracks): >= 3:1 against background, card and
+       muted (WCAG 1.4.11). --input stays the hairline for decorative use. */
+    --input-strong: 35 6% 54%;
     --ring: 213 68% 44%;
     --link: 213 68% 40%;
     --chart-1: 213 68% 50%;
     --chart-2: 18 82% 56%;
-    --chart-3: 162 74% 40%;
+    --chart-3: 159 77% 36%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.375rem;
@@ -109,10 +114,13 @@
     --muted-foreground: 40 6% 64%;
     --accent: 40 4% 17%;
     --accent-foreground: 40 12% 94%;
-    --destructive: 0 62% 44%;
-    --destructive-foreground: 0 0% 98%;
+    /* Light enough to read as text on the dark ground (4.8:1); a destructive
+       button then carries dark ink rather than white. */
+    --destructive: 0 70% 60%;
+    --destructive-foreground: 40 5% 8%;
     --border: 40 4% 19%;
     --input: 40 4% 19%;
+    --input-strong: 40 5% 42%;
     --ring: 213 70% 62%;
     --link: 213 76% 68%;
     --chart-1: 213 70% 58%;
@@ -161,6 +169,10 @@
   /* Numerals that line up in tables of energies and widths. */
   .tabular {
     font-variant-numeric: tabular-nums;
+  }
+  /* A word that must not break at its hyphen ("R-matrix"); see sci.tsx. */
+  .nobr {
+    white-space: nowrap;
   }
 }
 
@@ -307,4 +319,120 @@ sub {
 
 .atlas-arrow:focus-visible .atlas-focus {
   stroke: hsl(var(--ring) / 0.6);
+}
+
+/*
+ * Publications: "first author" filter (components/publication-filter.tsx).
+ * The list is server-rendered; the filter only sets data-pub-filter.
+ */
+[data-pub-filter] [data-count="first"] {
+  display: none;
+}
+[data-pub-filter="first"] [data-count="all"] {
+  display: none;
+}
+[data-pub-filter="first"] [data-count="first"] {
+  display: inline;
+}
+[data-pub-filter="first"] [data-first="false"],
+[data-pub-filter="first"] [data-has-first="false"] {
+  display: none;
+}
+
+/*
+ * Print.
+ *
+ * A printed page is the content alone: no header, footer, theme or language
+ * controls (they carry `print:hidden`), always light ink on white whatever the
+ * screen theme, the address after each external link (a link on paper is
+ * otherwise lost), and no heading stranded at the foot of a page.
+ */
+@media print {
+  @page {
+    margin: 16mm 14mm;
+  }
+
+  :root,
+  .dark {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 7%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 7%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 28%;
+    --border: 0 0% 82%;
+    --input-strong: 0 0% 45%;
+    --link: 213 68% 32%;
+    --primary: 0 0% 10%;
+    --primary-foreground: 0 0% 100%;
+    --viz-surface: #ffffff;
+    --viz-text: #0b0b0b;
+    --viz-text-muted: #52514e;
+    --viz-grid: #e4e4e1;
+    --viz-axis: #b8b8b3;
+    --viz-series-1: #2a78d6;
+    --viz-series-2: #eb6834;
+    --viz-series-3: #15a372;
+    --atlas-cell: #ecebe7;
+    --atlas-cell-strong: #d9d8d2;
+    --atlas-cell-edge: #cbcbc7;
+  }
+
+  html {
+    font-size: 12pt;
+  }
+
+  body {
+    background: #fff !important;
+    color: hsl(var(--foreground));
+  }
+
+  /* Sticky and fixed things print once, where they are, or not at all. */
+  .sticky,
+  .fixed {
+    position: static !important;
+  }
+
+  main a[href^="http"]:not(.print-no-url)::after {
+    content: " (" attr(href) ")";
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 0.78em;
+    font-weight: 400;
+    color: hsl(var(--muted-foreground));
+    word-break: break-all;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  li,
+  figure,
+  pre,
+  blockquote,
+  article > header,
+  .katex-display,
+  table tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+
+  /* No transitions, shadows or hover states to freeze on paper. */
+  * {
+    box-shadow: none !important;
+    transition: none !important;
+  }
+
+  .heading-anchor {
+    display: none !important;
+  }
 }

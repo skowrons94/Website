@@ -92,7 +92,7 @@ export async function NotePage({ slug, lang }: { slug: string; lang: Lang }) {
               <ol lang={noteLang} className="space-y-2 text-[0.9rem] leading-relaxed text-muted-foreground">
                 {note.references.map((ref, i) => (
                   <li key={i} className="flex gap-3">
-                    <span className="tabular text-muted-foreground/70">
+                    <span className="tabular text-muted-foreground">
                       {i + 1}.
                     </span>
                     <span>

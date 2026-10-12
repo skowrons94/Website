@@ -6,7 +6,8 @@
  * all-pairs colorblind separation applies, and only the first three slots clear
  * it — checked with the palette validator in both light and dark modes:
  *
- *   light  worst CVD dE 9.2, worst normal-vision dE 24.0
+ *   light  worst CVD dE 9.4, worst normal-vision dE 22.4, every slot >= 3:1
+ *          against the surface (the green was #1baf7a, 2.74:1, until 2026-10)
  *   dark   worst CVD dE 9.4, worst normal-vision dE 20.9
  *
  * That is why overlaying is capped at OVERLAY_LIMIT datasets and anything
@@ -21,7 +22,7 @@ import type { Lang } from "@/lib/i18n"
 export const OVERLAY_LIMIT = 3
 
 /** Categorical slots, light and dark steps of the same three hues. */
-export const SERIES_LIGHT = ["#2a78d6", "#eb6834", "#1baf7a"] as const
+export const SERIES_LIGHT = ["#2a78d6", "#eb6834", "#15a372"] as const
 export const SERIES_DARK = ["#3987e5", "#d95926", "#199e70"] as const
 
 /**
