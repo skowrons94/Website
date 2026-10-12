@@ -160,7 +160,7 @@ export function LunaFigure({ lang, className, compact = false }: { lang: Lang; c
                 >
                   {i + 1}
                 </span>
-                <span>
+                <span className="min-w-0 [overflow-wrap:anywhere]">
                   <Sci>{item}</Sci>
                 </span>
               </li>

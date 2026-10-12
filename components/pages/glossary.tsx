@@ -1,3 +1,4 @@
+import "@/components/math-styles"
 import type { Metadata } from "next"
 import Link from "next/link"
 import katex from "katex"
@@ -50,7 +51,7 @@ export function GlossaryPage({ lang }: { lang: Lang }) {
 
       <dl className="divide-y divide-border/70 border-y border-border/70">
         {terms.map((term) => (
-          <div key={term.id} id={term.id} className="scroll-mt-24 py-8 sm:grid sm:grid-cols-[13rem_minmax(0,1fr)] sm:gap-8">
+          <div key={term.id} id={term.id} className="scroll-mt-24 py-8 min-[40em]:grid min-[40em]:grid-cols-[13rem_minmax(0,1fr)] min-[40em]:gap-8">
             <dt>
               <span className="block font-serif text-xl font-semibold leading-snug tracking-tight">
                 <Sci>{term.term}</Sci>
@@ -61,7 +62,7 @@ export function GlossaryPage({ lang }: { lang: Lang }) {
                 </span>
               )}
             </dt>
-            <dd className="mt-3 sm:mt-0">
+            <dd className="mt-3 min-w-0 min-[40em]:mt-0">
               <p className="max-w-[42rem] text-pretty text-[1.0625rem] leading-relaxed">
                 <Sci>{term.text}</Sci>
               </p>

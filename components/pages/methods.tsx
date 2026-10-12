@@ -169,9 +169,12 @@ function FacilityCard({ facility: f, reactions, lang }: { facility: Facility; re
       {facts.length > 0 && (
         <dl className="mt-3 space-y-1 text-sm">
           {facts.map(([label, value]) => (
-            <div key={label} className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-3">
-              <dt className="text-muted-foreground">{label}</dt>
-              <dd className="text-pretty">
+            // Label and value side by side while the card has room; at large
+            // text sizes the value wraps under its label instead of being
+            // squeezed to a sliver beside it.
+            <div key={label} className="flex flex-wrap gap-x-3">
+              <dt className="shrink-0 basis-[6.5rem] text-muted-foreground">{label}</dt>
+              <dd className="min-w-[12ch] flex-1 text-pretty">
                 <Sci>{value}</Sci>
               </dd>
             </div>
