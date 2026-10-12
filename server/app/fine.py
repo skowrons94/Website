@@ -1,19 +1,33 @@
-"""The model on a fine energy grid, for drawing.
+"""The model on a fine, extended energy grid, for drawing.
 
 AZURE2 evaluates the model in data mode only at the measured energies, so a
 plot that joins those values draws straight lines across every gap in the data
 (0.65-1.45 MeV for one ¹²C(p,p) set) and cuts through resonances between two
-points.  Its extrapolation mode evaluates the model on any grid, so for drawing
-each data segment gets a matching *extrapolation* segment -- same entrance and
-exit pair, same observable, same angle, the segment's own energy range -- on a
-dense uniform grid.
+points, and stops where the data stop.  Its extrapolation mode evaluates the
+model on any grid, so for drawing each distinct calculation the data measure
+-- same entrance and exit pair, same observable, same angle; ⁷Be's 120
+datasets share far fewer -- gets matching *extrapolation* segments on a grid
+that reaches beyond the data (:func:`plan`):
+
+* below the lowest measurement, to a third of it, and for a charged-particle
+  reaction towards the astrophysical region (the Gamow peak at T₉ = 0.01),
+  never below 10 keV nor below the threshold of a closed exit channel;
+* 15% above the highest;
+* log-spaced over all of it, uniform over the data's own range, and refined
+  around every resonance of the level scheme (at the shipped parameters), so
+  a narrow one is neither missed nor cut.
+
+AZURE2's grids are uniform, so the grid is written as *pieces* (one
+``<segmentsTest>`` line each, or one per capture pair for a total capture,
+summed) and the pieces are joined and sorted (:func:`join_pieces`).
 
 The model file is left as it is.  A derived copy is written with only
 ``<segmentsTest>`` replaced and with its own output directory, so neither the
 evaluation's extrapolations nor its cached external-capture integrals
 (``output/intEC.extrap``) are touched; the data segments, and so the free
 parameter vector, are unchanged, which is what lets the same parameters drive
-both models.
+both models.  The integrals of the derived grid are computed once (per
+deploy) and are discarded whenever the derived file changes.
 
 What cannot be matched is skipped rather than approximated, and the page then
 draws the model at the data points as before:
@@ -29,15 +43,17 @@ instead, and a total-capture segment as the sum of one line per capture pair
 
 AZURE2 can also fold some data segments with the target thickness or the
 detector's angular attenuation (``<targetInt>``), which an extrapolation does
-not; :func:`attach` compares the two models at the data energies and keeps the
-fine curve only where they agree.
+not; the serializer compares the two models at the data energies
+(:func:`agrees`) and keeps the curve only for the segments where they agree --
+beyond the data there is nothing to compare, and the extension goes with the
+part that agrees.
 """
 
 import math
 import os
 import re
 import tempfile
-from typing import List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 # <segmentsData> isDiff -> <segmentsTest> isDiff (see pyazr.datasets: the two
 # blocks number their observables differently).
@@ -48,7 +64,17 @@ _TEST_CODE = {
     "differential-cm": 5,
 }
 
-POINTS = 300
+# The extended energy grid of one calculation (see plan and energy_pieces).
+LOG_POINTS = 240        # log-spaced, over the whole extended range
+DATA_POINTS = 160       # uniform, over the data's own range
+PIECE_RATIO = 2.0       # the log grid as uniform pieces of this energy ratio
+EXTEND_BELOW = 3.0      # down to the lowest measurement / this ...
+EXTEND_ABOVE = 1.15     # ... and up to the highest × this
+# Around a resonance (E_R, Γ): pieces of half-width × Γ and step × Γ.
+RESONANCE_PIECES = ((5.0, 1.0), (1.5, 0.25), (0.5, 1 / 12))
+ASTRO_T9 = 0.01         # charged-particle reactions: down to this Gamow peak
+FLOOR = 0.010           # MeV c.m.: never below (a neutron: FLOOR_NEUTRAL)
+FLOOR_NEUTRAL = 0.001
 # An angular distribution is drawn on a grid of about this many angles.
 ANGLES = 180
 
@@ -142,68 +168,270 @@ def _same(values, tolerance=1e-4) -> bool:
     return hi - lo <= tolerance * max(abs(hi), 1.0)
 
 
-def plan(azr_path, cwd, segments, captures=None) -> List[Optional[Tuple[List[str], str]]]:
-    """Per data segment, the ``<segmentsTest>`` lines that draw it and the
-    axis they run along (``"energy"`` or ``"angle"``), or ``None`` where the
-    segment cannot be drawn on a grid.  Index ``i`` belongs to data segment
-    ``i``.
+def model_pairs(azr_path) -> Dict[int, dict]:
+    """Per pair key, what the extended grid needs to know of it: charges,
+    masses, its threshold (an excitation energy of the compound nucleus) and
+    whether it is a photon pair.  Read from the ``<levels>`` lines, which
+    carry every pair a level decays to."""
+    try:
+        from pyazr import AzrModel
+        model = AzrModel.from_file(azr_path)
+    except Exception:
+        return {}
+    pairs = {}
+    for level in model.levels:
+        for c in level.channels:
+            if c.pair in pairs:
+                continue
+            pairs[c.pair] = {
+                "Z1": c.Z1, "Z2": c.Z2, "M1": c.M1, "M2": c.M2,
+                "threshold": c.sep_energy + c.excitation,
+                "photon": c.ptype != 0,
+            }
+    return pairs
 
-    * An excitation function (points at one angle, several energies) gets an
-      energy grid at that angle.
+
+def model_levels(azr_path) -> List[Tuple[float, float]]:
+    """``(E_x, Γ)`` in MeV of every active level, at the shipped parameters.
+
+    Γ is the sum of the level's partial widths (eV in the file): photon
+    channels, and particle channels the level lies above (below a pair's
+    threshold the stored value is an ANC, not a width).
+    """
+    try:
+        from pyazr import AzrModel
+        model = AzrModel.from_file(azr_path)
+    except Exception:
+        return []
+    out = []
+    for level in model.levels:
+        channels = [c for c in level.channels if c.active]
+        if not channels:
+            continue
+        energy = level.energy
+        width = 0.0
+        for c in channels:
+            if c.ptype == 0:
+                if energy >= c.sep_energy + c.excitation:
+                    width += abs(c.gamma)
+            elif c.ptype == 10:
+                width += abs(c.gamma)
+        out.append((energy, width * 1e-6))
+    return out
+
+
+def _lab_factor(pair) -> float:
+    """E_cm / E_lab for the entrance pair (light particle on the heavy one at
+    rest), as AZURE2 converts a segment's laboratory energies."""
+    try:
+        m1, m2 = float(pair["M1"]), float(pair["M2"])
+        if m1 > 0 and m2 > 0:
+            return m2 / (m1 + m2)
+    except (KeyError, TypeError, ValueError):
+        pass
+    return 1.0
+
+
+def gamow_peak(pair, T9) -> float:
+    """The Gamow peak (MeV) of a charged pair at temperature ``T9``."""
+    m1, m2 = float(pair["M1"]), float(pair["M2"])
+    mu = m1 * m2 / (m1 + m2)
+    return 0.122 * (pair["Z1"] ** 2 * pair["Z2"] ** 2 * mu * T9 ** 2) ** (1 / 3)
+
+
+def extended_range(entrance, exit_, lo, hi, pairs, lab_angle=False) -> Tuple[float, float]:
+    """The c.m. energy range one calculation is drawn over, beyond the data's
+    own ``[lo, hi]``.
+
+    Up to ``EXTEND_ABOVE`` × the highest measurement.  Down to a third of the
+    lowest, and for a charged-particle capture or reaction further, to the
+    Gamow peak at T₉ = 0.01 (the astrophysical region, where the model is
+    used); never below ``FLOOR`` (10 keV; 1 keV for a neutron) nor, for an
+    exit channel that opens above the entrance (Q < 0), below its threshold
+    -- nor, measured at a laboratory angle (``lab_angle``), below the data.
+    """
+    pin = pairs.get(entrance) or {}
+    charged = bool(pin) and pin.get("Z1", 0) * pin.get("Z2", 0) > 0
+    reaction = exit_ != entrance
+    floor = FLOOR if charged or not pin else FLOOR_NEUTRAL
+    e_lo = lo / EXTEND_BELOW
+    if charged and reaction:
+        try:
+            e_lo = min(e_lo, gamow_peak(pin, ASTRO_T9))
+        except (KeyError, TypeError, ValueError, ZeroDivisionError):
+            pass
+    e_lo = max(e_lo, floor)
+    pout = pairs.get(exit_)
+    if pin and pout and not pout.get("photon") and reaction:
+        opens = pout["threshold"] - pin["threshold"]
+        if opens > 0:
+            e_lo = max(e_lo, opens + max(1e-3, 2e-3 * opens))
+            if lab_angle:
+                # Near the threshold of an endothermic reaction the ejectile
+                # is thrown forward: a laboratory angle the data were taken
+                # at is not reachable below them.
+                e_lo = lo
+    return min(e_lo, lo), hi * EXTEND_ABOVE
+
+
+def energy_pieces(lo, hi, e_lo, e_hi, resonances) -> List[Tuple[float, float, float]]:
+    """The extended grid of one calculation as uniform pieces ``(start, stop,
+    step)`` in c.m. MeV -- AZURE2 grids are uniform -- to be calculated
+    separately and joined:
+
+    * a logarithmic base over ``[e_lo, e_hi]`` (``LOG_POINTS``), as pieces of
+      ratio ``PIECE_RATIO`` with a uniform step each;
+    * ``DATA_POINTS`` uniform points over the data's own range (the grid the
+      plots drew before the extension);
+    * around every resonance ``(E_R, Γ)`` inside the range, nested pieces at
+      ±5Γ, ±1.5Γ and ±Γ/2 with steps Γ, Γ/4 and Γ/12 (``RESONANCE_PIECES``,
+      ~35 points, densest at the peak), so a narrow resonance is neither
+      missed nor cut -- each only where it is finer than the grid already
+      there.
+    """
+    out = []
+    ratio = e_hi / e_lo if e_lo > 0 else 1.0
+    if ratio > 1:
+        k = max(1, math.ceil(math.log(ratio) / math.log(PIECE_RATIO)))
+        n = max(4, math.ceil(LOG_POINTS / k))
+        for i in range(k):
+            a = e_lo * ratio ** (i / k)
+            b = e_lo * ratio ** ((i + 1) / k)
+            out.append((a, b, (b - a) / n))
+    if hi > lo:
+        out.append((lo, hi, (hi - lo) / DATA_POINTS))
+    base = list(out)
+
+    def spacing(energy):
+        """The base grid's step at ``energy``."""
+        steps = [step for a, b, step in base if a <= energy <= b]
+        return min(steps) if steps else math.inf
+
+    for e_r, width in resonances:
+        if not (e_lo < e_r < e_hi) or width <= 0 or width > e_r:
+            continue
+        # A width the grid's digits cannot resolve is drawn as one this wide.
+        width = max(width, 2e-6 * e_r)
+        local = spacing(e_r)
+        for half, step in RESONANCE_PIECES:
+            half, step = half * width, step * width
+            # Only where it is finer than the grid already there: a broad
+            # resonance needs nothing added.
+            if step >= 0.7 * local:
+                continue
+            a, b = max(e_lo, e_r - half), min(e_hi, e_r + half)
+            if b - a > step / 2:
+                out.append((a, b, step))
+    return out
+
+
+def _calc_key(segment, code, angle, energy=None):
+    """What makes two data segments one calculation: the same channels,
+    observable and angle (an excitation function), or the same energy (an
+    angular distribution)."""
+    if energy is not None:
+        return ("angle", segment.entrance_key, segment.exit_key, code, round(energy, 6))
+    return ("energy", segment.entrance_key, segment.exit_key, code, round(angle, 2))
+
+
+def plan(azr_path, cwd, segments, captures=None):
+    """The calculations that draw the data segments, and which one draws which.
+
+    Returns ``(calcs, index)``.  ``index[i]`` is the calculation drawing data
+    segment ``i`` (shared by every segment measuring the same curve: ⁷Be has
+    120 datasets and far fewer distinct curves), or ``None`` where the segment
+    cannot be drawn on a grid.  ``calcs[j]`` is ``{"axis": ..., "pieces":
+    [[line, ...], ...]}``: ``<segmentsTest>`` lines, one *piece* per uniform
+    stretch of the grid, the lines of a piece summed (one per capture pair for
+    a total capture), the pieces joined and sorted by the caller.
+
+    * An excitation function (points at one angle, several energies) gets the
+      extended energy grid of :func:`energy_pieces` at that angle, over the
+      range of :func:`extended_range` around every dataset sharing it.
     * An angular distribution (one energy, several angles) gets an angle grid
       at that energy -- it is plotted against the angle.
     * A total-capture segment is drawn as one angle-integrated line per
-      capture pair, summed by the caller, rather than as AZURE2's own total
-      capture (whose integrals are unreliable, see :func:`summed`).
+      capture pair, summed, rather than as AZURE2's own total capture (whose
+      integrals are unreliable, see :func:`summed`) -- where the evaluation
+      opts in (:func:`split_enabled`).
     """
     if captures is None:
         captures = capture_keys(azr_path) if split_enabled(cwd) else []
-    out = []
-    for segment in segments:
+    pairs = model_pairs(azr_path)
+    levels = model_levels(azr_path)
+
+    groups = {}             # key -> {"segments": [...], ...}
+    index = []
+    for i, segment in enumerate(segments):
         code = _TEST_CODE.get(segment.observable)
         if code is None or getattr(segment, "composite", False):
-            out.append(None)
+            index.append(None)
             continue
         energies, angles = _data_points(cwd, segment)
         if len(energies) < 2:
-            out.append(None)
+            index.append(None)
             continue
         lo, hi = min(energies), max(energies)
         if code in (1, 5) and _same(energies) and not _same(angles, 1e-3):
-            # An angular distribution at one energy.
-            amin, amax = min(angles), max(angles)
-            astep = float(f"{max((amax - amin) / ANGLES, 0.1):.3g}")
             energy = sum(energies) / len(energies)
-            out.append(([
-                f"1 {segment.entrance_key} {segment.exit_key} {energy:.8g} "
-                f"{energy:.8g} 0.01 {amin:.6g} {amax + astep / 2:.6g} "
-                f"{astep:.6g} {code} 0"], "angle"))
+            key = _calc_key(segment, code, None, energy)
+            g = groups.setdefault(key, {"segment": segment, "code": code,
+                                        "energy": energy, "lo": min(angles),
+                                        "hi": max(angles)})
+            g["lo"], g["hi"] = min(g["lo"], min(angles)), max(g["hi"], max(angles))
+            index.append(key)
             continue
         if hi - lo <= 1e-6 * max(abs(hi), 1.0):
-            out.append(None)
+            index.append(None)
             continue
         angle = 0.0
         if code in (1, 5):
             distinct = {round(a, 3) for a in angles}
             if len(distinct) != 1:
-                out.append(None)
+                index.append(None)
                 continue
             angle = angles[0]
-        step = (hi - lo) / POINTS
-        # Keep the step representable in the file's fixed notation, and let
-        # the last grid point reach the last measurement.
-        step = float(f"{step:.6g}")
-        exits = [segment.exit_key]
-        if code == 4:
-            exits, code = (captures or [segment.exit_key]), 0
-            if exits == [segment.exit_key]:
-                code = 4
-        out.append(([
-            f"1 {segment.entrance_key} {exit_} {lo:.8g} "
-            f"{hi + step / 2:.8g} "
-            f"{step:.6g} {angle:.6g} {angle:.6g} 0 {code} 0"
-            for exit_ in exits], "energy"))
-    return out
+        key = _calc_key(segment, code, angle)
+        g = groups.setdefault(key, {"segment": segment, "code": code,
+                                    "angle": angle, "lo": lo, "hi": hi})
+        g["lo"], g["hi"] = min(g["lo"], lo), max(g["hi"], hi)
+        index.append(key)
+
+    calcs, number = [], {}
+    for key, g in groups.items():
+        segment, code = g["segment"], g["code"]
+        if key[0] == "angle":
+            amin, amax = g["lo"], g["hi"]
+            astep = float(f"{max((amax - amin) / ANGLES, 0.1):.3g}")
+            energy = g["energy"]
+            pieces = [[
+                f"1 {segment.entrance_key} {segment.exit_key} {energy:.8g} "
+                f"{energy:.8g} 0.01 {amin:.6g} {amax + astep / 2:.6g} "
+                f"{astep:.6g} {code} 0"]]
+            number[key] = len(calcs)
+            calcs.append({"axis": "angle", "pieces": pieces})
+            continue
+        entrance, exit_ = segment.entrance_key, segment.exit_key
+        factor = _lab_factor(pairs.get(entrance) or {})
+        lo, hi = g["lo"] * factor, g["hi"] * factor        # c.m.
+        e_lo, e_hi = extended_range(entrance, exit_, lo, hi, pairs, lab_angle=code == 1)
+        threshold = (pairs.get(entrance) or {}).get("threshold")
+        resonances = ([(ex - threshold, width) for ex, width in levels]
+                      if threshold is not None else [])
+        exits, line_code = [exit_], code
+        if code == 4 and captures and captures != [exit_]:
+            exits, line_code = captures, 0
+        angle = g["angle"]
+        pieces = []
+        for a, b, step in energy_pieces(lo, hi, e_lo, e_hi, resonances):
+            a, b, step = a / factor, b / factor, step / factor          # lab
+            pieces.append([
+                f"1 {entrance} {x} {a:.10g} {b + step / 2:.10g} {step:.8g} "
+                f"{angle:.6g} {angle:.6g} 0 {line_code} 0"
+                for x in exits])
+        number[key] = len(calcs)
+        calcs.append({"axis": "energy", "pieces": pieces})
+    return calcs, [None if key is None else number[key] for key in index]
 
 
 def with_directories(text, output, checks) -> Optional[str]:
@@ -233,6 +461,24 @@ def _write_model(text, workdir, name) -> Optional[str]:
     if text is None:
         return None
     path = os.path.join(workdir, name)
+    # External-capture integrals belong to the grid they were calculated on:
+    # a model written differently from the one there (a new grid, a changed
+    # evaluation) must not read the old ones back.
+    # (The directories it names are left out of the comparison: the
+    # in-browser build ships the integrals computed at another path.)
+    def body(t):
+        return re.sub(r"<config>.*?</config>", "", t, count=1, flags=re.S)
+    try:
+        with open(path) as f:
+            same = body(f.read()) == body(text)
+    except OSError:
+        same = False
+    if not same:
+        for stale in ("intEC.dat", "intEC.extrap"):
+            try:
+                os.remove(os.path.join(output, stale))
+            except OSError:
+                pass
     fd, tmp = tempfile.mkstemp(dir=workdir, prefix=".fine-", suffix=".azr")
     with os.fdopen(fd, "w") as f:
         f.write(text)
@@ -250,54 +496,92 @@ def _with_tests(text, lines) -> Optional[str]:
 def derived_model(azr_path, cwd, segments, workdir):
     """Write the derived model into ``workdir``.
 
-    Returns its path and, per data segment, ``{"slots": [...], "axis": ...}``
-    -- the indices of its extrapolation segments in the derived model (summed
-    when there are several) and the variable they run along -- or ``None``
-    for a segment left out.  The path is ``None`` when no segment can be
-    drawn on a grid.
+    Returns ``(path, calcs, index)``: ``index[i]`` is the calculation drawing
+    data segment ``i`` (or ``None``), and ``calcs[j]`` is ``{"axis": ...,
+    "pieces": [[slot, ...], ...]}`` -- the derived model's extrapolation
+    segments of each piece of that calculation's grid (summed within a piece,
+    joined across pieces; see :func:`plan`).  The path is ``None`` when no
+    segment can be drawn on a grid.
     """
-    planned = plan(azr_path, cwd, segments)
-    index, chosen = [], []
-    for item in planned:
-        if item is None:
-            index.append(None)
-            continue
-        lines, axis = item
-        index.append({"slots": list(range(len(chosen), len(chosen) + len(lines))),
-                      "axis": axis})
-        chosen.extend(lines)
-    if not chosen:
-        return None, index
+    planned, index = plan(azr_path, cwd, segments)
+    lines, calcs = [], []
+    for calc in planned:
+        pieces = []
+        for piece in calc["pieces"]:
+            pieces.append(list(range(len(lines), len(lines) + len(piece))))
+            lines.extend(piece)
+        calcs.append({"axis": calc["axis"], "pieces": pieces})
+    if not lines:
+        return None, [], [None] * len(index)
 
     with open(azr_path) as f:
-        text = _with_tests(f.read(), chosen)
+        text = _with_tests(f.read(), lines)
     if text is None:
-        return None, [None] * len(planned)
+        return None, [], [None] * len(index)
     path = _write_model(text, workdir, "fine.azr")
     if path is None:
-        return None, [None] * len(planned)
-    return path, index
+        return None, [], [None] * len(index)
+    return path, calcs, index
+
+
+def _active_tests(text):
+    block = re.search(r"<segmentsTest>\n(.*?)</segmentsTest>", text, flags=re.S)
+    if block is None:
+        return None
+    return [raw.split() for raw in block.group(1).split("\n")
+            if len(raw.split()) >= 10 and int(float(raw.split()[0])) == 1]
+
+
+def _collapsible(t) -> bool:
+    """An angle-integrated (or total-capture) line over a range of angles:
+    AZURE2 calculates the same number once per angle (⁷Be: 0-180° in steps of
+    1°, 181 identical copies of every energy)."""
+    return (int(float(t[9])) in (0, 4) and float(t[8]) > 0
+            and float(t[7]) > float(t[6]))
+
+
+def extrap_needs_model(azr_path, captures, split) -> bool:
+    """Should the extrapolations be calculated by :func:`extrap_model` rather
+    than by the evaluation's own file: a total capture to split, or an
+    angle-integrated line to collapse to one angle."""
+    try:
+        with open(azr_path) as f:
+            tests = _active_tests(f.read())
+    except OSError:
+        return False
+    if not tests:
+        return False
+    if any(_collapsible(t) for t in tests):
+        return True
+    return bool(split and len(captures) > 1 and any(
+        int(float(t[9])) == 4 and int(float(t[2])) == -1 for t in tests))
 
 
 def extrap_model(azr_path, workdir, captures):
-    """The evaluation's own extrapolations as a model without component
-    segments: every active total-capture line becomes one angle-integrated
-    line per capture pair (summed back by the caller), and inactive lines,
-    which AZURE2 does not calculate, are dropped.
+    """The evaluation's own extrapolations as AZURE2 can calculate them
+    quickly and right, the numbers unchanged:
+
+    * an angle-integrated (or total-capture) line declared over a range of
+      angles is calculated at its first angle only (:func:`_collapsible`) --
+      the value does not depend on it;
+    * with ``captures`` (two or more capture pairs: the evaluation splits its
+      total capture), every active total-capture line becomes one
+      angle-integrated line per capture pair, summed back by the caller;
+    * inactive lines, which AZURE2 does not calculate, are dropped.
 
     Returns ``(path, slots)``: ``slots[j]`` lists the derived segments that
     make up the ``j``-th *active* extrapolation segment.
     """
     with open(azr_path) as f:
         text = f.read()
-    block = re.search(r"<segmentsTest>\n(.*?)</segmentsTest>", text, flags=re.S)
-    if block is None:
+    tests = _active_tests(text)
+    if tests is None:
         return None, []
     lines, slots = [], []
-    for raw in block.group(1).split("\n"):
-        t = raw.split()
-        if len(t) < 10 or int(float(t[0])) != 1:
-            continue
+    for t in tests:
+        t = list(t)
+        if _collapsible(t):
+            t[7], t[8] = t[6], "0"
         if int(float(t[9])) == 4 and int(float(t[2])) == -1 and len(captures) > 1:
             group = []
             for key in captures:
@@ -410,6 +694,37 @@ def split_data_model(azr_path, workdir, captures):
         body = re.sub(r'^(\s*\S+\s+)"([^"]*)"', relist, target.group(1), flags=re.M)
         text = text[:target.start(1)] + body + text[target.end(1):]
     return _write_model(text, workdir, "data.azr"), groups
+
+
+def join_pieces(pieces, axis, mu, sfactor, energies, angles):
+    """One calculation's curve from its pieces (:func:`derived_model`): each
+    piece summed over its slots, the pieces joined and sorted along ``axis``,
+    a point two pieces share kept once.  Returns ``(energies, mu, sfactor,
+    angles)`` as float arrays."""
+    import numpy as np
+    parts = ([], [], [], [])
+    for slots in pieces:
+        if max(slots) >= len(mu):
+            continue
+        e = np.asarray(energies[slots[0]], dtype=float)
+        a = np.asarray(angles[slots[0]], dtype=float)
+        m = sum_slots(mu, slots)
+        f = sum_slots(sfactor, slots)
+        n = min(len(e), len(a), len(m), len(f))
+        for out, values in zip(parts, (e, m, f, a)):
+            out.append(values[:n])
+    if not parts[0]:
+        empty = np.zeros(0)
+        return empty, empty, empty, empty
+    e, m, f, a = (np.concatenate(p) for p in parts)
+    x = a if axis == "angle" else e
+    order = np.argsort(x, kind="stable")
+    x = x[order]
+    keep = np.ones(len(x), dtype=bool)
+    if len(x) > 1:
+        keep[1:] = np.diff(x) > 1e-9 * np.maximum(np.abs(x[1:]), 1e-12)
+    order = order[keep]
+    return e[order], m[order], f[order], a[order]
 
 
 def sum_slots(arrays, slots):

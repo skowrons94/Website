@@ -32,7 +32,10 @@ CACHE_FILE = "precomputed.json"
 # 2: total capture over several capture pairs calculated with fresh external-
 #    capture integrals (app.fine.summed); the fine grid carries angles and
 #    axes; extrapolations come from their own model.
-REVISION = "2"
+# 3: the fine grid is one extended curve per distinct calculation (below and
+#    above the data, resonances resolved), shared by the segments measuring
+#    it; angle-integrated extrapolations are calculated at one angle.
+REVISION = "3"
 
 
 # -- engine output to and from JSON --------------------------------------------

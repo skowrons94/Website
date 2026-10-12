@@ -9,7 +9,9 @@ Flask's test client, so the browser and the server cannot drift apart.
 Two things differ from the server:
 
 * **No worker processes.**  A page cannot fork, so :class:`InProcessEngine`
-  holds the model in this interpreter.  The worker is single-threaded and the
+  holds the model in this interpreter -- its derived models too, which
+  AZURE2 does not keep apart: :func:`app.engine.evaluate` initializes a
+  model again when another was initialized after it.  The worker is single-threaded and the
   page sends one request at a time, so pyazr's per-call ``chdir`` is safe.
 * **Precomputed results.**  ``precompute.py`` runs every evaluation natively at
   build time and stores the data and extrapolation curves at the shipped
@@ -20,7 +22,8 @@ Two things differ from the server:
 """
 
 from app import session as session_module
-from app.engine import EngineError, _dispatch, fine_curves, model_info
+from app.engine import (PREPARE_STEPS, EngineError, _dispatch, fine_curves,
+                        fine_model, model_info, opened)
 from app.session import SessionManager
 
 # Results at the shipped parameters come from the server's own cache
@@ -35,7 +38,7 @@ class InProcessEngine:
     def __init__(self, azr_path, cwd, omp_threads=None, timeout=None):
         import pyazr
         try:
-            self._azr = pyazr.azure2(azr_path, cwd=cwd)
+            self._azr = opened(pyazr.azure2(azr_path, cwd=cwd))
         except Exception as err:
             raise EngineError(f"{type(err).__name__}: {err}") from err
         self.info = model_info(self._azr)
@@ -61,6 +64,17 @@ class InProcessEngine:
         except Exception as err:
             raise EngineError(f"{type(err).__name__}: {err}") from err
 
+    def prepare(self, step):
+        if step not in PREPARE_STEPS:
+            raise ValueError(f"unknown preparation step: {step}")
+        try:
+            if step == "fine":
+                fine_model(self._fine, self._azr_path, self._cwd)
+                return True
+            return _dispatch(self._azr, f"prepare_{step}", [])
+        except Exception as err:
+            raise EngineError(f"{type(err).__name__}: {err}") from err
+
     def fine_ready(self):
         return "model" in self._fine
 
@@ -70,7 +84,9 @@ class InProcessEngine:
     def close(self):
         if not self._closed:
             self._closed = True
-            for model in (self._azr, self._fine.get("model")):
+            for model in (self._azr, self._fine.get("model"),
+                          getattr(self._azr, "_extrap_state", {}).get("model"),
+                          getattr(self._azr, "_data_state", {}).get("model")):
                 try:
                     if model is not None:
                         model.close()

@@ -45,6 +45,12 @@ log = logging.getLogger(__name__)
 DEFAULT_TIMEOUT = 600.0
 
 
+# What a session builds in the background once it opens, in this order: the
+# models the first edit needs (data, then the plots' extended curves), then
+# the extrapolations'.
+PREPARE_STEPS = ("data", "fine", "extrap")
+
+
 class EngineError(RuntimeError):
     """Raised when the worker cannot be started, has died, or reported a failure."""
 
@@ -99,12 +105,20 @@ def model_info(azr) -> ModelInfo:
 
 # -- the worker ---------------------------------------------------------------
 
-def _worker(conn, azr_path, cwd, omp_threads):
-    """Own one ``pyazr.azure2`` and answer commands until the pipe closes.
+def _worker(conn, azr_path, cwd, omp_threads, role="data"):
+    """Own one model and answer commands until the pipe closes.
 
     Runs in a fresh interpreter (the ``spawn`` start method), so nothing of the
     server's threaded state is inherited -- which is the point: this process has
     its own working directory and its own copy of the engine.
+
+    ``role`` says which of a session's models: ``"data"`` (the evaluation's
+    own, plus its split data model), ``"fine"`` (the plots' extended grid) or
+    ``"extrap"``.  Each in a process of its own, because AZURE2 keeps state
+    across the models of one process: whichever was initialized last
+    calculates right, and the others -- the data model after the fine one was
+    built -- come out wrong (⁷Be's ³He(α,γ) by a factor of 25).  See
+    :func:`evaluate` for the one-process case (the in-browser build).
     """
     # Each session is a process, so left alone every one of them would claim all
     # the cores for its own OpenMP pool and they would fight.  Set before pyazr
@@ -112,10 +126,15 @@ def _worker(conn, azr_path, cwd, omp_threads):
     if omp_threads:
         os.environ["OMP_NUM_THREADS"] = str(omp_threads)
 
+    azr = None
     try:
         import pyazr
-        azr = pyazr.azure2(azr_path, cwd=cwd)
-        conn.send(("ready", model_info(azr)))
+        if role == "data":
+            azr = pyazr.azure2(azr_path, cwd=cwd)
+            opened(azr)
+            conn.send(("ready", model_info(azr)))
+        else:
+            conn.send(("ready", None))
     except BaseException as err:            # the model may simply not open
         try:
             conn.send(("error", f"{type(err).__name__}: {err}"))
@@ -123,7 +142,7 @@ def _worker(conn, azr_path, cwd, omp_threads):
             pass
         return
 
-    fine = {}
+    state = {}
     while True:
         try:
             command, payload = conn.recv()
@@ -136,23 +155,105 @@ def _worker(conn, azr_path, cwd, omp_threads):
             break
 
         try:
-            if command == "fine":
-                result = fine_curves(fine, azr_path, cwd, payload)
-            elif command == "fine_ready":
-                result = "model" in fine
+            if role == "fine":
+                if command == "fine":
+                    result = fine_curves(state, azr_path, cwd, payload)
+                elif command == "fine_ready":
+                    result = "model" in state
+                elif command == "prepare_fine":
+                    fine_model(state, azr_path, cwd)
+                    result = True
+                else:
+                    raise ValueError(f"unknown command: {command}")
+            elif role == "extrap":
+                if command == "extrap":
+                    result = extrap_curves(state, azr_path, cwd, payload)
+                elif command == "prepare_extrap":
+                    extrap_model(state, azr_path, cwd)
+                    result = True
+                else:
+                    raise ValueError(f"unknown command: {command}")
             else:
                 result = _dispatch(azr, command, payload)
             conn.send(("ok", result))
         except BaseException as err:
             conn.send(("error", f"{type(err).__name__}: {err}"))
 
-    for model in (azr, fine.get("model"), getattr(azr, "_extrap_state", {}).get("model"),
+    for model in (azr, state.get("model"), getattr(azr, "_extrap_state", {}).get("model"),
                   getattr(azr, "_data_state", {}).get("model")):
         try:
             if model is not None:
                 model.close()
         except Exception:
             pass
+
+
+# The model AZURE2 last initialized in this process (a weak reference).
+_CURRENT = None
+
+
+def opened(model):
+    """Note that ``model`` was just built (so initialized): the one AZURE2
+    now calculates right in this process (see :func:`evaluate`)."""
+    global _CURRENT
+    import weakref
+    _CURRENT = weakref.ref(model)
+    return model
+
+
+def _open(path, cwd, data_mode=True):
+    import pyazr
+    return opened(pyazr.azure2(path, cwd=cwd, data_mode=data_mode))
+
+
+def evaluate(model, params, grid=True):
+    """One AZURE2 calculation, and everything read from it.
+
+    pyazr's ``calculate``, ``calculate_sfactor``, ``calculate_energies`` and
+    ``calculate_angles`` each run ``update_segments`` -- a whole calculation
+    -- before reading their one result, so asking for all four did the work
+    four times.  This runs it once and reads every result.
+
+    Returns ``(mu, mu_sfactor, energies, angles)``, one array per segment
+    (``energies`` and ``angles`` are ``None`` without ``grid``).
+    """
+    # Several models in one process (the in-browser build): AZURE2 keeps
+    # state across them, and only the one initialized last calculates right.
+    # Initialize this one again if another came after it (seconds, with its
+    # integrals stored); the server keeps each model in a process of its own
+    # (_worker), so there this never happens.
+    current = _CURRENT() if _CURRENT is not None else None
+    if current is not None and current is not model:
+        if model.mode == "extrap":
+            model.extrap_mode()
+        else:
+            model.data_mode()
+    opened(model)
+    s = model.sess
+    params = np.asarray(params, dtype=np.float64)
+    n = int(s.update_segments(params))
+    mu = [np.asarray(s.calculated_segments(i), dtype=float) for i in range(n)]
+    sfactor = [mu[i] * np.asarray(s.calculated_conv(i), dtype=float) for i in range(n)]
+    if not grid:
+        return mu, sfactor, None, None
+    energies = [np.asarray(s.calculated_energies(i), dtype=float) for i in range(n)]
+    angles = [np.asarray(s.calculated_angles(i), dtype=float) for i in range(n)]
+    return mu, sfactor, energies, angles
+
+
+def data_model(state, azr_path, cwd):
+    """Build (once, kept in ``state``) the split data model of
+    :func:`app.fine.split_data_model`."""
+    from app import fine
+
+    if "model" not in state:
+        captures = fine.capture_keys(azr_path)
+        workdir = fine.workdir_for(cwd, "datamodel")
+        with fine.building(workdir):
+            path, groups = fine.split_data_model(azr_path, workdir, captures)
+            model = _open(path, cwd) if path else None
+        state["model"], state["groups"] = model, groups
+    return state
 
 
 def data_curves(state, azr_path, cwd, params):
@@ -163,24 +264,16 @@ def data_curves(state, azr_path, cwd, params):
     Returns ``None`` when the model cannot be split, and the caller falls
     back on a fresh initialization of its own model (:func:`_fresh_data`).
     """
-    import pyazr
     from app import fine
 
-    if "model" not in state:
-        captures = fine.capture_keys(azr_path)
-        workdir = fine.workdir_for(cwd, "datamodel")
-        with fine.building(workdir):
-            path, groups = fine.split_data_model(azr_path, workdir, captures)
-            model = pyazr.azure2(path, cwd=cwd) if path else None
-        state["model"], state["groups"] = model, groups
+    data_model(state, azr_path, cwd)
     model, groups = state["model"], state["groups"]
     if model is None:
         return None
     params = np.asarray(params, dtype=np.float64)
     if len(params) != len(model.params):
         return None
-    mu = model.calculate(params)
-    sfactor = model.calculate_sfactor(params)
+    mu, sfactor, _, _ = evaluate(model, params, grid=False)
     return ([fine.sum_slots(mu, g) for g in groups],
             [fine.sum_slots(sfactor, g) for g in groups])
 
@@ -223,20 +316,18 @@ def _fresh_data(azr):
         except OSError:
             pass
     azr.data_mode()
+    opened(azr)
     azr._fresh_ec = True
 
 
-def fine_curves(state, azr_path, cwd, params):
-    """The model on a fine grid per data segment (see :mod:`app.fine`).
+def fine_model(state, azr_path, cwd):
+    """Build (once, kept in ``state``) the derived model of :mod:`app.fine`.
 
-    ``state`` keeps the derived model between calls: building it runs AZURE2's
-    INITIALIZE, external-capture integrals included, which is slow the first
-    time and is then reused for every later parameter vector.  Returns
-    ``(index, energies, mu, mu_sfactor, angles, axes)``: ``index[i]`` is data
-    segment ``i``'s slot in the other lists, or ``None``; ``axes[j]`` says
-    whether slot ``j`` runs along the energy or the (c.m.) angle.
+    Building runs AZURE2's INITIALIZE, external-capture integrals included,
+    which is slow the first time and is then reused for every later
+    parameter vector -- which is why a session prepares it in the background
+    (``POST /api/sessions/<id>/prepare``) before the first edit needs it.
     """
-    import pyazr
     from pyazr.datasets import SegmentSet
     from app import fine
 
@@ -244,72 +335,118 @@ def fine_curves(state, azr_path, cwd, params):
         segments = SegmentSet.from_file(azr_path)
         workdir = fine.workdir_for(cwd)
         with fine.building(workdir):
-            path, index = fine.derived_model(azr_path, cwd, segments, workdir)
-            model = (pyazr.azure2(path, cwd=cwd, data_mode=False)
-                     if path else None)
-        state["index"] = index
-        state["model"] = model
-    model = state["model"]
-    planned = state["index"]
-    index = [None] * len(planned)
+            path, calcs, index = fine.derived_model(azr_path, cwd, segments, workdir)
+            model = _settled(path, cwd) if path else None
+        state["index"], state["calcs"], state["model"] = index, calcs, model
+    return state
+
+
+def _settled(path, cwd, attempts=3):
+    """The model at ``path`` in extrapolation mode, built until AZURE2 reads
+    its stored external-capture integrals back rather than writing them.
+
+    A total capture over several capture pairs calculated as AZURE2 does it
+    as shipped (an evaluation without ``split_total_capture``, ¹⁴N) gives
+    three different answers on three builds: right when the integrals are
+    first calculated, garbage on the next (the count check fails and they are
+    recalculated), then -- read back from the file -- the same numbers as the
+    data model, which is what the published fit shows and what the curve
+    must reproduce.  So a build that wrote the file is done again; a build
+    that only read it (every one after the first) is kept.
+    """
+
+    stored = os.path.join(os.path.dirname(path), "output", "intEC.extrap")
+
+    def stamp():
+        try:
+            st = os.stat(stored)
+            return (st.st_mtime_ns, st.st_size)
+        except OSError:
+            return None
+
+    for attempt in range(attempts):
+        before = stamp()
+        model = _open(path, cwd, data_mode=False)
+        if stamp() == before or attempt == attempts - 1:
+            return model
+        model.close()
+
+
+def fine_curves(state, azr_path, cwd, params):
+    """The model on its extended grid, per distinct calculation (see
+    :mod:`app.fine`), in one AZURE2 calculation.
+
+    Returns ``(index, energies, mu, mu_sfactor, angles, axes)``: ``index[i]``
+    is data segment ``i``'s curve in the other lists (shared by every segment
+    measuring the same curve), or ``None``; ``axes[j]`` says whether curve
+    ``j`` runs along the energy or the (c.m.) angle.  Each curve is sorted
+    along its axis.
+    """
+    from app import fine
+
+    fine_model(state, azr_path, cwd)
+    model, calcs, planned = state["model"], state["calcs"], state["index"]
     if model is None:
-        return index, [], [], [], [], []
-    params = np.asarray(params, dtype=np.float64)
-    energies = model.calculate_energies(params)
-    angles = model.calculate_angles(params)
-    mu = model.calculate(params)
-    sfactor = model.calculate_sfactor(params)
+        return [None] * len(planned), [], [], [], [], []
+    mu, sfactor, energies, angles = evaluate(model, params)
     out = ([], [], [], [], [])
-    for i, item in enumerate(planned):
-        if not item:
+    number = {}
+    for j, calc in enumerate(calcs):
+        e, m, f, a = fine.join_pieces(calc["pieces"], calc["axis"],
+                                      mu, sfactor, energies, angles)
+        if len(e) == 0:
             continue
-        slots = item["slots"]
-        if max(slots) >= len(mu):
-            continue
-        index[i] = len(out[0])
-        first = slots[0]
-        out[0].append(np.asarray(energies[first], dtype=float))
-        out[1].append(fine.sum_slots(mu, slots))
-        out[2].append(fine.sum_slots(sfactor, slots))
-        out[3].append(np.asarray(angles[first], dtype=float))
-        out[4].append(item["axis"])
+        number[j] = len(out[0])
+        for target, value in zip(out, (e, m, f, a, calc["axis"])):
+            target.append(value)
+    index = [None if j is None else number.get(j) for j in planned]
     return (index,) + out
 
 
-def extrap_curves(state, azr_path, cwd, params):
-    """The evaluation's extrapolations: ``(energies, angles, mu, mu_sfactor)``
-    per *active* ``<segmentsTest>`` line, in file order.
+EXTRAP_DIR = "extrapolations"
 
-    Calculated by a second model in extrapolation mode, so the data model is
-    never re-initialized (a summed-capture model could not be, safely).  When
-    the extrapolations include a total capture over several capture pairs,
-    that model is a derived copy with one line per pair (summed here), whose
-    integrals live in ``extrap/`` next to the evaluation and are reused safely.
-    """
-    import pyazr
+
+def extrap_model(state, azr_path, cwd):
+    """Build (once, kept in ``state``) the model the extrapolations are
+    calculated by: the evaluation's own file in extrapolation mode, or the
+    derived copy of :func:`app.fine.extrap_model` when it has a total capture
+    to split or an angle-integrated line to collapse.  Its integrals then live
+    in ``extrapolations/`` next to the evaluation."""
     from pyazr.datasets import TestSegmentSet
     from app import fine
 
     if "model" not in state:
         captures = fine.capture_keys(azr_path)
         tests = TestSegmentSet.from_file(azr_path)
+        split = fine.split_enabled(cwd) and fine.summed(tests, captures)
+        captures = captures if split else []
         slots = None
-        if fine.split_enabled(cwd) and fine.summed(tests, captures):
-            workdir = fine.workdir_for(cwd, "extrap")
+        if fine.extrap_needs_model(azr_path, captures, split):
+            workdir = fine.workdir_for(cwd, EXTRAP_DIR)
             with fine.building(workdir):
                 path, slots = fine.extrap_model(azr_path, workdir, captures)
-                model = pyazr.azure2(path, cwd=cwd, data_mode=False) if path else None
+                model = _open(path, cwd, data_mode=False) if path else None
         else:
-            model = pyazr.azure2(azr_path, cwd=cwd, data_mode=False)
+            model = _open(azr_path, cwd, data_mode=False)
         state["model"], state["slots"] = model, slots
+    return state
+
+
+def extrap_curves(state, azr_path, cwd, params):
+    """The evaluation's extrapolations: ``(energies, angles, mu, mu_sfactor)``
+    per *active* ``<segmentsTest>`` line, in file order.
+
+    Calculated by a second model in extrapolation mode (:func:`extrap_model`),
+    so the data model is never re-initialized (a summed-capture model could
+    not be, safely).
+    """
+    from app import fine
+
+    extrap_model(state, azr_path, cwd)
     model, slots = state["model"], state["slots"]
     if model is None:
         return [], [], [], []
-    params = np.asarray(params, dtype=np.float64)
-    energies = model.calculate_energies(params)
-    angles = model.calculate_angles(params)
-    mu = model.calculate(params)
-    sfactor = model.calculate_sfactor(params)
+    mu, sfactor, energies, angles = evaluate(model, params)
     if slots is None:
         return energies, angles, mu, sfactor
     out = ([], [], [], [])
@@ -321,6 +458,15 @@ def extrap_curves(state, azr_path, cwd, params):
         out[2].append(fine.sum_slots(mu, group))
         out[3].append(fine.sum_slots(sfactor, group))
     return out
+
+
+def _state(azr, name):
+    """A derived model's state, kept on the data model it belongs to."""
+    state = getattr(azr, name, None)
+    if state is None:
+        state = {}
+        setattr(azr, name, state)
+    return state
 
 
 def _dispatch(azr, command, params):
@@ -345,38 +491,39 @@ def _dispatch(azr, command, params):
         if _needs_split(azr):
             # A total capture over several capture pairs: AZURE2's own
             # calculation of it is unreliable (app.fine.summed).
-            state = getattr(azr, "_data_state", None)
-            if state is None:
-                state = {}
-                azr._data_state = state
+            state = _state(azr, "_data_state")
             result = data_curves(state, azr.file, azr.cwd, params)
             if result is not None:
                 return result
             _fresh_data(azr)
-        return (azr.calculate(params), azr.calculate_sfactor(params))
+        mu, sfactor, _, _ = evaluate(azr, params, grid=False)
+        return mu, sfactor
 
     if command == "extrap":
-        state = getattr(azr, "_extrap_state", None)
-        if state is None:
-            state = {}
-            azr._extrap_state = state
-        return extrap_curves(state, azr.file, azr.cwd, params)
+        return extrap_curves(_state(azr, "_extrap_state"), azr.file, azr.cwd, params)
+
+    if command == "prepare_data":
+        # The split data model, where the data need one (data_curves), and
+        # one calculation: AZURE2's first is the slow one (²⁴Mg: 2.5 s, then
+        # 0.4 s), and at the shipped parameters the page never asked for it.
+        _dispatch(azr, "data", azr.params)
+        return True
+
+    if command == "prepare_extrap":
+        extrap_model(_state(azr, "_extrap_state"), azr.file, azr.cwd)
+        return True
 
     raise ValueError(f"unknown command: {command}")
 
 
 # -- the server-side handle ---------------------------------------------------
 
-class Engine:
-    """A worker process holding one open model.
+class _Process:
+    """One worker process (:func:`_worker`) and the pipe to it."""
 
-    Not thread-safe by itself: the pipe carries one request at a time, so a
-    caller must serialize its use.  :class:`app.session.Session` does that with
-    its own lock, which is also what makes eviction safe.
-    """
-
-    def __init__(self, azr_path, cwd, omp_threads=None, timeout=DEFAULT_TIMEOUT):
+    def __init__(self, azr_path, cwd, omp_threads, timeout, role):
         self.timeout = timeout
+        self.role = role
         # `spawn`, not `fork`: this server is multi-threaded, and forking a
         # threaded process copies locks that no thread in the child will ever
         # release.  A fresh interpreter costs a second at open and cannot
@@ -384,8 +531,8 @@ class Engine:
         context = multiprocessing.get_context("spawn")
         self._conn, child_conn = context.Pipe()
         self._process = context.Process(
-            target=_worker, args=(child_conn, azr_path, cwd, omp_threads),
-            name=f"azure2-{os.path.basename(cwd)}", daemon=True)
+            target=_worker, args=(child_conn, azr_path, cwd, omp_threads, role),
+            name=f"azure2-{os.path.basename(cwd)}-{role}", daemon=True)
         self._process.start()
         # The parent must drop its copy of the child's end, or the pipe never
         # reports EOF when the child dies and every read waits for the timeout.
@@ -395,28 +542,9 @@ class Engine:
         if status != "ready":
             self.close()
             raise EngineError(payload)
-        self.info: ModelInfo = payload
+        self.ready = payload
 
-    # -- calls ----------------------------------------------------------------
-
-    def calculate_data(self, params):
-        """Cross sections and S-factors on the data segments: ``(mu, mu_sfactor)``."""
-        return self._call("data", params)
-
-    def calculate_extrapolations(self, params):
-        """``(energies, angles, mu, mu_sfactor)`` on the extrapolation grids."""
-        return self._call("extrap", params)
-
-    def calculate_fine(self, params):
-        """``(index, energies, mu, mu_sfactor, angles, axes)``: the model on a
-        fine grid per data segment (:func:`fine_curves`)."""
-        return self._call("fine", params)
-
-    def fine_ready(self) -> bool:
-        """Has the fine-grid model been built (so a calculation is cheap)?"""
-        return bool(self._call("fine_ready", []))
-
-    def _call(self, command, params):
+    def call(self, command, params):
         if not self.is_alive():
             raise EngineError("the AZURE2 worker for this session has exited")
         try:
@@ -447,8 +575,6 @@ class Engine:
         except OSError as err:
             self.close()
             raise EngineError(f"lost the AZURE2 worker while {what}: {err}") from err
-
-    # -- lifecycle ------------------------------------------------------------
 
     def is_alive(self) -> bool:
         return self._process is not None and self._process.is_alive()
@@ -481,3 +607,78 @@ class Engine:
     @property
     def pid(self) -> Optional[int]:
         return self._process.pid if self._process is not None else None
+
+
+class Engine:
+    """The worker processes holding one session's models.
+
+    The evaluation's own model (and its split data model) lives in one
+    process, started here; the plots' extended grid and the extrapolations
+    each get a process of their own the first time they are asked for --
+    AZURE2 does not keep two models of one process apart (see
+    :func:`_worker`).
+
+    Not thread-safe by itself: a pipe carries one request at a time, so a
+    caller must serialize its use.  :class:`app.session.Session` does that with
+    its own lock, which is also what makes eviction safe.
+    """
+
+    def __init__(self, azr_path, cwd, omp_threads=None, timeout=DEFAULT_TIMEOUT):
+        self.timeout = timeout
+        self._args = (azr_path, cwd, omp_threads, timeout)
+        self._main = _Process(azr_path, cwd, omp_threads, timeout, "data")
+        self._roles = {}
+        self.info: ModelInfo = self._main.ready
+
+    def _role(self, role):
+        if not self.is_alive():
+            raise EngineError("the AZURE2 worker for this session has exited")
+        worker = self._roles.get(role)
+        if worker is None or not worker.is_alive():
+            worker = _Process(*self._args, role)
+            self._roles[role] = worker
+        return worker
+
+    # -- calls ----------------------------------------------------------------
+
+    def calculate_data(self, params):
+        """Cross sections and S-factors on the data segments: ``(mu, mu_sfactor)``."""
+        return self._main.call("data", params)
+
+    def calculate_extrapolations(self, params):
+        """``(energies, angles, mu, mu_sfactor)`` on the extrapolation grids."""
+        return self._role("extrap").call("extrap", params)
+
+    def calculate_fine(self, params):
+        """``(index, energies, mu, mu_sfactor, angles, axes)``: the model on its
+        extended grid per distinct calculation (:func:`fine_curves`)."""
+        return self._role("fine").call("fine", params)
+
+    def prepare(self, step):
+        """Build one derived model ahead of need: ``"data"`` (a split data
+        model), ``"fine"`` or ``"extrap"``.  Calculates nothing that is kept."""
+        if step not in PREPARE_STEPS:
+            raise ValueError(f"unknown preparation step: {step}")
+        worker = self._main if step == "data" else self._role(step)
+        return worker.call(f"prepare_{step}", [])
+
+    def fine_ready(self) -> bool:
+        """Has the fine-grid model been built (so a calculation is cheap)?"""
+        worker = self._roles.get("fine")
+        if worker is None or not worker.is_alive():
+            return False
+        return bool(worker.call("fine_ready", []))
+
+    # -- lifecycle ------------------------------------------------------------
+
+    def is_alive(self) -> bool:
+        return self._main.is_alive()
+
+    def close(self):
+        """Stop every worker of the session."""
+        for worker in [self._main, *self._roles.values()]:
+            worker.close()
+
+    @property
+    def pid(self) -> Optional[int]:
+        return self._main.pid
