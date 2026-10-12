@@ -52,7 +52,7 @@ function Timeline({ entries }: { entries: TimelineEntry[] }) {
         // may run on to the next page rather than leave this one half empty.
         <li
           key={i}
-          className={`${entry.bullets ? "" : "break-inside-avoid"} sm:grid sm:grid-cols-[10.5rem_1fr] sm:gap-6 print:grid-cols-[7.5rem_1fr] print:gap-4`}
+          className={`${entry.bullets ? "" : "break-inside-avoid"} sm:grid sm:grid-cols-[10.5rem_minmax(0,1fr)] [overflow-wrap:anywhere] sm:gap-6 print:grid-cols-[7.5rem_1fr] print:gap-4`}
         >
           <p className="text-sm text-muted-foreground sm:pt-0.5">
             {keepDates(entry.period)}
@@ -89,7 +89,7 @@ function Talks({ entries }: { entries: TalkEntry[] }) {
   return (
     <ol className="space-y-6 print:space-y-[0.8rem]">
       {entries.map((entry, i) => (
-        <li key={i} className="break-inside-avoid sm:grid sm:grid-cols-[10.5rem_1fr] sm:gap-6 print:grid-cols-[7.5rem_1fr] print:gap-4">
+        <li key={i} className="break-inside-avoid sm:grid sm:grid-cols-[10.5rem_minmax(0,1fr)] [overflow-wrap:anywhere] sm:gap-6 print:grid-cols-[7.5rem_1fr] print:gap-4">
           <p className="text-sm text-muted-foreground sm:pt-0.5">{keepDates(entry.date)}</p>
           <div className="mt-1 sm:mt-0">
             <h3 className="text-pretty font-serif text-[1.05rem] font-semibold tracking-tight">
@@ -199,7 +199,7 @@ export function CVPage({ lang }: { lang: Lang }) {
         <Section id="skills" title={t.skills}>
           <dl className="space-y-5 print:space-y-[0.7rem]">
             {cv.skills.map((skill) => (
-              <div key={skill.label} className="break-inside-avoid sm:grid sm:grid-cols-[10.5rem_1fr] sm:gap-6 print:grid-cols-[7.5rem_1fr] print:gap-4">
+              <div key={skill.label} className="break-inside-avoid sm:grid sm:grid-cols-[10.5rem_minmax(0,1fr)] [overflow-wrap:anywhere] sm:gap-6 print:grid-cols-[7.5rem_1fr] print:gap-4">
                 <dt className="text-sm text-muted-foreground">{skill.label}</dt>
                 <dd className="mt-1 max-w-[68ch] text-pretty text-[0.95rem] leading-relaxed sm:mt-0">
                   <Sci>{skill.items}</Sci>

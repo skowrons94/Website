@@ -646,7 +646,7 @@ function BodyEn({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
           <P>
             Radioactive branch points can now be measured directly, on samples made in reactors. {r("171Tm-ng-172Tm")},
             on thulium that lives two years, was measured at n_TOF and at SARAF; it captures 2.6 times less readily
-            than the data libraries said {c("guerrero2020")}. {r("204Tl-ng-205Tl")}, on nine milligrams of thallium
+            than the general-purpose libraries JEFF-3.3 and ENDF/B-VIII said {c("guerrero2020")}. {r("204Tl-ng-205Tl")}, on nine milligrams of thallium
             that lives almost four years, decides how much of the s-only <Sci>²⁰⁴Pb</Sci> is made, and was measured
             for the first time in 2024 {c("casanovashoste2024")}. <Sci>⁹³Zr</Sci> lives 1.6 million years: in the star
             it captures like a stable nucleus, and what is left of it decays later to niobium; {r("93Zr-ng-94Zr")} has
@@ -929,7 +929,8 @@ function BodyIt({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
           <P>
             Oggi i punti di diramazione radioattivi si possono misurare direttamente, su campioni prodotti nei
             reattori. La {r("171Tm-ng-172Tm")}, sul tulio che vive due anni, è stata misurata a n_TOF e a SARAF: il
-            tulio-171 cattura 2,6 volte meno facilmente di quanto dicevano le librerie di dati {c("guerrero2020")}.
+            tulio-171 cattura 2,6 volte meno facilmente di quanto dicevano le librerie generali JEFF-3.3 ed
+            ENDF/B-VIII {c("guerrero2020")}.
             La {r("204Tl-ng-205Tl")}, su nove milligrammi di tallio che vive quasi quattro anni, decide quanto
             piombo-204, prodotto solo dal processo s, si forma, ed è stata misurata per la prima volta nel 2024{" "}
             {c("casanovashoste2024")}. Il <Sci>⁹³Zr</Sci> vive 1,6 milioni di anni: nella stella cattura come un nucleo

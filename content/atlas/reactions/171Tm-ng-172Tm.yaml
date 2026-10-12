@@ -12,11 +12,13 @@ keywords_it: [tulio-171, Tm-171, punto di diramazione, itterbio-171, SARAF]
 summary: >-
   Radioactive thulium-171 captures a neutron. Measured for the first time in
   2020, both by time of flight and by activation, it turned out to capture
-  far less readily than the libraries said.
+  2.6 times less readily than the general-purpose libraries JEFF-3.3 and
+  ENDF/B-VIII said.
 summary_it: >-
   Il tulio-171 radioattivo cattura un neutrone. Misurata per la prima volta
   nel 2020, sia a tempo di volo sia per attivazione, la cattura è risultata
-  molto meno facile di quanto dicevano le librerie di dati.
+  2,6 volte meno facile di quanto dicevano le librerie generali JEFF-3.3 ed
+  ENDF/B-VIII.
 role: >-
   Thulium-171 lives about two years in the laboratory. In an AGB star it
   either decays into ytterbium-171 or captures a neutron and moves on to

@@ -49,7 +49,8 @@ export function DistributionChart({
   yLabel: string
   shellLabel: (n: number) => string
   sOnlyLabel: string
-  baseLabel: string
+  /** The hollow "unchanged" key; null hides it (nothing changed, so no hollow dots). */
+  baseLabel: string | null
   changedLabel: string
   belowLabel: string
 }) {
@@ -211,12 +212,14 @@ export function DistributionChart({
         )}
       </svg>
       <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 px-1 text-xs text-muted-foreground">
-        <span className="inline-flex items-center gap-1.5">
-          <svg width="10" height="10" aria-hidden>
-            <circle cx="5" cy="5" r="3.5" fill="none" stroke="var(--viz-axis)" strokeWidth="1.25" />
-          </svg>
-          {baseLabel}
-        </span>
+        {baseLabel && (
+          <span className="inline-flex items-center gap-1.5">
+            <svg width="10" height="10" aria-hidden>
+              <circle cx="5" cy="5" r="3.5" fill="none" stroke="var(--viz-axis)" strokeWidth="1.25" />
+            </svg>
+            {baseLabel}
+          </span>
+        )}
         <span className="inline-flex items-center gap-1.5">
           <svg width="10" height="10" aria-hidden>
             <circle cx="5" cy="5" r="3.5" fill="var(--viz-series-1)" />

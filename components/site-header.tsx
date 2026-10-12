@@ -73,11 +73,21 @@ function useHeaderSpace(header: React.RefObject<HTMLElement | null>, menuOpen: b
     const el = header.current
     if (!el) return
     const root = document.documentElement
+    // Writing a custom property on <html> restyles the whole document, so it
+    // is written only when the value actually changes.
     const update = () => {
       const sticky = getComputedStyle(el).position === "sticky"
       const h = sticky && !hiddenRef.current ? Math.round(el.getBoundingClientRect().height) : 0
-      root.style.setProperty("--header-h", `${h}px`)
-      root.toggleAttribute("data-header-hidden", hiddenRef.current)
+      const value = `${h}px`
+      // Before the first write the stylesheet's default applies (globals.css):
+      // 4rem plus the border, or 0 on a short window.
+      const fallback = window.matchMedia("(max-height: 30em)").matches
+        ? "0px"
+        : `${Math.round(4 * parseFloat(getComputedStyle(root).fontSize) + 1)}px`
+      const current = root.style.getPropertyValue("--header-h") || fallback
+      if (current !== value) root.style.setProperty("--header-h", value)
+      if (root.hasAttribute("data-header-hidden") !== hiddenRef.current)
+        root.toggleAttribute("data-header-hidden", hiddenRef.current)
     }
     update()
     const ro = new ResizeObserver(update)

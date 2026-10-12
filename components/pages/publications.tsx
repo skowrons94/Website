@@ -18,7 +18,37 @@ const isUnderReview = (p: Publication) => Boolean(p.status) && !p.journal
 /** A LUNA collaboration paper: tagged by hand in publications.yaml. */
 const isLuna = (p: Publication) => Boolean(p.tags?.includes("luna"))
 
+/** "Phys. Rev. C 111, 035802" → "Phys. Rev. C"; "J. Phys. G, Nucl. Part. Phys. 50, …" → "J. Phys. G". */
+const venueOf = (journal: string) => journal.split(",")[0].replace(/\s+L?\d.*$/, "").trim()
+
+/**
+ * The first-author record in one line, counted from publications.yaml:
+ * articles (with their journals), proceedings, and submitted papers.
+ */
+function firstAuthorLine(all: Publication[], lang: Lang): string {
+  const t = dict(lang).publications
+  const mine = all.filter(isFirstAuthor)
+  const out = mine.filter((p) => !isUnderReview(p))
+  const articles = out.filter((p) => p.kind === "article")
+  const venues = new Map<string, number>()
+  for (const p of articles) {
+    const v = p.journal ? venueOf(p.journal) : ""
+    if (v) venues.set(v, (venues.get(v) ?? 0) + 1)
+  }
+  const venueText = [...venues]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .map(([v, n]) => (n > 1 ? `${n} × ${v}` : v))
+    .join(", ")
+  return t.firstAuthorSummary(
+    articles.length,
+    venueText,
+    out.filter((p) => p.kind === "proceedings").length,
+    mine.filter(isUnderReview).length,
+  )
+}
+
 function Entry({ publication, lang }: { publication: Publication; lang: Lang }) {
+  const first = isFirstAuthor(publication)
   const link = publication.doi
     ? `https://doi.org/${publication.doi}`
     : publication.arxiv
@@ -28,11 +58,17 @@ function Entry({ publication, lang }: { publication: Publication; lang: Lang }) 
   return (
     <li
       data-pub=""
-      data-first={isFirstAuthor(publication) ? "true" : "false"}
+      data-first={first ? "true" : "false"}
       data-luna={isLuna(publication) ? "true" : "false"}
       data-year={publication.year}
+      // Two tiers: a dark rule for a first-author paper, a light one for the
+      // other key papers (lib/content.ts, isKeyPaper).
       className={`py-5 ${
-        publication.highlight ? "border-l-2 border-foreground/25 pl-5" : "pl-[calc(1.25rem+2px)]"
+        first
+          ? "border-l-2 border-foreground/80 pl-5"
+          : publication.highlight
+            ? "border-l-2 border-foreground/25 pl-5"
+            : "pl-[calc(1.25rem+2px)]"
       }`}
     >
       <p className="text-sm text-muted-foreground">
@@ -75,6 +111,12 @@ function Entry({ publication, lang }: { publication: Publication; lang: Lang }) 
           </span>
         )}
         <span className="tabular"> ({publication.year})</span>
+        {first && (
+          <>
+            {" · "}
+            <span className="text-foreground/80">{dict(lang).publications.firstAuthorTag}</span>
+          </>
+        )}
         {publication.doi && (
           <>
             {" · "}
@@ -147,6 +189,9 @@ export function PublicationsPage({ lang }: { lang: Lang }) {
   return (
     <Container wide>
       <PageHeader title={t.title} lead={t.lead(count("article"), count("proceedings"), review.length)} />
+      <p data-first-summary="" className="-mt-6 mb-8 max-w-3xl border-l-2 border-foreground/80 pl-4 text-pretty text-[0.95rem]">
+        <Sci>{firstAuthorLine(all, lang)}</Sci>
+      </p>
 
       {profiles.length > 0 && (
         <p className="-mt-4 mb-10 flex flex-wrap items-center gap-x-1 text-sm text-muted-foreground">
