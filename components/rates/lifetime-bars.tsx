@@ -119,14 +119,14 @@ export function LifetimeBars({
                 {fin ? (
                   <>
                     <span
-                      className="relative h-3.5 rounded-r-[4px]"
+                      className="relative h-3.5 shrink-0 rounded-r-[4px]"
                       style={{
                         width: `${frac(r.tau) * 100}%`,
                         background: r.bottleneck ? "var(--viz-series-2)" : "var(--viz-series-1)",
                       }}
                     />
                     <span
-                      className={`tabular relative ml-2 whitespace-nowrap text-xs ${r.bottleneck ? "font-semibold text-foreground" : "text-muted-foreground"}`}
+                      className={`tabular relative ml-2 min-w-0 text-xs leading-tight ${r.bottleneck ? "font-semibold text-foreground" : "text-muted-foreground"}`}
                     >
                       {duration(r.tau, lang)}
                       {r.bottleneck && ` · ${bottleneckWord}`}

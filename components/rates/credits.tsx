@@ -1,3 +1,4 @@
+import { Sci } from "@/components/sci"
 import type { Lang } from "@/lib/locale"
 
 /**
@@ -12,6 +13,10 @@ export interface RatesRef {
   doi?: string
   url?: string
 }
+
+/** The references of each rates page. */
+export const LIGHT_REFS = ["cyburt2010", "smith2023", "willcox2018", "lodders2021", "bahcall2001", "woosley2002", "karakas2014", "jose1998", "iliadis2002", "wallace1982", "shampine1997"]
+export const SPROCESS_REFS = ["cyburt2010", "smith2023", "willcox2018", "lodders2021", "kaeppeler2011", "straniero2006", "karakas2014", "mohr2016", "woosley2002", "wallace1982", "shampine1997"]
 
 export const RATES_REFS: RatesRef[] = [
   {
@@ -60,6 +65,21 @@ export const RATES_REFS: RatesRef[] = [
     doi: "10.1086/341400",
   },
   {
+    key: "kaeppeler2011",
+    text: "F. Käppeler, R. Gallino, S. Bisterzo and W. Aoki, The s process: nuclear physics, stellar models, and observations, Rev. Mod. Phys. 83, 157 (2011)",
+    doi: "10.1103/RevModPhys.83.157",
+  },
+  {
+    key: "straniero2006",
+    text: "O. Straniero, R. Gallino and S. Cristallo, s process in low-mass asymptotic giant branch stars, Nucl. Phys. A 777, 311 (2006)",
+    doi: "10.1016/j.nuclphysa.2005.01.011",
+  },
+  {
+    key: "mohr2016",
+    text: "P. Mohr et al., Re-evaluation of the ¹⁶O(n,γ)¹⁷O cross section at astrophysical energies and its role as neutron poison in the s process, ApJ 827, 29 (2016)",
+    url: "https://arxiv.org/abs/1605.02639",
+  },
+  {
     key: "wallace1982",
     text: "R. K. Wallace, S. E. Woosley and T. A. Weaver, The thermonuclear model for X-ray transients, ApJ 258, 696 (1982) — the screening prescription (screen5)",
     doi: "10.1086/160119",
@@ -92,7 +112,7 @@ const TEXT = {
 
 export function RatesCredits({ lang, keys }: { lang: Lang; keys?: string[] }) {
   const t = TEXT[lang]
-  const refs = keys ? RATES_REFS.filter((r) => keys.includes(r.key)) : RATES_REFS
+  const refs = keys ? keys.map((k) => RATES_REFS.find((r) => r.key === k)!).filter(Boolean) : RATES_REFS
   return (
     <section
       id="credits"
@@ -132,7 +152,12 @@ export function RatesCredits({ lang, keys }: { lang: Lang; keys?: string[] }) {
           <li key={r.key} className="grid grid-cols-[1.75rem_minmax(0,1fr)]">
             <span className="tabular text-muted-foreground">{i + 1}.</span>
             <span>
-              {r.text}.{" "}
+              <Sci>{r.text}</Sci>.{" "}
+              {r.url && !r.doi && (
+                <a href={r.url} className="break-all text-link underline-offset-4 hover:underline" target="_blank" rel="noreferrer">
+                  {r.url.replace(/^https?:\/\//, "")}
+                </a>
+              )}
               {r.doi && (
                 <a
                   href={`https://doi.org/${r.doi}`}

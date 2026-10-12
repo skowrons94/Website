@@ -61,7 +61,7 @@ def integrate(mod, Y0, T, rho, tmax, until=None, rtol=1e-10, atol=1e-30, screeni
     return sol.t[-1], sol.y[:, -1], sol
 
 
-def reference_for(data: dict, rates, spec_id: str) -> dict:
+def reference_for(data: dict, rates, spec_id: str, rtol: float = 1e-10) -> dict:
     nucs = [n["name"] for n in data["nuclei"]]
     A = np.array([n["A"] for n in data["nuclei"]], dtype=float)
     # rates on a temperature grid, unscreened
@@ -74,6 +74,19 @@ def reference_for(data: dict, rates, spec_id: str) -> dict:
         net.write_network(str(path))
         mod = load_module(path, f"net_{spec_id}")
         runs = []
+        # pynucastro orders its nuclei its own way: map to the JSON's order
+        order = [nucs.index(n.raw) for n in net.unique_nuclei]
+        assert sorted(order) == list(range(len(nucs)))
+
+        def to_pyna(v):
+            return np.array([v[j] for j in order])
+
+        def from_pyna(v):
+            out = np.zeros(len(nucs))
+            for k, j in enumerate(order):
+                out[j] = v[k]
+            return out
+
         for s in data["scenarios"]:
             Y0 = np.array([s["X"][n] for n in nucs]) / A
             until = None
@@ -81,19 +94,33 @@ def reference_for(data: dict, rates, spec_id: str) -> dict:
                 i = nucs.index(s["until"]["nucleus"])
                 until = (i, Y0[i] * s["until"]["fraction"])
             t0 = time.time()
-            tf, Y, sol = integrate(mod, Y0, s["T9"] * 1e9, s["rho"], s["time_s"], until)
+            if until is not None:
+                until = (order.index(until[0]), until[1])
+            tf, Y, sol = integrate(mod, to_pyna(Y0), s["T9"] * 1e9, s["rho"], s["time_s"], until, rtol=rtol)
+            Y = from_pyna(Y)
             print(f"  {spec_id} {s['id']}: t = {tf:.4g} s, {sol.nfev} rhs, {time.time() - t0:.1f} s")
             runs.append({"scenario": s["id"], "tFinal": float(tf), "Y": [float(y) for y in Y]})
             # one run without screening, to check that switch too
             if s is data["scenarios"][0]:
-                tf2, Y2, _ = integrate(mod, Y0, s["T9"] * 1e9, s["rho"], s["time_s"], until, screening=False)
+                tf2, Y2, _ = integrate(mod, to_pyna(Y0), s["T9"] * 1e9, s["rho"], s["time_s"], until, rtol=rtol,
+                                       screening=False)
+                Y2 = from_pyna(Y2)
                 runs.append({"scenario": s["id"], "screening": False, "tFinal": float(tf2),
                              "Y": [float(y) for y in Y2]})
     return {"network": data["id"], "nuclei": nucs, "T9": grid, "lambda": lam, "runs": runs,
-            "tool": data["provenance"]["tool"], "solver": "scipy solve_ivp BDF, rtol 1e-10, atol 1e-30"}
+            "tool": data["provenance"]["tool"], "solver": f"scipy solve_ivp BDF, rtol {rtol:g}, atol 1e-30"}
+
+
+# Networks larger than this are integrated with numba's JIT switched off: the
+# generated module of the s-process network (some 500 nuclei) would take far
+# longer to compile than to run as plain Python. Each such network runs in a
+# child process, since numba reads NUMBA_DISABLE_JIT when it is imported.
+JIT_LIMIT = 100
 
 
 def main() -> None:
+    import subprocess
+
     import build
     only = set(sys.argv[1:])
     specs, scenarios = build.load_specs()
@@ -101,15 +128,17 @@ def main() -> None:
     for spec in specs:
         if only and spec["id"] not in only:
             continue
+        big = spec.get("builder") == "sprocess" or len(spec.get("nuclei", [])) > JIT_LIMIT
+        if big and os.environ.get("NUMBA_DISABLE_JIT") != "1":
+            subprocess.run([sys.executable, __file__, spec["id"]], env={**os.environ, "NUMBA_DISABLE_JIT": "1"},
+                           check=True)
+            continue
         data = json.loads((ROOT / "public" / "rates" / f"{spec['id']}.json").read_text(encoding="utf-8"))
-        _, rates = px.network_rates(spec["nuclei"], spec.get("select", "all"), spec.get("include", ()),
-                                    spec.get("exclude", ()))
+        _, rates = px.spec_rates(spec)
         assert [r.fname for r in rates] == [r["id"] for r in data["reactions"]], "rebuild the JSON first"
-        ref = reference_for(data, rates, spec["id"])
+        # the s-process network in plain Python: tight, but not as tight
+        ref = reference_for(data, rates, spec["id"], rtol=1e-8 if big else 1e-10)
         (OUT / f"{spec['id']}.json").write_text(json.dumps(ref, separators=(",", ":")), encoding="utf-8")
-    if (HERE / "sprocess.py").exists() and (not only or "sprocess" in only):
-        import sprocess
-        sprocess.reference(OUT)
 
 
 if __name__ == "__main__":

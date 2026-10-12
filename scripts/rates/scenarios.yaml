@@ -83,18 +83,18 @@ scenarios:
   # AGB star: T ≈ 80 MK (networks.yaml; Karakas & Lattanzio 2014, PASA 31,
   # e030). The density there is low, of order a few g/cm³; we take 3 g/cm³.
   # At fixed T the proton captures depend only on ρ × t, so the density and
-  # the burn time are one parameter.
+  # the burn time are one parameter; 10 years is a choice (see `note`).
   - id: agb-hbb
     name: AGB star, hot-bottom burning
     name_it: Stella AGB, combustione alla base dell'inviluppo
     T9: 0.08
     rho: 3
-    time_yr: 1.0e3
+    time_yr: 10
     composition: { base: lodders }
     source: "T ≈ 80 MK at the base of the envelope of massive AGB stars (Karakas & Lattanzio 2014, PASA 31, e030); composition: Lodders 2021"
     source_it: "T ≈ 80 MK alla base dell'inviluppo delle stelle AGB massicce (Karakas e Lattanzio 2014, PASA 31, e030); composizione: Lodders 2021"
-    note: "ρ = 3 g/cm³ is an order of magnitude only, and the 1000-year burn is a choice: the envelope passes through the hot layer many times. At fixed temperature only ρ × t matters for proton captures."
-    note_it: "ρ = 3 g/cm³ è solo un ordine di grandezza, e i 1000 anni di combustione sono una scelta: l'inviluppo attraversa lo strato caldo molte volte. A temperatura fissa per le catture protoniche conta solo ρ × t."
+    note: "ρ = 3 g/cm³ is an order of magnitude only, and the 10-year burn is a choice, long enough to show the NeNa and MgAl cycles at work and short of burning the magnesium away: in the star the envelope passes through the thin hot layer again and again, spending only a fraction of its time there. At fixed temperature only ρ × t matters for proton captures."
+    note_it: "ρ = 3 g/cm³ è solo un ordine di grandezza, e i 10 anni di combustione sono una scelta, abbastanza per vedere all'opera i cicli NeNa e MgAl senza bruciare tutto il magnesio: nella stella l'inviluppo attraversa più e più volte il sottile strato caldo, passandovi solo una parte del suo tempo. A temperatura fissa per le catture protoniche conta solo ρ × t."
 
   # Classical nova at peak: hydrodynamic models reach 0.2–0.35 GK at the
   # base of the envelope (José & Hernanz 1998, ApJ 494, 680); Iliadis et al.
@@ -117,3 +117,66 @@ scenarios:
     source_it: "Picco 0,2–0,35 GK (José e Hernanz 1998, ApJ 494, 680; Iliadis et al. 2002, ApJS 142, 105); 50% solare (Lodders 2021) + 50% materia della nana bianca CO"
     note: "ρ = 10³ g/cm³ is an order of magnitude and 300 s at constant peak temperature is a simplification: a real nova cools as the envelope expands."
     note_it: "ρ = 10³ g/cm³ è un ordine di grandezza e 300 s a temperatura di picco costante sono una semplificazione: una nova vera si raffredda mentre l'inviluppo si espande."
+
+  # -- the s-process ----------------------------------------------------------
+  # Temperatures from the atlas (content/atlas/networks.yaml): the ¹³C pocket
+  # at kT ≈ 8 keV (0.09 GK) and the thermal pulses at kT ≈ 23 keV (0.27 GK)
+  # of low-mass AGB stars (Straniero et al. 2006, Nucl. Phys. A 777, 311;
+  # Käppeler et al. 2011, Rev. Mod. Phys. 83, 157); core helium burning in
+  # massive stars at kT ≈ 26 keV, 0.3 GK (Mohr et al. 2016). The intershell
+  # of an AGB star is about three quarters ⁴He and one quarter ¹²C, with ~2%
+  # ²²Ne and ~1% ¹⁶O (Karakas & Lattanzio 2014, PASA 31, e030). The heavy
+  # seeds are Lodders' solar mixture from iron up.
+  #
+  # The neutron density is computed, not imposed: it follows from the
+  # sources and the captures. At fixed T it scales with ρ, which is chosen
+  # so that it comes out near the values quoted for each site (about
+  # 10⁷ cm⁻³ in the pocket, 10¹⁰ cm⁻³ at the peak of a pulse: Straniero et
+  # al. 2006); the exposure of a pocket burnt to the end does not depend on
+  # ρ at all.
+  - id: agb-13c-pocket
+    name: AGB star, ¹³C pocket between pulses
+    name_it: Stella AGB, tasca di ¹³C tra due impulsi
+    T9: 0.09
+    rho: 3.5e+3
+    time_yr: 1.0e+5
+    until: { nucleus: c13, fraction: 0.001 }
+    composition:
+      heavy: lodders
+      set: { c12: 0.23, o16: 0.01, ne22: 0.02, c13: 0.005, n14: 0.0005 }
+      balance: he4
+    source: "T = 0.09 GK (kT ≈ 8 keV; Straniero et al. 2006; Käppeler et al. 2011); intershell ⁴He, ¹²C, ²²Ne, ¹⁶O after Karakas & Lattanzio 2014; seeds: Lodders 2021"
+    source_it: "T = 0,09 GK (kT ≈ 8 keV; Straniero et al. 2006; Käppeler et al. 2011); intershell ⁴He, ¹²C, ²²Ne, ¹⁶O da Karakas e Lattanzio 2014; semi: Lodders 2021"
+    note: "X(¹³C) = 0.005 and X(¹⁴N) = 0.0005 are illustrative: how much ¹³C the pocket holds is the main free parameter of AGB models, so both can be scaled. The burn runs until 99.9% of the ¹³C is gone; ρ only sets how fast (it is chosen so that the neutron density comes out near 10⁷ cm⁻³)."
+    note_it: "X(¹³C) = 0,005 e X(¹⁴N) = 0,0005 sono illustrativi: quanto ¹³C contenga la tasca è il principale parametro libero dei modelli AGB, perciò si possono scalare entrambi. La combustione continua finché il 99,9% del ¹³C non è consumato; ρ ne fissa solo la rapidità (è scelta perché la densità di neutroni risulti vicina a 10⁷ cm⁻³)."
+
+  - id: agb-thermal-pulse
+    name: AGB star, ²²Ne in a thermal pulse
+    name_it: Stella AGB, ²²Ne in un impulso termico
+    T9: 0.27
+    rho: 3.5e+3
+    time_yr: 5
+    composition:
+      heavy: lodders
+      set: { c12: 0.23, o16: 0.01, ne22: 0.02 }
+      balance: he4
+    source: "T = 0.27 GK (kT ≈ 23 keV; Straniero et al. 2006; Käppeler et al. 2011); intershell after Karakas & Lattanzio 2014; seeds: Lodders 2021"
+    source_it: "T = 0,27 GK (kT ≈ 23 keV; Straniero et al. 2006; Käppeler et al. 2011); intershell da Karakas e Lattanzio 2014; semi: Lodders 2021"
+    note: "The ²²Ne source burns only briefly at the peak of a pulse; ρ is chosen so that the neutron density comes out near 10¹⁰ cm⁻³ (Straniero et al. 2006). The seeds start solar here; in a star they are what the pocket made."
+    note_it: "La sorgente di ²²Ne brucia solo brevemente al picco di un impulso; ρ è scelta perché la densità di neutroni risulti vicina a 10¹⁰ cm⁻³ (Straniero et al. 2006). Qui i semi partono solari; in una stella sono ciò che ha prodotto la tasca."
+
+  - id: massive-he-core
+    name: Massive star, end of core helium burning
+    name_it: Stella massiccia, fine della combustione centrale dell'elio
+    T9: 0.3
+    rho: 1.0e+3
+    time_yr: 1.0e+5
+    until: { nucleus: he4, fraction: 0.01 }
+    composition:
+      heavy: lodders
+      set: { he4: 0.1, c12: 0.3, ne22: 0.0147 }
+      balance: o16
+    source: "T = 0.3 GK (kT ≈ 26 keV; Mohr et al. 2016, networks.yaml); ρ = 10³ g/cm³, the order of the central density in core helium burning (Woosley, Heger & Weaver 2002, Table I); X(²²Ne) = 0.0147: all of Lodders' C, N and O turned into ¹⁴N by hydrogen burning, then into ²²Ne; seeds: Lodders 2021"
+    source_it: "T = 0,3 GK (kT ≈ 26 keV; Mohr et al. 2016, networks.yaml); ρ = 10³ g/cm³, l'ordine della densità centrale nella combustione dell'elio (Woosley, Heger e Weaver 2002, tabella I); X(²²Ne) = 0,0147: tutto il C, N e O di Lodders trasformato in ¹⁴N dalla combustione dell'idrogeno, poi in ²²Ne; semi: Lodders 2021"
+    note: "Schematic: the last tenth of the helium (X = 0.1, with ¹²C 0.3 and ¹⁶O the rest) burnt at constant T and ρ until 1% is left. In the star the core heats up as the helium runs out, and most of the weak s-process happens then."
+    note_it: "Schematico: l'ultimo decimo dell'elio (X = 0,1, con ¹²C 0,3 e ¹⁶O il resto) bruciato a T e ρ costanti finché ne resta l'1%. Nella stella il nucleo si scalda mentre l'elio si esaurisce, ed è allora che avviene gran parte del processo s debole."

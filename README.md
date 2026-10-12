@@ -283,6 +283,19 @@ npm run rates:baseline                 # public/rates/<id>.baseline.json
 npm run test:rates                     # must pass
 ```
 
+The s-process network (`builder: sprocess` in `networks.yaml`; 481 nuclei,
+739 reactions) is built by `s_process_rates` in `pyna_export.py`: every
+nucleus of Lodders' solar mixture from iron to polonium, closed under (n,γ)
+from anything living longer than six hours and under decay, plus the light
+nuclei that make and steal the neutrons. `reference.py` integrates it with
+numba's JIT switched off (a child process; compiling it would take longer
+than running it), about a minute for its three scenarios.
+
+Accuracy (`npm run test:rates`): rates agree with pynucastro's `Rate.eval`
+to 1e-11; burns at rtol 1e-6 agree with pynucastro's own network integrated
+by scipy BDF to ≤ 2.3e-6 (light networks) and ≤ 1.4e-6 (s-process), and at
+the tolerances the explorer uses (1e-4; 1e-3 for the s-process) to ≤ 8e-5.
+
 #### Design
 
 Made to be reused when pynucastro also runs on the server and stellar

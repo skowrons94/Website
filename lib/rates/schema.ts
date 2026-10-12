@@ -109,11 +109,19 @@ export interface Network {
     /** nuclei the abundance plot opens with */
     show?: string[] | null
     groups?: { id: string; reactions: string[] }[] | null
+    /** initial abundances the explorer offers to scale */
+    knobs?: string[] | null
+    /** heavy nuclei whose abundance over time a big network's burns keep */
+    track?: string[] | null
+    /** a caveat for specialists */
+    notes?: { en: string; it: string } | null
   }
   scenarios: Scenario[]
   /** Lodders (2021) mass fractions of these nuclei */
   solar: Record<string, number>
   screening: { method: string; co2: number; aaFactor: number; NA: number }
+  /** tolerances the explorer runs this network with, when not the defaults */
+  solver?: { rtol?: number; atol?: number }
 }
 
 /** Throws unless `data` is a network file this code understands. */

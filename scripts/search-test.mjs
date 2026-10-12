@@ -47,6 +47,7 @@ const CASES = [
   { lang: "en", q: "reaction rates", first: "/atlas/rates" },
   { lang: "it", q: "tassi di reazione", first: "/atlas/rates" },
   { lang: "en", q: "pynucastro", top: ["/atlas/rates"], n: 2 },
+  { lang: "en", q: "neutron poison", top: ["/atlas/rates/s-process"], n: 5 },
   // Physics
   { lang: "en", q: "Hoyle state", first: "/atlas/4He-aa-12C" },
   { lang: "it", q: "stato di Hoyle", first: "/atlas/4He-aa-12C" },

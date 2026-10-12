@@ -6,6 +6,16 @@
 
 import type { Lang } from "@/lib/locale"
 
+/** "all'1%", "allo 0,1%", "al 5%": the Italian article before a percentage, as it is read. */
+function alPercent(f: number): string {
+  const v = +(f * 100).toPrecision(2)
+  const text = `${String(v).replace(".", ",")}%`
+  if (v < 1) return `allo ${text}`
+  const n = Math.floor(v)
+  const vowel = n === 1 || n === 8 || n === 11 || (n >= 80 && n <= 89)
+  return vowel ? `all'${text}` : `al ${text}`
+}
+
 const en = {
   network: "Network",
   networks: "Choose a network",
@@ -16,7 +26,7 @@ const en = {
   temperature: "Temperature",
   density: "Density",
   burnTime: "Burn time",
-  stopOnFuel: (fuel: string) => `Stop when ${fuel} falls to 1% of its initial amount`,
+  stopOnFuel: (fuel: string, f = 0.01) => `Stop when ${fuel} falls to ${+(f * 100).toPrecision(2)}% of its initial amount`,
   metals: "Heavier elements",
   metalsHint: "× the scenario's",
   hydrogen: "Hydrogen",
@@ -93,7 +103,8 @@ const en = {
   calculating: "Calculating…",
   calculated: (ms: number, steps: number) => `Recalculated in your browser: ${ms} ms, ${steps} steps.`,
   precomputed: "Precomputed with the same solver; change anything to recalculate in your browser.",
-  stoppedUntil: (fuel: string, time: string) => `The burn stopped after ${time}, when ${fuel} ran down to 1%.`,
+  stoppedUntil: (fuel: string, time: string, f = 0.01) =>
+    `The burn stopped after ${time}, when ${fuel} ran down to ${+(f * 100).toPrecision(2)}%.`,
   stoppedTime: (time: string) => `The burn ran for ${time}.`,
   failed: "The calculation failed:",
   baselineLabel: "unchanged",
@@ -131,6 +142,48 @@ const en = {
   provenance: (lib: string, tool: string) => `${lib} — ${tool}`,
   dataNote:
     "Rates are the REACLIB fits themselves, evaluated in your browser. Reverse rates are left out (negligible at these temperatures); nuclei outside the network are inert.",
+  // -- the s-process explorer --------------------------------------------------
+  sp: {
+    lightTab: "Light-element networks",
+    groups: {
+      sources: ["Neutron sources", "The reactions that release the neutrons."],
+      competitors: ["Competitors and recyclers", "²²Ne(α,γ) burns the source without a neutron; ¹⁷O(α,n) gives back a neutron a poison took."],
+      poisons: ["Neutron poisons", "Light nuclei, far more abundant than iron, that capture neutrons before the seeds can."],
+      seeds: ["The seed", "Iron, where the chain starts."],
+      branches: ["Branch points", "Unstable nuclei that can capture a neutron before they decay: their captures steer the path."],
+    } as Record<string, [string, string]>,
+    knobsTitle: "How much fuel and poison",
+    knob: (n: string) => `Initial ${n}`,
+    statsTitle: "The neutrons",
+    exposure: "Neutron exposure",
+    exposureHint: "τ = ∫ n_n v_T dt: how many neutrons per millibarn a nucleus has been offered",
+    peak: "Peak neutron density",
+    perSeed: "Neutrons captured per seed",
+    perSeedHint: "per heavy nucleus from iron up",
+    burn: "Burn",
+    unchangedWord: "unchanged",
+    distTitle: "What the burn made, from iron to bismuth",
+    distLead:
+      "Each dot is a stable isotope: how much more of it there is at the end of the burn than at the start, which is the solar mix. Squares are s-only isotopes, made by the s-process alone; the shaded bands are the closed neutron shells, where the flow piles up.",
+    distLabel: "Production factors of the stable isotopes from iron to bismuth against mass number, on a logarithmic scale.",
+    massNumber: "Mass number A",
+    productionFactor: "end ÷ start",
+    shell: (n: number) => `N = ${n}`,
+    sOnly: "s-only",
+    below: "below a hundredth of the start (burnt)",
+    heavy: "Iron and up",
+    toResults: "See what changed",
+    light: "Light nuclei",
+    neutronTitle: "Neutron density during the burn",
+    neutronLead: "Free neutrons per cubic centimetre. Solid: with your changes; dashed: unchanged.",
+    neutronAxis: "neutrons per cm³",
+    neutronLabel: "Line chart of the neutron density against time, both on logarithmic scales.",
+    decayNote:
+      "Abundances after the decay of every nucleus with a half-life under 10⁸ years (laboratory half-lives, as in REACLIB: the stellar half-lives of branch points such as ¹⁷⁶Lu or ⁷⁹Se are not modelled).",
+    macsCol: "MACS at kT (mb)",
+    networkNote: (n: number, r: number) =>
+      `${n} nuclei and ${r} reactions: the light nuclei that make and steal neutrons, and every nucleus from iron to polonium that the solar mix holds or that a neutron capture or a decay reaches from one living longer than six hours. Between heavy nuclei only (n,γ) and decays.`,
+  },
 }
 
 export type RatesDict = typeof en
@@ -145,7 +198,8 @@ const it: RatesDict = {
   temperature: "Temperatura",
   density: "Densità",
   burnTime: "Durata della combustione",
-  stopOnFuel: (fuel: string) => `Fermati quando ${fuel} scende all'1% della quantità iniziale`,
+  stopOnFuel: (fuel: string, f = 0.01) =>
+    `Fermati quando ${fuel} scende ${alPercent(f)} della quantità iniziale`,
   metals: "Elementi più pesanti",
   metalsHint: "× quelli dello scenario",
   hydrogen: "Idrogeno",
@@ -224,8 +278,8 @@ const it: RatesDict = {
   calculating: "Calcolo in corso…",
   calculated: (ms: number, steps: number) => `Ricalcolato nel tuo browser: ${ms} ms, ${steps} passi.`,
   precomputed: "Precalcolato con lo stesso risolutore; cambia qualcosa per ricalcolare nel tuo browser.",
-  stoppedUntil: (fuel: string, time: string) =>
-    `La combustione si è fermata dopo ${time}, quando ${fuel} è sceso all'1%.`,
+  stoppedUntil: (fuel: string, time: string, f = 0.01) =>
+    `La combustione si è fermata dopo ${time}, quando ${fuel} è sceso ${alPercent(f)}.`,
   stoppedTime: (time: string) => `La combustione è durata ${time}.`,
   failed: "Il calcolo non è riuscito:",
   baselineLabel: "originale",
@@ -262,6 +316,47 @@ const it: RatesDict = {
   provenance: (lib: string, tool: string) => `${lib} — ${tool}`,
   dataNote:
     "I tassi sono i fit di REACLIB stessi, calcolati nel tuo browser. I tassi inversi sono esclusi (trascurabili a queste temperature); i nuclei fuori dalla rete sono inerti.",
+  sp: {
+    lightTab: "Reti degli elementi leggeri",
+    groups: {
+      sources: ["Sorgenti di neutroni", "Le reazioni che liberano i neutroni."],
+      competitors: ["Concorrenti e riciclatori", "La ²²Ne(α,γ) consuma la sorgente senza un neutrone; la ¹⁷O(α,n) restituisce un neutrone preso da un veleno."],
+      poisons: ["Veleni neutronici", "Nuclei leggeri, molto più abbondanti del ferro, che catturano i neutroni prima dei semi."],
+      seeds: ["Il seme", "Il ferro, da cui parte la catena."],
+      branches: ["Punti di diramazione", "Nuclei instabili che possono catturare un neutrone prima di decadere: le loro catture orientano il percorso."],
+    } as Record<string, [string, string]>,
+    knobsTitle: "Quanto combustibile e quanto veleno",
+    knob: (n: string) => `${n} iniziale`,
+    statsTitle: "I neutroni",
+    exposure: "Esposizione ai neutroni",
+    exposureHint: "τ = ∫ n_n v_T dt: quanti neutroni per millibarn sono stati offerti a un nucleo",
+    peak: "Densità di neutroni massima",
+    perSeed: "Neutroni catturati per seme",
+    perSeedHint: "per nucleo pesante, dal ferro in su",
+    burn: "Combustione",
+    unchangedWord: "originale",
+    distTitle: "Che cosa ha prodotto la combustione, dal ferro al bismuto",
+    distLead:
+      "Ogni punto è un isotopo stabile: quanto ce n'è alla fine della combustione rispetto all'inizio, che è la miscela solare. I quadrati sono gli isotopi solo s, prodotti soltanto dal processo s; le bande ombreggiate sono i gusci di neutroni chiusi, dove il flusso si accumula.",
+    distLabel: "Fattori di produzione degli isotopi stabili dal ferro al bismuto in funzione del numero di massa, in scala logaritmica.",
+    massNumber: "Numero di massa A",
+    productionFactor: "fine ÷ inizio",
+    shell: (n: number) => `N = ${n}`,
+    sOnly: "solo s",
+    below: "sotto un centesimo dell'inizio (bruciati)",
+    heavy: "Dal ferro in su",
+    toResults: "Guarda che cosa è cambiato",
+    light: "Nuclei leggeri",
+    neutronTitle: "La densità di neutroni durante la combustione",
+    neutronLead: "Neutroni liberi per centimetro cubo. Linea continua: con le tue modifiche; tratteggiata: originale.",
+    neutronAxis: "neutroni per cm³",
+    neutronLabel: "Grafico a linee della densità di neutroni in funzione del tempo, entrambi in scala logaritmica.",
+    decayNote:
+      "Abbondanze dopo il decadimento di ogni nucleo con tempo di dimezzamento inferiore a 10⁸ anni (tempi di dimezzamento di laboratorio, come in REACLIB: i tempi stellari dei punti di diramazione come il ¹⁷⁶Lu o il ⁷⁹Se non sono modellati).",
+    macsCol: "MACS a kT (mb)",
+    networkNote: (n: number, r: number) =>
+      `${n} nuclei e ${r} reazioni: i nuclei leggeri che producono e sottraggono neutroni, e ogni nucleo dal ferro al polonio presente nella miscela solare o raggiunto, con una cattura neutronica o un decadimento, da uno che vive più di sei ore. Tra i nuclei pesanti solo (n,γ) e decadimenti.`,
+  },
 }
 
 export const RATES_DICT: Record<Lang, RatesDict> = { en, it }

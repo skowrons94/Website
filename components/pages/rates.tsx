@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react"
 
 import { Term } from "@/components/atlas/term"
 import { RatesExplorer } from "@/components/rates/rates-explorer"
-import { RatesCredits } from "@/components/rates/credits"
+import { LIGHT_REFS, RatesCredits } from "@/components/rates/credits"
 import { Sci } from "@/components/sci"
 import { dict, localePath, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
@@ -157,7 +157,7 @@ export function RatesPage({ lang }: { lang: Lang }) {
         </div>
       </section>
 
-      <RatesCredits lang={lang} />
+      <RatesCredits lang={lang} keys={LIGHT_REFS} />
     </div>
   )
 }

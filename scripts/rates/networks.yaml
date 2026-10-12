@@ -18,6 +18,7 @@
 #   cycle       optional: the reactions of the main cycle or chain, among
 #               which the slowest step is the bottleneck
 #   show        the nuclei the abundance plot opens with (at most three)
+#   notes       optional {en, it}: a caveat shown to specialists
 
 networks:
   - id: pp
@@ -97,6 +98,9 @@ networks:
 
   - id: mgal
     show: [mg25, al26, mg26]
+    notes:
+      en: "REACLIB has one ²⁶Al: ²⁵Mg(p,γ) feeds the ground state (t½ = 7.2 × 10⁵ yr) entirely, while in a star part of it goes to the short-lived isomer of ²⁶Al (6.3 s), which decays to ²⁶Mg without leaving ²⁶Al behind; the ²⁶Al here is an upper limit."
+      it: "REACLIB ha un solo ²⁶Al: la ²⁵Mg(p,γ) alimenta tutto lo stato fondamentale (t½ = 7,2 × 10⁵ anni), mentre in una stella una parte va all'isomero di vita breve del ²⁶Al (6,3 s), che decade in ²⁶Mg senza lasciare ²⁶Al; il ²⁶Al qui è un limite superiore."
     family: mgal
     nuclei: [p, he4, mg24, mg25, mg26, al25, al26, al27, si26, si27, si28]
     select: hydrogen-burning
@@ -116,3 +120,38 @@ networks:
       - Al26_to_Mg26_beta_pos_reaclib
       - Mg26_p_to_Al27_reaclib
       - Al27_p_to_He4_Mg24_reaclib
+
+  # The s-process, iron to bismuth: a reduced network along the valley of
+  # stability (scripts/rates/pyna_export.py, s_process_rates), with the
+  # light nuclei that make and steal the neutrons. Its explorer is
+  # /atlas/rates/s-process.
+  #   light   every forward REACLIB rate among these
+  #   heavy   Lodders' nuclei from zmin to zmax, closed under (n,γ) from any
+  #           nucleus living longer than extend_halflife_s, and under decay
+  #   groups  the reactions the explorer offers to scale, by their role
+  #   knobs   initial abundances the explorer offers to scale
+  - id: sprocess
+    family: s-process
+    builder: sprocess
+    light: [n, p, he4, c12, c13, n13, c14, n14, n15, o15, o16, o17, o18, f18, f19, ne20, ne21, ne22, ne23, na23, na24, mg24, mg25, mg26, mg27, al27]
+    heavy: { zmin: 26, zmax: 84, extend_halflife_s: 21600 }
+    scenarios: [agb-13c-pocket, agb-thermal-pulse, massive-he-core]
+    show: [n, fe56, ba138]
+    # heavy nuclei whose abundance over time the explorer keeps (the light
+    # ones are always kept)
+    track: [fe56, ni60, se80, kr84, kr85, kr86, sr86, sr88, zr90, zr96, ba134, ba136, ba138, ce140, sm148, sm150, sm151, pb204, pb206, pb207, pb208, bi209]
+    groups:
+      - id: sources
+        reactions: [C13_He4_to_n_O16_reaclib, Ne22_He4_to_n_Mg25_reaclib]
+      - id: competitors
+        reactions: [Ne22_He4_to_Mg26_reaclib, O17_He4_to_n_Ne20_reaclib]
+      - id: poisons
+        reactions: [N14_n_to_p_C14_reaclib, C12_n_to_C13_reaclib, O16_n_to_O17_reaclib, Ne22_n_to_Ne23_reaclib, Mg25_n_to_Mg26_reaclib, Mg26_n_to_Mg27_reaclib]
+      - id: seeds
+        reactions: [Fe56_n_to_Fe57_reaclib]
+      - id: branches
+        reactions: [Kr85_n_to_Kr86_reaclib, Zr93_n_to_Zr94_reaclib, Sm151_n_to_Sm152_reaclib, Tm171_n_to_Tm172_reaclib, Tl204_n_to_Tl205_reaclib]
+    knobs: [c13, n14, ne22]
+    # 481 nuclei: the explorer's burns run at rtol 1e-3 (RODAS3 then agrees
+    # with pynucastro to ~5e-5; npm run test:rates checks it at 1e-6)
+    solver: { rtol: 1.0e-3 }

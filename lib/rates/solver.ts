@@ -13,10 +13,11 @@
  *   dY_k/dt = Σ_r c_kr · prefactor_r · ρ^densExp_r · (Ye) · Π Y_reactants · λ_r(T9) · e^{h_r}
  *
  * with h_r the screen5 screening of the reaction's pairs, evaluated at every
- * right-hand side as pynucastro does. The integrator is the L-stable
- * Rosenbrock method of MATLAB's ode23s (Shampine & Reichelt 1997, SIAM J.
- * Sci. Comput. 18, 1): second order with a third-order error estimate, one
- * Jacobian and one sparse LU (lib/rates/sparse.ts) per step. A network's
+ * right-hand side as pynucastro does. The integrator is RODAS3, an L-stable,
+ * stiffly accurate Rosenbrock method of order 3 (below), or MATLAB's ode23s
+ * (Shampine & Reichelt 1997, SIAM J. Sci. Comput. 18, 1) on request: one
+ * Jacobian and one sparse LU (lib/rates/sparse.ts) per step. At rtol 1e-4
+ * RODAS3 reproduces pynucastro's own integration to ~1e-5. A network's
  * timescales span twenty decades or more (a neutron lives milliseconds in an
  * s-process burn of ten thousand years), and an L-stable method takes steps
  * set by accuracy alone however stiff the network is.
@@ -33,7 +34,7 @@ export type History =
   | { kind: "series"; t_s: number[]; T9: number[]; rho: number[] }
 
 /** The tolerances the explorer runs with (and its precomputed baselines). */
-export const DEFAULT_TOLERANCES = { rtol: 1e-6, atol: 1e-26 } as const
+export const DEFAULT_TOLERANCES = { rtol: 1e-4, atol: 1e-26 } as const
 
 export interface IntegrateOptions {
   /** the scaling of each reaction's rate, 1 when absent */
@@ -53,6 +54,10 @@ export interface IntegrateOptions {
   maxSamples?: number
   maxSteps?: number
   provider?: RateProvider
+  /** accumulate the neutron exposure ∫ n_n v_T dt (needs a nucleus "n") */
+  neutronExposure?: boolean
+  /** the Rosenbrock method: "rodas3" (default) or "ode23s" */
+  method?: "rodas3" | "ode23s"
 }
 
 export interface IntegrateResult {
@@ -67,6 +72,8 @@ export interface IntegrateResult {
   steps: number
   rejected: number
   ms: number
+  /** ∫ n_n v_T dt in cm⁻² (×10⁻²⁷ for mb⁻¹), and the largest n_n in cm⁻³ */
+  exposure?: { tau_cm2: number; peak_cm3: number }
 }
 
 export interface Compiled {
@@ -348,6 +355,23 @@ export function makeSystem(c: Compiled, opts: Pick<IntegrateOptions, "scale" | "
 const D = 1 / (2 + Math.SQRT2)
 const E32 = 6 + Math.SQRT2
 
+/*
+ * RODAS3 (Sandu et al. 1997, Atmos. Environ. 31, 3459; the coefficients of
+ * KPP's Rosenbrock integrators): four stages, three function evaluations,
+ * order 3 with an embedded order-2 estimate, L-stable and stiffly accurate.
+ * K_i solves (I/(hγ) − J) K_i = F(Y + Σ a_ij K_j) + Σ (c_ij/h) K_j + hγ_i ∂F/∂t.
+ */
+const R3 = {
+  gamma: 0.5,
+  a: [[], [0], [2, 0], [2, 0, 1]] as number[][],
+  c: [[], [4], [1, -1], [1, -1, -8 / 3]] as number[][],
+  alpha: [0, 0, 1, 1],
+  gammas: [0.5, 1.5, 0, 0],
+  newF: [true, false, true, true],
+  m: [2, 0, 1, 1],
+  e: [0, 0, 0, 1],
+}
+
 /** Integrates a compiled network. */
 export function integrate(c: Compiled, opts: IntegrateOptions): IntegrateResult {
   const t0 = typeof performance !== "undefined" ? performance.now() : Date.now()
@@ -384,6 +408,15 @@ export function integrate(c: Compiled, opts: IntegrateOptions): IntegrateResult 
   const ts: number[] = [0]
   const Ys: Float64Array[] = [y.slice()]
   let t = 0
+  // neutron exposure: n_n = ρ N_A Y_n, v_T = sqrt(2kT/m_n)
+  const iN = opts.neutronExposure ? (c.index.get("n") ?? -1) : -1
+  const NA = c.network.screening.NA
+  const nDensity = (time: number, yn: number) => {
+    const { T9, rho } = stateAt(opts.history, time)
+    return { n: rho * NA * Math.max(yn, 0), v: Math.sqrt((2 * 1.380649e-16 * T9 * 1e9) / 1.67492750e-24) }
+  }
+  let tau = 0
+  let peak = iN >= 0 ? nDensity(0, y[iN]).n : 0
   const tEnd = opts.tEnd_s
   sys.rhs(t, y, F0)
   // first step: a small fraction of the fastest change, at most 1e-6 tEnd
@@ -398,12 +431,58 @@ export function integrate(c: Compiled, opts: IntegrateOptions): IntegrateResult 
   let stopped: IntegrateResult["stopped"] = "time"
   let fresh = true // F0 is f(t, y)
 
+  const rodas = (opts.method ?? "rodas3") === "rodas3"
+  const K = rodas ? [new Float64Array(n), new Float64Array(n), new Float64Array(n), new Float64Array(n)] : []
+  const Fs = new Float64Array(n)
+
   while (t < tEnd) {
     if (steps >= maxSteps) {
       stopped = "steps"
       break
     }
     if (t + h > tEnd) h = tEnd - t
+    let err = 0
+    if (rodas) {
+      // F(t, y) and the Jacobian from the same fluxes
+      sys.rhs(t, y, F0)
+      val.fill(0)
+      sys.addJacobian(y, -h * R3.gamma, val)
+      for (let i = 0; i < n; i++) val[pattern.diag[i]] += 1
+      factor(pattern, val, work)
+      if (timeDependent) {
+        const dt = Math.max(1e-7 * Math.abs(t), 1e-7 * h)
+        sys.rhs(t + dt, y, Tt)
+        for (let i = 0; i < n; i++) Tt[i] = (Tt[i] - F0[i]) / dt
+        sys.rhs(t, y, F0)
+      }
+      const hg = h * R3.gamma
+      for (let s = 0; s < 4; s++) {
+        if (s === 0) Fs.set(F0)
+        else if (R3.newF[s]) {
+          for (let i = 0; i < n; i++) {
+            let v = y[i]
+            for (let j = 0; j < s; j++) v += R3.a[s][j] * K[j][i]
+            ytmp[i] = v
+          }
+          sys.rhs(t + R3.alpha[s] * h, ytmp, Fs)
+        }
+        for (let i = 0; i < n; i++) {
+          let v = Fs[i]
+          for (let j = 0; j < s; j++) v += (R3.c[s][j] / h) * K[j][i]
+          if (timeDependent) v += h * R3.gammas[s] * Tt[i]
+          b[i] = 0
+          k1[i] = hg * v
+        }
+        lu(k1, K[s])
+      }
+      for (let i = 0; i < n; i++) {
+        ynew[i] = y[i] + R3.m[0] * K[0][i] + R3.m[2] * K[2][i] + R3.m[3] * K[3][i]
+        const e = Math.abs(K[3][i])
+        const sc = atol + rtol * Math.max(Math.abs(y[i]), Math.abs(ynew[i]))
+        const r = e / sc
+        if (r > err) err = r
+      }
+    } else {
     if (!fresh) sys.rhs(t, y, F0)
     fresh = true
     // Jacobian at (t, y): W = I − h d J
@@ -438,17 +517,18 @@ export function integrate(c: Compiled, opts: IntegrateOptions): IntegrateResult 
     // down in quasi-equilibrium)
     for (let i = 0; i < n; i++) ytmp[i] = (h / 6) * (k1[i] - 2 * k2[i] + k3[i])
     lu(ytmp, k3)
-    let err = 0
     for (let i = 0; i < n; i++) {
       const e = Math.abs(k3[i])
       const sc = atol + rtol * Math.max(Math.abs(y[i]), Math.abs(ynew[i]))
       const r = e / sc
       if (r > err) err = r
     }
+    }
     if (!Number.isFinite(err)) err = 1e10
     if (err > 1) {
       rejected++
       h *= Math.max(0.1, 0.8 * err ** (-1 / 3))
+      fresh = !rodas
       continue
     }
     // a stop condition crossed inside the step: shorten it onto the crossing
@@ -456,18 +536,24 @@ export function integrate(c: Compiled, opts: IntegrateOptions): IntegrateResult 
       const a = Math.log(y[untilIdx] / untilTarget)
       const bb = Math.log(y[untilIdx] / Math.max(ynew[untilIdx], 1e-300))
       const theta = Math.min(0.999, Math.max(0.01, a / bb))
-      if (Math.abs(ynew[untilIdx] / untilTarget - 1) > 1e-3 && h * theta > 1e-9 * t) {
+      if (Math.abs(ynew[untilIdx] / untilTarget - 1) > 1e-6 && h * theta > 1e-12 * t) {
         h *= theta
         continue
       }
     }
+    if (iN >= 0) {
+      const a = nDensity(t, y[iN])
+      const b = nDensity(t + h, ynew[iN])
+      tau += 0.5 * h * (a.n * a.v + b.n * b.v)
+      if (b.n > peak) peak = b.n
+    }
     t += h
     steps++
     y.set(ynew)
-    F0.set(F2)
+    if (!rodas) F0.set(F2)
     ts.push(t)
     Ys.push(y.slice())
-    if (untilIdx >= 0 && y[untilIdx] <= untilTarget * (1 + 1e-3)) {
+    if (untilIdx >= 0 && y[untilIdx] <= untilTarget * (1 + 1e-6)) {
       stopped = "until"
       break
     }
@@ -494,7 +580,17 @@ export function integrate(c: Compiled, opts: IntegrateOptions): IntegrateResult 
     }
   }
   const ms = (typeof performance !== "undefined" ? performance.now() : Date.now()) - t0
-  return { t: outT, Y: outY, final: y, tFinal: t, stopped, steps, rejected, ms }
+  return {
+    t: outT,
+    Y: outY,
+    final: y,
+    tFinal: t,
+    stopped,
+    steps,
+    rejected,
+    ms,
+    ...(iN >= 0 ? { exposure: { tau_cm2: tau, peak_cm3: peak } } : {}),
+  }
 }
 
 /**

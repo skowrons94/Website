@@ -16,19 +16,25 @@ export interface RunRequest {
   until: { nucleus: string; fraction: number } | null
   screening: boolean
   scale: Record<string, number>
+  rtol?: number
+  atol?: number
+  /** nuclei whose abundance over time to return (all when absent) */
+  track?: string[]
 }
 
 export interface RunResult {
   /** sample times, s */
   t: number[]
-  /** mass fractions per sample, in network order */
+  /** mass fractions per sample: of `track` when given, else of every nucleus in network order */
   X: number[][]
+  track?: string[]
   /** mass fractions at the end */
   final: number[]
   tFinal: number
   stopped: "time" | "until" | "steps"
   steps: number
   ms: number
+  exposure?: { tau_cm2: number; peak_cm3: number }
 }
 
 /** The request a scenario makes, unmodified. */
@@ -41,7 +47,16 @@ export function scenarioRequest(network: Network, s: Scenario, screening = true)
     until: s.until,
     screening,
     scale: {},
+    ...(network.solver?.rtol ? { rtol: network.solver.rtol } : {}),
+    ...(network.ui.track ? { track: trackOf(network) } : {}),
+    ...(network.solver?.atol ? { atol: network.solver.atol } : {}),
   }
+}
+
+/** A big network keeps the time series of its light nuclei and of `ui.track`. */
+export function trackOf(network: Network): string[] {
+  const keep = new Set(network.ui.track ?? [])
+  return network.nuclei.filter((n) => n.Z < 26 || keep.has(n.name)).map((n) => n.name)
 }
 
 const round = (x: number) => (x === 0 ? 0 : Number(x.toPrecision(7)))
@@ -54,13 +69,19 @@ export function run(c: Compiled, req: RunRequest, maxSamples = 120): RunResult {
     until: req.until,
     screening: req.screening,
     scale: req.scale,
+    rtol: req.rtol,
+    atol: req.atol,
     maxSamples,
+    neutronExposure: c.index.has("n"),
   })
   const A = c.A
   const toX = (Y: Float64Array) => Array.from(Y, (y, i) => round(Math.max(0, y * A[i])))
+  const cols = req.track?.map((name) => c.index.get(name)).filter((i): i is number => i !== undefined)
   return {
     t: res.t.map(round),
-    X: res.Y.map(toX),
+    X: cols ? res.Y.map((Y) => cols.map((i) => round(Math.max(0, Y[i] * A[i])))) : res.Y.map(toX),
+    ...(cols ? { track: cols.map((i) => c.network.nuclei[i].name) } : {}),
+    ...(res.exposure ? { exposure: res.exposure } : {}),
     final: toX(res.final),
     tFinal: res.tFinal,
     stopped: res.stopped,
@@ -74,7 +95,18 @@ export function requestKey(req: RunRequest): string {
   const scale = Object.entries(req.scale)
     .filter(([, v]) => v !== 1)
     .sort(([a], [b]) => (a < b ? -1 : 1))
-  return JSON.stringify([req.network, req.history, req.X0, req.tEnd_s, req.until, req.screening, scale])
+  return JSON.stringify([
+    req.network,
+    req.history,
+    req.X0,
+    req.tEnd_s,
+    req.until,
+    req.screening,
+    scale,
+    req.rtol ?? null,
+    req.atol ?? null,
+    req.track ?? null,
+  ])
 }
 
 const cache = new Map<string, Compiled>()

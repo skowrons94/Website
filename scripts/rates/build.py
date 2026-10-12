@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Write public/rates/<id>.json for every network of scripts/rates/networks.yaml
-(and the s-process network of sprocess.py), from REACLIB through pynucastro.
+(the s-process network too: builder: sprocess), from REACLIB through pynucastro.
 
     pip install pynucastro numpy scipy pyyaml
     python scripts/rates/build.py [network ids...]
@@ -68,9 +68,6 @@ def main() -> None:
         if only and spec["id"] not in only:
             continue
         write(px.export_network(spec, scenarios, atlas_ids=atlas_ids, title=titles.get(spec["family"])))
-    if (HERE / "sprocess.py").exists() and (not only or "sprocess" in only):
-        import sprocess
-        write(sprocess.export(atlas_ids, titles))
 
 
 if __name__ == "__main__":

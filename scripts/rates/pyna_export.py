@@ -22,6 +22,7 @@ every unit out:
     ui            {key[], reference, fuel, cycle[], show[]}  (what to show first)
     scenarios[]   {id, name, name_it, T9, rho, time_s, until, X{name: X}, ...}
     solar         Lodders mass fractions of the network's nuclei
+    solver        optional {rtol, atol} for the explorer's burns
     screening     constants of pynucastro's screen5 plasma factors
 
 The ydot term of a reaction is, exactly as in pynucastro's generated
@@ -252,6 +253,11 @@ def resolve_composition(spec: dict) -> dict[str, float]:
                 out[k] = out.get(k, 0.0) + w * v
         return out
     X: dict[str, float] = lodders() if spec.get("base") == "lodders" else {}
+    # heavy: lodders — the Lodders mass fractions of the nuclei from Z = 26
+    # (iron) up, the seeds of the s-process, beside a light composition set
+    # by hand
+    if spec.get("heavy") == "lodders":
+        X.update({k: v for k, v in lodders().items() if pyna.Nucleus(k).Z >= 26})
     scale = spec.get("scale_metals")
     if scale is not None:
         X = {k: (v * scale if pyna.Nucleus(k).Z > 2 else v) for k, v in X.items()}
@@ -349,15 +355,15 @@ def export_network(spec: dict, scenarios: dict | None = None, *, atlas_ids=froze
     `nuclei` override the selection (a caller that built its own list).
     """
     if rates is None:
-        nucs, rates = network_rates(spec["nuclei"], spec.get("select", "all"), spec.get("include", ()),
-                                    spec.get("exclude", ()), libfile)
+        nucs, rates = spec_rates(spec, libfile)
     else:
         nucs = nuclei
     index = {n: i for i, n in enumerate(nucs)}
     sources = load_sources()
     ids = {r.fname for r in rates}
-    ui = {k: spec.get(k) for k in ("key", "reference", "fuel", "cycle", "show", "groups")}
-    for k in (ui.get("key") or []) + (ui.get("cycle") or []) + ([ui["reference"]] if ui.get("reference") else []):
+    ui = {k: spec.get(k) for k in ("key", "reference", "fuel", "cycle", "show", "groups", "knobs", "track", "notes")}
+    grouped = [r for g in (ui.get("groups") or []) for r in g["reactions"]]
+    for k in (ui.get("key") or []) + (ui.get("cycle") or []) + grouped + ([ui["reference"]] if ui.get("reference") else []):
         if k not in ids:
             raise ValueError(f"{spec['id']}: {k} is not a rate of the network")
     solar = lodders()
@@ -381,8 +387,78 @@ def export_network(spec: dict, scenarios: dict | None = None, *, atlas_ids=froze
         "ui": ui,
         "scenarios": [scenario_json(scenarios[s], nucs) for s in spec.get("scenarios", [])] if scenarios else [],
         "solar": {n.raw: _sig(solar.get(comp_key(n), 0.0)) for n in nucs},
+        # tolerances the explorer runs this network with (optional)
+        "solver": {k: float(v) for k, v in (spec.get("solver") or {}).items()},
         "screening": screening_constants(),
     }
+
+
+def s_process_rates(spec: dict, libfile: str = LIBFILE):
+    """(nuclei, rates) of a reduced s-process network (networks.yaml, builder: sprocess).
+
+    Light nuclei (`light`): every forward REACLIB rate among them (the
+    neutron sources, poisons and helium burning). Heavy nuclei: the nuclei of
+    Lodders' solar mixture from `heavy.zmin` to `heavy.zmax`, closed under
+    neutron capture and decay: the (Z, A+1) of every nucleus that lives
+    longer than `heavy.extend_halflife_s` is added, and so is the product of
+    every decay, until nothing new appears. Between heavy nuclei only (n,γ)
+    and decays (β±, electron capture, α) are kept: charged-particle reactions
+    on them are negligible at these temperatures. Laboratory half-lives
+    throughout (REACLIB weak rates); reverse rates left out.
+    """
+    lib = library(libfile)
+    h = spec["heavy"]
+    zmin, zmax, ext = h["zmin"], h["zmax"], float(h["extend_halflife_s"])
+    light = pyna.Nucleus.cast_list(spec["light"])
+
+    def tau(n):
+        return math.inf if n.tau in ("stable", None) else float(n.tau)
+
+    by: dict = {}
+    for r in lib.get_rates():
+        if any(st.labelprops[5] == "v" for st in r.sets):
+            continue
+        heavy = [n for n in r.reactants if n.Z >= zmin]
+        if not heavy:
+            continue
+        names = [n.raw for n in r.reactants]
+        if len(names) == 2 and "n" in names and len(r.products) == 1:
+            by.setdefault(heavy[0], []).append(("ng", r))
+        elif len(names) == 1:
+            by.setdefault(heavy[0], []).append(("decay", r))
+    S = {pyna.Nucleus(k) for k in LODDERS_DATA if zmin <= pyna.Nucleus(k).Z <= zmax}
+    changed = True
+    while changed:
+        changed = False
+        for n in list(S):
+            for kind, r in by.get(n, []):
+                if kind == "ng" and tau(n) < ext:
+                    continue
+                for p in r.products:
+                    if zmin <= p.Z <= zmax and p not in S:
+                        S.add(p)
+                        changed = True
+    heavy = sorted(S, key=lambda n: (n.A, n.Z))
+    nucs = light + heavy
+    allowed = set(nucs)
+    rates = list(lib.linking_nuclei(light, with_reverse=False, print_warning=False).get_rates())
+    for n in heavy:
+        for kind, r in by.get(n, []):
+            if kind == "ng" and tau(n) < ext:
+                continue
+            if all(p in allowed for p in r.products):
+                rates.append(r)
+    rates.sort(key=lambda r: (_heaviest(list(r.reactants)).A, _heaviest(list(r.reactants)).Z,
+                              len(r.reactants) == 1, r.fname))
+    return nucs, rates
+
+
+def spec_rates(spec: dict, libfile: str = LIBFILE):
+    """(nuclei, rates) for any networks.yaml entry."""
+    if spec.get("builder") == "sprocess":
+        return s_process_rates(spec, libfile)
+    return network_rates(spec["nuclei"], spec.get("select", "all"), spec.get("include", ()),
+                         spec.get("exclude", ()), libfile)
 
 
 def python_network(rates):

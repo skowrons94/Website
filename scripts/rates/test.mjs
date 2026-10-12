@@ -7,16 +7,18 @@
  *   1. λ(T9) of every reaction on a temperature grid, against pynucastro's
  *      Rate.eval: must agree to 1e-9 relative;
  *   2. the abundances after each scenario's burn, against pynucastro's own
- *      network integrated by scipy BDF (rtol 1e-10): every nucleus with a
- *      final mass fraction above 1e-12 must agree to `TOL` relative, and the
- *      burn must stop at the same time when it stops on a condition.
+ *      network integrated by scipy BDF (rtol 1e-10; 1e-8 for the s-process):
+ *      every nucleus with a final mass fraction above 1e-12 must agree to
+ *      `TOL` relative, at rtol 1e-6 and at the explorer's own tolerance, and
+ *      the burn must stop at the same time when it stops on a condition;
+ *   3. the precomputed baselines must be what the solver gives today.
  * Prints the largest differences and the solver's time per run.
  */
 
 import fs from "node:fs"
 import path from "node:path"
 
-import { compile, integrate } from "../../lib/rates/solver.ts"
+import { DEFAULT_TOLERANCES, compile, integrate } from "../../lib/rates/solver.ts"
 import { networkProvider } from "../../lib/rates/rate-provider.ts"
 import { checkNetwork } from "../../lib/rates/schema.ts"
 import { requestKey, run, scenarioRequest } from "../../lib/rates/run.ts"
@@ -93,6 +95,23 @@ for (const file of files) {
         `${res.steps} steps, ${res.ms.toFixed(0)} ms`,
     )
     if (worst > TOL) fail(`${id} ${tag}: abundances differ by ${worst} (${worstName})`)
+    // and at the tolerance the explorer runs with
+    if (run.screening !== false) {
+      const ui = integrate(c, {
+        history: { kind: "constant", T9: s.T9, rho: s.rho },
+        X0: s.X,
+        tEnd_s: s.time_s,
+        until: s.until,
+        rtol: network.solver?.rtol ?? DEFAULT_TOLERANCES.rtol,
+        atol: network.solver?.atol ?? DEFAULT_TOLERANCES.atol,
+      })
+      let w = 0
+      network.nuclei.forEach((nuc, i) => {
+        if (run.Y[i] * nuc.A >= XMIN) w = Math.max(w, Math.abs(ui.final[i] - run.Y[i]) / run.Y[i])
+      })
+      console.log(`  ${"  at the explorer's rtol".padEnd(28)} max |ΔY|/Y ${w.toExponential(2)}, ${ui.steps} steps, ${ui.ms.toFixed(0)} ms`)
+      if (w > TOL) fail(`${id} ${tag}: at the explorer's tolerance abundances differ by ${w}`)
+    }
     if (dt > TOL) fail(`${id} ${tag}: stops at ${res.tFinal}, pynucastro at ${run.tFinal}`)
   }
 }
@@ -113,7 +132,7 @@ for (const file of fs.readdirSync(DATA).filter((f) => f.endsWith(".baseline.json
     }
     const now = run(c, req)
     const d = Math.max(...now.final.map((x, i) => (x > 1e-12 ? Math.abs(x - stored.final[i]) / x : 0)))
-    if (d > 1e-5) fail(`${id} ${s.id}: baseline differs from the solver by ${d} (npm run rates:baseline)`)
+    if (d > 1e-9) fail(`${id} ${s.id}: baseline differs from the solver by ${d} (npm run rates:baseline)`)
   }
   console.log(`baseline ${id}: ${network.scenarios.length} scenarios checked`)
 }
