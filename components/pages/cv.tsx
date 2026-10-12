@@ -18,15 +18,18 @@ export const cvMetadata = (lang: Lang): Metadata =>
   pageMetadata(dict(lang).cv.metaTitle, dict(lang).cv.description, lang)
 
 function Section({
+  id,
   title,
   children,
 }: {
+  /** The anchor the landing page's "Roles and recognition" links to. */
+  id: string
   title: string
   children: React.ReactNode
 }) {
   return (
-    <section className="border-t border-border/70 pt-8 print:pt-3">
-      <h2 className="mb-6 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground print:mb-2.5">
+    <section id={id} aria-labelledby={`${id}-heading`} className="scroll-mt-[calc(var(--header-h)+1rem)] border-t border-border/70 pt-8 print:pt-3">
+      <h2 id={`${id}-heading`} className="mb-6 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground print:mb-2.5">
         {title}
       </h2>
       {children}
@@ -68,7 +71,7 @@ function Timeline({ entries }: { entries: TimelineEntry[] }) {
                 {entry.bullets.map((bullet, j) => (
                   <li key={j} className="flex gap-2.5">
                     <span className="select-none text-muted-foreground/50">—</span>
-                    <span className="text-pretty">
+                    <span className="min-w-0 text-pretty">
                       <Sci>{bullet}</Sci>
                     </span>
                   </li>
@@ -160,40 +163,40 @@ export function CVPage({ lang }: { lang: Lang }) {
       </div>
 
       <div className="space-y-12 print:space-y-5">
-        <Section title={t.employment}>
+        <Section id="employment" title={t.employment}>
           <Timeline entries={cv.employment} />
         </Section>
-        <Section title={t.education}>
+        <Section id="education" title={t.education}>
           <Timeline entries={cv.education} />
         </Section>
-        <Section title={t.researchExperience}>
+        <Section id="research" title={t.researchExperience}>
           <Timeline entries={cv.research} />
         </Section>
-        <Section title={t.projects}>
+        <Section id="projects" title={t.projects}>
           <Timeline entries={cv.projects} />
         </Section>
-        <Section title={t.awards}>
+        <Section id="awards" title={t.awards}>
           <Timeline entries={cv.awards} />
         </Section>
-        <Section title={t.invited}>
+        <Section id="invited" title={t.invited}>
           <Talks entries={talks.invited} />
         </Section>
-        <Section title={t.organisation}>
+        <Section id="organisation" title={t.organisation}>
           <Talks entries={talks.organisation} />
         </Section>
-        <Section title={t.participation}>
+        <Section id="participation" title={t.participation}>
           <Talks entries={talks.participation} />
         </Section>
-        <Section title={t.teaching}>
+        <Section id="teaching" title={t.teaching}>
           <Timeline entries={cv.teaching} />
         </Section>
-        <Section title={t.supervision}>
+        <Section id="supervision" title={t.supervision}>
           <Timeline entries={cv.supervision} />
         </Section>
-        <Section title={t.outreach}>
+        <Section id="outreach" title={t.outreach}>
           <Timeline entries={cv.outreach} />
         </Section>
-        <Section title={t.skills}>
+        <Section id="skills" title={t.skills}>
           <dl className="space-y-5 print:space-y-[0.7rem]">
             {cv.skills.map((skill) => (
               <div key={skill.label} className="break-inside-avoid sm:grid sm:grid-cols-[10.5rem_1fr] sm:gap-6 print:grid-cols-[7.5rem_1fr] print:gap-4">

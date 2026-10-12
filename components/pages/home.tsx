@@ -4,7 +4,16 @@ import { ArrowRight, FileText } from "lucide-react"
 
 import { LunaFigure } from "@/components/atlas/luna-figure"
 import { HomeNetwork } from "@/components/home-network"
-import { getAllNotes, getProfile, getPublications, getResearch } from "@/lib/content"
+import { getAtlas } from "@/lib/atlas"
+import {
+  getAllNotes,
+  getEvaluationCount,
+  getProfile,
+  getPublications,
+  getRecognition,
+  getResearch,
+  getSoftware,
+} from "@/lib/content"
 import { Sci } from "@/components/sci"
 import { dict, localePath, type Lang } from "@/lib/i18n"
 
@@ -93,11 +102,74 @@ function selectedWork(lang: Lang): Selected[] {
   return out
 }
 
+type Resource = { key: string; title: string; text: string; href: string; meta: { text: string; href?: string; external?: boolean }[] }
+
+/**
+ * What the site offers the field, each with its licence, version and how to
+ * cite it, all read from where they are kept (the atlas' meta, software.yaml,
+ * the evaluations, the notes, the glossary): nothing restated by hand.
+ */
+function resources(lang: Lang): Resource[] {
+  const t = dict(lang).home
+  const atlas = getAtlas(lang)
+  const meta = atlas.meta as { licence?: string; version?: string | null }
+  const lunasrim = getSoftware(lang).find((s) => s.id === "lunasrim")
+  const pypi = lunasrim?.links?.find((l) => /pypi/i.test(l.href))
+  const evaluations = getEvaluationCount()
+  const notes = getAllNotes().length
+  const out: Resource[] = [
+    {
+      key: "atlas",
+      title: t.resourceAtlas,
+      text: t.resourceAtlasText(atlas.reactions.length),
+      href: "/atlas",
+      meta: [
+        ...(meta.licence ? [{ text: t.licence(meta.licence) }] : []),
+        ...(meta.version ? [{ text: t.version(meta.version) }] : []),
+        { text: t.howToCite, href: "/atlas#cite" },
+      ],
+    },
+    {
+      key: "s-process",
+      title: t.resourceSProcess,
+      text: t.resourceSProcessText,
+      href: "/atlas/s-process",
+      meta: [{ text: t.resourceSProcessMeta, href: "/atlas#cite" }],
+    },
+  ]
+  if (evaluations > 0)
+    out.push({
+      key: "evaluations",
+      title: t.resourceEvaluations,
+      text: t.resourceEvaluationsText(evaluations),
+      href: "/evaluations",
+      meta: [{ text: t.resourceEvaluationsMeta }],
+    })
+  if (lunasrim)
+    out.push({
+      key: "lunasrim",
+      title: lunasrim.name,
+      text: lunasrim.tagline ?? "",
+      href: "/software#lunasrim",
+      meta: [
+        ...(lunasrim.version ? [{ text: t.version(lunasrim.version) }] : []),
+        ...(lunasrim.license ? [{ text: t.licence(lunasrim.license) }] : []),
+        ...(pypi ? [{ text: "PyPI", href: pypi.href, external: true }] : []),
+      ],
+    })
+  if (notes > 0) out.push({ key: "notes", title: t.resourceNotes, text: t.resourceNotesText(notes), href: "/notes", meta: [] })
+  if (atlas.glossary.length > 0)
+    out.push({ key: "glossary", title: t.resourceGlossary, text: t.resourceGlossaryText(atlas.glossary.length), href: "/glossary", meta: [] })
+  return out
+}
+
 export function HomePage({ lang }: { lang: Lang }) {
   const profile = getProfile(lang)
   const research = getResearch(lang)
   const notes = getAllNotes().slice(0, 3)
   const selected = selectedWork(lang)
+  const roles = getRecognition(lang)
+  const offered = resources(lang)
   const t = dict(lang).home
   const to = (path: string) => localePath(lang, path)
 
@@ -114,7 +186,7 @@ export function HomePage({ lang }: { lang: Lang }) {
             <span className="font-semibold text-foreground">{profile.name}</span>
             <span className="text-muted-foreground"> · {profile.role}</span>
           </p>
-          <h1 className="text-balance font-serif text-[2rem] font-semibold leading-[1.12] tracking-tight sm:text-5xl xl:text-[3.4rem]">
+          <h1 className="hyphens-auto text-balance font-serif text-[2rem] font-semibold leading-[1.12] tracking-tight sm:text-5xl xl:text-[3.4rem]">
             <Sci>{profile.tagline}</Sci>
           </h1>
           {profile.lead && (
@@ -145,6 +217,42 @@ export function HomePage({ lang }: { lang: Lang }) {
         </div>
       </section>
 
+      {/* -- roles and recognition ----------------------------------------- */}
+      {/* Straight under the opening, so a reader judging the person sees the
+          responsibilities without opening the CV; each one links to where it
+          is told in full. */}
+      {roles.length > 0 && (
+        <section aria-labelledby="roles-heading" className="border-t border-border/70 py-10">
+          <div className="mb-5 flex flex-wrap items-baseline justify-between gap-x-4">
+            <h2 id="roles-heading" className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
+              {t.rolesTitle}
+            </h2>
+            <Link prefetch={false} href={to("/cv")} className="inline-flex min-h-10 items-center text-sm text-link underline-offset-4 hover:underline">
+              {t.rolesMore}
+            </Link>
+          </div>
+          <ul className="grid gap-x-8 gap-y-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            {roles.map((role, i) => (
+              <li key={i} className="min-w-0">
+                <Link
+                  prefetch={false}
+                  href={to(role.href)}
+                  className="group -mx-2 block rounded-md px-2 py-2 transition-colors hover:bg-accent/60"
+                >
+                  <span className="block text-[0.9375rem] font-medium leading-snug text-foreground group-hover:text-link">
+                    <Sci>{role.label}</Sci>
+                  </span>
+                  <span className="block text-pretty text-sm leading-snug text-muted-foreground">
+                    <Sci>{role.what}</Sci>
+                  </span>
+                  <span className="mt-0.5 block text-xs text-muted-foreground">{role.date}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       {/* -- research: the longer version, and the four threads ----------- */}
       {/* One section rather than three (an "about", the threads, and the
           threads again among the selected work): the intro carries what the
@@ -162,14 +270,14 @@ export function HomePage({ lang }: { lang: Lang }) {
           {/* Beside "the rock above the laboratory": what 1.4 km of rock does. */}
           <Luna lang={lang} compact className="mt-6 max-w-sm" />
           <p className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-sm">
-            <Link href={to("/research")} className="inline-flex min-h-10 items-center text-link underline-offset-4 hover:underline">
+            <Link prefetch={false} href={to("/research")} className="inline-flex min-h-10 items-center text-link underline-offset-4 hover:underline">
               {t.allResearch}
             </Link>
-            <Link href={to("/cv")} className="inline-flex min-h-10 items-center gap-1.5 text-link underline-offset-4 hover:underline">
+            <Link prefetch={false} href={to("/cv")} className="inline-flex min-h-10 items-center gap-1.5 text-link underline-offset-4 hover:underline">
               <FileText className="h-3.5 w-3.5" />
               {t.cv}
             </Link>
-            <Link href={to("/software")} className="inline-flex min-h-10 items-center text-link underline-offset-4 hover:underline">
+            <Link prefetch={false} href={to("/software")} className="inline-flex min-h-10 items-center text-link underline-offset-4 hover:underline">
               {t.software}
             </Link>
           </p>
@@ -178,6 +286,7 @@ export function HomePage({ lang }: { lang: Lang }) {
         <div className="mt-10 grid content-start gap-x-10 gap-y-8 sm:grid-cols-2 lg:mt-1">
           {research.map((thread) => (
             <Link
+              prefetch={false}
               key={thread.id}
               href={to(`/research#${thread.id}`)}
               className="group block"
@@ -207,6 +316,7 @@ export function HomePage({ lang }: { lang: Lang }) {
               {selected.every((s) => s.external) ? t.selectedPapers : t.selected}
             </h2>
             <Link
+              prefetch={false}
               href={to("/publications")}
               className="inline-flex min-h-10 items-center text-sm text-link underline-offset-4 hover:underline"
             >
@@ -233,7 +343,7 @@ export function HomePage({ lang }: { lang: Lang }) {
                       <Sci>{item.title}</Sci>
                     </a>
                   ) : (
-                    <Link href={item.href} className="underline-offset-4 hover:text-link hover:underline">
+                    <Link prefetch={false} href={item.href} className="underline-offset-4 hover:text-link hover:underline">
                       <Sci>{item.title}</Sci>
                     </Link>
                   )}
@@ -260,6 +370,7 @@ export function HomePage({ lang }: { lang: Lang }) {
             {t.atlasText}
           </p>
           <Link
+            prefetch={false}
             href={to("/atlas")}
             className="group mt-auto inline-flex min-h-10 items-center gap-2 self-start pt-6 text-sm font-medium text-link underline-offset-4 hover:underline"
           >
@@ -275,6 +386,7 @@ export function HomePage({ lang }: { lang: Lang }) {
             {t.evaluationsText}
           </p>
           <Link
+            prefetch={false}
             href={to("/evaluations")}
             className="group mt-auto inline-flex min-h-10 items-center gap-2 self-start pt-6 text-sm font-medium text-link underline-offset-4 hover:underline"
           >
@@ -284,6 +396,66 @@ export function HomePage({ lang }: { lang: Lang }) {
         </div>
       </section>
 
+      {/* -- resources for the community ---------------------------------- */}
+      <section aria-labelledby="resources-heading" className="border-t border-border/70 py-14">
+        <h2 id="resources-heading" className="font-serif text-2xl font-semibold tracking-tight">
+          {t.resourcesTitle}
+        </h2>
+        <p className="mt-3 max-w-2xl text-pretty text-[0.95rem] leading-relaxed text-muted-foreground">{t.resourcesLead}</p>
+        <ul className="mt-8 grid gap-x-10 gap-y-7 sm:grid-cols-2 lg:grid-cols-3">
+          {offered.map((r) => (
+            <li key={r.key} className="min-w-0 border-t-2 border-foreground/15 pt-4">
+              <h3 className="font-serif text-[1.05rem] font-semibold tracking-tight">
+                <Link prefetch={false} href={to(r.href)} className="underline-offset-4 hover:text-link hover:underline">
+                  {r.title}
+                </Link>
+              </h3>
+              <p className="mt-1.5 text-pretty text-[0.95rem] leading-relaxed text-muted-foreground">
+                <Sci>{r.text}</Sci>
+              </p>
+              {r.meta.length > 0 && (
+                <p className="mt-2 flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground">
+                  {r.meta.map((m, i) => (
+                    <Fragment key={i}>
+                      {i > 0 && <span aria-hidden>·</span>}
+                      {m.href ? (
+                        m.external ? (
+                          <a href={m.href} target="_blank" rel="noreferrer" className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
+                            {m.text}
+                          </a>
+                        ) : (
+                          <Link prefetch={false} href={to(m.href)} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
+                            {m.text}
+                          </Link>
+                        )
+                      ) : (
+                        <span className="tabular">{m.text}</span>
+                      )}
+                    </Fragment>
+                  ))}
+                </p>
+              )}
+            </li>
+          ))}
+        </ul>
+        {/* Broader impact: the Italian half of the site, and the outreach on record. */}
+        <p className="mt-10 max-w-3xl text-pretty text-[0.95rem] leading-relaxed text-muted-foreground">
+          {t.impactBefore}
+          {lang === "en" ? (
+            <Link prefetch={false} href="/it" hrefLang="it" className="text-link underline underline-offset-4 decoration-link/40 hover:decoration-link">
+              {t.impactLink}
+            </Link>
+          ) : (
+            t.impactLink
+          )}
+          {t.impactAfter}
+          <Link prefetch={false} href={to("/cv#outreach")} className="text-link underline underline-offset-4 decoration-link/40 hover:decoration-link">
+            {t.impactCv}
+          </Link>
+          .
+        </p>
+      </section>
+
       {/* -- notes --------------------------------------------------------- */}
       <section className="border-t border-border/70 py-14">
         <div className="mb-10 flex break-after-avoid flex-wrap items-baseline justify-between gap-x-4">
@@ -291,6 +463,7 @@ export function HomePage({ lang }: { lang: Lang }) {
             {t.notes}
           </h2>
           <Link
+            prefetch={false}
             href={to("/notes")}
             className="text-sm text-link underline-offset-4 hover:underline"
           >
@@ -304,6 +477,7 @@ export function HomePage({ lang }: { lang: Lang }) {
         <div className="divide-y divide-border/70">
           {notes.map((note) => (
             <Link
+              prefetch={false}
               key={note.slug}
               href={to(`/notes/${note.slug}`)}
               // The notes are in English on every page.

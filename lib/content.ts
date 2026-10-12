@@ -64,8 +64,13 @@ export interface Publication {
   arxiv?: string
   /** "article" | "proceedings"; anything else lands in its own section. */
   kind: string
-  /** Marks the entry with a rule and heavier weight in the list. */
+  /**
+   * Marks the entry with a rule in the list. Not set in the YAML: derived
+   * here, true for a first-author paper and for one with a `role`.
+   */
   highlight?: boolean
+  /** My part in it, when the author list does not show it ("analysis lead"). */
+  role?: string
   /** Free text shown in place of a journal, e.g. "under review at Nature Physics". */
   status?: string
   /** Topic tags; `luna` marks a paper of the LUNA collaboration (the LUNA filter). */
@@ -85,6 +90,8 @@ export interface Profile {
   lead?: string
   /** "Selected work" on the landing page: DOIs and research-thread ids. */
   selected?: ({ publication: string } | { research: string })[]
+  /** "Roles and recognition": each points at its record (see getRecognition). */
+  recognition?: { source: string; label: string; what?: string }[]
   intro: string[]
   links: { label: string; href: string }[]
   cv: { label: string; file: string }
@@ -166,13 +173,16 @@ export const getProfile = (lang: Lang = "en"): Profile => {
 export const getResearch = (lang: Lang = "en") =>
   readYaml<{ threads: ResearchThread[] }>("research.yaml", lang).threads
 
+/** Jakub first in the author list. */
+export const isFirstAuthor = (p: Pick<Publication, "authors">) => /^J\. Skowronski\b/.test(p.authors.trim())
+
 export const getPublications = (lang: Lang = "en") =>
   // Newest first; ties keep their file order, which is where the manual
   // ordering of same-year entries lives.
   readYaml<{ publications: Publication[] }>("publications.yaml", lang)
     .publications.map((p, i) => ({ ...p, _i: i }))
     .sort((a, b) => b.year - a.year || a._i - b._i)
-    .map(({ _i, ...p }) => p)
+    .map(({ _i, ...p }) => ({ ...p, highlight: isFirstAuthor(p) || Boolean(p.role) }))
 
 export const getSoftware = (lang: Lang = "en") =>
   readYaml<{ software: SoftwareEntry[] }>("software.yaml", lang).software
@@ -196,6 +206,64 @@ export const getTalks = (lang: Lang = "en") =>
     organisation: TalkEntry[]
     participation: TalkEntry[]
   }>("talks.yaml", lang)
+
+/* -- roles and recognition ---------------------------------------------------- */
+
+export interface RecognitionItem {
+  label: string
+  what: string
+  /** As the record has it: "Jun 2025 — present", "Feb 2026". */
+  date: string
+  /** Where it is told in full, an English path: /research#agata, /cv#awards. */
+  href: string
+}
+
+/**
+ * The landing page's "Roles and recognition", from profile.yaml's
+ * `recognition`. Each item names its record (a research thread, a CV entry, a
+ * talk), found by its English title so the match does not depend on the
+ * translation; an item whose record is missing is left out, and its date and
+ * link are the record's, so the strip cannot claim what the CV does not.
+ */
+export function getRecognition(lang: Lang = "en"): RecognitionItem[] {
+  const items = getProfile(lang).recognition ?? []
+  const researchEn = getResearch("en")
+  const research = getResearch(lang)
+  const cvEn = getExperience("en") as unknown as Record<string, TimelineEntry[] | undefined>
+  const cv = getExperience(lang) as unknown as Record<string, TimelineEntry[] | undefined>
+  const talksEn = getTalks("en") as unknown as Record<string, TalkEntry[] | undefined>
+  const talks = getTalks(lang) as unknown as Record<string, TalkEntry[] | undefined>
+  const out: RecognitionItem[] = []
+  for (const item of items) {
+    const [kind, section = "", ...rest] = String(item.source ?? "").split("/")
+    const text = rest.join("/")
+    let date: string | undefined
+    let href = ""
+    if (kind === "research") {
+      const i = researchEn.findIndex((t) => t.id === section)
+      date = i >= 0 ? research[i]?.period : undefined
+      href = `/research#${section}`
+    } else if (kind === "cv") {
+      const i = cvEn[section]?.findIndex((e) => e.title.includes(text)) ?? -1
+      date = i >= 0 ? cv[section]?.[i]?.period : undefined
+      href = `/cv#${section}`
+    } else if (kind === "talks") {
+      const i = talksEn[section]?.findIndex((e) => e.event.includes(text)) ?? -1
+      date = i >= 0 ? talks[section]?.[i]?.date : undefined
+      href = `/cv#${section}`
+    }
+    if (date === undefined || !text && kind !== "research") continue
+    out.push({ label: item.label, what: item.what ?? "", date: String(date), href })
+  }
+  return out
+}
+
+/** The live evaluations: server/evaluations/<id>/info.json. */
+export function getEvaluationCount(): number {
+  const dir = path.join(process.cwd(), "server", "evaluations")
+  if (!fs.existsSync(dir)) return 0
+  return fs.readdirSync(dir).filter((id) => fs.existsSync(path.join(dir, id, "info.json"))).length
+}
 
 /* -- notes ----------------------------------------------------------------- */
 
