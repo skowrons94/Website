@@ -91,7 +91,7 @@ function Workspace({ id, known }: { id: string; known: boolean }) {
   // evaluation does not pay for calculations nobody looks at.
   useEffect(() => {
     if (!sessionId) return
-    if ((tab === "data" || tab === "plot") && data === null) loadData()
+    if ((tab === "data" || tab === "plot" || tab === "scheme") && data === null) loadData()
     if (tab === "extrap" && extrapolations === null) loadExtrapolations()
     // The smooth model curves, once the data are in (after an edit the
     // server sends them along when they are cheap; otherwise ask again).
