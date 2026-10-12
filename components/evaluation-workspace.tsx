@@ -318,8 +318,10 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
   const failed = Boolean(error) && !calculating && !expired
 
   const starting = (
-    <Placeholder busy={!activities.open && retryAt === null} tall={tab !== "scheme"}>
-      {(activities.open || retryAt !== null) && <ProgressTimer stage="open" activity={activities.open ?? null} retryAt={retryAt} variant="block" />}
+    <Placeholder tall>
+      <div className="flex min-h-[3.75rem] w-full max-w-md justify-center">
+        <ProgressTimer stage="open" activity={activities.open ?? null} retryAt={retryAt} variant="block" />
+      </div>
       <p className="text-sm">{t.starting(id)}</p>
       {IN_BROWSER && (
         <p className="max-w-sm text-center text-xs">
@@ -537,7 +539,11 @@ function Placeholder({ children, busy = false, tall = false }: { children?: Reac
   return (
     <div
       role="status"
-      className={`flex min-h-[20rem] flex-col items-center justify-start gap-3 rounded-lg border border-dashed border-border/80 px-3 pt-10 text-muted-foreground sm:min-h-[32rem] sm:pt-16 ${tall ? "lg:min-h-[48rem]" : ""}`}
+      className={`flex flex-col items-center justify-start gap-3 rounded-lg border border-dashed border-border/80 px-3 pt-10 text-muted-foreground sm:pt-16 ${
+        // The plot view is taller than a phone's screen: hold all of it, so
+        // nothing below is seen in one place and then pushed away.
+        tall ? "min-h-[100svh] lg:min-h-[48rem]" : "min-h-[20rem] sm:min-h-[32rem]"
+      }`}
     >
       {busy && <Loader2 className="h-6 w-6 animate-spin" aria-hidden />}
       {children ?? (busy && <p className="text-sm">{t.loadingView}</p>)}
@@ -561,7 +567,7 @@ function Pending({
 }) {
   if (failed) {
     return (
-      <div className="flex min-h-[20rem] items-start justify-center pt-10 sm:min-h-[32rem] lg:min-h-[48rem]">
+      <div className="flex min-h-[100svh] items-start justify-center pt-10 lg:min-h-[48rem]">
         <Button variant="outline" onClick={onRetry}>
           {retry}
         </Button>
@@ -570,7 +576,8 @@ function Pending({
   }
   return (
     <Placeholder tall>
-      {timer}
+      {/* The timer's room is kept while it has nothing to show yet. */}
+      <div className="flex min-h-[3.75rem] w-full max-w-md justify-center">{timer}</div>
       <span className="flex max-w-md items-center gap-2 text-center text-xs">
         {!timer && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
         {label}

@@ -267,7 +267,7 @@ export function DataPlot({
   // The dataset list starts open where there is room for it, and when it is
   // short: a long one (120 on ⁷Be) would stand between a keyboard and the sliders.
   useEffect(() => {
-    setListOpen(window.matchMedia("(min-width: 1024px)").matches && data.length <= 16)
+    setListOpen(window.matchMedia("(min-width: 1024px)").matches && data.length <= 8)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   // View switches redraw every panel: as transitions, so the switch itself paints at once.
@@ -868,6 +868,13 @@ export function DataPlot({
 
   return (
     <div className="space-y-4">
+      {/* The first stop in the plot view: past the view settings and the dataset list, straight to the sliders. */}
+      <a
+        href="#plot-levels"
+        className="sr-only w-fit rounded-md bg-card px-3 py-2 text-sm font-medium text-link ring-2 ring-ring focus:not-sr-only focus:inline-flex [&+*]:!mt-0 focus:[&+*]:!mt-4"
+      >
+        {lv.skipToLevels}
+      </a>
       {(anyScattering && quantity === "sfactor") || faceted || quantity === "rutherford" ? (
         <p className="text-xs text-muted-foreground">
           {anyScattering && quantity === "sfactor" && t.elasticNote}{" "}
@@ -1017,12 +1024,6 @@ export function DataPlot({
             </p>
           )}
 
-          <a
-            href="#plot-levels"
-            className="sr-only w-fit rounded-md bg-card px-3 py-2 text-sm font-medium text-link ring-2 ring-ring focus:not-sr-only focus:inline-flex max-lg:order-6"
-          >
-            {lv.skipToLevels}
-          </a>
           <details
             open={listOpen}
             onToggle={(event) => setListOpen((event.target as HTMLDetailsElement).open)}
