@@ -53,8 +53,8 @@ const en = {
     reactionsFitted: "Reactions fitted",
     channelsLabel: "Channels",
     paper: "Paper",
-    unpublished: "Unpublished",
-    noReference: "Unpublished",
+    unpublished: "Not yet published",
+    noReference: "Not yet published",
     allEvaluations: "All evaluations",
     headerEyebrow: "R-matrix evaluation · AZURE2",
     authors: "Authors",
@@ -85,7 +85,7 @@ const en = {
     aboutEvaluationHint: "What was fitted, energies, engine and how to cite",
     citeWithPaper: "Please cite the paper this evaluation belongs to:",
     citeNoPaper:
-      "This evaluation has no publication yet. Please cite this page with the date you used it, and the authors listed above.",
+      "This evaluation is not yet published. Please cite this page, with its version and the date you used it.",
     citeAzure: "and the AZURE2 code:",
     azureReference: "R. E. Azuma et al., Phys. Rev. C 81, 045805 (2010)",
     notFoundTitle: "No such evaluation",
@@ -98,6 +98,10 @@ const en = {
     citeWhat:
       "Cite the paper for the evaluation, AZURE2 for the code, and this page (with its version) if you use the interactive calculation or its numbers. The measured data belong to their authors: cite the original papers listed in the table of the Plot & data tab.",
     licence: (name: string) => `This page and the model file are shared under ${name}.`,
+    // --- evaluations (round 4) ---
+    whatIsThis: "What am I looking at?",
+    citeWhatNoPaper:
+      "Cite AZURE2 for the code, and this page (with its version) if you use the interactive calculation or its numbers. The measured data belong to their authors: cite the original papers listed in the table of the Plot & data tab.",
   },
 
   /* -- the evaluation workspace ------------------------------------------- */
@@ -257,7 +261,7 @@ const en = {
     // --- evaluations (round 3) ---
     tipData: "data × n",
     keyLabel: "Key",
-    keyText: "Points: measured data × their normalisation n, with ±1σ error bars. Black line: the R-matrix model.",
+    keyText: "Points: measured data × their normalisation n, with ±1σ error bars. Solid line: the R-matrix model.",
     keyOriginal: "Dashed grey line: the fit as published, before your changes.",
     zoomHint: "Drag across the plot to zoom in; double-click to reset.",
     resetZoom: "Reset zoom",
@@ -281,10 +285,33 @@ const en = {
     gamowTemperature: "Gamow window",
     gamowOff: "none",
     gamowBand: (T9: string) => `Gamow window, T₉ = ${T9}`,
-    gamowNote: (T9: string, E0: string, width: string, pair: string) =>
-      `Shaded: the Gamow window of ${pair} at T₉ = ${T9} (${T9} billion kelvin), centred at E₀ = ${E0} with width Δ = ${width} — the energies at which this reaction mostly happens in a star at that temperature.`,
+    gamowNote: (T9: string, kelvin: string, E0: string, width: string, pair: string) =>
+      `Shaded: the Gamow window of ${pair} at T₉ = ${T9} (${kelvin}), centred at E₀ = ${E0} with width Δ = ${width} — the energies at which this reaction mostly happens in a star at that temperature.`,
     glossaryLink: "More in the glossary",
+    kelvin: (value: string, billion: boolean, one: boolean) => `${value} ${billion ? "billion" : "million"} kelvin`,
+    atlasTemperatures: "Where it burns (reaction atlas)",
+    otherTemperatures: "Other temperatures",
+    angularCurve: (energy: string, from: string, to: string) => `E = ${energy} MeV · θ ${from}–${to}°`,
+    atAngle: (angle: string) => `θ = ${angle}°`,
+    sMinLabel: "S at the lowest energy",
+    noGamowScattering: "No Gamow window: elastic scattering is not a reaction that burns anything in a star.",
     editLevel: "Adjust its parameters →",
+    // --- evaluations (round 4) ---
+    modelLine: "R-matrix model",
+    publishedFit: "published fit",
+    resetAll: "Reset all",
+    resetAllHint: "Back to the evaluation's own parameters (every level)",
+    view: "View",
+    chi2Plain:
+      "χ²/N near 1 means the line passes through the points within their error bars; above 1 it misses some of them by more, often because of normalisations and systematic effects that the error bars leave out.",
+    chi2NormNote: (allOne: boolean) =>
+      `This page does not refit the normalisations: they stay at the values stored in the file${allOne ? " (n = 1 for every dataset)" : ""}, and the χ² shown counts only each point's own uncertainty, not a dataset's overall scale uncertainty.`,
+    chi2AllSummary: "χ² for all the data in the fit",
+    chi2AllText: (v: string) => `χ²/N = ${v} over every active dataset (per dataset in the table below).`,
+    elapsed: (s: string) => `${s} s`,
+    lastTook: (s: string) => `last ${s} s`,
+    nDatasets: (n: number) => `${n} datasets`,
+    sharedNote: "Panels of one kind share their energy axis; each has its own vertical scale.",
   },
 
   // --- levels (round 3) ---
@@ -375,8 +402,8 @@ const it: EvalDictionary = {
     reactionsFitted: "Reazioni nel fit",
     channelsLabel: "Canali",
     paper: "Articolo",
-    unpublished: "Non pubblicata",
-    noReference: "Non pubblicata",
+    unpublished: "Non ancora pubblicata",
+    noReference: "Non ancora pubblicata",
     allEvaluations: "Tutte le valutazioni",
     headerEyebrow: "Valutazione R-matrix · AZURE2",
     authors: "Autori",
@@ -407,7 +434,7 @@ const it: EvalDictionary = {
     aboutEvaluationHint: "Che cosa è stato adattato, energie, codice e come citare",
     citeWithPaper: "Cita l'articolo a cui appartiene questa valutazione:",
     citeNoPaper:
-      "Questa valutazione non è ancora pubblicata. Cita questa pagina, con la data in cui l'hai consultata, e gli autori indicati sopra.",
+      "Questa valutazione non è ancora pubblicata. Cita questa pagina, con la sua versione e la data in cui l'hai consultata.",
     citeAzure: "e il codice AZURE2:",
     azureReference: "R. E. Azuma et al., Phys. Rev. C 81, 045805 (2010)",
     notFoundTitle: "Valutazione inesistente",
@@ -420,6 +447,10 @@ const it: EvalDictionary = {
     citeWhat:
       "Cita l'articolo per la valutazione, AZURE2 per il codice e questa pagina (con la sua versione) se usi il calcolo interattivo o i suoi numeri. I dati misurati appartengono ai loro autori: cita gli articoli originali elencati nella tabella della scheda Grafico e dati.",
     licence: (name: string) => `Questa pagina e il file del modello sono distribuiti con licenza ${name}.`,
+    // --- evaluations (round 4) ---
+    whatIsThis: "Che cosa sto guardando?",
+    citeWhatNoPaper:
+      "Cita AZURE2 per il codice e questa pagina (con la sua versione) se usi il calcolo interattivo o i suoi numeri. I dati misurati appartengono ai loro autori: cita gli articoli originali elencati nella tabella della scheda Grafico e dati.",
   },
 
   /* -- the evaluation workspace ------------------------------------------- */
@@ -581,7 +612,7 @@ const it: EvalDictionary = {
     // --- evaluations (round 3) ---
     tipData: "dati × n",
     keyLabel: "Legenda",
-    keyText: "Punti: dati misurati × la loro normalizzazione n, con barre d'errore di ±1σ. Linea nera: il modello R-matrix.",
+    keyText: "Punti: dati misurati × la loro normalizzazione n, con barre d'errore di ±1σ. Linea continua: il modello R-matrix.",
     keyOriginal: "Linea grigia tratteggiata: il fit pubblicato, prima delle tue modifiche.",
     zoomHint: "Trascina sul grafico per ingrandire; doppio clic per tornare indietro.",
     resetZoom: "Annulla lo zoom",
@@ -605,10 +636,34 @@ const it: EvalDictionary = {
     gamowTemperature: "Finestra di Gamow",
     gamowOff: "nessuna",
     gamowBand: (T9: string) => `Finestra di Gamow, T₉ = ${T9}`,
-    gamowNote: (T9: string, E0: string, width: string, pair: string) =>
-      `In grigio: la finestra di Gamow di ${pair} a T₉ = ${T9} (${T9} miliardi di kelvin), centrata in E₀ = ${E0} e larga Δ = ${width}: le energie a cui questa reazione avviene per lo più in una stella a quella temperatura.`,
+    gamowNote: (T9: string, kelvin: string, E0: string, width: string, pair: string) =>
+      `In grigio: la finestra di Gamow di ${pair} a T₉ = ${T9} (${kelvin}), centrata in E₀ = ${E0} e larga Δ = ${width}: le energie a cui questa reazione avviene per lo più in una stella a quella temperatura.`,
     glossaryLink: "Approfondisci nel glossario",
+    kelvin: (value: string, billion: boolean, one: boolean) =>
+      `${value} ${billion ? (one ? "miliardo" : "miliardi") : one ? "milione" : "milioni"} di kelvin`,
+    atlasTemperatures: "Dove avviene (atlante delle reazioni)",
+    otherTemperatures: "Altre temperature",
+    angularCurve: (energy: string, from: string, to: string) => `E = ${energy} MeV · θ ${from}–${to}°`,
+    atAngle: (angle: string) => `θ = ${angle}°`,
+    sMinLabel: "S all'energia più bassa",
+    noGamowScattering: "Nessuna finestra di Gamow: la diffusione elastica non è una reazione che bruci qualcosa in una stella.",
     editLevel: "Regola i suoi parametri →",
+    // --- evaluations (round 4) ---
+    modelLine: "modello R-matrix",
+    publishedFit: "fit pubblicato",
+    resetAll: "Ripristina tutto",
+    resetAllHint: "Torna ai parametri della valutazione (tutti i livelli)",
+    view: "Vista",
+    chi2Plain:
+      "χ²/N vicino a 1 vuol dire che la linea passa per i punti entro le barre d'errore; sopra 1 ne manca alcuni di più, spesso per normalizzazioni ed effetti sistematici che le barre d'errore non includono.",
+    chi2NormNote: (allOne: boolean) =>
+      `Questa pagina non riadatta le normalizzazioni: restano ai valori memorizzati nel file${allOne ? " (n = 1 per ogni insieme di dati)" : ""}, e il χ² mostrato conta solo l'incertezza di ciascun punto, non quella sulla scala complessiva di un insieme di dati.`,
+    chi2AllSummary: "χ² per tutti i dati del fit",
+    chi2AllText: (v: string) => `χ²/N = ${v} su tutti gli insiemi di dati attivi (per ciascuno nella tabella qui sotto).`,
+    elapsed: (s: string) => `${s} s`,
+    lastTook: (s: string) => `l'ultimo ${s} s`,
+    nDatasets: (n: number) => `${n} insiemi di dati`,
+    sharedNote: "I pannelli dello stesso tipo condividono l'asse dell'energia; ciascuno ha la sua scala verticale.",
   },
 
   // --- levels (round 3) ---

@@ -84,22 +84,32 @@ function readUrl(): UrlState {
  * server already rendered its title and header above; an evaluation the API
  * serves but the build has not seen gets a title from the API instead.
  */
-export default function EvaluationWorkspace({ id, known }: { id: string; known: boolean }) {
+export interface WorkspaceProps {
+  id: string
+  known: boolean
+  /** Elastic scattering only (⁸Be, ²⁴Mg): cross sections, no S-factor, no Gamow window. */
+  scatteringOnly?: boolean
+  /** Where the atlas places the headline reaction (T₉, label): the Gamow windows offered. */
+  temperatures?: { T9: number; label: string }[]
+}
+
+export default function EvaluationWorkspace(props: WorkspaceProps) {
   return (
     <SessionProvider>
-      <Workspace id={id} known={known} />
+      <Workspace {...props} />
     </SessionProvider>
   )
 }
 
-function Workspace({ id, known }: { id: string; known: boolean }) {
+function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: WorkspaceProps) {
+  const defaultQuantity: Quantity = scatteringOnly ? "cross_section" : "sfactor"
   const lang = useLang()
   const t = useEvalDict().workspace
   const initial = useRef<UrlState | null>(null)
   const [tab, setTab] = useState<Tab>("scheme")
   const [tableOpen, setTableOpen] = useState(false)
   const [selected, setSelected] = useState<number[]>([])
-  const [quantity, setQuantity] = useState<Quantity>("sfactor")
+  const [quantity, setQuantity] = useState<Quantity>(defaultQuantity)
   const [selectedLevel, setSelectedLevel] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [progress, setProgress] = useState<string | null>(null)
@@ -142,7 +152,21 @@ function Workspace({ id, known }: { id: string; known: boolean }) {
     if (state.ds) setSelected(state.ds)
     if (state.q) setQuantity(state.q)
     if (state.level) setSelectedLevel(state.level)
+    // A link to a tab (?tab=plot from a reaction page): bring the tabs, and so
+    // the plot, into view rather than leave the reader at the page's top.
+    if (new URLSearchParams(window.location.search).has("tab")) {
+      fromUrl.current = true
+      requestAnimationFrame(scrollToTabs)
+    }
   }, [])
+  // Once more when the workspace has drawn (fonts and the header settle).
+  const fromUrl = useRef(false)
+  const wasReady = useRef(false)
+  useEffect(() => {
+    if (!scheme || wasReady.current) return
+    wasReady.current = true
+    if (fromUrl.current && window.scrollY > 0) requestAnimationFrame(scrollToTabs)
+  }, [scheme])
 
   useEffect(() => {
     if (id && sessionId === null && !loading) open(id)
@@ -151,25 +175,42 @@ function Workspace({ id, known }: { id: string; known: boolean }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
-  // Parameters edited in the shared link: applied once the model is open.
+  // Parameters edited in the shared link: applied once the model is open and
+  // its own data and smooth curves are in, so the published fit (the dashed
+  // line), the χ² it had and the Δχ² of each change survive the reload.
   const appliedParams = useRef(false)
   useEffect(() => {
     if (!sessionId || !scheme || appliedParams.current) return
-    appliedParams.current = true
     const params = initial.current?.params
-    if (params) updateParameters(params)
-  }, [sessionId, scheme, updateParameters])
+    if (!params) {
+      appliedParams.current = true
+      return
+    }
+    if (calculating) return
+    if (data === null) {
+      loadData()
+      return
+    }
+    if (fineStatus === "idle") {
+      loadFine()
+      return
+    }
+    if (fineStatus === "loading") return
+    appliedParams.current = true
+    updateParameters(params)
+  }, [sessionId, scheme, data, fineStatus, calculating, loadData, loadFine, updateParameters])
 
   // Each tab pulls what it needs the first time it is shown, so opening an
   // evaluation does not pay for calculations nobody looks at. The plot's
   // data also serve the extrapolations' overlay.
   useEffect(() => {
     if (!sessionId) return
-    if ((tab === "plot" || tab === "extrap") && data === null && !calculating) loadData()
+    const restoring = Boolean(initial.current?.params) && !appliedParams.current
+    if ((tab === "plot" || tab === "extrap") && data === null && !calculating && !restoring) loadData()
     if (tab === "extrap" && extrapolations === null && data !== null && !calculating) loadExtrapolations()
     // The smooth model curves, once the data are in (after an edit the
     // server sends them along when they are cheap; otherwise ask again).
-    if (tab === "plot" && data !== null && !calculating && fineStatus === "idle") loadFine()
+    if (tab === "plot" && data !== null && !calculating && fineStatus === "idle" && !restoring) loadFine()
   }, [tab, sessionId, data, extrapolations, loadData, loadExtrapolations, loadFine, fineStatus, calculating])
 
   // The plot opens on the headline reaction, unless the link chose.
@@ -181,7 +222,12 @@ function Workspace({ id, known }: { id: string; known: boolean }) {
       if (pair.is_photon || pair.threshold == null) continue
       for (const level of scheme?.levels ?? []) resonances.push(level.energy - pair.threshold)
     }
-    setSelected(defaultSelection(data, evaluation?.reactions?.[0], resonances))
+    // Surnames of the analysis' and the paper's authors: "J. Skowronski" → "Skowronski".
+    const own = [evaluation?.analysis, evaluation?.paper?.authors]
+      .flatMap((text) => (text ?? "").split(/,| and | e /))
+      .map((name) => name.replace(/\bet al\.?/g, "").trim().split(/\s+/).pop() ?? "")
+      .filter(Boolean)
+    setSelected(defaultSelection(data, evaluation?.reactions?.[0], resonances, own))
   }, [data, evaluation, scheme, selected.length])
 
   // The view in the address bar (replaceState: no history entry per click).
@@ -190,7 +236,7 @@ function Workspace({ id, known }: { id: string; known: boolean }) {
       const q = new URLSearchParams()
       if (tab !== "scheme") q.set("tab", tab)
       if (tab !== "scheme" && selected.length > 0) q.set("ds", selected.join(","))
-      if (tab !== "scheme" && quantity !== "sfactor") q.set("q", quantity)
+      if (tab !== "scheme" && quantity !== defaultQuantity) q.set("q", quantity)
       if (selectedLevel) q.set("level", selectedLevel)
       if (withParams && scheme) {
         const changed = changedValues(scheme)
@@ -200,7 +246,7 @@ function Workspace({ id, known }: { id: string; known: boolean }) {
       const text = q.toString().replace(/%2C/g, ",").replace(/%3A/g, ":")
       return text ? `?${text}` : ""
     },
-    [tab, selected, quantity, selectedLevel, scheme],
+    [tab, selected, quantity, selectedLevel, scheme, defaultQuantity],
   )
   useEffect(() => {
     if (!initial.current) return
@@ -265,7 +311,7 @@ function Workspace({ id, known }: { id: string; known: boolean }) {
     setSelectedLevel(key)
     setTab("plot")
     // Back to the tabs, so the plot and the opened sliders are in view.
-    requestAnimationFrame(() => document.querySelector('[role="tablist"]')?.scrollIntoView({ block: "start" }))
+    requestAnimationFrame(scrollToTabs)
   }
 
   return (
@@ -379,6 +425,8 @@ function Workspace({ id, known }: { id: string; known: boolean }) {
             ) : (
               <ExtrapPlot
                 headline={evaluation?.reactions?.[0]}
+                scatteringOnly={scatteringOnly}
+                temperatures={temperatures}
                 extrapolations={extrapolations}
                 data={data}
                 pairs={scheme?.pairs ?? []}
@@ -392,6 +440,16 @@ function Workspace({ id, known }: { id: string; known: boolean }) {
       </Tabs>
     </div>
   )
+}
+
+/** Scroll the tabs to just under the site header (whose height is `--header-h` when it sets it). */
+function scrollToTabs() {
+  const tabs = document.querySelector('[role="tablist"]')
+  if (!tabs) return
+  const raw = getComputedStyle(document.documentElement).getPropertyValue("--header-h").trim()
+  const css = parseFloat(raw) * (raw.endsWith("rem") ? 16 : 1)
+  const header = raw && Number.isFinite(css) ? css : (document.querySelector("header")?.getBoundingClientRect().height ?? 64)
+  window.scrollTo({ top: Math.max(0, tabs.getBoundingClientRect().top + window.scrollY - header - 12) })
 }
 
 /** Reserved space while something loads, so the footer does not jump. */

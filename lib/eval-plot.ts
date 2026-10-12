@@ -20,6 +20,7 @@
 import { texPlain } from "@/components/tex"
 import type { DataSegment, FineCurve, SchemePair } from "@/lib/api"
 import type { Lang } from "@/lib/i18n"
+import { decimal } from "@/lib/i18n-eval"
 import { rutherford, type CoulombPair } from "@/lib/rutherford"
 import { quantityLabel } from "@/lib/viz"
 
@@ -85,24 +86,26 @@ const PREFIXES = [
 ]
 
 /**
- * The unit a set of values reads best in: keV b or MeV b for an S-factor
- * (keV b unless something reaches 1 MeV b), b, mb, μb, … for a cross section
+ * The unit a set of values reads best in: keV b for an S-factor (on every
+ * tab), b, mb, μb, … for a cross section
  * (the largest value is ≥ 1 in it). One unit per plot, used by the axis, the
  * tooltip and every readout.
  */
 export function pickUnit(quantity: Quantity, observable: string, values: number[]): DisplayUnit {
   if (quantity === "rutherford") return { factor: 1, unit: "" }
   const max = Math.max(0, ...values.filter((v) => Number.isFinite(v)).map(Math.abs))
-  if (quantity === "sfactor") return max >= 1 || max === 0 ? { factor: 1, unit: "MeV b" } : { factor: 1e3, unit: "keV b" }
+  // keV b always, on every tab, so a number read on the plot and one read on
+  // the extrapolations can be compared as they stand.
+  if (quantity === "sfactor") return { factor: 1e3, unit: "keV b" }
   const base = observable.startsWith("differential") ? "b/sr" : "b"
   if (max === 0) return { factor: 1, unit: base }
   const chosen = PREFIXES.find((p) => max * p.factor >= 1) ?? PREFIXES[PREFIXES.length - 1]
   return { factor: chosen.factor, unit: chosen.p + base }
 }
 
-/** The S-factor unit for one value (readouts outside a plot): keV b below 1 MeV b. */
-export function sfactorUnit(valueMeVb: number): DisplayUnit {
-  return Math.abs(valueMeVb) >= 1 ? { factor: 1, unit: "MeV b" } : { factor: 1e3, unit: "keV b" }
+/** The S-factor unit for a readout outside a plot: keV b, as on the plots. */
+export function sfactorUnit(_valueMeVb?: number): DisplayUnit {
+  return { factor: 1e3, unit: "keV b" }
 }
 
 /** Y-axis title for a segment drawn as `asked`, in `unit`. */
@@ -209,13 +212,19 @@ const strip = (s: string) => s.normalize("NFKC").replace(/\s+/g, "")
 
 /**
  * The segments a plot should open on: those of the evaluation's headline
- * reaction (its first listed one), preferring datasets the model actually
- * fits (χ²/N ≤ 5) and, among them, the widest energy coverage — so the view
+ * reaction (its first listed one), preferring the evaluation's own
+ * measurements (dataset names carrying an author's surname, `own`), else
+ * datasets the model actually fits (χ²/N ≤ 5) and, among them, the widest energy coverage — so the view
  * reaches the resonances rather than one narrow low-energy set. Up to three
  * segments of one observable, adding one only where it extends the energy
  * range; never an angular distribution unless nothing else is there.
  */
-export function defaultSelection(data: DataSegment[], headline?: string | null, resonances: number[] = []): number[] {
+export function defaultSelection(
+  data: DataSegment[],
+  headline?: string | null,
+  resonances: number[] = [],
+  own: string[] = [],
+): number[] {
   const usable = data.filter((s) => s.active && (s.n_points ?? 0) > 0)
   // The headline reaction's own segments, elastic scattering included when
   // that is what the evaluation is about (⁸Be, ²⁴Mg).
@@ -226,8 +235,15 @@ export function defaultSelection(data: DataSegment[], headline?: string | null, 
     const first = data.find((s) => s.active) ?? data[0]
     return first ? [first.index] : []
   }
-  const fits = pool.filter((s) => s.chi2 === null || s.chi2 <= 5)
-  if (fits.length > 0) pool = fits
+  // The evaluation's own measurements first (LUNA and Felsenkeller for ¹³N):
+  // the reason the evaluation exists, shown whatever their χ².
+  const names = own.map((n) => n.toLowerCase()).filter((n) => n.length > 2)
+  const mine = pool.filter((s) => names.some((n) => datasetName(s).toLowerCase().includes(n)))
+  if (mine.length > 0) pool = mine
+  else {
+    const fits = pool.filter((s) => s.chi2 === null || s.chi2 <= 5)
+    if (fits.length > 0) pool = fits
+  }
   const energySegments = pool.filter((s) => !isAngular(s))
   if (energySegments.length > 0) pool = energySegments
 
@@ -414,4 +430,30 @@ export function plotCsv(
     out.push("")
   }
   return out.join("\n")
+}
+
+/* -- numbers ------------------------------------------------------------------ */
+
+const SUPER = "⁰¹²³⁴⁵⁶⁷⁸⁹"
+
+/**
+ * A number to read: `digits` significant figures, in powers of ten as
+ * "9.23 × 10⁻⁴" (never "9.23e-4") outside 0.01–10⁵, with the decimal comma in
+ * Italian and a real minus sign. Unicode superscripts: set it through <Sci>.
+ */
+export function numberText(value: number, lang: Lang, digits = 3): string {
+  if (!Number.isFinite(value)) return "—"
+  const a = Math.abs(value)
+  let text: string
+  if (a !== 0 && (a < 1e-2 || a >= 1e5)) {
+    let e = Math.floor(Math.log10(a))
+    let m = Number((value / 10 ** e).toPrecision(digits))
+    if (Math.abs(m) >= 10) {
+      m /= 10
+      e += 1
+    }
+    const exp = String(e).replace("-", "⁻").replace(/\d/g, (d) => SUPER[Number(d)])
+    text = `${m} × 10${exp}`
+  } else text = String(Number(value.toPrecision(digits)))
+  return decimal(text, lang).replace(/^-/, "−")
 }

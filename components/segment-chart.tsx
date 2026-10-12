@@ -4,7 +4,8 @@ import { useEffect, useId, useMemo, useRef, useState, type RefObject } from "rea
 
 import { useLang } from "@/components/lang-context"
 import { useEvalDict } from "@/components/eval-dict"
-import type { PlotPoint } from "@/lib/eval-plot"
+import { Sci } from "@/components/sci"
+import { numberText, type PlotPoint } from "@/lib/eval-plot"
 import { axisFormatter, linearTicks, logTicks, type Axis } from "@/lib/ticks"
 import { seriesShape } from "@/lib/viz"
 
@@ -19,10 +20,10 @@ import { seriesShape } from "@/lib/viz"
  * cursor that names the point, its uncertainty and its pull, brush-zoom with a
  * double-click reset, and an SVG that can be saved as it is.
  *
- * Colour: the measured points carry the series hue (≤ 3, lib/viz.ts); the
- * model is drawn in ink, so it never disappears into same-coloured markers,
- * and told apart by dash when several share the axes. A curve-only series
- * (an extrapolation) is drawn in its hue.
+ * Colour: the measured points carry the series hue (≤ 3, lib/viz.ts) and are
+ * drawn above the lines with a thin surface-coloured halo; the model is drawn
+ * in ink (one line per distinct calculation, told apart by dash when there are
+ * several). A curve-only series (an extrapolation) is drawn in its hue.
  */
 
 export interface ChartSeries {
@@ -33,6 +34,8 @@ export interface ChartSeries {
   curve: { x: number; y: number }[]
   /** The model before the current edit, drawn faint behind. */
   original?: { x: number; y: number }[]
+  /** Dash pattern of the curve ("" solid); by default by series order. */
+  dash?: string
 }
 
 export interface ChartBand {
@@ -165,11 +168,13 @@ function pathOf(
   return d
 }
 
-function Marker({ shape, x, y, r, fill }: { shape: string; x: number; y: number; r: number; fill: string }) {
-  if (shape === "square") return <rect x={x - r} y={y - r} width={2 * r} height={2 * r} fill={fill} />
+/** A marker; `halo` rings it with the surface colour so it stands out on a line. */
+function Marker({ shape, x, y, r, fill, halo = false }: { shape: string; x: number; y: number; r: number; fill: string; halo?: boolean }) {
+  const ring = halo ? { stroke: "var(--viz-surface)", strokeWidth: 2, paintOrder: "stroke" as const } : {}
+  if (shape === "square") return <rect x={x - r} y={y - r} width={2 * r} height={2 * r} fill={fill} {...ring} />
   if (shape === "triangle")
-    return <path d={`M${x},${y - r * 1.2}L${x + r * 1.1},${y + r * 0.8}L${x - r * 1.1},${y + r * 0.8}Z`} fill={fill} />
-  return <circle cx={x} cy={y} r={r} fill={fill} />
+    return <path d={`M${x},${y - r * 1.2}L${x + r * 1.1},${y + r * 0.8}L${x - r * 1.1},${y + r * 0.8}Z`} fill={fill} {...ring} />
+  return <circle cx={x} cy={y} r={r} fill={fill} {...ring} />
 }
 
 interface Hover {
@@ -237,9 +242,12 @@ export function SegmentChart({
       if (x < lo) lo = x
       if (x > hi) hi = x
     }
+    // Fitted to the measurements when there are any (a model line may run
+    // wider, over the range of every dataset of its kind); else to the curves.
+    const anyPoints = series.some((s) => s.points.length > 0)
     for (const s of series) {
       for (const p of s.points) if (okX(p.x) && okY(p.y)) take(p.x)
-      if (s.points.length === 0) for (const p of s.curve) if (okX(p.x) && okY(p.y)) take(p.x)
+      if (!anyPoints) for (const p of s.curve) if (okX(p.x) && okY(p.y)) take(p.x)
     }
     if (!Number.isFinite(lo)) return null
     return fittedAxis(lo, hi, logX, 6)
@@ -329,16 +337,11 @@ export function SegmentChart({
   }
 
   const total = series.reduce((n, s) => n + s.points.length, 0)
-  const r = total > 40 || size.width < 500 ? 2 : 3
+  const r = total > 40 || size.width < 500 || series.length > 1 ? 2.5 : 3
   const fmtX = axisFormatter(xAxis, logX, lang)
   const fmtY = axisFormatter(yAxis, logY, lang)
 
-  const num = (v: number) => {
-    if (!Number.isFinite(v)) return "—"
-    const a = Math.abs(v)
-    const s = a !== 0 && (a < 1e-3 || a >= 1e5) ? v.toExponential(2) : String(Number(v.toPrecision(4)))
-    return (lang === "it" ? s.replace(".", ",") : s).replace("-", "−")
-  }
+  const num = (v: number) => <Sci>{numberText(v, lang, 4)}</Sci>
 
   // -- pointer -------------------------------------------------------------------
   const local = (event: React.PointerEvent) => {
@@ -438,7 +441,7 @@ export function SegmentChart({
         </div>
         <div className="tabular-nums">
           {t.tipData}: {num(p.y)}
-          {p.error !== undefined && ` ± ${num(Number(p.error.toPrecision(2)))}`} {yUnit}
+          {p.error !== undefined && <> ± {num(Number(p.error.toPrecision(2)))}</>} {yUnit}
         </div>
         {p.model !== undefined && (
           <div className="tabular-nums text-muted-foreground">
@@ -461,7 +464,11 @@ export function SegmentChart({
         </div>
         {hover.curveAt.values.map((v) => (
           <div key={v.label} className="flex items-center gap-1.5 tabular-nums">
-            <span className="inline-block h-0.5 w-3 shrink-0" style={{ background: `var(--viz-series-${v.slot + 1})` }} aria-hidden />
+            <span
+              className="inline-block h-0.5 w-3 shrink-0"
+              style={{ background: colouredCurves ? `var(--viz-series-${v.slot + 1})` : "var(--viz-text)" }}
+              aria-hidden
+            />
             <span className="truncate">{v.label}</span>
             <span className="shrink-0">
               {num(v.y)} {yUnit}
@@ -550,6 +557,25 @@ export function SegmentChart({
                 ) : null,
               )}
 
+              {curves.map((c, i) => {
+                const s = series[i]
+                const ink = colouredCurves ? `var(--viz-series-${(s.slot ?? i) + 1})` : "var(--viz-text)"
+                return (
+                  <g key={`c${i}`}>
+                    <path d={c.model} fill="none" stroke="var(--viz-surface)" strokeWidth={4.5} strokeLinejoin="round" opacity={0.8} />
+                    <path
+                      d={c.model}
+                      fill="none"
+                      stroke={ink}
+                      strokeWidth={colouredCurves ? 2 : 1.6}
+                      strokeDasharray={(s.dash ?? (colouredCurves ? "" : DASHES[i % DASHES.length])) || undefined}
+                      strokeLinejoin="round"
+                    />
+                  </g>
+                )
+              })}
+
+              {/* Measurements above the model lines, each with a thin halo. */}
               {series.map((s, i) => {
                 const colour = `var(--viz-series-${(s.slot ?? i) + 1})`
                 return (
@@ -563,27 +589,9 @@ export function SegmentChart({
                     })}
                     {s.points.map((p, k) =>
                       usableX(p.x) && usableY(p.y) ? (
-                        <Marker key={`m${k}`} shape={seriesShape(s.slot ?? i)} x={sx(p.x)} y={sy(p.y)} r={r} fill={colour} />
+                        <Marker key={`m${k}`} shape={seriesShape(s.slot ?? i)} x={sx(p.x)} y={sy(p.y)} r={r} fill={colour} halo />
                       ) : null,
                     )}
-                  </g>
-                )
-              })}
-
-              {curves.map((c, i) => {
-                const s = series[i]
-                const ink = colouredCurves ? `var(--viz-series-${(s.slot ?? i) + 1})` : "var(--viz-text)"
-                return (
-                  <g key={`c${i}`}>
-                    <path d={c.model} fill="none" stroke="var(--viz-surface)" strokeWidth={4.5} strokeLinejoin="round" opacity={0.8} />
-                    <path
-                      d={c.model}
-                      fill="none"
-                      stroke={ink}
-                      strokeWidth={colouredCurves ? 2 : 1.6}
-                      strokeDasharray={colouredCurves ? undefined : DASHES[i % DASHES.length] || undefined}
-                      strokeLinejoin="round"
-                    />
                   </g>
                 )
               })}
