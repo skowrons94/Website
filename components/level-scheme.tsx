@@ -34,6 +34,7 @@ import {
   type SchemeLevel,
 } from "@/lib/api"
 import {
+  energyDecimals,
   formatEnergy,
   formatQuantity,
   quantityName,
@@ -54,7 +55,15 @@ interface Props {
   scheme: Scheme
   evaluation: Evaluation
   sessionId: string
+  /** The selected level ("<jgroup>-<level>"), shared with the plot's sliders. */
+  selectedLevel?: string | null
+  onSelectLevel?: (key: string | null) => void
+  /** Open the selected level's sliders (in the plot view). */
+  onEditLevel?: (key: string) => void
 }
+
+/** The key a level is selected by: "<jgroup>-<level>" (lib/level-layout's levelKey). */
+const levelKey = (level: Pick<SchemeLevel, "jgroup" | "level">) => `${level.jgroup}-${level.level}`
 
 /** Sort J^pi labels by spin, then parity: 1/2- before 1/2+ before 3/2-. */
 function jpiOrder(jpi: string): number {
@@ -68,9 +77,38 @@ function jpiLatex(jpi: string): string {
   return jpi.replace(/([+-])$/, "^{$1}")
 }
 
-export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
+export function LevelScheme({ scheme, evaluation, sessionId, selectedLevel: shared, onSelectLevel, onEditLevel }: Props) {
   const lang = useLang()
   const t = useDict().workspace
+  // Controlled by the workspace when it passes a selection, else local.
+  const [localSelection, setLocalSelection] = useState<string | null>(null)
+  const selectedLevel = shared !== undefined ? shared : localSelection
+  const selectLevel = (key: string | null) => {
+    setLocalSelection(key)
+    onSelectLevel?.(key)
+  }
+  // The excitation-energy range of the fitted data, from the API's pairs.
+  const dataRange = useMemo(() => {
+    let min = Infinity
+    let max = -Infinity
+    for (const p of scheme.pairs) {
+      if (p.data_ex_min != null) min = Math.min(min, p.data_ex_min)
+      if (p.data_ex_max != null) max = Math.max(max, p.data_ex_max)
+    }
+    return Number.isFinite(min) ? { min, max } : null
+  }, [scheme.pairs])
+  // Levels with an edited parameter (drawn with a halo).
+  const editedLevels = useMemo(
+    () =>
+      scheme.levels
+        .filter((l) => l.energy !== l.initial_energy || l.channels.some((c) => c.width !== c.initial_width))
+        .map(levelKey),
+    [scheme.levels],
+  )
+  const selected = scheme.levels.find((l) => levelKey(l) === selectedLevel)
+  const selectedFree = selected
+    ? (selected.energy_fixed ? 0 : 1) + selected.channels.filter((c) => !c.fixed).length
+    : 0
   const [showFixed, setShowFixed] = useState(true)
   const [selectedJpi, setSelectedJpi] = useState<string[]>([])
   const [energyMin, setEnergyMin] = useState("")
@@ -134,6 +172,54 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
     setEnergyMin("")
     setEnergyMax("")
   }
+
+  const channelList = (channels: SchemeLevel["channels"]) =>
+    channels.length === 0 ? (
+                              <p className="text-xs text-muted-foreground">
+                                {t.noFreeChannels}
+                              </p>
+                            ) : (
+                              <ul className="space-y-1.5">
+                                {channels.map((channel, i) => (
+                                  <li
+                                    key={i}
+                                    className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1"
+                                  >
+                                    <span className="flex items-baseline gap-2">
+                                      <Tex
+                                        math={quantitySymbol(
+                                          channel.quantity,
+                                          channel.label,
+                                        )}
+                                      />
+                                      <span className="text-xs text-muted-foreground">
+                                        L={channel.L}, S={channel.S}
+                                        {channel.radiation_type &&
+                                          channel.radiation_type !== "P" &&
+                                          ` · ${channel.radiation_type}${channel.L}`}
+                                        {channel.quantity !== "width" && (
+                                          <span className="ml-1.5">
+                                            · {quantityName(channel.quantity, lang)}
+                                          </span>
+                                        )}
+                                      </span>
+                                    </span>
+                                    <span className="flex items-baseline gap-2 tabular-nums">
+                                      {formatQuantity(channel.width, channel.unit).text.replace("-", "\u2212")}{" "}
+                                      <Unit unit={formatQuantity(channel.width, channel.unit).unit} />
+                                      {channel.fixed ? (
+                                        <Lock className="h-3 w-3 text-muted-foreground" />
+                                      ) : (
+                                        <Unlock className="h-3 w-3 text-muted-foreground" />
+                                      )}
+                                    </span>
+                                  </li>
+                                ))}
+                              </ul>
+                            )
+
+  const decimals = energyDecimals(scheme.levels.map((l) => l.initial_energy))
+  const energyText = (v: number) => formatEnergy(v, decimals)
 
   return (
     <div className="space-y-6">
@@ -243,7 +329,30 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
         </CardContent>
       </Card>
 
-      <LevelDiagram levels={filtered} />
+      {/* Props of the round-3 diagram, asserted so that this file compiles
+          against either version of it. */}
+      <LevelDiagram
+        {...({
+          levels: filtered,
+          pairs: scheme.pairs,
+          selectedLevel,
+          onSelectLevel: selectLevel,
+          dataRange,
+          editedLevels,
+        } as unknown as React.ComponentProps<typeof LevelDiagram>)}
+      />
+
+      {selected && onEditLevel && selectedFree > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border bg-card px-4 py-2.5 text-sm">
+          <span>
+            <Tex math={jpiLatex(selected.jpi)} /> {formatEnergy(selected.energy)} MeV ·{" "}
+            <span className="text-muted-foreground">{t.nParameters(selectedFree)}</span>
+          </span>
+          <Button size="sm" onClick={() => onEditLevel(levelKey(selected))}>
+            {t.editLevel}
+          </Button>
+        </div>
+      )}
 
       <Card>
         <CardHeader className="pb-3">
@@ -251,7 +360,40 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
           <CardDescription>{t.selectRow}</CardDescription>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
+          {/* Phones: one card per level, channels on tap. */}
+          <ul className="divide-y sm:hidden">
+            {filtered.map((level) => {
+              const key = keyOf(level)
+              const open = expanded.includes(key)
+              const channels = showFixed ? level.channels : level.channels.filter((c) => !c.fixed)
+              const free = (level.energy_fixed ? 0 : 1) + level.channels.filter((c) => !c.fixed).length
+              return (
+                <li key={key} className={selectedLevel === key ? "bg-muted/60" : undefined}>
+                  <button
+                    type="button"
+                    aria-expanded={open}
+                    onClick={() => {
+                      toggleExpanded(key)
+                      selectLevel(key)
+                    }}
+                    className="flex min-h-11 w-full items-center gap-3 px-4 py-2 text-left text-sm"
+                  >
+                    {open ? <ChevronDown className="h-4 w-4 shrink-0" aria-hidden /> : <ChevronRight className="h-4 w-4 shrink-0" aria-hidden />}
+                    <span className="w-12 shrink-0">
+                      <Tex math={jpiLatex(level.jpi)} />
+                    </span>
+                    <span className="tabular-nums">{energyText(level.energy)} MeV</span>
+                    <span className="ml-auto flex items-center gap-1 text-xs text-muted-foreground">
+                      {level.energy_fixed ? <Lock className="h-3 w-3" aria-hidden /> : <Unlock className="h-3 w-3" aria-hidden />}
+                      {free > 0 ? `${free} ${t.freeWord}` : t.fixedWord}
+                    </span>
+                  </button>
+                  {open && <div className="px-4 pb-3 pl-11 text-sm">{channelList(channels)}</div>}
+                </li>
+              )
+            })}
+          </ul>
+          <div className="overflow-x-auto max-sm:hidden">
             <table className="w-full min-w-[40rem] text-sm">
               <thead>
                 <tr className="border-b text-left text-xs font-medium text-muted-foreground">
@@ -281,8 +423,11 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
                   return (
                     <Fragment key={key}>
                       <tr
-                        onClick={() => toggleExpanded(key)}
-                        className="cursor-pointer border-b hover:bg-muted/40"
+                        onClick={() => {
+                          toggleExpanded(key)
+                          selectLevel(key)
+                        }}
+                        className={`cursor-pointer border-b hover:bg-muted/40 ${selectedLevel === key ? "bg-muted/60" : ""}`}
                       >
                         <td className="px-1 py-1 text-muted-foreground">
                           <button
@@ -306,10 +451,10 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
                           <Tex math={jpiLatex(level.jpi)} />
                         </td>
                         <td className="px-2 py-2 text-right tabular-nums">
-                          {formatEnergy(level.energy)}
+                          {energyText(level.energy)}
                           {level.energy !== level.initial_energy && (
                             <span className="ml-1.5 text-xs text-muted-foreground">
-                              {t.was(formatEnergy(level.initial_energy))}
+                              {t.was(energyText(level.initial_energy))}
                             </span>
                           )}
                         </td>
@@ -340,49 +485,7 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
                         <tr className="border-b bg-muted/20">
                           <td />
                           <td colSpan={5} className="px-2 py-3">
-                            {channels.length === 0 ? (
-                              <p className="text-xs text-muted-foreground">
-                                {t.noFreeChannels}
-                              </p>
-                            ) : (
-                              <ul className="space-y-1.5">
-                                {channels.map((channel, i) => (
-                                  <li
-                                    key={i}
-                                    className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1"
-                                  >
-                                    <span className="flex items-baseline gap-2">
-                                      <Tex
-                                        math={quantitySymbol(
-                                          channel.quantity,
-                                          channel.label,
-                                        )}
-                                      />
-                                      <span className="text-xs text-muted-foreground">
-                                        L={channel.L}, S={channel.S}
-                                        {channel.radiation_type &&
-                                          channel.radiation_type !== "P" &&
-                                          ` · ${channel.radiation_type}${channel.L}`}
-                                        {channel.quantity !== "width" && (
-                                          <span className="ml-1.5">
-                                            · {quantityName(channel.quantity, lang)}
-                                          </span>
-                                        )}
-                                      </span>
-                                    </span>
-                                    <span className="flex items-baseline gap-2 tabular-nums">
-                                      {formatQuantity(channel.width, channel.unit).text.replace("-", "\u2212")}{" "}
-                                      <Unit unit={formatQuantity(channel.width, channel.unit).unit} />
-                                      {channel.fixed ? (
-                                        <Lock className="h-3 w-3 text-muted-foreground" />
-                                      ) : (
-                                        <Unlock className="h-3 w-3 text-muted-foreground" />
-                                      )}
-                                    </span>
-                                  </li>
-                                ))}
-                              </ul>
-                            )}
+                            {channelList(channels)}
                           </td>
                         </tr>
                       )}
