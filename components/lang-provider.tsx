@@ -1,20 +1,16 @@
 "use client"
 
-import { createContext, useContext } from "react"
+import { useContext } from "react"
 
-import { dict, type Dictionary, type Lang } from "@/lib/i18n"
+import { LangContext } from "@/components/lang-context"
+import { dict, type Dictionary } from "@/lib/i18n"
 
-/**
- * The page's language, for client components deep in the tree (the map, the
- * timeline, the evaluation workspace). Server components take `lang` as a prop
- * instead; each root layout (`app/(en)`, `app/it`) sets this once.
+/*
+ * The language context lives in components/lang-context.tsx (which the root
+ * layout uses, without the dictionaries); this module adds `useDict` for the
+ * client components that need UI strings, and re-exports the rest so their
+ * imports stay as they were.
  */
-const LangContext = createContext<Lang>("en")
-
-export function LangProvider({ lang, children }: { lang: Lang; children: React.ReactNode }) {
-  return <LangContext.Provider value={lang}>{children}</LangContext.Provider>
-}
-
-export const useLang = (): Lang => useContext(LangContext)
+export { LangProvider, useLang } from "@/components/lang-context"
 
 export const useDict = (): Dictionary => dict(useContext(LangContext))

@@ -6,29 +6,15 @@
  * profile, the research threads, the atlas — is translated in the content files
  * themselves, as `*_it` fields beside the English (see `lib/localize.mjs`).
  *
- * No file access, so client components import it as freely as server ones.
+ * No file access, so client components can import it; but it weighs about
+ * 20 kB compressed in a browser bundle, so the site chrome (header, footer,
+ * search) takes its strings as props from the server instead.
  */
 
-export type Lang = "en" | "it"
-export const LANGS: Lang[] = ["en", "it"]
-
-/** The path of `path` (an English, root-relative path) in `lang`. */
-export function localePath(lang: Lang, path: string): string {
-  if (lang === "en" || !path.startsWith("/") || path.startsWith("//")) return path
-  if (path === "/" || path.startsWith("/#") || path.startsWith("/?")) return `/it${path.slice(1)}`
-  return `/it${path}`
-}
-
-/** Which language a pathname (without the base path) is in. */
-export function langOf(pathname: string): Lang {
-  return pathname === "/it" || pathname.startsWith("/it/") ? "it" : "en"
-}
-
-/** The English path a localized pathname corresponds to. */
-export function englishPath(pathname: string): string {
-  if (langOf(pathname) === "en") return pathname || "/"
-  return pathname.slice(3) || "/"
-}
+// The language type and the path helpers live in lib/locale.ts, which client
+// components can import without pulling in the dictionaries below.
+export { LANGS, englishPath, langOf, localePath, type Lang } from "@/lib/locale"
+import type { Lang } from "@/lib/locale"
 
 /** `1.5` → `1,5` in Italian. */
 export function decimal(text: string | number, lang: Lang): string {
@@ -63,6 +49,30 @@ const en = {
     theme: "Toggle colour theme",
     language: "Language",
     switchTo: "Read this page in English",
+    // --- site (round 3) ---
+    home: "Home",
+    learn: "Learn",
+    glossary: "Glossary",
+    methods: "Methods and laboratories",
+    methodsShort: "Methods",
+    timeline: "Timeline",
+    sProcess: "The s-process",
+    groups: { work: "Work", explore: "Explore", learn: "Learn" },
+    // One line each, under the label in the phone menu and the Learn menu.
+    descriptions: {
+      research: "Underground measurements, R-matrix theory, γ\u2011ray tracking",
+      atlas: "The reactions that power stars, on the chart of nuclides",
+      evaluations: "Live R-matrix fits you can adjust",
+      publications: "Articles and conference proceedings",
+      cv: "Employment, education, talks and teaching",
+      software: "AZURE2, LunaSRIM and other code",
+      notes: "R-matrix theory written out, with worked examples",
+      glossary: "The words the atlas uses, in plain language",
+      methods: "How reactions are measured, and where",
+      timeline: "A century of nuclear astrophysics",
+      sProcess: "How stars make half the heavy elements",
+    },
+    breadcrumb: "Breadcrumb",
   },
   footer: {
     work: "Work",
@@ -78,6 +88,38 @@ const en = {
     glossary: "Glossary",
     methods: "Methods and laboratories",
     notes: "Notes on R-matrix theory",
+  },
+  // --- site (round 3) ---
+  search: {
+    button: "Search",
+    title: "Search the site",
+    placeholder: "Reactions, terms, notes, papers…",
+    close: "Close",
+    loading: "Loading…",
+    error: "The search index could not be loaded. Try again later.",
+    // Plain strings with {q} and {n}, not functions: the search dialog is a
+    // client component and gets these as props from the server.
+    none: "Nothing found for “{q}”.",
+    countOne: "1 result",
+    countMany: "{n} results",
+    suggestions: "Go to",
+    hintMove: "move",
+    hintOpen: "open",
+    hintClose: "close",
+    external: "opens the publisher's page",
+    groups: {
+      page: "Pages",
+      process: "Processes in stars",
+      reaction: "Reactions",
+      evaluation: "Evaluations",
+      glossary: "Glossary",
+      note: "Notes",
+      section: "Sections of notes",
+      research: "Research",
+      method: "Methods",
+      facility: "Laboratories",
+      publication: "Publications",
+    } as Record<string, string>,
   },
   notFound: {
     title: "Page not found",
@@ -120,9 +162,10 @@ const en = {
     firstAuthor: "First author",
     about: "In more detail",
     // --- site (round 2) ---
-    legendCapture: "proton capture",
-    legendDecay: "β⁺ decay",
-    legendClose: "(p,α): back to carbon",
+    // --- site (round 3) ---: the legend in plain words
+    legendCapture: "a proton is captured",
+    legendDecay: "β⁺ decay: a proton turns into a neutron",
+    legendClose: "proton in, helium out: back to carbon",
     selectedPapers: "Selected papers",
   },
 
@@ -173,6 +216,8 @@ const en = {
     year: "Year",
     allYears: "All years",
     shown: (n: number) => (n === 1 ? "1 publication shown" : `${n} publications shown`),
+    // --- site (round 3) ---
+    none: "No publication matches this filter.",
   },
 
   /* -- CV ----------------------------------------------------------------- */
@@ -837,6 +882,29 @@ const it: Dictionary = {
     theme: "Cambia tema chiaro/scuro",
     language: "Lingua",
     switchTo: "Leggi questa pagina in italiano",
+    // --- site (round 3) ---
+    home: "Home",
+    learn: "Approfondire",
+    glossary: "Glossario",
+    methods: "Metodi e laboratori",
+    methodsShort: "Metodi",
+    timeline: "Cronologia",
+    sProcess: "Il processo s",
+    groups: { work: "Lavoro", explore: "Esplorare", learn: "Approfondire" },
+    descriptions: {
+      research: "Misure sotterranee, teoria R-matrix, tracciamento dei raggi γ",
+      atlas: "Le reazioni che alimentano le stelle, sulla carta dei nuclidi",
+      evaluations: "Fit R-matrix dal vivo, da modificare",
+      publications: "Articoli e atti di congressi",
+      cv: "Impieghi, formazione, seminari e didattica",
+      software: "AZURE2, LunaSRIM e altro codice",
+      notes: "La teoria R-matrix per esteso, con esempi svolti (in inglese)",
+      glossary: "Le parole dell'atlante, in linguaggio semplice",
+      methods: "Come si misurano le reazioni, e dove",
+      timeline: "Un secolo di astrofisica nucleare",
+      sProcess: "Come le stelle producono metà degli elementi pesanti",
+    },
+    breadcrumb: "Percorso",
   },
   footer: {
     work: "Lavoro",
@@ -852,6 +920,36 @@ const it: Dictionary = {
     glossary: "Glossario",
     methods: "Metodi e laboratori",
     notes: "Note sulla teoria R-matrix",
+  },
+  // --- site (round 3) ---
+  search: {
+    button: "Cerca",
+    title: "Cerca nel sito",
+    placeholder: "Reazioni, termini, note, articoli…",
+    close: "Chiudi",
+    loading: "Caricamento…",
+    error: "Non è stato possibile caricare l'indice di ricerca. Riprova più tardi.",
+    none: "Nessun risultato per «{q}».",
+    countOne: "1 risultato",
+    countMany: "{n} risultati",
+    suggestions: "Vai a",
+    hintMove: "sposta",
+    hintOpen: "apri",
+    hintClose: "chiudi",
+    external: "apre la pagina dell'editore",
+    groups: {
+      page: "Pagine",
+      process: "Processi nelle stelle",
+      reaction: "Reazioni",
+      evaluation: "Valutazioni",
+      glossary: "Glossario",
+      note: "Note",
+      section: "Sezioni delle note",
+      research: "Ricerca",
+      method: "Metodi",
+      facility: "Laboratori",
+      publication: "Pubblicazioni",
+    } as Record<string, string>,
   },
   notFound: {
     title: "Pagina non trovata",
@@ -898,9 +996,10 @@ const it: Dictionary = {
     firstAuthor: "Primo autore",
     about: "Più nel dettaglio",
     // --- site (round 2) ---
-    legendCapture: "cattura protonica",
-    legendDecay: "decadimento β⁺",
-    legendClose: "(p,α): di nuovo carbonio",
+    // --- site (round 3) ---: la legenda in parole semplici
+    legendCapture: "viene catturato un protone",
+    legendDecay: "decadimento β⁺: un protone diventa un neutrone",
+    legendClose: "entra un protone, esce un elio: di nuovo carbonio",
     selectedPapers: "Articoli scelti",
   },
 
@@ -951,6 +1050,8 @@ const it: Dictionary = {
     year: "Anno",
     allYears: "Tutti gli anni",
     shown: (n: number) => (n === 1 ? "1 pubblicazione mostrata" : `${n} pubblicazioni mostrate`),
+    // --- site (round 3) ---
+    none: "Nessuna pubblicazione corrisponde a questo filtro.",
   },
 
   /* -- CV ----------------------------------------------------------------- */

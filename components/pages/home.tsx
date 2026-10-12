@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Fragment } from "react"
 import { ArrowRight, FileText } from "lucide-react"
 
+import { LunaFigure } from "@/components/atlas/luna-figure"
 import { HomeNetwork } from "@/components/home-network"
 import { getAllNotes, getProfile, getPublications, getResearch } from "@/lib/content"
 import { Sci } from "@/components/sci"
@@ -34,6 +35,11 @@ function Linked({ text, lang }: { text: string; lang: Lang }) {
   if (last < text.length) parts.push(<Sci key={`t${last}`}>{text.slice(last)}</Sci>)
   return <Fragment>{parts}</Fragment>
 }
+
+// The atlas' LUNA picture, small. `compact` (labels sized for a small figure,
+// the numbered key folded away) is the atlas' to add; typed loosely here so
+// this page builds with or without it.
+const Luna = LunaFigure as React.ComponentType<React.ComponentProps<typeof LunaFigure> & { compact?: boolean }>
 
 type Selected = {
   key: string
@@ -153,6 +159,8 @@ export function HomePage({ lang }: { lang: Lang }) {
               </p>
             ))}
           </div>
+          {/* Beside "the rock above the laboratory": what 1.4 km of rock does. */}
+          <Luna lang={lang} compact className="mt-6 max-w-sm" />
           <p className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-sm">
             <Link href={to("/research")} className="inline-flex min-h-10 items-center text-link underline-offset-4 hover:underline">
               {t.allResearch}
@@ -167,7 +175,7 @@ export function HomePage({ lang }: { lang: Lang }) {
           </p>
         </div>
 
-        <div className="mt-10 grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:mt-1">
+        <div className="mt-10 grid content-start gap-x-10 gap-y-8 sm:grid-cols-2 lg:mt-1">
           {research.map((thread) => (
             <Link
               key={thread.id}
@@ -194,7 +202,7 @@ export function HomePage({ lang }: { lang: Lang }) {
       {/* -- selected papers ----------------------------------------------- */}
       {selected.length > 0 && (
         <section className="border-t border-border/70 py-14" aria-labelledby="selected-heading">
-          <div className="mb-8 flex break-after-avoid items-baseline justify-between gap-4">
+          <div className="mb-8 flex break-after-avoid flex-wrap items-baseline justify-between gap-x-4">
             <h2 id="selected-heading" className="font-serif text-2xl font-semibold tracking-tight">
               {selected.every((s) => s.external) ? t.selectedPapers : t.selected}
             </h2>
@@ -244,8 +252,8 @@ export function HomePage({ lang }: { lang: Lang }) {
           and the outreach half of the site is as close to the top as the
           specialist half. */}
       <section className="grid gap-6 border-t border-border/70 py-14 lg:grid-cols-2">
-        <div className="flex flex-col rounded-lg border border-border bg-card p-6 sm:p-8 lg:p-10">
-          <h2 className="font-serif text-2xl font-semibold tracking-tight">
+        <div className="flex min-w-0 flex-col rounded-lg border border-border bg-card p-6 sm:p-8 lg:p-10">
+          <h2 className="hyphens-auto break-words font-serif text-2xl font-semibold tracking-tight">
             {t.atlasTitle}
           </h2>
           <p className="mt-4 max-w-2xl text-pretty leading-relaxed text-muted-foreground">
@@ -259,8 +267,8 @@ export function HomePage({ lang }: { lang: Lang }) {
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </Link>
         </div>
-        <div className="flex flex-col rounded-lg border border-border bg-card p-6 sm:p-8 lg:p-10">
-          <h2 className="font-serif text-2xl font-semibold tracking-tight">
+        <div className="flex min-w-0 flex-col rounded-lg border border-border bg-card p-6 sm:p-8 lg:p-10">
+          <h2 className="hyphens-auto break-words font-serif text-2xl font-semibold tracking-tight">
             {t.evaluationsTitle}
           </h2>
           <p className="mt-4 max-w-2xl text-pretty leading-relaxed text-muted-foreground">
@@ -278,7 +286,7 @@ export function HomePage({ lang }: { lang: Lang }) {
 
       {/* -- notes --------------------------------------------------------- */}
       <section className="border-t border-border/70 py-14">
-        <div className="mb-10 flex break-after-avoid items-baseline justify-between gap-4">
+        <div className="mb-10 flex break-after-avoid flex-wrap items-baseline justify-between gap-x-4">
           <h2 className="font-serif text-2xl font-semibold tracking-tight">
             {t.notes}
           </h2>

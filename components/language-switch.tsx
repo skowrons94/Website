@@ -3,7 +3,8 @@
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 
-import { dict, englishPath, localePath, type Lang } from "@/lib/i18n"
+import type { ChromeStrings } from "@/lib/chrome-strings"
+import { englishPath, localePath, type Lang } from "@/lib/locale"
 
 /**
  * EN / IT: the same page in the other language.
@@ -15,15 +16,14 @@ import { dict, englishPath, localePath, type Lang } from "@/lib/i18n"
  * the switch. The two languages have different root layouts, so the router
  * does a full load, as it must for `<html lang>` to change.
  */
-export function LanguageSwitch({ lang }: { lang: Lang }) {
+export function LanguageSwitch({ lang, strings }: { lang: Lang; strings: ChromeStrings["language"] }) {
   const pathname = usePathname() ?? "/"
   const router = useRouter()
   const other: Lang = lang === "en" ? "it" : "en"
   const target = localePath(other, englishPath(pathname))
-  const t = dict(other)
 
   return (
-    <div role="group" aria-label={dict(lang).nav.language} className="flex items-center text-xs font-medium">
+    <div role="group" aria-label={strings.label} className="flex shrink-0 items-center text-xs font-medium">
       {/* The current language, shown beside the other on a wide screen only. */}
       <span aria-current="true" className="hidden px-1 text-foreground sm:inline">
         {lang.toUpperCase()}
@@ -35,15 +35,15 @@ export function LanguageSwitch({ lang }: { lang: Lang }) {
         href={target}
         hrefLang={other}
         lang={other}
-        title={t.nav.switchTo}
-        aria-label={`${t.langName}: ${t.nav.switchTo}`}
+        title={strings.otherSwitchTo}
+        aria-label={`${strings.otherName}: ${strings.otherSwitchTo}`}
         onClick={(event) => {
           const extra = `${window.location.search}${window.location.hash}`
           if (!extra || event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return
           event.preventDefault()
           router.push(`${target}${extra}`)
         }}
-        className="inline-flex h-10 min-w-10 items-center justify-center rounded-md px-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+        className="inline-flex h-10 min-w-10 shrink-0 items-center justify-center rounded-md px-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
       >
         {other.toUpperCase()}
       </Link>

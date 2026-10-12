@@ -6,6 +6,7 @@ import { LangProvider } from "@/components/lang-provider"
 import { NotFoundBody } from "@/components/not-found-body"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
+import { chromeStrings } from "@/lib/chrome-strings"
 import type { Profile } from "@/lib/content"
 import { langOf, type Lang } from "@/lib/i18n"
 
@@ -28,7 +29,7 @@ export function NotFoundClient({ profiles }: { profiles: Record<Lang, Profile> }
   return (
     <LangProvider lang={lang}>
       <div className="flex min-h-screen flex-col">
-        <SiteHeader name={profiles[lang].name} lang={lang} />
+        <SiteHeader name={profiles[lang].name} lang={lang} strings={chromeStrings(lang)} />
         <main id="content" tabIndex={-1} className="flex-1 focus:outline-none">
           <NotFoundBody lang={lang} />
         </main>
