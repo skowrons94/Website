@@ -10,13 +10,45 @@ import type { Lang } from "@/lib/locale"
 export interface RatesRef {
   key: string
   text: string
+  /** what the page takes from it, in each language */
+  note?: { en: string; it: string }
   doi?: string
   url?: string
 }
 
 /** The references of each rates page. */
-export const LIGHT_REFS = ["cyburt2010", "smith2023", "willcox2018", "lodders2021", "bahcall2001", "woosley2002", "karakas2014", "jose1998", "iliadis2002", "wallace1982", "shampine1997"]
-export const SPROCESS_REFS = ["cyburt2010", "smith2023", "willcox2018", "lodders2021", "kaeppeler2011", "straniero2006", "karakas2014", "mohr2016", "woosley2002", "wallace1982", "shampine1997"]
+export const LIGHT_REFS = [
+  "cyburt2010",
+  "smith2023",
+  "willcox2018",
+  "kondev2021",
+  "lodders2021",
+  "bahcall2001",
+  "woosley2002",
+  "karakas2014",
+  "jose1998",
+  "ritossa1996",
+  "iliadis2002",
+  "wallace1982",
+  "sandu1997",
+  "shampine1997",
+]
+export const SPROCESS_REFS = [
+  "cyburt2010",
+  "smith2023",
+  "willcox2018",
+  "kondev2021",
+  "lodders2021",
+  "kaeppeler2011",
+  "straniero2006",
+  "karakas2014",
+  "pignatari2010",
+  "woosley2002",
+  "jung1992",
+  "wallace1982",
+  "sandu1997",
+  "shampine1997",
+]
 
 export const RATES_REFS: RatesRef[] = [
   {
@@ -33,6 +65,15 @@ export const RATES_REFS: RatesRef[] = [
     key: "willcox2018",
     text: "D. E. Willcox and M. Zingale, pynucastro: an interface to nuclear reaction rates and code generator for reaction network equations, JOSS 3, 588 (2018)",
     doi: "10.21105/joss.00588",
+  },
+  {
+    key: "kondev2021",
+    text: "F. G. Kondev, M. Wang, W. J. Huang, S. Naimi and G. Audi, The NUBASE2020 evaluation of nuclear physics properties, Chinese Phys. C 45, 030001 (2021)",
+    note: {
+      en: "half-lives, and the ground-state decay of ²⁶Al",
+      it: "tempi di dimezzamento, e il decadimento dello stato fondamentale del ²⁶Al",
+    },
+    doi: "10.1088/1674-1137/abddae",
   },
   {
     key: "lodders2021",
@@ -60,6 +101,11 @@ export const RATES_REFS: RatesRef[] = [
     doi: "10.1086/305244",
   },
   {
+    key: "ritossa1996",
+    text: "C. Ritossa, E. García-Berro and I. Iben Jr., On the evolution of stars that form electron-degenerate cores processed by carbon burning. II. Isotope abundances and thermal pulses in a 10 M☉ model with an ONe core, ApJ 460, 489 (1996)",
+    note: { en: "the ONe white dwarf of the ONe nova", it: "la nana bianca ONe della nova ONe" },
+  },
+  {
     key: "iliadis2002",
     text: "C. Iliadis et al., The effects of thermonuclear reaction-rate variations on nova nucleosynthesis: a sensitivity study, ApJS 142, 105 (2002)",
     doi: "10.1086/341400",
@@ -75,18 +121,34 @@ export const RATES_REFS: RatesRef[] = [
     doi: "10.1016/j.nuclphysa.2005.01.011",
   },
   {
-    key: "mohr2016",
-    text: "P. Mohr et al., Re-evaluation of the ¹⁶O(n,γ)¹⁷O cross section at astrophysical energies and its role as neutron poison in the s process, ApJ 827, 29 (2016)",
-    url: "https://arxiv.org/abs/1605.02639",
+    key: "pignatari2010",
+    text: "M. Pignatari et al., The weak s-process in massive stars and its dependence on the neutron capture cross sections, ApJ 710, 1557 (2010)",
+    doi: "10.1088/0004-637X/710/2/1557",
+  },
+  {
+    key: "jung1992",
+    text: "M. Jung et al., First observation of bound-state β⁻ decay, Phys. Rev. Lett. 69, 2164 (1992)",
+    note: { en: "why ¹⁶⁴Er is not made here", it: "perché qui non si forma il ¹⁶⁴Er" },
+    doi: "10.1103/PhysRevLett.69.2164",
   },
   {
     key: "wallace1982",
-    text: "R. K. Wallace, S. E. Woosley and T. A. Weaver, The thermonuclear model for X-ray transients, ApJ 258, 696 (1982) — the screening prescription (screen5)",
+    text: "R. K. Wallace, S. E. Woosley and T. A. Weaver, The thermonuclear model for X-ray transients, ApJ 258, 696 (1982)",
+    note: { en: "the screening prescription (screen5)", it: "la prescrizione per la schermatura (screen5)" },
     doi: "10.1086/160119",
   },
   {
+    key: "sandu1997",
+    text: "A. Sandu, J. G. Verwer, J. G. Blom, E. J. Spee, G. R. Carmichael and F. A. Potra, Benchmarking stiff ODE solvers for atmospheric chemistry problems II: Rosenbrock solvers, Atmos. Environ. 31, 3459 (1997)",
+    note: {
+      en: "RODAS3, the Rosenbrock integrator the explorer runs",
+      it: "RODAS3, l'integratore di Rosenbrock che usa l'esploratore",
+    },
+  },
+  {
     key: "shampine1997",
-    text: "L. F. Shampine and M. W. Reichelt, The MATLAB ODE suite, SIAM J. Sci. Comput. 18, 1 (1997) — the Rosenbrock integrator",
+    text: "L. F. Shampine and M. W. Reichelt, The MATLAB ODE suite, SIAM J. Sci. Comput. 18, 1 (1997)",
+    note: { en: "ode23s, the second integrator", it: "ode23s, il secondo integratore" },
     doi: "10.1137/S1064827594276424",
   },
 ]
@@ -97,7 +159,7 @@ const TEXT = {
     reaclib:
       "Reaction rates: the JINA REACLIB database (Cyburt et al. 2010), snapshot of 30 March 2025 as distributed with pynucastro; each rate's own source is listed with it in the specialist tables. REACLIB is free to use with citation.",
     pynucastro:
-      "The networks, the rate sources, the solar composition and the screening were exported with pynucastro (Smith et al. 2023; Willcox & Zingale 2018), BSD 3-Clause licence. The browser's solver is checked against pynucastro's own integration of the same networks (scripts/rates/reference.py).",
+      "The networks, the rate sources, the solar composition and the screening were exported with pynucastro (Smith et al. 2023; Willcox & Zingale 2018), BSD 3-Clause licence. The browser's solver is checked against pynucastro's own integration of the same networks.",
     refs: "References",
   },
   it: {
@@ -105,7 +167,7 @@ const TEXT = {
     reaclib:
       "Tassi di reazione: il database JINA REACLIB (Cyburt et al. 2010), versione del 30 marzo 2025 distribuita con pynucastro; la fonte di ogni tasso è indicata accanto a esso nelle tabelle per specialisti. REACLIB è libero di essere usato, citandolo.",
     pynucastro:
-      "Le reti, le fonti dei tassi, la composizione solare e lo schermo elettronico sono stati esportati con pynucastro (Smith et al. 2023; Willcox e Zingale 2018), licenza BSD 3-Clause. Il risolutore del browser è verificato con l'integrazione delle stesse reti fatta da pynucastro (scripts/rates/reference.py).",
+      "Le reti, le fonti dei tassi, la composizione solare e la schermatura elettronica sono state esportate con pynucastro (Smith et al. 2023; Willcox e Zingale 2018), licenza BSD 3-Clause. Il risolutore del browser è verificato con l'integrazione delle stesse reti fatta da pynucastro.",
     refs: "Bibliografia",
   },
 } as const
@@ -152,9 +214,21 @@ export function RatesCredits({ lang, keys }: { lang: Lang; keys?: string[] }) {
           <li key={r.key} className="grid grid-cols-[1.75rem_minmax(0,1fr)]">
             <span className="tabular text-muted-foreground">{i + 1}.</span>
             <span>
-              <Sci>{r.text}</Sci>.{" "}
+              <Sci>{r.text}</Sci>
+              {r.note && (
+                <span className="text-muted-foreground">
+                  {" "}
+                  — <Sci>{r.note[lang]}</Sci>
+                </span>
+              )}
+              .{" "}
               {r.url && !r.doi && (
-                <a href={r.url} className="break-all text-link underline-offset-4 hover:underline" target="_blank" rel="noreferrer">
+                <a
+                  href={r.url}
+                  className="break-all text-link underline-offset-4 hover:underline"
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   {r.url.replace(/^https?:\/\//, "")}
                 </a>
               )}

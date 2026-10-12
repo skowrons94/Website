@@ -17,12 +17,22 @@
 #   reference   the default reference of the "relative to" rate plot
 #   cycle       optional: the reactions of the main cycle or chain, among
 #               which the slowest step is the bottleneck
-#   show        the nuclei the abundance plot opens with (at most three)
+#   show        the nuclei the abundance plot opens with (at most three: the
+#               fuel, the ash and one nucleus the network is about)
 #   notes       optional {en, it}: a caveat shown to specialists
+#   newer       optional {reaction: {en, it}}: rates REACLIB still takes from
+#               an older source although newer data exist (flagged in the
+#               specialist table)
+#   not_modelled optional {nucleus: {en, it}}: nuclei whose production needs
+#               physics the network lacks (greyed out, with the reason)
+#
+# Decays: every REACLIB decay of a nucleus living longer than 10⁸ years
+# (NUBASE2020) is dropped, and the laboratory ground-state decay of ²⁶Al is
+# added to REACLIB's isomer term (pyna_export.py: lab_decays).
 
 networks:
   - id: pp
-    show: [he3, be7, d]
+    show: [p, he4, he3]
     family: pp
     nuclei: [p, d, he3, he4, li7, be7, b8]
     select: all
@@ -43,13 +53,17 @@ networks:
       - He3_He4_to_Be7_reaclib
       - Be7_p_to_B8_reaclib
     reference: He3_He3_to_p_p_He4_reaclib
+    newer:
+      d_p_to_He3_reaclib:
+        en: "REACLIB: Descouvemont et al. 2004 (de04). LUNA measured it at Big Bang energies: Mossa et al. 2020, Nature 587, 210."
+        it: "REACLIB: Descouvemont et al. 2004 (de04). LUNA l'ha misurata alle energie del Big Bang: Mossa et al. 2020, Nature 587, 210."
     cycle:
       - p_p_to_d_beta_pos_reaclib
       - d_p_to_He3_reaclib
       - He3_He3_to_p_p_He4_reaclib
 
   - id: cno
-    show: [c12, c13, n14]
+    show: [p, c12, n14]
     family: cno
     nuclei: [p, he4, c12, c13, n13, n14, n15, o14, o15, o16, o17, o18, f17, f18, f19, ne18, ne19, ne20]
     select: hydrogen-burning
@@ -66,6 +80,16 @@ networks:
       - N15_p_to_O16_reaclib
       - O17_p_to_He4_N14_reaclib
     reference: N14_p_to_O15_reaclib
+    newer:
+      C12_p_to_N13_reaclib:
+        en: "REACLIB: ls09. Newer: LUNA, Skowronski et al. 2023, PRL 131, 162701."
+        it: "REACLIB: ls09. Più recente: LUNA, Skowronski et al. 2023, PRL 131, 162701."
+      C13_p_to_N14_reaclib:
+        en: "REACLIB: NACRE 1999. Newer: LUNA, Skowronski et al. 2023, PRL 131, 162701."
+        it: "REACLIB: NACRE 1999. Più recente: LUNA, Skowronski et al. 2023, PRL 131, 162701."
+      O17_p_to_He4_N14_reaclib:
+        en: "REACLIB: Iliadis et al. 2010 (il10). Newer: LUNA, Bruno et al. 2016, PRL 117, 142502 (the 64.5 keV resonance)."
+        it: "REACLIB: Iliadis et al. 2010 (il10). Più recente: LUNA, Bruno et al. 2016, PRL 117, 142502 (la risonanza a 64,5 keV)."
     cycle:
       - C12_p_to_N13_reaclib
       - N13_to_C13_beta_pos_reaclib
@@ -75,12 +99,16 @@ networks:
       - N15_p_to_He4_C12_reaclib
 
   - id: nena
-    show: [ne21, ne22, na23]
+    show: [p, ne22, na23]
     family: nena
     nuclei: [p, he4, ne20, ne21, ne22, na21, na22, na23, mg22, mg23, mg24]
     select: hydrogen-burning
-    scenarios: [agb-hbb, massive-25, nova]
+    scenarios: [agb-hbb, massive-25, nova-one]
     fuel: p
+    newer:
+      Ne22_p_to_Na23_reaclib:
+        en: "REACLIB: Kelly et al. 2017 (ke17). Newer: LUNA, Ferraro et al. 2018, PRL 121, 172701."
+        it: "REACLIB: Kelly et al. 2017 (ke17). Più recente: LUNA, Ferraro et al. 2018, PRL 121, 172701."
     key:
       - Ne20_p_to_Na21_reaclib
       - Ne21_p_to_Na22_reaclib
@@ -97,15 +125,19 @@ networks:
       - Na23_p_to_He4_Ne20_reaclib
 
   - id: mgal
-    show: [mg25, al26, mg26]
+    show: [p, mg25, al26]
     notes:
-      en: "REACLIB has one ²⁶Al: ²⁵Mg(p,γ) feeds the ground state (t½ = 7.2 × 10⁵ yr) entirely, while in a star part of it goes to the short-lived isomer of ²⁶Al (6.3 s), which decays to ²⁶Mg without leaving ²⁶Al behind; the ²⁶Al here is an upper limit."
-      it: "REACLIB ha un solo ²⁶Al: la ²⁵Mg(p,γ) alimenta tutto lo stato fondamentale (t½ = 7,2 × 10⁵ anni), mentre in una stella una parte va all'isomero di vita breve del ²⁶Al (6,3 s), che decade in ²⁶Mg senza lasciare ²⁶Al; il ²⁶Al qui è un limite superiore."
+      en: "²⁶Al is one species here. Its decay is the laboratory β⁺ decay of the ground state (t½ = 7.17 × 10⁵ yr, NUBASE2020; REACLIB lacks it) plus REACLIB's term for the thermally populated isomer ²⁶Alᵐ (228 keV, 6.3 s), which assumes the two in equilibrium: true above about 0.4 GK only, so at nova temperatures the decay is an upper bound, and below 0.05 GK the term vanishes. ²⁵Mg(p,γ) feeds the ground state entirely, while in a star part of it goes to the isomer, which decays to ²⁶Mg without leaving ²⁶Al: the ²⁶Al here is an upper limit."
+      it: "Qui il ²⁶Al è una sola specie. Il suo decadimento è il decadimento β⁺ di laboratorio dello stato fondamentale (t½ = 7,17 × 10⁵ anni, NUBASE2020; REACLIB non lo contiene) più il termine di REACLIB per l'isomero ²⁶Alᵐ popolato termicamente (228 keV, 6,3 s), che suppone i due in equilibrio: vero solo sopra circa 0,4 GK, quindi alle temperature di una nova il decadimento è un limite superiore, e sotto 0,05 GK il termine si annulla. La ²⁵Mg(p,γ) alimenta tutto lo stato fondamentale, mentre in una stella una parte va all'isomero, che decade in ²⁶Mg senza lasciare ²⁶Al: il ²⁶Al qui è un limite superiore."
     family: mgal
     nuclei: [p, he4, mg24, mg25, mg26, al25, al26, al27, si26, si27, si28]
     select: hydrogen-burning
-    scenarios: [agb-hbb, massive-25, nova]
+    scenarios: [agb-hbb, massive-25, nova-one]
     fuel: p
+    newer:
+      Mg25_p_to_Al26_reaclib:
+        en: "REACLIB: Iliadis et al. 2010 (il10). Newer: LUNA, Straniero et al. 2013, ApJ 763, 100 (resonance strengths and the ground-state fraction)."
+        it: "REACLIB: Iliadis et al. 2010 (il10). Più recente: LUNA, Straniero et al. 2013, ApJ 763, 100 (forze delle risonanze e frazione allo stato fondamentale)."
     key:
       - Mg24_p_to_Al25_reaclib
       - Mg25_p_to_Al26_reaclib
@@ -152,6 +184,22 @@ networks:
       - id: branches
         reactions: [Kr85_n_to_Kr86_reaclib, Zr93_n_to_Zr94_reaclib, Sm151_n_to_Sm152_reaclib, Tm171_n_to_Tm172_reaclib, Tl204_n_to_Tl205_reaclib]
     knobs: [c13, n14, ne22]
+    newer:
+      C13_He4_to_n_O16_reaclib:
+        en: "REACLIB: Guo et al. 2012 (gl12). Newer: LUNA, Ciani et al. 2021, PRL 127, 152701."
+        it: "REACLIB: Guo et al. 2012 (gl12). Più recente: LUNA, Ciani et al. 2021, PRL 127, 152701."
+      N14_n_to_p_C14_reaclib:
+        en: "REACLIB: Caughlan & Fowler 1988 (cf88), the main poison of the pocket; newer measurements exist."
+        it: "REACLIB: Caughlan e Fowler 1988 (cf88), il veleno principale della tasca; esistono misure più recenti."
+    # stable nuclei whose s-process production needs decays REACLIB does
+    # not have (stellar, temperature-dependent ones)
+    not_modelled:
+      er164:
+        en: "needs the decay of ¹⁶³Dy in the star (stable in the laboratory, β⁻-unstable when ionised; Jung et al. 1992), not modelled"
+        it: "richiede il decadimento del ¹⁶³Dy nella stella (stabile in laboratorio, instabile β⁻ quando è ionizzato; Jung et al. 1992), non modellato"
+      hf176:
+        en: "needs the short-lived isomer of ¹⁷⁶Lu, thermally populated in the star (Takahashi & Yokoi 1987), not modelled"
+        it: "richiede l'isomero di vita breve del ¹⁷⁶Lu, popolato termicamente nella stella (Takahashi e Yokoi 1987), non modellato"
     # 481 nuclei: the explorer's burns run at rtol 1e-3 (RODAS3 then agrees
     # with pynucastro to ~5e-5; npm run test:rates checks it at 1e-6)
     solver: { rtol: 1.0e-3 }

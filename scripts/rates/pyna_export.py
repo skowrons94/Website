@@ -13,13 +13,14 @@ Schema (schema_version 1) — CGS throughout; `units` in the file spells
 every unit out:
 
     schema, schema_version, id, family, title{en,it}, provenance{...}, units{...}
-    nuclei[]      {name, Z, A, label, code, halfLife_s}
+    nuclei[]      {name, Z, A, label, code, halfLife_s}   (NUBASE2020, null when stable)
     reactions[]   {id, label, atlas, target, reactants[idx], products[idx], prefactor,
                    densExp, ye, screen[[Z1,A1,Z2,A2]], Q_MeV, chapter, weak,
                    weakType, rate{kind, ...}, sources[]}
                   rate.kind "reaclib": {sets[{a[7], set, flag}], validity_T9}
                   (a later kind "table" would carry {T9[], log10[]} instead)
-    ui            {key[], reference, fuel, cycle[], show[]}  (what to show first)
+    ui            {key[], reference, fuel, cycle[], show[], groups, knobs, track, notes,
+                   newer{reaction: {en, it}}, not_modelled{nucleus: {en, it}}}  (what to show first)
     scenarios[]   {id, name, name_it, T9, rho, time_s, until, X{name: X}, ...}
     solar         Lodders mass fractions of the network's nuclei
     solver        optional {rtol, atol} for the explorer's burns
@@ -31,6 +32,10 @@ networks,
     prefactor · ρ^densExp · (Ye if ye) · Π Y_reactant · λ(T9) · e^{h_screen}
 
 where λ is N_A^{n−1}⟨σv⟩ for n reactants (s⁻¹ for a decay).
+
+Decays (lab_decays): REACLIB decays of nuclei that NUBASE2020 gives as stable
+or longer-lived than 10⁸ years are dropped, and the ground-state decay of ²⁶Al
+is added as a constant set labelled nb20 (GROUND_STATE_DECAYS).
 """
 
 from __future__ import annotations
@@ -40,14 +45,45 @@ import datetime as _dt
 import math
 from pathlib import Path
 
+import copy
+
 import pynucastro as pyna
 from pynucastro.constants import constants
 from pynucastro.nucdata.composition import LODDERS_DATA
+from pynucastro.rates.reaclib_rate import SingleSet
 
 SCHEMA = "skowronski.rates.network"
 SCHEMA_VERSION = 1
 LIBFILE = "reaclib_default2_20250330"
 YR = 3.15576e7  # Julian year, s
+
+# NUBASE2020 half-lives as the atlas keeps them (A, Z, seconds or "stable"),
+# beside this repository's content. A caller elsewhere passes its own table.
+NUBASE_FILE = Path(__file__).resolve().parents[2] / "content" / "atlas" / "nuclear-data" / "nubase2020-halflife.txt"
+NUBASE_REF = {
+    "author": "F. G. Kondev et al.",
+    "title": "The NUBASE2020 evaluation of nuclear physics properties",
+    "ref": "Chinese Phys. C 45, 030001",
+    "year": "2021",
+    "url": "https://doi.org/10.1088/1674-1137/abddae",
+}
+
+# A nucleus living longer than this is stable for every burn here (the
+# longest is 10⁵ years): REACLIB decays of such nuclei are dropped. Some of
+# them are not even right: REACLIB carries a β⁻ decay of ⁹⁶Zr (mo03, t½ ≈ 7
+# years; NUBASE2020: 2.3 × 10¹⁹ years) and a β⁺ decay of the stable ¹²³Te
+# (mo97, 100 s), which would burn two key s-process nuclei.
+LONG_LIVED_S = 1.0e8 * YR
+
+# Decays whose REACLIB entry lacks the laboratory ground-state decay.
+# ²⁶Al: REACLIB (wc12) holds only the thermally populated isomer ²⁶Alᵐ
+# (228 keV, 6.35 s) in equilibrium with the ground state, a term that
+# vanishes below ~0.05 GK; the ground state's own β⁺ decay (t½ = 7.17 × 10⁵
+# yr, NUBASE2020) is added as a constant set, so λ = λ_gs + λ_isomer(T).
+# The isomer term assumes thermal equilibrium between the two, which holds
+# above ~0.4 GK only (Gupta & Meyer 2001, PRC 64, 025805; Iliadis et al.
+# 2011, ApJS 193, 16); below that it is an upper bound.
+GROUND_STATE_DECAYS = {"Al26_to_Mg26_beta_pos_reaclib": (26, 13)}
 
 SUP = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
 LIGHT = {(0, 1): "n", (1, 1): "p", (1, 2): "d", (2, 4): "α"}
@@ -98,13 +134,61 @@ def load_sources() -> dict[str, dict]:
             if not row or row[0] == "Label":
                 continue
             label_, author, title, publisher, year, url = (row + [""] * 7)[:6]
+
+            def clean(v: str) -> str:
+                v = v.strip()
+                return "" if v in ("-", "0") else v
             out[label_.strip()] = {
-                "author": author.strip(),
-                "title": title.replace("&gamma;", "γ").replace("&alpha;", "α").strip(),
-                "ref": publisher.strip(),
-                "year": year.strip(),
-                "url": url.strip() if url.strip() not in ("-", "") else None,
+                "author": clean(author),
+                "title": clean(title).replace("&gamma;", "γ").replace("&alpha;", "α").replace("<sup>", "").replace("</sup>", ""),
+                "ref": clean(publisher),
+                "year": clean(year),
+                "url": clean(url) or None,
             }
+    out["nb20"] = dict(NUBASE_REF)
+    return out
+
+
+def nubase_halflives(path: Path | str | None = NUBASE_FILE) -> dict[tuple[int, int], float]:
+    """(A, Z) → half-life in s (math.inf when stable), from the atlas' NUBASE2020 table."""
+    out: dict[tuple[int, int], float] = {}
+    if path is None or not Path(path).exists():
+        return out
+    for line in Path(path).read_text(encoding="utf-8").splitlines():
+        f = line.split()
+        if len(f) < 3 or not f[0].isdigit():
+            continue
+        out[(int(f[0]), int(f[1]))] = math.inf if f[2] == "stable" else float(f[2])
+    return out
+
+
+def half_life(nuc, hl: dict) -> float:
+    """NUBASE2020 half-life of a nucleus in s (inf when stable), else pynucastro's."""
+    if (nuc.A, nuc.Z) in hl:
+        return hl[(nuc.A, nuc.Z)]
+    return math.inf if nuc.tau in ("stable", None) else float(nuc.tau)
+
+
+def is_decay(r) -> bool:
+    return len(r.reactants) == 1
+
+
+def lab_decays(rates, hl: dict, limit_s: float = LONG_LIVED_S):
+    """The rates with decays of (practically) stable nuclei dropped and the
+    missing ground-state decays (GROUND_STATE_DECAYS) added as a constant set."""
+    out = []
+    for r in rates:
+        if is_decay(r) and half_life(r.reactants[0], hl) > limit_s:
+            continue
+        if r.fname in GROUND_STATE_DECAYS:
+            A, Z = GROUND_STATE_DECAYS[r.fname]
+            t = hl.get((A, Z))
+            if not t or not math.isfinite(t):
+                raise ValueError(f"{r.fname}: no NUBASE2020 half-life for A={A}, Z={Z}")
+            if not any(st.labelprops.startswith("nb20") for st in r.sets):
+                r = copy.deepcopy(r)
+                r.sets.append(SingleSet([math.log(math.log(2) / t), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "nb20w "))
+        out.append(r)
     return out
 
 
@@ -125,7 +209,7 @@ SELECTORS = {
 }
 
 
-def network_rates(nuclei, select="all", include=(), exclude=(), libfile: str = LIBFILE):
+def network_rates(nuclei, select="all", include=(), exclude=(), libfile: str = LIBFILE, hl: dict | None = None):
     """(nuclei, rates): the forward REACLIB rates linking `nuclei`, filtered.
 
     `select` is a SELECTORS key or a function rate → bool; `include` and
@@ -136,6 +220,7 @@ def network_rates(nuclei, select="all", include=(), exclude=(), libfile: str = L
     keep = SELECTORS[select] if isinstance(select, str) else select
     inc, exc = set(include), set(exclude)
     rates = [r for r in sub.get_rates() if (keep(r) or r.fname in inc) and r.fname not in exc]
+    rates = lab_decays(rates, nubase_halflives() if hl is None else hl)
     missing = inc - {r.fname for r in rates}
     if missing:
         raise ValueError(f"include: no such rate among these nuclei: {sorted(missing)}")
@@ -334,6 +419,7 @@ def scenario_json(s: dict, nucs) -> dict:
     out = {
         "id": s["id"],
         "name": s["name"], "name_it": s["name_it"],
+        "short": s.get("short", s["name"]), "short_it": s.get("short_it", s["name_it"]),
         "T9": float(s["T9"]), "rho": float(s["rho"]), "time_s": time,
         "until": s.get("until"),
         "X": {n.raw: _sig(X.get(comp_key(n), 0.0)) for n in nucs},
@@ -347,23 +433,27 @@ def scenario_json(s: dict, nucs) -> dict:
 
 
 def export_network(spec: dict, scenarios: dict | None = None, *, atlas_ids=frozenset(),
-                   title: dict | None = None, libfile: str = LIBFILE, rates=None, nuclei=None) -> dict:
+                   title: dict | None = None, libfile: str = LIBFILE, rates=None, nuclei=None,
+                   hl: dict | None = None) -> dict:
     """A network spec (a networks.yaml entry) → the schema's dict.
 
     `scenarios` maps ids to scenarios.yaml entries; `atlas_ids` holds the
     atlas reaction ids rates may link to; `title` is {en, it}. `rates` and
     `nuclei` override the selection (a caller that built its own list).
     """
+    hl = nubase_halflives() if hl is None else hl
     if rates is None:
-        nucs, rates = spec_rates(spec, libfile)
+        nucs, rates = spec_rates(spec, libfile, hl)
     else:
         nucs = nuclei
     index = {n: i for i, n in enumerate(nucs)}
     sources = load_sources()
     ids = {r.fname for r in rates}
-    ui = {k: spec.get(k) for k in ("key", "reference", "fuel", "cycle", "show", "groups", "knobs", "track", "notes")}
+    ui = {k: spec.get(k) for k in ("key", "reference", "fuel", "cycle", "show", "groups", "knobs", "track", "notes",
+                                   "newer", "not_modelled")}
     grouped = [r for g in (ui.get("groups") or []) for r in g["reactions"]]
-    for k in (ui.get("key") or []) + (ui.get("cycle") or []) + grouped + ([ui["reference"]] if ui.get("reference") else []):
+    for k in ((ui.get("key") or []) + (ui.get("cycle") or []) + grouped + list(ui.get("newer") or {})
+              + ([ui["reference"]] if ui.get("reference") else [])):
         if k not in ids:
             raise ValueError(f"{spec['id']}: {k} is not a rate of the network")
     solar = lodders()
@@ -381,8 +471,9 @@ def export_network(spec: dict, scenarios: dict | None = None, *, atlas_ids=froze
             "reverse_rates": False,
         },
         "units": UNITS,
+        # NUBASE2020 half-lives (the atlas' table), pynucastro's where it has none
         "nuclei": [{"name": n.raw, "Z": n.Z, "A": n.A, "label": sci(n), "code": code(n),
-                    "halfLife_s": (None if n.tau in ("stable", None) else float(n.tau))} for n in nucs],
+                    "halfLife_s": (None if not math.isfinite(half_life(n, hl)) else half_life(n, hl))} for n in nucs],
         "reactions": [rate_json(r, index, sources, atlas_ids) for r in rates],
         "ui": ui,
         "scenarios": [scenario_json(scenarios[s], nucs) for s in spec.get("scenarios", [])] if scenarios else [],
@@ -393,7 +484,7 @@ def export_network(spec: dict, scenarios: dict | None = None, *, atlas_ids=froze
     }
 
 
-def s_process_rates(spec: dict, libfile: str = LIBFILE):
+def s_process_rates(spec: dict, libfile: str = LIBFILE, hl: dict | None = None):
     """(nuclei, rates) of a reduced s-process network (networks.yaml, builder: sprocess).
 
     Light nuclei (`light`): every forward REACLIB rate among them (the
@@ -407,12 +498,13 @@ def s_process_rates(spec: dict, libfile: str = LIBFILE):
     throughout (REACLIB weak rates); reverse rates left out.
     """
     lib = library(libfile)
+    hl = nubase_halflives() if hl is None else hl
     h = spec["heavy"]
     zmin, zmax, ext = h["zmin"], h["zmax"], float(h["extend_halflife_s"])
     light = pyna.Nucleus.cast_list(spec["light"])
 
     def tau(n):
-        return math.inf if n.tau in ("stable", None) else float(n.tau)
+        return half_life(n, hl)
 
     by: dict = {}
     for r in lib.get_rates():
@@ -424,7 +516,7 @@ def s_process_rates(spec: dict, libfile: str = LIBFILE):
         names = [n.raw for n in r.reactants]
         if len(names) == 2 and "n" in names and len(r.products) == 1:
             by.setdefault(heavy[0], []).append(("ng", r))
-        elif len(names) == 1:
+        elif len(names) == 1 and tau(heavy[0]) <= LONG_LIVED_S:
             by.setdefault(heavy[0], []).append(("decay", r))
     S = {pyna.Nucleus(k) for k in LODDERS_DATA if zmin <= pyna.Nucleus(k).Z <= zmax}
     changed = True
@@ -448,17 +540,18 @@ def s_process_rates(spec: dict, libfile: str = LIBFILE):
                 continue
             if all(p in allowed for p in r.products):
                 rates.append(r)
+    rates = lab_decays(rates, hl)
     rates.sort(key=lambda r: (_heaviest(list(r.reactants)).A, _heaviest(list(r.reactants)).Z,
                               len(r.reactants) == 1, r.fname))
     return nucs, rates
 
 
-def spec_rates(spec: dict, libfile: str = LIBFILE):
+def spec_rates(spec: dict, libfile: str = LIBFILE, hl: dict | None = None):
     """(nuclei, rates) for any networks.yaml entry."""
     if spec.get("builder") == "sprocess":
-        return s_process_rates(spec, libfile)
+        return s_process_rates(spec, libfile, hl)
     return network_rates(spec["nuclei"], spec.get("select", "all"), spec.get("include", ()),
-                         spec.get("exclude", ()), libfile)
+                         spec.get("exclude", ()), libfile, hl)
 
 
 def python_network(rates):

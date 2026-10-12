@@ -273,6 +273,7 @@ scripts/rates/pyna_export.py    pynucastro → network JSON, as importable funct
 scripts/rates/build.py          writes public/rates/<id>.json        (Python, pynucastro)
 scripts/rates/reference.py      pynucastro + scipy BDF answers       (Python, pynucastro)
 scripts/rates/baseline.mjs      the precomputed first view           (Node, the browser's solver)
+scripts/rates/sensitivity.mjs   every rate ×2 in turn, per scenario   (written by baseline.mjs)
 scripts/rates/test.mjs          npm run test:rates: browser vs pynucastro
 lib/rates/                      schema, rate providers, screening, sparse LU, solver, worker
 components/rates/               the explorer's charts and controls
@@ -285,12 +286,12 @@ a scenario or the REACLIB snapshot:
 pip install pynucastro numpy scipy pyyaml numba
 python scripts/rates/build.py          # public/rates/<id>.json
 python scripts/rates/reference.py      # scripts/rates/reference/<id>.json
-npm run rates:baseline                 # public/rates/<id>.baseline.json
+npm run rates:baseline                 # public/rates/<id>.baseline.json, <id>.sensitivity.json
 npm run test:rates                     # must pass
 ```
 
 The s-process network (`builder: sprocess` in `networks.yaml`; 481 nuclei,
-739 reactions) is built by `s_process_rates` in `pyna_export.py`: every
+721 reactions) is built by `s_process_rates` in `pyna_export.py`: every
 nucleus of Lodders' solar mixture from iron to polonium, closed under (n,γ)
 from anything living longer than six hours and under decay, plus the light
 nuclei that make and steal the neutrons. `reference.py` integrates it with
@@ -301,6 +302,18 @@ Accuracy (`npm run test:rates`): rates agree with pynucastro's `Rate.eval`
 to 1e-11; burns at rtol 1e-6 agree with pynucastro's own network integrated
 by scipy BDF to ≤ 2.3e-6 (light networks) and ≤ 1.4e-6 (s-process), and at
 the tolerances the explorer uses (1e-4; 1e-3 for the s-process) to ≤ 8e-5.
+
+Physics checks in `npm run test:rates`: no decay of a nucleus that NUBASE2020
+(the atlas' `nubase2020-halflife.txt`) gives as stable or longer-lived than
+10⁸ years, every half-life as NUBASE2020 has it, ²⁶Al decaying with its
+laboratory half-life at hydrogen-burning temperatures, the mass fractions
+conserved at both ends of every composition slider, and the bottleneck of a
+hot cycle found on its slow decays. REACLIB's decays are not taken blindly:
+`lab_decays` in `pyna_export.py` drops those of (practically) stable nuclei
+(REACLIB gives ⁹⁶Zr a 7-year β⁻ decay and ¹²³Te a 100-second β⁺) and adds the
+ground-state decay of ²⁶Al, which REACLIB lacks (its entry is only the
+thermally populated isomer). ¹⁶⁴Er and ¹⁷⁶Hf, which need stellar decays the
+network does not have, are marked `not_modelled` in `networks.yaml`.
 
 #### Design
 
@@ -334,6 +347,33 @@ tracks drive the network:
   `network_rates`, `export_network`, `resolve_composition`,
   `python_network`), so a server endpoint can build a network for a spec of
   its own and hand the same JSON to the same solver.
+- **Derived physics is pure and shared**: `lib/rates/composition.ts` (the
+  composition sliders, mass conserved), `lib/rates/flow.ts` (the path the
+  flow takes, its bottleneck with branchings, integrated flows),
+  `lib/rates/analysis.ts` (decays after a burn, MACS, neutrons per seed),
+  `lib/rates/first-view.ts` (what the s-process page sends with its HTML).
+  test:rates, the baselines and the page call the same functions.
+
+The page is built for speed: the first light network and its precomputed
+burn are sent with the HTML (`preloadNetwork` in `lib/rates/catalog.ts`), so
+the first chart is drawn on the server with no request and no worker; the
+s-process page sends its first site's production factors (a few kB) and
+loads the 500 kB network behind them. Burns run in the worker, which fetches
+the network files itself; a newer request supersedes a queued one, and a
+stale s-process run in progress is cancelled by restarting the worker. On
+the page, results arrive as React transitions and the conditions are
+deferred, so a slider drag keeps the main thread; closed folds and
+downloads are built on demand and sections below the fold use
+`content-visibility`. The sensitivity map is precomputed
+(`<id>.sensitivity.json`, loaded when asked for) and the Gamow peak is
+computed in closed form.
+
+The charts share one colour language (`components/rates/chart-kit.tsx`):
+the three series colours of `lib/viz.ts` mark identity (a picked reaction
+keeps its colour in every chart), grey is the unchanged burn and context,
+ink is what the page points at (the bottleneck, the current temperature),
+and violet/brown are "more"/"less" and the result of a change. A dash means
+"unchanged" and nothing else; marker shapes are the second cue of identity.
 
 ### Software
 

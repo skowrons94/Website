@@ -1,10 +1,10 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { memo, useRef, useState } from "react"
 
 import { Sci } from "@/components/sci"
 import type { Lang } from "@/lib/locale"
-import { SvgSci, decades, logScale, useWidth } from "./chart-kit"
+import { C, SvgSci, decades, logScale, useWidth } from "./chart-kit"
 import { pow10, sci } from "./format"
 
 export interface DistPoint {
@@ -15,6 +15,8 @@ export interface DistPoint {
   base: number
   changed: number | null
   sOnly: boolean
+  /** its production needs physics the network lacks: drawn apart, not as burnt */
+  notModelled?: boolean
 }
 
 /** The closed neutron shells' mass numbers along the s-process path. */
@@ -25,12 +27,14 @@ const SHELLS = [
 ]
 
 /**
- * Production factors against mass number: one dot per stable isotope, the
- * unchanged burn hollow grey and the changed one in the first colour, s-only
- * isotopes as squares, the closed neutron shells shaded. A crosshair picks
+ * Production factors against mass number: one dot per stable isotope, grey
+ * for the unchanged burn (hollow once something changed) and violet for the
+ * changed one; s-only isotopes are squares (shape, not colour), the closed
+ * neutron shells shaded, and isotopes the network cannot make for want of a
+ * stellar decay sit apart as dashed squares on the floor. A crosshair picks
  * a mass number (pointer or arrow keys) and lists its isotopes.
  */
-export function DistributionChart({
+export const DistributionChart = memo(function DistributionChart({
   points,
   lang,
   label,
@@ -41,6 +45,8 @@ export function DistributionChart({
   baseLabel,
   changedLabel,
   belowLabel,
+  changed = false,
+  notModelledLabel,
 }: {
   points: DistPoint[]
   lang: Lang
@@ -53,6 +59,9 @@ export function DistributionChart({
   baseLabel: string | null
   changedLabel: string
   belowLabel: string
+  /** a rate or an abundance has been changed: the unchanged burn turns hollow */
+  changed?: boolean
+  notModelledLabel?: string
 }) {
   const [box, width] = useWidth<HTMLDivElement>()
   const narrow = width < 520
@@ -61,7 +70,10 @@ export function DistributionChart({
   const [hoverA, setHoverA] = useState<number | null>(null)
   const svgRef = useRef<SVGSVGElement>(null)
 
-  const vals = points.flatMap((p) => [p.base, p.changed ?? p.base]).filter((v) => v > 0)
+  const vals = points
+    .filter((p) => !p.notModelled)
+    .flatMap((p) => [p.base, p.changed ?? p.base])
+    .filter((v) => v > 0)
   if (!vals.length) return <div ref={box} />
   let yMax = Math.max(...vals)
   let yMin = Math.min(...vals)
@@ -131,7 +143,13 @@ export function DistributionChart({
                 fill="var(--viz-grid)"
                 opacity={0.55}
               />
-              <text x={x((s.A[0] + s.A[1]) / 2)} y={m.t - 7} textAnchor="middle" fontSize={11} fill="var(--viz-text-muted)">
+              <text
+                x={x((s.A[0] + s.A[1]) / 2)}
+                y={m.t - 7}
+                textAnchor="middle"
+                fontSize={11}
+                fill="var(--viz-text-muted)"
+              >
                 {shellLabel(s.N)}
               </text>
             </g>
@@ -157,87 +175,117 @@ export function DistributionChart({
         <text x={(m.l + width - m.r) / 2} y={height - 6} textAnchor="middle" fontSize={12} fill="var(--viz-text-muted)">
           {xLabel}
         </text>
-        <text transform={`translate(12 ${(m.t + height - m.b) / 2}) rotate(-90)`} textAnchor="middle" fontSize={12} fill="var(--viz-text-muted)">
+        <text
+          transform={`translate(12 ${(m.t + height - m.b) / 2}) rotate(-90)`}
+          textAnchor="middle"
+          fontSize={12}
+          fill="var(--viz-text-muted)"
+        >
           {yLabel}
         </text>
         {hoverA !== null && <line x1={hx} x2={hx} y1={m.t} y2={height - m.b} stroke="var(--viz-text-muted)" />}
 
-        {/* the unchanged burn: hollow grey */}
-        {points.map((p) =>
-          p.base > 0 && !below(p.base) ? (
-            p.sOnly ? (
-              <rect
-                key={`b${p.name}`}
-                x={x(p.A) - r - 0.5}
-                y={clampY(p.base) - r - 0.5}
-                width={2 * r + 1}
-                height={2 * r + 1}
-                fill="none"
-                stroke="var(--viz-text-muted)"
-                strokeWidth={1.25}
-              />
-            ) : (
-              <circle key={`b${p.name}`} cx={x(p.A)} cy={clampY(p.base)} r={r} fill="none" stroke="var(--viz-axis)" strokeWidth={1.25} />
-            )
-          ) : null,
-        )}
-        {/* the changed burn */}
-        {points.map((p) =>
-          p.changed !== null && p.changed > 0 ? (
-            below(p.changed) ? (
-              <path key={`c${p.name}`} d={tri(x(p.A), r)} fill="var(--viz-text-muted)" opacity={0.7} />
-            ) : p.sOnly ? (
-              <rect
-                key={`c${p.name}`}
-                x={x(p.A) - r}
-                y={clampY(p.changed) - r}
-                width={2 * r}
-                height={2 * r}
-                fill="var(--viz-series-2)"
-                stroke="var(--viz-surface)"
-                strokeWidth={1}
-              />
-            ) : (
-              <circle
-                key={`c${p.name}`}
-                cx={x(p.A)}
-                cy={clampY(p.changed)}
-                r={r - 0.4}
-                fill="var(--viz-series-1)"
-                stroke="var(--viz-surface)"
-                strokeWidth={1}
-              />
-            )
-          ) : null,
-        )}
+        {/* the burns, one path per kind of mark (a few DOM nodes, not hundreds) */}
+        {(() => {
+          const circ = (cx: number, cy: number, rr: number) =>
+            `M${(cx - rr).toFixed(1)},${cy.toFixed(1)}a${rr},${rr} 0 1,0 ${2 * rr},0a${rr},${rr} 0 1,0 ${-2 * rr},0`
+          const sq = (cx: number, cy: number, rr: number) =>
+            `M${(cx - rr).toFixed(1)},${(cy - rr).toFixed(1)}h${2 * rr}v${2 * rr}h${-2 * rr}Z`
+          let baseC = ""
+          let baseS = ""
+          let baseT = ""
+          let modC = ""
+          let modS = ""
+          let modT = ""
+          const nm: React.ReactNode[] = []
+          for (const p of points) {
+            if (!(p.base > 0)) continue
+            const cxp = x(p.A)
+            if (p.notModelled) {
+              const cy = height - m.b - r - 2
+              nm.push(
+                <g key={p.name}>
+                  <rect x={cxp - r} y={cy - r} width={2 * r} height={2 * r} fill="none" stroke={C.muted} strokeWidth={1.25} strokeDasharray="2 1.5" />
+                  <text x={cxp} y={cy - r - 4} textAnchor="middle" fontSize={10} fill={C.muted}>
+                    ?
+                  </text>
+                </g>,
+              )
+              continue
+            }
+            if (below(p.base)) {
+              if (!changed) baseT += tri(cxp, r)
+            } else if (p.sOnly) baseS += sq(cxp, clampY(p.base), r)
+            else baseC += circ(cxp, clampY(p.base), r)
+            if (changed && p.changed !== null && p.changed > 0) {
+              if (below(p.changed)) modT += tri(cxp, r)
+              else if (p.sOnly) modS += sq(cxp, clampY(p.changed), r)
+              else modC += circ(cxp, clampY(p.changed), r - 0.3)
+            }
+          }
+          const fill = changed ? "none" : C.muted
+          const stroke = changed ? C.base : C.surface
+          return (
+            <g>
+              <path d={baseT} fill={C.muted} opacity={0.7} />
+              <path d={baseC} fill={fill} stroke={stroke} strokeWidth={changed ? 1.25 : 1} />
+              <path d={baseS} fill={fill} stroke={changed ? C.base : C.surface} strokeWidth={changed ? 1.25 : 1} />
+              {changed && (
+                <>
+                  <path d={modT} fill={C.changed} opacity={0.8} />
+                  <path d={modC} fill={C.changed} stroke={C.surface} strokeWidth={1} />
+                  <path d={modS} fill={C.changed} stroke={C.surface} strokeWidth={1} />
+                </>
+              )}
+              {nm}
+            </g>
+          )
+        })()}
       </svg>
       <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 px-1 text-xs text-muted-foreground">
         {baseLabel && (
           <span className="inline-flex items-center gap-1.5">
             <svg width="10" height="10" aria-hidden>
-              <circle cx="5" cy="5" r="3.5" fill="none" stroke="var(--viz-axis)" strokeWidth="1.25" />
+              <circle cx="5" cy="5" r="3.5" fill="none" stroke={C.base} strokeWidth="1.25" />
             </svg>
             {baseLabel}
           </span>
         )}
         <span className="inline-flex items-center gap-1.5">
           <svg width="10" height="10" aria-hidden>
-            <circle cx="5" cy="5" r="3.5" fill="var(--viz-series-1)" />
+            <circle cx="5" cy="5" r="3.5" fill={changed ? C.changed : C.muted} />
           </svg>
           {changedLabel}
         </span>
         <span className="inline-flex items-center gap-1.5">
           <svg width="10" height="10" aria-hidden>
-            <rect x="1.5" y="1.5" width="7" height="7" fill="var(--viz-series-2)" />
+            <rect x="1.5" y="1.5" width="7" height="7" fill={C.muted} />
           </svg>
           {sOnlyLabel}
         </span>
         <span className="inline-flex items-center gap-1.5">
           <svg width="10" height="10" aria-hidden>
-            <path d="M1,2 L9,2 L5,9 Z" fill="var(--viz-text-muted)" opacity="0.7" />
+            <path d="M1,2 L9,2 L5,9 Z" fill={C.muted} opacity="0.7" />
           </svg>
           {belowLabel}
         </span>
+        {notModelledLabel && points.some((p) => p.notModelled) && (
+          <span className="inline-flex items-center gap-1.5">
+            <svg width="10" height="10" aria-hidden>
+              <rect
+                x="1.5"
+                y="1.5"
+                width="7"
+                height="7"
+                fill="none"
+                stroke={C.muted}
+                strokeWidth="1.25"
+                strokeDasharray="2 1.5"
+              />
+            </svg>
+            {notModelledLabel}
+          </span>
+        )}
       </div>
       {hoverA !== null && at.length > 0 && (
         <div
@@ -251,6 +299,7 @@ export function DistributionChart({
                 <span>
                   <Sci>{p.label}</Sci>
                   {p.sOnly && <span className="ml-1 text-muted-foreground">(s)</span>}
+                  {p.notModelled && <span className="ml-1 text-muted-foreground">?</span>}
                 </span>
                 <span className="tabular text-muted-foreground">
                   <Sci>{`${sci(p.base, lang, 3)}${p.changed !== null && p.changed !== p.base ? ` → ${sci(p.changed, lang, 3)}` : ""}`}</Sci>
@@ -262,4 +311,4 @@ export function DistributionChart({
       )}
     </div>
   )
-}
+})

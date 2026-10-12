@@ -2,7 +2,7 @@
 
 import { Sci } from "@/components/sci"
 import type { Lang } from "@/lib/locale"
-import { dec } from "./format"
+import { dec, sci } from "./format"
 
 export interface ChangeRow {
   name: string
@@ -15,15 +15,14 @@ const STEPS = [1.1, 1.25, 1.5, 2, 3, 5, 10, 30, 100, 1e3, 1e4, 1e6, 1e9]
 /** ×2.3 or ÷4.1: a ratio as a reader says it. */
 export function ratioText(r: number, lang: Lang): string {
   if (!Number.isFinite(r)) return r > 0 ? "∞" : "0"
-  if (r >= 1) return `×${dec(r < 10 ? r.toFixed(r < 1.1 ? 3 : 2) : r < 1e4 ? r.toFixed(0) : r.toExponential(1), lang)}`
-  const q = 1 / r
-  return `÷${dec(q < 10 ? q.toFixed(q < 1.1 ? 3 : 2) : q < 1e4 ? q.toFixed(0) : q.toExponential(1), lang)}`
+  const f = (q: number) => (q < 10 ? dec(q.toFixed(q < 1.1 ? 3 : 2), lang) : q < 1e4 ? q.toFixed(0) : sci(q, lang, 2))
+  return r >= 1 ? `×${f(r)}` : `÷${f(1 / r)}`
 }
 
 /**
  * The final abundances with the changed rates over the unchanged ones, one
- * diverging bar per nucleus on a symmetric log scale: right (first colour)
- * is more, left (second colour) is less, and the label says ×2 or ÷2 in
+ * diverging bar per nucleus on a symmetric log scale: right (violet) is
+ * more, left (brown) is less — a pair kept apart from the series colours — and the label says ×2 or ÷2 in
  * words as well, so the direction never rests on colour alone.
  */
 export function ChangeBars({
@@ -74,7 +73,7 @@ export function ChangeBars({
                   style={{
                     left: up ? "50%" : `${50 + p * 50}%`,
                     width: `${Math.max(Math.abs(p) * 50, 0.4)}%`,
-                    background: up ? "var(--viz-series-1)" : "var(--viz-series-2)",
+                    background: up ? "var(--rates-up)" : "var(--rates-down)",
                     borderRadius: up ? "0 4px 4px 0" : "4px 0 0 4px",
                   }}
                 />
@@ -82,7 +81,7 @@ export function ChangeBars({
                   className="tabular absolute top-1/2 -translate-y-1/2 whitespace-nowrap text-xs"
                   style={up ? { right: "52%" } : { left: "52%" }}
                 >
-                  {ratioText(r.ratio, lang)}
+                  <Sci>{ratioText(r.ratio, lang)}</Sci>
                   <span className="sr-only"> {up ? more : less}</span>
                 </span>
               </div>

@@ -1,3 +1,4 @@
+import { Children } from "react"
 import type { Metadata } from "next"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
@@ -8,7 +9,7 @@ import { LIGHT_REFS, RatesCredits } from "@/components/rates/credits"
 import { Sci } from "@/components/sci"
 import { dict, localePath, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
-import { hasSProcess, rateTabs } from "@/lib/rates/catalog"
+import { hasSProcess, preloadNetwork, rateTabs } from "@/lib/rates/catalog"
 
 /**
  * /atlas/rates: the reaction rates of the light networks (pp, CNO, NeNa,
@@ -47,23 +48,24 @@ function Lead({ lang }: { lang: Lang }) {
   )
   return lang === "it" ? (
     <>
-      Una stella è una rete di reazioni nucleari, e ciascuna ha il suo {term("rate", "tasso")}: quante volte avviene,
-      per ogni coppia di nuclei, a una data {term("temperature", "temperatura")}. Qui puoi vedere come cambiano i tassi
-      con il calore, quanto aspetta un nucleo prima di ogni passo, e che cosa succede ai nuclei prodotti se un tasso
-      fosse il doppio o la metà di quanto pensiamo.
+      Ogni reazione in una stella ha il suo {term("rate", "tasso")}, che cresce in fretta con la{" "}
+      {term("temperature", "temperatura")}. Scegli un ambiente, trova il passo più lento, poi cambia un tasso e guarda
+      che cosa ne esce.
     </>
   ) : (
     <>
-      A star is a network of nuclear reactions, each with its own {term("rate", "rate")}: how often it happens, for each
-      pair of nuclei, at a given {term("temperature", "temperature")}. Here you can see how the rates change with heat,
-      how long a nucleus waits before each step, and what happens to the nuclei a star makes if a rate were twice or
-      half what we think.
+      Every reaction in a star has its own {term("rate", "rate")}, climbing steeply with{" "}
+      {term("temperature", "temperature")}. Pick a site, find the slowest step, then change a rate and see what comes
+      out.
     </>
   )
 }
 
 function How({ lang }: { lang: Lang }) {
-  const P = ({ children }: { children: React.ReactNode }) => <p className="text-pretty">{children}</p>
+  // prose with Unicode superscripts (¹⁴N) set as real ones
+  const P = ({ children }: { children: React.ReactNode }) => (
+    <p className="text-pretty">{Children.map(children, (c) => (typeof c === "string" ? <Sci>{c}</Sci> : c))}</p>
+  )
   const term = (id: string, text: string) => (
     <Term id={id} lang={lang}>
       <Sci>{text}</Sci>
@@ -83,7 +85,10 @@ function How({ lang }: { lang: Lang }) {
           Il tempo di attesa di un nucleo è l'inverso della probabilità per secondo che una reazione lo trasformi:
           dipende dal tasso, dalla densità e da quanti partner ci sono intorno (i protoni, quasi sempre). Per un
           decadimento è la vita media, il {term("half-life", "tempo di dimezzamento")} diviso per ln 2. In un ciclo il
-          passo più lento comanda: la ¹⁴N(p,γ)¹⁵O nel ciclo CNO, la fusione di due protoni nella catena pp.
+          passo più lento comanda: la <Sci>{"¹⁴N(p,γ)¹⁵O"}</Sci> nel ciclo CNO, la fusione di due protoni nella catena
+          pp. Dove un nucleo può prendere due strade vince la più rapida, quindi il passo più lento si cerca lungo il
+          percorso che il flusso segue davvero: in una nova il <Sci>{"¹³N"}</Sci> cattura un protone molto prima di
+          decadere.
         </P>
         <P>
           «E se» ricalcola la combustione in un modello a una zona: temperatura e densità fisse, la composizione
@@ -107,8 +112,10 @@ function How({ lang }: { lang: Lang }) {
       <P>
         A nucleus' waiting time is one over the chance per second that a reaction transforms it: it depends on the rate,
         on the density and on how many partners are around (protons, nearly always). For a decay it is the mean life,
-        the {term("half-life", "half-life")} divided by ln 2. In a cycle the slowest step rules: ¹⁴N(p,γ)¹⁵O in the CNO
-        cycle, the fusion of two protons in the pp chain.
+        the {term("half-life", "half-life")} divided by ln 2. In a cycle the slowest step rules:{" "}
+        <Sci>{"¹⁴N(p,γ)¹⁵O"}</Sci> in the CNO cycle, the fusion of two protons in the pp chain. Where a nucleus can go
+        two ways the faster one wins, so the slowest step is taken along the path the flow actually follows: in a nova,{" "}
+        <Sci>{"¹³N"}</Sci> captures a proton long before it decays.
       </P>
       <P>
         "What if" reruns the burn in a one-zone model: fixed temperature and density, the scenario's initial
@@ -126,7 +133,7 @@ export function RatesPage({ lang }: { lang: Lang }) {
   const to = (p: string) => localePath(lang, p)
   const tabs = rateTabs(lang)
   return (
-    <div className="mx-auto max-w-6xl px-5 py-14 [overflow-wrap:anywhere] sm:px-8 xl:max-w-7xl">
+    <div className="mx-auto max-w-6xl px-5 py-8 [overflow-wrap:anywhere] sm:px-8 sm:py-10 xl:max-w-7xl">
       <Link
         href={to("/atlas")}
         className="-my-2.5 inline-flex items-center gap-1.5 py-2.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
@@ -134,21 +141,30 @@ export function RatesPage({ lang }: { lang: Lang }) {
         <ArrowLeft className="h-4 w-4" />
         {t.back}
       </Link>
-      <header className="mt-8 border-b border-border/70 pb-8">
-        <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">{t.eyebrow}</p>
-        <h1 className="mt-3 text-balance font-serif text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
+      <header className="mt-5">
+        <p className="sr-only">{t.eyebrow}</p>
+        <h1 className="text-balance font-serif text-[1.75rem] font-semibold leading-tight tracking-tight sm:text-4xl">
           {t.title}
         </h1>
-        <p className="mt-4 max-w-2xl text-pretty text-[1.0625rem] leading-relaxed text-muted-foreground">
+        <p className="mt-2 max-w-3xl text-pretty leading-relaxed text-muted-foreground sm:text-[1.0625rem]">
           <Lead lang={lang} />
         </p>
       </header>
 
-      <div className="mt-10">
-        <RatesExplorer lang={lang} tabs={tabs} initial={tabs[0]?.id ?? "pp"} sProcess={hasSProcess()} />
+      <div className="mt-5">
+        <RatesExplorer
+          lang={lang}
+          tabs={tabs}
+          initial={tabs[0]?.id ?? "pp"}
+          sProcess={hasSProcess()}
+          preload={preloadNetwork(tabs[0]?.id ?? "pp") ?? undefined}
+        />
       </div>
 
-      <section className="mt-16 border-t border-border/70 pt-10" aria-labelledby="how-heading">
+      <section
+        className="mt-16 border-t border-border/70 pt-10 [contain-intrinsic-size:auto_900px] [content-visibility:auto]"
+        aria-labelledby="how-heading"
+      >
         <h2 id="how-heading" className="font-serif text-2xl font-semibold tracking-tight">
           {t.howTitle}
         </h2>
