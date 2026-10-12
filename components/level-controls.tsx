@@ -563,12 +563,12 @@ function ParameterControl({
           </>
         ) : (
           <>
-            <span className="whitespace-nowrap tabular-nums">
+            <span className="tabular-nums">
               {negative ? "−" : ""}
               {endLabel(lo)}
             </span>
             <span className="whitespace-nowrap">{l.logSlider}</span>
-            <span className="ml-auto whitespace-nowrap tabular-nums">
+            <span className="ml-auto text-right tabular-nums">
               {negative ? "−" : ""}
               {endLabel(hi)}
             </span>
