@@ -45,6 +45,7 @@ server/evaluations/*/fine/
 # The split data model and the extrapolation model (server/app/engine.py)
 server/evaluations/*/datamodel/
 server/evaluations/*/extrap/
+server/evaluations/*/extrapolations/
 
 # Written by scripts/search-index.mjs before every build.
 public/search/

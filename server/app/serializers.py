@@ -390,64 +390,96 @@ def data_to_dict(session, labels, mu, mu_sfactor) -> List[Dict]:
 
 # -- the model on a fine grid ---------------------------------------------------
 
-def fine_to_dict(session, fine_result, mu, mu_sfactor) -> List[Dict]:
-    """Per data segment, the model on a fine grid for drawing.
+def fine_to_dict(session, fine_result, mu, mu_sfactor) -> Dict:
+    """The model on its extended grid, for drawing: ``{"curves": [...],
+    "segments": [{"index": i, "curve": id}, ...]}``.
 
-    ``axis`` says what the grid runs along: ``"energy"`` for an excitation
-    function, ``"angle"`` (c.m. degrees) for an angular distribution at one
-    energy, whose curve is then in ``angles``/``calculated``.
+    One curve per distinct calculation (``app.fine.plan``), shared by every
+    data segment that measures it, running from below the lowest measurement
+    to above the highest with the resonances resolved.  ``axis`` says what it
+    runs along: ``"energy"``, or ``"angle"`` (c.m. degrees) for an angular
+    distribution at one energy, whose curve is then in
+    ``angles``/``calculated``.
 
-    Only segments whose fine curve reproduces the data-mode model at the
-    measured points are included (see :mod:`app.fine`); the values at the
-    measured points are merged in, so the curve passes through exactly what
-    the χ² is computed from.  A segment left out is drawn through its data
-    points, as before.
+    A segment is listed only if the curve reproduces the data-mode model at
+    its measured points (see :func:`app.fine.agrees`; a segment AZURE2 folds
+    with the target or the detector does not) -- beyond the data there is
+    nothing to compare, and the extension is kept with the part that agrees.
+    The values at the measured points of every listed segment are merged in,
+    so the curve passes through exactly what the χ² is computed from.  A
+    segment left out is drawn through its data points, as before.  A segment
+    whose energy shift matters carries it (``shift``, c.m. MeV): its curve is
+    the shared one at ``E - shift``.
     """
     from app import fine
 
     if len(fine_result) < 6:
-        return []           # an older cache entry
+        return {"curves": [], "segments": []}      # an older cache entry
     index, energies, fine_mu, fine_sfactor, fine_angles, axes = fine_result[:6]
     datasets = session.datasets
     m_energies = _aligned(datasets, session.measured.energies)
     m_angles = _aligned(datasets, session.measured.angles)
     mu = _aligned(datasets, mu)
     mu_sfactor = _aligned(datasets, mu_sfactor)
-    out = []
+
+    pairs = {getattr(p, "key", p.number): p for p in session.pairs}
+    grids = {}
+    listed = []
     for i, segment in enumerate(datasets):
         j = index[i] if i < len(index) else None
         if j is None or j >= len(fine_mu) or mu[i] is None:
             continue
         axis = axes[j]
-        if axis == "angle":
-            at_x = _floats(m_angles[i]) or []
-            grid_x = _floats(fine_angles[j]) or []
-        else:
-            at_x = _floats(m_energies[i]) or []
-            grid_x = _floats(energies[j]) or []
-        grid_y = _floats(fine_mu[j]) or []
+        if j not in grids:
+            grid_x = _floats(fine_angles[j] if axis == "angle" else energies[j]) or []
+            grid_y = _floats(fine_mu[j]) or []
+            grid_s = _floats(fine_sfactor[j]) or [None] * len(grid_x)
+            # Sorted along the grid (the engine sorts; do not rely on it).
+            order = sorted(range(len(grid_x)),
+                           key=lambda k: grid_x[k] if grid_x[k] is not None else 0)
+            grids[j] = {"axis": axis,
+                        "x": [grid_x[k] for k in order],
+                        "y": [grid_y[k] for k in order],
+                        "s": [grid_s[k] for k in order],
+                        "at_x": [], "at_y": [], "at_s": [], "energy": None}
+        g = grids[j]
+        at_x = _floats(m_angles[i] if axis == "angle" else m_energies[i]) or []
         at_y = _floats(mu[i]) or []
-        # Sorted by the grid variable (an angle grid comes out ascending, but
-        # do not rely on it).
-        order = sorted(range(len(grid_x)), key=lambda k: grid_x[k] if grid_x[k] is not None else 0)
-        grid_x = [grid_x[k] for k in order]
-        grid_y = [grid_y[k] for k in order]
-        grid_s = [(_floats(fine_sfactor[j]) or [None] * len(order))[k] for k in order]
-        if not fine.agrees(grid_x, grid_y, at_x, at_y):
+        if not fine.agrees(g["x"], g["y"], at_x, at_y):
+            # A segment with an energy shift (a free calibration, in the lab)
+            # is calculated at E + shift: next to a narrow resonance its
+            # curve is the shared one moved by the shift, drawn on its own.
+            shift = float(getattr(segment, "energy_shift", 0.0) or 0.0)
+            shift *= _lab_to_cm(pairs.get(segment.entrance_key))
+            if (axis != "energy" or shift == 0.0
+                    or not fine.agrees([x - shift for x in g["x"]], g["y"], at_x, at_y)):
+                continue
+            listed.append({"index": i, "curve": j, "shift": shift})
             continue
-        xs, ys = fine.merge(grid_x, grid_y, at_x, at_y)
-        sx, sys_ = fine.merge(grid_x, grid_s, at_x, _floats(mu_sfactor[i]) or [])
-        entry = {"index": i, "axis": axis}
-        if axis == "angle":
-            entry.update({"angles": xs, "calculated": ys,
-                          "energy": (at_x and _floats(m_energies[i])[0]) or None,
+        g["at_x"] += at_x
+        g["at_y"] += at_y
+        g["at_s"] += _floats(mu_sfactor[i]) or [None] * len(at_x)
+        if axis == "angle" and g["energy"] is None:
+            g["energy"] = (_floats(m_energies[i]) or [None])[0]
+        listed.append({"index": i, "curve": j})
+
+    curves = []
+    used = {entry["curve"] for entry in listed}
+    for j, g in sorted(grids.items()):
+        if j not in used:
+            continue
+        xs, ys = fine.merge(g["x"], g["y"], g["at_x"], g["at_y"])
+        entry = {"id": j, "axis": g["axis"]}
+        if g["axis"] == "angle":
+            entry.update({"angles": xs, "calculated": ys, "energy": g["energy"],
                           "energies": [], "sfactor_energies": [],
                           "calculated_sfactor": []})
         else:
+            sx, sy = fine.merge(g["x"], g["s"], g["at_x"], g["at_s"])
             entry.update({"energies": xs, "calculated": ys,
-                          "sfactor_energies": sx, "calculated_sfactor": sys_})
-        out.append(entry)
-    return out
+                          "sfactor_energies": sx, "calculated_sfactor": sy})
+        curves.append(entry)
+    return {"curves": curves, "segments": listed}
 
 
 # -- extrapolations -----------------------------------------------------------

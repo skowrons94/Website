@@ -299,6 +299,12 @@ const en = {
     // --- evaluations (round 4) ---
     modelLine: "R-matrix model",
     publishedFit: "published fit",
+    // --- evaluations (round 5: the model beyond the data) ---
+    modelBeyond: "model beyond the data",
+    extend: "Extend beyond data",
+    extendHint: "Draw the model below and above the measured energies (dashed), and widen the energy axis to show it",
+    keyBeyond: "Dashed: the same model beyond the energies of the shown data, where it is an extrapolation.",
+    fineUpdating: "Updating the smooth curve for your change… the previous one is shown faded meanwhile.",
     resetAll: "Reset all",
     resetAllHint: "Back to the evaluation's own parameters (every level)",
     view: "View",
@@ -680,6 +686,12 @@ const it: EvalDictionary = {
     // --- evaluations (round 4) ---
     modelLine: "modello R-matrix",
     publishedFit: "fit pubblicato",
+    // --- evaluations (round 5: the model beyond the data) ---
+    modelBeyond: "modello oltre i dati",
+    extend: "Estendi oltre i dati",
+    extendHint: "Traccia il modello anche sotto e sopra le energie misurate (tratteggiato) e allarga l'asse delle energie per mostrarlo",
+    keyBeyond: "Tratteggio: lo stesso modello oltre le energie dei dati mostrati, dove è un'estrapolazione.",
+    fineUpdating: "Aggiornamento della curva per la tua modifica… nel frattempo la precedente è mostrata più chiara.",
     resetAll: "Ripristina tutto",
     resetAllHint: "Torna ai parametri della valutazione (tutti i livelli)",
     view: "Vista",

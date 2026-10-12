@@ -28,7 +28,7 @@ import uuid
 from typing import Dict, List, Optional
 
 from app import cache
-from app.engine import Engine, EngineError
+from app.engine import PREPARE_STEPS, Engine, EngineError
 
 log = logging.getLogger(__name__)
 
@@ -52,6 +52,7 @@ class Session:
         self.created_at = time.time()
         self.last_used = time.time()
         self._lock = threading.RLock()
+        self._waiting = 0
         self._closed = False
 
         kwargs = {} if timeout is None else {"timeout": timeout}
@@ -73,6 +74,13 @@ class Session:
 
         # The measurements the model is being compared against.
         self.measured = info
+
+        # The last result of each calculation, with the parameters it was
+        # calculated for: /fine and /data after an edit ask again for what
+        # the edit's own response already calculated.
+        self._memo = {}
+        # Preparation steps done (engine.PREPARE_STEPS).
+        self.prepared = set()
 
     # -- lifecycle ------------------------------------------------------------
 
@@ -184,16 +192,66 @@ class Session:
         except EngineError:
             return False
 
+    def peek(self, key):
+        """``key``'s result if it can be had without the worker -- the
+        evaluation's own parameters, cached -- else ``None``.  Needs no lock,
+        so a page reading cached curves never waits behind a calculation or
+        a background preparation."""
+        if self._closed:
+            raise SessionError("session has been closed")
+        self.touch()
+        params = tuple(self.params)
+        memo = self._memo.get(key)
+        if memo is not None and memo[0] == params:
+            return memo[1]
+        if list(params) != self.initial_params:
+            return None
+        hit = cache.read(self.evaluation.path, list(params), key)
+        if hit is not None:
+            self._memo[key] = (params, hit)
+        return hit
+
+    def prepare(self, step):
+        """Build one derived model ahead of need (``engine.PREPARE_STEPS``),
+        so that the first edit does not wait for it.  Idempotent."""
+        if step not in PREPARE_STEPS:
+            raise ValueError(f"unknown preparation step: {step}")
+        if step in self.prepared:
+            return False
+        try:
+            self.engine.prepare(step)
+        except EngineError as err:
+            if not self.engine.is_alive():
+                self._closed = True
+                raise SessionError(str(err)) from err
+            # The model could not be built; the calculation that needs it
+            # will report that when it is asked for.
+            log.warning("session %s (%s): preparing %s failed: %s",
+                        self.id, self.evaluation.id, step, err)
+        self.prepared.add(step)
+        return True
+
+    def busy_elsewhere(self) -> bool:
+        """Is another request waiting for this session's worker?  A
+        background preparation then lets it go first."""
+        return self._waiting > 0
+
     def _cached(self, key, method):
         """At the evaluation's own parameters, answer from ``app.cache`` when
-        it can and fill it when it cannot; after an edit, always calculate."""
+        it can and fill it when it cannot; after an edit, calculate -- once
+        per parameter vector."""
+        params = tuple(self.params)
+        memo = self._memo.get(key)
+        if memo is not None and memo[0] == params:
+            return memo[1]
         if self.is_modified:
-            return self._engine_call(method)
-        hit = cache.read(self.evaluation.path, self.params, key)
-        if hit is not None:
-            return hit
-        result = self._engine_call(method)
-        cache.write(self.evaluation.path, self.params, key, result)
+            result = self._engine_call(method)
+        else:
+            result = cache.read(self.evaluation.path, self.params, key)
+            if result is None:
+                result = self._engine_call(method)
+                cache.write(self.evaluation.path, self.params, key, result)
+        self._memo[key] = (params, result)
         return result
 
     def _engine_call(self, method):
@@ -210,12 +268,22 @@ class Session:
             raise SessionError(str(err)) from err
 
 
+_WAITING = threading.Lock()
+
+
 class _SessionUse:
     def __init__(self, session):
         self._session = session
 
     def __enter__(self):
-        self._session._lock.acquire()
+        session = self._session
+        with _WAITING:
+            session._waiting += 1
+        try:
+            session._lock.acquire()
+        finally:
+            with _WAITING:
+                session._waiting -= 1
         try:
             self._session._check_alive()
         except Exception:

@@ -111,7 +111,7 @@ message. Put `BUILD_JOBS=2` in `.env` and it fits.
 
 | | |
 |---|---|
-| `AZURE2_MAX_SESSIONS` | how many evaluations may be open at once. Each is a worker process holding a model. Measured: the API idles at ~45 MB and an open session costs 35–100 MB depending on the model, so 8 open evaluations fit in well under 1 GB. The exception is the `7Be` **extrapolations**: computing them takes that worker to ~3.6 GB until the session closes. This is what bounds memory; see DEPLOY.md. |
+| `AZURE2_MAX_SESSIONS` | how many evaluations may be open at once. Each is a worker process holding a model (and, once used, one more for the plots' curves and one for the extrapolations: AZURE2 does not keep two models of one process apart). Measured: the API idles at ~45 MB and an open session costs 35–100 MB depending on the model, so 8 open evaluations fit in well under 1 GB. The exceptions are `7Be`: its plot curves take the worker to ~0.4 GB once the Plot tab is open, and its **extrapolations** to ~1.6 GB once they have been shown, until the session closes. This is what bounds memory; see DEPLOY.md. |
 | `AZURE2_SESSION_TTL` | seconds before an abandoned session is reaped. |
 | `AZURE2_OMP_THREADS` | OpenMP threads per worker. Total load is sessions × threads, so `1` is the right default until the box is large. |
 | `AZURE2_THREADS` | Waitress' HTTP threads. Unrelated to the above — these serve requests, they do not run AZURE2. |
@@ -292,6 +292,35 @@ integrals, which take minutes to recompute, so those two are kept. `fine/` is
 written by the server (the model on a fine grid for the plots,
 `server/app/fine.py`) and is not committed.
 
+#### The model curves on the plot
+
+The Plot & data tab draws the model as a smooth curve, not as a line joining
+its values at the data points: one curve per distinct calculation (same
+channels, observable and angle; ⁷Be's 120 datasets need 106), calculated on
+its own grid in AZURE2's extrapolation mode (`server/app/fine.py`):
+
+- from a third of the lowest measured energy (for a charged-particle reaction
+  further, down to the Gamow peak at T₉ = 0.01; never below 10 keV c.m., nor
+  below the threshold of an exit channel that opens above the entrance) up to
+  15% above the highest;
+- 240 log-spaced points over all of it, 160 uniform points over the data's own
+  range, and around every resonance of the level scheme (E_R = E_x − entrance
+  threshold, Γ the sum of its partial widths, at the shipped parameters) nested
+  pieces at ±5Γ, ±1.5Γ and ±Γ/2 wherever they are finer than the grid already
+  there, so a narrow resonance is neither missed nor cut. AZURE2's grids are
+  uniform, so this is written as pieces and joined.
+
+The page draws it solid over the shown data's range and dashed beyond
+("Extend beyond data", on by default, which also widens the energy axis). A
+dataset AZURE2 folds with the target or the detector (`<targetInt>`), where the
+curve does not reproduce the data-mode values, keeps its own line through its
+points; one whose energy shift moves it next to a narrow resonance gets the
+curve shifted. At the shipped parameters the curves come from
+`precomputed.json` (`make warm`); once the Plot tab is open the page asks the
+server to build the derived models in the background (`POST
+/api/sessions/<id>/prepare`), so the first edit answers with the new curve in
+about two seconds rather than first building them.
+
 #### Total capture and `split_total_capture`
 
 AZURE2 at the pinned revision (`7e533b7`) calculates a total capture over
@@ -312,7 +341,7 @@ in which each total capture is one angle-integrated segment per capture pair
 (appended, with fixed normalisations, so no key or free parameter moves) and
 sums them back (`server/app/fine.py` `split_data_model`, `server/app/engine.py`);
 the extrapolations and the fine-grid curves likewise. Those integrals can be
-reused, and live in `datamodel/` and `extrap/` (not committed). Without the
+reused, and live in `datamodel/` and `extrapolations/` (not committed). Without the
 flag a total capture is calculated as AZURE2 does as shipped, so a published
 fit looks exactly as published. It is set for 17F, 7Be and 23Na, where the
 corrected total reproduces the data; 14N is left off (corrected, its LUNA total

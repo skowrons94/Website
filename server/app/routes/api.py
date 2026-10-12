@@ -8,7 +8,8 @@ Shape of a client's interaction:
     POST /api/sessions/<sid>/parameters       edit levels, get new curves back
     POST /api/sessions/<sid>/reset            back to the model's own values
     GET  /api/sessions/<sid>/extrapolations   extrapolation curves
-    GET  /api/sessions/<sid>/fine             the model on a fine grid per data segment
+    GET  /api/sessions/<sid>/fine             the model on an extended fine grid
+    POST /api/sessions/<sid>/prepare          build the derived models ahead of the first edit
 
 Opening an evaluation starts an AZURE2 process, so a client should close its
 session when done; idle ones are reaped anyway.
@@ -16,6 +17,7 @@ session when done; idle ones are reaped anyway.
 
 import logging
 import os
+import time
 from datetime import datetime
 
 from flask import Blueprint, current_app, jsonify, request, send_file
@@ -23,6 +25,7 @@ from werkzeug.exceptions import HTTPException
 
 from app import evaluations as evaluations_module
 from app import serializers
+from app.engine import PREPARE_STEPS
 from app.session import SessionError
 
 log = logging.getLogger(__name__)
@@ -172,6 +175,10 @@ def export_scheme_text(session_id):
 @bp.route("/sessions/<session_id>/data", methods=["GET"])
 def get_data(session_id):
     session, labels = _session_and_labels(session_id)
+    hit = session.peek("data")
+    if hit is not None:
+        mu, mu_sfactor = hit
+        return jsonify(serializers.data_to_dict(session, labels, mu, mu_sfactor))
     with session.use():
         mu, mu_sfactor = session.calculate_data()
         return jsonify(serializers.data_to_dict(session, labels, mu, mu_sfactor))
@@ -187,10 +194,52 @@ def get_fine(session_id):
     their data points.
     """
     session, _ = _session_and_labels(session_id)
+    data, result = session.peek("data"), session.peek("fine")
+    if data is not None and result is not None:
+        return jsonify(serializers.fine_to_dict(session, result, *data))
     with session.use():
         mu, mu_sfactor = session.calculate_data()
         result = session.calculate_fine()
         return jsonify(serializers.fine_to_dict(session, result, mu, mu_sfactor))
+
+
+# What the first edit needs.  The extrapolations' model is prepared only once
+# the page has shown them (``{"steps": ["extrap"]}``): for ⁷Be it holds about
+# 1.2 GB, which a visitor who never opens that tab should not cost.
+DEFAULT_PREPARE = ("data", "fine")
+
+
+@bp.route("/sessions/<session_id>/prepare", methods=["POST"])
+def prepare_session(session_id):
+    """Build the session's derived models -- the split data model and the
+    plots' extended grid, or with ``{"steps": ["extrap"]}`` the
+    extrapolations' model -- before anything asks for them.
+
+    At the evaluation's own parameters every curve comes from the cache, so
+    nothing has built them when the first edit arrives, and that edit would
+    wait for all of it (seconds to minutes).  The page sends this once the
+    cached curves are drawn.  Each step takes the session on its own and
+    gives way to a request that is waiting (an edit goes first), so this
+    never holds the reader up for longer than the step under way.
+    """
+    body = request.get_json(silent=True) or {}
+    steps = body.get("steps") or list(DEFAULT_PREPARE)
+    if not isinstance(steps, list) or any(step not in PREPARE_STEPS for step in steps):
+        raise ValueError(f"'steps' must be a list drawn from {list(PREPARE_STEPS)}")
+    session, _ = _session_and_labels(session_id)
+    done = []
+    for step in PREPARE_STEPS:
+        if step not in steps:
+            continue
+        # Let a waiting edit go first.
+        for _ in range(600):
+            if not session.busy_elsewhere():
+                break
+            time.sleep(0.05)
+        with session.use():
+            if session.prepare(step):
+                done.append(step)
+    return jsonify({"prepared": done})
 
 
 def _with_fine(session, labels, mu, mu_sfactor):
@@ -245,6 +294,9 @@ def reset_parameters(session_id):
 @bp.route("/sessions/<session_id>/extrapolations", methods=["GET"])
 def get_extrapolations(session_id):
     session, labels = _session_and_labels(session_id)
+    hit = session.peek("extrap")
+    if hit is not None:
+        return jsonify(serializers.extrapolations_to_dict(session, labels, *hit))
     with session.use():
         energies, angles, mu, mu_sfactor = session.calculate_extrapolations()
         return jsonify(serializers.extrapolations_to_dict(
