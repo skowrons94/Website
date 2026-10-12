@@ -772,7 +772,7 @@ export function RatesExplorer({
               )}
             </div>
 
-            <aside className="min-w-0 space-y-5 lg:pt-12">
+            <div className="min-w-0 space-y-5 lg:pt-12">
               <div>
                 <p className="text-xs text-muted-foreground">{full ? t.pickFull : t.pickHint}</p>
                 <ul className="mt-2 flex flex-wrap gap-1.5 lg:flex-col lg:items-stretch" aria-label={t.highlight}>
@@ -830,7 +830,7 @@ export function RatesExplorer({
                   <Sci>{t.gamowResonances}</Sci>
                 </p>
               </div>
-            </aside>
+            </div>
           </div>
         </section>
       </div>
@@ -1168,7 +1168,7 @@ export function RatesExplorer({
                       </td>
                       <td className="tabular px-3 py-1.5 text-right">{dec(String(scale[r.id] ?? 1), lang)}</td>
                       <td className="px-3 py-1.5">
-                        <SourceCell sources={r.sources} />
+                        <SourceCell sources={r.sources} lang={lang} />
                       </td>
                       <td className="max-w-[18rem] px-3 py-1.5 text-muted-foreground">
                         {network.ui.newer?.[r.id] && <Sci>{network.ui.newer[r.id][lang]}</Sci>}

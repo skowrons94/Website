@@ -172,6 +172,40 @@ SOURCE_FIXES: dict[str, dict] = {
 }
 
 
+# REACLIB's bet+ label is titled "experimental beta-plus rates" (a generic
+# title for the label), but its p+p and ³He+p sets are not measurements: the
+# p+p fusion cross section has never been measured, and both rates are
+# calculated from the theory of the weak interaction. Their coefficients are
+# the fits of Caughlan & Fowler 1988: the ³He(p,e⁺ν)⁴He set is CF88's formula
+# exactly (8.78·10⁻¹³ T₉^(−2/3) exp(−6.141 T₉^(−1/3))), the p+p set is within
+# 1.5% of CF88's p+p formula from 10 MK to 1 GK (3.5% at 5 MK). The note says so beside the
+# source, in both languages.
+CF88 = {
+    "author": "G. R. Caughlan, W. A. Fowler",
+    "title": "Thermonuclear reaction rates V",
+    "ref": "ADNDT 40, 283",
+    "year": "1988",
+    "url": "https://doi.org/10.1016/0092-640X(88)90009-5",
+}
+RATE_SOURCE_FIXES: dict[tuple[str, str], dict] = {
+    ("p_p_to_d_beta_pos_reaclib", "bet+"): {
+        **CF88,
+        "note": "calculated from weak-interaction theory: p+p fusion has never been measured",
+        "note_it": "calcolato dalla teoria dell'interazione debole: la fusione p+p non è mai stata misurata",
+    },
+    ("He3_p_to_He4_beta_pos_reaclib", "bet+"): {
+        **CF88,
+        "note": "calculated from weak-interaction theory, not measured",
+        "note_it": "calcolato dalla teoria dell'interazione debole, non misurato",
+    },
+}
+
+
+def rate_sources(fname: str, labels: list[str], sources: dict) -> list[dict]:
+    """The sources of one rate's sets, with RATE_SOURCE_FIXES applied."""
+    return [{"set": l, **sources.get(l, {}), **RATE_SOURCE_FIXES.get((fname, l), {})} for l in labels]
+
+
 def load_sources() -> dict[str, dict]:
     """REACLIB set label → {author, title, ref, year, url}, from pynucastro."""
     path = Path(pyna.__file__).parent / "data" / "rate_sources.csv"
@@ -459,7 +493,7 @@ def rate_json(r, index: dict, sources: dict, atlas_ids) -> dict:
         "weakType": r.weak_type or None,
         # Cyburt et al. 2010 fit REACLIB rates for 10⁷–10¹⁰ K.
         "rate": {"kind": "reaclib", "sets": sets, "validity_T9": [0.01, 10.0]},
-        "sources": [{"set": l, **sources.get(l, {})} for l in labels],
+        "sources": rate_sources(r.fname, labels, sources),
     }
 
 
