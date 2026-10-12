@@ -64,6 +64,7 @@ measurements:
     facility: juna
     method: direct-underground
     energy: "down to 186 keV"
+    energy_it: "fino a 186 keV"
     note: >-
       Direct measurement at the China JinPing Underground Laboratory; a key
       resonance at 225 keV raises the rate near 0.1 GK by up to a factor of

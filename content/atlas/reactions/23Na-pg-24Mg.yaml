@@ -55,6 +55,7 @@ measurements:
     facility: tunl-lena
     method: direct-surface
     energy: "E_cm = 138 keV resonance"
+    energy_it: "risonanza a E_cm = 138 keV"
     note: >-
       Search for the 138 keV resonance with the 200 kV accelerator and its ECR ion
       source; only an upper limit on the strength could be set, 5.17 neV at 95 %
@@ -64,6 +65,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "Eₚ = 140 and 251 keV resonances"
+    energy_it: "risonanze a Eₚ = 140 e 251 keV"
     note: >-
       First direct observation of the 140 keV resonance (4π BGO), ωγ = 1.46
       (+0.58/−0.53) neV, and the 251 keV resonance (HPGe), ωγ = 482(82) μeV. The
@@ -82,6 +84,7 @@ measurements:
     lab: "TUNL, Durham"
     method: anc
     energy: "states of ²⁴Mg near the proton threshold"
+    energy_it: "stati del ²⁴Mg vicino alla soglia protonica"
     note: >-
       ²³Na(³He,d)²⁴Mg proton transfer to constrain the proton widths of the
       low-energy resonances; the width of the 133 keV resonance is in strong

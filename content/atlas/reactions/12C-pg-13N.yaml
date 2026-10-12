@@ -53,6 +53,7 @@ measurements:
   - year: 1974
     method: direct-surface
     energy: "about 150 keV to 2.5 MeV (proton energy)"
+    energy_it: "da circa 150 keV a 2,5 MeV (energia del protone)"
     note: >-
       Showed that direct E1 capture to the ground state, interfering with the
       resonances at proton energies of 457 and 1699 keV, is needed to describe
@@ -63,6 +64,7 @@ measurements:
     facility: atomki
     method: activation
     energy: "300–1900 keV (proton energy)"
+    energy_it: "300–1900 keV (energia del protone)"
     note: >-
       Total cross section from the ¹³N activity, with uncertainties independent
       of in-beam γ-ray spectroscopy; covers the region of the 1.7 MeV resonance,
@@ -81,6 +83,7 @@ measurements:
     facility: notre-dame
     method: direct-surface
     energy: "1.0–2.5 MeV (proton energy)"
+    energy_it: "1,0–2,5 MeV (energia del protone)"
     note: >-
       Absolute cross section over a wide energy range to fix the overall
       normalisation and the interference between overlapping resonances; the
@@ -90,6 +93,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "down to 60 keV"
+    energy_it: "fino a 60 keV"
     note: >-
       Prompt γ-ray detection and activation, with overall systematic
       uncertainties of 7–8 %; the S-factor is about 25 % lower than most

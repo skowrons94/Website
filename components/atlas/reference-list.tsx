@@ -24,7 +24,7 @@ export function ReferenceList({
         return (
           // Reference titles stay as published, in English.
           <li key={key} id={`ref-${key}`} lang={lang === "en" ? undefined : "en"} className="flex scroll-mt-24 gap-3">
-            <span className="tabular w-6 shrink-0 pt-0.5 text-right text-sm text-muted-foreground/70">
+            <span className="tabular w-6 shrink-0 pt-0.5 text-right text-sm text-muted-foreground">
               {i + 1}.
             </span>
             {ref ? <Entry reference={ref} /> : <span className="text-sm text-muted-foreground">{key} ({dict(lang).atlas.referenceNotFound})</span>}
@@ -102,7 +102,10 @@ export function Cite({ keys, order }: { keys: string[]; order: string[] }) {
       {keys.map((key, i) => (
         <span key={key}>
           {i > 0 && ", "}
-          <a href={`#ref-${key}`} className="underline-offset-2 hover:text-link hover:underline">
+          <a
+            href={`#ref-${key}`}
+            className="-my-1 inline-flex min-h-6 min-w-6 items-center justify-center rounded-sm align-baseline underline-offset-2 hover:text-link hover:underline"
+          >
             {order.indexOf(key) + 1}
           </a>
         </span>

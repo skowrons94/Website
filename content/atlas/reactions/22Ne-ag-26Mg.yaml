@@ -52,6 +52,7 @@ measurements:
     facility: tunl-lena
     method: direct-surface
     energy: "E(α,lab) = 0.83 MeV resonance"
+    energy_it: "risonanza a E(α,lab) = 0,83 MeV"
     note: >-
       Implanted ²²Ne target and γγ-coincidence detection;
       E(α,lab) = 835.2 ± 3.0 keV and ωγ = (4.6 ± 1.2)×10⁻⁵ eV, higher than
@@ -61,6 +62,7 @@ measurements:
     facility: texas-am
     method: anc
     energy: "²²Ne(⁶Li,d) and ²²Ne(⁷Li,t), 1.0 MeV/u ²²Ne beam"
+    energy_it: "²²Ne(⁶Li,d) e ²²Ne(⁷Li,t), fascio di ²²Ne da 1,0 MeV/u"
     note: >-
       Partial α widths of ²⁶Mg resonances in the Gamow window; the (α,γ) rate
       differs significantly from earlier values.
@@ -69,6 +71,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "E = 334 keV resonance"
+    energy_it: "risonanza a E = 334 keV"
     note: >-
       First direct limit, ωγ < 4.0×10⁻¹¹ eV (90% CL), higher than most
       indirect limits but free of their model assumptions.
@@ -77,6 +80,7 @@ measurements:
     facility: notre-dame
     method: direct-surface
     energy: "E(α,lab) = 650 and 830 keV resonances"
+    energy_it: "risonanze a E(α,lab) = 650 e 830 keV"
     note: >-
       Implanted ²²Ne targets; ωγ(830 keV) = 35 ± 4 µeV and the first direct
       upper limit for the 650 keV resonance.

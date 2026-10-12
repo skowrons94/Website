@@ -89,6 +89,7 @@ measurements:
   - year: 2012
     method: thm
     energy: "quasi-free ¹³C(⁶Li,n¹⁶O)d"
+    energy_it: "¹³C(⁶Li,n¹⁶O)d quasi libera"
     note: >-
       First Trojan Horse study of the −3 keV subthreshold resonance from the
       6.356 MeV level of ¹⁷O, which dominates the cross section in the
@@ -99,6 +100,7 @@ measurements:
     lab: "John D. Fox Accelerator Laboratory, Florida State University, Tallahassee"
     method: anc
     energy: "⁶Li(¹³C,d)¹⁷O at sub-Coulomb energy, 8 MeV ¹³C beam"
+    energy_it: "⁶Li(¹³C,d)¹⁷O a energia sotto la barriera coulombiana, fascio di ¹³C da 8 MeV"
     note: >-
       Squared Coulomb-modified α ANC of the 1/2⁺ state at 6.356 MeV,
       3.6 ± 0.7 fm⁻¹. The result removes the disagreement between earlier
@@ -119,6 +121,7 @@ measurements:
     facility: juna
     method: direct-underground
     energy: "E = 0.24–1.9 MeV (with Sichuan University above ground)"
+    energy_it: "E = 0,24–1,9 MeV (con la Sichuan University in superficie)"
     note: >-
       One consistent data set across the s- and i-process windows; the
       uncertainty at the centre of the i-process window fell from about 60% to

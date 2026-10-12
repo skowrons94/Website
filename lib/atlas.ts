@@ -108,6 +108,10 @@ export interface Reaction {
   /** False for an id networks.yaml lists before its file is written. */
   hasFile: boolean
   label: string
+  /** The reaction in words: `nitrogen‑14 + proton → oxygen‑15 + gamma ray`. */
+  plain: string
+  /** YYYY-MM-DD of the last change to its file (git, else `reviewed:`), or null. */
+  updated: string | null
   kind: ReactionKind
   target: string
   projectile: string
@@ -203,6 +207,25 @@ export interface TimelineEvent {
   facility: string | null
 }
 
+export interface AtlasMeta {
+  title: string
+  author: string
+  url: string
+  licence: string
+  licenceUrl: string
+  /** YYYY-MM-DD: the last change to the content. */
+  version: string | null
+  versionFromGit: boolean
+}
+
+export interface GlossaryTerm {
+  id: string
+  term: string
+  also: string
+  text: string
+  see: string[]
+}
+
 export interface Atlas {
   families: Family[]
   networks: Network[]
@@ -213,6 +236,8 @@ export interface Atlas {
   timeline: TimelineEvent[]
   /** False while content/atlas/timeline.yaml does not exist. */
   timelinePresent: boolean
+  meta: AtlasMeta
+  glossary: GlossaryTerm[]
 }
 
 /* -- loading --------------------------------------------------------------- */
@@ -259,8 +284,51 @@ export function getMethod(id: string, lang: Lang = "en"): Method | undefined {
 
 /** Details are Markdown with KaTeX, rendered by the same pipeline as the notes. */
 export async function renderDetails(markdown: string): Promise<string> {
-  return markdown ? renderMarkdown(markdown) : ""
+  return markdown ? renderMarkdown(paragraphs(markdown)) : ""
 }
+
+// Abbreviations after which a full stop does not end a sentence.
+const ABBREVIATIONS =
+  /(?:\bet al|\be\.g|\bi\.e|\bcf|\bvs|\bFig|\bEq|\bRef|\bRefs|\bPhys|\bRev|\bLett|\bNucl|\bAstrophys|\bJ|\bAstron|\bEur|\bProc|\bNo|\bVol|\bSect|\bapprox|\b[A-Z])\.$/
+
+/**
+ * Break a long paragraph of specialist text into paragraphs of about three
+ * sentences, so a page does not open on a wall of text. Text that already has
+ * paragraphs (a blank line), lists, headings or display maths is left as the
+ * author wrote it. Sentences end at `. ` followed by a capital letter or a
+ * nuclide, outside parentheses and not after a known abbreviation.
+ */
+export function paragraphs(markdown: string, perParagraph = 3, minLength = 650): string {
+  const text = markdown.trim()
+  if (text.length < minLength || /\n\s*\n|^\s*([-*#>]|\d+\.)\s|\$\$/m.test(text)) return text
+  const flat = text.replace(/\s*\n\s*/g, " ")
+  const sentences: string[] = []
+  let depth = 0
+  let start = 0
+  for (let i = 0; i < flat.length; i++) {
+    const c = flat[i]
+    if (c === "(" || c === "[") depth++
+    else if ((c === ")" || c === "]") && depth > 0) depth--
+    else if ((c === "." || c === "?" || c === "!") && depth === 0 && flat[i + 1] === " ") {
+      const next = flat[i + 2] ?? ""
+      if (!/[A-Z\u00C0-\u00DD\u2070-\u209F¹²³]/.test(next)) continue
+      if (ABBREVIATIONS.test(flat.slice(Math.max(0, i - 12), i + 1))) continue
+      sentences.push(flat.slice(start, i + 1).trim())
+      start = i + 2
+    }
+  }
+  sentences.push(flat.slice(start).trim())
+  if (sentences.length <= perParagraph + 1) return text
+  // Even groups: 7 sentences become 3 + 2 + 2 rather than 3 + 3 + 1.
+  const groups = Math.ceil(sentences.length / perParagraph)
+  const size = Math.ceil(sentences.length / groups)
+  const out: string[] = []
+  for (let i = 0; i < sentences.length; i += size) out.push(sentences.slice(i, i + size).join(" "))
+  return out.join("\n\n")
+}
+
+/** The glossary, in file order. */
+export const getGlossary = (lang: Lang = "en") => getAtlas(lang).glossary
 
 /** Events that name a reaction, oldest first. */
 export function eventsFor(id: string, lang: Lang = "en"): TimelineEvent[] {
@@ -273,6 +341,7 @@ export interface MapReaction {
   id: string
   hasFile: boolean
   label: string
+  plain: string
   kind: ReactionKind
   /** First sentence of the summary, for the tooltip. */
   line: string
@@ -332,6 +401,7 @@ export function getMapData(lang: Lang = "en"): MapData {
       id: r.id,
       hasFile: r.hasFile,
       label: r.label,
+      plain: r.plain,
       kind: r.kind,
       line: firstSentence(r.summary),
       summary: r.summary,

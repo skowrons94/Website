@@ -52,6 +52,7 @@ measurements:
   - year: 2011
     method: thm
     energy: "below about 300 keV (α₀ channel)"
+    energy_it: "sotto circa 300 keV (canale α₀)"
     note: >-
       First study of the α₀ channel at astrophysical energies, from the
       quasi-free parts of ²H(¹⁹F,α¹⁶O)n and ¹⁹F(³He,α¹⁶O)d. Resonances not
@@ -61,6 +62,7 @@ measurements:
   - year: 2015
     method: direct-surface
     energy: "0.2–0.6 MeV (α₀ channel)"
+    energy_it: "0,2–0,6 MeV (canale α₀)"
     note: >-
       Direct measurement at deeply sub-Coulomb energies; the S-factor is
       1.5–2 times larger than the extrapolations then adopted.
@@ -68,6 +70,7 @@ measurements:
   - year: 2017
     method: thm
     energy: "about 0–1 MeV (α₀ channel)"
+    energy_it: "circa 0–1 MeV (canale α₀)"
     note: >-
       Improved Trojan-Horse measurement of the α₀ S-factor over the energy
       range of astrophysical interest.

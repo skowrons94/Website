@@ -50,6 +50,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "Eₚ = 127.3–352.6 keV (five resonances)"
+    energy_it: "Eₚ = 127,3–352,6 keV (cinque risonanze)"
     note: >-
       Resonance strengths measured deep underground. The
       272.3 and 352.6 keV resonances are more than 1.5 times stronger than the

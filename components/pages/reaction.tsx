@@ -4,10 +4,11 @@ import path from "node:path"
 import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { ArrowLeft, ArrowRight, SlidersHorizontal } from "lucide-react"
+import { ArrowLeft, ArrowRight, ChevronDown, SlidersHorizontal } from "lucide-react"
 
 import { Cite, ReferenceList } from "@/components/atlas/reference-list"
 import { LunaBadge, StatusBadge } from "@/components/atlas/status-badge"
+import { Term } from "@/components/atlas/term"
 import { Sci } from "@/components/sci"
 import {
   eventsFor,
@@ -24,6 +25,7 @@ import {
   statusHint,
   type Reaction,
 } from "@/lib/atlas"
+import { formatDate } from "@/lib/atlas-format"
 import { decimal, dict, localePath, withoutArticle, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
 
@@ -67,9 +69,26 @@ function Facts({ reaction: r, lang }: { reaction: Reaction; lang: Lang }) {
     <div className="rounded-lg border border-border bg-card p-5 sm:p-6">
       <Label>{t.facts}</Label>
       <dl className="space-y-4 text-sm">
+        {r.status && r.kind !== "decay" && (
+          <div>
+            <dt className="text-muted-foreground">
+              <Term id="status" lang={lang}>
+                {t.statusFact}
+              </Term>
+            </dt>
+            <dd className="mt-1 text-pretty text-[0.8125rem] leading-relaxed text-foreground/85">
+              <Sci>{r.statusNote || statusHint(r.status, lang)}</Sci>
+            </dd>
+          </div>
+        )}
+
         {r.q && (
           <div>
-            <dt className="text-muted-foreground">{t.qValue}</dt>
+            <dt className="text-muted-foreground">
+              <Term id="q-value" lang={lang}>
+                {t.qValue}
+              </Term>
+            </dt>
             <dd className="mt-0.5 text-base font-medium tabular">{formatQ(r.q, lang)}</dd>
             {r.q.annihilation && (
               <dd className="mt-1 text-xs leading-snug text-muted-foreground">
@@ -86,7 +105,10 @@ function Facts({ reaction: r, lang }: { reaction: Reaction; lang: Lang }) {
         {r.halfLife && (
           <div>
             <dt className="text-muted-foreground">
-              {t.halfLifeOf} <Sci>{r.from ? displayCode(r.target) : r.target}</Sci>
+              <Term id="half-life" lang={lang}>
+                {t.halfLifeOf}
+              </Term>{" "}
+              <Sci>{r.from ? displayCode(r.target) : r.target}</Sci>
             </dt>
             <dd className="mt-0.5 text-base font-medium tabular">
               <Sci>{r.halfLife.text}</Sci>
@@ -101,7 +123,11 @@ function Facts({ reaction: r, lang }: { reaction: Reaction; lang: Lang }) {
 
         {r.gamow.length > 0 && (
           <div>
-            <dt className="text-muted-foreground">{t.gamow}</dt>
+            <dt className="text-muted-foreground">
+              <Term id="gamow-window" lang={lang}>
+                {t.gamow}
+              </Term>
+            </dt>
             <dd>
               <ul className="mt-1 space-y-1.5">
                 {r.gamow.map((g) => (
@@ -165,6 +191,15 @@ function Facts({ reaction: r, lang }: { reaction: Reaction; lang: Lang }) {
           <dt className="text-muted-foreground">{t.kind}</dt>
           <dd className="mt-0.5">{kindLabel(r.kind, lang)}</dd>
         </div>
+
+        {r.updated && (
+          <div>
+            <dt className="text-muted-foreground">{t.lastUpdated}</dt>
+            <dd className="mt-0.5">
+              <time dateTime={r.updated}>{formatDate(r.updated, lang)}</time>
+            </dd>
+          </div>
+        )}
       </dl>
     </div>
   )
@@ -221,6 +256,21 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
   const related = r.related.map((rid) => getReaction(rid, lang)).filter((x): x is Reaction => Boolean(x))
   const methods = r.methods.map((mid) => getMethod(mid, lang) ?? { id: mid, name: mid })
   const order = r.references
+  const years = r.measurements.map((m) => m.year).filter((y): y is number => y !== null).sort((a, b) => a - b)
+  const yearSpan = years.length === 0 ? "" : years[0] === years[years.length - 1] ? String(years[0]) : `${years[0]}–${years[years.length - 1]}`
+  const toc = [
+    r.hasFile && (r.summary || r.role) ? { id: "summary", label: t.summaryAnchor } : null,
+    methods.length > 0 || r.measurements.length > 0 ? { id: "measured", label: t.howMeasured } : null,
+    html ? { id: "details", label: t.details } : null,
+    r.evaluations.length > 0 ? { id: "evaluations", label: t.evaluationsTitle } : null,
+    r.openQuestions.length > 0 ? { id: "open-questions", label: t.openQuestions } : null,
+    order.length > 0 ? { id: "references", label: t.references } : null,
+  ].filter((x): x is { id: string; label: string } => x !== null)
+  const measurementLine = t.measurementCount(
+    r.measurements.length,
+    yearSpan,
+    r.measurements.filter((m) => m.luna).length,
+  )
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 xl:max-w-7xl">
@@ -255,23 +305,30 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
         <h1 className="mt-3 font-serif text-4xl font-semibold tracking-tight sm:text-5xl">
           <Sci>{r.label}</Sci>
         </h1>
+        {r.plain && (
+          <p className="mt-3 text-pretty text-lg leading-snug text-muted-foreground">
+            <span className="sr-only">: </span>
+            {r.plain}
+            <Link
+              href={to("/glossary#notation")}
+              className="ml-3 inline-block whitespace-nowrap py-1 text-sm text-link underline-offset-4 hover:underline"
+            >
+              {t.readNotation}
+            </Link>
+          </p>
+        )}
         <div className="mt-5 flex flex-wrap items-center gap-2">
-          {r.kind !== "decay" && <StatusBadge status={r.status} pending={!r.hasFile} lang={lang} />}
+          {r.kind !== "decay" && <StatusBadge status={r.status} pending={!r.hasFile} lang={lang} link />}
           {!r.hasFile && r.kind === "decay" && <StatusBadge status={null} pending lang={lang} />}
           {r.luna && <LunaBadge label={t.measuredAtLuna} />}
         </div>
-        {r.status && r.kind !== "decay" && (
-          <p className="mt-3 max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground">
-            {r.statusNote ? <Sci>{r.statusNote}</Sci> : statusHint(r.status, lang)}
-          </p>
-        )}
       </header>
 
       <div className="mt-10 lg:grid lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-14 xl:grid-cols-[minmax(0,1fr)_20rem]">
         <article className="min-w-0 max-w-[46rem] xl:max-w-[50rem]">
           {/* -- for a general reader --------------------------------------- */}
           {r.hasFile ? (
-            <div className="space-y-5">
+            <div id="summary" className="scroll-mt-24 space-y-5">
               {r.summary && (
                 <p className="text-pretty text-xl leading-relaxed">
                   <Sci>{r.summary}</Sci>
@@ -340,72 +397,83 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
                 </ul>
               )}
 
-              {r.measurements.length > 0 && english("measurements") && <InEnglish lang={lang} />}
               {r.measurements.length > 0 && (
-                <ol className="mt-8 divide-y divide-border/70 border-y border-border/70">
-                  {r.measurements.map((m, i) => {
-                    const facility = m.facility ? getFacility(m.facility, lang) : undefined
-                    const method = m.method ? getMethod(m.method, lang) : undefined
-                    return (
-                      <li
-                        key={i}
-                        className={`grid grid-cols-[3.25rem_minmax(0,1fr)] gap-x-4 py-5 sm:grid-cols-[4rem_minmax(0,1fr)] ${m.luna ? "border-l-2 border-l-foreground/40 pl-3 sm:pl-4" : "pl-[calc(0.75rem+2px)] sm:pl-[calc(1rem+2px)]"}`}
-                      >
-                        <p className="tabular pt-0.5 text-sm font-medium">{m.year ?? "—"}</p>
-                        <div className="min-w-0">
-                          <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
-                            {facility ? (
-                              <Link
-                                href={to(`/atlas/methods#${facility.id}`)}
-                                className="font-medium underline-offset-4 hover:text-link hover:underline"
-                              >
-                                <Sci>{facility.name}</Sci>
-                              </Link>
-                            ) : m.lab ? (
-                              <span lang={enLang("measurements")} className="font-medium">
-                                <Sci>{m.lab}</Sci>
-                              </span>
-                            ) : (
-                              <span className="text-muted-foreground">{t.labNotGiven}</span>
-                            )}
-                            {facility?.lab && (
-                              <span className="text-muted-foreground">
-                                <Sci>{facility.lab}</Sci>
-                              </span>
-                            )}
-                            {m.luna && <LunaBadge />}
-                          </p>
-                          <p className="mt-1 text-xs text-muted-foreground">
-                            {method && (
-                              <Link href={to(`/atlas/methods#${method.id}`)} className="underline-offset-2 hover:text-link hover:underline">
-                                <Sci>{method.name}</Sci>
-                              </Link>
-                            )}
-                            {method && m.energy && " · "}
-                            {m.energy && (
-                              <span lang={enLang("measurements")}>
-                                <Sci>{m.energy}</Sci>
-                              </span>
-                            )}
-                          </p>
-                          {m.note && (
-                            <p className="mt-2 text-pretty text-[0.95rem] leading-relaxed text-foreground/90">
-                              <span lang={enLang("measurements")}>
-                                <Sci>{m.note}</Sci>
-                              </span>{" "}
-                              <Cite keys={m.refs} order={order} />
-                            </p>
-                          )}
-                          {!m.note && m.refs.length > 0 && (
-                            <p className="mt-2 text-sm">
-                              <Cite keys={m.refs} order={order} />
-                            </p>
-                          )}
-                        </div>
-                      </li>
-                    )
-                  })}
-                </ol>
+                <details className="group mt-8 rounded-lg border border-border/80">
+                  <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 rounded-lg px-4 py-3 transition-colors hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+                    <span className="text-[0.95rem] font-medium tabular">{measurementLine}</span>
+                    <span className="inline-flex shrink-0 items-center gap-1.5 text-sm text-link">
+                      <span className="group-open:hidden">{t.showList}</span>
+                      <span className="hidden group-open:inline">{t.hideList}</span>
+                      <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" aria-hidden />
+                    </span>
+                  </summary>
+                  <div className="px-4 pb-2">
+                    {english("measurements") && <InEnglish lang={lang} />}
+                    <ol className="mt-3 divide-y divide-border/70 border-t border-border/70">
+                      {r.measurements.map((m, i) => {
+                        const facility = m.facility ? getFacility(m.facility, lang) : undefined
+                        const method = m.method ? getMethod(m.method, lang) : undefined
+                        return (
+                          <li key={i} className="grid grid-cols-[3.25rem_minmax(0,1fr)] gap-x-4 py-5 sm:grid-cols-[4rem_minmax(0,1fr)]">
+                            <p className="tabular pt-0.5 text-sm font-medium">{m.year ?? "—"}</p>
+                            <div className="min-w-0">
+                              {(facility || m.lab || m.luna) && (
+                                <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+                                  {facility ? (
+                                    <Link
+                                      href={to(`/atlas/methods#${facility.id}`)}
+                                      className="font-medium underline-offset-4 hover:text-link hover:underline"
+                                    >
+                                      <Sci>{facility.name}</Sci>
+                                    </Link>
+                                  ) : (
+                                    m.lab && (
+                                      <span className="font-medium">
+                                        <Sci>{m.lab}</Sci>
+                                      </span>
+                                    )
+                                  )}
+                                  {facility?.lab && (
+                                    <span className="text-muted-foreground">
+                                      <Sci>{facility.lab}</Sci>
+                                    </span>
+                                  )}
+                                  {m.luna && !facility?.luna && <LunaBadge />}
+                                </p>
+                              )}
+                              <p className={`${facility || m.lab || m.luna ? "mt-1" : ""} text-xs text-muted-foreground`}>
+                                {method && (
+                                  <Link href={to(`/atlas/methods#${method.id}`)} className="underline-offset-2 hover:text-link hover:underline">
+                                    <Sci>{method.name}</Sci>
+                                  </Link>
+                                )}
+                                {method && m.energy && " · "}
+                                {m.energy && (
+                                  <span className="tabular">
+                                    <Sci>{decimal(m.energy, lang)}</Sci>
+                                  </span>
+                                )}
+                              </p>
+                              {m.note && (
+                                <p className="mt-2 text-pretty text-[0.95rem] leading-relaxed text-foreground/90">
+                                  <span lang={enLang("measurements")}>
+                                    <Sci>{m.note}</Sci>
+                                  </span>{" "}
+                                  <Cite keys={m.refs} order={order} />
+                                </p>
+                              )}
+                              {!m.note && m.refs.length > 0 && (
+                                <p className="mt-2 text-sm">
+                                  <Cite keys={m.refs} order={order} />
+                                </p>
+                              )}
+                            </div>
+                          </li>
+                        )
+                      })}
+                    </ol>
+                  </div>
+                </details>
               )}
             </section>
           )}
@@ -518,7 +586,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
           )}
 
           {order.length > 0 && (
-            <section className="mt-16 border-t border-border/70 pt-8">
+            <section id="references" className="mt-16 scroll-mt-24 border-t border-border/70 pt-8">
               <Label>{t.references}</Label>
               <ReferenceList keys={order} references={atlas.references} lang={lang} />
             </section>
@@ -560,7 +628,24 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
         </article>
 
         <aside className="hidden lg:block">
-          <div className="sticky top-24">
+          <div className="sticky top-24 space-y-6">
+            {toc.length > 2 && (
+              <nav aria-label={t.onThisPage} className="hidden xl:block">
+                <p className="mb-2 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">{t.onThisPage}</p>
+                <ul className="space-y-0.5 border-l border-border text-sm">
+                  {toc.map((item) => (
+                    <li key={item.id}>
+                      <a
+                        href={`#${item.id}`}
+                        className="-ml-px block border-l border-transparent py-1 pl-3 text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground"
+                      >
+                        {item.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            )}
             <Facts reaction={r} lang={lang} />
           </div>
         </aside>

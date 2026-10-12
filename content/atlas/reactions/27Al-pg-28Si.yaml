@@ -53,6 +53,7 @@ measurements:
   - year: 1990
     method: direct-surface
     energy: "low-energy (p,γ) resonances"
+    energy_it: "risonanze (p,γ) di bassa energia"
     note: >-
       γ-ray decay schemes of the low-energy resonances, with new spin-parity and
       isospin assignments for states of ²⁸Si; measured together with resonances

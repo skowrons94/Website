@@ -13,6 +13,8 @@ references/*.yaml      the bibliography, split in several files (merged on load)
 facilities.yaml        laboratories and accelerators
 methods.yaml           how cross sections are measured
 timeline.yaml          the history of the field
+glossary.yaml          the terms explained at /glossary (anchors are linked from the pages)
+atlas.yaml             author, licence and fallback version: the "How to cite" box and data.json
 nuclear-data/          AME2020 mass excesses and NUBASE2020 half-lives (read, never edited)
 ```
 
@@ -117,6 +119,20 @@ References are not translated: titles stay as published.
 
 See the comments at the top of each file. Every list is plain YAML; order in the
 file is display order.
+
+## Dates, versions and licence
+
+The "last updated" date of a reaction page is the date of the last commit that
+touched its file, and the atlas' version (in "How to cite" and in data.json)
+is the date of the last commit that touched anything in this directory. Both
+are read from git at build time. A build without the history (the Docker
+image copies no `.git`) falls back to `reviewed: YYYY-MM-DD` in a reaction
+file, and to `version:` in `atlas.yaml`; without either, the date is omitted.
+The content and data.json are released under CC BY 4.0 (`atlas.yaml`).
+
+Measurement energies may carry an Italian version, `energy_it`, for the words
+in them ("risonanza a 259 keV"); numbers alone need none, since the Italian
+page writes the decimal comma itself.
 
 ## Checks on translations
 

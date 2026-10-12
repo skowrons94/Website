@@ -1,0 +1,21 @@
+# About the atlas as a whole: who wrote it, how to cite it, and its licence.
+# Shown in the "How to cite" box on /atlas and written into data.json.
+#
+#   version: the date of the last change to the content. The build takes it
+#            from git (the last commit touching content/atlas/) when the
+#            history is available; this field is the fallback for builds
+#            without it, such as the Docker image, which copies no .git.
+#            Update it when you change the content and deploy with Docker.
+#   url:     the atlas' public address. Left empty, the page uses SITE_URL
+#            (set at build time) or the address it is served from.
+#
+# Each reaction file may carry `reviewed: YYYY-MM-DD`, used for its "last
+# updated" line when git cannot give the date of its last change.
+
+title: Reaction atlas
+title_it: Atlante delle reazioni
+author: J. Skowronski
+url: ""
+version: 2026-10-12
+licence: CC BY 4.0
+licence_url: https://creativecommons.org/licenses/by/4.0/

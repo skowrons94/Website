@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { ArrowLeft, ExternalLink } from "lucide-react"
+import { ArrowLeft, ChevronRight, ExternalLink } from "lucide-react"
 
 import { LunaBadge } from "@/components/atlas/status-badge"
 import { Container, PageHeader } from "@/components/page-header"
@@ -31,11 +31,11 @@ function Citations({ keys, lang }: { keys: string[]; lang: Lang }) {
   const refs = keys.map((k) => atlas.references[k]).filter(Boolean)
   if (refs.length === 0) return null
   return (
-    <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+    <p className="mt-4 flex flex-wrap gap-x-4 text-xs text-muted-foreground">
       {refs.map((ref) => {
         const href = referenceHref(ref)
         return href ? (
-          <a key={ref.key} href={href} target="_blank" rel="noreferrer" className="underline-offset-2 hover:text-link hover:underline">
+          <a key={ref.key} href={href} target="_blank" rel="noreferrer" className="inline-flex min-h-6 items-center underline-offset-2 hover:text-link hover:underline">
             <Sci>{shortCitation(ref, lang)}</Sci>
           </a>
         ) : (
@@ -66,6 +66,21 @@ function ReactionChips({ reactions, lang }: { reactions: Reaction[]; lang: Lang 
   )
 }
 
+/** The specialist paragraph of a method or a facility, folded away by default. */
+function Specialist({ text, lang }: { text: string; lang: Lang }) {
+  return (
+    <details className="group mt-3">
+      <summary className="inline-flex min-h-8 cursor-pointer list-none items-center gap-1.5 rounded text-sm text-link focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+        <ChevronRight className="h-4 w-4 transition-transform group-open:rotate-90" aria-hidden />
+        {dict(lang).atlas.forSpecialists}
+      </summary>
+      <p className="mt-2 text-pretty text-[0.925rem] leading-relaxed text-muted-foreground">
+        <Sci>{text}</Sci>
+      </p>
+    </details>
+  )
+}
+
 function MethodCard({ method: m, examples, lang }: { method: Method; examples: Reaction[]; lang: Lang }) {
   const t = dict(lang).atlas
   const strengths = asList(m.strengths)
@@ -82,11 +97,7 @@ function MethodCard({ method: m, examples, lang }: { method: Method; examples: R
       ) : (
         <p className="mt-3 text-sm text-muted-foreground">{t.descriptionPending}</p>
       )}
-      {m.details && (
-        <p className="mt-3 text-pretty text-[0.925rem] leading-relaxed text-muted-foreground">
-          <Sci>{m.details}</Sci>
-        </p>
-      )}
+      {m.details && <Specialist text={m.details} lang={lang} />}
       {(strengths.length > 0 || limits.length > 0) && (
         <div className="mt-5 grid gap-5 sm:grid-cols-2">
           {strengths.length > 0 && (
@@ -146,7 +157,7 @@ function FacilityCard({ facility: f, reactions, lang }: { facility: Facility; re
   return (
     <article
       id={f.id}
-      className={`scroll-mt-24 rounded-lg border bg-card p-6 ${f.luna ? "border-foreground/30" : "border-border"}`}
+      className="scroll-mt-24 rounded-lg border border-border bg-card p-6"
     >
       <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
         <h3 className="font-serif text-lg font-semibold tracking-tight">
@@ -173,11 +184,7 @@ function FacilityCard({ facility: f, reactions, lang }: { facility: Facility; re
       ) : (
         <p className="mt-3 text-sm text-muted-foreground">{t.descriptionPending}</p>
       )}
-      {f.details && (
-        <p className="mt-3 text-pretty text-sm leading-relaxed text-muted-foreground">
-          <Sci>{f.details}</Sci>
-        </p>
-      )}
+      {f.details && <Specialist text={f.details} lang={lang} />}
       {reactions.length > 0 && (
         <div className="mt-4">
           <h4 className="mb-2 text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">

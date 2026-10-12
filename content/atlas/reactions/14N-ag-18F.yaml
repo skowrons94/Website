@@ -51,6 +51,7 @@ measurements:
     lab: "Forschungszentrum Karlsruhe, Karlsruhe, and University of Notre Dame"
     method: direct-surface
     energy: "low-energy resonances"
+    energy_it: "risonanze di bassa energia"
     note: >-
       Strengths of the low-energy resonances with thin TiN targets and a Ge
       clover detector; the lowest resonance was not observed and was argued to

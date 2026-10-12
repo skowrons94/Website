@@ -4,7 +4,8 @@ import Link from "next/link"
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { ArrowRight, Maximize2, Minimize2, X } from "lucide-react"
 
-import { LunaBadge, StatusBadge } from "@/components/atlas/status-badge"
+import { LunaBadge, StatusBadge, StatusLegend } from "@/components/atlas/status-badge"
+import { Term } from "@/components/atlas/term"
 import { useDict, useLang } from "@/components/lang-provider"
 import { Sci } from "@/components/sci"
 import type { MapData, MapReaction } from "@/lib/atlas"
@@ -19,7 +20,7 @@ import { cn } from "@/lib/utils"
  *
  * One family of processes is in colour at a time and everything else is grey.
  * Within the family each network takes one of the three validated chart hues,
- * in file order; a fourth network (only the CNO family has one) is drawn in ink
+ * in file order; a fourth network (the pp family, with hep, and the CNO family) is drawn in ink
  * with a dashed line, so identity never rests on a fourth hue the palette does
  * not have. Colour follows the network, not its position among the ones that
  * are switched on, so toggling CNO-II off does not repaint CNO-III.
@@ -206,6 +207,16 @@ export function NetworkMap({ data }: { data: MapData }) {
   const byId = useMemo(() => new Map(reactions.map((r) => [r.id, r])), [reactions])
   const selected = selectedId ? byId.get(selectedId) ?? null : null
 
+  // The phone drawer is a modal dialog; on a wide screen the panel is a column.
+  const [wide, setWide] = useState(false)
+  useEffect(() => {
+    const query = window.matchMedia("(min-width: 1024px)")
+    const update = () => setWide(query.matches)
+    update()
+    query.addEventListener("change", update)
+    return () => query.removeEventListener("change", update)
+  }, [])
+
   /* -- deep links: /atlas#cno -------------------------------------------- */
 
   useEffect(() => {
@@ -270,6 +281,20 @@ export function NetworkMap({ data }: { data: MapData }) {
     () => reactions.filter((r) => familyNetworks.some((n) => n.reactions.includes(r.id))),
     [reactions, familyNetworks],
   )
+
+  // Keyboard order: the reactions of the switched-on networks, network by
+  // network, in the order a nucleus meets them. One arrow is in the Tab order
+  // at a time (a roving tabindex); the arrow keys move along this chain.
+  const chain = useMemo(() => {
+    const ids: string[] = []
+    for (const n of familyNetworks) {
+      if (disabled.has(n.id)) continue
+      for (const id of n.reactions) if (byId.has(id) && !ids.includes(id)) ids.push(id)
+    }
+    return ids
+  }, [familyNetworks, disabled, byId])
+  const [rovingId, setRovingId] = useState<string | null>(null)
+  const tabStop = rovingId && chain.includes(rovingId) ? rovingId : chain[0] ?? null
 
   /* -- view box, with a short tween between families -------------------------- */
 
@@ -379,6 +404,12 @@ export function NetworkMap({ data }: { data: MapData }) {
     [slotOf, familyId, chooseFamily],
   )
 
+  const focusArrow = useCallback((id: string) => {
+    setRovingId(id)
+    const el = frameRef.current?.querySelector<SVGGElement>(`[data-reaction="${CSS.escape(id)}"]`)
+    el?.focus({ preventScroll: true })
+  }, [])
+
   const close = useCallback(() => {
     setSelectedId(null)
     const id = returnFocusRef.current
@@ -400,6 +431,38 @@ export function NetworkMap({ data }: { data: MapData }) {
   useEffect(() => {
     if (selectedId) panelRef.current?.focus({ preventScroll: true })
   }, [selectedId])
+
+  // On a phone the open drawer is modal: the page behind does not scroll, and
+  // Tab cycles inside the drawer.
+  const modal = Boolean(selectedId) && !wide
+  useEffect(() => {
+    if (!modal) return
+    const body = document.body
+    const before = body.style.overflow
+    body.style.overflow = "hidden"
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Tab") return
+      const panel = panelRef.current
+      if (!panel) return
+      const items = [...panel.querySelectorAll<HTMLElement>("a[href], button:not([disabled]), [tabindex]:not([tabindex='-1'])")]
+      if (items.length === 0) return
+      const first = items[0]
+      const last = items[items.length - 1]
+      const active = document.activeElement
+      if (e.shiftKey && (active === first || active === panel)) {
+        e.preventDefault()
+        last.focus()
+      } else if (!e.shiftKey && (active === last || !panel.contains(active))) {
+        e.preventDefault()
+        first.focus()
+      }
+    }
+    document.addEventListener("keydown", onKey)
+    return () => {
+      body.style.overflow = before
+      document.removeEventListener("keydown", onKey)
+    }
+  }, [modal])
 
   const showTipAt = (id: string, clientX: number, clientY: number) => {
     const rect = frameRef.current?.getBoundingClientRect()
@@ -426,21 +489,38 @@ export function NetworkMap({ data }: { data: MapData }) {
         data-reaction={a.r.id}
         className="atlas-arrow cursor-pointer"
         role="button"
-        tabIndex={active ? 0 : -1}
+        tabIndex={active && a.r.id === tabStop ? 0 : -1}
         aria-label={`${a.r.label}. ${a.r.line}`}
         aria-pressed={isSelected}
-        onClick={() => select(a.r)}
+        onClick={() => {
+          if (active) setRovingId(a.r.id)
+          select(a.r)
+        }}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault()
             select(a.r)
+            return
           }
+          const i = chain.indexOf(a.r.id)
+          if (i < 0) return
+          let next: number | null = null
+          if (e.key === "ArrowRight" || e.key === "ArrowUp") next = Math.min(chain.length - 1, i + 1)
+          else if (e.key === "ArrowLeft" || e.key === "ArrowDown") next = Math.max(0, i - 1)
+          else if (e.key === "Home") next = 0
+          else if (e.key === "End") next = chain.length - 1
+          if (next === null) return
+          e.preventDefault()
+          focusArrow(chain[next])
         }}
         onPointerMove={(e) => {
           if (e.pointerType === "mouse") showTipAt(a.r.id, e.clientX, e.clientY)
         }}
         onPointerLeave={() => setTip((t) => (t?.id === a.r.id ? null : t))}
-        onFocus={() => showTipFor(a)}
+        onFocus={() => {
+          if (active) setRovingId(a.r.id)
+          showTipFor(a)
+        }}
         onBlur={() => setTip((t) => (t?.id === a.r.id ? null : t))}
       >
         {/* generous hit area, and a surface halo so crossing arrows stay legible */}
@@ -752,8 +832,10 @@ export function NetworkMap({ data }: { data: MapData }) {
           </span>
         </div>
         <p className="mt-2 text-xs text-muted-foreground">
-          {t.mapHelp}
+          <span className="[@media(hover:none)]:hidden">{t.mapHelp}</span>
+          <span className="hidden [@media(hover:none)]:inline">{t.mapHelpTouch}</span>
         </p>
+        <StatusLegend lang={lang} className="mt-4 border-t border-border/70 pt-3" />
       </div>
 
       {/* -- side panel; a drawer below lg ------------------------------------- */}
@@ -764,16 +846,18 @@ export function NetworkMap({ data }: { data: MapData }) {
               type="button"
               aria-label={t.closeDetails}
               tabIndex={-1}
-              className="fixed inset-0 z-40 bg-black/30 lg:hidden"
+              className="fixed inset-0 z-40 bg-black/50 dark:bg-black/70 lg:hidden"
               onClick={close}
             />
             <div
               ref={panelRef}
               tabIndex={-1}
               role="dialog"
+              aria-modal={modal ? true : undefined}
               aria-label={selected.label}
-              className="fixed inset-x-0 bottom-0 z-50 max-h-[78vh] overflow-y-auto rounded-t-xl border-t border-border bg-background px-5 pb-8 pt-5 shadow-2xl outline-none lg:static lg:z-auto lg:max-h-[calc(100vh-8rem)] lg:rounded-lg lg:border lg:bg-card lg:p-6 lg:shadow-none"
+              className="fixed inset-x-0 bottom-0 z-50 max-h-[78vh] overflow-y-auto overscroll-contain rounded-t-xl border-t border-border bg-background px-5 pb-8 pt-3 shadow-2xl outline-none lg:static lg:z-auto lg:max-h-[calc(100vh-8rem)] lg:rounded-lg lg:border lg:bg-card lg:p-6 lg:shadow-none"
             >
+              <div aria-hidden className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-muted-foreground/40 lg:hidden" />
               <ReactionPanel reaction={selected} networks={networks} onClose={close} />
             </div>
           </>
@@ -822,7 +906,7 @@ export function NetworkMap({ data }: { data: MapData }) {
                         href={localePath(lang, `/atlas/${id}`)}
                         className="group flex flex-wrap items-baseline gap-x-3 gap-y-1 py-2.5 text-[0.95rem]"
                       >
-                        <span className="tabular w-5 shrink-0 text-xs text-muted-foreground/70">{j + 1}.</span>
+                        <span className="tabular w-5 shrink-0 text-xs text-muted-foreground">{j + 1}.</span>
                         <span className="font-serif font-semibold group-hover:text-link">
                           <Sci>{r?.label ?? id}</Sci>
                         </span>
@@ -850,10 +934,19 @@ export function NetworkMap({ data }: { data: MapData }) {
 
 /* -- the panel ------------------------------------------------------------- */
 
-function Fact({ label, children }: { label: string; children: React.ReactNode }) {
+function Fact({ label, term, children }: { label: string; term?: string; children: React.ReactNode }) {
+  const lang = useLang()
   return (
     <div className="py-2.5 sm:grid sm:grid-cols-[7.5rem_1fr] sm:gap-3 lg:block xl:grid">
-      <dt className="text-xs uppercase tracking-[0.1em] text-muted-foreground">{label}</dt>
+      <dt className="text-xs uppercase tracking-[0.1em] text-muted-foreground">
+        {term ? (
+          <Term id={term} lang={lang}>
+            {label}
+          </Term>
+        ) : (
+          label
+        )}
+      </dt>
       <dd className="mt-0.5 text-sm sm:mt-0 lg:mt-0.5 xl:mt-0">{children}</dd>
     </div>
   )
@@ -879,6 +972,7 @@ function ReactionPanel({
           <h3 className="mt-1 font-serif text-2xl font-semibold tracking-tight">
             <Sci>{r.label}</Sci>
           </h3>
+          {r.plain && <p className="mt-1 text-pretty text-sm leading-snug text-muted-foreground">{r.plain}</p>}
         </div>
         <button
           type="button"
@@ -891,7 +985,7 @@ function ReactionPanel({
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
-        {r.kind !== "decay" && <StatusBadge status={r.status} pending={!r.hasFile} lang={lang} />}
+        {r.kind !== "decay" && <StatusBadge status={r.status} pending={!r.hasFile} lang={lang} link />}
         {r.luna && <LunaBadge label={t.measuredAtLuna} />}
       </div>
 
@@ -915,7 +1009,7 @@ function ReactionPanel({
           <Sci>{names.join(", ")}</Sci>
         </Fact>
         {r.q && (
-          <Fact label={t.qValue}>
+          <Fact label={t.qValue} term="q-value">
             <span className="tabular">{formatQ(r.q, lang)}</span>
             {r.q.annihilation && (
               <span className="block text-xs leading-snug text-muted-foreground">
@@ -925,14 +1019,14 @@ function ReactionPanel({
           </Fact>
         )}
         {r.halfLife && (
-          <Fact label={t.halfLife}>
+          <Fact label={t.halfLife} term="half-life">
             <span className="tabular">
               <Sci>{r.halfLife}</Sci>
             </span>
           </Fact>
         )}
         {r.gamow.length > 0 && (
-          <Fact label={t.gamow}>
+          <Fact label={t.gamow} term="gamow-window">
             <ul className="space-y-0.5">
               {r.gamow.map((g) => (
                 <li key={`${g.T9}-${g.label}`}>

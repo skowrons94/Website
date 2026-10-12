@@ -72,10 +72,10 @@ status_note_it: >-
 methods: [direct-surface, inverse-kinematics, anc, theory]
 measurements:
   - year: 2001
-    facility: other
-    lab: "Dynamitron, Universität Stuttgart, Stuttgart"
+    facility: stuttgart-dynamitron
     method: direct-surface
     energy: "E1 and E2 capture, forward kinematics"
+    energy_it: "cattura E1 ed E2, cinematica diretta"
     note: >-
       γ-ray angular distributions separated E1 and E2 ground-state capture;
       the derived rate is about 30% below the NACRE rate near
@@ -91,8 +91,7 @@ measurements:
       target, with no γ-ray coincidence.
     refs: [schurmann2005]
   - year: 2006
-    facility: other
-    lab: "Dynamitron, Universität Stuttgart, Stuttgart"
+    facility: stuttgart-dynamitron
     method: direct-surface
     energy: "E = 1.30–2.78 MeV"
     note: >-
@@ -120,8 +119,7 @@ measurements:
       in contrast with the earlier DRAGON result.
     refs: [schurmann2011]
   - year: 2012
-    facility: other
-    lab: "Karlsruhe 3.7 MV Van de Graaff, Karlsruhe"
+    facility: karlsruhe-vdg
     method: direct-surface
     energy: "E = 1.00–1.51 MeV"
     note: >-

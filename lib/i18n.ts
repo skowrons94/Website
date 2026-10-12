@@ -485,7 +485,7 @@ const en = {
     legendOther: "Other processes",
     legendStable: "Stable, radioactive",
     mapHelp:
-      "Hover or focus an arrow for its name; select it for the details. Tab moves between the reactions of the process on show.",
+      "Hover over an arrow for its name and click it for the details. With a keyboard, Tab reaches the map and the arrow keys move along the reactions of the process on show.",
     closeDetails: "Close details",
     close: "Close",
     selectArrow: "Select an arrow to see what the reaction does, its energy release and how well it is known.",
@@ -501,6 +501,66 @@ const en = {
     interactive: "Interactive evaluation →",
     fullEntry: "The full entry",
     soFar: "What there is so far",
+    // --- atlas ---
+    mapHelpTouch: "Tap an arrow to see what the reaction does; the buttons above the map choose the process in colour.",
+    startHere: "Start here",
+    startHereTitle: "A century of stellar fusion in five minutes",
+    startHereText:
+      "From Eddington's guess in 1920 to measurements deep under a mountain: how we learned what makes the stars shine.",
+    howToRead: "How to read the map",
+    readSteps: [
+      "Each square is an atomic nucleus. One step up adds a proton and makes the next element; one step to the right adds a neutron.",
+      "Each arrow is a reaction or a decay. Straight up: a proton is captured. Two up and two right: a helium nucleus is captured. One down and one right: a β⁺ decay, in which a proton turns into a neutron.",
+      "Squares filled in grey are stable nuclei; outlined squares are radioactive.",
+      "The colour of an arrow tells which process it belongs to; the buttons above the map choose the process. Thicker lines are the more important reactions.",
+    ],
+    diagram: {
+      label:
+        "Diagram: how to read the chart. A square for a nucleus; an arrow up for a proton capture, to the right for a neutron capture, two up and two right for a helium capture, one down and one right for a β⁺ decay; a filled square is stable, an outlined one radioactive.",
+      protons: "protons",
+      neutrons: "neutrons",
+      pCapture: "+ proton",
+      nCapture: "+ neutron",
+      aCapture: "+ helium‑4",
+      betaPlus: "β⁺",
+      stable: "stable",
+      radioactive: "radioactive",
+    },
+    notationTitle: "Reading a reaction",
+    notation: [
+      "means: a nitrogen‑14 nucleus (the target) captures a proton (what goes in) and becomes oxygen‑15 (the product), giving off a gamma ray (what comes out). Every reaction is written the same way:",
+      "target(in,out)product",
+    ],
+    primerTitle: "Why these reactions matter, and why they are measured underground",
+    statusLegend: "How well each rate is known:",
+    moreInGlossary: "More in the glossary",
+    glossaryLink: "Glossary",
+    readNotation: "How to read the notation",
+    measurementCount: (n: number, span: string, luna: number) =>
+      `${n} ${n === 1 ? "measurement" : "measurements"}${span ? `, ${span}` : ""}${luna ? `, ${luna} at LUNA` : ""}`,
+    showList: "Show the list",
+    hideList: "Hide the list",
+    statusFact: "How well known",
+    lastUpdated: "Last updated",
+    onThisPage: "On this page",
+    summaryAnchor: "In brief",
+    forSpecialists: "For specialists",
+    citeTitle: "How to cite this atlas",
+    citeVersion: "version",
+    citeAccessed: "Cite the version you used; the date is the last change to the content.",
+    licence: (name: string) =>
+      `The text and the data, including data.json, are released under the ${name} licence: you may reuse them, with credit.`,
+    licenceLink: "Licence",
+    // glossary page
+    glossaryMeta: "Glossary · Reaction atlas",
+    glossaryTitle: "Glossary",
+    glossaryDescription:
+      "The terms of nuclear astrophysics used in the reaction atlas, in plain words: cross section, S-factor, Gamow window, resonance, Q-value and more.",
+    glossaryLead:
+      "The words the atlas uses, in plain language. Each reaction page links here the first time a term appears.",
+    seeAlso: "See also",
+    readMore: "Read more",
+    readLess: "Show less",
   },
 }
 
@@ -832,7 +892,7 @@ const it: Dictionary = {
       "Le reazioni dell'atlante con almeno una misura pubblicata dalla collaborazione LUNA, con gli anni di quelle misure.",
     timelineCard: "Cronologia",
     timelineCardText:
-      "Dall'intuizione di Eddington nel 1920 alle più recenti misure in laboratorio sotterraneo, con le osservazioni e le infrastrutture nel mezzo.",
+      "Dall'intuizione di Eddington nel 1920 alle più recenti misure in laboratorio sotterraneo, passando per le osservazioni e le infrastrutture.",
     methodsCard: "Metodi e laboratori",
     methodsCardText: "Come si misura una sezione d'urto alle energie stellari, in modo diretto o indiretto, e dove.",
     dataCard: "I dati",
@@ -908,7 +968,7 @@ const it: Dictionary = {
     },
     months: ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"],
     decades: "Decenni",
-    decade: (d: number) => `Anni ${d}`,
+    decade: (d: number) => (d >= 1910 && d < 2000 ? `Anni '${String(d).slice(2)}` : `Anni ${d}`),
     undated: "Senza data",
     nothingHere: "Ancora nulla in questa categoria.",
     officialPage: "Pagina ufficiale",
@@ -958,7 +1018,7 @@ const it: Dictionary = {
     legendOther: "Altri processi",
     legendStable: "Stabile, radioattivo",
     mapHelp:
-      "Passa sopra una freccia o dalle il focus per vederne il nome; selezionala per i dettagli. Il tasto Tab passa da una reazione all'altra del processo mostrato.",
+      "Passa con il mouse su una freccia per vederne il nome e fai clic per i dettagli. Da tastiera, Tab porta alla mappa e i tasti freccia si spostano tra le reazioni del processo mostrato.",
     closeDetails: "Chiudi i dettagli",
     close: "Chiudi",
     selectArrow:
@@ -975,6 +1035,65 @@ const it: Dictionary = {
     interactive: "Valutazione interattiva →",
     fullEntry: "La scheda completa",
     soFar: "Quello che c'è finora",
+    // --- atlas ---
+    mapHelpTouch: "Tocca una freccia per vedere che cosa fa la reazione; i pulsanti sopra la mappa scelgono il processo a colori.",
+    startHere: "Inizia da qui",
+    startHereTitle: "Un secolo di fusione stellare in cinque minuti",
+    startHereText:
+      "Dall'intuizione di Eddington nel 1920 alle misure sotto una montagna: come abbiamo capito che cosa fa brillare le stelle.",
+    howToRead: "Come leggere la mappa",
+    readSteps: [
+      "Ogni casella è un nucleo atomico. Un passo verso l'alto aggiunge un protone e dà l'elemento successivo; un passo verso destra aggiunge un neutrone.",
+      "Ogni freccia è una reazione o un decadimento. Dritta in alto: viene catturato un protone. Due passi in alto e due a destra: viene catturato un nucleo di elio. Uno in basso e uno a destra: un decadimento β⁺, in cui un protone si trasforma in un neutrone.",
+      "Le caselle piene, in grigio, sono nuclei stabili; quelle solo contornate sono radioattive.",
+      "Il colore di una freccia indica il processo a cui appartiene; i pulsanti sopra la mappa scelgono il processo. Le linee più spesse sono le reazioni più importanti.",
+    ],
+    diagram: {
+      label:
+        "Schema: come leggere la carta. Una casella per ogni nucleo; una freccia in alto per la cattura di un protone, a destra per la cattura di un neutrone, due in alto e due a destra per la cattura di un nucleo di elio, una in basso e una a destra per un decadimento β⁺; una casella piena è stabile, una contornata radioattiva.",
+      protons: "protoni",
+      neutrons: "neutroni",
+      pCapture: "+ protone",
+      nCapture: "+ neutrone",
+      aCapture: "+ elio‑4",
+      betaPlus: "β⁺",
+      stable: "stabile",
+      radioactive: "radioattivo",
+    },
+    notationTitle: "Come si legge una reazione",
+    notation: [
+      "significa: un nucleo di azoto‑14 (il bersaglio) cattura un protone (ciò che entra) e diventa ossigeno‑15 (il prodotto), emettendo un raggio gamma (ciò che esce). Ogni reazione si scrive allo stesso modo:",
+      "bersaglio(entra,esce)prodotto",
+    ],
+    primerTitle: "Perché queste reazioni contano, e perché si misurano sotto terra",
+    statusLegend: "Quanto bene è noto ciascun tasso di reazione:",
+    moreInGlossary: "Di più nel glossario",
+    glossaryLink: "Glossario",
+    readNotation: "Come si legge la notazione",
+    measurementCount: (n: number, span: string, luna: number) =>
+      `${n} ${n === 1 ? "misura" : "misure"}${span ? `, ${span}` : ""}${luna ? `, ${luna === 1 ? "una" : `di cui ${luna}`} a LUNA` : ""}`,
+    showList: "Mostra l'elenco",
+    hideList: "Nascondi l'elenco",
+    statusFact: "Quanto è noto",
+    lastUpdated: "Ultimo aggiornamento",
+    onThisPage: "In questa pagina",
+    summaryAnchor: "In breve",
+    forSpecialists: "Per specialisti",
+    citeTitle: "Come citare questo atlante",
+    citeVersion: "versione",
+    citeAccessed: "Cita la versione che hai usato; la data è quella dell'ultima modifica dei contenuti.",
+    licence: (name: string) =>
+      `I testi e i dati, compreso data.json, sono distribuiti con licenza ${name}: puoi riutilizzarli citando la fonte.`,
+    licenceLink: "Licenza",
+    glossaryMeta: "Glossario · Atlante delle reazioni",
+    glossaryTitle: "Glossario",
+    glossaryDescription:
+      "I termini dell'astrofisica nucleare usati nell'atlante delle reazioni, in parole semplici: sezione d'urto, fattore S, finestra di Gamow, risonanza, valore Q e altri.",
+    glossaryLead:
+      "Le parole che l'atlante usa, in linguaggio semplice. Ogni pagina di reazione rimanda qui la prima volta che un termine compare.",
+    seeAlso: "Vedi anche",
+    readMore: "Leggi tutto",
+    readLess: "Mostra meno",
   },
 }
 

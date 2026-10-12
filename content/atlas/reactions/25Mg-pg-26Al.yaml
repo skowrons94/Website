@@ -77,6 +77,7 @@ measurements:
   - year: 1990
     method: direct-surface
     energy: "low-energy (p,γ) resonances"
+    energy_it: "risonanze (p,γ) di bassa energia"
     note: >-
       γ-ray decay schemes of the low-energy resonances, measured together with
       resonances in ²⁶Mg(p,γ) and ²⁷Al(p,γ).
@@ -85,6 +86,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "E_cm = 304 keV resonance"
+    energy_it: "risonanza a E_cm = 304 keV"
     note: >-
       Strength of the 304 keV resonance with higher accuracy than before, to
       serve as a normalisation for the low-energy resonances.
@@ -93,6 +95,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "E_cm = 92 and 189 keV resonances"
+    energy_it: "risonanze a E_cm = 92 e 189 keV"
     note: >-
       First direct observation of the 92 keV resonance with a 4π BGO summing
       detector, ωγ = (2.9 ± 0.6) × 10⁻¹⁰ eV. γ-ray branchings and strength of the
@@ -102,6 +105,7 @@ measurements:
     facility: juna
     method: direct-underground
     energy: "E_cm = 92 keV resonance"
+    energy_it: "risonanza a E_cm = 92 keV"
     note: >-
       First experiment at JUNA in the China Jinping Underground Laboratory: a
       precise measurement of the 92 keV resonance, independent of the LUNA one.

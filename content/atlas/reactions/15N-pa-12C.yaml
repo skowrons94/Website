@@ -54,6 +54,7 @@ measurements:
   - year: 1982
     method: direct-surface
     energy: "80–810 keV (proton energy)"
+    energy_it: "80–810 keV (energia del protone)"
     note: >-
       Cross section of the α₀ channel measured with a 350 kV implanter and a
       1 MV accelerator, normalised at Ep = 353.4 keV. For decades this was the
@@ -63,6 +64,7 @@ measurements:
   - year: 2007
     method: thm
     energy: "about 20–312 keV"
+    energy_it: "circa 20–312 keV"
     note: >-
       Bare-nucleus cross section from the quasi-free ²H(¹⁵N,α¹²C)n reaction at
       60 MeV beam energy; agrees with the direct data between 70 and 312 keV
@@ -71,6 +73,7 @@ measurements:
   - year: 2009
     method: thm
     energy: "R-matrix reanalysis"
+    energy_it: "nuova analisi R-matrix"
     note: >-
       R-matrix fits of the direct and Trojan-Horse data, including the
       finite energy resolution of the latter: S(0) = 73.0 ± 5.0 MeV b from the

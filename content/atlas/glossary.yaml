@@ -1,0 +1,495 @@
+# The glossary at /glossary (/it/glossary): the terms the atlas uses, in plain
+# words. Order here is display order. Each term's `id` is its anchor
+# (/glossary#gamow-window); reaction pages and the map link to these anchors,
+# so an id is never renamed.
+#
+#   id, term, also (abbreviations or other names, optional), text (one short
+#   paragraph for a general reader), see (other ids, optional)
+#
+# Italian: `term_it`, `also_it`, `text_it` beside the English.
+#
+# Values quoted here are textbook ones (Iliadis, Nuclear Physics of Stars,
+# 2nd ed. 2015; Rolfs and Rodney, Cauldrons in the Cosmos, 1988) or are given,
+# with their sources, elsewhere in the atlas (Gran Sasso depth: facilities.yaml;
+# Gamow window of ¹⁴N + p: computed by the site).
+
+terms:
+  - id: chart
+    term: Chart of nuclides
+    term_it: Carta dei nuclidi
+    text: >-
+      A map of all atomic nuclei. Each square is one nucleus: one step up adds
+      a proton (and so makes the next element), one step to the right adds a
+      neutron (a heavier isotope of the same element). Capturing a proton
+      moves a nucleus up, capturing a neutron moves it right, and a β⁺ decay,
+      in which a proton turns into a neutron, moves it one step down and one
+      to the right. On the atlas map the stable nuclei are filled in grey and
+      the radioactive ones are outlined.
+    text_it: >-
+      Una mappa di tutti i nuclei atomici. Ogni casella è un nucleo: un passo
+      verso l'alto aggiunge un protone (e quindi dà l'elemento successivo), un
+      passo verso destra aggiunge un neutrone (un isotopo più pesante dello
+      stesso elemento). La cattura di un protone sposta il nucleo in alto,
+      quella di un neutrone a destra, e un decadimento β⁺, in cui un protone si
+      trasforma in un neutrone, lo sposta di un passo in basso e di uno a
+      destra. Sulla mappa dell'atlante i nuclei stabili sono pieni, in grigio, e
+      quelli radioattivi solo contornati.
+    see: [notation]
+
+  - id: notation
+    term: Reaction notation
+    term_it: Notazione delle reazioni
+    also: target(in,out)product
+    also_it: bersaglio(entra,esce)prodotto
+    text: >-
+      Physicists write a reaction as target(in,out)product. ¹⁴N(p,γ)¹⁵O reads:
+      a nitrogen‑14 nucleus (the target) captures a proton (p, what comes in)
+      and becomes oxygen‑15 (the product), giving off a γ-ray (γ, what comes
+      out). The small number before the symbol is the mass number, the count
+      of protons and neutrons. Common particles have short names: p for a
+      proton, n for a neutron, d for a deuteron (a proton and a neutron), α
+      for a helium‑4 nucleus, γ for a gamma ray, e⁺ for a positron and ν for a
+      neutrino.
+    text_it: >-
+      I fisici scrivono una reazione come bersaglio(entra,esce)prodotto.
+      ¹⁴N(p,γ)¹⁵O si legge: un nucleo di azoto‑14 (il bersaglio) cattura un
+      protone (p, ciò che entra) e diventa ossigeno‑15 (il prodotto), emettendo
+      un raggio γ (γ, ciò che esce). Il numerino prima del simbolo è il numero
+      di massa, cioè quanti protoni e neutroni ci sono nel nucleo. Le
+      particelle più comuni hanno nomi brevi: p per il protone, n per il
+      neutrone, d per il deutone (un protone e un neutrone), α per un nucleo di
+      elio‑4, γ per un raggio gamma, e⁺ per il positrone e ν per il neutrino.
+    see: [chart, q-value]
+
+  - id: kev
+    term: keV and MeV
+    term_it: keV e MeV
+    also: kilo-electronvolt, mega-electronvolt
+    also_it: chiloelettronvolt, megaelettronvolt
+    text: >-
+      Units of energy for single particles. One electronvolt (eV) is the
+      energy an electron gains across 1 volt; a keV is a thousand of them and
+      an MeV a million. In the centre of the Sun the typical thermal energy of
+      a nucleus is about 1.3 keV, while the energy released by one fusion
+      reaction is a few MeV.
+    text_it: >-
+      Unità di energia per singole particelle. Un elettronvolt (eV) è l'energia
+      che un elettrone acquista attraversando una differenza di potenziale di
+      1 volt; un keV ne vale mille e un MeV un milione. Al centro del Sole
+      l'energia termica tipica di un nucleo è di circa 1,3 keV, mentre l'energia
+      liberata da una singola reazione di fusione è di qualche MeV.
+
+  - id: cross-section
+    term: Cross section
+    term_it: Sezione d'urto
+    also: σ; barn (b), picobarn (pb)
+    also_it: σ; barn (b), picobarn (pb)
+    text: >-
+      The probability that a reaction happens, expressed as an effective
+      target area that each nucleus presents to an incoming one. It is
+      measured in barns: 1 barn is 10⁻²⁴ cm², roughly the size of a large
+      nucleus. At stellar energies cross sections are tiny, often picobarns
+      (10⁻¹² barn) or less, which is why so few reactions happen in an
+      experiment and why they are so hard to count.
+    text_it: >-
+      La probabilità che una reazione avvenga, espressa come l'area efficace
+      che ogni nucleo offre a un nucleo in arrivo. Si misura in barn: 1 barn
+      vale 10⁻²⁴ cm², all'incirca la dimensione di un nucleo grande. Alle
+      energie stellari le sezioni d'urto sono minuscole, spesso picobarn
+      (10⁻¹² barn) o meno: per questo in un esperimento avvengono così poche
+      reazioni ed è così difficile contarle.
+    see: [s-factor, gamow-window]
+
+  - id: s-factor
+    term: Astrophysical S-factor
+    term_it: Fattore astrofisico S
+    also: S(E), S(0); keV b
+    text: >-
+      The cross section with its steepest, well-understood part taken out.
+      Because nuclei must tunnel through their electric repulsion, the cross
+      section falls by many orders of magnitude as the energy drops. Dividing
+      out the tunnelling probability leaves the S-factor, which changes only
+      slowly with energy (except near resonances) and is therefore much easier
+      to extend from measured energies down to stellar ones. S(0) is its value
+      extrapolated to zero energy; it is quoted in keV b or MeV b.
+    text_it: >-
+      La sezione d'urto privata della sua parte più ripida, che è ben nota.
+      Poiché i nuclei devono attraversare per effetto tunnel la loro
+      repulsione elettrica, la sezione d'urto crolla di molti ordini di
+      grandezza quando l'energia scende. Dividendo per la probabilità di
+      tunnel resta il fattore S, che varia lentamente con l'energia (tranne
+      vicino alle risonanze) ed è quindi molto più facile da prolungare dalle
+      energie misurate a quelle stellari. S(0) è il suo valore estrapolato a
+      energia zero; si esprime in keV b o MeV b.
+    see: [cross-section, r-matrix]
+
+  - id: gamow-window
+    term: Gamow window
+    term_it: Finestra di Gamow
+    also: Gamow peak, E₀
+    also_it: picco di Gamow, E₀
+    text: >-
+      The narrow band of energies at which a reaction actually happens in a
+      star. Fast nuclei are rare in a hot gas, but slow ones almost never get
+      through the electric repulsion; the product of the two is a peak, at an
+      energy well above the typical thermal one. For ¹⁴N + p at the centre of
+      the Sun it lies near 27 keV. Measuring a cross section inside, or close
+      to, the Gamow window is the goal of experiments like LUNA.
+    text_it: >-
+      La stretta banda di energie a cui una reazione avviene davvero in una
+      stella. In un gas caldo i nuclei veloci sono rari, mentre quelli lenti
+      non superano quasi mai la repulsione elettrica; il prodotto dei due
+      fattori è un picco, a un'energia ben più alta di quella termica tipica.
+      Per ¹⁴N + p al centro del Sole si trova intorno a 27 keV. Misurare una
+      sezione d'urto dentro la finestra di Gamow, o vicino, è l'obiettivo di
+      esperimenti come LUNA.
+    see: [kev, cross-section, temperature]
+
+  - id: resonance
+    term: Resonance
+    term_it: Risonanza
+    also: resonance strength ωγ
+    also_it: intensità della risonanza ωγ
+    text: >-
+      When the energy of the two colliding nuclei matches an excited state of
+      the nucleus they form together, the cross section rises sharply, often
+      by orders of magnitude, over a narrow range of energy. A narrow
+      resonance is characterised by its energy and by its strength (ωγ). A
+      single low-energy resonance can dominate the rate of a reaction in a
+      star, so finding and measuring them is a large part of the work.
+    text_it: >-
+      Quando l'energia dei due nuclei che si urtano coincide con uno stato
+      eccitato del nucleo che formano insieme, la sezione d'urto cresce di
+      colpo, spesso di ordini di grandezza, in un intervallo stretto di
+      energia. Una risonanza stretta è caratterizzata dalla sua energia e dalla
+      sua intensità (ωγ). Una sola risonanza a bassa energia può dominare il
+      tasso di una reazione in una stella: trovarle e misurarle è una parte
+      importante del lavoro.
+    see: [r-matrix]
+
+  - id: q-value
+    term: Q-value
+    term_it: Valore Q
+    text: >-
+      The energy released by a reaction, in MeV. It is the difference between
+      the masses before and after, converted with E = mc². A positive Q-value
+      means the reaction gives off energy, which is what heats a star; a
+      negative one means energy must be supplied. The atlas computes it from
+      the measured atomic masses of the 2020 Atomic Mass Evaluation (AME2020).
+    text_it: >-
+      L'energia liberata da una reazione, in MeV. È la differenza tra le masse
+      prima e dopo, convertita con E = mc². Un valore Q positivo significa che
+      la reazione libera energia, ed è ciò che scalda una stella; uno negativo
+      che l'energia va fornita. L'atlante lo calcola dalle masse atomiche
+      misurate della valutazione delle masse del 2020 (AME2020).
+    see: [notation]
+
+  - id: rate
+    term: Reaction rate
+    term_it: Tasso di reazione
+    also: N_A⟨σv⟩
+    text: >-
+      How many reactions happen per second in a given amount of stellar
+      matter. It combines the cross section at every energy with the
+      distribution of speeds of the nuclei at the temperature of the star.
+      Stellar models use tables of rates against temperature, which is why
+      the atlas says how well each rate is known.
+    text_it: >-
+      Quante reazioni avvengono al secondo in una data quantità di materia
+      stellare. Combina la sezione d'urto a ogni energia con la distribuzione
+      delle velocità dei nuclei alla temperatura della stella. I modelli
+      stellari usano tabelle di tassi in funzione della temperatura: per
+      questo l'atlante dice quanto bene è noto ciascun tasso.
+    see: [cross-section, status]
+
+  - id: status
+    term: How well a rate is known
+    term_it: Quanto bene è noto un tasso
+    also: Well known, Improving, Uncertain, Unmeasured
+    also_it: Ben noto, In miglioramento, Incerto, Non misurato
+    text: >-
+      Each reaction page carries one of four labels. Well known: the rate is
+      known well enough for the stellar models that use it. Improving: recent
+      measurements have narrowed it, but some uncertainty remains. Uncertain:
+      the uncertainty is large enough to change the models that depend on it.
+      Unmeasured: there are no direct data at the energies that matter, and
+      the rate rests on extrapolation, indirect methods or theory. The label
+      is the author's summary of the evaluations cited on the page.
+    text_it: >-
+      Ogni pagina di reazione porta una di quattro etichette. Ben noto: il
+      tasso è noto abbastanza bene per i modelli stellari che lo usano. In
+      miglioramento: misure recenti hanno ridotto l'incertezza, ma una parte
+      resta. Incerto: l'incertezza è abbastanza grande da cambiare i modelli
+      che ne dipendono. Non misurato: non ci sono dati diretti alle energie
+      che contano, e il tasso si basa su estrapolazioni, metodi indiretti o
+      teoria. L'etichetta è la sintesi dell'autore delle valutazioni citate
+      nella pagina.
+    see: [rate]
+
+  - id: temperature
+    term: Temperatures in stars
+    term_it: Temperature nelle stelle
+    also: MK, GK, T₉
+    text: >-
+      Stellar temperatures are given in millions of kelvin (MK) or billions of
+      kelvin (GK, gigakelvin); T₉ is the temperature in GK. The centre of the
+      Sun is at about 15.7 MK, or T₉ = 0.0157; helium burns at about 100–
+      300 MK, and the hottest explosive burning reaches a few GK.
+    text_it: >-
+      Le temperature stellari si danno in milioni di kelvin (MK) o in miliardi
+      di kelvin (GK, gigakelvin); T₉ è la temperatura in GK. Il centro del Sole
+      è a circa 15,7 MK, cioè T₉ = 0,0157; l'elio brucia a circa 100–300 MK, e
+      la combustione esplosiva più calda raggiunge alcuni GK.
+    see: [gamow-window]
+
+  - id: solar-mass
+    term: Solar mass
+    term_it: Massa solare
+    also: M☉
+    text: >-
+      The mass of the Sun, about 2 × 10³⁰ kg, used as the unit for the masses
+      of stars. A 15 M☉ star has fifteen times the mass of the Sun; the mass
+      decides how hot a star's core gets and so which reactions run in it.
+    text_it: >-
+      La massa del Sole, circa 2 × 10³⁰ kg, usata come unità per le masse delle
+      stelle. Una stella di 15 M☉ ha quindici volte la massa del Sole; la massa
+      decide quanto si scalda il nucleo della stella e quindi quali reazioni vi
+      avvengono.
+
+  - id: half-life
+    term: Half-life
+    term_it: Tempo di dimezzamento
+    also: t½
+    text: >-
+      The time after which half of a sample of a radioactive nucleus has
+      decayed. It ranges from fractions of a second to billions of years. The
+      atlas takes half-lives from the NUBASE2020 evaluation; in a star, where
+      the atoms are ionised, a half-life that depends on electrons (electron
+      capture) can be different.
+    text_it: >-
+      Il tempo dopo il quale metà di un campione di un nucleo radioattivo è
+      decaduta. Va da frazioni di secondo a miliardi di anni. L'atlante prende
+      i tempi di dimezzamento dalla valutazione NUBASE2020; in una stella, dove
+      gli atomi sono ionizzati, un tempo di dimezzamento che dipende dagli
+      elettroni (cattura elettronica) può essere diverso.
+
+  - id: agb-star
+    term: AGB star
+    term_it: Stella AGB
+    also: asymptotic giant branch
+    also_it: ramo asintotico delle giganti
+    text: >-
+      A late stage in the life of stars of roughly 1 to 8 solar masses. The
+      star has a core of carbon and oxygen, burns hydrogen and helium in thin
+      shells around it, and swells into a cool giant that loses much of its
+      mass in a slow wind. AGB stars make about half of the elements heavier
+      than iron, through the s-process, and enrich the Galaxy with carbon and
+      nitrogen.
+    text_it: >-
+      Una fase avanzata della vita delle stelle tra circa 1 e 8 masse solari.
+      La stella ha un nucleo di carbonio e ossigeno, brucia idrogeno ed elio in
+      gusci sottili intorno a esso e si gonfia in una gigante fredda che perde
+      gran parte della sua massa in un vento lento. Le stelle AGB producono
+      circa metà degli elementi più pesanti del ferro, con il processo s, e
+      arricchiscono la Galassia di carbonio e azoto.
+    see: [s-process, solar-mass]
+
+  - id: s-process
+    term: s-process
+    term_it: Processo s
+    also: slow neutron capture
+    also_it: cattura lenta di neutroni
+    text: >-
+      The slow neutron-capture process. Nuclei capture neutrons one at a time,
+      slowly enough that an unstable nucleus usually decays before it
+      captures the next one, so the process climbs along the valley of stable
+      nuclei. It runs mainly in AGB stars and in massive stars, with neutrons
+      from the reactions ¹³C(α,n)¹⁶O and ²²Ne(α,n)²⁵Mg, and makes about half
+      of the nuclei heavier than iron.
+    text_it: >-
+      Il processo di cattura lenta di neutroni. I nuclei catturano neutroni uno
+      alla volta, abbastanza lentamente che un nucleo instabile di solito
+      decade prima di catturare il successivo, così il processo risale lungo la
+      valle dei nuclei stabili. Avviene soprattutto nelle stelle AGB e nelle
+      stelle massicce, con i neutroni prodotti dalle reazioni ¹³C(α,n)¹⁶O e
+      ²²Ne(α,n)²⁵Mg, e produce circa metà dei nuclei più pesanti del ferro.
+    see: [r-process, agb-star]
+
+  - id: r-process
+    term: r-process
+    term_it: Processo r
+    also: rapid neutron capture
+    also_it: cattura rapida di neutroni
+    text: >-
+      The rapid neutron-capture process. In an environment flooded with
+      neutrons, nuclei capture many of them in a fraction of a second, far
+      faster than they can decay, and then decay back towards stability. It
+      makes the other half of the heavy elements, including gold and uranium.
+      Merging neutron stars are one confirmed site, from the kilonova seen
+      with the gravitational-wave event GW170817 in 2017.
+    text_it: >-
+      Il processo di cattura rapida di neutroni. In un ambiente inondato di
+      neutroni i nuclei ne catturano molti in una frazione di secondo, molto
+      più in fretta di quanto possano decadere, e poi decadono di nuovo verso
+      la stabilità. Produce l'altra metà degli elementi pesanti, tra cui l'oro e
+      l'uranio. La fusione di stelle di neutroni è un sito confermato, dalla
+      kilonova osservata con l'evento di onde gravitazionali GW170817 nel 2017.
+    see: [s-process]
+
+  - id: luna
+    term: LUNA and underground laboratories
+    term_it: LUNA e i laboratori sotterranei
+    also: Laboratory for Underground Nuclear Astrophysics
+    text: >-
+      At the Earth's surface, cosmic rays leave far more signals in a γ-ray
+      detector than the few reactions of a measurement at stellar energies. A
+      laboratory deep underground is shielded by the rock above it. LUNA, at
+      the Gran Sasso National Laboratories of INFN in Italy, has run
+      accelerators under about 1400 m of rock since the early 1990s; the rock
+      reduces the cosmic-ray muons by about a factor of a million. Other
+      underground accelerators now run in China (JUNA), the United States
+      (CASPAR) and Germany (Felsenkeller).
+    text_it: >-
+      In superficie i raggi cosmici lasciano in un rivelatore di raggi γ molti
+      più segnali delle poche reazioni di una misura alle energie stellari. Un
+      laboratorio in profondità è schermato dalla roccia che lo sovrasta. LUNA,
+      ai Laboratori Nazionali del Gran Sasso dell'INFN, usa acceleratori sotto
+      circa 1400 m di roccia dall'inizio degli anni Novanta; la roccia riduce i
+      muoni cosmici di circa un milione di volte. Altri acceleratori sotterranei
+      sono oggi in funzione in Cina (JUNA), negli Stati Uniti (CASPAR) e in
+      Germania (Felsenkeller).
+    see: [mwe, gamow-window]
+
+  - id: mwe
+    term: Metres water equivalent
+    term_it: Metri di acqua equivalente
+    also: m w.e.
+    text: >-
+      A way of comparing the depth of underground laboratories under different
+      rock: the thickness of water that would stop cosmic rays as well as the
+      rock does. The 1400 m of rock above the Gran Sasso laboratories
+      correspond to about 3800 m w.e.
+    text_it: >-
+      Un modo di confrontare la profondità di laboratori sotterranei sotto
+      rocce diverse: lo spessore d'acqua che fermerebbe i raggi cosmici quanto
+      la roccia. I 1400 m di roccia sopra i Laboratori del Gran Sasso
+      corrispondono a circa 3800 m di acqua equivalente (m w.e.).
+    see: [luna]
+
+  - id: electron-screening
+    term: Electron screening
+    term_it: Schermaggio elettronico
+    text: >-
+      In a laboratory target the nuclei are inside atoms, and their electrons
+      partly hide the nuclear charge from an incoming nucleus. This lowers the
+      electric barrier and makes the measured cross section at the lowest
+      energies larger than that of bare nuclei. In a star the screening comes
+      from the free electrons of the plasma and is different, so laboratory
+      data must be corrected; the enhancement measured in the laboratory is
+      often larger than atomic physics predicts.
+    text_it: >-
+      In un bersaglio di laboratorio i nuclei stanno dentro gli atomi, e i loro
+      elettroni nascondono in parte la carica del nucleo a un nucleo in arrivo.
+      Questo abbassa la barriera elettrica e rende la sezione d'urto misurata
+      alle energie più basse maggiore di quella dei nuclei nudi. In una stella
+      lo schermaggio viene dagli elettroni liberi del plasma ed è diverso,
+      quindi i dati di laboratorio vanno corretti; l'aumento misurato in
+      laboratorio è spesso maggiore di quanto preveda la fisica atomica.
+    see: [cross-section, trojan-horse]
+
+  - id: r-matrix
+    term: R-matrix
+    term_it: R-matrix
+    also: R-matrix theory, AZURE2
+    also_it: teoria della R-matrix, AZURE2
+    text: >-
+      A theoretical framework for fitting nuclear reaction data. Inside a
+      certain radius the nucleus is described by a set of levels, each with an
+      energy and widths; outside it, the particles move under the known
+      electric force. Fitting these parameters to all the data on a nucleus at
+      once gives a model that can be extended to the low energies of stars.
+      AZURE2 is an R-matrix code, and the evaluations on this site use it.
+    text_it: >-
+      Un quadro teorico per il fit dei dati di reazioni nucleari. Entro un
+      certo raggio il nucleo è descritto da un insieme di livelli, ciascuno con
+      un'energia e delle larghezze; al di fuori le particelle si muovono sotto
+      la forza elettrica, che è nota. Il fit di questi parametri a tutti i dati
+      su un nucleo insieme dà un modello che si può prolungare alle basse
+      energie delle stelle. AZURE2 è un codice R-matrix, ed è quello usato dalle
+      valutazioni di questo sito.
+    see: [s-factor, resonance, anc]
+
+  - id: anc
+    term: Asymptotic normalisation coefficient
+    term_it: Coefficiente di normalizzazione asintotica
+    also: ANC
+    text: >-
+      At very low energy a capture happens far outside the nucleus, where only
+      the tail of the final nucleus' wave function matters. The ANC measures
+      the size of that tail. It can be found from transfer reactions at higher
+      energy, where the cross section is large, and then gives the capture
+      rate at stellar energies without measuring the capture itself.
+    text_it: >-
+      A energie molto basse una cattura avviene lontano dal nucleo, dove conta
+      solo la coda della funzione d'onda del nucleo finale. L'ANC misura
+      l'ampiezza di quella coda. Si può ricavare da reazioni di trasferimento a
+      energia più alta, dove la sezione d'urto è grande, e dà poi il tasso di
+      cattura alle energie stellari senza misurare la cattura stessa.
+    see: [r-matrix]
+
+  - id: trojan-horse
+    term: Trojan Horse method
+    term_it: Metodo del cavallo di Troia
+    also: THM
+    text: >-
+      An indirect method. The reaction of interest is hidden inside another
+      one at higher energy: the projectile is carried in by a larger nucleus
+      (the Trojan horse, for example a deuteron carrying a proton), which
+      passes the Coulomb barrier easily. Selecting the events in which the
+      rest of the carrier is only a spectator gives the energy dependence of
+      the low-energy reaction, without Coulomb suppression or electron
+      screening. The result is normalised to direct data at higher energy.
+    text_it: >-
+      Un metodo indiretto. La reazione che interessa è nascosta dentro un'altra
+      a energia più alta: il proiettile viene portato dentro da un nucleo più
+      grande (il cavallo di Troia, per esempio un deutone che porta un
+      protone), che supera facilmente la barriera coulombiana. Selezionando gli
+      eventi in cui il resto del nucleo portatore fa solo da spettatore si
+      ottiene l'andamento in energia della reazione a bassa energia, senza
+      soppressione coulombiana né schermaggio elettronico. Il risultato si
+      normalizza ai dati diretti a energia più alta.
+    see: [electron-screening]
+
+  - id: inverse-kinematics
+    term: Inverse kinematics
+    term_it: Cinematica inversa
+    text: >-
+      Swapping the roles of beam and target: the heavier nucleus is
+      accelerated and hits a target of hydrogen or helium. The products then
+      fly forward in a narrow cone, where they can be caught and identified,
+      and the heavy nucleus can be a short-lived one that could never be made
+      into a target.
+    text_it: >-
+      Lo scambio dei ruoli di fascio e bersaglio: il nucleo più pesante viene
+      accelerato e colpisce un bersaglio di idrogeno o di elio. I prodotti
+      volano allora in avanti in un cono stretto, dove si possono raccogliere e
+      identificare, e il nucleo pesante può essere uno a vita breve, con cui non
+      si potrebbe mai fare un bersaglio.
+    see: [recoil-separator]
+
+  - id: recoil-separator
+    term: Recoil separator
+    term_it: Separatore di rinculo
+    text: >-
+      A set of magnets and electric fields that picks out the few product
+      nuclei of a reaction in inverse kinematics from the beam, which is
+      billions of times more intense and moves in almost the same direction.
+      Counting the products directly gives the cross section. DRAGON at
+      TRIUMF, ERNA and St. George are examples.
+    text_it: >-
+      Un insieme di magneti e campi elettrici che isola i pochi nuclei prodotti
+      da una reazione in cinematica inversa dal fascio, miliardi di volte più
+      intenso e diretto quasi nella stessa direzione. Contare direttamente i
+      prodotti dà la sezione d'urto. DRAGON a TRIUMF, ERNA e St. George ne sono
+      esempi.
+    see: [inverse-kinematics]

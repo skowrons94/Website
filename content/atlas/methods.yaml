@@ -45,7 +45,7 @@ methods:
     details_it: >-
       L'osservabile è la resa della reazione per proiettile incidente, misurata
       con rivelatori di raggi γ o di particelle cariche in funzione dell'energia
-      del fascio. La sezione d'urto, o la forza di risonanza per le risonanze
+      del fascio. La sezione d'urto, o l'intensità della risonanza per le risonanze
       strette, si ricava dalla resa, dalla stechiometria e dallo spessore del
       bersaglio, dal potere frenante e dall'efficienza di rivelazione. Sotto
       terra il flusso di muoni e i fondi di raggi γ e di neutroni indotti dai
@@ -56,7 +56,7 @@ methods:
       l'integrazione della corrente del fascio, lo spessore del bersaglio e il
       suo degrado sotto fascio, l'energia efficace di interazione in un
       bersaglio spesso o che si degrada, l'efficienza di rivelazione dei raggi γ
-      comprese le somme e le distribuzioni angolari, e lo schermo elettronico
+      comprese le somme e le distribuzioni angolari, e lo schermaggio elettronico
       alle energie più basse.
     strengths:
       - Measures the reaction of interest directly, without a nuclear model.
@@ -74,7 +74,7 @@ methods:
     limits_it:
       - Esistono poche infrastrutture, e il tempo fascio è limitato.
       - Alle energie più basse la resa è ancora piccola e domina l'incertezza statistica.
-      - I dati di laboratorio includono lo schermo elettronico, diverso da quello di un plasma stellare.
+      - I dati di laboratorio includono lo schermaggio elettronico, diverso da quello di un plasma stellare.
       - Al di sotto della più bassa energia misurata serve comunque un'estrapolazione, di solito R-matrix.
     refs: [broggini2010, broggini2018, junker2023]
     examples: [3He-3He2p-4He, 14N-pg-15O, 2H-pg-3He]
@@ -296,7 +296,7 @@ methods:
       fattorizza in un fattore cinematico, nella distribuzione dei momenti di x
       dentro a e nella sezione d'urto a due corpi "half-off-energy- shell". Il
       metodo dà l'andamento in energia della sezione d'urto del nucleo nudo,
-      senza soppressione coulombiana né schermo elettronico; la sua scala
+      senza soppressione coulombiana né schermaggio elettronico; la sua scala
       assoluta è normalizzata ai dati diretti a energie più alte. I limiti
       sistematici sono la validità della fattorizzazione quasi libera, la
       distribuzione dei momenti adottata, le correzioni fuori shell e la
@@ -305,7 +305,7 @@ methods:
       - Reaches energies far below those accessible directly, free of electron screening.
       - Applicable to charged-particle-induced and to neutron-induced reactions.
     strengths_it:
-      - Raggiunge energie molto al di sotto di quelle accessibili direttamente, senza schermo elettronico.
+      - Raggiunge energie molto al di sotto di quelle accessibili direttamente, senza schermaggio elettronico.
       - Si applica alle reazioni indotte da particelle cariche e a quelle indotte da neutroni.
     limits:
       - Requires normalisation to direct data.
@@ -363,6 +363,58 @@ methods:
       - Copre solo le parti non risonante e sotto soglia del tasso di reazione.
     refs: [tribble2014]
     examples: [14N-pg-15O, 7Be-pg-8B, 12C-ag-16O]
+
+  - id: lifetime
+    name: Lifetimes of excited states
+    name_it: Vite medie degli stati eccitati
+    summary: >-
+      Not a measurement of the reaction itself, but of one ingredient of it.
+      How long an excited state of the product nucleus lives fixes how
+      strongly it takes part in the capture. Very short lifetimes are measured
+      from how much the emitted γ-rays are shifted by the Doppler effect while
+      the recoiling nucleus slows down in the target.
+    summary_it: >-
+      Non è una misura della reazione stessa, ma di uno dei suoi ingredienti.
+      La vita media di uno stato eccitato del nucleo prodotto fissa quanto
+      intensamente quello stato partecipa alla cattura. Le vite medie molto
+      brevi si misurano da quanto i raggi γ emessi sono spostati per effetto
+      Doppler mentre il nucleo di rinculo rallenta nel bersaglio.
+    details: >-
+      In the Doppler-shift attenuation method (DSAM) the nucleus is populated
+      by a reaction that gives it a known recoil velocity, and the γ-ray energy
+      is measured while the nucleus slows down in the target or backing. The
+      attenuation of the full Doppler shift, compared with the stopping power,
+      gives lifetimes from about 1 fs to 1 ps. The radiative width that follows
+      enters an R-matrix fit of the capture, for example for a subthreshold
+      state whose tail reaches into the Gamow window. Systematic limits are
+      the stopping powers, which are known to a few percent at best, and the
+      sensitivity at the shortest lifetimes, where the attenuation is nearly
+      complete.
+    details_it: >-
+      Nel metodo dell'attenuazione dello spostamento Doppler (DSAM) il nucleo
+      viene popolato da una reazione che gli imprime una velocità di rinculo
+      nota, e l'energia del raggio γ si misura mentre il nucleo rallenta nel
+      bersaglio o nel supporto. L'attenuazione dello spostamento Doppler
+      completo, confrontata con il potere frenante, dà vite medie da circa 1 fs
+      a 1 ps. La larghezza radiativa che ne segue entra in un fit R-matrix
+      della cattura, per esempio per uno stato sotto soglia la cui coda
+      raggiunge la finestra di Gamow. I limiti sistematici sono i poteri
+      frenanti, noti al massimo a pochi percento, e la sensibilità alle vite
+      medie più brevi, dove l'attenuazione è quasi completa.
+    strengths:
+      - Constrains the width of a state that cannot be reached directly at low energy.
+      - Independent of the capture cross section and its normalisation.
+    strengths_it:
+      - Vincola la larghezza di uno stato che non si raggiunge direttamente a bassa energia.
+      - È indipendente dalla sezione d'urto di cattura e dalla sua normalizzazione.
+    limits:
+      - Depends on stopping powers.
+      - Lifetimes below about a femtosecond are hard to resolve.
+    limits_it:
+      - Dipende dai poteri frenanti.
+      - Le vite medie sotto circa un femtosecondo sono difficili da risolvere.
+    refs: [bertone2001, schurmann2008]
+    examples: [14N-pg-15O]
 
   - id: coulomb-dissociation
     name: Coulomb dissociation
@@ -438,7 +490,7 @@ methods:
       o dai raggi γ emessi, mentre la temperatura e la densità del plasma si
       ricavano da altre diagnostiche. Il metodo campiona direttamente la
       reattività mediata termicamente e permette di studiare effetti di plasma
-      come lo schermo. I limiti sistematici sono la conoscenza delle condizioni
+      come lo schermaggio. I limiti sistematici sono la conoscenza delle condizioni
       del plasma, che variano nello spazio e nel tempo, e la separazione della
       reazione che interessa dalle altre reazioni nel combustibile. Alla
       National Ignition Facility, Casey et al. hanno misurato i fattori S di

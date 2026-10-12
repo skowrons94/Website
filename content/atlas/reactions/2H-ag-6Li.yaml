@@ -59,16 +59,17 @@ measurements:
     lab: "Kernforschungszentrum Karlsruhe, Karlsruhe"
     method: coulomb-dissociation
     energy: "156 MeV ⁶Li beam"
+    energy_it: "fascio di ⁶Li da 156 MeV"
     note: >-
       Coulomb dissociation of ⁶Li into α + d at very low relative energies; the
       deduced S-factor was almost constant below 400 keV, contrary to
       theoretical expectations.
     refs: [kiener1991]
   - year: 2010
-    facility: other
-    lab: "GSI, Darmstadt"
+    facility: gsi
     method: coulomb-dissociation
     energy: "⁶Li beam at 150 MeV/u"
+    energy_it: "fascio di ⁶Li a 150 MeV/u"
     note: >-
       High-energy break-up of ⁶Li to test the Coulomb-dissociation approach;
       nuclear break-up dominates, so the data constrain the capture cross
@@ -78,6 +79,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "two energies in the BBN range"
+    energy_it: "due energie nell'intervallo della BBN"
     note: >-
       First direct measurement at BBN energies. With standard BBN the data give
       a primordial ⁶Li/⁷Li ratio of (1.5 ± 0.3) × 10⁻⁵, far below the values
@@ -87,6 +89,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "80, 93, 120 and 133 keV"
+    energy_it: "80, 93, 120 e 133 keV"
     note: >-
       Full LUNA data set and a new thermonuclear rate, lower than earlier
       estimates, which widens the gap between predicted and reported ⁶Li.

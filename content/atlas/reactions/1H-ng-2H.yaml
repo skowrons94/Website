@@ -51,6 +51,7 @@ measurements:
   - year: 2000
     method: theory
     energy: "up to about 1 MeV"
+    energy_it: "fino a circa 1 MeV"
     note: >-
       Pionless effective field theory calculation with M1 to NNLO and E1 to
       N4LO, constrained by the cold-neutron capture rate and by deuteron
