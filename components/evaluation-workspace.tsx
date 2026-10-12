@@ -27,12 +27,17 @@ import { localePath } from "@/lib/locale"
 const LevelScheme = dynamic(() => import("@/components/level-scheme").then((m) => m.LevelScheme), {
   loading: () => <Placeholder busy />,
 })
-const DataPlot = dynamic(() => import("@/components/data-plot").then((m) => m.DataPlot), {
+const DataPlotLazy = dynamic(() => import("@/components/data-plot").then((m) => m.DataPlot), {
   loading: () => <Placeholder busy tall />,
 })
-const ExtrapPlot = dynamic(() => import("@/components/extrap-plot").then((m) => m.ExtrapPlot), {
+const ExtrapPlotLazy = dynamic(() => import("@/components/extrap-plot").then((m) => m.ExtrapPlot), {
   loading: () => <Placeholder busy tall />,
 })
+// Fetched while the reader looks at another tab, then rendered directly: a
+// lazy component shows its "Loading the view…" for a moment even when its
+// code is already there.
+let ExtrapPlotLoaded: typeof import("@/components/extrap-plot").ExtrapPlot | null = null
+let DataPlotLoaded: typeof import("@/components/data-plot").DataPlot | null = null
 
 /** "data" is the old Data tab: now the table drawer of the plot view. */
 type Tab = "scheme" | "plot" | "extrap"
@@ -258,14 +263,24 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
 
   // The other tabs' code, fetched while the reader looks at this one, so a
   // tab switch never shows "Loading the view…".
+  const [, setViewsLoaded] = useState(0)
+  const ready0 = Boolean(scheme)
   useEffect(() => {
-    if (!scheme) return
+    if (!ready0 || (ExtrapPlotLoaded && DataPlotLoaded)) return
     const idle = (window as Window & { requestIdleCallback?: (f: () => void) => number }).requestIdleCallback ?? ((f: () => void) => setTimeout(f, 1500))
     idle(() => {
-      void import("@/components/data-plot")
-      void import("@/components/extrap-plot")
+      void Promise.all([
+        import("@/components/data-plot").then((m) => (DataPlotLoaded = m.DataPlot)),
+        import("@/components/extrap-plot").then((m) => (ExtrapPlotLoaded = m.ExtrapPlot)),
+      ]).then(() => setViewsLoaded((n) => n + 1))
     })
-  }, [scheme])
+  }, [ready0])
+  // Chosen when the tab is first shown, and kept (a swap would remount the plot).
+  const views = useRef<{ data?: typeof DataPlotLazy; extrap?: typeof ExtrapPlotLazy }>({})
+  if (visited.includes("plot")) views.current.data ??= DataPlotLoaded ?? DataPlotLazy
+  if (visited.includes("extrap")) views.current.extrap ??= ExtrapPlotLoaded ?? ExtrapPlotLazy
+  const DataPlot = views.current.data ?? DataPlotLazy
+  const ExtrapPlot = views.current.extrap ?? ExtrapPlotLazy
 
   // The plot opens on the headline reaction, unless the link chose.
   useEffect(() => {
