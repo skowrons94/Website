@@ -9,7 +9,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "check:atlas": "node scripts/atlas-check.mjs"
+    "check:atlas": "node scripts/atlas-check.mjs",
+    "test:search": "node scripts/search-index.mjs && node scripts/search-test.mjs"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.3.11",

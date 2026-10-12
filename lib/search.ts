@@ -9,10 +9,20 @@
  * `nitrogen-14` and `azoto-14` as keys (scripts/search-index.mjs).
  *
  * Every word of the query must match somewhere in an entry (its label, its
- * subtitle, or its hidden keys); a word that matches nowhere exactly may still
- * match a word of the label or keys with one typo (two for long words).
- * Matches in the label count most, at the start of a word more than inside
- * one, and the hidden keys (aliases, the other language's names) least.
+ * subtitle, its hidden keys or the words of its text), except words like
+ * "why" or "perché" that find nothing on their own. A word matches at the
+ * start of a word, never in the middle of one ("oro" finds "oro", not
+ * "fluoro"), unless it holds a digit or a bracket, as reaction notation does
+ * ("(p,g)" inside "14n(p,g)15o"); a word of five letters or more may also
+ * match with one typo (two from eight letters), and a word of one to three
+ * letters must match a whole word in an entry's text.
+ *
+ * The label counts most, and a reaction's target and product written out
+ * ("nitrogen-14", "N14", "azoto") count as much as its label, the target more
+ * than the product: "N14" puts ¹⁴N(p,γ)¹⁵O before ¹³C(p,γ)¹⁴N. Then the hidden
+ * keys (aliases, synonyms, the other language's names), the subtitle, and
+ * least, the text. When a reaction matches by its label or its nuclei, the
+ * reactions lead the results.
  */
 
 export type EntryType =
@@ -42,6 +52,12 @@ export interface SearchEntry {
   x?: 1
   /** Extra weight (a key reaction). */
   w?: number
+  /** A reaction's target and product written out, "target · … | product · …". */
+  n?: string
+  /** The distinct words of the entry's text. */
+  b?: string
+  /** What people type for it that the site does not call it ("gold", "underground"). */
+  a?: string
 }
 
 /** The order of the groups when their best results score alike. */
@@ -104,6 +120,13 @@ interface Prepared {
   label: string
   sub: string
   keys: string
+  aliases: string
+  /** The target's and the product's names, folded. */
+  target: string
+  product: string
+  targetNames: string[]
+  productNames: string[]
+  body: string
   words: string[]
 }
 
@@ -118,26 +141,54 @@ export function prepare(entries: SearchEntry[]): PreparedIndex {
     items: entries.map((entry) => {
       const label = fold(entry.l)
       const keys = fold(entry.k)
+      const [t = "", p = ""] = (entry.n ?? "").split("|")
+      const targetNames = t.split("·").map(fold).filter(Boolean)
+      const productNames = p.split("·").map(fold).filter(Boolean)
       return {
         entry,
         label,
         sub: fold(entry.s),
         keys,
+        aliases: fold(entry.a ?? ""),
+        target: targetNames.join(" · "),
+        product: productNames.join(" · "),
+        targetNames,
+        productNames,
+        body: fold(entry.b ?? ""),
         words: [...new Set([...(label.match(WORD) ?? []), ...(keys.match(WORD) ?? [])])].filter((w) => w.length >= 3),
       }
     }),
   }
 }
 
-/** Where `token` occurs in `text`: 2 at the start of a word, 1 inside one, 0 not at all. */
-function occurs(text: string, token: string): 0 | 1 | 2 {
+// Words of a question that find nothing by themselves ("why underground",
+// "perché sottoterra", "stato di Hoyle"); dropped when the query has others.
+const QUERY_STOP = new Set(
+  "a an the of in on at to for and or is are why what how where which who does do il lo la i gli le un una uno di da del della dello dei degli delle in nel nella con per tra fra e o che perché cosa come dove quale chi".split(
+    " ",
+  ),
+)
+
+/** Types whose labels are long titles rather than names. */
+const LONG_LABEL = new Set<EntryType>(["publication", "section"])
+
+const isAlnum = (c: string | undefined) => c !== undefined && /[a-z0-9]/.test(c)
+
+/**
+ * Where `token` occurs in `text`: 3 as a whole word, 2 at the start of a
+ * word, 1 inside one (only when `inside` allows it), 0 not at all.
+ */
+function occurs(text: string, token: string, inside: boolean): 0 | 1 | 2 | 3 {
   let i = text.indexOf(token)
-  if (i < 0) return 0
+  let best: 0 | 1 | 2 | 3 = 0
   while (i >= 0) {
-    if (i === 0 || !/[a-z0-9]/.test(text[i - 1])) return 2
+    if (!isAlnum(text[i - 1])) {
+      if (!isAlnum(text[i + token.length])) return 3
+      best = 2
+    } else if (inside && best === 0) best = 1
     i = text.indexOf(token, i + 1)
   }
-  return 1
+  return best
 }
 
 /** Optimal-string-alignment distance, giving up early past `max`. */
@@ -162,21 +213,54 @@ function distance(a: string, b: string, max: number): number {
   return prev[b.length]
 }
 
-function tokenScore(item: Prepared, token: string): number {
-  const inLabel = occurs(item.label, token)
-  if (inLabel) return item.label.startsWith(token) ? 14 : inLabel === 2 ? 10 : 6
-  const inKeys = occurs(item.keys, token)
-  if (inKeys) return inKeys === 2 ? 5 : 3
-  const inSub = occurs(item.sub, token)
-  if (inSub) return inSub === 2 ? 3 : 1.5
-  // A typo: a word of the label or keys, or the start of one.
-  if (token.length < 4 || !/^[a-z]+$/.test(token)) return 0
+/** How a token matched: its score, and whether it was by name (label or nuclei). */
+type Hit = { score: number; byName: boolean }
+const MISS: Hit = { score: 0, byName: false }
+
+function tokenScore(item: Prepared, token: string): Hit {
+  const letters = /^[a-z]+$/.test(token)
+  // Notation ("14n", "(p,g)", "12c+12c") may sit inside a longer run; a plain
+  // word may not ("oro" is not in "fluoro").
+  const inside = !letters
+  // One to three letters: whole words only, except at the start of the label
+  // or of a name ("cno" → "cno1", "pp" → "pp chains").
+  const short = letters && token.length <= 3
+
+  const inLabel = occurs(item.label, token, inside)
+  if (inLabel && !(short && token.length === 1 && inLabel < 3)) {
+    const score = item.label.startsWith(token) ? 14 : inLabel >= 2 ? 10 : 6
+    // A paper's title is long and says many things: a word in it is worth
+    // half a word in the name of a page or a reaction.
+    return { score: LONG_LABEL.has(item.entry.t) ? score / 2 : score, byName: true }
+  }
+  const inTarget = occurs(item.target, token, false)
+  if (inTarget && !(short && inTarget < 3 && token.length === 1)) return { score: 12, byName: true }
+  const inProduct = occurs(item.product, token, false)
+  if (inProduct && !(short && inProduct < 3 && token.length === 1)) return { score: 8, byName: true }
+  const inAliases = occurs(item.aliases, token, inside)
+  if (inAliases >= 2) return { score: 9, byName: false }
+  const inKeys = occurs(item.keys, token, inside)
+  if (inKeys && !(short && token.length === 1 && inKeys < 3)) return { score: inKeys >= 2 ? 5 : 3, byName: false }
+  const inSub = occurs(item.sub, token, inside)
+  if (inSub && !(short && inSub < 3)) return { score: inSub >= 2 ? 3 : 1.5, byName: false }
+  const inBody = occurs(item.body, token, false)
+  if (inBody && !(short && inBody < 3)) return { score: 2, byName: false }
+  // A typo: a word of the label or keys, or the start of one. Not for short
+  // words, where one letter off is a different word ("sole" is not "solo").
+  if (token.length < 5 || !letters) return MISS
   const max = token.length >= 8 ? 2 : 1
   for (const word of item.words) {
-    if (Math.abs(word.length - token.length) <= max && distance(token, word, max) <= max) return 2
-    if (word.length > token.length && distance(token, word.slice(0, token.length), 1) <= 1) return 1.5
+    if (Math.abs(word.length - token.length) <= max && distance(token, word, max) <= max) return { score: 2, byName: false }
+    if (token.length >= 6 && word.length > token.length && distance(token, word.slice(0, token.length), 1) <= 1) return { score: 1.5, byName: false }
   }
-  return 0
+  return MISS
+}
+
+/** The query's words, less those that find nothing on their own. */
+export function queryTokens(query: string): string[] {
+  const all = fold(query).split(" ").filter(Boolean)
+  const kept = all.filter((t) => !QUERY_STOP.has(t))
+  return kept.length ? kept : all
 }
 
 export interface Group {
@@ -186,42 +270,97 @@ export interface Group {
 
 /**
  * The entries matching `query`, best first, grouped by type; the groups are
- * ordered by their best result. `perGroup` caps each group (more when only
- * one type matches).
+ * ordered by their best result, except that the reactions come first when one
+ * matched by its label or its nuclei alone (every word of the query). `perGroup` caps each group (more when
+ * only one type matches).
  */
 export function search(index: PreparedIndex, query: string, perGroup = 5): Group[] {
   const q = fold(query)
   if (!q) return []
-  const tokens = q.split(" ").filter(Boolean)
-  const scored: { item: Prepared; score: number }[] = []
+  const tokens = queryTokens(query)
+  const phrase = tokens.join(" ")
+  const scored: { item: Prepared; score: number; byName: boolean }[] = []
   for (const item of index.items) {
     let score = 0
+    let byName = true
     let ok = true
     for (const token of tokens) {
-      const s = tokenScore(item, token)
-      if (s === 0) {
+      const hit = tokenScore(item, token)
+      if (hit.score === 0) {
         ok = false
         break
       }
-      score += s
+      score += hit.score
+      byName &&= hit.byName
     }
     if (!ok) continue
-    if (item.label === q) score += 30
-    else if (tokens.length > 1 && item.label.includes(q)) score += 10
-    else if (tokens.length > 1 && item.keys.includes(q)) score += 4
+    if (item.label === q || item.label === phrase) score += 30
+    else if (tokens.length > 1 && occurs(item.label, phrase, false)) score += 10
+    // The whole query is a name of the target (or the product): "carbon-12",
+    // "N14", "azoto".
+    if (item.targetNames.includes(phrase)) score += 16
+    else if (item.productNames.includes(phrase)) score += 8
+    else if (tokens.length > 1 && (occurs(item.aliases, phrase, false) || occurs(item.keys, phrase, false))) score += 6
     score += TYPE_WEIGHT[item.entry.t] + (item.entry.w ?? 0)
-    scored.push({ item, score })
+    scored.push({ item, score, byName })
   }
   scored.sort((a, b) => b.score - a.score)
 
   const groups = new Map<EntryType, { best: number; entries: SearchEntry[] }>()
-  for (const { item, score } of scored) {
+  let reactionByName = false
+  for (const { item, score, byName } of scored) {
+    if (item.entry.t === "reaction" && byName) reactionByName = true
     const g = groups.get(item.entry.t)
     if (!g) groups.set(item.entry.t, { best: score, entries: [item.entry] })
     else g.entries.push(item.entry)
   }
   const cap = groups.size === 1 ? perGroup * 3 : perGroup
+  const lead = (t: EntryType) => (reactionByName && t === "reaction" ? 1 : 0)
   return [...groups.entries()]
-    .sort((a, b) => b[1].best - a[1].best || TYPE_ORDER.indexOf(a[0]) - TYPE_ORDER.indexOf(b[0]))
+    .sort((a, b) => lead(b[0]) - lead(a[0]) || b[1].best - a[1].best || TYPE_ORDER.indexOf(a[0]) - TYPE_ORDER.indexOf(b[0]))
     .map(([type, g]) => ({ type, entries: g.entries.slice(0, cap) }))
+}
+
+/* -- highlighting ------------------------------------------------------------ */
+
+/**
+ * The parts of `text` (a label, as shown) that the query matched, as
+ * [start, end) ranges in `text` itself: each character is folded on its own,
+ * so the ranges land on the original "¹⁴N(p,γ)", not on "14n(p,g)".
+ */
+export function matchRanges(text: string, query: string): [number, number][] {
+  const tokens = queryTokens(query).filter((t) => t.length >= 2 || /\d/.test(t))
+  if (!tokens.length) return []
+  let folded = ""
+  const at: number[] = []
+  let i = 0
+  for (const ch of text) {
+    // A separator ("-", "→", a space) folds to nothing on its own: keep it
+    // as a space, so word boundaries survive.
+    const f = fold(ch) || " "
+    for (let k = 0; k < f.length; k++) at.push(i)
+    folded += f
+    i += ch.length
+  }
+  at.push(text.length)
+  const ranges: [number, number][] = []
+  for (const token of tokens) {
+    const inside = !/^[a-z]+$/.test(token)
+    let j = folded.indexOf(token)
+    while (j >= 0) {
+      if (inside || !isAlnum(folded[j - 1])) {
+        const end = j + token.length
+        ranges.push([at[j], end < at.length ? at[end] : text.length])
+      }
+      j = folded.indexOf(token, j + 1)
+    }
+  }
+  ranges.sort((a, b) => a[0] - b[0])
+  const merged: [number, number][] = []
+  for (const r of ranges) {
+    const last = merged[merged.length - 1]
+    if (last && r[0] <= last[1]) last[1] = Math.max(last[1], r[1])
+    else merged.push([r[0], r[1]])
+  }
+  return merged
 }

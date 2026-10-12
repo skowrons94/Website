@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react"
 import { Container } from "@/components/page-header"
 import { dict, localePath, type Lang } from "@/lib/i18n"
 
-/** The 404 page's content, in either language. No file access: the global 404 renders it on the client. */
+/** The 404 page's content, in either language. No file access: app/global-not-found.tsx renders it for both languages and the browser picks one. */
 export function NotFoundBody({ lang }: { lang: Lang }) {
   const t = dict(lang).notFound
   return (

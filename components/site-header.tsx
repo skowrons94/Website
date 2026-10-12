@@ -14,19 +14,29 @@ import { localePath, type Lang } from "@/lib/locale"
 /*
  * The header.
  *
- * Five destinations in the bar (Research, Atlas, Evaluations, Publications,
- * CV) and a "Learn" disclosure for the explanatory pages (Notes, Glossary,
- * Methods, Timeline, the s-process); search, EN/IT and the theme always
- * visible. Below the desktop breakpoint the destinations move into a menu
- * that lists every page, in three groups, each with one line saying what is
- * there. Software is in that menu, the footer and search, not in the bar.
+ * Six destinations in the bar (Research, Atlas, Evaluations, Publications,
+ * Software, CV) and a "Learn" disclosure for the explanatory pages (Notes,
+ * Glossary, Methods, Timeline, the s-process). Software is in the bar rather
+ * than under Learn because it is work, not an explanation, and it fits: the
+ * bar only appears from 64em (1024 px at the default text size), where the
+ * six links, Learn, search, EN/IT and the theme take about 900 px in either
+ * language. Below that breakpoint the destinations move into a menu that
+ * lists every page, in three groups, each with one line saying what is there.
  *
- * Sized in rem and switched at a breakpoint in em (64em, 1024 px at the
- * default text size), so with text enlarged to 200% the bar becomes the menu
- * rather than running off the screen (WCAG 1.4.4); the row wraps and the name
- * truncates (or shortens, on a phone) before a control can be pushed out of
- * reach. It sticks to the top only where the window is tall enough for that
- * to help: on a phone held sideways it scrolls away with the page.
+ * Sized in rem and switched at breakpoints in em, so with text enlarged to
+ * 200% the bar becomes the menu rather than running off the screen (WCAG
+ * 1.4.4). Below 30em (a phone, or a tablet at 200% text) the bar keeps to one
+ * row, the name, search and the menu button, and EN/IT and the theme move
+ * into the menu; above it they stay in the bar. The name truncates (or
+ * shortens, on a phone) before a control can be pushed out of reach.
+ *
+ * It sticks to the top only where the window is tall enough for that to help:
+ * on a phone held sideways it scrolls away with the page. Its current height
+ * is published as `--header-h` on <html> (0 when it is not sticky or is
+ * hidden), for anything else that sticks below it. A page can ask for more
+ * room by putting `data-hide-header-on-scroll` on <body> (the evaluation's
+ * plot does, on a phone): the header then slides away while the page scrolls
+ * down and comes back as soon as it scrolls up.
  *
  * No strings from lib/i18n.ts here: they come from the server as `strings`
  * (lib/chrome-strings.ts), which keeps the dictionaries out of every page's
@@ -35,9 +45,94 @@ import { localePath, type Lang } from "@/lib/locale"
 
 type Item = { href: string; label: string; description: string }
 
-// `[@media(min-width:64em)]`: the desktop bar. Literals, so Tailwind sees them.
+// `[@media(min-width:64em)]`: the desktop bar; below 30em, a phone (or larger
+// text), where EN/IT and the theme live in the menu. Literals, so Tailwind
+// sees them.
 const DESKTOP_FLEX = "hidden [@media(min-width:64em)]:flex"
 const MOBILE_ONLY = "[@media(min-width:64em)]:hidden"
+const NARROW_HIDDEN = "hidden [@media(min-width:30em)]:flex"
+const NARROW_ONLY = "[@media(min-width:30em)]:hidden"
+
+/** The opt-in on <body> for a header that gets out of the way on scroll. */
+const HIDE_ON_SCROLL = "data-hide-header-on-scroll"
+
+/**
+ * Keeps `--header-h` on <html> equal to the height the header covers at the
+ * top of the window (0 when it scrolls with the page or is hidden), and, on a
+ * page that opts in, hides it while scrolling down and shows it on the way
+ * back up. Returns whether it is hidden.
+ */
+function useHeaderSpace(header: React.RefObject<HTMLElement | null>, menuOpen: boolean): boolean {
+  const [hidden, setHidden] = useState(false)
+  const hiddenRef = useRef(false)
+  hiddenRef.current = hidden
+
+  // The variable follows the header's size, whether it sticks, and `hidden`.
+  useEffect(() => {
+    const el = header.current
+    if (!el) return
+    const root = document.documentElement
+    const update = () => {
+      const sticky = getComputedStyle(el).position === "sticky"
+      const h = sticky && !hiddenRef.current ? Math.round(el.getBoundingClientRect().height) : 0
+      root.style.setProperty("--header-h", `${h}px`)
+      root.toggleAttribute("data-header-hidden", hiddenRef.current)
+    }
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    window.addEventListener("resize", update)
+    return () => {
+      ro.disconnect()
+      window.removeEventListener("resize", update)
+    }
+  }, [header, hidden])
+
+  // Hide on the way down, show on the way up; only where <body> asks for it,
+  // which can change while the page is open (a tab switch).
+  useEffect(() => {
+    const el = header.current
+    if (!el) return
+    let enabled = document.body.hasAttribute(HIDE_ON_SCROLL)
+    let lastY = window.scrollY
+    let frame = 0
+    const onScroll = () => {
+      if (frame) return
+      frame = requestAnimationFrame(() => {
+        frame = 0
+        const y = window.scrollY
+        const dy = y - lastY
+        if (Math.abs(dy) < 6) return
+        lastY = y
+        if (!enabled || getComputedStyle(el).position !== "sticky") {
+          if (hiddenRef.current) setHidden(false)
+          return
+        }
+        // Never while the menu is open or something in the header has focus.
+        const busy = menuOpen || el.contains(document.activeElement)
+        if (dy > 0 && y > el.offsetHeight && !busy) setHidden(true)
+        else if (dy < 0 || busy) setHidden(false)
+      })
+    }
+    const mo = new MutationObserver(() => {
+      enabled = document.body.hasAttribute(HIDE_ON_SCROLL)
+      if (!enabled) setHidden(false)
+    })
+    mo.observe(document.body, { attributes: true, attributeFilter: [HIDE_ON_SCROLL] })
+    // Tabbing into a hidden header brings it back.
+    const onFocus = () => setHidden(false)
+    window.addEventListener("scroll", onScroll, { passive: true })
+    el.addEventListener("focusin", onFocus)
+    return () => {
+      mo.disconnect()
+      el.removeEventListener("focusin", onFocus)
+      window.removeEventListener("scroll", onScroll)
+      if (frame) cancelAnimationFrame(frame)
+    }
+  }, [header, menuOpen])
+
+  return hidden
+}
 
 export function SiteHeader({
   name,
@@ -68,7 +163,7 @@ export function SiteHeader({
     item("/atlas/timeline", t.timeline, d.timeline),
     item("/atlas/s-process", t.sProcess, d.sProcess),
   ]
-  const bar: Item[] = [research, atlas, evaluations, publications, cv]
+  const bar: Item[] = [research, atlas, evaluations, publications, software, cv]
   const groups: { id: string; title: string; items: Item[] }[] = [
     { id: "work", title: t.groups.work, items: [research, publications, cv, software] },
     { id: "explore", title: t.groups.explore, items: [atlas, evaluations] },
@@ -101,10 +196,18 @@ export function SiteHeader({
   }, [open])
 
   const shortName = name.replace(/^(\S)\S*\s+/, "$1. ")
+  const headerRef = useRef<HTMLElement>(null)
+  const hidden = useHeaderSpace(headerRef, open)
 
   return (
-    <header className="z-40 border-b border-border/70 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/85 print:hidden [@media(min-height:30em)]:sticky [@media(min-height:30em)]:top-0">
-      <div className="mx-auto flex min-h-16 max-w-6xl flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2 sm:gap-x-5 sm:px-8 xl:max-w-7xl">
+    <header
+      ref={headerRef}
+      data-hidden={hidden ? "" : undefined}
+      // Hidden, it is only moved up out of view: Tab still reaches it, and
+      // focus inside brings it back.
+      className="z-40 border-b border-border/70 bg-background/95 backdrop-blur transition-transform duration-200 ease-out supports-[backdrop-filter]:bg-background/85 motion-reduce:transition-none print:hidden data-[hidden]:-translate-y-full [@media(min-height:30em)]:sticky [@media(min-height:30em)]:top-0"
+    >
+      <div className="mx-auto flex min-h-16 max-w-6xl flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2 sm:gap-x-5 sm:px-8 xl:max-w-7xl [@media(max-width:29.999em)]:flex-nowrap">
         {/* The name gives way first: it truncates, and on a phone it is
             "J. Skowronski". Its basis is what makes the controls wrap onto a
             line of their own before they could be squeezed out. */}
@@ -136,10 +239,12 @@ export function SiteHeader({
 
         {/* With very large text on a narrow screen the controls wrap among
             themselves too, rather than run off the edge. */}
-        <div className="ml-auto flex max-w-full flex-wrap items-center justify-end gap-0.5">
+        <div className="ml-auto flex max-w-full flex-wrap items-center justify-end gap-0.5 [@media(max-width:29.999em)]:flex-nowrap">
           <SearchButton lang={lang} strings={strings.search} />
-          <LanguageSwitch lang={lang} strings={strings.language} />
-          <ThemeToggle label={t.theme} />
+          <div className={`${NARROW_HIDDEN} items-center gap-0.5`}>
+            <LanguageSwitch lang={lang} strings={strings.language} />
+            <ThemeToggle label={t.theme} />
+          </div>
           <button
             ref={menuButton}
             type="button"
@@ -198,6 +303,11 @@ export function SiteHeader({
                 </ul>
               </section>
             ))}
+            {/* On a phone EN/IT and the theme are here rather than in the bar. */}
+            <div className={`flex flex-wrap items-center gap-x-2 gap-y-2 border-t border-border/70 pt-3 ${NARROW_ONLY}`}>
+              <LanguageSwitch lang={lang} strings={strings.language} variant="menu" />
+              <ThemeToggle label={t.theme} withLabel />
+            </div>
           </div>
         </nav>
       )}
