@@ -34,8 +34,8 @@ const indexes = Object.fromEntries(
  */
 const CASES = [
   // Plain-language questions
-  { lang: "en", q: "underground", top: ["/atlas/methods#direct-underground", "/glossary#luna"], n: 4 },
-  { lang: "en", q: "why underground", top: ["/atlas/methods#direct-underground", "/glossary#luna"], n: 4 },
+  { lang: "en", q: "underground", top: ["/atlas/methods#direct-underground", "/glossary#luna"], n: 5 },
+  { lang: "en", q: "why underground", top: ["/atlas/methods#direct-underground", "/glossary#luna"], n: 5 },
   { lang: "it", q: "sottoterra", top: ["/atlas/methods#direct-underground", "/glossary#luna"], n: 4 },
   { lang: "it", q: "perché sottoterra", top: ["/atlas/methods#direct-underground", "/glossary#luna"], n: 4 },
   { lang: "en", q: "gold", top: ["/atlas/s-process", "/atlas/197Au-ng-198Au"], n: 2 },

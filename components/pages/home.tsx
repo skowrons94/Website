@@ -8,6 +8,7 @@ import { getAtlas } from "@/lib/atlas"
 import {
   getAllNotes,
   getEvaluationCount,
+  getOutlook,
   getProfile,
   getPublications,
   getRecognition,
@@ -169,6 +170,7 @@ export function HomePage({ lang }: { lang: Lang }) {
   const notes = getAllNotes().slice(0, 3)
   const selected = selectedWork(lang)
   const roles = getRecognition(lang)
+  const outlook = getOutlook(lang)
   const offered = resources(lang)
   const t = dict(lang).home
   const to = (path: string) => localePath(lang, path)
@@ -192,6 +194,19 @@ export function HomePage({ lang }: { lang: Lang }) {
           {profile.lead && (
             <p className="mt-4 max-w-2xl text-pretty text-[0.975rem] leading-[1.55] text-muted-foreground sm:mt-7 sm:text-lg sm:leading-relaxed">
               <Linked text={profile.lead} lang={lang} />
+            </p>
+          )}
+          {/* The research outlook in one line; the rest is on /research. */}
+          {outlook?.line && (
+            <p className="mt-3 max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground sm:mt-4">
+              <Sci>{outlook.line}</Sci>{" "}
+              <Link
+                prefetch={false}
+                href={to("/research#outlook")}
+                className="whitespace-nowrap text-link underline-offset-4 hover:underline"
+              >
+                {t.outlookMore}
+              </Link>
             </p>
           )}
 

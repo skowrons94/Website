@@ -216,6 +216,7 @@ const en = {
     impactAfter:
       ", for students and the public as well as specialists. Outreach so far includes Stelle sulla Terra, nuclear astrophysics for children with disabilities (2024), and courses on nuclear astrophysics for high-school students (PCTO, 2021–2022): ",
     impactCv: "outreach in the CV",
+    outlookMore: "What comes next →",
   },
 
   /* -- research ----------------------------------------------------------- */
@@ -1094,6 +1095,7 @@ const it: Dictionary = {
     impactAfter:
       " oltre che in inglese, per arrivare a studenti e pubblico e non solo agli specialisti. Tra le attività di divulgazione: Stelle sulla Terra, astrofisica nucleare per bambini con disabilità (2024), e percorsi di astrofisica nucleare per le scuole superiori (PCTO, 2021–2022): ",
     impactCv: "la divulgazione nel CV",
+    outlookMore: "Prospettive →",
   },
 
   /* -- research ----------------------------------------------------------- */

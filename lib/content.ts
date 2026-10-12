@@ -173,6 +173,18 @@ export const getProfile = (lang: Lang = "en"): Profile => {
 export const getResearch = (lang: Lang = "en") =>
   readYaml<{ threads: ResearchThread[] }>("research.yaml", lang).threads
 
+export interface Outlook {
+  title: string
+  /** The one-line version, on the landing page. */
+  line?: string
+  intro?: string
+  items: { lead: string; text: string }[]
+}
+
+/** "What comes next", at the end of /research; null when research.yaml has none. */
+export const getOutlook = (lang: Lang = "en"): Outlook | null =>
+  readYaml<{ outlook?: Outlook }>("research.yaml", lang).outlook ?? null
+
 /** Jakub first in the author list. */
 export const isFirstAuthor = (p: Pick<Publication, "authors">) => /^J\. Skowronski\b/.test(p.authors.trim())
 

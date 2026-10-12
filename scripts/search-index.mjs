@@ -424,6 +424,20 @@ function build(lang) {
     })
   }
 
+  // "What comes next", the research outlook at the end of /research.
+  const outlook = readYaml("research.yaml", lang).outlook
+  if (outlook?.title) {
+    const o = readYaml("research.yaml", other).outlook
+    entries.push({
+      t: "research",
+      l: clean(outlook.title),
+      s: short(outlook.line || outlook.intro, 120),
+      h: loc(lang, "/research#outlook"),
+      k: clean([o?.title, "outlook research statement future plans prospettive programma futuro"].filter(Boolean).join(" · ")),
+      b: bodyWords(outlook.intro, (outlook.items ?? []).map((i) => [i.lead, i.text])),
+    })
+  }
+
   const publications = (readYaml("publications.yaml", lang).publications ?? []).slice().sort((a, b) => b.year - a.year)
   for (const p of publications) {
     const link = p.doi ? `https://doi.org/${p.doi}` : p.arxiv ? `https://arxiv.org/abs/${p.arxiv}` : null

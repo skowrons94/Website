@@ -1,5 +1,7 @@
 # Research threads, rendered in order on /research and summarised on the landing
 # page. `body` paragraphs are plain text; `highlights` become a bulleted list.
+# `outlook` is the "What comes next" section at the end of /research
+# (#outlook); its `line` is the one-line version on the landing page.
 # A field ending in `_it` is the Italian version of the field before it (/it).
 
 threads:
@@ -213,3 +215,95 @@ threads:
         fascio immagazzinato e raffreddato, che cambia la configurazione atomica
         della collisione e così affronta la discrepanza da una direzione che un
         normale esperimento su bersaglio non può prendere.
+
+outlook:
+  title: What comes next
+  title_it: Prospettive
+  line: >-
+    Next: open, FAIR data from underground experiments, a shared database of
+    R-matrix evaluations, and new observables — γ-ray tracking and
+    polarization — at LUNA.
+  line_it: >-
+    Prossimi passi: dati aperti e FAIR dagli esperimenti sotterranei, un
+    database condiviso di valutazioni R-matrix e nuove osservabili a LUNA, dal
+    tracciamento γ alla polarizzazione.
+  intro: >-
+    A measurement is only as useful as the data, the code and the model that
+    survive it. The next years of my work are about making all three last, and
+    about giving the R-matrix new kinds of information.
+  intro_it: >-
+    Una misura vale quanto i dati, il codice e il modello che le
+    sopravvivono. I prossimi anni del mio lavoro servono a far durare tutti e
+    tre, e a dare alla R-matrix informazioni di tipo nuovo.
+  items:
+    - lead: Open data that stays open.
+      lead_it: Dati aperti che restano aperti.
+      text: >-
+        Too many good measurements have been lost because nobody could keep the
+        data, or the software that read them, alive. Maintaining software is no
+        longer the burden it was, so there is no excuse left. I want the data of
+        the experiments I take part in to be FAIR — findable, accessible,
+        interoperable, reusable — from the moment they are recorded, and I keep
+        developing the LUNA data acquisition with that aim.
+      text_it: >-
+        Troppe buone misure sono andate perse perché nessuno riusciva a tenere
+        in vita i dati, o il software che li leggeva. Mantenere il software non
+        è più il peso di una volta, quindi non ci sono più scuse. Voglio che i
+        dati degli esperimenti a cui partecipo siano FAIR (reperibili,
+        accessibili, interoperabili, riutilizzabili) fin dal momento in cui
+        vengono acquisiti, ed è con questo obiettivo che continuo a sviluppare
+        l'acquisizione dati di LUNA.
+    - lead: A database of R-matrix evaluations.
+      lead_it: Un database di valutazioni R-matrix.
+      text: >-
+        R-matrix theory is where theory meets every experimental detail:
+        resolution, target effects, normalisations, angular distributions. That
+        is exactly why I love it. Yet most evaluations live in one person's
+        files. The field needs a shared, versioned database of evaluations that
+        anyone can rerun, refit and extend when new data arrive; AZURE2 and the
+        evaluations on this site are a first step.
+      text_it: >-
+        La teoria R-matrix è il punto in cui la teoria incontra ogni dettaglio
+        sperimentale: risoluzione, effetti del bersaglio, normalizzazioni,
+        distribuzioni angolari. È proprio per questo che la amo. Eppure la
+        maggior parte delle valutazioni vive nei file di una sola persona. Al
+        settore serve un database condiviso e versionato di valutazioni, che
+        chiunque possa rieseguire, riadattare ed estendere quando arrivano
+        nuovi dati; AZURE2 e le valutazioni di questo sito sono un primo passo.
+    - lead: New observables, underground.
+      lead_it: Nuove osservabili, sotto terra.
+      text: >-
+        I want to keep contributing to LUNA's measurements, and to bring new
+        kinds of information to them: a segmented, AGATA-like γ-ray detector
+        deep underground, and polarization measurements, which give the
+        R-matrix input independent of the cross section.
+      text_it: >-
+        Voglio continuare a contribuire alle misure di LUNA e portarvi
+        informazioni di tipo nuovo: un rivelatore γ segmentato, simile ad
+        AGATA, in laboratorio sotterraneo, e misure di polarizzazione, che
+        danno alla R-matrix un'informazione indipendente dalla sezione d'urto.
+    - lead: Versatility.
+      lead_it: Versatilità.
+      text: >-
+        Moving between the accelerator, the detectors, the simulations, the data
+        acquisition and the theory is what I enjoy most, and what I think an
+        experiment needs from its people.
+      text_it: >-
+        Passare dall'acceleratore ai rivelatori, alle simulazioni,
+        all'acquisizione dati e alla teoria è ciò che mi piace di più, ed è ciò
+        che credo un esperimento chieda alle sue persone.
+    - lead: AI as a research tool.
+      lead_it: L'IA come strumento di ricerca.
+      text: >-
+        In the coming months AI will change how research is done. Used with
+        care it takes over the maintenance and boilerplate that used to swallow
+        our time, leaves more of it for physics, and puts a much broader set of
+        tools within reach of a small group. LUNA Skills is how I put this into
+        practice, openly, so others can do the same.
+      text_it: >-
+        Nei prossimi mesi l'intelligenza artificiale cambierà il modo di fare
+        ricerca. Usata con attenzione si fa carico della manutenzione e del
+        lavoro ripetitivo che prima ci consumavano il tempo, ne lascia di più
+        alla fisica e mette alla portata di un piccolo gruppo strumenti molto
+        più ampi. LUNA Skills è il modo in cui lo metto in pratica,
+        apertamente, perché anche altri possano farlo.
