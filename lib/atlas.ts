@@ -14,6 +14,7 @@ import {
   exportAtlas,
   firstSentence,
   readRaw,
+  sProcessPath,
 } from "@/lib/atlas-core.mjs"
 import { renderMarkdown } from "@/lib/content"
 import type { Lang } from "@/lib/i18n"
@@ -29,6 +30,12 @@ export interface Family {
   id: string
   name: string
   summary: string
+  /** A page of its own (`/atlas/s-process`), linked instead of the map. */
+  page: string | null
+  /** False for a family drawn on a chart of its own, not on the map. */
+  onMap: boolean
+  /** Other families whose pages this one links to. */
+  see: string[]
   /** Network ids, in file order. */
   networks: string[]
 }
@@ -236,6 +243,7 @@ export interface GlossaryTerm {
   also: string
   text: string
   see: string[]
+  page: string | null
 }
 
 export interface Atlas {
@@ -390,7 +398,7 @@ export interface MapCell {
 }
 
 export interface MapData {
-  families: Family[]
+  families: (Family & { links: { href: string; name: string }[] })[]
   networks: Pick<Network, "id" | "family" | "name" | "summary" | "reactions" | "temperatures">[]
   reactions: MapReaction[]
   cells: MapCell[]
@@ -409,8 +417,14 @@ export function getMapData(lang: Lang = "en"): MapData {
     maxZ: number
     maxN: number
   }
+  // Families with a chart of their own (the s-process, iron to lead) are
+  // not drawn: the map is the chart of the light nuclei. Their reactions stay
+  // only where they also belong to a family on the map.
+  const onMap = new Set(atlas.families.filter((f) => f.onMap).map((f) => f.id))
+  const networks = atlas.networks.filter((n) => onMap.has(n.family))
+  const networkIds = new Set(networks.map((n) => n.id))
   const reactions: MapReaction[] = atlas.reactions
-    .filter((r) => r.from && r.to && r.networks.length > 0)
+    .filter((r) => r.from && r.to && r.networks.some((n) => networkIds.has(n)))
     .map((r) => ({
       id: r.id,
       hasFile: r.hasFile,
@@ -422,8 +436,8 @@ export function getMapData(lang: Lang = "en"): MapData {
       role: r.role,
       from: r.from!,
       to: r.to!,
-      networks: r.networks,
-      families: r.families,
+      networks: r.networks.filter((n) => networkIds.has(n)),
+      families: r.families.filter((f) => onMap.has(f)),
       importance: r.importance,
       status: r.status,
       statusNote: r.statusNote,
@@ -436,14 +450,73 @@ export function getMapData(lang: Lang = "en"): MapData {
       luna: r.luna,
       rmatrix: r.rmatrix,
     }))
+  const families = atlas.families
+    .filter((f) => f.onMap)
+    .map((f) => ({
+      ...f,
+      links: f.see
+        .map((id) => atlas.families.find((x) => x.id === id))
+        .filter((x): x is Family => Boolean(x?.page))
+        .map((x) => ({ href: x.page!, name: x.name })),
+    }))
   return {
-    families: atlas.families,
-    networks: atlas.networks,
+    families,
+    networks,
     reactions,
     cells,
     maxZ,
     maxN,
   }
+}
+
+/* -- the s-process path ------------------------------------------------------ */
+
+export interface SCell {
+  code: string
+  A: number
+  Z: number
+  N: number
+  symbol: string
+  stable: boolean
+  /** Radioactive, but older than the Solar System would need (t½ > 10¹⁶ s). */
+  primordial: boolean
+  onPath: boolean
+  branch: boolean
+  role: "s-only" | "r-only" | "p" | null
+  /** Laboratory half-life, s; null when stable. */
+  seconds: number | null
+  halfLife: string
+}
+
+export interface SEdge {
+  from: string
+  to: string
+  kind: "n" | "beta-" | "ec" | "alpha"
+}
+
+export interface SPath {
+  nodes: NuclideRef[]
+  edges: SEdge[]
+  cells: SCell[]
+  sOnly: string[]
+  rOnly: string[]
+  branch: string[]
+  zMin: number
+  zMax: number
+  nMin: number
+  nMax: number
+}
+
+const sCache = new Map<Lang, SPath>()
+
+/** The s-process path from ⁵⁶Fe to the Pb–Bi cycle, from NUBASE2020 and AME2020. */
+export function getSProcessPath(lang: Lang = "en"): SPath {
+  let path = sCache.get(lang)
+  if (!path) {
+    path = sProcessPath(undefined, lang) as unknown as SPath
+    sCache.set(lang, path)
+  }
+  return path
 }
 
 /* -- formatting ------------------------------------------------------------ */

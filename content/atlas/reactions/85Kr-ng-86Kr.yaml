@@ -1,0 +1,78 @@
+id: 85Kr-ng-86Kr
+label: ⁸⁵Kr(n,γ)⁸⁶Kr
+kind: capture
+target: 85Kr
+projectile: n
+ejectile: g
+product: 86Kr
+networks: [s-main, s-weak]
+importance: key
+summary: >-
+  Radioactive krypton-85 captures a neutron. Whether it does so or decays
+  first tells how dense the neutrons were in the star, and it has never been
+  measured directly.
+summary_it: >-
+  Il kripton-85 radioattivo cattura un neutrone. Che lo faccia o che decada
+  prima dice quanto densi erano i neutroni nella stella, e la reazione non è
+  mai stata misurata direttamente.
+role: >-
+  Krypton-85 lives about ten years in the laboratory, which is comparable to
+  the time between two neutron captures in a star. If neutrons are few, it
+  decays into rubidium-85; if they are many, it captures another one and
+  becomes krypton-86, and the flow then reaches rubidium-87 through the next
+  capture. The amounts of krypton-86 and of the two rubidium isotopes
+  therefore record the neutron density, which differs between the two
+  neutron sources: low in the ¹³C pocket, higher in the brief ²²Ne bursts.
+  Krypton-86 in stardust grains from AGB stars, found in meteorites, is one
+  of the clues read in this way.
+role_it: >-
+  Il kripton-85 vive circa dieci anni in laboratorio, un tempo paragonabile a
+  quello tra due catture di neutroni in una stella. Se i neutroni sono pochi,
+  decade in rubidio-85; se sono molti, ne cattura un altro e diventa
+  kripton-86, e con la cattura successiva il flusso arriva al rubidio-87. Le
+  quantità di kripton-86 e dei due isotopi del rubidio registrano quindi la
+  densità di neutroni, che è diversa per le due sorgenti di neutroni: bassa
+  nella tasca di ¹³C, più alta nei brevi lampi del ²²Ne. Il kripton-86 dei
+  grani di polvere stellare prodotti dalle stelle AGB e trovati nei
+  meteoriti è uno degli indizi che si leggono in questo modo.
+details: >-
+  ⁸⁵Kr sits at the branching that feeds the s-process side of the N = 50
+  closed shell, where ⁸⁶Kr, ⁸⁷Rb and ⁸⁸Sr have magic neutron number; the
+  branching is a classic neutron-density indicator (Käppeler et al. 2011).
+  There is no direct measurement, and the stellar cross section comes from
+  statistical-model calculations. Raut et al. (2013) constrained it indirectly: they measured
+  the photodisintegration ⁸⁶Kr(γ,n) at HIγS with monoenergetic photons from
+  the neutron separation energy (9.86 MeV) to 13 MeV, combined it with
+  ⁸⁶Kr(γ,γ′) data into the dipole response of ⁸⁶Kr, and used it to predict
+  the ⁸⁵Kr(n,γ) cross section. With it, AGB models of less than about
+  1.5 M☉, in which the ¹³C burns convectively, are a possible explanation for
+  the highest ⁸⁶Kr/⁸²Kr ratios of presolar SiC grains.
+status: unmeasured
+status_note: >-
+  No direct measurement exists; the stellar cross section comes from
+  statistical-model calculations constrained by ⁸⁶Kr photodisintegration.
+status_note_it: >-
+  Non esiste una misura diretta; la sezione d'urto stellare viene da calcoli
+  con il modello statistico vincolati dalla fotodisintegrazione del ⁸⁶Kr.
+status_plain: >-
+  Never measured directly: the rate of this radioactive gas is inferred
+  from calculations and indirect experiments.
+status_plain_it: >-
+  Mai misurata direttamente: il tasso di questo gas radioattivo si ricava da
+  calcoli e da esperimenti indiretti.
+methods: [theory]
+measurements:
+  - year: 2013
+    facility: other
+    lab: HIγS, Triangle Universities Nuclear Laboratory
+    method: theory
+    energy: "⁸⁶Kr(γ,n), photons from 9.86 to 13 MeV"
+    energy_it: "⁸⁶Kr(γ,n), fotoni da 9,86 a 13 MeV"
+    note: >-
+      Photodisintegration of ⁸⁶Kr with monoenergetic photons; with
+      ⁸⁶Kr(γ,γ′) it fixes the dipole strength used to predict ⁸⁵Kr(n,γ).
+    refs: [raut2013]
+evaluations: [bao2000, dillmann2008, kaeppeler2011]
+open_questions:
+  - A direct measurement of the capture cross section on a ⁸⁵Kr sample.
+related: [63Ni-ng-64Ni, 151Sm-ng-152Sm, 22Ne-an-25Mg, 13C-an-16O]

@@ -1,0 +1,233 @@
+# References for the s-process page (/atlas/s-process), the neutron poisons and
+# the heavy-element neutron captures. Verified by web search on 2026-10-12:
+# direct access to publishers was blocked from the build container, so
+# `checked` names the records (arXiv listings, INSPIRE, EXFOR, institutional
+# repositories) that confirmed each entry. A DOI is given only where a record
+# showed it, or where it follows the APS scheme from a confirmed APS journal
+# reference. b2fh1957 (history.yaml), guerrero2013 (history.yaml) and
+# woosley2002 (carbon.yaml) are reused from the other files.
+
+# --- Reviews and compilations ---------------------------------------------------
+
+kaeppeler2011:
+  authors: F. Käppeler, R. Gallino, S. Bisterzo, W. Aoki
+  title: "The s process: nuclear physics, stellar models, and observations"
+  journal: Rev. Mod. Phys. 83, 157 (2011)
+  year: 2011
+  doi: 10.1103/RevModPhys.83.157
+  arxiv: "1012.5218"
+  checked: arXiv 1012.5218 listing (authors, abstract) and a 2025 arXiv paper citing the published version with its DOI, 2026-10-12
+
+clayton1961:
+  authors: D. D. Clayton, W. A. Fowler, T. E. Hull, B. A. Zimmerman
+  title: Neutron capture chains in heavy element synthesis
+  journal: Ann. Phys. 12, 331 (1961)
+  year: 1961
+  doi: 10.1016/0003-4916(61)90067-7
+  checked: biography page listing volume, page, ADS bibcode 1961AnPhy..12..331C and DOI; D. D. Clayton's 1962 Caltech thesis (Part I is a reprint of this article), 2026-10-12
+
+bao2000:
+  authors: Z. Y. Bao, H. Beer, F. Käppeler, F. Voss, K. Wisshak, T. Rauscher
+  title: Neutron cross sections for nucleosynthesis studies
+  journal: At. Data Nucl. Data Tables 76, 70 (2000)
+  year: 2000
+  doi: 10.1006/adnd.2000.0838
+  checked: University of Hertfordshire and Basel repository records (pp. 70–154, DOI, abstract giving recommended MACS at kT = 30 keV for H to Bi), 2026-10-12
+
+dillmann2008:
+  authors: I. Dillmann et al.
+  title: New stellar (n,γ) cross sections and the "Karlsruhe Astrophysical Database of Nucleosynthesis in Stars"
+  journal: Proc. Int. Conf. on Nuclear Data for Science and Technology 2007 (EDP Sciences, 2008), p. 575
+  year: 2008
+  doi: 10.1051/ndata:07303
+  arxiv: "0806.2076"
+  checked: arXiv 0806.2076 listing and University of Hertfordshire repository record (pages 575–578, DOI), 2026-10-12
+
+straniero2006:
+  authors: O. Straniero, R. Gallino, S. Cristallo
+  title: s process in low-mass asymptotic giant branch stars
+  journal: Nucl. Phys. A 777 (2006)
+  year: 2006
+  arxiv: astro-ph/0501405
+  checked: arXiv astro-ph/0501405 (abstract; ¹³C pocket burning radiatively at kT ≈ 8 keV, ²²Ne(α,n) in the pulses, ¹⁴N(n,p) as poison) and JINA Virtual Journal listing (Nucl. Phys. A 777); first page not confirmed, 2026-10-12
+
+# --- Neutron poisons --------------------------------------------------------------
+
+wallner2016:
+  authors: A. Wallner et al.
+  title: Accelerator mass spectrometry measurements of the ¹³C(n,γ)¹⁴C and ¹⁴N(n,p)¹⁴C cross sections
+  journal: Phys. Rev. C 93, 045803 (2016)
+  year: 2016
+  doi: 10.1103/PhysRevC.93.045803
+  checked: University of Vienna and ANU repository records (journal, 11 April 2016, abstract); DOI by APS scheme, 2026-10-12
+
+torressanchez2023:
+  authors: P. Torres-Sánchez et al. (n_TOF Collaboration)
+  title: Measurement of the ¹⁴N(n,p)¹⁴C cross section at the CERN n_TOF facility from subthermal energy to 800 keV
+  journal: Phys. Rev. C 107, 064617 (2023)
+  year: 2023
+  doi: 10.1103/PhysRevC.107.064617
+  arxiv: "2212.05128"
+  checked: University of Granada repository record (first author, arXiv 2212.05128), KIT and Vienna records (abstract); DOI by APS scheme, 2026-10-12
+
+heil2014:
+  authors: M. Heil et al.
+  title: Stellar neutron capture cross sections of ²⁰,²¹,²²Ne
+  journal: Phys. Rev. C 90, 045804 (2014)
+  year: 2014
+  doi: 10.1103/PhysRevC.90.045804
+  checked: >-
+    University of Hull repository record (pp. 045804-1–11, DOI, abstract: SAMMY
+    R-matrix reanalysis of keV resonance data) and the IAEA PGAA ²²Ne(n,γ)
+    report; an erratum appeared as Phys. Rev. C 92, 019902 (2015), 2026-10-12
+
+igashira1995:
+  authors: M. Igashira, Y. Nagai, K. Masuda, T. Ohsaki, H. Kitazawa
+  title: Measurement of the ¹⁶O(n,γ)¹⁷O reaction cross section at stellar energy and the critical role of nonresonant p-wave neutron capture
+  journal: Astrophys. J. 441, L89 (1995)
+  year: 1995
+  checked: EXFOR entry 22356, IAEA PGAA report and ENSDF summary (10–80 keV, MACS, nonresonant p-wave capture); DOI not confirmed, 2026-10-12
+
+mohr2016:
+  authors: P. Mohr, C. Heinz, M. Pignatari, I. Dillmann, A. Mengoni, F. Käppeler
+  title: Re-evaluation of the ¹⁶O(n,γ)¹⁷O cross section at astrophysical energies and its role as neutron poison in the s process
+  journal: Astrophys. J. 827, 29 (2016)
+  year: 2016
+  arxiv: "1605.02639"
+  checked: arXiv 1605.02639 listing (abstract; kT = 26 keV in core helium burning and 90 keV in shell carbon burning) and University of Hull repository record (ApJ 827, issue 1); article number not shown by the records found, DOI omitted, 2026-10-12
+
+# --- The heavy elements -------------------------------------------------------------
+
+wang2014:
+  authors: T.-F. Wang et al.
+  title: Maxwellian averaged neutron capture cross sections in ⁵⁶Fe and ⁵⁷Fe
+  journal: Chin. Phys. Lett. 31, 092101 (2014)
+  year: 2014
+  doi: 10.1088/0256-307X/31/9/092101
+  checked: Chinese Physics Letters abstract page (⁷Li(p,n) source, time of flight, MACS of ⁵⁶Fe and ⁵⁷Fe) and Beihang University record, 2026-10-12
+
+lederer2013:
+  authors: C. Lederer et al. (n_TOF Collaboration)
+  title: "Neutron capture cross section of unstable ⁶³Ni: implications for stellar nucleosynthesis"
+  journal: Phys. Rev. Lett. 110, 022501 (2013)
+  year: 2013
+  doi: 10.1103/PhysRevLett.110.022501
+  arxiv: "1304.3310"
+  checked: arXiv 1304.3310 abstract (first measurement, thermal to 200 keV, 12 resonances, MACS kT = 5–100 keV with ≈ 20% uncertainty; previous KADoNiS 30 keV value 31 ± 6 mb) and Hertfordshire, UPC and Seville repository records with the DOI, 2026-10-12
+
+lederer2014:
+  authors: C. Lederer et al. (n_TOF Collaboration)
+  title: ⁶²Ni(n,γ) and ⁶³Ni(n,γ) cross sections measured at the n_TOF facility at CERN
+  journal: Phys. Rev. C 89, 025810 (2014)
+  year: 2014
+  doi: 10.1103/PhysRevC.89.025810
+  arxiv: "1403.4778"
+  checked: arXiv 1403.4778 and Seville, JRC and ANU repository records (42 ⁶²Ni resonances, MACS 4.5% uncertainty, agreement with KADoNiS at 30 keV, up to a factor 1.6 lower at higher kT; ⁶³Ni 10–270 keV, 17% systematic); DOI by APS scheme, 2026-10-12
+
+weigand2015:
+  authors: M. Weigand et al.
+  title: ⁶³Ni(n,γ) cross sections measured with DANCE
+  journal: Phys. Rev. C 92, 045810 (2015)
+  year: 2015
+  doi: 10.1103/PhysRevC.92.045810
+  arxiv: "1512.02263"
+  checked: arXiv 1512.02263 and ANU and Frankfurt repository records (DANCE at LANSCE, relative to ¹⁹⁷Au, uncertainties below 15%), 2026-10-12
+
+raut2013:
+  authors: R. Raut, A. P. Tonchev, G. Rusev, W. Tornow, C. Iliadis, M. Lugaro, J. Buntain, S. Goriely, J. H. Kelley, R. Schwengner, A. Banu, N. Tsoneva
+  title: Cross-section measurements of the ⁸⁶Kr(γ,n) reaction to probe the s-process branching at ⁸⁵Kr
+  journal: Phys. Rev. Lett. 111, 112501 (2013)
+  year: 2013
+  doi: 10.1103/PhysRevLett.111.112501
+  arxiv: "1309.4159"
+  checked: Duke Scholars and HZDR records (journal, DOI, HIγS photon beams from 9.86 to 13 MeV, abstract), arXiv 1309.4159, 2026-10-12
+
+abbondanno2004:
+  authors: U. Abbondanno et al. (n_TOF Collaboration)
+  title: Neutron capture cross section measurement of ¹⁵¹Sm at the CERN neutron time of flight facility (n_TOF)
+  journal: Phys. Rev. Lett. 93, 161103 (2004)
+  year: 2004
+  doi: 10.1103/PhysRevLett.93.161103
+  checked: HAL in2p3-00026025 and University of Hertfordshire records (1 eV–1 MeV; MACS at kT = 30 keV of 3100 ± 160 mb); DOI by APS scheme, 2026-10-12
+
+wisshak2006:
+  authors: K. Wisshak, F. Voss, F. Käppeler, M. Krtička, S. Raman, A. Mengoni, R. Gallino
+  title: Stellar neutron capture cross section of the unstable s-process branching point ¹⁵¹Sm
+  journal: Phys. Rev. C 73, 015802 (2006)
+  year: 2006
+  doi: 10.1103/PhysRevC.73.015802
+  checked: EXFOR entry 22916 (authors, reference, 3.7 MV Van de Graaff and the Karlsruhe 4π BaF₂ detector) and a catalogue record giving the title; DOI by APS scheme, 2026-10-12
+
+heil2008lu:
+  authors: M. Heil, N. Winckler, S. Dababneh, F. Käppeler, K. Wisshak, S. Bisterzo, R. Gallino, A. M. Davis, T. Rauscher
+  title: "¹⁷⁶Lu/¹⁷⁶Hf: a sensitive test of s-process temperature and neutron density in AGB stars"
+  journal: Astrophys. J. 673, 434 (2008)
+  year: 2008
+  checked: >-
+    University of Hertfordshire and Basel repository records (pp. 434–444,
+    abstract: partial cross section to the ¹⁷⁶Lu isomer by activation at
+    Karlsruhe, temperature-dependent β half-life), 2026-10-12
+
+beer1980:
+  authors: H. Beer, F. Käppeler
+  title: Neutron capture cross sections on ¹³⁸Ba, ¹⁴⁰,¹⁴²Ce, ¹⁷⁵,¹⁷⁶Lu, and ¹⁸¹Ta at 30 keV; prerequisite for investigation of the ¹⁷⁶Lu cosmic clock
+  journal: Phys. Rev. C 21, 534 (1980)
+  year: 1980
+  doi: 10.1103/PhysRevC.21.534
+  checked: DOI resolver listing and EXFOR entry 21647 (activation at a pulsed Van de Graaff, 1.911 MeV protons on ⁷Li giving a nearly Maxwellian spectrum of 22–24 keV, partial cross section to the 3.68 h isomer of ¹⁷⁶Lu), 2026-10-12
+
+ratynski1988:
+  authors: W. Ratynski, F. Käppeler
+  title: "Neutron capture cross section of ¹⁹⁷Au: a standard for stellar nucleosynthesis"
+  journal: Phys. Rev. C 37, 595 (1988)
+  year: 1988
+  doi: 10.1103/PhysRevC.37.595
+  checked: >-
+    INSPIRE record 275787 (pp. 595–604, abstract: 648 ± 10 mb at kT = 25 keV,
+    582 ± 9 mb extrapolated to 30 keV) and EXFOR entry 22099 (protons at 1912
+    keV); DOI by APS scheme, 2026-10-12
+
+lederer2011:
+  authors: C. Lederer et al. (n_TOF Collaboration)
+  title: ¹⁹⁷Au(n,γ) cross section in the unresolved resonance region
+  journal: Phys. Rev. C 83, 034608 (2011)
+  year: 2011
+  doi: 10.1103/PhysRevC.83.034608
+  checked: University of Vienna, Seville, UPC and Hertfordshire repository records (5–400 keV, C₆D₆ detectors, 3.9–6.7% uncertainty, MACS at 30 keV 4.7% above the activation value), 2026-10-12
+
+massimi2014:
+  authors: C. Massimi, B. Becker, E. Dupont, S. Kopecky, C. Lampoudis, R. Massarczyk, M. Moxon, V. Pronyaev, P. Schillebeeckx, I. Sirakov, R. Wynants
+  title: Neutron capture cross section measurements for ¹⁹⁷Au from 3.5 to 84 keV at GELINA
+  journal: Eur. Phys. J. A 50, 124 (2014)
+  year: 2014
+  doi: 10.1140/epja/i2014-14124-8
+  checked: Springer article page and University of Bologna and JRC repository records (C₆D₆ detectors at about 13 m, normalised to the 4.9 eV resonance; results more than 5% from the astrophysical reference value), 2026-10-12
+
+domingopardo2006:
+  authors: C. Domingo-Pardo et al. (n_TOF Collaboration)
+  title: New measurement of neutron capture resonances in ²⁰⁹Bi
+  journal: Phys. Rev. C 74, 025807 (2006)
+  year: 2006
+  doi: 10.1103/PhysRevC.74.025807
+  arxiv: nucl-ex/0610040
+  checked: arXiv nucl-ex/0610040 and HAL in2p3-00098239 and Hertfordshire records (pulse-height weighting at n_TOF; rate at kT = 5–8 keV about 16% above the accepted value; s fraction of solar Bi 19 ± 3%); DOI by APS scheme, 2026-10-12
+
+# --- Facilities --------------------------------------------------------------------
+
+reifarth2009:
+  authors: R. Reifarth et al.
+  title: Opportunities for nuclear astrophysics at FRANZ
+  journal: Publ. Astron. Soc. Aust. 26, 255 (2009)
+  year: 2009
+  doi: 10.1071/AS08061
+  arxiv: "0909.5279"
+  checked: arXiv 0909.5279 and the CSIRO journal record (pp. 255–258, DOI), 2026-10-12
+
+tessler2015:
+  authors: M. Tessler, M. Paul et al.
+  title: Stellar 30-keV neutron capture in ⁹⁴,⁹⁶Zr and the ⁹⁰Zr(γ,n)⁸⁹Zr photonuclear reaction with a high-power liquid-lithium target
+  journal: Phys. Lett. B 751, 418 (2015)
+  year: 2015
+  arxiv: "1511.04701"
+  checked: arXiv 1511.04701 and DOAJ journal record (pp. 418–422; LiLiT at SARAF, quasi-Maxwellian kT ≈ 30 keV, 3–5 × 10¹⁰ n/s; MACS 28.0 ± 0.6 mb for ⁹⁴Zr and 12.4 ± 0.5 mb for ⁹⁶Zr), 2026-10-12
+

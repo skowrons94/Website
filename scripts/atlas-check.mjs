@@ -134,6 +134,15 @@ const listedReactions = new Set()
     checkTranslations(file, f, ["name", "summary"], where)
     if (familyIds.has(f?.id)) error(file, `${where}duplicate family id \`${f.id}\``)
     familyIds.add(f?.id)
+    if (f?.map !== undefined && typeof f.map !== "boolean") error(file, `${where}\`map\` must be true or false`)
+    if (f?.page !== undefined && !/^\/[a-z0-9/-]*$/.test(String(f.page))) error(file, `${where}\`page\` must be a site path such as /atlas/s-process`)
+  })
+  families.forEach((f, i) => {
+    for (const id of checkList(file, f, "see", `families[${i}]: `)) {
+      const target = families.find((x) => x?.id === id)
+      if (!target) error(file, `families[${i}]: \`see\` names unknown family \`${id}\``)
+      else if (!target.page) warn(file, `families[${i}]: \`see\` names \`${id}\`, which has no \`page\` to link to`)
+    }
   })
   networks.forEach((n, i) => {
     const where = `networks[${i}] (${n?.id ?? "?"}): `
@@ -376,6 +385,7 @@ if (raw.glossary && typeof raw.glossary === "object") {
     if (t?.id && ids.has(t.id)) error(file, `${where}id \`${t.id}\` used twice`)
     if (t?.id) ids.add(t.id)
     checkTranslations(file, t, ["term", "text"], where)
+    if (t?.page !== undefined && !/^\/[a-z0-9/-]*$/.test(String(t.page))) error(file, `${where}\`page\` must be a site path such as /atlas/s-process`)
   })
   terms.forEach((t, i) => {
     for (const see of checkList(file, t, "see", `terms[${i}]: `)) {

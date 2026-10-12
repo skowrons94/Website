@@ -1,0 +1,46 @@
+id: 22Ne-ng-23Ne
+label: ²²Ne(n,γ)²³Ne
+kind: capture
+target: 22Ne
+projectile: n
+ejectile: g
+product: 23Ne
+networks: [neutron-poisons]
+importance: minor
+summary: >-
+  Neon-22, the fuel of the neutron source in massive stars, also captures
+  some of the neutrons that it releases.
+summary_it: >-
+  Il neon-22, il combustibile della sorgente di neutroni nelle stelle
+  massicce, cattura anche una parte dei neutroni che libera.
+role: >-
+  In massive stars nearly all neutrons come from ²²Ne(α,n)²⁵Mg. Neon-22 is
+  far more abundant than iron, so even though a single neon nucleus is very
+  unlikely to capture a neutron, together they take a noticeable share. Each
+  neutron captured by neon is lost to the heavy elements. The product,
+  neon-23, decays within a minute to sodium-23.
+role_it: >-
+  Nelle stelle massicce quasi tutti i neutroni vengono dalla
+  ²²Ne(α,n)²⁵Mg. Il neon-22 è molto più abbondante del ferro, quindi anche se
+  un singolo nucleo di neon ha una probabilità molto piccola di catturare un
+  neutrone, tutti insieme ne prendono una quota apprezzabile. Ogni neutrone
+  catturato dal neon è perso per gli elementi pesanti. Il prodotto, il
+  neon-23, decade in meno di un minuto in sodio-23.
+details: >-
+  The Maxwellian-averaged cross section of ²²Ne is tiny, but its abundance in
+  helium-burning matter makes it a significant poison. Heil et al. (2014)
+  re-analysed the keV resonance data of the three stable neon isotopes with
+  the R-matrix code SAMMY, adding direct-capture components, and gave new
+  Maxwellian-averaged cross sections; they found that earlier work had
+  grossly overestimated the stellar rates of ²⁰Ne and ²¹Ne (an erratum
+  appeared in 2015).
+status: improving
+status_note: >-
+  The 2014 R-matrix reanalysis changed the stellar rates of the neon isotopes
+  substantially compared with earlier compilations.
+status_note_it: >-
+  La rianalisi R-matrix del 2014 ha cambiato in modo sostanziale i tassi
+  stellari degli isotopi del neon rispetto alle compilazioni precedenti.
+methods: [activation, neutron-beams]
+evaluations: [heil2014, bao2000, dillmann2008]
+related: [22Ne-an-25Mg, 14N-np-14C, 16O-ng-17O]

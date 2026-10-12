@@ -1,0 +1,58 @@
+id: 209Bi-ng-210Bi
+label: ²⁰⁹Bi(n,γ)²¹⁰Bi
+kind: capture
+target: 209Bi
+projectile: n
+ejectile: g
+product: 210Bi
+networks: [s-main]
+importance: major
+summary: >-
+  Bismuth-209 captures a neutron. It is the end of the s-process: what
+  follows decays back to lead, and the path closes into a cycle.
+summary_it: >-
+  Il bismuto-209 cattura un neutrone. È la fine del processo s: ciò che
+  segue decade di nuovo in piombo, e il percorso si chiude in un ciclo.
+role: >-
+  Bismuth-209 is the heaviest nucleus the s-process reaches. When it
+  captures a neutron it becomes bismuth-210, which decays within days to
+  polonium-210; polonium emits an alpha particle and becomes lead-206. The
+  neutrons that reach bismuth therefore keep cycling through lead and
+  bismuth instead of building anything heavier. The cross section decides
+  how much of the bismuth in the Solar System the s-process made, and so how
+  much is left for the rapid r-process to explain.
+role_it: >-
+  Il bismuto-209 è il nucleo più pesante che il processo s raggiunge. Quando
+  cattura un neutrone diventa bismuto-210, che decade in pochi giorni in
+  polonio-210; il polonio emette una particella alfa e diventa piombo-206. I
+  neutroni che arrivano al bismuto continuano quindi a circolare tra piombo
+  e bismuto invece di costruire qualcosa di più pesante. La sezione d'urto
+  decide quanta parte del bismuto del Sistema Solare è stata prodotta dal
+  processo s, e quindi quanta ne resta da spiegare al processo rapido r.
+details: >-
+  The capture resonances of ²⁰⁹Bi were measured at n_TOF with the
+  pulse-height weighting technique, with a set-up of
+  practically negligible neutron sensitivity. In the stellar range
+  kT = 5–8 keV the new rate is about 16% higher than the value used before;
+  the s-process fraction of solar bismuth becomes 19 ± 3%, leaving an
+  r-process residual of 81 ± 3% (Domingo-Pardo et al. 2006).
+status: improving
+status_note: >-
+  The resonance data were revised at n_TOF in 2006, raising the stellar rate
+  at low temperatures by about 16%.
+status_note_it: >-
+  I dati di risonanza sono stati rivisti a n_TOF nel 2006, alzando il tasso
+  stellare alle basse temperature di circa il 16%.
+methods: [neutron-beams]
+measurements:
+  - year: 2006
+    facility: n-tof
+    method: neutron-beams
+    energy: "resolved resonances (neutron energy)"
+    energy_it: "risonanze risolte (energia del neutrone)"
+    note: >-
+      Pulse-height weighting with low neutron sensitivity; rate at
+      kT = 5–8 keV about 16% higher; s fraction of solar Bi 19 ± 3%.
+    refs: [domingopardo2006]
+evaluations: [bao2000, dillmann2008]
+related: [197Au-ng-198Au, 151Sm-ng-152Sm]
