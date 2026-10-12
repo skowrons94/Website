@@ -292,7 +292,7 @@ function LevelControlsImpl({ scheme, onChange, onReset, disabled, selectedLevel,
                 <span className="tabular-nums text-muted-foreground">{energyText} MeV</span>
                 <span className="ml-auto flex items-center gap-2">
                   {touched && (
-                    <Badge variant="outline" className="text-[11px]">
+                    <Badge variant="outline" className="text-[0.6875rem]">
                       {t.changed}
                     </Badge>
                   )}
@@ -467,7 +467,7 @@ function ParameterControl({
           </label>
           <span className="truncate text-xs text-muted-foreground">{control.detail}</span>
           {changed && (
-            <Badge variant="outline" className="self-center text-[11px] font-medium">
+            <Badge variant="outline" className="self-center text-[0.6875rem] font-medium">
               {t.changed}
               {delta !== undefined && Number.isFinite(delta) && (
                 <span
@@ -550,7 +550,7 @@ function ParameterControl({
         </div>
       </div>
 
-      <div className={`-mt-0.5 flex items-baseline justify-between gap-2 text-[11px] text-muted-foreground ${isEnergy ? "" : "pl-[2.625rem]"}`}>
+      <div className={`-mt-0.5 flex items-baseline justify-between gap-2 text-[0.6875rem] text-muted-foreground ${isEnergy ? "" : "pl-[2.625rem]"}`}>
         {isEnergy ? (
           <>
             <span className="tabular-nums">{num(significant(lo, 4))}</span>
@@ -571,9 +571,9 @@ function ParameterControl({
         )}
       </div>
 
-      {invalid && <p className="text-[11px] text-destructive">{l.notANumber}</p>}
+      {invalid && <p className="text-[0.6875rem] text-destructive">{l.notANumber}</p>}
       {changed && (
-        <p className="text-[11px] text-muted-foreground">
+        <p className="text-[0.6875rem] text-muted-foreground">
           {t.wasValue(num(was.text).replace("-", "−"))} <UnitText unit={was.unit} />
         </p>
       )}

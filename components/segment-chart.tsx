@@ -227,14 +227,21 @@ function SegmentChartImpl({
   const t = useEvalDict().workspace
   const clipId = `clip${useId().replace(/[^a-zA-Z0-9]/g, "")}`
   const box = useRef<HTMLDivElement>(null)
-  const [size, setSize] = useState({ width: 0, height: height ?? 0 })
+  // k: the reader's text scale (200% text: 2), so the axes' text grows
+  // with it (WCAG 1.4.4); a narrow chart grows it less, to keep room for the data.
+  const [size, setSize] = useState({ width: 0, height: height ?? 0, k: 1 })
   const [hover, setHover] = useState<Hover | null>(null)
   const [brush, setBrush] = useState<{ from: number; to: number } | null>(null)
 
   useEffect(() => {
     const el = box.current
     if (!el) return
-    const measure = () => setSize({ width: el.clientWidth, height: height ?? el.clientHeight })
+    const measure = () => {
+      const px = parseFloat(getComputedStyle(document.documentElement).fontSize)
+      const scale = Number.isFinite(px) && px > 16 ? Math.min(2, px / 16) : 1
+      const k = Math.max(1, Math.min(scale, el.clientWidth / 260))
+      setSize({ width: el.clientWidth, height: height ?? el.clientHeight, k })
+    }
     measure()
     const ro = new ResizeObserver(measure)
     ro.observe(el)
@@ -245,14 +252,16 @@ function SegmentChartImpl({
   const identity = series.map((s) => s.label).join("|")
   useEffect(() => setHover(null), [identity, xDomain])
 
-  const margin = { top: 10, right: 14, bottom: compact ? 22 : 40, left: 62 }
+  const k = size.k
+  const fs = (n: number) => Math.round(n * k * 10) / 10
+  const margin = { top: 10, right: 14, bottom: compact ? 8 + 14 * k : 14 + 26 * k, left: 22 + 40 * k }
   const W = Math.max(0, size.width - margin.left - margin.right)
   const H = Math.max(0, size.height - margin.top - margin.bottom)
 
   const xAxis = useMemo<Axis | null>(() => {
     const okX = (x: number) => Number.isFinite(x) && (!logX || x > 0)
     const okY = (y: number) => Number.isFinite(y) && (!logY || y > 0)
-    if (xDomain) return fittedAxis(xDomain[0], xDomain[1], logX, compact ? 5 : 6)
+    if (xDomain) return fittedAxis(xDomain[0], xDomain[1], logX, Math.max(3, Math.round((compact ? 5 : 6) / k)))
     let lo = Infinity
     let hi = -Infinity
     const take = (x: number) => {
@@ -267,8 +276,8 @@ function SegmentChartImpl({
       if (!anyPoints) for (const p of [...s.curve, ...(s.extension ?? [])]) if (okX(p.x) && okY(p.y)) take(p.x)
     }
     if (!Number.isFinite(lo)) return null
-    return fittedAxis(lo, hi, logX, 6)
-  }, [series, logX, logY, xDomain, compact])
+    return fittedAxis(lo, hi, logX, Math.max(3, Math.round(6 / k)))
+  }, [series, logX, logY, xDomain, compact, k])
 
   const yAxis = useMemo<Axis | null>(() => {
     if (yDomain) return fittedAxis(yDomain[0], yDomain[1], logY, compact ? 3 : 5)
@@ -569,7 +578,7 @@ function SegmentChartImpl({
                       x={(x0 + x1) / 2 > W - 90 ? W - 4 : (x0 + x1) / 2 < 90 ? 4 : (x0 + x1) / 2}
                       y={H - 6}
                       textAnchor={(x0 + x1) / 2 > W - 90 ? "end" : (x0 + x1) / 2 < 90 ? "start" : "middle"}
-                      fontSize={11}
+                      fontSize={fs(11)}
                       fill="var(--viz-text-muted)"
                     >
                       {b.label}
@@ -652,7 +661,7 @@ function SegmentChartImpl({
                 usableX(m.x) && usableY(m.y) ? (
                   <g key={m.label}>
                     <circle cx={sx(m.x)} cy={sy(m.y)} r={4} fill="var(--viz-surface)" stroke="var(--viz-text)" strokeWidth={1.5} />
-                    <text x={sx(m.x) + 8} y={sy(m.y) < 18 ? sy(m.y) + 16 : sy(m.y) - 8} fontSize={11} fill="var(--viz-text)">
+                    <text x={sx(m.x) + 8} y={sy(m.y) < 18 ? sy(m.y) + 16 : sy(m.y) - 8} fontSize={fs(11)} fill="var(--viz-text)">
                       {m.label}
                     </text>
                   </g>
@@ -671,7 +680,7 @@ function SegmentChartImpl({
             {xAxis.ticks.map((v) => (
               <g key={`tx${v}`} transform={`translate(${sx(v)},${H})`}>
                 <line y2={4} stroke="var(--viz-axis)" />
-                <text y={16} textAnchor="middle" fontSize={11} fill="var(--viz-text-muted)">
+                <text y={5 + 11 * k} textAnchor="middle" fontSize={fs(11)} fill="var(--viz-text-muted)">
                   {fmtX(v)}
                 </text>
               </g>
@@ -679,20 +688,20 @@ function SegmentChartImpl({
             {yAxis.ticks.map((v) => (
               <g key={`ty${v}`} transform={`translate(0,${sy(v)})`}>
                 <line x2={-4} stroke="var(--viz-axis)" />
-                <text x={-7} dy="0.32em" textAnchor="end" fontSize={11} fill="var(--viz-text-muted)">
+                <text x={-7} dy="0.32em" textAnchor="end" fontSize={fs(11)} fill="var(--viz-text-muted)">
                   {fmtY(v)}
                 </text>
               </g>
             ))}
             {!compact && (
-              <text x={W / 2} y={H + 34} textAnchor="middle" fontSize={12} fill="var(--viz-text)">
+              <text x={W / 2} y={H + 8 + 26 * k} textAnchor="middle" fontSize={fs(12)} fill="var(--viz-text)">
                 {xLabel}
               </text>
             )}
             <text
-              transform={`translate(${-50},${H / 2}) rotate(-90)`}
+              transform={`translate(${-(10 + 40 * k)},${H / 2}) rotate(-90)`}
               textAnchor="middle"
-              fontSize={compact ? 11 : 12}
+              fontSize={fs(compact ? 11 : 12)}
               fill="var(--viz-text)"
             >
               {yLabel}
