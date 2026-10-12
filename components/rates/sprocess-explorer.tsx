@@ -21,7 +21,7 @@ import { BusyLine, Download, Figure, Fold, Formula, RATES_TOKENS, Segmented } fr
 import { DistributionChart, type DistPoint } from "./distribution-chart"
 import { EvolutionChart } from "./evolution-chart"
 import { FactorSlider } from "./factor-slider"
-import { dec, density, duration, NB, sci, sig2, tShort } from "./format"
+import { dec, density, duration, NB, sci, sig2, temperature, tShort } from "./format"
 import {
   ScenarioPanel,
   composition,
@@ -36,6 +36,8 @@ import { ChangesList, ReactionPicker, ResultStrip, SourceCell, StatusLine, type 
 // shown on request only: its code loads then
 const SensitivityMap = dynamic(() => import("./sensitivity-map").then((m) => m.SensitivityMap), { ssr: false })
 const NETWORK = "sprocess"
+/** "about 15", "about 4.6": a number fit for "about" (the side card keeps 15.3). */
+const about = (v: number, lang: Lang) => dec(String(v >= 10 ? Math.round(v) : Number(v.toPrecision(2))), lang)
 const K_KEV = 86.17333 // keV per GK
 
 /**
@@ -337,7 +339,7 @@ export function SProcessExplorer({
   const headline = sb ? (
     <p className="max-w-[52rem] text-pretty leading-relaxed sm:text-[1.0625rem]">
       <Sci>
-        {sp.headline(sName, sig3(sm && changed ? sm.nc : sb.nc))}
+        {sp.headline(sName, about(sm && changed ? sm.nc : sb.nc, lang))}
       </Sci>
     </p>
   ) : null
@@ -727,7 +729,7 @@ function FirstView({ view, lang }: { view: SProcessFirstView; lang: Lang }) {
   const s = view.scenario
   const headline = (
     <p className="max-w-[52rem] text-pretty leading-relaxed sm:text-[1.0625rem]">
-      <Sci>{sp.headline(it ? s.name_it : s.name, sig3(view.stats.nc))}</Sci>
+      <Sci>{sp.headline(it ? s.name_it : s.name, about(view.stats.nc, lang))}</Sci>
     </p>
   )
   const stat = (label: string, hint: string | null, v: string) => (
@@ -770,7 +772,7 @@ function FirstView({ view, lang }: { view: SProcessFirstView; lang: Lang }) {
             <Sci>{it ? s.name_it : s.name}</Sci>
           </span>
           <span className="tabular">
-            <Sci>{`${tShort(s.T9, lang)} · ${density(s.rho, lang)} · ${duration(s.time_s, lang)}`}</Sci>
+            <Sci>{`${temperature(s.T9, lang)} · ${density(s.rho, lang)} · ${duration(s.time_s, lang)}`}</Sci>
           </span>
           <Loader2 className="ml-auto h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden />
         </p>

@@ -241,7 +241,7 @@ const en = {
     "Rates are the REACLIB fits themselves, evaluated in your browser. Reverse rates are left out (negligible at these temperatures); nuclei outside the network are inert. Decays of nuclei that NUBASE2020 gives as stable or longer-lived than 10⁸ years are dropped.",
   newerTitle: "Rates with newer data",
   gamowResonances:
-    "The window is where a smooth (non-resonant) cross section reacts most. A narrow resonance inside it dominates instead (²⁴Mg(p,γ) at 0.3 GK through its 214 keV resonance, ²⁵Mg(p,γ) at 80 MK): the rate then follows the resonance's energy, not the window.",
+    "The window is where a smooth (non-resonant) cross section reacts most. A narrow resonance inside it dominates instead (²⁴Mg(p,γ) at 300 million K through its 214 keV resonance, ²⁵Mg(p,γ) at 80 million K): the rate then follows the resonance's energy, not the window.",
   nowFactor: (f: string) => `now ${f}`,
   luna: {
     title: "Rates from LUNA measurements",
@@ -549,7 +549,7 @@ const it: RatesDict = {
     "I tassi sono i fit di REACLIB stessi, calcolati nel tuo browser. I tassi inversi sono esclusi (trascurabili a queste temperature); i nuclei fuori dalla rete sono inerti. I decadimenti dei nuclei che NUBASE2020 dà come stabili o con vita più lunga di 10⁸ anni sono esclusi.",
   newerTitle: "Tassi con dati più recenti",
   gamowResonances:
-    "La finestra è dove reagisce di più una sezione d'urto liscia (non risonante). Una risonanza stretta al suo interno domina invece (la ²⁴Mg(p,γ) a 0,3 GK con la sua risonanza a 214 keV, la ²⁵Mg(p,γ) a 80 MK): allora il tasso segue l'energia della risonanza, non la finestra.",
+    "La finestra è dove reagisce di più una sezione d'urto liscia (non risonante). Una risonanza stretta al suo interno domina invece (la ²⁴Mg(p,γ) a 300 milioni di K con la sua risonanza a 214 keV, la ²⁵Mg(p,γ) a 80 milioni di K): allora il tasso segue l'energia della risonanza, non la finestra.",
   nowFactor: (f: string) => `ora ${f}`,
   luna: {
     title: "Tassi dalle misure di LUNA",

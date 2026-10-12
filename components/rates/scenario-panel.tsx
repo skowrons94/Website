@@ -10,7 +10,7 @@ import { composition, metalsMax, METALS_RANGE, metalFraction } from "@/lib/rates
 import { ratesDict } from "@/lib/rates/i18n"
 import { historyOf, scenarioRequest, type RunRequest } from "@/lib/rates/run"
 import type { Network, Scenario } from "@/lib/rates/schema"
-import { density, duration, NB, sig2, tShort, temperature } from "./format"
+import { density, duration, NB, sig2, temperature } from "./format"
 import { LogSlider } from "./log-slider"
 
 export { composition }
@@ -169,7 +169,7 @@ export function ScenarioPanel({
           </span>
           <span className="tabular">
             {" · "}
-            <Sci>{`${tShort(cond.T9, lang)} · ${density(cond.rho, lang)} · ${duration(cond.time_s, lang)}`}</Sci>
+            <Sci>{`${temperature(cond.T9, lang)} · ${density(cond.rho, lang)} · ${duration(cond.time_s, lang)}`}</Sci>
           </span>
           {custom && (
             <button

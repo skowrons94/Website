@@ -5,7 +5,7 @@ import type { Lang } from "@/lib/locale"
 import { ratesDict } from "@/lib/rates/i18n"
 import type { Network, Reaction } from "@/lib/rates/schema"
 import { C, SERIES, useWidth } from "./chart-kit"
-import { NB, sig2, tShort } from "./format"
+import { NB, sig2, temperature } from "./format"
 
 const ALPHA = 1 / 137.035999
 const AMU_KEV = 931494.1
@@ -83,7 +83,7 @@ export function GamowPanel({
       </p>
       <svg
         role="img"
-        aria-label={t.gamowLabel(reaction.label, tShort(T9, lang))}
+        aria-label={t.gamowLabel(reaction.label, temperature(T9, lang))}
         width={width * k}
         height={height * k}
         viewBox={`0 0 ${width} ${height}`}
