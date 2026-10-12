@@ -187,6 +187,8 @@ export function NetworkMap({ data, below }: { data: MapData; below?: React.React
   const t = useDict().atlas
 
   const [familyId, setFamilyId] = useState(families[0]?.id ?? "")
+  // The button the reader pressed, marked at once; the map follows in a transition.
+  const [pickedId, setPickedId] = useState(familyId)
   const [disabled, setDisabled] = useState<Set<string>>(() => new Set())
   const [whole, setWhole] = useState(false)
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -210,6 +212,17 @@ export function NetworkMap({ data, below }: { data: MapData; below?: React.React
     [family, networks],
   )
   const byId = useMemo(() => new Map(reactions.map((r) => [r.id, r])), [reactions])
+  // The family in words, under the map, follows a moment later: the map
+  // repaints first, the long list in a render of its own.
+  const [listId, setListId] = useState(familyId)
+  useEffect(() => {
+    startTransition(() => setListId(familyId))
+  }, [familyId])
+  const listFamily = families.find((f) => f.id === listId) ?? family
+  const listNetworks = useMemo(
+    () => (listFamily ? listFamily.networks.map((id) => networks.find((n) => n.id === id)!).filter(Boolean) : []),
+    [listFamily, networks],
+  )
   const selected = selectedId ? byId.get(selectedId) ?? null : null
   const selectedCell = !selected && cellCode ? cells.find((c) => c.code === cellCode) ?? null : null
   const cellReactions = useMemo(
@@ -256,6 +269,7 @@ export function NetworkMap({ data, below }: { data: MapData; below?: React.React
       if (hash && families.some((f) => f.id === hash)) {
         animateRef.current = true
         setFamilyId(hash)
+        setPickedId(hash)
         requestAnimationFrame(() =>
           rootRef.current?.scrollIntoView({ block: "start", behavior: prefersReducedMotion() ? "auto" : "smooth" }),
         )
@@ -269,6 +283,7 @@ export function NetworkMap({ data, below }: { data: MapData; below?: React.React
   const chooseFamily = useCallback((id: string) => {
     animateRef.current = true
     // The pressed button repaints at once; the map follows as a transition.
+    setPickedId(id)
     startTransition(() => setFamilyId(id))
     setTip(null)
     try {
@@ -716,11 +731,11 @@ export function NetworkMap({ data, below }: { data: MapData; below?: React.React
             <button
               key={f.id}
               type="button"
-              aria-pressed={f.id === family?.id}
+              aria-pressed={f.id === pickedId}
               onClick={() => chooseFamily(f.id)}
               className={cn(
                 "min-h-10 shrink-0 snap-start whitespace-nowrap rounded-full border px-2.5 py-1 text-[0.8125rem] sm:min-h-0 transition-colors sm:px-3 sm:py-1.5 sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                f.id === family?.id
+                f.id === pickedId
                   ? "border-foreground bg-foreground text-background"
                   : "border-border text-muted-foreground hover:border-foreground/40 hover:text-foreground",
               )}
@@ -993,14 +1008,14 @@ export function NetworkMap({ data, below }: { data: MapData; below?: React.React
       {/* -- the family in words: the table view of the map -------------------- */}
       <section className="mt-12 lg:col-span-2" aria-labelledby="family-heading">
         <h2 id="family-heading" className="font-serif text-2xl font-semibold tracking-tight">
-          <Sci>{family?.name}</Sci>
+          <Sci>{listFamily?.name}</Sci>
         </h2>
         <p className="mt-3 max-w-3xl text-pretty leading-relaxed text-muted-foreground">
-          <Sci>{family?.summary}</Sci>
+          <Sci>{listFamily?.summary}</Sci>
         </p>
-        {family && family.links.length > 0 && (
+        {listFamily && listFamily.links.length > 0 && (
           <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-1">
-            {family.links.map((l) => (
+            {listFamily.links.map((l) => (
               <li key={l.href}>
                 <Link
                   href={localePath(lang, l.href)}
@@ -1014,7 +1029,7 @@ export function NetworkMap({ data, below }: { data: MapData; below?: React.React
           </ul>
         )}
         <div className="mt-8 grid gap-x-10 gap-y-10 md:grid-cols-2">
-          {familyNetworks.map((n, i) => (
+          {listNetworks.map((n, i) => (
             <div key={n.id}>
               <h3 className="flex items-center gap-2.5 font-serif text-lg font-semibold tracking-tight">
                 <LineKey slot={i} />
