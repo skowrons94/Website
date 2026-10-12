@@ -515,7 +515,7 @@ export function LevelDiagram({
         width={x2 - x1}
         height={bottom - top}
         fill={lineColor(item.status)}
-        opacity={0.11}
+        opacity={list ? 0.07 : 0.11}
         pointerEvents="none"
       />
     )
@@ -1015,6 +1015,11 @@ export function LevelDiagram({
                 {q && rowW > 190 && (
                   <text x={rowX + 100 + BAR_W + 6} y={ly + 4.5} fontSize={11.5} fill="var(--viz-text-muted)">
                     Γ {num(q.text)} {q.unit}
+                  </text>
+                )}
+                {rowW > 360 && (
+                  <text x={rowX + 236} y={ly + 4.5} fontSize={11.5} fill="var(--viz-text-muted)">
+                    {t.status[item.status]}
                   </text>
                 )}
               </g>

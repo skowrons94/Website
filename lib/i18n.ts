@@ -484,9 +484,7 @@ const en = {
     legendThreshold: "particle threshold",
     legendWidth: "±Γ/2",
     legendData: "fitted data",
-    legendChannels: "Γ_c/Γ:",
     zoomHint: "Drag along the energy axis to zoom.",
-    zoomHintTouch: "Drag along the energy axis to zoom.",
     zoomData: "Zoom to data",
     zoomReset: "Whole scheme",
     zoomed: (lo: string, hi: string) => `Showing ${lo}–${hi} MeV`,
@@ -497,9 +495,7 @@ const en = {
     width: "Γ",
     noWidth: "no partial widths (bound in every particle channel)",
     anc: "ANC",
-    selected: "selected",
     clearSelection: "Clear selection",
-    edited: "edited",
     // sliders
     flipSign: (name: string, negative: boolean) =>
       `${name}: sign ${negative ? "negative" : "positive"}; press to make it ${negative ? "positive" : "negative"}`,
@@ -1229,9 +1225,7 @@ const it: Dictionary = {
     legendThreshold: "soglia di particella",
     legendWidth: "±Γ/2",
     legendData: "dati adattati",
-    legendChannels: "Γ_c/Γ:",
     zoomHint: "Trascina lungo l'asse delle energie per ingrandire.",
-    zoomHintTouch: "Trascina lungo l'asse delle energie per ingrandire.",
     zoomData: "Zoom sui dati",
     zoomReset: "Schema intero",
     zoomed: (lo: string, hi: string) => `Intervallo ${lo}–${hi} MeV`,
@@ -1242,9 +1236,7 @@ const it: Dictionary = {
     width: "Γ",
     noWidth: "nessuna larghezza parziale (legato in tutti i canali di particella)",
     anc: "ANC",
-    selected: "selezionato",
     clearSelection: "Deseleziona",
-    edited: "modificato",
     // sliders
     flipSign: (name: string, negative: boolean) =>
       `${name}: segno ${negative ? "negativo" : "positivo"}; premi per renderlo ${negative ? "positivo" : "negativo"}`,
