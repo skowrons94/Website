@@ -18,7 +18,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Sci } from "@/components/sci"
 import { Unit, texPlain } from "@/components/tex"
 import type { SchemeLevel, SchemePair } from "@/lib/api"
-import { decimal } from "@/lib/i18n"
+import { decimal } from "@/lib/i18n-eval"
 import {
   buildAxis,
   entranceOf,
@@ -43,7 +43,8 @@ import {
   type ThresholdInput,
 } from "@/lib/level-layout"
 import { formatQuantity } from "@/lib/viz"
-import { useDict, useLang } from "@/components/lang-provider"
+import { useLang } from "@/components/lang-context"
+import { useEvalDict } from "@/components/eval-dict"
 
 /**
  * The level scheme as a figure: one vertical excitation-energy axis, a column
@@ -194,7 +195,7 @@ export function LevelDiagram({
   dataRange,
   editedLevels,
 }: LevelDiagramProps) {
-  const t = useDict().levels
+  const t = useEvalDict().levels
   const lang = useLang()
   const wrapRef = useRef<HTMLDivElement>(null)
   const svgRef = useRef<SVGSVGElement>(null)
@@ -1133,7 +1134,7 @@ function Details({
   hueOf: (species: string, photon: boolean) => string
   onClear: () => void
 }) {
-  const t = useDict().levels
+  const t = useEvalDict().levels
   const lang = useLang()
   const num = (s: string) => decimal(s, lang)
   if (!item) {
@@ -1230,7 +1231,7 @@ function Legend({
   photon: boolean
   hueOf: (species: string, photon: boolean) => string
 }) {
-  const t = useDict().levels
+  const t = useEvalDict().levels
   const swatch = (children: ReactNode) => (
     <svg width={22} height={12} viewBox="0 0 22 12" aria-hidden className="shrink-0">
       {children}

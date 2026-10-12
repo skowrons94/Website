@@ -13,8 +13,9 @@ import { Sci } from "@/components/sci"
 import type { DataSegment } from "@/lib/api"
 import { angleText, datasetName } from "@/lib/eval-plot"
 import { formatEnergy, observableLabel } from "@/lib/viz"
-import { useDict, useLang } from "@/components/lang-provider"
-import { decimal } from "@/lib/i18n"
+import { useLang } from "@/components/lang-context"
+import { useEvalDict } from "@/components/eval-dict"
+import { decimal } from "@/lib/i18n-eval"
 
 /**
  * Every data segment with its provenance and fit quality.
@@ -34,7 +35,7 @@ interface Props {
 
 export function DataTable({ data, selected, onToggle }: Props) {
   const lang = useLang()
-  const t = useDict().workspace
+  const t = useEvalDict().workspace
   const [filter, setFilter] = useState("")
   const [sortKey, setSortKey] = useState<SortKey>("key")
   const [ascending, setAscending] = useState(true)

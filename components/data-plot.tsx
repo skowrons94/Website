@@ -35,8 +35,10 @@ import {
 } from "@/lib/eval-plot"
 import { downloadPng, downloadSvg, downloadText } from "@/lib/plot-export"
 import { OVERLAY_LIMIT, observableLabel, seriesShape } from "@/lib/viz"
-import { useDict, useLang } from "@/components/lang-provider"
-import { decimal, localePath } from "@/lib/i18n"
+import { useLang } from "@/components/lang-context"
+import { useEvalDict } from "@/components/eval-dict"
+import { decimal } from "@/lib/i18n-eval"
+import { localePath } from "@/lib/locale"
 
 /**
  * The interactive view: measured data with the model overlaid, beside sliders
@@ -111,7 +113,7 @@ export function DataPlot({
   deltaChi2,
 }: Props) {
   const lang = useLang()
-  const t = useDict().workspace
+  const t = useEvalDict().workspace
   const [logXOverride, setLogX] = useState<boolean | null>(null)
   const [logYOverride, setLogY] = useState<boolean | null>(null)
   const [listOpen, setListOpen] = useState(false)

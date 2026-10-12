@@ -13,8 +13,9 @@ import { SessionProvider, changedValues, useSession } from "@/contexts/session-c
 import { IN_BROWSER } from "@/lib/api"
 import { onEngineProgress } from "@/lib/browser-engine"
 import { defaultSelection, type Quantity } from "@/lib/eval-plot"
-import { useDict, useLang } from "@/components/lang-provider"
-import { localePath } from "@/lib/i18n"
+import { useLang } from "@/components/lang-context"
+import { useEvalDict } from "@/components/eval-dict"
+import { localePath } from "@/lib/locale"
 
 /*
  * The tabs' bodies are loaded on demand: the level scheme is what a visitor
@@ -93,7 +94,7 @@ export default function EvaluationWorkspace({ id, known }: { id: string; known: 
 
 function Workspace({ id, known }: { id: string; known: boolean }) {
   const lang = useLang()
-  const t = useDict().workspace
+  const t = useEvalDict().workspace
   const initial = useRef<UrlState | null>(null)
   const [tab, setTab] = useState<Tab>("scheme")
   const [tableOpen, setTableOpen] = useState(false)
@@ -395,7 +396,7 @@ function Workspace({ id, known }: { id: string; known: boolean }) {
 
 /** Reserved space while something loads, so the footer does not jump. */
 function Placeholder({ children, busy = false }: { children?: React.ReactNode; busy?: boolean }) {
-  const t = useDict().workspace
+  const t = useEvalDict().workspace
   return (
     <div
       role="status"
@@ -440,7 +441,7 @@ function Pending({
 /** An id the API does not know: say so, and offer the way back. */
 function NotFoundState({ id, heading }: { id: string; heading: "h1" | "h2" }) {
   const lang = useLang()
-  const t = useDict().evaluations
+  const t = useEvalDict().evaluations
   const Heading = heading
   return (
     <div className="mt-8 max-w-2xl">

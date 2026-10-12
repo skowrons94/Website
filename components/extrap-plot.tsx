@@ -15,10 +15,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { SegmentChart, type ChartBand, type ChartSeries } from "@/components/segment-chart"
 import { extrapolationsCsvUrl, downloadLink, type DataSegment, type ExtrapSegment, type SchemePair } from "@/lib/api"
 import { OVERLAY_LIMIT, formatEnergy, observableLabel, quantityLabel } from "@/lib/viz"
-import { decimal, localePath } from "@/lib/i18n"
+import { decimal } from "@/lib/i18n-eval"
+import { localePath } from "@/lib/locale"
 import { autoLog, axisLabel, pickUnit, quantityFor, rawValues, segmentTitle, segmentValues, sfactorUnit, type DisplayUnit } from "@/lib/eval-plot"
 import { downloadPng, downloadSvg } from "@/lib/plot-export"
-import { useDict, useLang } from "@/components/lang-provider"
+import { useLang } from "@/components/lang-context"
+import { useEvalDict } from "@/components/eval-dict"
 
 /**
  * Extrapolation curves, optionally with measured datasets overlaid for context,
@@ -59,7 +61,7 @@ function gamow(pair: SchemePair, T9: number) {
 
 export function ExtrapPlot({ headline, extrapolations, data, pairs, sessionId, calculating, evaluationId }: Props) {
   const lang = useLang()
-  const t = useDict().workspace
+  const t = useEvalDict().workspace
   const [selected, setSelected] = useState<number[]>([])
   const [overlaid, setOverlaid] = useState<number[]>([])
   const [quantity, setQuantity] = useState<Quantity>("sfactor")

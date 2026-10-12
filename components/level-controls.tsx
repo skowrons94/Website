@@ -8,10 +8,11 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import type { Scheme } from "@/lib/api"
-import { decimal } from "@/lib/i18n"
+import { decimal } from "@/lib/i18n-eval"
 import { formatLevelEnergy, jpiPlain, levelKey } from "@/lib/level-layout"
 import { formatQuantity, quantitySymbol, significant } from "@/lib/viz"
-import { useDict, useLang } from "@/components/lang-provider"
+import { useLang } from "@/components/lang-context"
+import { useEvalDict } from "@/components/eval-dict"
 
 /**
  * Sliders for every free R-matrix parameter, driving a live recalculation.
@@ -125,8 +126,8 @@ function parseNumber(text: string): number | null {
 }
 
 export function LevelControls({ scheme, onChange, onReset, disabled, selectedLevel, onSelectLevel, deltaChi2 }: Props) {
-  const t = useDict().workspace
-  const l = useDict().levels
+  const t = useEvalDict().workspace
+  const l = useEvalDict().levels
   const lang = useLang()
   const num = (s: string) => decimal(s, lang)
 
@@ -335,8 +336,8 @@ function ParameterControl({
   onSlide: (value: number) => void
   onCommit: (value: number) => void
 }) {
-  const t = useDict().workspace
-  const l = useDict().levels
+  const t = useEvalDict().workspace
+  const l = useEvalDict().levels
   const lang = useLang()
   const num = (s: string) => decimal(s, lang)
 

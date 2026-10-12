@@ -40,7 +40,8 @@ import {
   quantityName,
   quantitySymbol,
 } from "@/lib/viz"
-import { useDict, useLang } from "@/components/lang-provider"
+import { useLang } from "@/components/lang-context"
+import { useEvalDict } from "@/components/eval-dict"
 
 /**
  * The level scheme, built to stay readable when the model is crowded.
@@ -79,7 +80,7 @@ function jpiLatex(jpi: string): string {
 
 export function LevelScheme({ scheme, evaluation, sessionId, selectedLevel: shared, onSelectLevel, onEditLevel }: Props) {
   const lang = useLang()
-  const t = useDict().workspace
+  const t = useEvalDict().workspace
   // Controlled by the workspace when it passes a selection, else local.
   const [localSelection, setLocalSelection] = useState<string | null>(null)
   const selectedLevel = shared !== undefined ? shared : localSelection

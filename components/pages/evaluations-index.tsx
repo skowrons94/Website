@@ -7,9 +7,10 @@ import { AlertCircle, ArrowRight, Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sci } from "@/components/sci"
 import { Tex, texPlain } from "@/components/tex"
-import { useDict, useLang } from "@/components/lang-provider"
+import { useLang } from "@/components/lang-context"
+import { useEvalDict } from "@/components/eval-dict"
 import { evaluationDownloadUrl, listEvaluations, type Evaluation } from "@/lib/api"
-import { localePath } from "@/lib/i18n"
+import { localePath } from "@/lib/locale"
 
 /** What the page knows about an evaluation before the API answers. */
 export interface CardMeta {
@@ -25,7 +26,7 @@ export interface CardMeta {
 
 function Intro() {
   const lang = useLang()
-  const t = useDict().evaluations
+  const t = useEvalDict().evaluations
   return (
     <div className="border-b border-border/70 pb-8">
       <p className="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
@@ -64,7 +65,7 @@ const nuclide = (id: string) =>
  */
 export function EvaluationsIndex({ initial = [] }: { initial?: CardMeta[] }) {
   const lang = useLang()
-  const t = useDict().evaluations
+  const t = useEvalDict().evaluations
   const to = (path: string) => localePath(lang, path)
   const [live, setLive] = useState<Evaluation[] | null>(null)
   const [failed, setFailed] = useState(false)

@@ -2,7 +2,8 @@
 
 import { useEffect, useId, useMemo, useRef, useState, type RefObject } from "react"
 
-import { useDict, useLang } from "@/components/lang-provider"
+import { useLang } from "@/components/lang-context"
+import { useEvalDict } from "@/components/eval-dict"
 import type { PlotPoint } from "@/lib/eval-plot"
 import { axisFormatter, linearTicks, logTicks, type Axis } from "@/lib/ticks"
 import { seriesShape } from "@/lib/viz"
@@ -201,7 +202,7 @@ export function SegmentChart({
   svgRef,
 }: Props) {
   const lang = useLang()
-  const t = useDict().workspace
+  const t = useEvalDict().workspace
   const clipId = `clip${useId().replace(/[^a-zA-Z0-9]/g, "")}`
   const box = useRef<HTMLDivElement>(null)
   const [size, setSize] = useState({ width: 0, height: height ?? 0 })
