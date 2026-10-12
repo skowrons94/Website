@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { ArrowLeft, ArrowRight } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 
 import {
   formatDate,
@@ -9,6 +9,7 @@ import {
   getNote,
   getNoteSlugs,
 } from "@/lib/content"
+import { Breadcrumbs } from "@/components/breadcrumbs"
 import { Sci } from "@/components/sci"
 import { dict, localePath, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
@@ -24,6 +25,7 @@ export async function noteMetadata(slug: string, lang: Lang): Promise<Metadata> 
 export async function NotePage({ slug, lang }: { slug: string; lang: Lang }) {
   if (!getNoteSlugs().includes(slug)) notFound()
   const t = dict(lang).notes
+  const nav = dict(lang).nav
   const to = (path: string) => localePath(lang, path)
   // Notes are written in English only; on a page in another language the note
   // itself is marked as English and introduced by a line saying so.
@@ -44,13 +46,14 @@ export async function NotePage({ slug, lang }: { slug: string; lang: Lang }) {
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 xl:max-w-7xl">
-      <Link
-        href={to("/notes")}
-        className="-my-2.5 inline-flex py-2.5 items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        {t.all}
-      </Link>
+      <Breadcrumbs
+        label={nav.breadcrumb}
+        items={[
+          { label: nav.home, href: to("/") },
+          { label: nav.notes, href: to("/notes") },
+          { label: note.title, lang: noteLang },
+        ]}
+      />
 
       <div className="mt-8 lg:grid lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-14 xl:grid-cols-[minmax(0,1fr)_17rem]">
         {/* min-w-0 is what lets a wide table or equation scroll inside the
@@ -68,7 +71,7 @@ export async function NotePage({ slug, lang }: { slug: string; lang: Lang }) {
             <h1 className="mt-3 text-balance font-serif text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
               <Sci>{note.title}</Sci>
             </h1>
-            <p className="mt-4 text-pretty text-lg leading-relaxed text-muted-foreground">
+            <p className="mt-4 max-w-[60ch] text-pretty text-lg leading-relaxed text-muted-foreground">
               <Sci>{note.summary}</Sci>
             </p>
             <p lang={lang === "en" ? undefined : lang} className="mt-5 text-xs uppercase tracking-[0.1em] text-muted-foreground">
@@ -148,7 +151,7 @@ export async function NotePage({ slug, lang }: { slug: string; lang: Lang }) {
                     <h3 className="font-serif font-semibold tracking-tight group-hover:text-link">
                       <Sci>{other.title}</Sci>
                     </h3>
-                    <p className="mt-1 text-sm text-muted-foreground">
+                    <p className="mt-1 max-w-[68ch] text-sm text-muted-foreground">
                       <Sci>{other.summary}</Sci>
                     </p>
                   </Link>
