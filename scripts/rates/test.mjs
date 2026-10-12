@@ -28,7 +28,7 @@ import path from "node:path"
 import { DEFAULT_TOLERANCES, compile, integrate } from "../../lib/rates/solver.ts"
 import { networkProvider } from "../../lib/rates/rate-provider.ts"
 import { checkNetwork } from "../../lib/rates/schema.ts"
-import { historyOf, providerFor, requestKey, run, scenarioRequest } from "../../lib/rates/run.ts"
+import { compiled, historyOf, providerFor, requestKey, run, scenarioRequest } from "../../lib/rates/run.ts"
 import { composition, metalsMax, METALS_RANGE } from "../../lib/rates/composition.ts"
 import { bottleneck, closes, dominantPath, pathStart } from "../../lib/rates/flow.ts"
 import { lifetimes } from "../../lib/rates/solver.ts"
@@ -235,8 +235,8 @@ for (const id of ["pp", "cno", "nena", "mgal", "sprocess"]) {
   // burn is not named, nor a leak out of the cycle (lib/rates/flow.ts)
   const want = {
     pp: [["sun-core", "p_p_to_d_beta_pos_reaclib"]],
-    cno: [["nova", /O1[45]_to_N1[45]_beta_pos/]],
-    nena: [["nova-one", /beta_pos|p_to/], ["massive-25", /^(?!Ne20_p)/]],
+    cno: [["nova", /O1[45]_to_N1[45]_beta_pos/], ["massive-15", /./], ["sun-core", /./]],
+    nena: [["nova-one", /beta_pos|p_to/], ["massive-25", /^(?!Ne20_p)/], ["agb-hbb", /./]],
     mgal: [["massive-25", /^(?!Mg24_p)/], ["agb-hbb", /^(?!Al27_p_to_Si28)/]],
   }
   for (const [id, cases] of Object.entries(want)) {
@@ -256,8 +256,18 @@ for (const id of ["pp", "cno", "nena", "mgal", "sprocess"]) {
       console.log(
         `bottleneck ${id} ${sid}: ${network.reactions[b.step.reaction].label}, ${b.tau.toPrecision(3)} s (burn ${tBurn.toPrecision(3)} s)` +
           `${b.idle.length ? `, not running: ${b.idle.map((p) => network.reactions[p.reaction].label).join(", ")}` : ""}` +
-          `${b.leak.length ? `, leak: ${b.leak.map((p) => network.reactions[p.reaction].label).join(", ")}` : ""}`,
+          `${b.leak.length ? `, leak: ${b.leak.map((p) => network.reactions[p.reaction].label).join(", ")}` : ""}` +
+          `${b.stall !== null ? `, piles up at ${network.nuclei[b.stall].label}` : ""}`,
       )
+      // the path ends where the flow stops (r10 expert #1): in an AGB
+      // envelope ²⁶Al(p,γ) takes 21 yr in a 10-yr burn, so ²⁶Al piles up and
+      // ²⁷Al(p,γ)²⁸Si (267 yr) is no leak
+      for (const p of b.path) if (p.nucleus !== fuel && taus[p.reaction] > tBurn) fail(`${id} ${sid}: path runs through idle ${network.reactions[p.reaction].label}`)
+      for (const p of b.leak) if (taus[p.reaction] > tBurn) fail(`${id} ${sid}: leak ${network.reactions[p.reaction].label} slower than the burn`)
+      if (id === "mgal" && sid === "agb-hbb") {
+        if (b.leak.length) fail(`mgal agb-hbb: leak reported`)
+        if (b.stall === null || network.nuclei[b.stall].name !== "al26") fail(`mgal agb-hbb: path does not end at ²⁶Al`)
+      }
       if (typeof re === "string" ? rid !== re : !re.test(rid)) fail(`${id} ${sid}: bottleneck ${rid}`)
       if (b.tau > tBurn && b.step.nucleus !== fuel) fail(`${id} ${sid}: bottleneck ${rid} slower than the burn`)
       if (id === "nena" && /Na22_to/.test(rid) && sid === "nova-one") fail(`nena nova: ²²Na decay taken as bottleneck though ²²Na(p,γ) is faster`)
@@ -327,6 +337,70 @@ for (const id of ["pp", "cno", "nena", "mgal", "sprocess"]) {
     `¹²C/¹³C in CN equilibrium at 35 MK: REACLIB ${(reaclib.rate(ids[1], T9) / reaclib.rate(ids[0], T9)).toFixed(2)}, ` +
       `evaluated ${(luna.rate(ids[1], T9) / luna.rate(ids[0], T9)).toFixed(2)}`,
   )
+}
+
+{
+  // the curiosities (lib/rates/curiosities.ts): every sentence is the one a
+  // fresh run of the solver gives (×2 against the unchanged burn, after the
+  // decays for the s-process), within its rounding; no headline that is a
+  // self-cell by construction, no excluded nucleus, short hooks, the caveat
+  const cur = await import("../../lib/rates/curiosities.ts")
+  const { decayMap, decayed } = await import("../../lib/rates/analysis.ts")
+  const nets = new Map()
+  const cardsFile = path.join(DATA, "cards", "cards.json")
+  const cards = fs.existsSync(cardsFile) ? JSON.parse(fs.readFileSync(cardsFile, "utf8")) : null
+  if (!cards) fail("curiosities: no social cards (node scripts/rates/curiosity-cards.mjs)")
+  let n = 0
+  for (const spec of cur.CURIOSITIES) {
+    if (only.length && !only.includes(spec.net)) continue
+    if (!nets.has(spec.net)) {
+      const network = checkNetwork(JSON.parse(fs.readFileSync(path.join(DATA, `${spec.net}.json`), "utf8")))
+      nets.set(spec.net, {
+        network,
+        c: compiled(network),
+        sens: JSON.parse(fs.readFileSync(path.join(DATA, `${spec.net}.sensitivity.json`), "utf8")),
+        base: JSON.parse(fs.readFileSync(path.join(DATA, `${spec.net}.baseline.json`), "utf8")),
+        dmap: spec.net === "sprocess" ? decayMap(network, networkProvider(network)) : null,
+      })
+    }
+    const { network, c, sens, base, dmap } = nets.get(spec.net)
+    const s = network.scenarios.find((x) => x.id === spec.site)
+    const reaction = network.reactions.find((r) => r.id === spec.reaction)
+    if (!s || !reaction) {
+      fail(`curiosity ${spec.id}: no scenario or reaction`)
+      continue
+    }
+    const req = scenarioRequest(network, s)
+    const fin = (res) => (dmap ? decayed(network, res.final, dmap) : res.final)
+    const X0 = fin(run(c, req))
+    const X2 = fin(run(c, { ...req, scale: { [spec.reaction]: 2 } }))
+    const idx = (name) => network.nuclei.findIndex((x) => x.name === name)
+    const i = idx(spec.nucleus)
+    const j = spec.per ? idx(spec.per) : -1
+    const solved = (X2[i] / X0[i]) / (j >= 0 ? X2[j] / X0[j] : 1)
+    const shipped = cur.curiosityRatio(spec, sens)
+    const ctx = { reaction: reaction.label, T9: s.T9, tFinal: base.runs[spec.site].tFinal, cooling: Boolean(s.profile) }
+    for (const lang of ["en", "it"]) {
+      const a = cur.curiosityText(spec, shipped, lang, ctx)
+      const b = cur.curiosityText(spec, solved, lang, ctx)
+      if (a.sentence !== b.sentence) fail(`curiosity ${spec.id} (${lang}): table says "${a.amount} (${a.percent})", the solver "${b.amount} (${b.percent})"`)
+      if (!/One-zone model|Modello a una zona/.test(a.caveat) || !/Real stars adjust|Le stelle vere si adattano/.test(a.caveat)) fail(`curiosity ${spec.id}: caveat`)
+      if (cards && cards[`${spec.id}.${lang}`] !== a.sentence)
+        fail(`curiosity ${spec.id} (${lang}): its social card is stale (node scripts/rates/curiosity-cards.mjs)`)
+      if (lang === "en" && a.hook.split(/\s+/).length > 15) fail(`curiosity ${spec.id}: hook longer than 15 words`)
+      if (/[0-9]\.[0-9]{2,}%|[0-9]{3,}%/.test(a.percent)) fail(`curiosity ${spec.id}: ${a.percent} is more than two figures`)
+    }
+    if (Math.abs(solved / shipped - 1) > 0.01) fail(`curiosity ${spec.id}: solver ${solved} vs table ${shipped}`)
+    const self = network.nuclei[reaction.target]?.name === spec.nucleus
+    const sv = cur.sensOf(sens, spec.site, spec.reaction, spec.nucleus)
+    if (self && !spec.per && Math.abs(sv + 1) < 0.05) fail(`curiosity ${spec.id}: ${spec.nucleus} just halves with its own rate (a self-cell)`)
+    if (cur.NEVER_HEADLINE.includes(spec.nucleus)) fail(`curiosity ${spec.id}: ${spec.nucleus} is excluded`)
+    if (spec.net === "nena" && spec.site === "nova-one" && spec.reaction === "Na23_p_to_Mg24_reaclib") fail(`curiosity ${spec.id}: the ONe-nova ²³Na(p,γ) edge case`)
+    n++
+  }
+  const ids = cur.CURIOSITIES.map((x) => x.id)
+  if (new Set(ids).size !== ids.length) fail("curiosities: duplicate ids")
+  console.log(`curiosities: ${n} sentences match the solver within rounding (EN, IT)`)
 }
 
 if (failures) {

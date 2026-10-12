@@ -45,6 +45,7 @@ export const SPROCESS_REFS = [
   "pignatari2010",
   "woosley2002",
   "jung1992",
+  "takahashi1987",
   "wallace1982",
   "sandu1997",
   "shampine1997",
@@ -132,9 +133,15 @@ export const RATES_REFS: RatesRef[] = [
     doi: "10.1103/PhysRevLett.69.2164",
   },
   {
+    key: "takahashi1987",
+    text: "K. Takahashi and K. Yokoi, Beta-decay rates of highly ionized heavy atoms in stellar interiors, At. Data Nucl. Data Tables 36, 375 (1987)",
+    note: { en: "why ¹⁷⁶Hf is not modelled here", it: "perché qui il ¹⁷⁶Hf non è modellato" },
+    doi: "10.1016/0092-640X(87)90010-6",
+  },
+  {
     key: "wallace1982",
     text: "R. K. Wallace, S. E. Woosley and T. A. Weaver, The thermonuclear model for X-ray transients, ApJ 258, 696 (1982)",
-    note: { en: "the screening prescription (screen5)", it: "la prescrizione per la schermatura (screen5)" },
+    note: { en: "the screening prescription (screen5)", it: "la prescrizione per lo schermaggio (screen5)" },
     doi: "10.1086/160119",
   },
   {
@@ -167,7 +174,7 @@ const TEXT = {
     reaclib:
       "Tassi di reazione: il database JINA REACLIB (Cyburt et al. 2010), versione del 30 marzo 2025 distribuita con pynucastro; la fonte di ogni tasso è indicata accanto a esso nelle tabelle per specialisti. REACLIB è libero di essere usato, citandolo.",
     pynucastro:
-      "Le reti, le fonti dei tassi, la composizione solare e la schermatura elettronica sono state esportate con pynucastro (Smith et al. 2023; Willcox e Zingale 2018), licenza BSD 3-Clause. Il risolutore del browser è verificato con l'integrazione delle stesse reti fatta da pynucastro.",
+      "Le reti, le fonti dei tassi, la composizione solare e lo schermaggio elettronico sono stati esportati con pynucastro (Smith et al. 2023; Willcox e Zingale 2018), licenza BSD 3-Clause. Il risolutore del browser è verificato con l'integrazione delle stesse reti fatta da pynucastro.",
     refs: "Bibliografia",
   },
 } as const

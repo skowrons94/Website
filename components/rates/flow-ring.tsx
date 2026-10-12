@@ -7,6 +7,8 @@ import { C, useWidth } from "./chart-kit"
 import type { Network } from "@/lib/rates/schema"
 import type { PathStep } from "@/lib/rates/flow"
 
+const PAD = 26
+
 /** "(p,γ)" out of "¹⁴N(p,γ)¹⁵O". */
 const channel = (label: string) => label.match(/\([^)]*\)/)?.[0] ?? label
 
@@ -158,8 +160,10 @@ export const FlowRing = memo(function FlowRing({
         role="img"
         aria-label={label}
         width={W * k}
-        height={H * k}
-        viewBox={`0 0 ${W} ${H}`}
+        height={(H + PAD) * k * (W / (W + 2 * PAD))}
+        // padded, so the side labels ("(³He,2p)", "(α,γ)⁷Be 48%") are not cut
+        // at the edges of a narrow box with large text
+        viewBox={`${-PAD} ${-PAD / 2} ${W + 2 * PAD} ${H + PAD}`}
         className="block overflow-visible"
       >
         {edges.map(({ p, a, b }) => {

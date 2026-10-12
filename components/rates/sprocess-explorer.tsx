@@ -11,6 +11,9 @@ import { localePath, type Lang } from "@/lib/locale"
 import { decayMap, decayed, macs, neutronsPerSeed } from "@/lib/rates/analysis"
 import { loadNetwork, loadSensitivity, runBurn, type Baseline, type SensitivityFile } from "@/lib/rates/client"
 import { ratesDict } from "@/lib/rates/i18n"
+import type { CuriosityCardData } from "@/lib/rates/curiosity-data"
+import { CuriosityStrip } from "./curiosity-card"
+import { parseRatesHash, ratesHash, showWhatIf } from "@/lib/rates/url"
 import { networkProvider } from "@/lib/rates/rate-provider"
 import type { RunResult } from "@/lib/rates/run"
 import type { SProcessFirstView } from "@/lib/rates/first-view"
@@ -20,7 +23,7 @@ import { BusyLine, Download, Figure, Fold, Formula, RATES_TOKENS, Segmented } fr
 import { DistributionChart, type DistPoint } from "./distribution-chart"
 import { EvolutionChart } from "./evolution-chart"
 import { FactorSlider } from "./factor-slider"
-import { dec, density, duration, NB, sci, sig2, tShort } from "./format"
+import { dec, density, duration, NB, sci, sig2, temperature, tShort } from "./format"
 import {
   ScenarioPanel,
   composition,
@@ -35,6 +38,8 @@ import { ChangesList, ReactionPicker, ResultStrip, SourceCell, StatusLine, type 
 // shown on request only: its code loads then
 const SensitivityMap = dynamic(() => import("./sensitivity-map").then((m) => m.SensitivityMap), { ssr: false })
 const NETWORK = "sprocess"
+/** "about 15", "about 4.6": a number fit for "about" (the side card keeps 15.3). */
+const about = (v: number, lang: Lang) => dec(String(v >= 10 ? Math.round(v) : Number(v.toPrecision(2))), lang)
 const K_KEV = 86.17333 // keV per GK
 
 /**
@@ -50,10 +55,13 @@ export function SProcessExplorer({
   lang,
   sOnly,
   firstView,
+  curiosities,
 }: {
   lang: Lang
   sOnly: string[]
   firstView?: SProcessFirstView | null
+  /** the s-process curiosities (lib/rates/curiosity-data.ts), and how many there are in all */
+  curiosities?: { items: CuriosityCardData[]; total: number }
 }) {
   const t = ratesDict(lang)
   const sp = t.sp
@@ -79,16 +87,28 @@ export function SProcessExplorer({
   const [sensOpen, setSensOpen] = useState(false)
   const [sens, setSens] = useState<SensitivityFile | null>(null)
 
+  // a setting from the address (#site=massive-he-core&s=…): on load, and
+  // when the address changes on the page (back/forward, a curiosity's "Try it")
+  const applyHash = (n: Network) => {
+    const h = parseRatesHash(window.location.hash)
+    const s = n.scenarios.find((x) => x.id === h.site) ?? n.scenarios[0]
+    const sc = Object.fromEntries(Object.entries(h.scale).filter(([id]) => n.reactions.some((r) => r.id === id)))
+    setScenarioId(s.id)
+    setCond(fromScenario(s))
+    setScale(sc)
+    setActive(Object.keys(sc)[0] ?? n.ui.groups?.[0]?.reactions[0] ?? null)
+    if (h.focus) showWhatIf()
+  }
+  const applyRef = useRef(applyHash)
+  applyRef.current = applyHash
+
   useEffect(() => {
     let live = true
     loadNetwork(NETWORK)
       .then((d) => {
         if (!live) return
         setData(d)
-        const s = d.network.scenarios[0]
-        setScenarioId(s.id)
-        setCond(fromScenario(s))
-        setActive(d.network.ui.groups?.[0]?.reactions[0] ?? null)
+        applyRef.current(d.network)
       })
       .catch((e) => live && setError(String(e)))
     return () => {
@@ -96,11 +116,26 @@ export function SProcessExplorer({
     }
   }, [])
 
+  useEffect(() => {
+    if (!data) return
+    const on = () => applyRef.current(data.network)
+    window.addEventListener("hashchange", on)
+    return () => window.removeEventListener("hashchange", on)
+  }, [data])
+
   const network = data?.network ?? null
   const scenario = network?.scenarios.find((s) => s.id === scenarioId) ?? null
   const provider = useMemo(() => (network ? networkProvider(network) : null), [network])
   const decays = useMemo(() => (network && provider ? decayMap(network, provider) : null), [network, provider])
   const changed = Object.values(scale).some((v) => v !== 1)
+
+  // keep the address in step (replace, so the back button leaves the page)
+  useEffect(() => {
+    if (!network || !scenario) return
+    const h = ratesHash({ site: scenario.id !== network.scenarios[0].id ? scenario.id : null, scale })
+    if (window.location.hash !== h && (h || window.location.hash))
+      window.history.replaceState(null, "", h || window.location.pathname + window.location.search)
+  }, [network, scenario, scale])
 
   const seq = useRef(0)
   useEffect(() => {
@@ -310,7 +345,7 @@ export function SProcessExplorer({
   const headline = sb ? (
     <p className="max-w-[52rem] text-pretty leading-relaxed sm:text-[1.0625rem]">
       <Sci>
-        {sp.headline(sName, sig3(sm && changed ? sm.nc : sb.nc))}
+        {sp.headline(sName, about(sm && changed ? sm.nc : sb.nc, lang))}
       </Sci>
     </p>
   ) : null
@@ -421,6 +456,17 @@ export function SProcessExplorer({
           </div>
         </section>
       </div>
+
+      {curiosities && curiosities.items.length > 0 && (
+        <CuriosityStrip
+          key={scenario.id}
+          items={curiosities.items}
+          first={curiosities.items.filter((c) => c.site === scenario.id).map((c) => c.id)}
+          lang={lang}
+          allHref={localePath(lang, "/atlas/rates/curiosities")}
+          total={curiosities.total}
+        />
+      )}
 
       <Figure id="what-if" step={{ n: 2, label: t.step3 }} title={t.whatIfTitle} lead={sp.whatIfLead}>
         <div className="grid gap-8 lg:grid-cols-[minmax(0,24rem)_minmax(0,1fr)] lg:gap-10">
@@ -556,7 +602,7 @@ export function SProcessExplorer({
             {t.sensLead} {sp.sensNuclei}.
           </p>
           {sensOpen && (
-            <div className="mt-4">
+            <div id="sprocess-sens-map" className="mt-4">
               {custom && <p className="mb-2 text-xs text-muted-foreground">{t.sensCustom}</p>}
               {sensTable ? (
                 <SensitivityMap network={network} table={sensTable} lang={lang} columns={sensCols} onTry={tryRate} />
@@ -575,7 +621,8 @@ export function SProcessExplorer({
           href="#sprocess-results"
           lang={lang}
           active={changed || altered}
-          watch="sprocess-changes"
+          watch="sprocess-changes sprocess-sens-map"
+          rev={sensOpen && sens !== null}
         />
       </Figure>
 
@@ -700,7 +747,7 @@ function FirstView({ view, lang }: { view: SProcessFirstView; lang: Lang }) {
   const s = view.scenario
   const headline = (
     <p className="max-w-[52rem] text-pretty leading-relaxed sm:text-[1.0625rem]">
-      <Sci>{sp.headline(it ? s.name_it : s.name, sig3(view.stats.nc))}</Sci>
+      <Sci>{sp.headline(it ? s.name_it : s.name, about(view.stats.nc, lang))}</Sci>
     </p>
   )
   const stat = (label: string, hint: string | null, v: string) => (
@@ -743,7 +790,7 @@ function FirstView({ view, lang }: { view: SProcessFirstView; lang: Lang }) {
             <Sci>{it ? s.name_it : s.name}</Sci>
           </span>
           <span className="tabular">
-            <Sci>{`${tShort(s.T9, lang)} · ${density(s.rho, lang)} · ${duration(s.time_s, lang)}`}</Sci>
+            <Sci>{`${temperature(s.T9, lang)} · ${density(s.rho, lang)} · ${duration(s.time_s, lang)}`}</Sci>
           </span>
           <Loader2 className="ml-auto h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden />
         </p>

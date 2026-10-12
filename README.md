@@ -277,6 +277,8 @@ scripts/rates/evaluated/        their N_A⟨σv⟩ tables, read by build.py
 scripts/rates/baseline.mjs      the precomputed first view           (Node, the browser's solver)
 scripts/rates/sensitivity.mjs   every rate ×2 in turn, per scenario   (written by baseline.mjs)
 scripts/rates/test.mjs          npm run test:rates: browser vs pynucastro
+scripts/rates/curiosity-cards.mjs  the curiosities' 1200×630 social cards (sharp; committed)
+lib/rates/curiosities.ts        the "what if a rate were twice as fast" sentences (words only)
 lib/rates/                      schema, rate providers, screening, sparse LU, solver, worker
 components/rates/               the explorer's charts and controls
 ```
@@ -319,6 +321,13 @@ from anything living longer than six hours and under decay, plus the light
 nuclei that make and steal the neutrons. `reference.py` integrates it with
 numba's JIT switched off (a child process; compiling it would take longer
 than running it), about a minute for its three scenarios.
+
+The curiosities (`/atlas/rates/curiosities`, three at a time on the explorer
+pages) are sixteen sentences whose numbers are read at build time from the
+sensitivity tables; `test:rates` reruns the solver for each and fails when a
+sentence would read differently, or when a social card in
+`public/rates/cards/` is stale (rerun `node scripts/rates/curiosity-cards.mjs`
+with `SITE_URL` set, so the cards print the site's address).
 
 Accuracy (`npm run test:rates`): rates agree with pynucastro's `Rate.eval`
 to 1e-11; burns at rtol 1e-6 agree with pynucastro's own network integrated

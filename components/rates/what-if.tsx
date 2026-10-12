@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Loader2, X } from "lucide-react"
 
 import { Sci } from "@/components/sci"
@@ -134,7 +134,7 @@ export function LunaMark({ reaction, lang, inverted = false }: { reaction: React
     <abbr
       title={t.lunaChipTitle(refs)}
       className={`rounded-sm border px-1 font-sans text-[0.62rem] font-semibold tracking-[0.06em] no-underline ${
-        inverted ? "border-background/50 text-background" : "border-[var(--viz-series-1)] text-[var(--viz-series-1)]"
+        inverted ? "border-background/50 text-background" : "border-[var(--viz-series-1)] text-foreground"
       }`}
     >
       {t.lunaChip}
@@ -213,8 +213,17 @@ export function StatusLine({
 }) {
   const t = ratesDict(lang)
   const s = useElapsed(busy)
+  // a drag makes many results a second: the screen reader hears only the
+  // last one, once nothing has changed for 0.8 s, and never "Calculating…"
+  const doneRef = useRef<HTMLSpanElement>(null)
+  const [said, setSaid] = useState("")
+  useEffect(() => {
+    if (busy) return
+    const id = setTimeout(() => setSaid(error ? `${t.failed} ${error}` : (doneRef.current?.textContent ?? "")), 800)
+    return () => clearTimeout(id)
+  }, [busy, error, t])
   return (
-    <p className="flex min-h-5 items-center gap-2 text-xs text-muted-foreground" role="status" aria-live="polite">
+    <p className="flex min-h-5 items-center gap-2 text-xs text-muted-foreground">
       {busy ? (
         <>
           <Loader2 className="h-3.5 w-3.5 animate-spin motion-reduce:animate-none" aria-hidden />
@@ -225,8 +234,11 @@ export function StatusLine({
           {t.failed} {error}
         </span>
       ) : (
-        done
+        <span ref={doneRef}>{done}</span>
       )}
+      <span className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+        {said}
+      </span>
     </p>
   )
 }
@@ -245,6 +257,7 @@ export function ResultStrip({
   lang,
   active,
   watch,
+  rev,
 }: {
   rows: ChangeRow[]
   busy: boolean
@@ -252,19 +265,37 @@ export function ResultStrip({
   lang: Lang
   /** a change has been made */
   active: boolean
-  /** the id of the results the strip stands in for */
+  /** the ids of what the strip would cover (the results it stands in for, the sensitivity map), space-separated */
   watch?: string
+  /** changes when one of them appears or goes (the map opened) */
+  rev?: unknown
 }) {
   const t = ratesDict(lang)
   const s = useElapsed(busy)
   const [covered, setCovered] = useState(false)
   useEffect(() => {
-    const el = watch ? document.getElementById(watch) : null
-    if (!el || typeof IntersectionObserver === "undefined") return
-    const io = new IntersectionObserver((entries) => setCovered(entries[0]?.isIntersecting ?? false), { threshold: 0.15 })
-    io.observe(el)
-    return () => io.disconnect()
-  }, [watch])
+    const els = (watch ?? "")
+      .split(" ")
+      .map((id) => (id ? document.getElementById(id) : null))
+      .filter((e): e is HTMLElement => e !== null)
+    if (!els.length || typeof IntersectionObserver === "undefined") return
+    const seen = new Set<Element>()
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) seen.add(e.target)
+          else seen.delete(e.target)
+        }
+        setCovered(seen.size > 0)
+      },
+      { threshold: 0.05 },
+    )
+    els.forEach((e) => io.observe(e))
+    return () => {
+      io.disconnect()
+      setCovered(false)
+    }
+  }, [watch, rev])
   if (!active || covered) return null
   return (
     <div className="sticky bottom-0 z-20 -mx-5 mt-6 border-t border-border bg-background/95 px-5 py-2.5 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:-mx-8 sm:px-8 lg:hidden">
@@ -272,7 +303,7 @@ export function ResultStrip({
         <span className="shrink-0 text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
           {t.stripTitle}
         </span>
-        <div className="min-w-0 flex-1 text-sm" aria-live="polite">
+        <div className="min-w-0 flex-1 text-sm">
           {busy ? (
             <span className="inline-flex items-center gap-1.5 text-muted-foreground">
               <Loader2 className="h-3.5 w-3.5 animate-spin motion-reduce:animate-none" aria-hidden />

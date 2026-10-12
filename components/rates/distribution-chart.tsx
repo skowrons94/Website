@@ -86,6 +86,8 @@ export const DistributionChart = memo(function DistributionChart({
   const Amin = Math.min(...points.map((p) => p.A)) - 2
   const Amax = Math.max(...points.map((p) => p.A)) + 2
   const x = (A: number) => m.l + ((A - Amin) / (Amax - Amin)) * (width - m.l - m.r)
+  // a label centred near the right edge would be cut: end it at the edge
+  const edge = (cx: number): [number, "middle" | "end"] => (cx + 34 > width ? [width - 2, "end"] : [cx, "middle"])
   const xInv = (px: number) => Amin + ((px - m.l) / (width - m.l - m.r)) * (Amax - Amin)
   const y = logScale(yMin, yMax, height - m.b, m.t)
   const yt = decades(y.lo, y.hi, narrow ? 5 : 8)
@@ -146,9 +148,9 @@ export const DistributionChart = memo(function DistributionChart({
                 opacity={0.55}
               />
               <text
-                x={x((s.A[0] + s.A[1]) / 2)}
+                x={edge(x((s.A[0] + s.A[1]) / 2))[0]}
                 y={m.t - 22}
-                textAnchor="middle"
+                textAnchor={edge(x((s.A[0] + s.A[1]) / 2))[1]}
                 fontSize={11}
                 fill="var(--viz-text-muted)"
               >
@@ -156,9 +158,9 @@ export const DistributionChart = memo(function DistributionChart({
               </text>
               {/* the peak the closed shell makes, by its elements */}
               <text
-                x={x((s.A[0] + s.A[1]) / 2)}
+                x={edge(x((s.A[0] + s.A[1]) / 2))[0]}
                 y={m.t - 8}
-                textAnchor="middle"
+                textAnchor={edge(x((s.A[0] + s.A[1]) / 2))[1]}
                 fontSize={11}
                 fontWeight={600}
                 fill="var(--viz-text)"

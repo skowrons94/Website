@@ -115,9 +115,15 @@ export function integratedFlows(
  *   core of a 25 M☉ star, 63 Gyr against 6.7 Myr): they are returned apart,
  *   in `idle`, not named as the bottleneck. A step that burns the fuel
  *   itself (p + p) always runs: it is what sets the length of the burn.
+ * - The flow stops at the first such step (other than the fuel's): the
+ *   nucleus there piles up instead of going on (²⁶Al in an AGB envelope,
+ *   whose (p,γ) takes 21 years in a 10-year burn). `path` is the part that
+ *   runs, `stall` the nucleus it piles up at; the steps after it do not run
+ *   and are not drawn as part of the flow.
  * - On a path that does not close, a last step whose reaction is not one of
- *   the network's cycle (`cycle`) is a leak out of it (²⁷Al(p,γ)²⁸Si in an
- *   AGB envelope), not a step of the cycle: `leak` holds it.
+ *   the network's cycle (`cycle`) is a leak out of it, not a step of the
+ *   cycle: `leak` holds it, but only when it runs within the burn (a leak
+ *   slower than the burn, or beyond a stall, is no leak).
  */
 export interface Bottleneck {
   step: PathStep | null
@@ -125,6 +131,10 @@ export interface Bottleneck {
   tau: number
   idle: PathStep[]
   leak: PathStep[]
+  /** the steps of the path that run, up to the first that does not */
+  path: PathStep[]
+  /** the nucleus the flow piles up at (the first step that does not run), if any */
+  stall: number | null
 }
 
 export function bottleneck(
@@ -135,18 +145,23 @@ export function bottleneck(
   tBurn: number,
   fuel?: number,
 ): Bottleneck {
+  const tauOf = (p: PathStep) => taus[p.reaction]
+  const runs = (p: PathStep) => p.nucleus === fuel || !(tauOf(p) > tBurn)
   const leak: PathStep[] = []
   let steps = path
   if (!closed && cycle && cycle.length && path.length > 1 && !cycle.includes(path[path.length - 1].reaction)) {
-    leak.push(path[path.length - 1])
+    const last = path[path.length - 1]
     steps = path.slice(0, -1)
+    if (runs(last) && steps.every(runs)) leak.push(last)
   }
-  const tauOf = (p: PathStep) => taus[p.reaction]
-  const runs = (p: PathStep) => p.nucleus === fuel || !(tauOf(p) > tBurn)
+  const first = steps.findIndex((p) => !runs(p))
+  // (when not even the first step runs, there is no flow to cut short)
+  const ran = first > 0 ? path.slice(0, first) : path
+  const stall = first > 0 ? steps[first].nucleus : null
   const idle = steps.filter((p) => !runs(p))
-  const running = steps.filter((p) => runs(p) && Number.isFinite(tauOf(p)))
+  const running = (first > 0 ? ran : steps).filter((p) => runs(p) && Number.isFinite(tauOf(p)))
   const step = running.reduce<PathStep | null>((a, b) => (!a || tauOf(b) > tauOf(a) ? b : a), null)
-  return { step, tau: step ? tauOf(step) : NaN, idle, leak }
+  return { step, tau: step ? tauOf(step) : NaN, idle, leak, path: ran, stall }
 }
 
 /**

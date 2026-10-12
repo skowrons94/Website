@@ -16,6 +16,9 @@ import {
   type Baseline,
   type SensitivityFile,
 } from "@/lib/rates/client"
+import type { CuriosityCardData } from "@/lib/rates/curiosity-data"
+import { CuriosityStrip } from "./curiosity-card"
+import { parseRatesHash, ratesHash, showWhatIf } from "@/lib/rates/url"
 import { bottleneck, closes, dominantPath, heaviestProduct, integratedFlows, pathStart } from "@/lib/rates/flow"
 import { LUNA_RATES_PUBLIC } from "@/lib/rates/features"
 import { ratesDict } from "@/lib/rates/i18n"
@@ -110,17 +113,10 @@ const rangeOf = (lo: number, hi: number): [number, number] => {
 }
 const fill3 = (ids: string[]): (string | null)[] => [ids[0] ?? null, ids[1] ?? null, ids[2] ?? null]
 
-/** #cno&site=nova&s=N14_p_to_O15_reaclib:2 — a setting as an address. */
+/** #cno&site=nova&s=N14_p_to_O15_reaclib:2 — a setting as an address (lib/rates/url.ts). */
 function parseHash(h: string) {
-  const [net, ...rest] = h.replace(/^#/, "").split("&")
-  const params = new Map(rest.map((p) => p.split("=") as [string, string]))
-  const scale: Record<string, number> = {}
-  for (const pair of (params.get("s") ?? "").split(",").filter(Boolean)) {
-    const [id, f] = pair.split(":")
-    const v = Number(f)
-    if (id && v > 0 && v !== 1) scale[decodeURIComponent(id)] = Math.min(10, Math.max(0.1, v))
-  }
-  return { net, site: params.get("site") ?? null, scale, luna: LUNA_RATES_PUBLIC && params.get("luna") === "1" }
+  const a = parseRatesHash(h)
+  return { ...a, luna: LUNA_RATES_PUBLIC && a.luna }
 }
 
 /** Everything the explorer shows first for a network, from its files alone (no worker). */
@@ -156,6 +152,7 @@ export function RatesExplorer({
   initial,
   sProcess = false,
   preload,
+  curiosities,
 }: {
   lang: Lang
   tabs: NetworkTab[]
@@ -164,6 +161,8 @@ export function RatesExplorer({
   sProcess?: boolean
   /** the first network and its baseline, sent with the page: the first view renders on the server */
   preload?: { network: Network; baseline: Baseline | null }
+  /** the light networks' curiosities (lib/rates/curiosity-data.ts), and how many there are in all */
+  curiosities?: { items: CuriosityCardData[]; total: number }
 }) {
   if (preload) primeNetwork(preload.network.id, preload)
   const [init0] = useState(() =>
@@ -208,20 +207,60 @@ export function RatesExplorer({
   const [sens, setSens] = useState<SensitivityFile | null>(null)
   const pending = useRef<ReturnType<typeof parseHash> | null>(null)
 
+  // set every control from a network file and an address (or the defaults)
+  const apply = useCallback((d: { network: Network; baseline: Baseline | null }, h: ReturnType<typeof parseHash> | null) => {
+    const st = initState(d.network, d.baseline, h)
+    setData(d)
+    setScenarioId(st.scenarioId)
+    setCond(st.cond)
+    setScale(st.scale)
+    setRefId(st.refId)
+    setSlots(st.slots)
+    setShown(st.shown)
+    setActive(st.active)
+    setLuna(st.luna)
+    setBase(st.base)
+    setMod(st.mod)
+    setSens(null)
+    if (h?.focus) showWhatIf()
+  }, [])
+  const dataRef = useRef(data)
+  dataRef.current = data
+
+  // on a phone the tabs scroll sideways: keep the chosen one in view (only
+  // the strip scrolls, not the page)
+  const tabsRef = useRef<HTMLElement>(null)
+  useEffect(() => {
+    const nav = tabsRef.current
+    const a = nav?.querySelector<HTMLElement>('[aria-current="page"]')
+    if (!nav || !a || nav.scrollWidth <= nav.clientWidth) return
+    const left = a.getBoundingClientRect().left - nav.getBoundingClientRect().left + nav.scrollLeft
+    const pad = 48 // clear of the fade at the right edge
+    if (left < nav.scrollLeft) nav.scrollTo({ left: Math.max(0, left - 12) })
+    else if (left + a.offsetWidth > nav.scrollLeft + nav.clientWidth - pad)
+      nav.scrollTo({ left: left + a.offsetWidth - nav.clientWidth + pad })
+  }, [netId, data])
+
   // the network in the address: /atlas/rates#cno (and a shared setting)
   useEffect(() => {
-    const fromHash = () => {
+    const fromHash = (e?: Event) => {
       const h = parseHash(window.location.hash)
-      if (tabs.some((x) => x.id === h.net)) {
-        pending.current = h
-        setNetId(h.net)
-        setData((d) => (d && d.network.id === h.net ? { ...d } : d))
+      if (!tabs.some((x) => x.id === h.net)) return
+      const d = dataRef.current
+      // a new address on the network already open (#cno → #cno&site=nova,
+      // back/forward, a curiosity's "Try it"): apply it here, as the load
+      // below only runs when the network changes
+      if (e && d && d.network.id === h.net) {
+        apply(d, h)
+        return
       }
+      pending.current = h
+      setNetId(h.net)
     }
     fromHash()
     window.addEventListener("hashchange", fromHash)
     return () => window.removeEventListener("hashchange", fromHash)
-  }, [tabs])
+  }, [tabs, apply])
 
   useEffect(() => {
     let live = true
@@ -229,30 +268,17 @@ export function RatesExplorer({
     loadNetwork(netId)
       .then((d) => {
         if (!live) return
-        const n = d.network
-        const h = pending.current && pending.current.net === n.id ? pending.current : null
+        const h = pending.current && pending.current.net === d.network.id ? pending.current : null
         // only the load it was meant for consumes a shared setting: the
         // preloaded first network may resolve first and must not clear it
         if (h) pending.current = null
-        const st = initState(n, d.baseline, h)
-        setData(d)
-        setScenarioId(st.scenarioId)
-        setCond(st.cond)
-        setScale(st.scale)
-        setRefId(st.refId)
-        setSlots(st.slots)
-        setShown(st.shown)
-        setActive(st.active)
-        setLuna(st.luna)
-        setBase(st.base)
-        setMod(st.mod)
-        setSens(null)
+        apply(d, h)
       })
       .catch((e) => live && setError(String(e)))
     return () => {
       live = false
     }
-  }, [netId])
+  }, [netId, apply])
 
   const network = data?.network?.id === netId ? data.network : null
   const scenario = network?.scenarios.find((s) => s.id === scenarioId) ?? null
@@ -273,11 +299,12 @@ export function RatesExplorer({
   // keep the address in step (replace, so the back button leaves the page)
   useEffect(() => {
     if (!network || !scenario) return
-    const s = Object.entries(scale)
-      .filter(([, v]) => v !== 1)
-      .map(([id, v]) => `${id}:${v}`)
-      .join(",")
-    const h = `#${network.id}${scenario.id !== network.scenarios[0].id ? `&site=${scenario.id}` : ""}${s ? `&s=${s}` : ""}${LUNA_RATES_PUBLIC && luna ? "&luna=1" : ""}`
+    const h = ratesHash({
+      net: network.id,
+      site: scenario.id !== network.scenarios[0].id ? scenario.id : null,
+      scale,
+      luna: LUNA_RATES_PUBLIC && luna,
+    })
     if (window.location.hash !== h) window.history.replaceState(null, "", h)
   }, [network, scenario, scale, luna])
 
@@ -352,10 +379,17 @@ export function RatesExplorer({
     const cycle = (network.ui.cycle ?? []).map((id) => network.reactions.findIndex((r) => r.id === id)).filter((i) => i >= 0)
     const fuel = network.nuclei.findIndex((n) => n.name === network.ui.fuel)
     const start = pathStart(c, taus, cycle, tBurn, fuel)
-    const path = start === undefined ? [] : dominantPath(c, taus, start)
-    const closed = closes(c, path)
-    const slow = bottleneck(path, taus, closed, cycle, tBurn, fuel)
-    return { taus, taus0, path, closed, slow }
+    const full = start === undefined ? [] : dominantPath(c, taus, start)
+    const cyclic = closes(c, full)
+    // "the slowest step of the cycle" when the network's own path is a cycle
+    const isCycle =
+      cycle.length > 1 && heaviestProduct(c, cycle[cycle.length - 1]) === network.reactions[cycle[0]].target
+    const slow = bottleneck(full, taus, cyclic, cycle, tBurn, fuel)
+    // the path the flow takes within the burn: it stops where a step does not
+    // run (²⁶Al in an AGB envelope piles up), so it no longer closes there
+    const path = slow.path
+    const closed = cyclic && slow.stall === null
+    return { taus, taus0, path, closed, isCycle, stall: slow.stall, slow }
   }, [network, scenario, condD, scaleD, changedD, providerD, providerReaclib, tBurn])
 
   const flows = useMemo(() => {
@@ -414,6 +448,7 @@ export function RatesExplorer({
     const last = life.path[life.path.length - 1]
     const endIdx = !life.closed && last ? heaviestProduct(compiled(network), last.reaction) : undefined
     const pathEnd = endIdx !== undefined ? nucleus(endIdx).label : null
+    const stalled = life.stall !== null
     const changes: ChangeRow[] = []
     if (base && mod && changedD) {
       network.nuclei.forEach((n, i) => {
@@ -442,7 +477,7 @@ export function RatesExplorer({
         })
       })
     }
-    return { lifeRows, pathText, pathEnd, changes, evo }
+    return { lifeRows, pathText, pathEnd, stalled, changes, evo }
   }, [network, life, allSteps, slots, scaleD, changedD, base, mod, shown])
   const lifeRefs = useMemo(
     () => [
@@ -489,7 +524,7 @@ export function RatesExplorer({
     )
   }
 
-  const { lifeRows, pathText, pathEnd, changes, evo } = derived
+  const { lifeRows, pathText, pathEnd, stalled, changes, evo } = derived
   const sName = (s: Scenario) => (it ? s.name_it : s.name)
   const custom = !sameConditions(cond, fromScenario(scenario))
 
@@ -564,6 +599,7 @@ export function RatesExplorer({
 
   const tabBar = (
     <nav
+      ref={tabsRef}
       aria-label={t.networks}
       className="relative -mx-3 overflow-x-auto px-3 [mask-image:linear-gradient(to_right,#000_85%,transparent)] [scrollbar-width:none] sm:mx-0 sm:px-0 sm:[mask-image:none]"
     >
@@ -610,7 +646,7 @@ export function RatesExplorer({
           <span className="mr-2 rounded bg-foreground px-1.5 py-0.5 text-xs font-medium uppercase tracking-[0.1em] text-background">
             {t.headlineShort}
           </span>
-          <Sci>{L(t.headline(sName(scenario), slowR.label, duration(life.slow.tau, lang), life.closed))}</Sci>{" "}
+          <Sci>{L(t.headline(sName(scenario), slowR.label, duration(life.slow.tau, lang), life.isCycle))}</Sci>{" "}
           <a
             href="#what-if"
             onClick={() => setActive(slowR.id)}
@@ -619,11 +655,12 @@ export function RatesExplorer({
             {t.tryIt} ↓
           </a>
         </p>
-        {(idleList || life.slow.leak.length > 0) && (
+        {(idleList || life.slow.leak.length > 0 || life.stall !== null) && (
           <p className="text-pretty text-sm text-muted-foreground">
             <Sci>
               {[
                 idleList ? L(t.headlineIdle(idleList)) : "",
+                life.stall !== null ? L(t.headlineStall(network.nuclei[life.stall].label)) : "",
                 life.slow.leak.length ? L(t.headlineLeak(network.reactions[life.slow.leak[0].reaction].label)) : "",
               ]
                 .filter(Boolean)
@@ -724,6 +761,10 @@ export function RatesExplorer({
                 />
               </div>
               <p className="mt-2 text-xs text-muted-foreground">{t.scrubHint}</p>
+              {/* in the chart's own column, so it flows up beside a tall sidebar */}
+              <p className="mt-3 max-w-[46rem] text-pretty text-xs text-muted-foreground">
+                <Sci>{t.decaysNote}</Sci>
+              </p>
               {t.notation[network.id] && (
                 <p className="mt-1 max-w-[46rem] text-pretty text-xs text-muted-foreground">
                   <Sci>{t.notation[network.id]}</Sci>
@@ -785,13 +826,11 @@ export function RatesExplorer({
                     lang={lang}
                   />
                 </div>
+                <p className="mt-2 text-pretty text-xs text-muted-foreground">
+                  <Sci>{t.gamowResonances}</Sci>
+                </p>
               </div>
             </aside>
-          </div>
-          <div className="mt-4 max-w-[46rem] text-muted-foreground">
-            <p className="text-pretty text-xs">
-              <Sci>{t.decaysNote}</Sci>
-            </p>
           </div>
         </section>
       </div>
@@ -812,7 +851,7 @@ export function RatesExplorer({
           </button>
         }
       >
-        <div className="grid gap-10 xl:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]">
+        <div className="grid gap-10 xl:grid-cols-[minmax(0,1fr)_minmax(0,384px)]">
           <div className="min-w-0">
             <LifetimeBars
               rows={lifeRows}
@@ -827,7 +866,7 @@ export function RatesExplorer({
             <p className="mt-3 max-w-[46rem] text-pretty text-xs text-muted-foreground">
               <Sci>
                 {[
-                  pathText ? (pathEnd ? t.pathEnd(pathText, pathEnd) : t.pathNote(pathText)) : "",
+                  pathText ? (pathEnd ? (stalled ? t.pathStall(pathText, pathEnd) : t.pathEnd(pathText, pathEnd)) : t.pathNote(pathText)) : "",
                   network.id === "pp" ? t.pathPp : "",
                   t.lifeFine,
                   network.id === "pp" || (network.id === "mgal" && scenario.id === "massive-25")
@@ -839,7 +878,7 @@ export function RatesExplorer({
               </Sci>
             </p>
           </div>
-          {life.path.length > 1 && (
+          {(life.path.length > 1 || (life.path.length === 1 && !life.closed)) && (
             <div className="min-w-0">
               <h3 className="font-serif text-lg font-semibold tracking-tight">{t.ringTitle}</h3>
               <p className="mt-1 text-sm text-muted-foreground">{t.ringLead}</p>
@@ -866,6 +905,17 @@ export function RatesExplorer({
           )}
         </div>
       </Figure>
+
+      {curiosities && curiosities.items.length > 0 && (
+        <CuriosityStrip
+          key={netId}
+          items={curiosities.items}
+          first={curiosities.items.filter((c) => c.net === netId).map((c) => c.id)}
+          lang={lang}
+          allHref={localePath(lang, "/atlas/rates/curiosities")}
+          total={curiosities.total}
+        />
+      )}
 
       {/* -- 3. what if -------------------------------------------------------------- */}
       <Figure id="what-if" step={{ n: 3, label: t.step3 }} title={t.whatIfTitle} lead={t.whatIfLead}>
@@ -1009,7 +1059,7 @@ export function RatesExplorer({
           </div>
           <p className="mt-1 max-w-[46rem] text-pretty text-sm text-muted-foreground">{t.sensLead}</p>
           {sensOpen && (
-            <div className="mt-4">
+            <div id="sens-map" className="mt-4">
               {custom && <p className="mb-2 text-xs text-muted-foreground">{t.sensCustom}</p>}
               {sensTable ? (
                 <SensitivityMap network={network} table={sensTable} lang={lang} onTry={tryRate} />
@@ -1028,7 +1078,8 @@ export function RatesExplorer({
           href="#what-if-results"
           lang={lang}
           active={changed}
-          watch="what-changes"
+          watch="what-changes sens-map"
+          rev={sensOpen && sens !== null}
         />
       </Figure>
 
@@ -1047,7 +1098,7 @@ export function RatesExplorer({
               )}
             </p>
             <p className="text-pretty leading-relaxed text-muted-foreground">
-              <Sci>{LUNA_RATES_PUBLIC ? t.builtBy : t.builtByPlain}</Sci> <Sci>{t.gamowResonances}</Sci>
+              <Sci>{LUNA_RATES_PUBLIC ? t.builtBy : t.builtByPlain}</Sci>
             </p>
             <ul className="space-y-1.5 font-mono text-[0.8rem] leading-relaxed">
               <li>
