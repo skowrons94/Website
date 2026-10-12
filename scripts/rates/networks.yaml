@@ -1,0 +1,118 @@
+# The networks of the rates explorer (/atlas/rates), as data.
+#
+# Read by scripts/rates/build.py, which asks pynucastro (scripts/rates/
+# pyna_export.py) for every forward REACLIB rate linking `nuclei`, keeps those
+# that `select` admits, and writes public/rates/<id>.json. Nothing about a
+# network is written in the site's components: they read these fields.
+#
+#   family      the atlas family (networks.yaml of the atlas) it belongs to
+#   nuclei      pynucastro names
+#   select      hydrogen-burning: proton captures and weak decays, Q > 0
+#               all: every forward rate
+#   include     REACLIB rate names (pynucastro fname) added to the selection
+#   exclude     REACLIB rate names removed from it
+#   scenarios   ids from scenarios.yaml, the first is the default
+#   fuel        the nucleus a burn "until" condition refers to by default
+#   key         the reactions a general reader sees first (one slider each)
+#   reference   the default reference of the "relative to" rate plot
+#   cycle       optional: the reactions of the main cycle or chain, among
+#               which the slowest step is the bottleneck
+#   show        the nuclei the abundance plot opens with (at most three)
+
+networks:
+  - id: pp
+    show: [he3, be7, d]
+    family: pp
+    nuclei: [p, d, he3, he4, li7, be7, b8]
+    select: all
+    # Minor channels left out: the deuteron is destroyed by protons within
+    # seconds, so d + d, d + ³He and d + ⁷Be never compete, and ³He + ⁷Be is
+    # negligible. ⁸B → ⁸Be duplicates ⁸B → 2α in REACLIB (⁸Be is not tracked).
+    exclude:
+      - d_d_to_He4_reaclib
+      - He3_d_to_p_He4_reaclib
+      - Be7_d_to_p_He4_He4_reaclib
+      - Be7_He3_to_p_p_He4_He4_reaclib
+    scenarios: [sun-core, massive-15]
+    fuel: p
+    key:
+      - p_p_to_d_beta_pos_reaclib
+      - d_p_to_He3_reaclib
+      - He3_He3_to_p_p_He4_reaclib
+      - He3_He4_to_Be7_reaclib
+      - Be7_p_to_B8_reaclib
+    reference: He3_He3_to_p_p_He4_reaclib
+    cycle:
+      - p_p_to_d_beta_pos_reaclib
+      - d_p_to_He3_reaclib
+      - He3_He3_to_p_p_He4_reaclib
+
+  - id: cno
+    show: [c12, c13, n14]
+    family: cno
+    nuclei: [p, he4, c12, c13, n13, n14, n15, o14, o15, o16, o17, o18, f17, f18, f19, ne18, ne19, ne20]
+    select: hydrogen-burning
+    # The breakout of the hot CNO cycle by α captures on ¹⁴O and ¹⁵O; the
+    # other α captures belong to helium burning.
+    include: [O15_He4_to_Ne19_reaclib, O14_He4_to_p_F17_reaclib]
+    scenarios: [massive-15, sun-core, nova]
+    fuel: p
+    key:
+      - C12_p_to_N13_reaclib
+      - C13_p_to_N14_reaclib
+      - N14_p_to_O15_reaclib
+      - N15_p_to_He4_C12_reaclib
+      - N15_p_to_O16_reaclib
+      - O17_p_to_He4_N14_reaclib
+    reference: N14_p_to_O15_reaclib
+    cycle:
+      - C12_p_to_N13_reaclib
+      - N13_to_C13_beta_pos_reaclib
+      - C13_p_to_N14_reaclib
+      - N14_p_to_O15_reaclib
+      - O15_to_N15_beta_pos_reaclib
+      - N15_p_to_He4_C12_reaclib
+
+  - id: nena
+    show: [ne21, ne22, na23]
+    family: nena
+    nuclei: [p, he4, ne20, ne21, ne22, na21, na22, na23, mg22, mg23, mg24]
+    select: hydrogen-burning
+    scenarios: [agb-hbb, massive-25, nova]
+    fuel: p
+    key:
+      - Ne20_p_to_Na21_reaclib
+      - Ne21_p_to_Na22_reaclib
+      - Ne22_p_to_Na23_reaclib
+      - Na23_p_to_He4_Ne20_reaclib
+      - Na23_p_to_Mg24_reaclib
+    reference: Ne22_p_to_Na23_reaclib
+    cycle:
+      - Ne20_p_to_Na21_reaclib
+      - Na21_to_Ne21_beta_pos_reaclib
+      - Ne21_p_to_Na22_reaclib
+      - Na22_to_Ne22_beta_pos_reaclib
+      - Ne22_p_to_Na23_reaclib
+      - Na23_p_to_He4_Ne20_reaclib
+
+  - id: mgal
+    show: [mg25, al26, mg26]
+    family: mgal
+    nuclei: [p, he4, mg24, mg25, mg26, al25, al26, al27, si26, si27, si28]
+    select: hydrogen-burning
+    scenarios: [agb-hbb, massive-25, nova]
+    fuel: p
+    key:
+      - Mg24_p_to_Al25_reaclib
+      - Mg25_p_to_Al26_reaclib
+      - Mg26_p_to_Al27_reaclib
+      - Al27_p_to_He4_Mg24_reaclib
+      - Al27_p_to_Si28_reaclib
+    reference: Mg25_p_to_Al26_reaclib
+    cycle:
+      - Mg24_p_to_Al25_reaclib
+      - Al25_to_Mg25_beta_pos_reaclib
+      - Mg25_p_to_Al26_reaclib
+      - Al26_to_Mg26_beta_pos_reaclib
+      - Mg26_p_to_Al27_reaclib
+      - Al27_p_to_He4_Mg24_reaclib

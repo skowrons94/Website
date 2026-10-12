@@ -1,4 +1,5 @@
 import fs from "node:fs"
+import { ratesHrefFor } from "@/lib/rates/catalog"
 import path from "node:path"
 
 import type { Metadata } from "next"
@@ -111,6 +112,18 @@ function Facts({ reaction: r, lang }: { reaction: Reaction; lang: Lang }) {
                 </Link>
               </dd>
             )}
+          </div>
+        )}
+
+        {/* --- rates --- the reaction in the rates explorer */}
+        {ratesHrefFor(r.id) && (
+          <div>
+            <dt className="text-muted-foreground">{dict(lang).nav.rates}</dt>
+            <dd className="mt-1">
+              <Link href={localePath(lang, ratesHrefFor(r.id)!)} className="font-medium text-link underline-offset-4 hover:underline">
+                {t.exploreRates} →
+              </Link>
+            </dd>
           </div>
         )}
 

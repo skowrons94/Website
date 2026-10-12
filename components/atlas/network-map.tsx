@@ -1011,6 +1011,15 @@ export function NetworkMap({ data, below }: { data: MapData; below?: React.React
                 <ArrowRight className="h-4 w-4" aria-hidden />
               </Link>
             ))}
+            {family?.rates && (
+              <Link
+                href={localePath(lang, family.rates)}
+                className="mt-3 flex min-h-8 items-center gap-1.5 font-medium text-link underline-offset-4 hover:underline"
+              >
+                {t.exploreRates}
+                <ArrowRight className="h-4 w-4" aria-hidden />
+              </Link>
+            )}
             <p className="mt-4">{t.selectArrow}</p>
           </div>
         )}
@@ -1024,15 +1033,18 @@ export function NetworkMap({ data, below }: { data: MapData; below?: React.React
         <p className="mt-3 max-w-3xl text-pretty leading-relaxed text-muted-foreground">
           <Sci>{listFamily?.summary}</Sci>
         </p>
-        {listFamily && listFamily.links.length > 0 && (
+        {listFamily && (listFamily.links.length > 0 || listFamily.rates) && (
           <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-1">
-            {listFamily.links.map((l) => (
+            {[
+              ...listFamily.links.map((l) => ({ href: l.href, name: t.familyPageLink(l.name) })),
+              ...(listFamily.rates ? [{ href: listFamily.rates, name: t.exploreRatesOf(withoutArticle(listFamily.name)) }] : []),
+            ].map((l) => (
               <li key={l.href}>
                 <Link
                   href={localePath(lang, l.href)}
                   className="group inline-flex min-h-8 items-center gap-1.5 text-[0.95rem] font-medium text-link underline-offset-4 hover:underline"
                 >
-                  {t.familyPageLink(l.name)}
+                  <Sci>{l.name}</Sci>
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
                 </Link>
               </li>

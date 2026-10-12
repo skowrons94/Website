@@ -43,6 +43,10 @@ const CASES = [
   { lang: "en", q: "sun", first: "/atlas#pp", none: [/^https?:/] , nOnly: 3 },
   { lang: "it", q: "Sole", first: "/atlas#pp", none: [/s-only/] },
   { lang: "en", q: "supernova", top: ["/atlas#carbon"], n: 3 },
+  // --- rates ---
+  { lang: "en", q: "reaction rates", first: "/atlas/rates" },
+  { lang: "it", q: "tassi di reazione", first: "/atlas/rates" },
+  { lang: "en", q: "pynucastro", top: ["/atlas/rates"], n: 2 },
   // Physics
   { lang: "en", q: "Hoyle state", first: "/atlas/4He-aa-12C" },
   { lang: "it", q: "stato di Hoyle", first: "/atlas/4He-aa-12C" },

@@ -8,6 +8,7 @@
  * time only.
  */
 
+import { ratesHrefForFamily } from "@/lib/rates/catalog"
 import {
   buildAtlas,
   chartCells,
@@ -405,7 +406,7 @@ export interface MapCell {
 }
 
 export interface MapData {
-  families: (Family & { links: { href: string; name: string }[] })[]
+  families: (Family & { links: { href: string; name: string }[]; rates?: string | null })[]
   networks: Pick<Network, "id" | "family" | "name" | "summary" | "reactions" | "temperatures">[]
   reactions: MapReaction[]
   cells: MapCell[]
@@ -465,6 +466,8 @@ export function getMapData(lang: Lang = "en"): MapData {
         .map((id) => atlas.families.find((x) => x.id === id))
         .filter((x): x is Family => Boolean(x?.page))
         .map((x) => ({ href: x.page!, name: x.name })),
+      // --- rates --- the rates explorer's view of this family, if it has one
+      rates: ratesHrefForFamily(f.id),
     }))
   return {
     families,

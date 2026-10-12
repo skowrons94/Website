@@ -1,0 +1,119 @@
+# The astrophysical scenarios of the rates explorer (/atlas/rates).
+#
+# Read by scripts/rates/build.py, which resolves each composition into mass
+# fractions of every network's own nuclei and writes them into
+# public/rates/<network>.json. Every number carries its source in a comment
+# here and in the `source` field (shown in the page's expert fold). Where no
+# source pins a value, the field says so: `note` explains how it was chosen.
+#
+# A one-zone model holds T and ρ fixed for the whole burn: it shows which
+# reactions matter and how, not the yields of a real star.
+#
+#   T9        temperature in GK
+#   rho       density in g/cm³
+#   time      burn time in seconds
+#   until     optional: stop when nucleus (network name: p, he4) falls below `fraction` of its
+#             initial abundance (the burn time is then an upper limit)
+#   composition:
+#     base    lodders: present-day solar mass fractions of Lodders (2021),
+#             as tabulated in pynucastro (nucdata/composition.py, LODDERS_DATA)
+#     set     mass fractions fixed by hand, nucleus: X (Lodders names: h1, h2)
+#     balance the nucleus that takes whatever is left to make ΣX = 1
+#     mix     [ [weight, composition], ... ], mass-weighted
+#   Nuclei that are not in a network are inert there: they are dropped, not
+#   renormalised into the others.
+
+constants:
+  yr: 3.15576e7          # Julian year, s
+
+scenarios:
+  # Bahcall, Pinsonneault & Basu (2001), ApJ 555, 990 (model BP2000):
+  # central temperature 15.7 × 10⁶ K, central density ≈ 150 g/cm³ (152.7 in
+  # the model), central hydrogen fraction X = 0.340 today (0.708 at the
+  # zero-age main sequence). The metals keep the Lodders surface mixture:
+  # in the real core ¹²C has already turned into ¹⁴N, which the burn redoes.
+  - id: sun-core
+    name: Centre of the Sun today
+    name_it: Centro del Sole oggi
+    T9: 0.0157
+    rho: 150
+    time_yr: 1.0e9
+    composition:
+      base: lodders
+      set: { h1: 0.340 }
+      balance: he4
+    source: "Bahcall, Pinsonneault & Basu 2001, ApJ 555, 990 (BP2000): T = 15.7 MK, ρ ≈ 150 g/cm³, X(H) = 0.340; metals: Lodders 2021"
+    source_it: "Bahcall, Pinsonneault e Basu 2001, ApJ 555, 990 (BP2000): T = 15,7 MK, ρ ≈ 150 g/cm³, X(H) = 0,340; metalli: Lodders 2021"
+    note: "Burn time 1 Gyr: long enough for ³He, ⁷Be and the CN nuclei to reach their equilibrium values, short against the Sun's 10 Gyr."
+    note_it: "Tempo di combustione 1 miliardo di anni: abbastanza perché ³He, ⁷Be e i nuclei CN raggiungano l'equilibrio, breve rispetto ai 10 miliardi di anni del Sole."
+
+  # Woosley, Heger & Weaver (2002), Rev. Mod. Phys. 74, 1015, Table I,
+  # hydrogen burning in a 15 M☉ star: T = 0.035 GK, ρ = 5.8 g/cm³,
+  # duration 1.1 × 10⁷ yr. Initial composition: Lodders solar.
+  - id: massive-15
+    name: Core of a 15 M☉ star, hydrogen burning
+    name_it: Nucleo di una stella di 15 M☉, combustione dell'idrogeno
+    T9: 0.035
+    rho: 5.8
+    time_yr: 1.1e7
+    until: { nucleus: p, fraction: 0.01 }
+    composition: { base: lodders }
+    source: "Woosley, Heger & Weaver 2002, Rev. Mod. Phys. 74, 1015, Table I (15 M☉, H burning): T = 0.035 GK, ρ = 5.8 g/cm³, 1.1 × 10⁷ yr; composition: Lodders 2021"
+    source_it: "Woosley, Heger e Weaver 2002, Rev. Mod. Phys. 74, 1015, tabella I (15 M☉, combustione di H): T = 0,035 GK, ρ = 5,8 g/cm³, 1,1 × 10⁷ anni; composizione: Lodders 2021"
+    note: "The burn stops at the model's duration, or earlier when hydrogen falls to 1% of its initial value."
+    note_it: "La combustione si ferma alla durata del modello, o prima se l'idrogeno scende all'1% del valore iniziale."
+
+  # Same table, 25 M☉: T = 0.038 GK, ρ = 3.81 g/cm³, 6.7 × 10⁶ yr. The core
+  # hydrogen burning of massive stars makes the ²⁶Al later blown out by
+  # Wolf-Rayet winds, and runs the NeNa cycle.
+  - id: massive-25
+    name: Core of a 25 M☉ star, hydrogen burning
+    name_it: Nucleo di una stella di 25 M☉, combustione dell'idrogeno
+    T9: 0.038
+    rho: 3.81
+    time_yr: 6.7e6
+    until: { nucleus: p, fraction: 0.01 }
+    composition: { base: lodders }
+    source: "Woosley, Heger & Weaver 2002, Rev. Mod. Phys. 74, 1015, Table I (25 M☉, H burning): T = 0.038 GK, ρ = 3.81 g/cm³, 6.7 × 10⁶ yr; composition: Lodders 2021"
+    source_it: "Woosley, Heger e Weaver 2002, Rev. Mod. Phys. 74, 1015, tabella I (25 M☉, combustione di H): T = 0,038 GK, ρ = 3,81 g/cm³, 6,7 × 10⁶ anni; composizione: Lodders 2021"
+    note: "The burn stops at the model's duration, or earlier when hydrogen falls to 1% of its initial value."
+    note_it: "La combustione si ferma alla durata del modello, o prima se l'idrogeno scende all'1% del valore iniziale."
+
+  # Hot-bottom burning at the base of the convective envelope of a massive
+  # AGB star: T ≈ 80 MK (networks.yaml; Karakas & Lattanzio 2014, PASA 31,
+  # e030). The density there is low, of order a few g/cm³; we take 3 g/cm³.
+  # At fixed T the proton captures depend only on ρ × t, so the density and
+  # the burn time are one parameter.
+  - id: agb-hbb
+    name: AGB star, hot-bottom burning
+    name_it: Stella AGB, combustione alla base dell'inviluppo
+    T9: 0.08
+    rho: 3
+    time_yr: 1.0e3
+    composition: { base: lodders }
+    source: "T ≈ 80 MK at the base of the envelope of massive AGB stars (Karakas & Lattanzio 2014, PASA 31, e030); composition: Lodders 2021"
+    source_it: "T ≈ 80 MK alla base dell'inviluppo delle stelle AGB massicce (Karakas e Lattanzio 2014, PASA 31, e030); composizione: Lodders 2021"
+    note: "ρ = 3 g/cm³ is an order of magnitude only, and the 1000-year burn is a choice: the envelope passes through the hot layer many times. At fixed temperature only ρ × t matters for proton captures."
+    note_it: "ρ = 3 g/cm³ è solo un ordine di grandezza, e i 1000 anni di combustione sono una scelta: l'inviluppo attraversa lo strato caldo molte volte. A temperatura fissa per le catture protoniche conta solo ρ × t."
+
+  # Classical nova at peak: hydrodynamic models reach 0.2–0.35 GK at the
+  # base of the envelope (José & Hernanz 1998, ApJ 494, 680); Iliadis et al.
+  # (2002, ApJS 142, 105) used profiles peaking at 0.145–0.418 GK. The
+  # envelope is solar matter mixed 50% with the white dwarf's core (the
+  # mixing assumed by José & Hernanz); here a CO core of equal parts ¹²C and
+  # ¹⁶O. The density is an order of magnitude, the 300 s burn a choice; a
+  # real nova cools as it expands.
+  - id: nova
+    name: Classical nova, at peak temperature
+    name_it: Nova classica, al picco di temperatura
+    T9: 0.25
+    rho: 1.0e3
+    time: 300
+    composition:
+      mix:
+        - [0.5, { base: lodders }]
+        - [0.5, { set: { c12: 0.5, o16: 0.5 } }]
+    source: "Peak 0.2–0.35 GK (José & Hernanz 1998, ApJ 494, 680; Iliadis et al. 2002, ApJS 142, 105); 50% solar (Lodders 2021) + 50% CO white-dwarf matter"
+    source_it: "Picco 0,2–0,35 GK (José e Hernanz 1998, ApJ 494, 680; Iliadis et al. 2002, ApJS 142, 105); 50% solare (Lodders 2021) + 50% materia della nana bianca CO"
+    note: "ρ = 10³ g/cm³ is an order of magnitude and 300 s at constant peak temperature is a simplification: a real nova cools as the envelope expands."
+    note_it: "ρ = 10³ g/cm³ è un ordine di grandezza e 300 s a temperatura di picco costante sono una semplificazione: una nova vera si raffredda mentre l'inviluppo si espande."
