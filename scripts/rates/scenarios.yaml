@@ -104,8 +104,8 @@ scenarios:
   # ¹⁶O. The density is an order of magnitude, the 300 s burn a choice; a
   # real nova cools as it expands.
   - id: nova
-    name: Classical nova, at peak temperature
-    name_it: Nova classica, al picco di temperatura
+    name: Classical nova on a carbon–oxygen white dwarf
+    name_it: Nova classica su una nana bianca al carbonio e ossigeno
     T9: 0.25
     rho: 1.0e3
     time: 300
@@ -118,12 +118,35 @@ scenarios:
     note: "ρ = 10³ g/cm³ is an order of magnitude and 300 s at constant peak temperature is a simplification: a real nova cools as the envelope expands."
     note_it: "ρ = 10³ g/cm³ è un ordine di grandezza e 300 s a temperatura di picco costante sono una semplificazione: una nova vera si raffredda mentre l'inviluppo si espande."
 
+  # The same nova on an oxygen–neon white dwarf, where the NeNa and MgAl
+  # cycles start from the white dwarf's own neon, sodium and magnesium.
+  # Core composition: the ONe white dwarf of Ritossa, García-Berro & Iben
+  # (1996, ApJ 460, 489) as José & Hernanz (1998) used it, its main nuclei
+  # rounded (¹⁶O 0.511, ²⁰Ne 0.313, ²³Na 0.064, ²⁴Mg 0.055, ²⁵Mg 0.016,
+  # ²⁶Mg 0.011, ¹²C 0.009); the ~2% of minor nuclei is given to ²⁰Ne. ONe
+  # novae are the hotter ones; 0.3 GK is within the range above.
+  - id: nova-one
+    name: Classical nova on an oxygen–neon white dwarf
+    name_it: Nova classica su una nana bianca all'ossigeno e neon
+    T9: 0.3
+    rho: 1.0e3
+    time: 300
+    composition:
+      mix:
+        - [0.5, { base: lodders }]
+        - [0.5, { set: { o16: 0.511, na23: 0.064, mg24: 0.055, mg25: 0.016, mg26: 0.011, c12: 0.009 }, balance: ne20 }]
+    source: "Peak 0.2–0.35 GK (José & Hernanz 1998, ApJ 494, 680; Iliadis et al. 2002, ApJS 142, 105); 50% solar (Lodders 2021) + 50% ONe white-dwarf matter (Ritossa, García-Berro & Iben 1996, ApJ 460, 489, as used by José & Hernanz 1998)"
+    source_it: "Picco 0,2–0,35 GK (José e Hernanz 1998, ApJ 494, 680; Iliadis et al. 2002, ApJS 142, 105); 50% solare (Lodders 2021) + 50% materia della nana bianca ONe (Ritossa, García-Berro e Iben 1996, ApJ 460, 489, come in José e Hernanz 1998)"
+    note: "The white dwarf's main nuclei are rounded and its ~2% of minor nuclei counted as ²⁰Ne. ρ = 10³ g/cm³ is an order of magnitude and 300 s at constant peak temperature a simplification: a real nova cools as the envelope expands."
+    note_it: "I nuclei principali della nana bianca sono arrotondati e il suo ~2% di nuclei minori è contato come ²⁰Ne. ρ = 10³ g/cm³ è un ordine di grandezza e 300 s a temperatura di picco costante sono una semplificazione: una nova vera si raffredda mentre l'inviluppo si espande."
+
   # -- the s-process ----------------------------------------------------------
   # Temperatures from the atlas (content/atlas/networks.yaml): the ¹³C pocket
   # at kT ≈ 8 keV (0.09 GK) and the thermal pulses at kT ≈ 23 keV (0.27 GK)
   # of low-mass AGB stars (Straniero et al. 2006, Nucl. Phys. A 777, 311;
   # Käppeler et al. 2011, Rev. Mod. Phys. 83, 157); core helium burning in
-  # massive stars at kT ≈ 26 keV, 0.3 GK (Mohr et al. 2016). The intershell
+  # massive stars at kT ≈ 26 keV, 0.3 GK (Pignatari et al. 2010, ApJ 710,
+# 1557). The intershell
   # of an AGB star is about three quarters ⁴He and one quarter ¹²C, with ~2%
   # ²²Ne and ~1% ¹⁶O (Karakas & Lattanzio 2014, PASA 31, e030). The heavy
   # seeds are Lodders' solar mixture from iron up.
@@ -162,8 +185,8 @@ scenarios:
       balance: he4
     source: "T = 0.27 GK (kT ≈ 23 keV; Straniero et al. 2006; Käppeler et al. 2011); intershell after Karakas & Lattanzio 2014; seeds: Lodders 2021"
     source_it: "T = 0,27 GK (kT ≈ 23 keV; Straniero et al. 2006; Käppeler et al. 2011); intershell da Karakas e Lattanzio 2014; semi: Lodders 2021"
-    note: "The ²²Ne source burns only briefly at the peak of a pulse; ρ is chosen so that the neutron density comes out near 10¹⁰ cm⁻³ (Straniero et al. 2006). The seeds start solar here; in a star they are what the pocket made."
-    note_it: "La sorgente di ²²Ne brucia solo brevemente al picco di un impulso; ρ è scelta perché la densità di neutroni risulti vicina a 10¹⁰ cm⁻³ (Straniero et al. 2006). Qui i semi partono solari; in una stella sono ciò che ha prodotto la tasca."
+    note: "The ²²Ne source burns only briefly at the peak of a pulse; ρ is chosen so that the neutron density comes out near 10¹⁰ cm⁻³ (Straniero et al. 2006). At this density helium burning is too fast: in five years ⁴He falls from 0.74 to 0.24, far more than in a real pulse, so read the light nuclei with care. The seeds start solar here; in a star they are what the pocket made."
+    note_it: "La sorgente di ²²Ne brucia solo brevemente al picco di un impulso; ρ è scelta perché la densità di neutroni risulti vicina a 10¹⁰ cm⁻³ (Straniero et al. 2006). A questa densità l'elio brucia troppo in fretta: in cinque anni il ⁴He scende da 0,74 a 0,24, molto più che in un impulso vero, quindi i nuclei leggeri vanno letti con cautela. Qui i semi partono solari; in una stella sono ciò che ha prodotto la tasca."
 
   - id: massive-he-core
     name: Massive star, end of core helium burning
@@ -176,7 +199,7 @@ scenarios:
       heavy: lodders
       set: { he4: 0.1, c12: 0.3, ne22: 0.0147 }
       balance: o16
-    source: "T = 0.3 GK (kT ≈ 26 keV; Mohr et al. 2016, networks.yaml); ρ = 10³ g/cm³, the order of the central density in core helium burning (Woosley, Heger & Weaver 2002, Table I); X(²²Ne) = 0.0147: all of Lodders' C, N and O turned into ¹⁴N by hydrogen burning, then into ²²Ne; seeds: Lodders 2021"
-    source_it: "T = 0,3 GK (kT ≈ 26 keV; Mohr et al. 2016, networks.yaml); ρ = 10³ g/cm³, l'ordine della densità centrale nella combustione dell'elio (Woosley, Heger e Weaver 2002, tabella I); X(²²Ne) = 0,0147: tutto il C, N e O di Lodders trasformato in ¹⁴N dalla combustione dell'idrogeno, poi in ²²Ne; semi: Lodders 2021"
-    note: "Schematic: the last tenth of the helium (X = 0.1, with ¹²C 0.3 and ¹⁶O the rest) burnt at constant T and ρ until 1% is left. In the star the core heats up as the helium runs out, and most of the weak s-process happens then."
-    note_it: "Schematico: l'ultimo decimo dell'elio (X = 0,1, con ¹²C 0,3 e ¹⁶O il resto) bruciato a T e ρ costanti finché ne resta l'1%. Nella stella il nucleo si scalda mentre l'elio si esaurisce, ed è allora che avviene gran parte del processo s debole."
+    source: "T = 0.3 GK (kT ≈ 26 keV; Pignatari et al. 2010, ApJ 710, 1557); ρ = 10³ g/cm³, the order of the central density in core helium burning (Woosley, Heger & Weaver 2002, Table I); X(²²Ne) = 0.0147: all of Lodders' C, N and O turned into ¹⁴N by hydrogen burning, then into ²²Ne; seeds: Lodders 2021"
+    source_it: "T = 0,3 GK (kT ≈ 26 keV; Pignatari et al. 2010, ApJ 710, 1557); ρ = 10³ g/cm³, l'ordine della densità centrale nella combustione dell'elio (Woosley, Heger e Weaver 2002, tabella I); X(²²Ne) = 0,0147: tutto il C, N e O di Lodders trasformato in ¹⁴N dalla combustione dell'idrogeno, poi in ²²Ne; semi: Lodders 2021"
+    note: "Schematic: the last tenth of the helium (X = 0.1, with ¹²C 0.3 and ¹⁶O the rest) burnt at constant T and ρ until 1% is left. In the star the core heats up as the helium runs out, and most of the weak s-process happens then. Here ²²Ne burns down to about 2 × 10⁻⁴ of its start; in a real star much of it survives into carbon-shell burning, so the weak s-process comes out too strong."
+    note_it: "Schematico: l'ultimo decimo dell'elio (X = 0,1, con ¹²C 0,3 e ¹⁶O il resto) bruciato a T e ρ costanti finché ne resta l'1%. Nella stella il nucleo si scalda mentre l'elio si esaurisce, ed è allora che avviene gran parte del processo s debole. Qui il ²²Ne brucia fino a circa 2 × 10⁻⁴ del valore iniziale; in una stella vera gran parte sopravvive fino alla combustione del carbonio in shell, quindi il processo s debole risulta troppo forte."
