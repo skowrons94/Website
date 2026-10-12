@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, ArrowRight } from "lucide-react"
 
 import { ChartDiagram } from "@/components/atlas/chart-diagram"
 import { LunaFigure } from "@/components/atlas/luna-figure"
@@ -75,6 +75,17 @@ export function GlossaryPage({ lang }: { lang: Lang }) {
                     </li>
                   ))}
                 </ul>
+              )}
+              {term.page && (
+                <p className="mt-4">
+                  <Link
+                    href={localePath(lang, term.page)}
+                    className="group inline-flex min-h-8 items-center gap-1.5 text-[0.95rem] font-medium text-link underline-offset-4 hover:underline"
+                  >
+                    {t.glossaryPage}
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
+                  </Link>
+                </p>
               )}
               {term.see.length > 0 && (
                 <p className="mt-4 text-sm text-muted-foreground">

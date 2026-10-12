@@ -264,6 +264,23 @@ events:
       iniziali degli autori, B²FH.
     refs: [b2fh1957]
 
+  - year: 1961
+    title: The s-process as a chain of neutron captures
+    title_it: Il processo s come catena di catture di neutroni
+    category: theory
+    text: >-
+      Donald Clayton, William Fowler, Thomas Hull and Barbara Zimmerman worked
+      out how abundances build up along a long chain of slow neutron captures
+      and compared the result with the observed abundances of the heavy
+      elements, for the slow process that B²FH had named.
+    text_it: >-
+      Donald Clayton, William Fowler, Thomas Hull e Barbara Zimmerman
+      calcolarono come si accumulano le abbondanze lungo una lunga catena di
+      catture lente di neutroni e confrontarono il risultato con le abbondanze
+      osservate degli elementi pesanti, per il processo lento che B²FH aveva
+      individuato.
+    refs: [clayton1961]
+
   - year: 1964
     title: Bahcall proposes a solar neutrino experiment with chlorine
     title_it: Bahcall propone un esperimento sui neutrini solari con il cloro
@@ -494,6 +511,25 @@ events:
     refs: [bonetti1999]
     reactions: [3He-3He2p-4He]
 
+  - year: 2000
+    title: A compilation of stellar neutron-capture cross sections
+    title_it: Una compilazione delle sezioni d'urto stellari di cattura neutronica
+    category: experiment
+    text: >-
+      Bao, Beer, Käppeler, Voss, Wisshak and Rauscher surveyed the measured
+      neutron-capture cross sections of the nuclei from hydrogen to bismuth
+      and recommended stellar values at a thermal energy of 30 keV, with
+      calculations where no measurement existed. It became the reference for
+      s-process models, continued today by the KADoNiS database.
+    text_it: >-
+      Bao, Beer, Käppeler, Voss, Wisshak e Rauscher passarono in rassegna le
+      sezioni d'urto di cattura neutronica misurate per i nuclei
+      dall'idrogeno al bismuto e raccomandarono valori stellari a un'energia
+      termica di 30 keV, con calcoli dove non esisteva una misura. Divenne il
+      riferimento per i modelli del processo s, proseguito oggi dalla banca
+      dati KADoNiS.
+    refs: [bao2000, dillmann2008]
+
   - year: 2002
     title: SNO shows that solar neutrinos change flavour
     highlight: true
@@ -570,6 +606,24 @@ events:
       procede quindi più lentamente di quanto si pensasse.
     refs: [formicola2004]
     reactions: [14N-pg-15O]
+
+  - year: 2004
+    title: A radioactive s-process branch point measured at n_TOF
+    title_it: Un punto di diramazione radioattivo del processo s misurato a n_TOF
+    category: experiment
+    facility: n-tof
+    text: >-
+      At CERN's n_TOF facility the neutron-capture cross section of
+      samarium-151, which lives about 90 years, was measured on a radioactive
+      sample from 1 eV to 1 MeV. The stellar value turned out well above the
+      theoretical predictions used until then.
+    text_it: >-
+      Alla struttura n_TOF del CERN la sezione d'urto di cattura neutronica del
+      samario-151, che vive circa 90 anni, fu misurata su un campione
+      radioattivo da 1 eV a 1 MeV. Il valore stellare risultò ben al di sopra
+      delle previsioni teoriche usate fino ad allora.
+    reactions: [151Sm-ng-152Sm]
+    refs: [abbondanno2004]
 
   - year: 2006
     title: ¹⁴N(p,γ)¹⁵O down to 70 keV

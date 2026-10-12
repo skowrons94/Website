@@ -471,7 +471,8 @@ terms:
       valle dei nuclei stabili. Avviene soprattutto nelle stelle AGB e nelle
       stelle massicce, con i neutroni prodotti dalle reazioni ¹³C(α,n)¹⁶O e
       ²²Ne(α,n)²⁵Mg, e produce circa metà dei nuclei più pesanti del ferro.
-    see: [r-process, agb-star]
+    page: /atlas/s-process
+    see: [r-process, agb-star, s-components, branch-point, s-only, macs]
 
   - id: r-process
     term: r-process
@@ -493,6 +494,215 @@ terms:
       l'uranio. La fusione di stelle di neutroni è un sito confermato, dalla
       kilonova osservata con l'evento di onde gravitazionali GW170817 nel 2017.
     see: [s-process]
+
+  - id: s-components
+    term: Main and weak s-process
+    term_it: Processo s principale e debole
+    also: main and weak components
+    also_it: componente principale e componente debole
+    text: >-
+      The two parts of the s-process found when its products are compared
+      with the Solar System. The main component comes from low-mass AGB
+      stars, with neutrons mostly from the ¹³C pocket, and makes most of the
+      s-process nuclei from strontium to lead. The weak component comes from
+      massive stars, with neutrons from ²²Ne at the end of core helium burning
+      and in the carbon-burning shell, and makes mostly nuclei lighter than
+      mass 90.
+    text_it: >-
+      Le due parti del processo s che emergono confrontando i suoi prodotti
+      con il Sistema Solare. La componente principale viene dalle stelle AGB
+      di piccola massa, con neutroni soprattutto dalla tasca di ¹³C, e produce
+      la maggior parte dei nuclei del processo s dallo stronzio al piombo. La
+      componente debole viene dalle stelle massicce, con neutroni dal ²²Ne alla
+      fine della combustione centrale dell'elio e nel guscio in cui brucia il
+      carbonio, e produce soprattutto nuclei più leggeri della massa 90.
+    see: [s-process, c13-pocket, thermal-pulse]
+
+  - id: c13-pocket
+    term: ¹³C pocket
+    term_it: Tasca di ¹³C
+    text: >-
+      A thin layer in an AGB star, between the helium shell and the hydrogen
+      envelope, where a few protons mixed into helium-burning ashes turn
+      carbon-12 into carbon-13. Between two thermal pulses the carbon-13
+      captures helium and releases neutrons through ¹³C(α,n)¹⁶O, at a thermal
+      energy of about 8 keV. Most of the heavy s-process elements are made in
+      it.
+    text_it: >-
+      Uno strato sottile di una stella AGB, tra il guscio di elio e
+      l'inviluppo di idrogeno, dove pochi protoni mescolati alle ceneri della
+      combustione dell'elio trasformano il carbonio-12 in carbonio-13. Tra due
+      impulsi termici il carbonio-13 cattura elio e libera neutroni con la
+      ¹³C(α,n)¹⁶O, a un'energia termica di circa 8 keV. Vi si produce la
+      maggior parte degli elementi pesanti del processo s.
+    see: [thermal-pulse, agb-star, neutron-poison]
+
+  - id: thermal-pulse
+    term: Thermal pulse
+    term_it: Impulso termico
+    also: helium-shell flash
+    also_it: lampo del guscio di elio
+    text: >-
+      In an AGB star, helium accumulates in a shell under the burning
+      hydrogen until it ignites in a brief, violent flash, which drives
+      convection through the shell. The flash recurs again and again. At its
+      peak, around 300 million kelvin, it briefly starts the second neutron
+      source of the star, ²²Ne(α,n)²⁵Mg, with a higher neutron density than
+      the ¹³C pocket.
+    text_it: >-
+      In una stella AGB l'elio si accumula in un guscio sotto l'idrogeno che
+      brucia, finché si accende in un lampo breve e violento, che rimescola il
+      guscio per convezione. Il lampo si ripete più e più volte. Al suo
+      culmine, intorno a 300 milioni di kelvin, accende brevemente la seconda
+      sorgente di neutroni della stella, la ²²Ne(α,n)²⁵Mg, con una densità di
+      neutroni più alta di quella della tasca di ¹³C.
+    see: [c13-pocket, agb-star]
+
+  - id: neutron-poison
+    term: Neutron poison
+    term_it: Veleno neutronico
+    text: >-
+      A nucleus that captures neutrons that would otherwise reach the iron
+      seeds of the s-process. A poison may capture neutrons only rarely, but
+      if it is far more abundant than iron it still takes a large share:
+      nitrogen-14 in the ¹³C pocket, and oxygen-16 and neon-22 in massive
+      stars.
+    text_it: >-
+      Un nucleo che cattura neutroni che altrimenti raggiungerebbero i semi di
+      ferro del processo s. Un veleno può catturare neutroni solo di rado, ma
+      se è molto più abbondante del ferro ne prende comunque una quota grande:
+      l'azoto-14 nella tasca di ¹³C, l'ossigeno-16 e il neon-22 nelle stelle
+      massicce.
+    see: [c13-pocket, s-process]
+
+  - id: neutron-density
+    term: Neutron density
+    term_it: Densità di neutroni
+    text: >-
+      The number of free neutrons per cubic centimetre in a star. In the
+      s-process it is low, up to about 10⁸ per cubic centimetre, so a nucleus
+      waits years between two captures; in the r-process it is many orders of
+      magnitude higher. Branch points of the s-process measure it.
+    text_it: >-
+      Il numero di neutroni liberi per centimetro cubo in una stella. Nel
+      processo s è bassa, fino a circa 10⁸ per centimetro cubo, così un nucleo
+      aspetta anni tra due catture; nel processo r è più alta di molti ordini
+      di grandezza. I punti di diramazione del processo s la misurano.
+    see: [branch-point, s-process, r-process]
+
+  - id: magic-numbers
+    term: Magic numbers
+    term_it: Numeri magici
+    also: closed neutron shells
+    also_it: gusci di neutroni chiusi
+    text: >-
+      Protons and neutrons fill shells inside the nucleus, much as electrons
+      do in an atom. A nucleus with 2, 8, 20, 28, 50, 82 or 126 neutrons has a
+      closed shell and is especially stable and reluctant to capture another
+      neutron. At N = 50, 82 and 126 the s-process slows down, which makes
+      the abundance peaks at strontium, barium and lead.
+    text_it: >-
+      Protoni e neutroni riempiono gusci all'interno del nucleo, un po' come
+      gli elettroni in un atomo. Un nucleo con 2, 8, 20, 28, 50, 82 o 126
+      neutroni ha un guscio chiuso ed è particolarmente stabile e restio a
+      catturare un altro neutrone. A N = 50, 82 e 126 il processo s rallenta,
+      e questo produce i picchi di abbondanza allo stronzio, al bario e al
+      piombo.
+    see: [s-process, chart]
+
+  - id: branch-point
+    term: Branch point
+    term_it: Punto di diramazione
+    text: >-
+      A radioactive nucleus on the s-process path that lives long enough to
+      capture a neutron before it decays, but not always. There the path
+      forks, and the share of each branch depends on the neutron density and
+      sometimes on the temperature of the star. The abundances of the nuclei
+      beyond, such as krypton-86 or the samarium isotopes, therefore act as a
+      gauge of neutron density or as a thermometer.
+    text_it: >-
+      Un nucleo radioattivo sul percorso del processo s che vive abbastanza da
+      catturare un neutrone prima di decadere, ma non sempre. Lì il percorso si
+      biforca, e la quota di ciascun ramo dipende dalla densità di neutroni e
+      talvolta dalla temperatura della stella. Le abbondanze dei nuclei che
+      seguono, come il kripton-86 o gli isotopi del samario, fanno quindi da
+      misuratore della densità di neutroni o da termometro.
+    page: /atlas/s-process
+    see: [neutron-density, s-process, branching-ratio]
+
+  - id: s-only
+    term: s-only and r-only isotopes
+    term_it: Isotopi solo s e solo r
+    text: >-
+      A stable isotope is s-only when a stable neighbour with the same mass
+      number and one proton less shields it from the decays that follow the
+      r-process, while the s-process path passes through it; samarium-148
+      and lead-204 are examples. An r-only isotope is a neutron-rich one the
+      s-process path skips, such as ytterbium-176. Their abundances separate
+      the two processes.
+    text_it: >-
+      Un isotopo stabile è solo s quando un vicino stabile con lo stesso
+      numero di massa e un protone in meno lo scherma dai decadimenti che
+      seguono il processo r, mentre il percorso del processo s lo attraversa;
+      il samario-148 e il piombo-204 ne sono esempi. Un isotopo solo r è un
+      isotopo ricco di neutroni che il percorso del processo s salta, come
+      l'itterbio-176. Le loro abbondanze separano i due processi.
+    see: [s-process, r-process]
+
+  - id: macs
+    term: Maxwellian-averaged cross section
+    term_it: Sezione d'urto mediata su una maxwelliana
+    also: MACS
+    text: >-
+      In a star the neutrons have the spread of energies of a hot gas, the
+      Maxwell–Boltzmann distribution. The Maxwellian-averaged cross section is
+      the capture cross section averaged over that distribution at a given
+      temperature, which is what stellar models need. By convention it is
+      quoted at a thermal energy kT = 30 keV, about 350 million kelvin.
+    text_it: >-
+      In una stella i neutroni hanno la distribuzione di energie di un gas
+      caldo, la distribuzione di Maxwell–Boltzmann. La sezione d'urto mediata
+      su una maxwelliana è la sezione d'urto di cattura mediata su quella
+      distribuzione a una data temperatura, ed è ciò che serve ai modelli
+      stellari. Per convenzione si cita a un'energia termica kT = 30 keV,
+      circa 350 milioni di kelvin.
+    see: [cross-section, time-of-flight, activation]
+
+  - id: time-of-flight
+    term: Time of flight
+    term_it: Tempo di volo
+    text: >-
+      A way to measure a neutron's energy: neutrons of all energies are made
+      in a short burst, and the time each takes to cover a known distance,
+      tens to hundreds of metres, gives its speed and so its energy. One
+      experiment then measures a cross section at many energies at once. n_TOF
+      at CERN, GELINA in Geel and LANSCE in Los Alamos work this way.
+    text_it: >-
+      Un modo di misurare l'energia di un neutrone: neutroni di tutte le
+      energie vengono prodotti in un breve impulso, e il tempo che ciascuno
+      impiega a percorrere una distanza nota, da decine a centinaia di metri,
+      ne dà la velocità e quindi l'energia. Un solo esperimento misura così
+      una sezione d'urto a molte energie insieme. n_TOF al CERN, GELINA a Geel
+      e LANSCE a Los Alamos funzionano in questo modo.
+    see: [macs, activation]
+
+  - id: activation
+    term: Activation
+    term_it: Attivazione
+    text: >-
+      A way to count reactions after the fact: a sample is irradiated, and the
+      radioactive nuclei the reaction made are counted afterwards from their
+      decay. For the s-process, neutrons with a spectrum close to that in a
+      star, made by protons on lithium, irradiate the sample beside a gold
+      foil, whose well-known capture serves as the reference.
+    text_it: >-
+      Un modo di contare le reazioni a posteriori: un campione viene
+      irraggiato, e i nuclei radioattivi prodotti dalla reazione si contano
+      dopo, dal loro decadimento. Per il processo s, neutroni con uno spettro
+      vicino a quello di una stella, prodotti da protoni sul litio, irraggiano
+      il campione accanto a un foglio d'oro, la cui cattura ben nota fa da
+      riferimento.
+    see: [macs, time-of-flight]
 
   - id: luna
     term: LUNA and underground laboratories
