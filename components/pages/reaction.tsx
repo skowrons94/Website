@@ -39,11 +39,15 @@ export function reactionMetadata(id: string, lang: Lang): Metadata {
   return pageMetadata(`${reaction.label} · ${t.name}`, reaction.summary || t.entryDescription(reaction.label), lang)
 }
 
-/** A short line on a translated page: this section is still in English. */
-function InEnglish({ lang }: { lang: Lang }) {
-  const text = dict(lang).atlas.englishSection
+/**
+ * A short line on a translated page, once, where the first section still in
+ * English begins: which technical sections are in English.
+ */
+function InEnglish({ lang, sections }: { lang: Lang; sections: ("measurements" | "details" | "openQuestions")[] }) {
+  const t = dict(lang).atlas
+  const text = t.englishSections(sections.map((s) => t.sectionNames[s]))
   if (!text) return null
-  return <p className="mt-3 text-sm italic text-muted-foreground">{text}</p>
+  return <p className="mt-4 text-sm italic text-muted-foreground">{text}</p>
 }
 
 /* -- pieces ---------------------------------------------------------------- */
@@ -159,18 +163,29 @@ function Facts({ reaction: r, lang }: { reaction: Reaction; lang: Lang }) {
         {r.thermal.length > 0 && (
           <div>
             <dt className="text-muted-foreground">{t.thermal}</dt>
-            <dd>
-              <ul className="mt-1 space-y-1.5">
-                {r.thermal.map((th) => (
-                  <li key={th.T9}>
-                    <span className="font-medium tabular">{decimal(th.kT.toFixed(th.kT < 10 ? 1 : 0), lang)} keV</span>
-                    <span className="block text-xs text-muted-foreground">
-                      <Sci>{th.label}</Sci>, {formatTemperature(th.T9, lang)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+            <dd className="mt-0.5 text-pretty">
+              <ThermalPlain thermal={r.thermal} lang={lang} />
             </dd>
+            {r.thermal.length > 1 && (
+              <dd>
+                <details className="group mt-2">
+                  <summary className="inline-flex min-h-8 cursor-pointer list-none items-center gap-1 text-xs text-link [&::-webkit-details-marker]:hidden">
+                    {t.thermalBySite}
+                    <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" aria-hidden />
+                  </summary>
+                  <ul className="mt-1 space-y-1.5">
+                    {r.thermal.map((th) => (
+                      <li key={th.T9}>
+                        <span className="font-medium tabular">{decimal(th.kT.toFixed(th.kT < 10 ? 1 : 0), lang)} keV</span>
+                        <span className="block text-xs text-muted-foreground">
+                          <Sci>{th.label}</Sci>, {formatTemperature(th.T9, lang)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              </dd>
+            )}
           </div>
         )}
 
@@ -212,6 +227,25 @@ function Facts({ reaction: r, lang }: { reaction: Reaction; lang: Lang }) {
   )
 }
 
+/**
+ * The thermal energies of a neutron capture in one plain line: "about 8–90
+ * keV, the energy of a gas at 90–1,000 million degrees", rounded the way a
+ * person would say it.
+ */
+function ThermalPlain({ thermal, lang }: { thermal: Reaction["thermal"]; lang: Lang }) {
+  const t = dict(lang).atlas
+  const round = (v: number) => (v < 10 ? Math.round(v) : Number(v.toPrecision(2)))
+  const kTs = thermal.map((th) => th.kT)
+  const mks = thermal.map((th) => th.T9 * 1000)
+  const span = (values: number[]) => {
+    const lo = round(Math.min(...values))
+    const hi = round(Math.max(...values))
+    const f = (v: number) => v.toLocaleString(lang === "it" ? "it-IT" : "en-GB")
+    return lo === hi ? f(lo) : `${f(lo)}–${f(hi)}`
+  }
+  return <span className="text-[0.9375rem] font-medium">{t.thermalPlain(span(kTs), span(mks))}</span>
+}
+
 /** `14N` → `¹⁴N`, for the facts box; leaves anything else as it is. */
 function displayCode(code: string): string {
   const match = /^(\d+)([A-Z][a-z]?)$/.exec(code)
@@ -249,6 +283,10 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
   // Sections whose text is still English on a translated page.
   const english = (section: Reaction["untranslated"][number]) => r.untranslated.includes(section)
   const enLang = (section: Reaction["untranslated"][number]) => (english(section) ? "en" : undefined)
+  // The sections still in English, in reading order; the notice goes before the first.
+  const englishSections = (["measurements", "details", "openQuestions"] as const).filter((section) => english(section))
+  const notice = (section: (typeof englishSections)[number]) =>
+    englishSections[0] === section ? <InEnglish lang={lang} sections={[...englishSections]} /> : null
   const networks = r.networks
     .map((nid) => atlas.networks.find((n) => n.id === nid))
     .filter((n): n is NonNullable<typeof n> => Boolean(n))
@@ -265,6 +303,21 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
         })
         .filter((f): f is NonNullable<typeof f> => Boolean(f?.page))
         .map((f) => [f.page!, f]),
+    ).values(),
+  ]
+
+  // The line above the title: the networks, or their family when the reaction
+  // is in several networks of one family ("The s-process", not "main
+  // component (AGB stars), weak component (massive stars)").
+  const eyebrow = [
+    ...new Map(
+      networks.map((n) => {
+        const fam = atlas.families.find((f) => f.id === n.family)
+        const several = networks.filter((m) => m.family === n.family).length > 1
+        return several && fam
+          ? [fam.id, { key: fam.id, name: fam.name, href: familyHref(fam.id) }]
+          : [n.id, { key: n.id, name: n.name, href: familyHref(n.family) }]
+      }),
     ).values(),
   ]
 
@@ -324,12 +377,12 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
       <header className="mt-8 border-b border-border/70 pb-8">
         <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
           {kindLabel(r.kind, lang)}
-          {networks.length > 0 && " · "}
-          {networks.map((n, i) => (
-            <span key={n.id}>
+          {eyebrow.length > 0 && " · "}
+          {eyebrow.map((item, i) => (
+            <span key={item.key}>
               {i > 0 && ", "}
-              <Link href={to(familyHref(n.family))} className="underline-offset-4 hover:text-foreground hover:underline">
-                <Sci>{n.name}</Sci>
+              <Link href={to(item.href)} className="underline-offset-4 hover:text-foreground hover:underline">
+                <Sci>{withoutArticle(item.name)}</Sci>
               </Link>
             </span>
           ))}
@@ -462,6 +515,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
                 </ul>
               )}
 
+              {r.measurements.length > 0 && notice("measurements")}
               {r.measurements.length > 0 && (
                 <details className="group mt-8 rounded-lg border border-border/80">
                   <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 rounded-lg px-4 py-3 transition-colors hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
@@ -473,7 +527,6 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
                     </span>
                   </summary>
                   <div className="px-4 pb-2">
-                    {english("measurements") && <InEnglish lang={lang} />}
                     <ol className="mt-3 divide-y divide-border/70 border-t border-border/70">
                       {r.measurements.map((m, i) => {
                         const facility = m.facility ? getFacility(m.facility, lang) : undefined
@@ -583,7 +636,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
               )}
               {html && (
                 <>
-                  {english("details") && <InEnglish lang={lang} />}
+                  {notice("details")}
                   <div
                     lang={enLang("details")}
                     className="prose-note mt-5 !font-sans !text-[1rem]"
@@ -641,7 +694,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
           {r.openQuestions.length > 0 && (
             <section className="mt-14">
               <SectionTitle id="open-questions">{t.openQuestions}</SectionTitle>
-              {english("openQuestions") && <InEnglish lang={lang} />}
+              {notice("openQuestions")}
               <ul lang={enLang("openQuestions")} className="mt-5 space-y-3 border-l-2 border-border pl-5 text-[0.95rem] leading-relaxed text-foreground/90">
                 {r.openQuestions.map((q, i) => (
                   <li key={i} className="text-pretty">

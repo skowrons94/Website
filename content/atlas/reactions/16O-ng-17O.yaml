@@ -57,3 +57,13 @@ measurements:
     refs: [igashira1995]
 evaluations: [bao2000, mohr2016]
 related: [17O-an-20Ne, 22Ne-ng-23Ne, 14N-np-14C]
+details_it: >-
+  Alle energie stellari la sezione d'urto è dominata dalla cattura diretta
+  non risonante in onda p, che la fa crescere con l'energia invece di
+  diminuire come 1/v; lo stabilirono misure tra 10 e 80 keV (Igashira et al.
+  1995). Mohr et al. (2016) rivalutarono tutti i dati e raccomandarono
+  sezioni d'urto mediate su una maxwelliana da kT = 5 a 100 keV, più basse
+  della raccomandazione precedente fino a kT = 60 keV e fino al 14% più alte
+  a 100 keV, e studiarono l'effetto sul processo s debole nella combustione
+  centrale dell'elio (kT = 26 keV) e nella combustione del carbonio nei
+  gusci (kT = 90 keV).

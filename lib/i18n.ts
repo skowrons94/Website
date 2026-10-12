@@ -726,6 +726,14 @@ const en = {
       ],
       note: "Schematic, not to scale.",
     },
+    // --- atlas (round 3) ---
+    /** Said once per translated page, where its first English section begins. */
+    englishSections: (_sections: string[]) => "",
+    sectionNames: { measurements: "the list of measurements", details: "Details", openQuestions: "Open questions" },
+    thermalPlain: (kT: string, mk: string) => `about ${kT} keV, the energy of a gas at ${mk} million degrees`,
+    thermalBySite: "By stellar site",
+    skipToMap: "Skip to the map",
+    lunaMountain: "Gran Sasso",
   },
 }
 
@@ -1423,6 +1431,14 @@ const it: Dictionary = {
       ],
       note: "Schema, non in scala.",
     },
+    // --- atlas (round 3) ---
+    englishSections: (sections: string[]) =>
+      `${sections.length === 1 ? "Questa parte tecnica della pagina" : "Le parti tecniche di questa pagina"} (${sections.join(", ")}) ${sections.length === 1 ? "è" : "sono"} in inglese.`,
+    sectionNames: { measurements: "l'elenco delle misure", details: "i dettagli", openQuestions: "le domande aperte" },
+    thermalPlain: (kT: string, mk: string) => `circa ${kT} keV, l'energia di un gas a ${mk} milioni di gradi`,
+    thermalBySite: "Per ambiente stellare",
+    skipToMap: "Vai alla mappa",
+    lunaMountain: "Gran Sasso",
   },
 }
 

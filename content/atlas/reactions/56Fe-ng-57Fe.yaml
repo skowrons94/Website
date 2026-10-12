@@ -61,3 +61,14 @@ measurements:
     refs: [wang2014]
 evaluations: [bao2000, dillmann2008]
 related: [62Ni-ng-63Ni, 22Ne-an-25Mg, 13C-an-16O, 197Au-ng-198Au]
+details_it: >-
+  Il tasso stellare si dà come sezione d'urto mediata su una maxwelliana
+  (MACS); la compilazione di riferimento di Bao et al. (2000) raccomanda
+  valori a kT = 30 keV, scalati a kT = 5–100 keV, e la sua erede KADoNiS
+  (Dillmann et al. 2008) li aggiorna. La sezione d'urto degli isotopi del
+  ferro nella regione dei keV è dominata da risonanze risolte misurate a
+  tempo di volo. Wang et al. (2014) misurarono la cattura di neutroni di
+  qualche keV su ⁵⁶Fe e ⁵⁷Fe a tempo di volo con una sorgente di neutroni
+  ⁷Li(p,n)⁷Be e ne ricavarono la MACS di entrambi gli isotopi. Il prodotto
+  ⁵⁷Fe è stabile, come il ⁵⁸Fe; la catena incontra il primo nucleo
+  radioattivo al ⁵⁹Fe.

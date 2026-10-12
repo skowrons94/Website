@@ -66,3 +66,12 @@ measurements:
 evaluations: [fields2020]
 open_questions: []
 related: [2H-pg-3He, 2H-dn-3He, 2H-dp-3H]
+details_it: >-
+  Alle energie della BBN la cattura è dominata dalla transizione
+  isovettoriale M1 dal continuo ¹S₀ alle energie più basse e dalla cattura
+  isovettoriale E1 dalle onde P alle energie più alte. La sezione d'urto si
+  calcola nella teoria di campo efficace senza pioni, con l'ampiezza M1 fino
+  al secondo ordine sotto il dominante e l'ampiezza E1 fino a N4LO; un
+  controtermine è fissato dal tasso di cattura dei neutroni freddi e un
+  altro dai dati di fotodisintegrazione del deutone. L'accuratezza
+  dichiarata è dell'1% per energie nel centro di massa fino a circa 1 MeV.

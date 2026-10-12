@@ -50,3 +50,10 @@ measurements:
 evaluations: [descouvemont2004, bosch1992]
 open_questions: []
 related: [2H-dp-3H, 3He-dp-4He, 3H-ag-7Li]
+details_it: >-
+  La sezione d'urto è dominata da un'ampia risonanza 3/2⁺ nel ⁵He appena
+  sopra la soglia d+t, che la rende molto grande alle energie della BBN.
+  Bosch e Hale (1992) diedero parametrizzazioni della sezione d'urto e della
+  reattività maxwelliana, basate su calcoli R-matrix, molto usate nella
+  ricerca sulla fusione, insieme a quelle di ²H(d,n)³He, ²H(d,p)³H e
+  ³He(d,p)⁴He.

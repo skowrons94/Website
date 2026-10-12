@@ -65,3 +65,12 @@ open_questions:
 open_questions_it:
   - "Il fattore S della cattura diretta a energie inferiori a 1 MeV, dove non esiste alcuna misura."
 related: [12C-ag-16O]
+details_it: >-
+  Alle energie della combustione dell'elio nessuna risonanza contribuisce in
+  modo significativo e la reazione procede soprattutto per cattura diretta,
+  il che rende la sezione d'urto molto piccola. Il tasso si ottiene da una
+  descrizione R-matrix delle risonanze di bassa energia insieme alle
+  transizioni di cattura diretta (Costantini et al. 2010). DRAGON misurò la
+  sezione d'urto totale a E = 2,26 MeV in cinematica inversa e determinò,
+  per la prima volta insieme, il fattore S totale e le sue componenti di
+  cattura diretta (Hager et al. 2011).

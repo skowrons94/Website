@@ -88,3 +88,5 @@ evaluations: [bao2000, dillmann2014, dillmann2008]
 open_questions:
   - The cross section between about 10 and 100 keV, where the measurements of different groups still differ.
 related: [13C-an-16O, 22Ne-ng-23Ne, 16O-ng-17O]
+open_questions_it:
+  - La sezione d'urto tra circa 10 e 100 keV, dove le misure dei diversi gruppi ancora non concordano.

@@ -63,3 +63,11 @@ open_questions:
 open_questions_it:
   - "L'intensità delle risonanze più basse, che controllano il tasso all'inizio della combustione dell'elio."
 related: [18F-bp-18O, 18O-ag-22Ne, 22Ne-an-25Mg, 14N-pg-15O]
+details_it: >-
+  Alle temperature della combustione dell'elio il tasso è dominato da poche
+  risonanze strette nel ¹⁸F, e i tassi compilati sono somme delle loro
+  intensità. Görres et al. (2000) misurarono le risonanze di bassa energia
+  con bersagli sottili di TiN e un rivelatore clover al germanio a Karlsruhe
+  e a Notre Dame. La risonanza più bassa non fu osservata; gli autori
+  sostennero che la sua intensità è molto al di sotto della portata degli
+  esperimenti attuali.

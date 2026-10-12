@@ -74,3 +74,13 @@ measurements:
     refs: [massimi2017]
 evaluations: [bao2000, dillmann2014]
 related: [22Ne-an-25Mg, 22Ne-ng-23Ne, 16O-ng-17O]
+details_it: >-
+  La sezione d'urto stellare è dominata da poche risonanze in onda s e p
+  nella regione dei keV. A n_TOF le rese di cattura dei tre isotopi stabili
+  del magnesio sono state misurate con rivelatori C₆D₆ e analizzate insieme
+  ai dati di trasmissione sul magnesio naturale; la sezione d'urto mediata
+  su una maxwelliana del ²⁵Mg a kT = 30 keV è 4,1 ± 0,6 mb (Massimi et al.
+  2012). Nuovi dati di cattura di n_TOF e di trasmissione di GELINA su ²⁵Mg
+  arricchito hanno poi fissato spin e parità degli stati del ²⁶Mg sopra la
+  soglia dei neutroni, gli stessi stati che popola la sorgente di neutroni
+  ²²Ne(α,n)²⁵Mg (Massimi et al. 2017).

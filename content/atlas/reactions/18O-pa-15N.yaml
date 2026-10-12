@@ -87,3 +87,13 @@ open_questions_it:
   - "L'intensità della risonanza a 20 keV, nota solo dai dati del metodo del cavallo di Troia."
   - "La risonanza a 90 keV, la cui intensità misurata direttamente a LUNA è dieci volte il valore precedente, mentre l'analisi con il cavallo di Troia la trovava trascurabile."
 related: [18O-pg-19F, 17O-pg-18F, 18F-bp-18O, 15N-pa-12C]
+details_it: >-
+  Alle temperature stellari il tasso è la somma di diverse risonanze di
+  bassa energia nel ¹⁹F, a E = 20, 90 e 143 keV, e di contributi non
+  risonanti dalle code di stati larghi più alti. La risonanza a 20 keV è
+  molto al di sotto della portata delle misure dirette, e la sua intensità
+  viene dai dati del Cavallo di Troia. LUNA misurò la sezione d'urto sotto
+  terra fino a E = 55 keV, dove è inferiore a 1 pb/sr, e trovò la risonanza
+  a 90 keV circa dieci volte più intensa di quanto riportato prima. Un fit
+  R-matrix a più canali di questi dati e di quelli precedenti dà il tasso
+  tra 0,01 e 1 GK.

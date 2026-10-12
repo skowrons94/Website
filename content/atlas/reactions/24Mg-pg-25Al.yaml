@@ -70,3 +70,12 @@ open_questions:
 open_questions_it:
   - "Il fattore S della cattura diretta sotto la risonanza a 214 keV, che finora viene dall'estrapolazione di dati a energia più alta."
 related: [25Al-bp-25Mg, 25Mg-pg-26Al, 23Na-pg-24Mg, 27Al-pa-24Mg]
+details_it: >-
+  Alle temperature della combustione alla base dell'inviluppo (hot-bottom
+  burning) il tasso è determinato dalla cattura diretta e dalla risonanza
+  stretta a E_cm = 214 keV. Limata et al. (2010) ne misurarono l'intensità a
+  LUNA, insieme a risonanze in ²⁵Mg + p e ²⁶Mg + p, con una precisione mai
+  raggiunta prima; queste risonanze servono anche da riferimento di
+  normalizzazione per risonanze più deboli e di energia più bassa negli
+  isotopi del magnesio, dove le misure assolute risentono del fondo indotto
+  dal fascio e della stechiometria variabile del bersaglio.

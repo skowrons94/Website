@@ -60,3 +60,10 @@ measurements:
     refs: [lederer2014]
 evaluations: [bao2000, dillmann2008]
 related: [63Ni-ng-64Ni, 56Fe-ng-57Fe, 22Ne-an-25Mg]
+details_it: >-
+  A n_TOF sono stati analizzati i nuclei di cattura di 42 risonanze del ⁶²Ni
+  fino a 200 keV, e sono state calcolate sezioni d'urto mediate su una
+  maxwelliana per kT = 5–100 keV con un'incertezza totale del 4,5%.
+  Concordano con il valore di KADoNiS a kT = 30 keV ma sono fino a 1,6 volte
+  più basse alle temperature più alte, il che conta per la combustione del
+  carbonio nei gusci a kT ≈ 90 keV (Lederer et al. 2014).

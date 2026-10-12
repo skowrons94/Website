@@ -65,3 +65,10 @@ open_questions:
 open_questions_it:
   - "Misure dirette delle risonanze sotto E_cm = 326 keV, che dominano il tasso nella combustione alla base dell'inviluppo (hot-bottom burning)."
 related: [26Al-bp-26Mg, 25Mg-pg-26Al, 27Al-pg-28Si, 27Al-pa-24Mg, 22Ne-ag-26Mg]
+details_it: >-
+  Alle temperature della combustione dell'idrogeno il tasso è dato da
+  risonanze strette. Limata et al. (2010) misurarono a LUNA l'intensità
+  della risonanza a E_cm = 326 keV con una precisione mai raggiunta prima,
+  come riferimento di normalizzazione per le risonanze più deboli a energie
+  più basse, la cui misura assoluta è limitata dal fondo indotto dal fascio
+  e dalla stechiometria del bersaglio.

@@ -116,3 +116,13 @@ open_questions_it:
   - "La larghezza radiativa della risonanza a 422 keV, che domina il tasso alle temperature più alte."
 related: [13N-bp-13C, 13C-pg-14N, 14N-pg-15O]
 rmatrix: [13N]
+details_it: >-
+  A bassa energia la cattura procede per cattura diretta E1 verso lo stato
+  fondamentale del ¹³N, che interferisce con l'ampia risonanza a E = 422 keV
+  formata dal primo stato eccitato del ¹³N. Il fattore S alle energie
+  stellari si ottiene da fit R-matrix, quindi il risultato dipende dalla
+  normalizzazione dei dati e dalla larghezza di quella risonanza. Le misure
+  dal 2023 in poi, con γ prompt e per attivazione, danno fattori S circa il
+  25% più bassi della maggior parte della letteratura precedente. I dati di
+  LUNA arrivano a E = 60 keV, dove la sezione d'urto entra nell'intervallo
+  di energie della combustione dell'idrogeno nei gusci delle stelle giganti.
