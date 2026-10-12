@@ -594,7 +594,7 @@ export function NetworkMap({ data }: { data: MapData }) {
         <div
           role="group"
           aria-label={t.process}
-          className="flex scroll-mt-24 snap-x gap-1.5 overflow-x-auto px-5 pb-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0 [&::-webkit-scrollbar]:hidden"
+          className="flex scroll-mt-24 snap-x scroll-px-5 gap-1.5 overflow-x-auto px-5 pb-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0 [&::-webkit-scrollbar]:hidden"
         >
           {families.map((f) => (
             <button

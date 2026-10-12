@@ -168,18 +168,18 @@ export function ArrowKey({ lang, className }: { lang: Lang; className?: string }
       <ul className="mt-2 grid gap-x-6 gap-y-1.5 sm:grid-cols-2">
         {t.arrowKey.map(([name, text], i) => {
           const [dN, dZ] = ARROW_KINDS[i] ?? [1, 0]
-          const unit = Math.abs(dN) > 2 || Math.abs(dZ) > 2 ? 3.6 : 7
-          const x1 = 16 - (dN * unit) / 2
-          const y1 = 12 + (dZ * unit) / 2
-          const x2 = 16 + (dN * unit) / 2
-          const y2 = 12 - (dZ * unit) / 2
+          const unit = Math.abs(dN) > 2 || Math.abs(dZ) > 2 ? 6 : 11
+          const x1 = 22 - (dN * unit) / 2
+          const y1 = 15 + (dZ * unit) / 2
+          const x2 = 22 + (dN * unit) / 2
+          const y2 = 15 - (dZ * unit) / 2
           const len = Math.hypot(x2 - x1, y2 - y1) || 1
           const ux = (x2 - x1) / len
           const uy = (y2 - y1) / len
-          const h = 4.5
+          const h = 5.5
           return (
             <li key={name} className="flex items-center gap-2.5 text-sm">
-              <svg width="32" height="24" viewBox="0 0 32 24" aria-hidden className="shrink-0">
+              <svg width="44" height="30" viewBox="0 0 44 30" aria-hidden className="shrink-0">
                 <circle cx={x1} cy={y1} r={1.8} fill="var(--viz-text-muted)" />
                 <line
                   x1={x1}

@@ -101,7 +101,7 @@ export function TimelineView({ events }: { events: TimelineItem[] }) {
     if (headings.length === 0 || typeof IntersectionObserver === "undefined") return
     const pick = () => {
       // The last heading above a line just under the sticky bar.
-      const line = (bar.current?.getBoundingClientRect().bottom ?? 0) + 24
+      const line = (bar.current?.getBoundingClientRect().bottom ?? 0) + 64
       let found = decades[0]?.decade ?? null
       for (const el of headings) {
         if (el.getBoundingClientRect().top <= line) found = Number(el.id.slice(1))
@@ -121,6 +121,9 @@ export function TimelineView({ events }: { events: TimelineItem[] }) {
     const row = bar.current?.querySelector<HTMLElement>("[data-scroll-row]")
     const link = row?.querySelector<HTMLElement>('[aria-current="true"]')
     if (!row || !link || row.scrollWidth <= row.clientWidth) return
+    // Not while the bar still sits in the page above the line: the filters
+    // come first, and the reader has not started down the line yet.
+    if ((bar.current?.getBoundingClientRect().top ?? 0) > 72) return
     const left = link.offsetLeft - row.offsetLeft
     if (left < row.scrollLeft || left + link.offsetWidth > row.scrollLeft + row.clientWidth) {
       row.scrollTo({ left: Math.max(0, left - 16), behavior: "smooth" })
@@ -144,9 +147,9 @@ export function TimelineView({ events }: { events: TimelineItem[] }) {
       >
         <div
           data-scroll-row
-          className="flex snap-x items-center gap-1.5 overflow-x-auto whitespace-nowrap px-5 py-2.5 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:whitespace-normal sm:px-8 sm:py-3 [&::-webkit-scrollbar]:hidden"
+          className="flex snap-x scroll-px-5 items-center gap-1.5 overflow-x-auto whitespace-nowrap px-5 py-2.5 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:whitespace-normal sm:px-8 sm:py-3 [&::-webkit-scrollbar]:hidden"
         >
-          <div role="group" aria-label={t.show} className="flex shrink-0 gap-1.5 sm:flex-wrap">
+          <div role="group" aria-label={t.show} className="flex shrink-0 gap-1.5 sm:min-w-0 sm:shrink sm:flex-wrap">
             {highlights > 0 && (
               <Chip on={only === HIGHLIGHTS} onClick={() => choose(only === HIGHLIGHTS ? null : HIGHLIGHTS)}>
                 {t.highlights} <span className="tabular opacity-70">{highlights}</span>
