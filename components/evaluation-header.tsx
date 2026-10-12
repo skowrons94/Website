@@ -160,20 +160,20 @@ export function EvaluationHeader({
                 {doiUrl && (
                   <a
                     href={doiUrl}
-                    className="inline-flex items-center gap-1 break-all text-link underline-offset-4 hover:underline"
+                    className="break-all text-link underline-offset-4 hover:underline"
                   >
                     doi:{meta.doi}
-                    <ExternalLink className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                    <ExternalLink className="ml-1 inline h-3.5 w-3.5 align-[-0.15em]" aria-hidden />
                   </a>
                 )}
               </>
             ) : doiUrl ? (
               <a
                 href={doiUrl}
-                className="inline-flex items-center gap-1 break-all text-link underline-offset-4 hover:underline"
+                className="break-all text-link underline-offset-4 hover:underline"
               >
                 doi:{meta.doi}
-                <ExternalLink className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                <ExternalLink className="ml-1 inline h-3.5 w-3.5 align-[-0.15em]" aria-hidden />
               </a>
             ) : meta.status === "unpublished" ? (
               t.unpublished

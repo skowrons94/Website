@@ -240,7 +240,7 @@ export function LevelScheme({ scheme, evaluation, sessionId, selectedLevel: shar
             toggleExpanded(key)
             selectLevel(key)
           }}
-          className="flex min-h-11 w-full items-center gap-3 px-4 py-2 text-left text-sm"
+          className="flex min-h-11 w-full flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2 text-left text-sm"
         >
           {open ? <ChevronDown className="h-4 w-4 shrink-0" aria-hidden /> : <ChevronRight className="h-4 w-4 shrink-0" aria-hidden />}
           <span className="w-12 shrink-0">
@@ -353,14 +353,14 @@ export function LevelScheme({ scheme, evaluation, sessionId, selectedLevel: shar
             {t.schemeSummary(scheme.levels.length, scheme.pairs.length, freeCount)}
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button asChild variant="outline" size="sm">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <Button asChild variant="outline" size="sm" className="h-auto min-h-9 max-w-full whitespace-normal">
             <a {...downloadLink(schemeExportUrl(sessionId), `${evaluation.id}_level_scheme.txt`)}>
               <FileText className="mr-2 h-4 w-4" />
               {t.exportScheme}
             </a>
           </Button>
-          <Button asChild size="sm">
+          <Button asChild size="sm" className="h-auto min-h-9 max-w-full whitespace-normal [overflow-wrap:anywhere]">
             <a href={evaluationDownloadUrl(evaluation.id, evaluation.filename)} download>
               <Download className="mr-2 h-4 w-4" />
               {t.downloadFile(evaluation.filename)}

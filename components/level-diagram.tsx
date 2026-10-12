@@ -89,7 +89,7 @@ export interface LevelDiagramProps {
 }
 
 /** Below this container width the columns give way to the list layout. */
-const LIST_BELOW = 700
+const LIST_BELOW = 600
 /** Least column width for the column layout. */
 const MIN_COLUMN = 84
 const LABEL_W = 40

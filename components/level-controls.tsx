@@ -233,7 +233,7 @@ export function LevelControls({ scheme, onChange, onReset, disabled, selectedLev
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
           <h2 className="text-base font-semibold">{t.interactiveLevels}</h2>
           <Badge variant="secondary" className="text-xs">
             {t.nFree(total)}
@@ -284,7 +284,7 @@ export function LevelControls({ scheme, onChange, onReset, disabled, selectedLev
                 onClick={() => toggle(group.key)}
                 aria-expanded={expanded}
                 aria-label={t.levelGroupAria(jpiPlain(group.jpi), energyText)}
-                className="flex min-h-11 w-full items-center gap-3 px-3 py-2 text-left text-sm hover:bg-muted/50"
+                className="flex min-h-11 w-full flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 text-left text-sm hover:bg-muted/50"
               >
                 {expanded ? (
                   <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
@@ -438,7 +438,7 @@ function ParameterControl({
             </Badge>
           )}
         </span>
-        <span className="ml-auto flex shrink-0 items-center gap-1.5">
+        <span className="ml-auto flex min-w-0 max-w-full items-center gap-1.5">
           <input
             id={inputId}
             type="text"
@@ -469,7 +469,7 @@ function ParameterControl({
             }}
             aria-label={l.valueInput(`${groupLabel}: ${control.name}`, unitText(scale.unit))}
             aria-invalid={invalid || undefined}
-            className={`h-8 w-[6.5rem] rounded-md border bg-background px-2 text-right text-sm tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${invalid ? "border-destructive" : "border-input-strong"}`}
+            className={`h-8 w-[6.5rem] min-w-0 max-w-full rounded-md border bg-background px-2 text-right text-sm tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${invalid ? "border-destructive" : "border-input-strong"}`}
           />
           <span className="min-w-[2.5rem] text-xs text-muted-foreground">
             <UnitText unit={scale.unit} />

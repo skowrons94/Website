@@ -332,12 +332,12 @@ export function ExtrapPlot({
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-end gap-x-4 gap-y-3">
-        <div className="space-y-1.5">
+        <div className="min-w-0 max-w-full space-y-1.5">
           <Label htmlFor="ex-quantity" className="text-xs">
             {t.quantity}
           </Label>
           <Select value={quantity} onValueChange={(value: Quantity) => setQuantity(value)}>
-            <SelectTrigger id="ex-quantity" className="w-44">
+            <SelectTrigger id="ex-quantity" className="w-44 max-w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -419,7 +419,7 @@ export function ExtrapPlot({
       {overLimit && <p className="text-xs text-muted-foreground">{mixed ? t.mixedNote : t.facets(series.length, OVERLAY_LIMIT, "series")}</p>}
       {scatteringOnly && <p className="text-xs text-muted-foreground">{t.noGamowScattering}</p>}
 
-      <div className="grid items-stretch gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
+      <div className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] [&>*]:min-w-0">
         <div className="relative min-w-0">
           {series.length === 0 ? (
             <Card>
@@ -518,12 +518,12 @@ export function ExtrapPlot({
             it -- a long list scrolls rather than stretching the row. */}
         <div className="relative">
           <Card className="flex min-h-0 flex-col lg:absolute lg:inset-0">
-            <CardHeader className="shrink-0 pb-3">
+            <CardHeader className="shrink-0 p-4 pb-3 sm:p-6 sm:pb-3">
               <CardTitle role="heading" aria-level={3} className="text-base">
                 {t.extrapolations}
               </CardTitle>
             </CardHeader>
-            <CardContent className="max-h-80 min-h-0 flex-1 overflow-y-auto pb-4 lg:max-h-none">
+            <CardContent className="max-h-80 min-h-0 flex-1 overflow-y-auto px-4 pb-4 sm:px-6 lg:max-h-none">
               <div className="space-y-2 pr-1">
                 {extrapolations.map((segment) => (
                   <div key={segment.index} className="flex items-start gap-2">

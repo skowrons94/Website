@@ -650,14 +650,21 @@ export function DataPlot({
   )
 
   const history = (
-    <div className="flex shrink-0 items-center gap-1">
+    <div className="flex min-w-0 flex-wrap items-center gap-1">
       <Button variant="ghost" size="sm" className="h-9 w-9 px-0" onClick={onUndo} disabled={calculating || !canUndo} aria-label={t.undo} title={t.undo}>
         <Undo2 className="h-4 w-4" aria-hidden />
       </Button>
       <Button variant="ghost" size="sm" className="h-9 w-9 px-0" onClick={onRedo} disabled={calculating || !canRedo} aria-label={t.redo} title={t.redo}>
         <Redo2 className="h-4 w-4" aria-hidden />
       </Button>
-      <Button variant="outline" size="sm" className="h-9" onClick={onReset} disabled={calculating || !scheme.modified} title={t.resetAllHint}>
+      <Button
+        variant="outline"
+        size="sm"
+        className="h-auto min-h-9 max-w-full whitespace-normal"
+        onClick={onReset}
+        disabled={calculating || !scheme.modified}
+        title={t.resetAllHint}
+      >
         <RotateCcw className="mr-1.5 h-3.5 w-3.5" aria-hidden />
         {t.resetAll}
       </Button>
@@ -700,12 +707,12 @@ export function DataPlot({
             viewOpen ? "max-lg:rounded-lg max-lg:border max-lg:bg-card max-lg:p-3" : "max-lg:hidden"
           }`}
         >
-          <div className="space-y-1.5">
+          <div className="min-w-0 max-w-full space-y-1.5">
             <Label htmlFor="plot-quantity" className="text-xs">
               {t.quantity}
             </Label>
             <Select value={quantity} onValueChange={(value: Quantity) => onQuantity(value)}>
-              <SelectTrigger id="plot-quantity" className="w-44">
+              <SelectTrigger id="plot-quantity" className="w-44 max-w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -794,7 +801,7 @@ export function DataPlot({
             {/* Phone: χ², the view settings and the history under the plot. */}
             <div className="mt-1.5 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 px-1 text-sm lg:hidden">
               {chi2Line}
-              <div className="flex items-center gap-1">
+              <div className="flex min-w-0 flex-wrap items-center gap-1">
                 <Button
                   variant={viewOpen ? "secondary" : "ghost"}
                   size="sm"
