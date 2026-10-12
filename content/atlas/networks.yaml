@@ -91,6 +91,29 @@ families:
       Gli elementi più pesanti del ferro sono costruiti per lo più da catture di
       neutroni. Nelle stelle i neutroni vengono da due reazioni indotte da elio,
       sul ¹³C e sul ²²Ne.
+    see: [s-process]
+  # The s-process from iron to lead has a page and a chart of its own
+  # (/atlas/s-process): its nuclei lie far beyond the light nuclei of the
+  # map, so `map: false` keeps them off it. Temperatures as kT: ¹³C pocket
+  # ≈ 8 keV and thermal pulses ≈ 23 keV (straniero2006, kaeppeler2011);
+  # core helium burning 26 keV and shell carbon burning 90 keV in massive
+  # stars (mohr2016).
+  - id: s-process
+    name: The s-process
+    name_it: Il processo s
+    page: /atlas/s-process
+    map: false
+    summary: >-
+      Slow neutron captures build about half of the nuclei between iron and
+      bismuth. Each capture adds one neutron; an unstable nucleus usually
+      decays before the next arrives, so the path climbs along the valley of
+      stable nuclei up to lead and bismuth.
+    summary_it: >-
+      Le catture lente di neutroni costruiscono circa metà dei nuclei tra il
+      ferro e il bismuto. Ogni cattura aggiunge un neutrone; un nucleo
+      instabile di solito decade prima che arrivi il successivo, così il
+      percorso risale lungo la valle dei nuclei stabili fino al piombo e al
+      bismuto.
   - id: bbn
     name: Big Bang nucleosynthesis
     name_it: La nucleosintesi primordiale
@@ -323,6 +346,66 @@ networks:
       - { label: AGB ¹³C pocket, label_it: "tasca di ¹³C nelle AGB", T9: 0.09 }
       - { label: "massive star, He core end", label_it: "stella massiccia, fine della combustione centrale dell'elio", T9: 0.3 }
     reactions: [13C-an-16O, 22Ne-an-25Mg, 22Ne-ag-26Mg, 17O-an-20Ne]
+
+  - id: neutron-poisons
+    family: neutrons
+    name: Neutron poisons
+    name_it: Veleni neutronici
+    summary: >-
+      Light nuclei that are far more abundant than iron capture some of the
+      neutrons before the heavy seeds can. ¹⁴N(n,p)¹⁴C competes in the ¹³C
+      pocket of AGB stars; ²²Ne and ¹⁶O capture neutrons in massive stars,
+      and the ¹⁷O made from ¹⁶O can give its neutron back through
+      ¹⁷O(α,n)²⁰Ne.
+    summary_it: >-
+      Nuclei leggeri, molto più abbondanti del ferro, catturano parte dei
+      neutroni prima che possano farlo i semi pesanti. La ¹⁴N(n,p)¹⁴C compete
+      nella tasca di ¹³C delle stelle AGB; ²²Ne e ¹⁶O catturano neutroni nelle
+      stelle massicce, e l'¹⁷O prodotto dall'¹⁶O può restituire il suo
+      neutrone attraverso la ¹⁷O(α,n)²⁰Ne.
+    temperatures:
+      - { label: AGB ¹³C pocket, label_it: "tasca di ¹³C nelle AGB", T9: 0.09 }
+      - { label: "massive star, core helium burning", label_it: "stella massiccia, combustione centrale dell'elio", T9: 0.3 }
+    reactions: [14N-np-14C, 22Ne-ng-23Ne, 16O-ng-17O]
+
+  - id: s-main
+    family: s-process
+    name: Main component (AGB stars)
+    name_it: Componente principale (stelle AGB)
+    summary: >-
+      In low-mass AGB stars, neutrons from the ¹³C pocket and, briefly, from
+      ²²Ne in the thermal pulses carry iron seeds all the way to lead and
+      bismuth. This component makes most of the s-process nuclei above
+      mass 90.
+    summary_it: >-
+      Nelle stelle AGB di piccola massa i neutroni della tasca di ¹³C e,
+      brevemente, del ²²Ne negli impulsi termici portano i semi di ferro fino
+      al piombo e al bismuto. Questa componente produce la maggior parte dei
+      nuclei del processo s sopra la massa 90.
+    temperatures:
+      - { label: AGB ¹³C pocket, label_it: "tasca di ¹³C nelle AGB", T9: 0.09 }
+      - { label: AGB thermal pulse, label_it: "impulso termico nelle AGB", T9: 0.27 }
+    reactions: [56Fe-ng-57Fe, 85Kr-ng-86Kr, 151Sm-ng-152Sm, 197Au-ng-198Au, 209Bi-ng-210Bi]
+
+  - id: s-weak
+    family: s-process
+    name: Weak component (massive stars)
+    name_it: Componente debole (stelle massicce)
+    summary: >-
+      In stars of more than about ten solar masses, ²²Ne(α,n)²⁵Mg releases
+      neutrons at the end of core helium burning and again in carbon-burning
+      shells. Too few neutrons per seed reach far: this component makes
+      nuclei up to mass about 90, from copper to strontium.
+    summary_it: >-
+      Nelle stelle di più di circa dieci masse solari la ²²Ne(α,n)²⁵Mg libera
+      neutroni alla fine della combustione centrale dell'elio e di nuovo nei
+      gusci in cui brucia il carbonio. I neutroni per seme sono troppo pochi
+      per arrivare lontano: questa componente produce nuclei fino alla massa
+      90 circa, dal rame allo stronzio.
+    temperatures:
+      - { label: "massive star, core helium burning", label_it: "stella massiccia, combustione centrale dell'elio", T9: 0.3 }
+      - { label: "massive star, shell carbon burning", label_it: "stella massiccia, combustione del carbonio nei gusci", T9: 1.04 }
+    reactions: [56Fe-ng-57Fe, 62Ni-ng-63Ni, 63Ni-ng-64Ni, 85Kr-ng-86Kr]
 
   - id: bbn
     family: bbn

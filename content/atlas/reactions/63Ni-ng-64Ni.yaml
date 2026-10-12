@@ -1,0 +1,84 @@
+id: 63Ni-ng-64Ni
+label: ⁶³Ni(n,γ)⁶⁴Ni
+kind: capture
+target: 63Ni
+projectile: n
+ejectile: g
+product: 64Ni
+networks: [s-weak]
+importance: key
+summary: >-
+  Radioactive nickel-63 captures a neutron before it can decay. It is an
+  early branch point of the s-process, and it decides how much copper
+  massive stars make.
+summary_it: >-
+  Il nichel-63 radioattivo cattura un neutrone prima di poter decadere. È uno
+  dei primi punti di diramazione del processo s, e decide quanto rame producono
+  le stelle massicce.
+role: >-
+  Nickel-63 lives about a century in the laboratory. In a massive star it
+  can either decay into copper-63 or capture another neutron and become
+  nickel-64; which of the two happens more often depends on how many
+  neutrons are around and on this cross section. Massive stars are the main
+  source of the copper in the Solar System, so the branching at nickel-63
+  shapes the copper, nickel and zinc they make. Measuring the reaction needs
+  a radioactive sample, which is why it was first measured only in 2013.
+role_it: >-
+  Il nichel-63 vive circa un secolo in laboratorio. In una stella massiccia
+  può decadere in rame-63 oppure catturare un altro neutrone e diventare
+  nichel-64; quale delle due cose avvenga più spesso dipende da quanti
+  neutroni ci sono e da questa sezione d'urto. Le stelle massicce sono la
+  principale sorgente del rame del Sistema Solare, quindi la diramazione al
+  nichel-63 determina il rame, il nichel e lo zinco che producono. Per
+  misurare la reazione serve un campione radioattivo, ed è per questo che è
+  stata misurata per la prima volta solo nel 2013.
+details: >-
+  Before 2013 the stellar cross section rested on calculations and
+  extrapolations; KADoNiS recommended 31 ± 6 mb at kT = 30 keV. The first
+  measurement, at n_TOF, covered thermal energies up to 200 keV, determined
+  the capture kernels of 12 new resonances and gave MACS for kT = 5–100 keV
+  with uncertainties around 20%; models of a 25 M☉ star showed a significant
+  effect on the s-process production of ⁶³Cu, ⁶⁴Ni and ⁶⁴Zn (Lederer et al.
+  2013). Unresolved cross sections from 10 to 270 keV, with a systematic
+  uncertainty of 17%, followed (Lederer et al. 2014). At LANSCE the
+  calorimetric 4π BaF₂ array DANCE measured the cross section relative to
+  ¹⁹⁷Au with uncertainties below 15% (Weigand et al. 2015).
+status: improving
+status_note: >-
+  Measured since 2013 on a radioactive sample at n_TOF and DANCE, with
+  uncertainties of 15–20%.
+status_note_it: >-
+  Misurata dal 2013 su un campione radioattivo a n_TOF e a DANCE, con
+  incertezze del 15–20%.
+methods: [neutron-beams]
+measurements:
+  - year: 2013
+    facility: n-tof
+    method: neutron-beams
+    energy: "thermal to 200 keV (neutron energy)"
+    energy_it: "da energie termiche a 200 keV (energia del neutrone)"
+    note: >-
+      First measurement; 12 new resonances; MACS for kT = 5–100 keV with
+      uncertainties around 20%.
+    refs: [lederer2013]
+  - year: 2014
+    facility: n-tof
+    method: neutron-beams
+    energy: "10–270 keV (neutron energy)"
+    energy_it: "10–270 keV (energia del neutrone)"
+    note: >-
+      Unresolved cross sections with a systematic uncertainty of 17%,
+      published together with ⁶²Ni(n,γ).
+    refs: [lederer2014]
+  - year: 2015
+    facility: lansce-dance
+    method: neutron-beams
+    energy: "neutron time of flight, relative to ¹⁹⁷Au"
+    energy_it: "tempo di volo dei neutroni, relativa a ¹⁹⁷Au"
+    note: >-
+      Cross section with the 4π BaF₂ calorimeter DANCE, uncertainties below
+      15%; resonances identified by their Q-value; network sensitivity
+      studied.
+    refs: [weigand2015]
+evaluations: [bao2000, dillmann2008]
+related: [62Ni-ng-63Ni, 56Fe-ng-57Fe, 85Kr-ng-86Kr]

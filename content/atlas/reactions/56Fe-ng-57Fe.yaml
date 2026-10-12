@@ -1,0 +1,63 @@
+id: 56Fe-ng-57Fe
+label: ⁵⁶Fe(n,γ)⁵⁷Fe
+kind: capture
+target: 56Fe
+projectile: n
+ejectile: g
+product: 57Fe
+networks: [s-main, s-weak]
+importance: key
+summary: >-
+  Iron-56 captures a neutron. It is the first step of the s-process: almost
+  every heavy nucleus the process makes began as an iron seed.
+summary_it: >-
+  Il ferro-56 cattura un neutrone. È il primo passo del processo s: quasi
+  ogni nucleo pesante prodotto dal processo è nato come un seme di ferro.
+role: >-
+  Iron-56 is by far the most abundant nucleus heavier than the light
+  elements that stars burn, and it was already present in the gas the star
+  formed from. Neutrons released inside the star are captured one by one,
+  first by iron and then by its heavier products, which climb step by step
+  towards lead. How readily iron captures a neutron sets how many seeds are
+  put on the path; together with the number of neutrons available per seed,
+  it decides how far the s-process goes.
+role_it: >-
+  Il ferro-56 è di gran lunga il nucleo più abbondante tra quelli più pesanti
+  degli elementi leggeri che le stelle bruciano, ed era già presente nel gas
+  da cui la stella si è formata. I neutroni liberati dentro la stella vengono
+  catturati uno alla volta, prima dal ferro e poi dai suoi prodotti più
+  pesanti, che salgono passo dopo passo verso il piombo. La facilità con cui
+  il ferro cattura un neutrone fissa quanti semi vengono avviati sul percorso;
+  insieme al numero di neutroni disponibili per seme, decide fin dove arriva
+  il processo s.
+details: >-
+  The stellar rate is given as a Maxwellian-averaged cross section (MACS);
+  the reference compilation of Bao et al. (2000) recommends values at
+  kT = 30 keV, scaled to kT = 5–100 keV, and its successor KADoNiS
+  (Dillmann et al. 2008) updates them. The cross section of the iron
+  isotopes in the keV region is dominated by resolved resonances measured by
+  time of flight. Wang et al. (2014) measured keV-neutron capture on ⁵⁶Fe and
+  ⁵⁷Fe by time of flight with a ⁷Li(p,n)⁷Be neutron source and derived the
+  MACS of both isotopes. The product ⁵⁷Fe is stable, as is ⁵⁸Fe; the chain
+  first meets a radioactive nucleus at ⁵⁹Fe.
+status: improving
+status_note: >-
+  The recommended stellar cross section rests on time-of-flight resonance
+  data collected over several decades and compiled by Bao et al. and
+  KADoNiS; newer measurements refine it.
+status_note_it: >-
+  La sezione d'urto stellare raccomandata si basa su dati di risonanza a tempo
+  di volo raccolti in diversi decenni e compilati da Bao et al. e da KADoNiS;
+  misure più recenti la affinano.
+methods: [neutron-beams, activation]
+measurements:
+  - year: 2014
+    method: neutron-beams
+    energy: "keV neutrons from ⁷Li(p,n)⁷Be"
+    energy_it: "neutroni di qualche keV da ⁷Li(p,n)⁷Be"
+    note: >-
+      Capture cross sections of ⁵⁶Fe and ⁵⁷Fe by time of flight;
+      Maxwellian-averaged cross sections derived for both isotopes.
+    refs: [wang2014]
+evaluations: [bao2000, dillmann2008]
+related: [62Ni-ng-63Ni, 22Ne-an-25Mg, 13C-an-16O, 197Au-ng-198Au]

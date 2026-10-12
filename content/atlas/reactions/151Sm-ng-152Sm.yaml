@@ -1,0 +1,75 @@
+id: 151Sm-ng-152Sm
+label: ¹⁵¹Sm(n,γ)¹⁵²Sm
+kind: capture
+target: 151Sm
+projectile: n
+ejectile: g
+product: 152Sm
+networks: [s-main]
+importance: key
+summary: >-
+  Radioactive samarium-151 captures a neutron. It is a classic branch point
+  of the s-process, whose capture has been measured on a radioactive sample.
+summary_it: >-
+  Il samario-151 radioattivo cattura un neutrone. È un classico punto di
+  diramazione del processo s, la cui cattura è stata misurata su un campione
+  radioattivo.
+role: >-
+  Samarium-151 lives about ninety years in the laboratory. In an AGB star it
+  either captures a neutron, continuing the main path to samarium-152, or
+  decays into europium-151, opening a side path through the europium
+  isotopes. Its decay in a star depends on the temperature, so the share of
+  the two paths depends both on the neutron density and on how hot the
+  star is. Comparing the predicted and the observed abundances of the
+  samarium, europium and gadolinium isotopes in the Solar System therefore
+  tests the conditions inside the stars that made them.
+role_it: >-
+  Il samario-151 vive circa novant'anni in laboratorio. In una stella AGB
+  cattura un neutrone, proseguendo sul percorso principale verso il
+  samario-152, oppure decade in europio-151, aprendo un percorso laterale
+  attraverso gli isotopi dell'europio. Il suo decadimento in una stella
+  dipende dalla temperatura, quindi la ripartizione tra i due percorsi
+  dipende sia dalla densità di neutroni sia da quanto è calda la stella.
+  Confrontare le abbondanze previste e osservate degli isotopi di samario,
+  europio e gadolinio nel Sistema Solare mette quindi alla prova le
+  condizioni all'interno delle stelle che li hanno prodotti.
+details: >-
+  At n_TOF the cross section was measured from 1 eV to 1 MeV on a
+  radioactive ¹⁵¹Sm sample; the Maxwellian-averaged cross section at
+  kT = 30 keV, 3100 ± 160 mb, is significantly larger than the theoretical
+  predictions used before (Abbondanno et al. 2004). At Karlsruhe the stellar
+  cross section was measured with the 4π BaF₂ detector and neutrons from the
+  3.7 MV Van de Graaff (Wisshak et al. 2006). The branchings at ¹⁴⁷Nd, ¹⁴⁷Pm,
+  ¹⁴⁸Pm and ¹⁵¹Sm together determine the abundances of the s-only isotopes
+  ¹⁴⁸Sm and ¹⁵⁰Sm, which are shielded from the r-process by ¹⁴⁸Nd and ¹⁵⁰Nd
+  (Käppeler et al. 2011).
+status: improving
+status_note: >-
+  Measured at n_TOF and at Karlsruhe with radioactive samples; the
+  temperature dependence of the stellar decay rate remains a separate input.
+status_note_it: >-
+  Misurata a n_TOF e a Karlsruhe con campioni radioattivi; la dipendenza
+  dalla temperatura del decadimento nella stella resta un ingrediente a
+  parte.
+methods: [neutron-beams]
+measurements:
+  - year: 2004
+    facility: n-tof
+    method: neutron-beams
+    energy: "1 eV – 1 MeV (neutron energy)"
+    energy_it: "1 eV – 1 MeV (energia del neutrone)"
+    note: >-
+      Radioactive sample; MACS at kT = 30 keV of 3100 ± 160 mb, well above
+      the earlier theoretical estimates.
+    refs: [abbondanno2004]
+  - year: 2006
+    facility: karlsruhe-vdg
+    method: neutron-beams
+    energy: "keV neutrons, 4π BaF₂ detector"
+    energy_it: "neutroni di qualche keV, rivelatore 4π BaF₂"
+    note: >-
+      Stellar capture cross section of the branch point measured with the
+      Karlsruhe 4π barium fluoride array.
+    refs: [wisshak2006]
+evaluations: [bao2000, dillmann2008, kaeppeler2011]
+related: [85Kr-ng-86Kr, 197Au-ng-198Au, 63Ni-ng-64Ni]

@@ -1,0 +1,62 @@
+id: 62Ni-ng-63Ni
+label: ⁶²Ni(n,γ)⁶³Ni
+kind: capture
+target: 62Ni
+projectile: n
+ejectile: g
+product: 63Ni
+networks: [s-weak]
+importance: major
+summary: >-
+  Nickel-62 captures a neutron. In massive stars this capture is one of the
+  steps that hold back the weak s-process, and it affects what is made after it.
+summary_it: >-
+  Il nichel-62 cattura un neutrone. Nelle stelle massicce questa cattura è
+  uno dei passi che frenano il processo s debole, e influisce su ciò che
+  viene prodotto dopo.
+role: >-
+  In massive stars there are too few neutrons per iron seed for the
+  s-process to reach far, and the flow of matter stays in the region from
+  iron to strontium. There, each capture with a small cross section holds
+  back the flow and lowers the production of every heavier nucleus. Nickel-62
+  is one of these steps, which is why its stellar cross section, in
+  particular at the high temperatures of carbon-burning shells, changes the
+  predicted production of the heavier nuclei, and of copper in particular.
+role_it: >-
+  Nelle stelle massicce i neutroni per seme di ferro sono troppo pochi perché
+  il processo s arrivi lontano, e il flusso di materia resta nella regione tra
+  il ferro e lo stronzio. Lì ogni cattura con una sezione d'urto piccola
+  trattiene il flusso e riduce la produzione di tutti i nuclei più pesanti.
+  Il nichel-62 è uno di questi passi, ed è per questo che la sua sezione
+  d'urto stellare, in particolare alle alte temperature dei gusci in cui
+  brucia il carbonio, cambia la produzione prevista dei nuclei più pesanti, e
+  in particolare del rame.
+details: >-
+  At n_TOF the capture kernels of 42 resonances of ⁶²Ni were analysed up to
+  200 keV, and Maxwellian-averaged cross sections were calculated for
+  kT = 5–100 keV with a total uncertainty of 4.5%. They agree with the
+  KADoNiS value at kT = 30 keV but are up to a factor 1.6 lower at higher
+  temperatures, which matters for shell carbon burning at kT ≈ 90 keV
+  (Lederer et al. 2014).
+status: improving
+status_note: >-
+  Known to 4.5% at kT = 30 keV from n_TOF; the n_TOF data lowered the
+  cross section at the higher temperatures of carbon burning by up to a
+  factor 1.6.
+status_note_it: >-
+  Nota al 4,5% a kT = 30 keV dai dati di n_TOF, che hanno abbassato la
+  sezione d'urto alle temperature più alte della combustione del carbonio
+  fino a un fattore 1,6.
+methods: [neutron-beams]
+measurements:
+  - year: 2014
+    facility: n-tof
+    method: neutron-beams
+    energy: "resonances up to 200 keV (neutron energy)"
+    energy_it: "risonanze fino a 200 keV (energia del neutrone)"
+    note: >-
+      42 resonances analysed; MACS for kT = 5–100 keV with 4.5% total
+      uncertainty, up to a factor 1.6 below KADoNiS at high kT.
+    refs: [lederer2014]
+evaluations: [bao2000, dillmann2008]
+related: [63Ni-ng-64Ni, 56Fe-ng-57Fe, 22Ne-an-25Mg]

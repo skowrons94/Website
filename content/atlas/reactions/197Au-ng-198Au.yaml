@@ -1,0 +1,82 @@
+id: 197Au-ng-198Au
+label: ¹⁹⁷Au(n,γ)¹⁹⁸Au
+kind: capture
+target: 197Au
+projectile: n
+ejectile: g
+product: 198Au
+networks: [s-main]
+importance: major
+summary: >-
+  Gold-197 captures a neutron. Its cross section is the yardstick: most
+  stellar neutron-capture cross sections are measured relative to it.
+summary_it: >-
+  L'oro-197 cattura un neutrone. La sua sezione d'urto è il metro di
+  riferimento: la maggior parte delle sezioni d'urto stellari di cattura
+  neutronica si misura in rapporto a essa.
+role: >-
+  Counting the neutrons that hit a sample is hard. It is much easier to put a
+  thin gold foil beside the sample and compare how many captures happen in
+  each. Gold has a single stable isotope, and the product, gold-198, is
+  radioactive with a convenient half-life of a few days, so its captures can
+  be counted afterwards by its γ-rays. Every measurement made in this way
+  inherits the uncertainty of the gold cross section, which is why it has
+  been measured again and again.
+role_it: >-
+  Contare i neutroni che colpiscono un campione è difficile. È molto più
+  facile mettere un sottile foglio d'oro accanto al campione e confrontare
+  quante catture avvengono in ciascuno. L'oro ha un solo isotopo stabile, e
+  il prodotto, l'oro-198, è radioattivo con un comodo tempo di dimezzamento
+  di pochi giorni, così le sue catture si contano dopo, dai raggi γ emessi.
+  Ogni misura fatta in questo modo eredita l'incertezza della sezione d'urto
+  dell'oro, ed è per questo che è stata misurata più e più volte.
+details: >-
+  Ratynski and Käppeler (1988) activated gold in the quasi-Maxwellian
+  neutron spectrum of ⁷Li(p,n)⁷Be at E(p) = 1912 keV, with the integrated flux
+  from the ⁷Be activity of the target: 648 ± 10 mb at kT = 25 keV, and
+  582 ± 9 mb when extrapolated to kT = 30 keV, the value adopted as the
+  astrophysical reference. Time-of-flight data later pointed to a slightly
+  higher value: at n_TOF, 5–400 keV with C₆D₆ detectors and a total
+  uncertainty of 3.9–6.7%, the MACS at 30 keV agrees with ENDF/B-VII.0 and is
+  4.7% above the activation value (Lederer et al. 2011); at GELINA, 3.5–84 keV
+  normalised to the saturated 4.9 eV resonance, the results differ by more
+  than 5% from the astrophysical reference (Massimi et al. 2014).
+status: well-known
+status_note: >-
+  Known to a few percent; a difference of about 5% between the 1988
+  activation reference and later time-of-flight data and evaluations has
+  been the main open point.
+status_note_it: >-
+  Nota a qualche percento; una differenza di circa il 5% tra il riferimento
+  per attivazione del 1988 e i dati a tempo di volo e le valutazioni
+  successive è stata il principale punto aperto.
+methods: [activation, neutron-beams]
+measurements:
+  - year: 1988
+    facility: karlsruhe-vdg
+    method: activation
+    energy: "quasi-Maxwellian kT = 25 keV (E(p) = 1912 keV)"
+    note: >-
+      648 ± 10 mb at kT = 25 keV; 582 ± 9 mb extrapolated to 30 keV, the
+      reference for stellar capture measurements.
+    refs: [ratynski1988]
+  - year: 2011
+    facility: n-tof
+    method: neutron-beams
+    energy: "5–400 keV (neutron energy)"
+    energy_it: "5–400 keV (energia del neutrone)"
+    note: >-
+      C₆D₆ detectors, total uncertainty 3.9–6.7%; MACS at 30 keV 4.7% above
+      the activation value and in agreement with ENDF/B-VII.0.
+    refs: [lederer2011]
+  - year: 2014
+    facility: gelina
+    method: neutron-beams
+    energy: "3.5–84 keV (neutron energy)"
+    energy_it: "3,5–84 keV (energia del neutrone)"
+    note: >-
+      Two C₆D₆ detectors at about 13 m, total energy method, normalised to
+      the 4.9 eV resonance; more than 5% from the astrophysical reference.
+    refs: [massimi2014]
+evaluations: [bao2000, dillmann2008]
+related: [151Sm-ng-152Sm, 209Bi-ng-210Bi, 56Fe-ng-57Fe]

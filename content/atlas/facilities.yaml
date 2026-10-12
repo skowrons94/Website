@@ -34,6 +34,12 @@
 # (RIKEN RIPS; see also the review arXiv nucl-ex/9712002), Schümann et al.
 # 2003/2006 and Hammache et al. 2010 (GSI). CSNSM became part of IJCLab in
 # 2020.
+# karlsruhe-vdg details, gelina, lansce-dance, franz and saraf-lilit
+# (2026-10-12): EXFOR entries 21647, 22099 and 22916 for the Karlsruhe
+# activation and 4π BaF₂ set-ups; the JRC facility page and the CERIC-ERIC
+# instrument page for GELINA; the DANCE description in arXiv 1310.1884 and
+# 1512.02263 and the LANL Lujan Center page; reifarth2009 and the ChETEC
+# facility listing for FRANZ; tessler2015 for LiLiT at SARAF.
 # andromede (2026-10-12): Heine et al. 2018 (STELLA at Andromède, IPN Orsay)
 # and EPJ Web Conf. (HIAS 2025) 00029 for the ¹²C + ¹²C runs there.
 
@@ -604,14 +610,30 @@ facilities:
     country: Germany
     country_it: Germania
     underground: false
-    accelerator: single-ended Van de Graaff
-    accelerator_it: Van de Graaff single-ended
+    accelerator: single-ended Van de Graaff (3.7 MV)
+    accelerator_it: Van de Graaff single-ended (3,7 MV)
     summary: >-
       A Van de Graaff accelerator at the Karlsruhe nuclear research centre,
-      used among other work for measurements of ¹²C(α,γ)¹⁶O.
+      used for measurements of ¹²C(α,γ)¹⁶O and, for decades, of the neutron
+      captures of the s-process. Protons on a lithium target there make
+      neutrons whose energies mimic those in a star, and many of the stellar
+      capture rates in use today were measured with them.
     summary_it: >-
       Un acceleratore Van de Graaff del centro di ricerca nucleare di Karlsruhe,
-      usato tra l'altro per misure di ¹²C(α,γ)¹⁶O.
+      usato per misure di ¹²C(α,γ)¹⁶O e, per decenni, delle catture di neutroni
+      del processo s. Lì i protoni su un bersaglio di litio producono neutroni
+      con energie che imitano quelle di una stella, e molti dei tassi di
+      cattura stellari usati oggi sono stati misurati con essi.
+    details: >-
+      Protons of 1912 keV, just above the ⁷Li(p,n)⁷Be threshold, give a
+      forward-collimated neutron spectrum that closely resembles a
+      Maxwell–Boltzmann distribution at kT = 25 keV; a sample in the cone is
+      activated, and the ⁷Be activity of the target gives the integrated flux
+      (Beer and Käppeler 1980; Ratynski and Käppeler 1988). With a pulsed beam
+      the same machine served time-of-flight measurements with the Karlsruhe
+      4π BaF₂ array, 42 crystals forming a spherical shell of 10 cm inner
+      radius and 15 cm thickness (Wisshak et al. 2006).
+    refs: [beer1980, ratynski1988, wisshak2006]
 
   - id: tunl-tandem
     name: TUNL tandem
@@ -882,3 +904,131 @@ facilities:
       frammenti fornisce fasci veloci di nuclei a vita breve, usati per misurare
       la dissociazione coulombiana dell'⁸B e la rottura del ⁶Li.
     refs: [schumann2006, hammache2010]
+
+  - id: gelina
+    name: GELINA, Geel
+    lab: Joint Research Centre (JRC), European Commission
+    lab_it: Centro comune di ricerca (JRC), Commissione europea
+    location: Geel
+    country: Belgium
+    country_it: Belgio
+    underground: false
+    accelerator: >-
+      pulsed electron linear accelerator; measurement stations 10 to 400 m
+      from the neutron source
+    accelerator_it: >-
+      acceleratore lineare di elettroni pulsato; stazioni di misura tra 10 e
+      400 m dalla sorgente di neutroni
+    url: https://joint-research-centre.ec.europa.eu/laboratories-z/jrc-neutron-time-flight-facility_en
+    summary: >-
+      A neutron time-of-flight facility of the European Commission. Short
+      bursts of electrons make bursts of neutrons of every energy from
+      thermal to about 20 MeV, and the time each neutron takes to reach a
+      sample gives its energy. It measures neutron cross sections for
+      nuclear data and for astrophysics, ¹⁹⁷Au(n,γ) among them.
+    summary_it: >-
+      Un impianto a tempo di volo per neutroni della Commissione europea.
+      Brevi impulsi di elettroni producono impulsi di neutroni di ogni energia,
+      da quella termica fino a circa 20 MeV, e il tempo che ciascun neutrone
+      impiega a raggiungere il campione ne dà l'energia. Misura sezioni d'urto
+      neutroniche per i dati nucleari e per l'astrofisica, tra cui ¹⁹⁷Au(n,γ).
+    details: >-
+      The electron pulses are compressed to about 1 ns; up to ten
+      experiments run at once on flight paths between 10 and 400 m, covering
+      neutron energies from 10 meV to 20 MeV.
+    details_it: >-
+      Gli impulsi di elettroni sono compressi a circa 1 ns; fino a dieci
+      esperimenti lavorano insieme su basi di volo tra 10 e 400 m, con energie
+      dei neutroni da 10 meV a 20 MeV.
+    refs: [massimi2014]
+
+  - id: lansce-dance
+    name: DANCE at LANSCE
+    lab: Los Alamos Neutron Science Center, Los Alamos National Laboratory
+    location: Los Alamos, New Mexico
+    country: United States
+    country_it: Stati Uniti
+    underground: false
+    accelerator: >-
+      800 MeV protons on a tungsten spallation target (Lujan Center); DANCE
+      on a 20 m flight path
+    accelerator_it: >-
+      protoni da 800 MeV su un bersaglio di spallazione di tungsteno (Lujan
+      Center); DANCE su una base di volo di 20 m
+    summary: >-
+      The Detector for Advanced Neutron Capture Experiments: a ball of
+      barium fluoride crystals that surrounds a tiny sample and catches
+      nearly every γ-ray emitted when it captures a neutron. Because the
+      sample can weigh as little as a milligram, it can be radioactive, which
+      is what branch points of the s-process need.
+    summary_it: >-
+      Il Detector for Advanced Neutron Capture Experiments: una sfera di
+      cristalli di fluoruro di bario che circonda un campione minuscolo e
+      raccoglie quasi tutti i raggi γ emessi quando cattura un neutrone.
+      Poiché il campione può pesare appena un milligrammo, può essere
+      radioattivo, come serve per i punti di diramazione del processo s.
+    details: >-
+      Up to 160 BaF₂ crystals form a 4π shell of about 17 cm inner radius and
+      15 cm thickness; samples down to about 1 mg, or with activities up to
+      about 1 Ci, can be measured. Neutron energies come from the time of
+      flight.
+    details_it: >-
+      Fino a 160 cristalli di BaF₂ formano un guscio 4π con raggio interno di
+      circa 17 cm e spessore di 15 cm; si possono misurare campioni fino a
+      circa 1 mg, o con attività fino a circa 1 Ci. L'energia dei neutroni si
+      ricava dal tempo di volo.
+    refs: [weigand2015]
+
+  - id: franz
+    name: FRANZ, Frankfurt
+    lab: Stern-Gerlach-Zentrum, Goethe-Universität Frankfurt
+    location: Frankfurt am Main
+    country: Germany
+    country_it: Germania
+    underground: false
+    accelerator: >-
+      Van de Graaff for ⁷Li(p,n) activations; a high-current RFQ–IH proton
+      linac (about 2 MeV) under construction
+    accelerator_it: >-
+      Van de Graaff per attivazioni con ⁷Li(p,n); un linac protonico RFQ–IH ad
+      alta corrente (circa 2 MeV) in costruzione
+    summary: >-
+      The Frankfurt Neutron Source, designed to be the most intense source of
+      neutrons at the energies found in stars, about a thousand times more
+      intense than the Karlsruhe source in that energy range. Like Karlsruhe,
+      it makes the neutrons from protons on lithium.
+    summary_it: >-
+      La sorgente di neutroni di Francoforte, progettata per essere la più
+      intensa sorgente di neutroni alle energie che si trovano nelle stelle,
+      circa mille volte più intensa della sorgente di Karlsruhe in quell'intervallo
+      di energia. Come a Karlsruhe, i neutroni nascono da protoni sul litio.
+    refs: [reifarth2009]
+
+  - id: saraf-lilit
+    name: SARAF and LiLiT
+    lab: Soreq Nuclear Research Center
+    location: Yavne
+    country: Israel
+    underground: false
+    accelerator: >-
+      superconducting proton linac (SARAF) on a liquid-lithium target (LiLiT),
+      1.9 MeV, 1–2 mA
+    accelerator_it: >-
+      linac superconduttore per protoni (SARAF) su un bersaglio di litio
+      liquido (LiLiT), 1,9 MeV, 1–2 mA
+    summary: >-
+      A proton accelerator whose milliampere beam strikes a flowing film of
+      liquid lithium, making neutrons with a spectrum close to that of a star
+      at 30 keV, more than ten times more intensely than earlier lithium
+      targets. Samples are activated and their radioactivity counted.
+    summary_it: >-
+      Un acceleratore di protoni il cui fascio di qualche milliampere colpisce
+      un velo di litio liquido in movimento, producendo neutroni con uno
+      spettro vicino a quello di una stella a 30 keV, più di dieci volte più
+      intensamente dei bersagli di litio precedenti. I campioni vengono
+      attivati e se ne conta la radioattività.
+    details: >-
+      The thick-target ⁷Li(p,n)⁷Be spectrum at 1.92 MeV is quasi-Maxwellian
+      with kT ≈ 30 keV; 3–5 × 10¹⁰ n/s were reached in the first experiments,
+      which measured the 30 keV MACS of ⁹⁴Zr and ⁹⁶Zr (Tessler et al. 2015).
+    refs: [tessler2015]

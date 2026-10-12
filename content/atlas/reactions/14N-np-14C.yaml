@@ -1,0 +1,84 @@
+id: 14N-np-14C
+label: ¹⁴N(n,p)¹⁴C
+kind: transfer
+target: 14N
+projectile: n
+ejectile: 1H
+product: 14C
+networks: [neutron-poisons]
+importance: major
+summary: >-
+  Nitrogen-14 absorbs a neutron and releases a proton, becoming carbon-14.
+  It is the most dangerous neutron poison in the ¹³C pocket of giant stars.
+summary_it: >-
+  L'azoto-14 assorbe un neutrone e libera un protone, diventando carbonio-14.
+  È il veleno neutronico più pericoloso nella tasca di ¹³C delle stelle giganti.
+role: >-
+  In an AGB star the neutrons that build the heavy elements come from a thin
+  layer rich in carbon-13, the ¹³C pocket. Wherever that layer also holds
+  nitrogen-14, the nitrogen captures neutrons readily and turns them into
+  protons, so they never reach the iron seeds. How large this loss is decides
+  how many neutrons each iron nucleus receives, and so how far the s-process
+  climbs towards lead. The reaction is also used in medicine and dosimetry,
+  which is one reason it has been measured often.
+role_it: >-
+  In una stella AGB i neutroni che costruiscono gli elementi pesanti vengono
+  da uno strato sottile ricco di carbonio-13, la tasca di ¹³C. Dove quello
+  strato contiene anche azoto-14, l'azoto cattura facilmente i neutroni e li
+  trasforma in protoni, così che non raggiungono mai i semi di ferro. La
+  grandezza di questa perdita decide quanti neutroni riceve ciascun nucleo di
+  ferro, e quindi fino a che punto il processo s risale verso il piombo. La
+  reazione è usata anche in medicina e in dosimetria, ed è uno dei motivi per
+  cui è stata misurata spesso.
+details: >-
+  The first resonances of ¹⁴N(n,p)¹⁴C lie at 492.7 and 644 keV. Its competition with ¹³C(α,n)¹⁶O for the
+  neutrons of the pocket is why stellar models require the ¹³C pocket to form
+  where little ¹⁴N is present (Straniero et al. 2006). Activation at
+  Karlsruhe with a quasi-Maxwellian spectrum of kT = 25 keV and at 123–182 keV,
+  with the ¹⁴C counted by accelerator mass spectrometry at VERA, gave cross
+  sections about two times lower between 100 and 200 keV than earlier
+  experiments and evaluations (Wallner et al. 2016). A time-of-flight
+  measurement at n_TOF EAR2 from subthermal energy to 800 keV, relative to
+  ¹⁰B(n,α) and ²³⁵U(n,f), gave a thermal cross section of 1.809 ± 0.045 b and
+  a 492.7 keV resonance whose low-energy tail lies below the evaluations,
+  and Maxwellian-averaged cross sections from it (Torres-Sánchez et al. 2023).
+status: improving
+status_note: >-
+  Recent activation and time-of-flight data disagree with older ones in the
+  keV region; the n_TOF data cover the whole range from thermal to 800 keV
+  with 2.5% accuracy.
+status_note_it: >-
+  I dati recenti di attivazione e di tempo di volo non concordano con quelli
+  più vecchi nella regione dei keV; i dati di n_TOF coprono l'intero
+  intervallo dalle energie termiche a 800 keV con un'accuratezza del 2,5%.
+status_plain: >-
+  Well measured at low energies; at the energies inside stars, recent
+  experiments are correcting older values.
+status_plain_it: >-
+  Ben misurata alle basse energie; alle energie dell'interno delle stelle,
+  esperimenti recenti stanno correggendo i valori più vecchi.
+methods: [activation, neutron-beams]
+measurements:
+  - year: 2016
+    facility: karlsruhe-vdg
+    method: activation
+    energy: "quasi-Maxwellian kT = 25 keV; 123–182 keV"
+    note: >-
+      Irradiations at Karlsruhe, ¹⁴C counted by AMS at VERA (Vienna); about
+      two times lower cross sections between 100 and 200 keV than previous
+      experiments and evaluations.
+    refs: [wallner2016]
+  - year: 2023
+    facility: n-tof
+    method: neutron-beams
+    energy: "subthermal to 800 keV (neutron energy)"
+    energy_it: "da energie subtermiche a 800 keV (energia del neutrone)"
+    note: >-
+      EAR2 measurement relative to ¹⁰B(n,α)⁷Li and ²³⁵U(n,f); thermal cross
+      section 1.809 ± 0.045 b, consistent with ENDF/B-VIII.0 and JEFF-3.3;
+      first two resonances resolved; MACS derived.
+    refs: [torressanchez2023]
+evaluations: [bao2000, dillmann2008]
+open_questions:
+  - The cross section between about 10 and 100 keV, where the measurements of different groups still differ.
+related: [13C-an-16O, 22Ne-ng-23Ne, 16O-ng-17O]

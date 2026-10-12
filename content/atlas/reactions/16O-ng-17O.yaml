@@ -1,0 +1,59 @@
+id: 16O-ng-17O
+label: ¹⁶O(n,γ)¹⁷O
+kind: capture
+target: 16O
+projectile: n
+ejectile: g
+product: 17O
+networks: [neutron-poisons]
+importance: major
+summary: >-
+  Oxygen-16 captures a neutron. Oxygen is so abundant that this tiny cross
+  section makes it one of the main neutron poisons in massive stars.
+summary_it: >-
+  L'ossigeno-16 cattura un neutrone. L'ossigeno è così abbondante che questa
+  piccolissima sezione d'urto lo rende uno dei principali veleni neutronici
+  nelle stelle massicce.
+role: >-
+  In the helium core and the carbon-burning shells of a massive star,
+  oxygen-16 is among the most abundant nuclei. Every neutron it captures is
+  taken from the iron seeds of the weak s-process. The loss is not always
+  final: the oxygen-17 it makes can capture a helium nucleus and give the
+  neutron back through ¹⁷O(α,n)²⁰Ne, so the two reactions together decide how
+  strongly oxygen poisons the process.
+role_it: >-
+  Nel nucleo di elio e nei gusci in cui brucia il carbonio di una stella
+  massiccia, l'ossigeno-16 è tra i nuclei più abbondanti. Ogni neutrone che
+  cattura è sottratto ai semi di ferro del processo s debole. La perdita non è
+  sempre definitiva: l'ossigeno-17 prodotto può catturare un nucleo di elio e
+  restituire il neutrone attraverso la ¹⁷O(α,n)²⁰Ne, quindi le due reazioni
+  insieme decidono quanto l'ossigeno avveleni il processo.
+details: >-
+  At stellar energies the cross section is dominated by non-resonant direct
+  p-wave capture, which makes it rise with energy rather than fall as 1/v;
+  this was established by measurements between 10 and 80 keV (Igashira et
+  al. 1995). Mohr et al. (2016) re-evaluated all data and recommended
+  Maxwellian-averaged cross sections from kT = 5 to 100 keV that are lower
+  than the previous recommendation up to kT = 60 keV and up to 14% higher at
+  100 keV, and studied the effect on the weak s-process in core helium burning
+  (kT = 26 keV) and shell carbon burning (kT = 90 keV).
+status: improving
+status_note: >-
+  The 2016 re-evaluation of all data changed the energy dependence of the
+  recommended stellar cross section.
+status_note_it: >-
+  La rivalutazione del 2016 di tutti i dati ha cambiato l'andamento in
+  energia della sezione d'urto stellare raccomandata.
+methods: [neutron-beams]
+measurements:
+  - year: 1995
+    method: neutron-beams
+    energy: "10–80 keV (neutron energy)"
+    energy_it: "10–80 keV (energia del neutrone)"
+    note: >-
+      Cross section measured at stellar energies; it is dominated by
+      nonresonant direct p-wave capture, and the Maxwellian average was
+      derived.
+    refs: [igashira1995]
+evaluations: [bao2000, mohr2016]
+related: [17O-an-20Ne, 22Ne-ng-23Ne, 14N-np-14C]
