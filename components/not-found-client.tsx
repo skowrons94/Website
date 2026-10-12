@@ -13,12 +13,26 @@ import { langOf, type Lang } from "@/lib/locale"
  * and handed in as `pages`; this only chooses one, so no dictionary is sent to
  * the browser.
  */
-export function NotFoundClient({ pages }: { pages: Record<Lang, React.ReactNode> }) {
+export function NotFoundClient({
+  pages,
+  evaluations = [],
+}: {
+  pages: Record<Lang, React.ReactNode>
+  /** The evaluation ids: /evaluations/7be goes on to /evaluations/7Be (next.config.mjs does it on the server). */
+  evaluations?: string[]
+}) {
   const [lang, setLang] = useState<Lang>("en")
 
   useEffect(() => {
     const base = process.env.BASE_PATH ?? ""
     const path = window.location.pathname.startsWith(base) ? window.location.pathname.slice(base.length) : window.location.pathname
+    const misspelt = /^(\/it)?\/evaluations\/([^/]+)(\/?)$/.exec(path)
+    const id = misspelt && evaluations.find((e) => e.toLowerCase() === decodeURIComponent(misspelt[2]).toLowerCase())
+    if (misspelt && id && id !== misspelt[2]) {
+      const { search, hash } = window.location
+      window.location.replace(`${base}${misspelt[1] ?? ""}/evaluations/${id}${misspelt[3]}${search}${hash}`)
+      return
+    }
     const detected = langOf(path.replace(/\/$/, "") || "/")
     setLang(detected)
     document.documentElement.lang = detected
