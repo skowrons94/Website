@@ -110,6 +110,11 @@ function BodyEn({ to, n }: { to: (p: string) => string; n: Counts }) {
             mine.
           </p>
           <p>
+            The research the site presents is not the AI&apos;s work. The measurements, analyses and evaluations credited
+            to me, on the evaluation pages and in my publications, are my own, done with my collaborators and published
+            under our names; all other work is credited to its authors where it appears.
+          </p>
+          <p>
             This is also how I think tools for our field can be kept alive: with an AI doing much of the routine work,
             one researcher can build and maintain resources for the community (an atlas of reactions, evaluations anyone
             can rerun, a rate explorer) that would otherwise need a small team. It does not replace checking, which is
@@ -123,21 +128,24 @@ function BodyEn({ to, n }: { to: (p: string) => string; n: Counts }) {
         <div className={prose}>
           <p>
             Every round of changes was reviewed independently, by separate AI reviewers (also Claude) that had not
-            written the work, each given one role:
+            written the work, each asked to read the site in one role, from one point of view:
           </p>
         </div>
         <ul className={list}>
-          <li>a nuclear astrophysicist, for the physics, the numbers and the references;</li>
-          <li>an R-matrix specialist, for the evaluations and the notes;</li>
-          <li>a user-interface and accessibility reviewer, on phones and desktops, at 200% text and with a keyboard;</li>
-          <li>readers from the general public, one in English and one in Italian;</li>
-          <li>a senior referee, reading the whole site as a journal referee would.</li>
+          <li>in the role of a nuclear astrophysicist: the physics, the numbers and the references;</li>
+          <li>in the role of an R-matrix specialist: the evaluations and the notes;</li>
+          <li>
+            in the role of a user-interface and accessibility reviewer: phones and desktops, 200% text, the keyboard
+            alone;
+          </li>
+          <li>in the role of readers from the general public, one in English and one in Italian;</li>
+          <li>in the role of a senior referee, reading the whole site as a journal referee would.</li>
         </ul>
         <div className={prose}>
           <p>
             The reviews were repeated, and the problems they found fixed, until none reported an issue of high or medium
-            severity. They are not a substitute for review by people: if you find something wrong, please tell me (see
-            below).
+            severity. These are points of view an AI was asked to take, not reviews by people, and no substitute for
+            them: if you find something wrong, please tell me (see below).
           </p>
           <p>Automated tests check the rest:</p>
         </div>
@@ -149,7 +157,8 @@ function BodyEn({ to, n }: { to: (p: string) => string; n: Counts }) {
           </li>
           <li>
             the <L href="/atlas/rates">reaction rates</L> and the network calculations are compared with pynucastro, the
-            reference implementation of the same REACLIB rates;
+            reference implementation of the same REACLIB rates, and every number in the{" "}
+            <L href="/atlas/rates/curiosities">curiosities</L> is checked against the explorer&apos;s own solver;
           </li>
           <li>
             the <L href="/evaluations">evaluations</L> that run in your browser are compared with native AZURE2 on every
@@ -159,8 +168,9 @@ function BodyEn({ to, n }: { to: (p: string) => string; n: Counts }) {
         </ul>
         <div className={prose}>
           <p>
-            Every number in the atlas and on the explanatory pages carries a citation to its source, and each reference
-            was checked against a record of the publication.
+            Every number in the atlas and on the explanatory pages carries a citation to its source, and during the
+            reviews the references were checked against the sources they cite. If you find one that is wrong, the report
+            links below are the quickest way to tell me.
           </p>
         </div>
       </section>
@@ -171,7 +181,8 @@ function BodyEn({ to, n }: { to: (p: string) => string; n: Counts }) {
           <li>
             <span className="font-medium text-foreground">Masses and half-lives:</span> the Atomic Mass Evaluation
             AME2020 (M. Wang <i>et al.</i>, Chin. Phys. C 45, 030003 (2021)) and NUBASE2020 (F. G. Kondev{" "}
-            <i>et al.</i>, Chin. Phys. C 45, 030001 (2021)). Every Q-value and half-life on the site comes from them.
+            <i>et al.</i>, Chin. Phys. C 45, 030001 (2021)). The atlas&apos; Q-values and the half-lives come from them;
+            the rate explorer shows REACLIB&apos;s own Q-values, those its rates were fitted with.
           </li>
           <li>
             <span className="font-medium text-foreground">Reaction rates:</span> the JINA{" "}
@@ -217,7 +228,7 @@ function BodyEn({ to, n }: { to: (p: string) => string; n: Counts }) {
               open an issue
             </Ext>
             ; every reaction in the atlas, the s-process page and each glossary entry also has a &ldquo;Report an
-            error&rdquo; link that fills in the page for you, and a &ldquo;Suggest a reaction&rdquo; link for what is
+            error&rdquo; link that fills in the report for you, and a &ldquo;Suggest a reaction&rdquo; link for what is
             missing. You can also write to me by e-mail. Corrections and contributions (a reaction, a reference, a
             translation) are welcome as pull requests.
           </p>
@@ -247,6 +258,11 @@ function BodyIt({ to, n }: { to: (p: string) => string; n: Counts }) {
             risultati; la responsabilità scientifica di ogni pagina è mia.
           </p>
           <p>
+            La ricerca che il sito presenta non è opera dell&apos;IA. Le misure, le analisi e le valutazioni attribuite a
+            me, nelle pagine delle valutazioni e nelle mie pubblicazioni, sono mie, svolte con i miei collaboratori e
+            pubblicate a nostro nome; ogni altro lavoro è attribuito ai suoi autori dove compare.
+          </p>
+          <p>
             Penso che sia anche così che si possono tenere in vita gli strumenti del nostro settore: con
             un&apos;intelligenza artificiale che svolge gran parte del lavoro di routine, un solo ricercatore può
             costruire e mantenere risorse per la comunità (un atlante delle reazioni, valutazioni che chiunque può
@@ -261,24 +277,25 @@ function BodyIt({ to, n }: { to: (p: string) => string; n: Counts }) {
         <div className={prose}>
           <p>
             Ogni serie di modifiche è stata esaminata in modo indipendente da revisori IA distinti (anch&apos;essi
-            Claude), che non avevano scritto il lavoro, ciascuno con un ruolo:
+            Claude), che non avevano scritto il lavoro, ciascuno incaricato di leggere il sito in un ruolo, da un solo
+            punto di vista:
           </p>
         </div>
         <ul className={list}>
-          <li>un astrofisico nucleare, per la fisica, i numeri e la bibliografia;</li>
-          <li>uno specialista di R-matrix, per le valutazioni e le note;</li>
+          <li>nel ruolo di un astrofisico nucleare: la fisica, i numeri e la bibliografia;</li>
+          <li>nel ruolo di uno specialista di R-matrix: le valutazioni e le note;</li>
           <li>
-            un revisore dell&apos;interfaccia e dell&apos;accessibilità, su telefono e computer, con il testo al 200% e
-            con la sola tastiera;
+            nel ruolo di un revisore dell&apos;interfaccia e dell&apos;accessibilità: telefono e computer, testo al
+            200%, la sola tastiera;
           </li>
-          <li>lettori del grande pubblico, uno in inglese e uno in italiano;</li>
-          <li>un revisore senior, che legge l&apos;intero sito come farebbe il referee di una rivista.</li>
+          <li>nel ruolo di lettori del grande pubblico, uno in inglese e uno in italiano;</li>
+          <li>nel ruolo di un revisore senior, che legge l&apos;intero sito come farebbe il referee di una rivista.</li>
         </ul>
         <div className={prose}>
           <p>
             Le revisioni sono state ripetute, e i problemi trovati corretti, finché nessuna ha più segnalato problemi di
-            gravità alta o media. Non sostituiscono la revisione da parte di persone: se trovi qualcosa di sbagliato,
-            fammelo sapere (vedi sotto).
+            gravità alta o media. Sono punti di vista che un&apos;IA è stata incaricata di assumere, non revisioni di
+            persone, e non le sostituiscono: se trovi qualcosa di sbagliato, fammelo sapere (vedi sotto).
           </p>
           <p>Il resto lo controllano test automatici:</p>
         </div>
@@ -290,7 +307,8 @@ function BodyIt({ to, n }: { to: (p: string) => string; n: Counts }) {
           </li>
           <li>
             i <L href="/atlas/rates">tassi di reazione</L> e i calcoli di rete sono confrontati con pynucastro,
-            l&apos;implementazione di riferimento degli stessi tassi REACLIB;
+            l&apos;implementazione di riferimento degli stessi tassi REACLIB, e ogni numero delle{" "}
+            <L href="/atlas/rates/curiosities">curiosità</L> è verificato con il risolutore dell&apos;esploratore;
           </li>
           <li>
             le <L href="/evaluations">valutazioni</L> che girano nel tuo browser sono confrontate con AZURE2 nativo su
@@ -300,8 +318,9 @@ function BodyIt({ to, n }: { to: (p: string) => string; n: Counts }) {
         </ul>
         <div className={prose}>
           <p>
-            Ogni numero nell&apos;atlante e nelle pagine divulgative ha una citazione alla sua fonte, e ogni riferimento
-            è stato confrontato con un registro della pubblicazione.
+            Ogni numero nell&apos;atlante e nelle pagine divulgative ha una citazione alla sua fonte, e durante le
+            revisioni i riferimenti sono stati confrontati con le fonti che citano. Se ne trovi uno sbagliato, i
+            collegamenti per le segnalazioni qui sotto sono il modo più rapido per dirmelo.
           </p>
         </div>
       </section>
@@ -312,8 +331,9 @@ function BodyIt({ to, n }: { to: (p: string) => string; n: Counts }) {
           <li>
             <span className="font-medium text-foreground">Masse e tempi di dimezzamento:</span> la valutazione delle
             masse atomiche AME2020 (M. Wang <i>et al.</i>, Chin. Phys. C 45, 030003 (2021)) e NUBASE2020 (F. G. Kondev{" "}
-            <i>et al.</i>, Chin. Phys. C 45, 030001 (2021)). Da qui vengono tutti i valori Q e i tempi di dimezzamento
-            del sito.
+            <i>et al.</i>, Chin. Phys. C 45, 030001 (2021)). Da qui vengono i valori Q dell&apos;atlante e i tempi di
+            dimezzamento; l&apos;esploratore dei tassi mostra i valori Q di REACLIB, quelli con cui sono stati
+            ricavati i suoi tassi.
           </li>
           <li>
             <span className="font-medium text-foreground">Tassi di reazione:</span> la libreria{" "}
@@ -359,7 +379,7 @@ function BodyIt({ to, n }: { to: (p: string) => string; n: Counts }) {
               apri una segnalazione
             </Ext>
             ; ogni reazione dell&apos;atlante, la pagina sul processo s e ogni voce del glossario hanno anche un
-            collegamento &laquo;Segnala un errore&raquo; che compila la pagina al posto tuo, e uno &laquo;Proponi una
+            collegamento &laquo;Segnala un errore&raquo; che compila la segnalazione al posto tuo, e uno &laquo;Proponi una
             reazione&raquo; per ciò che manca. Puoi anche scrivermi per e-mail. Correzioni e contributi (una reazione,
             un riferimento, una traduzione) sono benvenuti come pull request.
           </p>

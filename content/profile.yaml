@@ -68,6 +68,7 @@ selected:
 recognition:
   - source: research/agata
     label: Spokesperson
+    label_it: Portavoce
     what: AGATA lifetime measurement in ¹⁵O
     what_it: Misura di vita media nell'¹⁵O con AGATA
   - source: research/luna
