@@ -272,6 +272,8 @@ scripts/rates/scenarios.yaml    the astrophysical sites, every value with its so
 scripts/rates/pyna_export.py    pynucastro → network JSON, as importable functions
 scripts/rates/build.py          writes public/rates/<id>.json        (Python, pynucastro)
 scripts/rates/reference.py      pynucastro + scipy BDF answers       (Python, pynucastro)
+scripts/rates/evaluated_rates.py  ¹²C(p,γ), ¹³C(p,γ) from the 13N/14N evaluations (Python, pyazr)
+scripts/rates/evaluated/        their N_A⟨σv⟩ tables, read by build.py
 scripts/rates/baseline.mjs      the precomputed first view           (Node, the browser's solver)
 scripts/rates/sensitivity.mjs   every rate ×2 in turn, per scenario   (written by baseline.mjs)
 scripts/rates/test.mjs          npm run test:rates: browser vs pynucastro
@@ -289,6 +291,24 @@ python scripts/rates/reference.py      # scripts/rates/reference/<id>.json
 npm run rates:baseline                 # public/rates/<id>.baseline.json, <id>.sensitivity.json
 npm run test:rates                     # must pass
 ```
+
+A scenario can change during the burn: the novae start at their peak and
+cool as the envelope expands (`history: {kind: cooling, tau_s, rho_exp}` in
+`scenarios.yaml`, T ∝ e^(−t/τ), ρ ∝ T³), written into the network file as a
+`profile` the solver interpolates (`historyOf` in `lib/rates/run.ts`);
+`reference.py` integrates the same profile with scipy.
+
+The "Use the LUNA/AZURE2 rates" switch on the CNO page runs ¹²C(p,γ)¹³N and
+¹³C(p,γ)¹⁴N with rates computed from the site's own evaluations
+(`server/evaluations/13N`, `14N`): `evaluated_rates.py` asks AZURE2 (pyazr,
+`PYTHONPATH=<pyazr>`) for each evaluation's cross section at its shipped
+parameters on a grid of its own (a derived copy of the .azr with only its
+extrapolation segments replaced: 1 keV to 4 MeV, refined around narrow
+levels), integrates the Maxwell–Boltzmann average numerically and writes a
+table; `build.py` puts it into the network file as the reaction's
+`alternatives`. Rerun it when an evaluation changes. The LUNA marks and the
+"newer data" notes come from the atlas (`content/atlas/reactions/*.yaml`:
+underground measurements and evaluations newer than the REACLIB sets).
 
 The s-process network (`builder: sprocess` in `networks.yaml`; 481 nuclei,
 721 reactions) is built by `s_process_rates` in `pyna_export.py`: every

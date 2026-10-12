@@ -42,20 +42,54 @@ def load_module(path: Path, name: str):
     return mod
 
 
-def integrate(mod, Y0, T, rho, tmax, until=None, rtol=1e-10, atol=1e-30, screening=True):
+def state_at(profile, T_peak, rho_peak, t):
+    """T (K) and ρ of a scenario profile at time t, interpolated as lib/rates/solver.ts does
+    (T linear, ρ log-linear in t, held at the ends)."""
+    ts = profile["t_s"]
+    if t <= ts[0]:
+        return T_peak * profile["T"][0], rho_peak * profile["rho"][0]
+    if t >= ts[-1]:
+        return T_peak * profile["T"][-1], rho_peak * profile["rho"][-1]
+    hi = int(np.searchsorted(ts, t, side="right"))
+    lo = hi - 1
+    f = (t - ts[lo]) / (ts[hi] - ts[lo])
+    T = profile["T"][lo] + f * (profile["T"][hi] - profile["T"][lo])
+    lr = np.log(profile["rho"][lo]) + f * (np.log(profile["rho"][hi]) - np.log(profile["rho"][lo]))
+    return T_peak * T, rho_peak * float(np.exp(lr))
+
+
+def integrate(mod, Y0, T, rho, tmax, until=None, rtol=1e-10, atol=1e-30, screening=True, profile=None):
     from pynucastro.screening import screen5
     screen = screen5 if screening else None
+    if profile is not None:
+        T_peak, rho_peak = T, rho
+
+        def rhs(t, Y):
+            Tt, rt = state_at(profile, T_peak, rho_peak, t)
+            return mod.rhs(t, Y, rt, Tt, screen)
+
+        def jac(t, Y):
+            Tt, rt = state_at(profile, T_peak, rho_peak, t)
+            return mod.jacobian(t, Y, rt, Tt, screen)
+    else:
+        def rhs(t, Y):
+            return mod.rhs(t, Y, rho, T, screen)
+
+        def jac(t, Y):
+            return mod.jacobian(t, Y, rho, T, screen)
     events = None
     if until is not None:
         idx, target = until
 
-        def ev(t, Y, *args):
+        def ev(t, Y):
             return Y[idx] - target
         ev.terminal = True
         ev.direction = -1
         events = [ev]
-    sol = solve_ivp(mod.rhs, [0, tmax], Y0, method="BDF", jac=mod.jacobian, dense_output=False,
-                    events=events, args=(rho, T, screen), rtol=rtol, atol=atol)
+    # a burn whose conditions change starts with a small step (its first sample interval / 100)
+    first = min(profile["t_s"][1], tmax) / 100 if profile is not None else None
+    sol = solve_ivp(rhs, [0, tmax], Y0, method="BDF", jac=jac, dense_output=False,
+                    events=events, rtol=rtol, atol=atol, first_step=first)
     if not sol.success:
         raise RuntimeError(sol.message)
     return sol.t[-1], sol.y[:, -1], sol
@@ -96,14 +130,15 @@ def reference_for(data: dict, rates, spec_id: str, rtol: float = 1e-10) -> dict:
             t0 = time.time()
             if until is not None:
                 until = (order.index(until[0]), until[1])
-            tf, Y, sol = integrate(mod, to_pyna(Y0), s["T9"] * 1e9, s["rho"], s["time_s"], until, rtol=rtol)
+            tf, Y, sol = integrate(mod, to_pyna(Y0), s["T9"] * 1e9, s["rho"], s["time_s"], until, rtol=rtol,
+                                 profile=s.get("profile"))
             Y = from_pyna(Y)
             print(f"  {spec_id} {s['id']}: t = {tf:.4g} s, {sol.nfev} rhs, {time.time() - t0:.1f} s")
             runs.append({"scenario": s["id"], "tFinal": float(tf), "Y": [float(y) for y in Y]})
             # one run without screening, to check that switch too
             if s is data["scenarios"][0]:
                 tf2, Y2, _ = integrate(mod, to_pyna(Y0), s["T9"] * 1e9, s["rho"], s["time_s"], until, rtol=rtol,
-                                       screening=False)
+                                       screening=False, profile=s.get("profile"))
                 Y2 = from_pyna(Y2)
                 runs.append({"scenario": s["id"], "screening": False, "tFinal": float(tf2),
                              "Y": [float(y) for y in Y2]})

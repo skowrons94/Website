@@ -5,6 +5,7 @@
  * worker share it.
  */
 
+import { evalSpec, networkProvider, overrideProvider, type RateProvider } from "./rate-provider.ts"
 import { compile, integrate, type Compiled, type History } from "./solver.ts"
 import type { Network, Scenario } from "./schema.ts"
 
@@ -20,6 +21,23 @@ export interface RunRequest {
   atol?: number
   /** nuclei whose abundance over time to return (all when absent) */
   track?: string[]
+  /** reactions to run with their alternative rate (schema: Reaction.alternatives) instead of REACLIB's */
+  alternatives?: string[]
+}
+
+/**
+ * The network's rates, with the reactions in `use` taken from their
+ * alternative (an evaluation's table) instead of REACLIB.
+ */
+export function providerFor(network: Network, use: string[] = []): RateProvider {
+  const base = networkProvider(network)
+  if (!use.length) return base
+  const over: Record<string, (T9: number) => number> = {}
+  for (const id of use) {
+    const alt = network.reactions.find((r) => r.id === id)?.alternatives?.[0]
+    if (alt) over[id] = (T9: number) => evalSpec(alt.rate, T9)
+  }
+  return overrideProvider(base, over)
 }
 
 export interface RunResult {
@@ -37,11 +55,21 @@ export interface RunResult {
   exposure?: { tau_cm2: number; peak_cm3: number }
 }
 
+/**
+ * The thermodynamic history of a scenario with peak (or constant) conditions
+ * T9, ρ: constant, or the scenario's profile scaled to them.
+ */
+export function historyOf(s: Scenario, T9 = s.T9, rho = s.rho): History {
+  const p = s.profile
+  if (!p) return { kind: "constant", T9, rho }
+  return { kind: "series", t_s: p.t_s, T9: p.T.map((f) => f * T9), rho: p.rho.map((f) => f * rho) }
+}
+
 /** The request a scenario makes, unmodified. */
 export function scenarioRequest(network: Network, s: Scenario, screening = true): RunRequest {
   return {
     network: network.id,
-    history: { kind: "constant", T9: s.T9, rho: s.rho },
+    history: historyOf(s),
     X0: s.X,
     tEnd_s: s.time_s,
     until: s.until,
@@ -73,6 +101,7 @@ export function run(c: Compiled, req: RunRequest, maxSamples = 120): RunResult {
     atol: req.atol,
     maxSamples,
     neutronExposure: c.index.has("n"),
+    ...(req.alternatives?.length ? { provider: providerFor(c.network, req.alternatives) } : {}),
   })
   const A = c.A
   const toX = (Y: Float64Array) => Array.from(Y, (y, i) => round(Math.max(0, y * A[i])))
@@ -106,6 +135,7 @@ export function requestKey(req: RunRequest): string {
     req.rtol ?? null,
     req.atol ?? null,
     req.track ?? null,
+    ...(req.alternatives?.length ? [[...req.alternatives].sort()] : []),
   ])
 }
 

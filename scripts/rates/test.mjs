@@ -28,9 +28,9 @@ import path from "node:path"
 import { DEFAULT_TOLERANCES, compile, integrate } from "../../lib/rates/solver.ts"
 import { networkProvider } from "../../lib/rates/rate-provider.ts"
 import { checkNetwork } from "../../lib/rates/schema.ts"
-import { requestKey, run, scenarioRequest } from "../../lib/rates/run.ts"
+import { historyOf, providerFor, requestKey, run, scenarioRequest } from "../../lib/rates/run.ts"
 import { composition, metalsMax, METALS_RANGE } from "../../lib/rates/composition.ts"
-import { dominantPath, slowest } from "../../lib/rates/flow.ts"
+import { bottleneck, closes, dominantPath, pathStart } from "../../lib/rates/flow.ts"
 import { lifetimes } from "../../lib/rates/solver.ts"
 import { sensitivity } from "./sensitivity.mjs"
 
@@ -80,7 +80,7 @@ for (const file of files) {
   for (const run of ref.runs) {
     const s = network.scenarios.find((x) => x.id === run.scenario)
     const res = integrate(c, {
-      history: { kind: "constant", T9: s.T9, rho: s.rho },
+      history: historyOf(s),
       X0: s.X,
       tEnd_s: s.time_s,
       until: s.until,
@@ -109,7 +109,7 @@ for (const file of files) {
     // and at the tolerance the explorer runs with
     if (run.screening !== false) {
       const ui = integrate(c, {
-        history: { kind: "constant", T9: s.T9, rho: s.rho },
+        history: historyOf(s),
         X0: s.X,
         tEnd_s: s.time_s,
         until: s.until,
@@ -231,22 +231,102 @@ for (const id of ["pp", "cno", "nena", "mgal", "sprocess"]) {
   if (Math.abs(taus[k] * lab - 1) > 0.01) fail(`²⁶Al waits ${yr} yr at ${s.id}`)
 }
 {
-  // bottlenecks follow the flow, branchings included
-  const want = { pp: ["sun-core", "p_p_to_d_beta_pos_reaclib"], cno: ["nova", /O1[45]_to_N1[45]_beta_pos/], nena: ["nova-one", /beta_pos/] }
-  for (const [id, [sid, re]] of Object.entries(want)) {
+  // bottlenecks follow the flow, branchings included; a step slower than the
+  // burn is not named, nor a leak out of the cycle (lib/rates/flow.ts)
+  const want = {
+    pp: [["sun-core", "p_p_to_d_beta_pos_reaclib"]],
+    cno: [["nova", /O1[45]_to_N1[45]_beta_pos/]],
+    nena: [["nova-one", /beta_pos|p_to/], ["massive-25", /^(?!Ne20_p)/]],
+    mgal: [["massive-25", /^(?!Mg24_p)/], ["agb-hbb", /^(?!Al27_p_to_Si28)/]],
+  }
+  for (const [id, cases] of Object.entries(want)) {
     if (only.length && !only.includes(id)) continue
     const network = checkNetwork(JSON.parse(fs.readFileSync(path.join(DATA, `${id}.json`), "utf8")))
+    const base = JSON.parse(fs.readFileSync(path.join(DATA, `${id}.baseline.json`), "utf8"))
     const c = compile(network)
-    const s = network.scenarios.find((x) => x.id === sid)
-    const taus = lifetimes(c, { history: { kind: "constant", T9: s.T9, rho: s.rho } }, s.X)
-    const start = network.reactions.find((r) => r.id === network.ui.cycle[0]).target
-    const path_ = dominantPath(c, taus, start)
-    const b = slowest(path_)
-    const rid = network.reactions[b.reaction].id
-    console.log(`bottleneck ${id} ${sid}: ${network.reactions[b.reaction].label}, ${b.tau.toPrecision(3)} s, path ${path_.map((p) => network.nuclei[p.nucleus].name).join(" → ")}`)
-    if (typeof re === "string" ? rid !== re : !re.test(rid)) fail(`${id} ${sid}: bottleneck ${rid}`)
-    if (id === "nena" && /Na22_to/.test(rid)) fail(`nena nova: ²²Na decay taken as bottleneck though ²²Na(p,γ) is faster`)
+    const cycle = network.ui.cycle.map((x) => network.reactions.findIndex((r) => r.id === x))
+    const fuel = network.nuclei.findIndex((n) => n.name === network.ui.fuel)
+    for (const [sid, re] of cases) {
+      const s = network.scenarios.find((x) => x.id === sid)
+      const taus = lifetimes(c, { history: { kind: "constant", T9: s.T9, rho: s.rho } }, s.X)
+      const tBurn = base.runs[sid].tFinal
+      const path_ = dominantPath(c, taus, pathStart(c, taus, cycle, tBurn, fuel))
+      const b = bottleneck(path_, taus, closes(c, path_), cycle, tBurn, fuel)
+      const rid = network.reactions[b.step.reaction].id
+      console.log(
+        `bottleneck ${id} ${sid}: ${network.reactions[b.step.reaction].label}, ${b.tau.toPrecision(3)} s (burn ${tBurn.toPrecision(3)} s)` +
+          `${b.idle.length ? `, not running: ${b.idle.map((p) => network.reactions[p.reaction].label).join(", ")}` : ""}` +
+          `${b.leak.length ? `, leak: ${b.leak.map((p) => network.reactions[p.reaction].label).join(", ")}` : ""}`,
+      )
+      if (typeof re === "string" ? rid !== re : !re.test(rid)) fail(`${id} ${sid}: bottleneck ${rid}`)
+      if (b.tau > tBurn && b.step.nucleus !== fuel) fail(`${id} ${sid}: bottleneck ${rid} slower than the burn`)
+      if (id === "nena" && /Na22_to/.test(rid) && sid === "nova-one") fail(`nena nova: ²²Na decay taken as bottleneck though ²²Na(p,γ) is faster`)
+    }
   }
+}
+{
+  // the novae cool as they expand (scenarios.yaml): an ONe nova keeps its
+  // ²⁰Ne and ejects ²⁶Al (José & Hernanz 1998: ²⁶Al/²⁷Al 0.2–0.4; José,
+  // Hernanz & Coc 1997: X(²⁶Al) 2 × 10⁻⁴–2 × 10⁻³), and most hydrogen is left
+  const X = (id, sid, name) => {
+    const network = checkNetwork(JSON.parse(fs.readFileSync(path.join(DATA, `${id}.json`), "utf8")))
+    const base = JSON.parse(fs.readFileSync(path.join(DATA, `${id}.baseline.json`), "utf8"))
+    const i = network.nuclei.findIndex((n) => n.name === name)
+    const s = network.scenarios.find((x) => x.id === sid)
+    return [s.X[name], base.runs[sid].final[i]]
+  }
+  if (!only.length || only.includes("mgal")) {
+    const [, al26] = X("mgal", "nova-one", "al26")
+    const [, al27] = X("mgal", "nova-one", "al27")
+    console.log(`ONe nova: X(²⁶Al) ${al26.toExponential(2)}, ²⁶Al/²⁷Al ${(al26 / al27).toFixed(3)}`)
+    if (!(al26 / al27 > 1e-2 && al26 / al27 < 1)) fail(`ONe nova: ²⁶Al/²⁷Al = ${al26 / al27}, outside 10⁻² … 1`)
+    if (!(al26 > 1e-4 && al26 < 3e-3)) fail(`ONe nova: X(²⁶Al) = ${al26}`)
+  }
+  if (!only.length || only.includes("nena")) {
+    const [ne0, ne1] = X("nena", "nova-one", "ne20")
+    const [h0, h1] = X("nena", "nova-one", "p")
+    console.log(`ONe nova: ²⁰Ne kept ${(ne1 / ne0).toFixed(3)}, H ${h0.toFixed(3)} → ${h1.toFixed(3)}`)
+    if (!(ne1 / ne0 > 0.5)) fail(`ONe nova burns ²⁰Ne: ${ne0} → ${ne1}`)
+    if (!(h1 / h0 > 0.7)) fail(`ONe nova burns too much hydrogen: ${h0} → ${h1}`)
+  }
+  if (!only.length || only.includes("cno")) {
+    const [h0, h1] = X("cno", "nova", "p")
+    console.log(`CO nova: H ${h0.toFixed(3)} → ${h1.toFixed(3)}`)
+    if (!(h1 / h0 > 0.7)) fail(`CO nova burns too much hydrogen: ${h0} → ${h1}`)
+  }
+  if (!only.length || only.includes("sprocess")) {
+    // core helium burning: n_n ≈ 10⁶–10⁷ cm⁻³ (Käppeler et al. 2011; Pignatari et al. 2010)
+    const base = JSON.parse(fs.readFileSync(path.join(DATA, "sprocess.baseline.json"), "utf8"))
+    const peak = base.runs["massive-he-core"].exposure.peak_cm3
+    console.log(`massive-star He core: peak neutron density ${peak.toExponential(2)} cm⁻³`)
+    if (!(peak > 1e6 && peak < 3e7)) fail(`He core: peak neutron density ${peak} cm⁻³, outside 10⁶ … 3 × 10⁷`)
+  }
+}
+
+{
+  // the rates from the site's evaluations (scripts/rates/evaluated_rates.py)
+  // reach the network as written, and only when asked for
+  const network = checkNetwork(JSON.parse(fs.readFileSync(path.join(DATA, "cno.json"), "utf8")))
+  const ids = network.reactions.filter((r) => r.alternatives?.length).map((r) => r.id)
+  if (ids.length !== 2) fail(`cno: ${ids.length} reactions with an evaluated rate, expected ¹²C(p,γ) and ¹³C(p,γ)`)
+  const luna = providerFor(network, ids)
+  const reaclib = providerFor(network)
+  for (const id of ids) {
+    const src = JSON.parse(fs.readFileSync(path.join(ROOT, "scripts", "rates", "evaluated", `${id}.json`), "utf8"))
+    src.T9.forEach((T9, i) => {
+      const d = Math.abs(Math.log10(luna.rate(id, T9)) - src.log10[i])
+      if (d > 1e-9) fail(`${id}: evaluated rate at T9 = ${T9} differs from the table by ${d} dex`)
+      const r = luna.rate(id, T9) / reaclib.rate(id, T9)
+      if (Math.abs(r / src.reaclib_ratio[i] - 1) > 1e-3) fail(`${id}: ratio to REACLIB ${r}, table says ${src.reaclib_ratio[i]}`)
+    })
+    const at = (T9) => (luna.rate(id, T9) / reaclib.rate(id, T9)).toFixed(3)
+    console.log(`${id}: evaluated ÷ REACLIB ${at(0.0157)} (16 MK), ${at(0.035)} (35 MK), ${at(0.1)} (0.1 GK), ${at(0.3)} (0.3 GK)`)
+  }
+  const T9 = 0.035
+  console.log(
+    `¹²C/¹³C in CN equilibrium at 35 MK: REACLIB ${(reaclib.rate(ids[1], T9) / reaclib.rate(ids[0], T9)).toFixed(2)}, ` +
+      `evaluated ${(luna.rate(ids[1], T9) / luna.rate(ids[0], T9)).toFixed(2)}`,
+  )
 }
 
 if (failures) {

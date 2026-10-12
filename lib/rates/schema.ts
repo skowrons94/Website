@@ -70,6 +70,21 @@ export interface Reaction {
   weakType: string | null
   rate: RateSpec
   sources: RateSource[]
+  /**
+   * other rates for this reaction the explorer can switch to: a table
+   * computed from one of the site's AZURE2 evaluations
+   * (scripts/rates/evaluated_rates.py), with its provenance
+   */
+  alternatives?: {
+    id: string
+    evaluation: string
+    rate: RateSpec
+    paper: { authors: string; title: string; journal: string; doi: string }
+    fit: { journal: string; doi: string }
+    method: string
+  }[]
+  /** underground measurements the atlas lists (LUNA and others), by build.py */
+  measured?: { facility: string; name: string; luna: boolean; year: number; refs: { short: string; doi?: string | null }[] }[]
 }
 
 export interface Scenario {
@@ -92,6 +107,12 @@ export interface Scenario {
   note_it: string | null
   /** optional extra data a network's explorer understands (the s-process) */
   extra?: Record<string, unknown>
+  /**
+   * optional: conditions that change during the burn (a nova cooling as it
+   * expands). T9 and rho above are then the peak values, and T(t) = T9 · T[i],
+   * ρ(t) = rho · rho[i] at the times t_s (lib/rates/run.ts, historyOf).
+   */
+  profile?: { kind: string; tau_s: number; rho_exp: number; t_s: number[]; T: number[]; rho: number[] }
 }
 
 export interface Network {
