@@ -2,8 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { Download, Loader2 } from "lucide-react"
-import { InlineMath } from "react-katex"
-import "katex/dist/katex.min.css"
+import { Tex, texPlain } from "@/components/tex"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -32,6 +31,7 @@ import {
   type ExtrapSegment,
 } from "@/lib/api"
 import { OVERLAY_LIMIT, formatEnergy, observableLabel, quantityLabel } from "@/lib/viz"
+import { axisLabel, quantityFor, segmentTitle } from "@/lib/eval-plot"
 import { useDict, useLang } from "@/components/lang-provider"
 
 /**
@@ -51,6 +51,10 @@ interface Props {
 
 type Quantity = "sfactor" | "cross_section"
 
+/** Scattering has no S-factor; such curves are always drawn as dσ/dΩ. */
+const scattering = (s: { entrance_key: number; exit_key: number; observable: string }) =>
+  s.observable === "phase-shift" || s.entrance_key === s.exit_key
+
 export function ExtrapPlot({
   extrapolations,
   data,
@@ -68,7 +72,10 @@ export function ExtrapPlot({
   useEffect(() => {
     setSelected((current) => {
       if (current.length > 0) return current
-      const first = extrapolations.find((s) => s.active) ?? extrapolations[0]
+      const first =
+        extrapolations.find((s) => s.active && !scattering(s)) ??
+        extrapolations.find((s) => s.active) ??
+        extrapolations[0]
       return first ? [first.index] : []
     })
   }, [extrapolations])
@@ -86,11 +93,13 @@ export function ExtrapPlot({
   const curveSeries = (segment: ExtrapSegment): ChartSeries => {
     const energies = segment.energies ?? []
     const values =
-      quantity === "sfactor"
+      quantity === "sfactor" && !scattering(segment)
         ? segment.calculated_sfactor
         : segment.calculated
     return {
-      label: `${segment.name} (${observableLabel(segment.observable, lang)})`,
+      label: `${texPlain(segment.entrance)} → ${texPlain(segment.exit)} (${observableLabel(segment.observable, lang)}${
+        segment.is_angle_integrated ? "" : `, ${Number(segment.angle_min.toFixed(1))}°`
+      })`,
       points: [],
       curve: energies.map((x, i) => ({ x, y: values?.[i] ?? NaN })),
     }
@@ -98,14 +107,11 @@ export function ExtrapPlot({
 
   const dataSeries = (segment: DataSegment): ChartSeries => {
     const energies = segment.energies ?? []
-    const observed =
-      quantity === "sfactor" ? segment.sfactor : segment.cross_sections
-    const errors =
-      quantity === "sfactor"
-        ? segment.sfactor_errors
-        : segment.cross_sections_errors
+    const q = quantityFor(segment, quantity)
+    const observed = q === "sfactor" ? segment.sfactor : segment.cross_sections
+    const errors = q === "sfactor" ? segment.sfactor_errors : segment.cross_sections_errors
     return {
-      label: segment.name,
+      label: segmentTitle(segment),
       points: energies.map((x, i) => ({
         x,
         y: observed?.[i] ?? NaN,
@@ -120,8 +126,12 @@ export function ExtrapPlot({
     [chosen, chosenData, quantity, lang],
   )
 
-  const overLimit = series.length > OVERLAY_LIMIT
-  const observable = chosen[0]?.observable ?? "angle-integrated"
+  const curveLabel = (s: ExtrapSegment) =>
+    quantityLabel(quantity === "sfactor" && !scattering(s) ? "sfactor" : "cross_section", s.observable, lang)
+  const labels = new Set([...chosen.map(curveLabel), ...chosenData.map((s) => axisLabel(s, quantity, lang))])
+  const mixed = labels.size > 1
+  const overLimit = series.length > OVERLAY_LIMIT || mixed
+  const yLabel = chosen[0] ? curveLabel(chosen[0]) : chosenData[0] ? axisLabel(chosenData[0], quantity, lang) : ""
 
   return (
     <div className="space-y-4">
@@ -171,7 +181,7 @@ export function ExtrapPlot({
 
       {overLimit && (
         <p className="text-xs text-muted-foreground">
-          {t.facets(series.length, OVERLAY_LIMIT, "series")}
+          {mixed ? t.mixedNote : t.facets(series.length, OVERLAY_LIMIT, "series")}
         </p>
       )}
 
@@ -188,9 +198,9 @@ export function ExtrapPlot({
                 <Card key={`x-${segment.index}`}>
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm">
-                      <InlineMath math={segment.entrance} />
+                      <Tex math={segment.entrance} />
                       {" → "}
-                      <InlineMath math={segment.exit} />
+                      <Tex math={segment.exit} />
                       <span className="ml-2 text-xs font-normal text-muted-foreground">
                         {observableLabel(segment.observable, lang)}
                       </span>
@@ -200,7 +210,8 @@ export function ExtrapPlot({
                     <SegmentChart
                       series={[curveSeries(segment)]}
                       xLabel={t.energyAxis}
-                      yLabel={quantityLabel(quantity, segment.observable, lang)}
+                      yLabel={curveLabel(segment)}
+                      ariaLabel={t.plotAria(curveLabel(segment), curveSeries(segment).label)}
                       logX={logX}
                       logY={logY}
                       height={240}
@@ -213,7 +224,7 @@ export function ExtrapPlot({
                 <Card key={`d-${segment.index}`}>
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm">
-                      {segment.name}
+                      {segmentTitle(segment)}
                       <span className="ml-2 text-xs font-normal text-muted-foreground">
                         {t.measured}
                       </span>
@@ -223,7 +234,8 @@ export function ExtrapPlot({
                     <SegmentChart
                       series={[dataSeries(segment)]}
                       xLabel={t.energyAxis}
-                      yLabel={quantityLabel(quantity, segment.observable, lang)}
+                      yLabel={axisLabel(segment, quantity, lang)}
+                      ariaLabel={t.plotAria(axisLabel(segment, quantity, lang), segmentTitle(segment))}
                       logX={logX}
                       logY={logY}
                       height={240}
@@ -235,13 +247,14 @@ export function ExtrapPlot({
           </div>
         ) : (
           <Card className="flex flex-col">
-            <CardContent className="flex-1 pt-6">
+            <CardContent className="h-[18rem] p-2 sm:p-4 lg:h-[26rem]">
               <SegmentChart
                 series={series}
                 xLabel={t.energyAxis}
-                yLabel={quantityLabel(quantity, observable, lang)}
+                yLabel={yLabel}
                 logX={logX}
                 logY={logY}
+                ariaLabel={t.plotAria(yLabel, series.map((s) => s.label).join("; "))}
               />
             </CardContent>
           </Card>
@@ -252,7 +265,7 @@ export function ExtrapPlot({
         <div className="relative">
           <Card className="flex min-h-0 flex-col lg:absolute lg:inset-0">
             <CardHeader className="shrink-0 pb-3">
-              <CardTitle className="text-base">{t.extrapolations}</CardTitle>
+              <CardTitle role="heading" aria-level={3} className="text-base">{t.extrapolations}</CardTitle>
             </CardHeader>
             <CardContent className="min-h-0 flex-1 overflow-y-auto">
               <div className="space-y-2 pr-1">
@@ -274,9 +287,9 @@ export function ExtrapPlot({
                     className="flex-1 cursor-pointer text-xs font-normal leading-tight"
                   >
                     <span className="block font-medium">
-                      <InlineMath math={segment.entrance} />
+                      <Tex math={segment.entrance} />
                       {" → "}
-                      <InlineMath math={segment.exit} />
+                      <Tex math={segment.exit} />
                     </span>
                     <span className="text-muted-foreground">
                       {observableLabel(segment.observable, lang)} ·{" "}
@@ -304,7 +317,7 @@ export function ExtrapPlot({
           extrapolation list that drives the plot. */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">{t.addMeasured}</CardTitle>
+          <CardTitle role="heading" aria-level={3} className="text-base">{t.addMeasured}</CardTitle>
           <CardDescription>{t.addMeasuredText}</CardDescription>
         </CardHeader>
         <CardContent>
@@ -332,7 +345,7 @@ export function ExtrapPlot({
                     className="flex-1 cursor-pointer text-xs font-normal leading-tight"
                   >
                     <span className="block truncate font-medium">
-                      {segment.name}
+                      {segmentTitle(segment)}
                     </span>
                     <span className="text-muted-foreground">
                       {formatEnergy(segment.energy_min)}–

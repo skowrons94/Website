@@ -36,6 +36,8 @@ interface SessionState {
   loading: boolean
   calculating: boolean
   error: string | null
+  /** HTTP status of the last failure (0: the server could not be reached). */
+  errorStatus: number | null
   expired: boolean
 
   open: (id: string) => Promise<void>
@@ -59,8 +61,13 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   )
   const [loading, setLoading] = useState(false)
   const [calculating, setCalculating] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setErrorText] = useState<string | null>(null)
+  const [errorStatus, setErrorStatus] = useState<number | null>(null)
   const [expired, setExpired] = useState(false)
+  const setError = useCallback((message: string | null, status: number | null = null) => {
+    setErrorText(message)
+    setErrorStatus(message === null ? null : status)
+  }, [])
 
   // Read inside callbacks so they never close over a stale id.
   const sessionRef = useRef<string | null>(null)
@@ -68,14 +75,14 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   const handle = useCallback((err: unknown) => {
     if (err instanceof ApiError) {
-      setError(err.message)
+      setError(err.message, err.status)
       // The server dropped this session (idle timeout or eviction); the UI has
       // to offer a reopen rather than retrying against a dead id.
       if (err.sessionExpired) setExpired(true)
     } else {
       setError(err instanceof Error ? err.message : unexpected)
     }
-  }, [unexpected])
+  }, [unexpected, setError])
 
   const open = useCallback(
     async (id: string) => {
@@ -201,6 +208,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         loading,
         calculating,
         error,
+        errorStatus,
         expired,
         open,
         loadData,

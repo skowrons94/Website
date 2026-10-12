@@ -2,8 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react"
 import { ChevronDown, ChevronRight, RotateCcw } from "lucide-react"
-import { InlineMath } from "react-katex"
-import "katex/dist/katex.min.css"
+import { Tex, Unit, texPlain, unitPlain } from "@/components/tex"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -83,7 +82,7 @@ export function LevelControls({ scheme, onChange, onReset, disabled }: Props) {
           freeIndex: level.energy_free_index,
           kind: "energy",
           latex: "E",
-          ariaLabel: t.levelEnergyAria(level.jpi),
+          ariaLabel: t.levelEnergy,
           value: level.energy,
           initial: level.initial_energy,
           unit: "MeV",
@@ -97,7 +96,7 @@ export function LevelControls({ scheme, onChange, onReset, disabled }: Props) {
           freeIndex: channel.free_index,
           kind: "channel",
           latex: quantitySymbol(channel.quantity, channel.label),
-          ariaLabel: `${level.jpi} ${channel.label} L=${channel.L}`,
+          ariaLabel: `${texPlain(quantitySymbol(channel.quantity, channel.label))}, L=${channel.L}`,
           value: channel.width,
           initial: channel.initial_width,
           unit: channel.unit,
@@ -169,7 +168,7 @@ export function LevelControls({ scheme, onChange, onReset, disabled }: Props) {
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <h3 className="text-sm font-medium">{t.interactiveLevels}</h3>
+          <h2 className="text-base font-semibold">{t.interactiveLevels}</h2>
           <Badge variant="secondary" className="text-xs">
             {t.nFree(total)}
           </Badge>
@@ -216,9 +215,11 @@ export function LevelControls({ scheme, onChange, onReset, disabled }: Props) {
           return (
             <div key={group.key}>
               <button
+                type="button"
                 onClick={() => toggle(group.key)}
                 aria-expanded={expanded}
-                className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm hover:bg-muted/50"
+                aria-label={t.levelGroupAria(group.jpi, formatEnergy(group.energy))}
+                className="flex min-h-11 w-full items-center gap-3 px-3 py-2 text-left text-sm hover:bg-muted/50"
               >
                 {expanded ? (
                   <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
@@ -226,7 +227,7 @@ export function LevelControls({ scheme, onChange, onReset, disabled }: Props) {
                   <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
                 )}
                 <span className="font-medium">
-                  <InlineMath math={jpiLatex(group.jpi)} />
+                  <Tex math={jpiLatex(group.jpi)} />
                 </span>
                 <span className="tabular-nums text-muted-foreground">
                   {formatEnergy(group.energy)} MeV
@@ -244,7 +245,7 @@ export function LevelControls({ scheme, onChange, onReset, disabled }: Props) {
               </button>
 
               {expanded && (
-                <div className="grid gap-x-8 gap-y-4 border-t bg-muted/20 px-4 py-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+                <div className="grid gap-x-8 gap-y-5 border-t bg-muted/20 px-4 py-4 sm:grid-cols-2 lg:grid-cols-1">
                   {group.controls.map((control) => {
                     const value = draft[control.freeIndex] ?? control.value
                     const [min, max] = bounds(control)
@@ -260,15 +261,19 @@ export function LevelControls({ scheme, onChange, onReset, disabled }: Props) {
                       <div key={control.freeIndex} className="space-y-1.5">
                         <div className="flex items-baseline justify-between gap-2 text-sm">
                           <span className="flex items-baseline gap-1.5 truncate">
-                            <InlineMath math={control.latex} />
+                            <Tex math={control.latex} />
                             <span className="text-xs text-muted-foreground">
                               {control.detail}
                             </span>
                           </span>
                           <span className="shrink-0 tabular-nums">
-                            {control.unit === "MeV"
-                              ? `${significant(value, 4)} MeV`
-                              : `${shown.text} ${shown.unit}`}
+                            {control.unit === "MeV" ? (
+                              `${significant(value, 4)} MeV`
+                            ) : (
+                              <>
+                                {shown.text.replace("-", "\u2212")} <Unit unit={shown.unit} />
+                              </>
+                            )}
                           </span>
                         </div>
                         <Slider
@@ -276,15 +281,20 @@ export function LevelControls({ scheme, onChange, onReset, disabled }: Props) {
                           min={min}
                           max={max}
                           step={(max - min) / 400}
-                          disabled={disabled}
+                          /* Never disabled while recalculating: that would drop a keyboard user's focus mid-adjustment; edits are debounced instead. */
                           onValueChange={([next]) =>
                             handleSlide(control.freeIndex, next)
                           }
-                          aria-label={control.ariaLabel}
+                          thumbLabel={`${t.levelGroupAria(group.jpi.replace(/-$/, "\u2212"), formatEnergy(group.energy))}: ${control.ariaLabel}`}
+                          valueText={
+                            control.unit === "MeV"
+                              ? t.sliderValue(significant(value, 4), "MeV")
+                              : t.sliderValue(shown.text, unitPlain(shown.unit))
+                          }
                         />
                         {changed && (
                           <p className="text-[11px] text-muted-foreground">
-                            {t.wasValue(`${initial.text} ${initial.unit}`)}
+                            {t.wasValue(`${initial.text} ${unitPlain(initial.unit)}`)}
                           </p>
                         )}
                       </div>

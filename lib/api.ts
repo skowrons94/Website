@@ -40,6 +40,13 @@ export interface Evaluation {
   reference: string | null
   filename: string
   entrance: string | null
+  // Added with the evaluation header; optional so an older API still parses.
+  doi?: string | null
+  reactions?: string[]
+  status?: string | null
+  citation?: string | null
+  summary?: string | null
+  summary_it?: string | null
 }
 
 /** What a channel parameter physically is; the unit travels with the value. */
@@ -80,7 +87,9 @@ export interface SchemeLevel {
 }
 
 export interface SchemePair {
+  /** The pair's key in the .azr file (what AZURE2's GUI calls it). */
   number: number
+  engine_number?: number
   label: string
   is_photon: boolean
   is_entrance: boolean
@@ -104,11 +113,19 @@ export interface DataSegment {
   index: number
   key: number
   name: string
+  /** Readable dataset name ("Kettner", "Elwyn (EXFOR F0012.002)"). */
+  label?: string
+  exfor?: string | null
   active: boolean
   entrance: string
   exit: string
   entrance_key: number
   exit_key: number
+  /** Same species in and out: no S-factor is defined. */
+  elastic?: boolean
+  capture?: boolean
+  /** Unicode reaction notation, e.g. "¹²C(p,γ)¹³N". */
+  reaction?: string | null
   observable: string
   data_file: string
   energy_min: number
@@ -118,8 +135,11 @@ export interface DataSegment {
   norm: number
   vary_norm: boolean
   norm_error: number
+  norm_penalty?: number | null
   n_points: number
   chi2: number | null
+  chi2_sum?: number | null
+  chi2_points?: number
   energies: number[] | null
   angles: number[] | null
   cross_sections: number[] | null
@@ -209,10 +229,10 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
       headers: { "Content-Type": "application/json", ...(init?.headers || {}) },
     })
   } catch {
-    throw new ApiError(
-      `Cannot reach the AZURE2 server at ${API_BASE || "this origin"}. Is it running?`,
-      0,
-    )
+    // Status 0 = unreachable. The message never names the API's address: in a
+    // development build that is http://localhost:…, which means nothing to a
+    // visitor (the pages show their own friendly copy for this case anyway).
+    throw new ApiError("The evaluation server could not be reached.", 0)
   }
 
   if (!response.ok) {

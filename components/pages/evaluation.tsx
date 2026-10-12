@@ -1,33 +1,22 @@
-import fs from "node:fs"
-import path from "node:path"
-
 import type { Metadata } from "next"
 import Link from "next/link"
 
+import { EvaluationHeader, nuclideOf as nuclide } from "@/components/evaluation-header"
 import EvaluationWorkspace from "@/components/evaluation-workspace"
 import { Sci } from "@/components/sci"
 import { getAtlas } from "@/lib/atlas"
+import { azure2Ref, evaluationIds, evaluationMeta } from "@/lib/evaluation-meta"
 import { dict, localePath, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
 
 /**
  * Every evaluation directory that holds a .azr file, so a static build has a
  * page for each. On the server build a new evaluation is still served on
- * demand without rebuilding the site.
+ * demand without rebuilding the site (it renders without the header, which
+ * is read from the repository at build time).
  */
 export function evaluationParams() {
-  const root = path.join(process.cwd(), "server", "evaluations")
-  if (!fs.existsSync(root)) return []
-  return fs
-    .readdirSync(root, { withFileTypes: true })
-    .filter((d) => d.isDirectory())
-    .filter((d) => fs.readdirSync(path.join(root, d.name)).some((f) => f.endsWith(".azr")))
-    .map((d) => ({ id: d.name }))
-}
-
-/** `14N` → `¹⁴N`; anything else is left as it is. */
-function nuclide(id: string): string {
-  return id.replace(/^(\d+)/, (m) => m.replace(/\d/g, (d) => "⁰¹²³⁴⁵⁶⁷⁸⁹"[Number(d)]))
+  return evaluationIds().map((id) => ({ id }))
 }
 
 export function evaluationMetadata(id: string, lang: Lang): Metadata {
@@ -40,10 +29,12 @@ export function EvaluationPage({ id, lang }: { id: string; lang: Lang }) {
   // The atlas entries that point at this evaluation (rmatrix: in their file),
   // so the way back to the physics is as short as the way in.
   const reactions = getAtlas(lang).reactions.filter((r) => r.rmatrix.includes(id))
+  const meta = evaluationMeta(id)
 
   return (
     <>
-      <EvaluationWorkspace />
+      {meta.known && <EvaluationHeader meta={meta} lang={lang} azure2Ref={azure2Ref()} />}
+      <EvaluationWorkspace id={id} known={meta.known} />
       {reactions.length > 0 && (
         <aside className="mt-16 border-t border-border/70 pt-8 text-sm">
           <h2 className="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">

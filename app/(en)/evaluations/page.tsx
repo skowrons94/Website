@@ -1,7 +1,21 @@
 import { EvaluationsIndex } from "@/components/pages/evaluations-index"
+import { evaluationIds, evaluationMeta } from "@/lib/evaluation-meta"
 
-// A client component: the list comes from the AZURE2 server, or from the
-// static index in the GitHub Pages build. Its language comes from the layout.
+// The cards are rendered from the repository at build time, so they are in
+// the HTML; the client then asks the AZURE2 server (or, in the GitHub Pages
+// build, the static index) for the live list. Its language comes from the layout.
 export default function Page() {
-  return <EvaluationsIndex />
+  const initial = evaluationIds().map((id) => {
+    const m = evaluationMeta(id)
+    return {
+      id,
+      reactions: m.reactions,
+      author: m.author,
+      doi: m.doi,
+      reference: m.reference,
+      status: m.status,
+      filename: m.filename,
+    }
+  })
+  return <EvaluationsIndex initial={initial} />
 }

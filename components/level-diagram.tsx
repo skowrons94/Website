@@ -13,7 +13,8 @@ import {
 } from "@/components/ui/card"
 import type { SchemeLevel } from "@/lib/api"
 import { formatEnergy } from "@/lib/viz"
-import { useDict } from "@/components/lang-provider"
+import { linearTicks, tickLabel } from "@/lib/ticks"
+import { useDict, useLang } from "@/components/lang-provider"
 
 /**
  * A conventional nuclear energy-level diagram: one horizontal line per level,
@@ -37,6 +38,7 @@ interface Props {
 
 export function LevelDiagram({ levels }: Props) {
   const t = useDict().workspace
+  const lang = useLang()
   const svgRef = useRef<SVGSVGElement>(null)
 
   const { columns, scale, ticks } = useMemo(() => {
@@ -54,15 +56,16 @@ export function LevelDiagram({ levels }: Props) {
     const energies = levels.map((l) => l.energy)
     const min = Math.min(...energies, 0)
     const max = Math.max(...energies, 1)
-    // Pad the range so the topmost level isn't drawn on the frame.
+    // Round ticks (0, 5, 10 MeV), with the frame on the outermost ones; pad
+    // first so the topmost level isn't drawn on the frame.
     const span = max - min || 1
-    const lo = min - span * 0.05
-    const hi = max + span * 0.05
+    const axis = linearTicks(min - span * 0.03, max + span * 0.03, 6)
+    const [lo, hi] = axis.domain
 
     const y = (energy: number) =>
       PAD.top + PLOT_H - ((energy - lo) / (hi - lo)) * PLOT_H
 
-    const tickValues = Array.from({ length: 6 }, (_, i) => lo + ((hi - lo) * i) / 5)
+    const tickValues = axis.ticks
 
     return { columns: ordered, scale: y, ticks: tickValues }
   }, [levels])
@@ -110,7 +113,7 @@ export function LevelDiagram({ levels }: Props) {
     <Card>
       <CardHeader className="flex flex-row items-start justify-between space-y-0">
         <div>
-          <CardTitle className="text-base">{t.levelDiagram}</CardTitle>
+          <CardTitle role="heading" aria-level={3} className="text-base">{t.levelDiagram}</CardTitle>
           <CardDescription>{t.diagramText}</CardDescription>
         </div>
         <Button variant="outline" size="sm" onClick={download}>
@@ -151,7 +154,7 @@ export function LevelDiagram({ levels }: Props) {
                     fontSize={11}
                     fill="var(--viz-text-muted)"
                   >
-                    {formatEnergy(value)}
+                    {tickLabel(value, false, lang)}
                   </text>
                 </g>
               )
@@ -180,7 +183,10 @@ export function LevelDiagram({ levels }: Props) {
                     fontSize={12}
                     fill="var(--viz-text)"
                   >
-                    {jpi}
+                    {jpi.replace(/[+-]$/, "")}
+                    <tspan baselineShift="super" fontSize={9}>
+                      {jpi.endsWith("-") ? "\u2212" : jpi.endsWith("+") ? "+" : ""}
+                    </tspan>
                   </text>
 
                   {group.map((level) => {
