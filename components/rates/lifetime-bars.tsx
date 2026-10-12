@@ -1,6 +1,6 @@
 "use client"
 
-import { memo } from "react"
+import { memo, useLayoutEffect, useRef } from "react"
 
 import Link from "next/link"
 
@@ -94,8 +94,33 @@ export const LifetimeBars = memo(function LifetimeBars({
   }
   const pct = (t: number) => `${(frac(t) * 100).toFixed(2)}%`
 
+  // a value label set to the right of its dot that would run past the end of
+  // its track (large text, a narrow column) goes to the left of it instead
+  const root = useRef<HTMLDivElement>(null)
+  useLayoutEffect(() => {
+    const el = root.current
+    if (!el) return
+    const fit = () => {
+      el.querySelectorAll<HTMLElement>("[data-side]").forEach((span) => {
+        const track = span.parentElement!
+        span.style.left = span.dataset.left ?? ""
+        span.style.right = ""
+        if (span.dataset.side !== "right") return
+        const over = span.getBoundingClientRect().right - track.getBoundingClientRect().right
+        if (over > 2) {
+          span.style.left = ""
+          span.style.right = span.dataset.flip ?? ""
+        }
+      })
+    }
+    fit()
+    const ro = new ResizeObserver(fit)
+    ro.observe(el)
+    return () => ro.disconnect()
+  })
+
   return (
-    <div role="figure" aria-label={label}>
+    <div role="figure" aria-label={label} ref={root}>
       <div className="grid grid-cols-1 gap-x-4 sm:grid-cols-[14rem_minmax(0,1fr)]">
         <span className="hidden sm:block" />
         <div className="relative mx-3" style={{ height: `${1.4 + 1.1 * shownRefs.length}rem` }} aria-hidden>
@@ -231,6 +256,9 @@ export const LifetimeBars = memo(function LifetimeBars({
                     </svg>
                     <span
                       className={`tabular absolute top-1/2 z-[1] -translate-y-1/2 whitespace-nowrap rounded-sm bg-background px-1 text-xs leading-tight ${r.bottleneck ? "font-semibold text-foreground" : "text-muted-foreground"}`}
+                      data-side={right ? "right" : "left"}
+                      data-left={right ? `calc(${(edge * 100).toFixed(2)}% + 12px)` : undefined}
+                      data-flip={right ? `calc(${(100 - Math.min(frac(r.tau), frac(ghost)) * 100).toFixed(2)}% + 12px)` : undefined}
                       style={
                         right
                           ? { left: `calc(${(edge * 100).toFixed(2)}% + 12px)` }
