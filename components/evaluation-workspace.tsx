@@ -247,7 +247,8 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
     if (!sessionId) return
     if (modern) {
       prepare(["data", "fine"])
-      prepare(["extrap"])
+      // After the edit's models, or now when the reader looks at the extrapolations.
+      prepare(["extrap"], tab === "extrap")
       return
     }
     if (calculating) return

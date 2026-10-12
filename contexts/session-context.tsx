@@ -121,7 +121,7 @@ interface SessionState {
   loadExtrapolations: () => Promise<void>
   loadFine: () => Promise<void>
   /** Build derived models ahead of need, in the background (server build only). */
-  prepare: (steps: ("data" | "fine" | "extrap")[]) => void
+  prepare: (steps: ("data" | "fine" | "extrap")[], now?: boolean) => void
   updateParameters: (updates: Record<number, number>) => void
   reset: () => void
   undo: () => void
@@ -843,21 +843,37 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   // at the cached curves. Not in the browser build: there one worker answers
   // every request in turn, and a preparation under way would hold up the
   // first edit.
-  const prepare = useCallback((steps: ("data" | "fine" | "extrap")[]) => {
+  // The edit's models first: the extrapolations' model is asked for once
+  // they are built (two builds at once share the server's cores, and the
+  // smooth curve of a first edit waited twice as long), unless the reader
+  // is looking at the extrapolations (`now`).
+  const editReady = useRef<{ id: string; done: Promise<unknown> } | null>(null)
+  const deferred = useRef(new Set<string>())
+  const prepare = useCallback(function prepare(steps: ("data" | "fine" | "extrap")[], now = false) {
     const id = sessionRef.current
     if (!id || IN_BROWSER) return
     const key = `${id}:${steps.join(",")}`
     if (prepared.current.has(key)) return
-    prepared.current.add(key)
     const slot = steps.includes("extrap") ? "extrap" : "edit"
+    const before = slot === "extrap" && !now && editReady.current?.id === id ? editReady.current.done : null
+    if (before && !now) {
+      // Asked again with `now` if the reader turns to the extrapolations meanwhile.
+      if (!deferred.current.has(key)) {
+        deferred.current.add(key)
+        void before.then(() => prepare(steps, true))
+      }
+      return
+    }
+    prepared.current.add(key)
     preparing.current[slot] = performance.now()
-    prepareSession(id, steps)
+    const done = prepareSession(id, steps)
       .catch(() => {
         /* best effort: an edit builds what it needs anyway */
       })
       .finally(() => {
         if (sessionRef.current === id) preparing.current[slot] = null
       })
+    if (slot === "edit") editReady.current = { id, done }
   }, [])
 
   /* -- the session's lifetime ---------------------------------------------------- */
