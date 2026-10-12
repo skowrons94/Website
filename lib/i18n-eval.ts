@@ -357,6 +357,35 @@ const en = {
     deltaChi2: (v: string) => `Δχ² ${v}`,
     notANumber: "Enter a number, e.g. 34.5 or 1.2e-3",
     levelInDiagram: "Selected in the diagram",
+    // --- evaluations (round 4) ---
+    groundState: "ground state",
+    // Plain-language legend, each entry linked to the glossary where there is one.
+    keyEnergyFree: "energy fitted",
+    keyWidthsFree: "widths fitted, energy fixed",
+    keyFixed: "fixed",
+    plainThreshold: "dashed line: a particle threshold — above it the nucleus can break up into that pair",
+    plainWidth: "shaded band: the level's width Γ (how short-lived it is), ±Γ/2",
+    plainWideWidth: (w: string) => `arrow, and “Γ ${w}” beside the energy: a width too large to shade`,
+    plainData: "blue rail on the right-hand axis: the energies the fitted data cover",
+    plainAnc: "open circle: a bound state, fitted through its ANC",
+    plainBar: "small bar: how the level decays, the share of each channel (Γc/Γ)",
+    plainEffective: "dashed level: an effective pole — far above the fitted data, or doubling another of its spin-parity; the data do not measure it as a state",
+    glossary: "glossary",
+    wideWidth: (w: string) => `Γ ${w}`,
+    noteAbove: (max: string) =>
+      `Effective pole: it lies far above the fitted data (which reach ${max} MeV), so it shapes the fit from outside the measured range, as a background pole; its parameters are not those of a state measured here.`,
+    noteOverlap: (jpi: string, energy: string) =>
+      `Effective pole: it overlaps the other ${jpi} pole at ${energy} MeV within their widths. Two poles of one spin-parity this close act together (a broad state and its background), so neither alone is a state of the nucleus.`,
+    notePhoton: (particle: string, photon: string) =>
+      `Its particle width (${particle}) is under 1% of its γ width (${photon}), so the bar shows γ almost alone: in the particle channels this pole has very little effect.`,
+    ancIn: (channel: string) => `ANC in ${channel}`,
+    effective: "effective pole",
+    filters: "Filter levels",
+    filtersSummary: (shown: number, total: number) => `${shown} of ${total} levels shown`,
+    backgroundRow: (n: number, energy: string) => `${n} background poles at ${energy} MeV (fixed, far above the data)`,
+    columnWidth: "Γ (keV)",
+    above: (pair: string, energy: string) => `${pair} threshold · ${energy} MeV`,
+    listLegend: "● energy fitted · ○ widths fitted · grey: fixed",
   },
 }
 
@@ -709,6 +738,34 @@ const it: EvalDictionary = {
     deltaChi2: (v: string) => `Δχ² ${v}`,
     notANumber: "Inserisci un numero, ad es. 34,5 o 1,2e-3",
     levelInDiagram: "Selezionato nel diagramma",
+    // --- evaluations (round 4) ---
+    groundState: "stato fondamentale",
+    keyEnergyFree: "energia adattata",
+    keyWidthsFree: "larghezze adattate, energia fissa",
+    keyFixed: "fisso",
+    plainThreshold: "linea tratteggiata: una soglia di particella — sopra di essa il nucleo può spezzarsi in quella coppia",
+    plainWidth: "banda ombreggiata: la larghezza Γ del livello (quanto vive poco), ±Γ/2",
+    plainWideWidth: (w: string) => `freccia, e “Γ ${w}” accanto all'energia: una larghezza troppo grande da ombreggiare`,
+    plainData: "barra blu sull'asse di destra: le energie coperte dai dati adattati",
+    plainAnc: "cerchio vuoto: uno stato legato, adattato tramite il suo ANC",
+    plainBar: "barretta: come decade il livello, la quota di ciascun canale (Γc/Γ)",
+    plainEffective: "livello tratteggiato: un polo efficace — molto sopra i dati adattati, o doppione di un altro della stessa spin-parità; i dati non lo misurano come stato",
+    glossary: "glossario",
+    wideWidth: (w: string) => `Γ ${w}`,
+    noteAbove: (max: string) =>
+      `Polo efficace: sta molto sopra i dati adattati (che arrivano a ${max} MeV), quindi agisce sul fit dall'esterno dell'intervallo misurato, come un polo di fondo; i suoi parametri non sono quelli di uno stato misurato qui.`,
+    noteOverlap: (jpi: string, energy: string) =>
+      `Polo efficace: si sovrappone, entro le larghezze, all'altro polo ${jpi} a ${energy} MeV. Due poli della stessa spin-parità così vicini agiscono insieme (uno stato largo e il suo fondo), quindi nessuno dei due da solo è uno stato del nucleo.`,
+    notePhoton: (particle: string, photon: string) =>
+      `La sua larghezza di particella (${particle}) è meno dell'1% della larghezza γ (${photon}), quindi la barretta mostra quasi solo γ: nei canali di particella questo polo ha un effetto minimo.`,
+    ancIn: (channel: string) => `ANC in ${channel}`,
+    effective: "polo efficace",
+    filters: "Filtra i livelli",
+    filtersSummary: (shown: number, total: number) => `${shown} livelli su ${total} mostrati`,
+    backgroundRow: (n: number, energy: string) => `${n} poli di fondo a ${energy} MeV (fissi, molto sopra i dati)`,
+    columnWidth: "Γ (keV)",
+    above: (pair: string, energy: string) => `soglia ${pair} · ${energy} MeV`,
+    listLegend: "● energia adattata · ○ larghezze adattate · grigio: fisso",
   },
 }
 

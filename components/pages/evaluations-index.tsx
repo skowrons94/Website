@@ -28,7 +28,7 @@ function Intro() {
   const lang = useLang()
   const t = useEvalDict().evaluations
   return (
-    <div className="border-b border-border/70 pb-8">
+    <div className="min-w-0 border-b border-border/70 pb-8 [overflow-wrap:anywhere]">
       <p className="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
         {t.eyebrow}
       </p>
@@ -138,7 +138,7 @@ export function EvaluationsIndex({ initial = [] }: { initial?: CardMeta[] }) {
           <p className="text-sm text-muted-foreground">{t.noneText}</p>
         </div>
       ) : (
-        <ul className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <ul className="grid min-w-0 gap-5 md:grid-cols-2 lg:grid-cols-3">
           {cards.map((card) => {
             const nucleus = card.known || !card.title ? nuclide(card.id) : texPlain(card.title)
             // The reaction is the heading (what a physicist looks for); the
@@ -153,7 +153,7 @@ export function EvaluationsIndex({ initial = [] }: { initial?: CardMeta[] }) {
             return (
               <li
                 key={card.id}
-                className="group relative flex min-h-[13.5rem] flex-col rounded-lg border border-border bg-card p-5 transition-colors focus-within:border-foreground/40 hover:border-foreground/30"
+                className="group relative flex min-h-[13.5rem] min-w-0 flex-col rounded-lg border border-border bg-card p-4 transition-colors [overflow-wrap:anywhere] sm:p-5 focus-within:border-foreground/40 hover:border-foreground/30"
               >
                 <h2 className="font-serif text-[1.375rem] font-semibold leading-snug tracking-tight">
                   {/* The title link covers the whole card (after:inset-0), so

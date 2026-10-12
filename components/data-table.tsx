@@ -205,8 +205,8 @@ export function DataTable({ data, selected, onToggle }: Props) {
                     </td>
                     <td className="px-2 py-2">
                       <span className="font-medium">{datasetName(segment)}</span>
-                      {angleText(segment) && (
-                        <span className="text-muted-foreground"> · {angleText(segment)}</span>
+                      {angleText(segment, lang) && (
+                        <span className="text-muted-foreground"> · {angleText(segment, lang)}</span>
                       )}
                       {segment.source?.ref && (
                         <span className="block text-[11px] text-muted-foreground">
@@ -251,7 +251,7 @@ export function DataTable({ data, selected, onToggle }: Props) {
                     <td className="whitespace-nowrap px-2 py-2 text-right tabular-nums">
                       {/* The angles the points were measured at (c.m.), not the
                           segment's filter limits, which may read 0–180. */}
-                      {angleText(segment).replace("°", "") || "—"}
+                      {angleText(segment, lang).replace("°", "") || "—"}
                     </td>
                     <td className="px-2 py-2 text-right tabular-nums">
                       {segment.n_points}

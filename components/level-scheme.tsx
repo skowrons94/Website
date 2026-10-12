@@ -34,13 +34,12 @@ import {
   type SchemeLevel,
 } from "@/lib/api"
 import {
-  energyDecimals,
-  formatEnergy,
   formatQuantity,
   quantityName,
   quantitySymbol,
 } from "@/lib/viz"
 import { useLang } from "@/components/lang-context"
+import { findBackground, formatLevelEnergy } from "@/lib/level-layout"
 import { useEvalDict } from "@/components/eval-dict"
 
 /**
@@ -81,6 +80,7 @@ function jpiLatex(jpi: string): string {
 export function LevelScheme({ scheme, evaluation, sessionId, selectedLevel: shared, onSelectLevel, onEditLevel }: Props) {
   const lang = useLang()
   const t = useEvalDict().workspace
+  const l = useEvalDict().levels
   // Controlled by the workspace when it passes a selection, else local.
   const [localSelection, setLocalSelection] = useState<string | null>(null)
   const selectedLevel = shared !== undefined ? shared : localSelection
@@ -219,13 +219,135 @@ export function LevelScheme({ scheme, evaluation, sessionId, selectedLevel: shar
                               </ul>
                             )
 
-  const decimals = energyDecimals(scheme.levels.map((l) => l.initial_energy))
-  const energyText = (v: number) => formatEnergy(v, decimals)
+  // keV precision, as in the diagram and the sliders.
+  const energyText = (v: number) => formatLevelEnergy(v)
+  // Background poles fold away at the end of the table, as in the diagram.
+  const background = useMemo(() => findBackground(scheme.levels), [scheme.levels])
+  const shownLevels = filtered.filter((level) => !background?.keys.has(keyOf(level)))
+  const bgLevels = filtered.filter((level) => background?.keys.has(keyOf(level)))
+
+  const phoneRow = (level: SchemeLevel) => {
+    const key = keyOf(level)
+    const open = expanded.includes(key)
+    const channels = showFixed ? level.channels : level.channels.filter((c) => !c.fixed)
+    const free = (level.energy_fixed ? 0 : 1) + level.channels.filter((c) => !c.fixed).length
+    return (
+      <li key={key} className={selectedLevel === key ? "bg-muted/60" : undefined}>
+        <button
+          type="button"
+          aria-expanded={open}
+          onClick={() => {
+            toggleExpanded(key)
+            selectLevel(key)
+          }}
+          className="flex min-h-11 w-full items-center gap-3 px-4 py-2 text-left text-sm"
+        >
+          {open ? <ChevronDown className="h-4 w-4 shrink-0" aria-hidden /> : <ChevronRight className="h-4 w-4 shrink-0" aria-hidden />}
+          <span className="w-12 shrink-0">
+            <Tex math={jpiLatex(level.jpi)} />
+          </span>
+          <span className="min-w-0 tabular-nums">
+          {energyText(level.energy)} MeV
+          {Math.abs(level.energy) < 5e-4 && <span className="ml-1.5 text-xs text-muted-foreground">{l.groundState}</span>}
+        </span>
+          <span className="ml-auto flex items-center gap-1 text-xs text-muted-foreground">
+            {level.energy_fixed ? <Lock className="h-3 w-3" aria-hidden /> : <Unlock className="h-3 w-3" aria-hidden />}
+            {free > 0 ? `${free} ${t.freeWord}` : t.fixedWord}
+          </span>
+        </button>
+        {open && <div className="px-4 pb-3 pl-11 text-sm">{channelList(channels)}</div>}
+      </li>
+    )
+  }
+
+  const tableRow = (level: SchemeLevel) => {
+    const key = keyOf(level)
+    const open = expanded.includes(key)
+    const channels = showFixed
+      ? level.channels
+      : level.channels.filter((c) => !c.fixed)
+    const free =
+      (level.energy_fixed ? 0 : 1) +
+      level.channels.filter((c) => !c.fixed).length
+
+    return (
+      <Fragment key={key}>
+        <tr
+          onClick={() => {
+            toggleExpanded(key)
+            selectLevel(key)
+          }}
+          className={`cursor-pointer border-b hover:bg-muted/40 ${selectedLevel === key ? "bg-muted/60" : ""}`}
+        >
+          <td className="px-1 py-1 text-muted-foreground">
+            <button
+              type="button"
+              aria-expanded={open}
+              aria-label={`${level.jpi} ${formatLevelEnergy(level.energy)} MeV`}
+              onClick={(event) => {
+                event.stopPropagation()
+                toggleExpanded(key)
+              }}
+              className="flex h-8 w-8 items-center justify-center rounded hover:bg-muted"
+            >
+              {open ? (
+                <ChevronDown className="h-4 w-4" aria-hidden />
+              ) : (
+                <ChevronRight className="h-4 w-4" aria-hidden />
+              )}
+            </button>
+          </td>
+          <td className="px-2 py-2">
+            <Tex math={jpiLatex(level.jpi)} />
+          </td>
+          <td className="px-2 py-2 text-right tabular-nums">
+            {energyText(level.energy)}
+            {Math.abs(level.energy) < 5e-4 && <span className="ml-1.5 text-xs text-muted-foreground">{l.groundState}</span>}
+            {level.energy !== level.initial_energy && (
+              <span className="ml-1.5 text-xs text-muted-foreground">
+                {t.was(energyText(level.initial_energy))}
+              </span>
+            )}
+          </td>
+          <td className="px-2 py-2">
+            {level.energy_fixed ? (
+              <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                <Lock className="h-3 w-3" /> {t.fixedWord}
+              </span>
+            ) : (
+              <span className="flex items-center gap-1 text-xs">
+                <Unlock className="h-3 w-3" /> {t.freeWord}
+              </span>
+            )}
+          </td>
+          <td className="px-2 py-2 text-right tabular-nums text-muted-foreground">
+            {level.channels.length}
+          </td>
+          <td className="px-2 py-2 text-right tabular-nums">
+            {free > 0 ? (
+              free
+            ) : (
+              <span className="text-muted-foreground">—</span>
+            )}
+          </td>
+        </tr>
+
+        {open && (
+          <tr className="border-b bg-muted/20">
+            <td />
+            <td colSpan={5} className="px-2 py-3">
+              {channelList(channels)}
+            </td>
+          </tr>
+        )}
+      </Fragment>
+    )
+  }
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
+        <div className="min-w-0 [overflow-wrap:anywhere]">
           <h2 className="text-2xl font-semibold tracking-tight">{t.levelScheme}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             {t.schemeSummary(scheme.levels.length, scheme.pairs.length, freeCount)}
@@ -247,9 +369,38 @@ export function LevelScheme({ scheme, evaluation, sessionId, selectedLevel: shar
         </div>
       </div>
 
-      {/* Filters drive the diagram and the table together. */}
-      <Card>
-        <CardContent className="space-y-3 pt-5">
+      {/* Props of the round-3 diagram, asserted so that this file compiles
+          against either version of it. */}
+      <LevelDiagram
+        {...({
+          levels: filtered,
+          pairs: scheme.pairs,
+          selectedLevel,
+          onSelectLevel: selectLevel,
+          dataRange,
+          editedLevels,
+        } as unknown as React.ComponentProps<typeof LevelDiagram>)}
+      />
+
+      {selected && onEditLevel && selectedFree > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border bg-card px-4 py-2.5 text-sm">
+          <span>
+            <Tex math={jpiLatex(selected.jpi)} /> {formatLevelEnergy(selected.energy)} MeV ·{" "}
+            <span className="text-muted-foreground">{t.nParameters(selectedFree)}</span>
+          </span>
+          <Button size="sm" onClick={() => onEditLevel(levelKey(selected))}>
+            {t.editLevel}
+          </Button>
+        </div>
+      )}
+
+      {/* Filters drive the diagram and the table together; folded, below the picture. */}
+      <details open={filtering || undefined} className="min-w-0 rounded-lg border bg-card">
+        <summary className="flex min-h-11 cursor-pointer select-none flex-wrap items-center gap-x-2 px-4 py-2 text-sm font-semibold">
+          {l.filters}
+          <span className="text-xs font-normal text-muted-foreground">· {l.filtersSummary(filtered.length, scheme.levels.length)}</span>
+        </summary>
+        <div className="space-y-3 border-t px-4 pb-4 pt-3">
           <div className="flex flex-wrap items-center gap-2">
             <span className="mr-1 text-xs font-medium text-muted-foreground">
               J<sup>π</sup>
@@ -323,37 +474,9 @@ export function LevelScheme({ scheme, evaluation, sessionId, selectedLevel: shar
                 {t.clear}
               </Button>
             )}
-            <span className="pb-1.5 text-xs text-muted-foreground">
-              {t.shownOf(filtered.length, scheme.levels.length)}
-            </span>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Props of the round-3 diagram, asserted so that this file compiles
-          against either version of it. */}
-      <LevelDiagram
-        {...({
-          levels: filtered,
-          pairs: scheme.pairs,
-          selectedLevel,
-          onSelectLevel: selectLevel,
-          dataRange,
-          editedLevels,
-        } as unknown as React.ComponentProps<typeof LevelDiagram>)}
-      />
-
-      {selected && onEditLevel && selectedFree > 0 && (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border bg-card px-4 py-2.5 text-sm">
-          <span>
-            <Tex math={jpiLatex(selected.jpi)} /> {formatEnergy(selected.energy)} MeV ·{" "}
-            <span className="text-muted-foreground">{t.nParameters(selectedFree)}</span>
-          </span>
-          <Button size="sm" onClick={() => onEditLevel(levelKey(selected))}>
-            {t.editLevel}
-          </Button>
         </div>
-      )}
+      </details>
 
       <Card>
         <CardHeader className="pb-3">
@@ -363,37 +486,16 @@ export function LevelScheme({ scheme, evaluation, sessionId, selectedLevel: shar
         <CardContent className="p-0">
           {/* Phones: one card per level, channels on tap. */}
           <ul className="divide-y sm:hidden">
-            {filtered.map((level) => {
-              const key = keyOf(level)
-              const open = expanded.includes(key)
-              const channels = showFixed ? level.channels : level.channels.filter((c) => !c.fixed)
-              const free = (level.energy_fixed ? 0 : 1) + level.channels.filter((c) => !c.fixed).length
-              return (
-                <li key={key} className={selectedLevel === key ? "bg-muted/60" : undefined}>
-                  <button
-                    type="button"
-                    aria-expanded={open}
-                    onClick={() => {
-                      toggleExpanded(key)
-                      selectLevel(key)
-                    }}
-                    className="flex min-h-11 w-full items-center gap-3 px-4 py-2 text-left text-sm"
-                  >
-                    {open ? <ChevronDown className="h-4 w-4 shrink-0" aria-hidden /> : <ChevronRight className="h-4 w-4 shrink-0" aria-hidden />}
-                    <span className="w-12 shrink-0">
-                      <Tex math={jpiLatex(level.jpi)} />
-                    </span>
-                    <span className="tabular-nums">{energyText(level.energy)} MeV</span>
-                    <span className="ml-auto flex items-center gap-1 text-xs text-muted-foreground">
-                      {level.energy_fixed ? <Lock className="h-3 w-3" aria-hidden /> : <Unlock className="h-3 w-3" aria-hidden />}
-                      {free > 0 ? `${free} ${t.freeWord}` : t.fixedWord}
-                    </span>
-                  </button>
-                  {open && <div className="px-4 pb-3 pl-11 text-sm">{channelList(channels)}</div>}
-                </li>
-              )
-            })}
+            {shownLevels.map(phoneRow)}
           </ul>
+          {bgLevels.length > 0 && (
+            <details className="border-t sm:hidden">
+              <summary className="flex min-h-11 cursor-pointer select-none items-center px-4 text-xs text-muted-foreground">
+                {l.backgroundRow(bgLevels.length, energyText(background!.energy))}
+              </summary>
+              <ul className="divide-y">{bgLevels.map(phoneRow)}</ul>
+            </details>
+          )}
           <div className="overflow-x-auto max-sm:hidden">
             <table className="w-full min-w-[40rem] text-sm">
               <thead>
@@ -411,88 +513,21 @@ export function LevelScheme({ scheme, evaluation, sessionId, selectedLevel: shar
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((level) => {
-                  const key = keyOf(level)
-                  const open = expanded.includes(key)
-                  const channels = showFixed
-                    ? level.channels
-                    : level.channels.filter((c) => !c.fixed)
-                  const free =
-                    (level.energy_fixed ? 0 : 1) +
-                    level.channels.filter((c) => !c.fixed).length
-
-                  return (
-                    <Fragment key={key}>
-                      <tr
-                        onClick={() => {
-                          toggleExpanded(key)
-                          selectLevel(key)
-                        }}
-                        className={`cursor-pointer border-b hover:bg-muted/40 ${selectedLevel === key ? "bg-muted/60" : ""}`}
-                      >
-                        <td className="px-1 py-1 text-muted-foreground">
-                          <button
-                            type="button"
-                            aria-expanded={open}
-                            aria-label={`${level.jpi} ${formatEnergy(level.energy)} MeV`}
-                            onClick={(event) => {
-                              event.stopPropagation()
-                              toggleExpanded(key)
-                            }}
-                            className="flex h-8 w-8 items-center justify-center rounded hover:bg-muted"
-                          >
-                            {open ? (
-                              <ChevronDown className="h-4 w-4" aria-hidden />
-                            ) : (
-                              <ChevronRight className="h-4 w-4" aria-hidden />
-                            )}
-                          </button>
-                        </td>
-                        <td className="px-2 py-2">
-                          <Tex math={jpiLatex(level.jpi)} />
-                        </td>
-                        <td className="px-2 py-2 text-right tabular-nums">
-                          {energyText(level.energy)}
-                          {level.energy !== level.initial_energy && (
-                            <span className="ml-1.5 text-xs text-muted-foreground">
-                              {t.was(energyText(level.initial_energy))}
-                            </span>
-                          )}
-                        </td>
-                        <td className="px-2 py-2">
-                          {level.energy_fixed ? (
-                            <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                              <Lock className="h-3 w-3" /> {t.fixedWord}
-                            </span>
-                          ) : (
-                            <span className="flex items-center gap-1 text-xs">
-                              <Unlock className="h-3 w-3" /> {t.freeWord}
-                            </span>
-                          )}
-                        </td>
-                        <td className="px-2 py-2 text-right tabular-nums text-muted-foreground">
-                          {level.channels.length}
-                        </td>
-                        <td className="px-2 py-2 text-right tabular-nums">
-                          {free > 0 ? (
-                            free
-                          ) : (
-                            <span className="text-muted-foreground">—</span>
-                          )}
-                        </td>
-                      </tr>
-
-                      {open && (
-                        <tr className="border-b bg-muted/20">
-                          <td />
-                          <td colSpan={5} className="px-2 py-3">
-                            {channelList(channels)}
-                          </td>
-                        </tr>
-                      )}
-                    </Fragment>
-                  )
-                })}
+                {shownLevels.map(tableRow)}
+                {bgLevels.length > 0 && (
+                  <tr>
+                    <td colSpan={6} className="p-0">
+                      <details className="text-sm">
+                        <summary className="flex min-h-10 cursor-pointer select-none items-center px-3 text-xs text-muted-foreground">
+                          {l.backgroundRow(bgLevels.length, energyText(background!.energy))}
+                        </summary>
+                        <table className="w-full text-sm">
+                          <tbody>{bgLevels.map(tableRow)}</tbody>
+                        </table>
+                      </details>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
@@ -510,7 +545,40 @@ export function LevelScheme({ scheme, evaluation, sessionId, selectedLevel: shar
           <CardTitle role="heading" aria-level={3} className="text-base">{t.pairs}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
+          {/* Phones: one block per pair, so nothing is cut off at the edge. */}
+          <ul className="divide-y text-sm sm:hidden">
+            {scheme.pairs.map((pair) => (
+              <li key={pair.number} className="py-2.5 first:pt-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="tabular-nums text-muted-foreground">{pair.number}</span>
+                  <Tex math={pair.label} />
+                  <span className="text-xs text-muted-foreground">{pair.is_photon ? t.photon : t.particle}</span>
+                  {pair.is_entrance && (
+                    <Badge variant="secondary" className="text-xs">
+                      {t.entrance}
+                    </Badge>
+                  )}
+                </div>
+                <dl className="mt-1 grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 gap-y-0.5 text-xs tabular-nums text-muted-foreground">
+                  {!pair.is_photon && (
+                    <>
+                      <dt>{t.separation}</dt>
+                      <dd className="text-right text-foreground">{formatLevelEnergy(pair.separation_energy)}</dd>
+                    </>
+                  )}
+                  <dt>{t.excitation}</dt>
+                  <dd className="text-right text-foreground">{formatLevelEnergy(pair.excitation)}</dd>
+                  {pair.channel_radius > 0 && (
+                    <>
+                      <dt>{t.radius}</dt>
+                      <dd className="text-right text-foreground">{pair.channel_radius.toFixed(2)}</dd>
+                    </>
+                  )}
+                </dl>
+              </li>
+            ))}
+          </ul>
+          <div className="overflow-x-auto max-sm:hidden">
             <table className="w-full min-w-[36rem] text-sm">
               <thead>
                 <tr className="border-b text-left text-xs font-medium text-muted-foreground">
@@ -546,10 +614,10 @@ export function LevelScheme({ scheme, evaluation, sessionId, selectedLevel: shar
                       {pair.is_photon ? t.photon : t.particle}
                     </td>
                     <td className="px-2 py-2 text-right tabular-nums">
-                      {pair.is_photon ? "—" : formatEnergy(pair.separation_energy)}
+                      {pair.is_photon ? "—" : formatLevelEnergy(pair.separation_energy)}
                     </td>
                     <td className="px-2 py-2 text-right tabular-nums">
-                      {formatEnergy(pair.excitation)}
+                      {formatLevelEnergy(pair.excitation)}
                     </td>
                     <td className="px-2 py-2 text-right tabular-nums">
                       {pair.channel_radius > 0

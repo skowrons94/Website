@@ -12,6 +12,7 @@ import {
   type ReactNode,
 } from "react"
 import { ImageDown, Maximize2, ZoomIn } from "lucide-react"
+import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -24,6 +25,7 @@ import {
   entranceOf,
   findBackground,
   formatLevelEnergy,
+  ancChannels,
   hasAnc,
   jpiOrder,
   jpiPlain,
@@ -31,6 +33,7 @@ import {
   levelStatus,
   levelWidth,
   normaliseThresholds,
+  poleNotes,
   segmentTicks,
   speciesList,
   spreadLabels,
@@ -39,10 +42,13 @@ import {
   type EnergyAxis,
   type LevelStatus,
   type LevelWidth,
+  type PoleNote,
   type Threshold,
   type ThresholdInput,
 } from "@/lib/level-layout"
 import { formatQuantity } from "@/lib/viz"
+import { numberText } from "@/lib/eval-plot"
+import { localePath } from "@/lib/locale"
 import { useLang } from "@/components/lang-context"
 import { useEvalDict } from "@/components/eval-dict"
 
@@ -83,7 +89,7 @@ export interface LevelDiagramProps {
 }
 
 /** Below this container width the columns give way to the list layout. */
-const LIST_BELOW = 600
+const LIST_BELOW = 700
 /** Least column width for the column layout. */
 const MIN_COLUMN = 84
 const LABEL_W = 40
@@ -183,6 +189,10 @@ interface Item {
   status: LevelStatus
   anc: boolean
   width: LevelWidth
+  /** Why it may be an effective pole (lib/level-layout's poleNotes). */
+  notes: PoleNote[]
+  /** Drawn as an effective pole (dashed): far above the data or overlapping one of its J^pi. */
+  effective: boolean
 }
 
 export function LevelDiagram({
@@ -228,23 +238,28 @@ export function LevelDiagram({
 
   /* -- data ------------------------------------------------------------- */
 
-  const items = useMemo<Item[]>(
-    () =>
-      levels.map((level) => ({
-        level,
-        key: levelKey(level),
-        status: levelStatus(level),
-        anc: hasAnc(level),
-        width: levelWidth(level, pairs),
-      })),
-    [levels, pairs],
-  )
-
   const thresholds = useMemo<Threshold[]>(
     () => (thresholdInput ? normaliseThresholds(thresholdInput) : thresholdsFromPairs(pairs)),
     [thresholdInput, pairs],
   )
   const entrance = useMemo(() => entranceOf(thresholds), [thresholds])
+  const background = useMemo(() => findBackground(levels), [levels])
+
+  const items = useMemo<Item[]>(() => {
+    const notes = poleNotes(levels, pairs, dataRange, entrance?.energy, background?.keys)
+    return levels.map((level) => {
+      const n = notes.get(levelKey(level)) ?? []
+      return {
+        level,
+        key: levelKey(level),
+        status: levelStatus(level),
+        anc: hasAnc(level, entrance?.energy),
+        width: levelWidth(level, pairs),
+        notes: n,
+        effective: n.some((x) => x.kind !== "photon"),
+      }
+    })
+  }, [levels, pairs, dataRange, entrance, background])
   // Hues go to the species that actually carry a width, in pair order.
   const species = useMemo(() => {
     const carrying = new Set(items.flatMap((i) => i.width.parts.filter((p) => !p.photon).map((p) => p.species)))
@@ -260,7 +275,6 @@ export function LevelDiagram({
     [species],
   )
 
-  const background = useMemo(() => findBackground(levels), [levels])
   const main = useMemo(() => items.filter((item) => !background?.keys.has(item.key)), [items, background])
   const visible = useMemo(
     () => (zoom ? main.filter((i) => i.level.energy >= zoom[0] && i.level.energy <= zoom[1]) : main),
@@ -496,8 +510,22 @@ export function LevelDiagram({
 
   /* -- drawing helpers ---------------------------------------------------- */
 
+  // Energy fitted: series-1 at 2.5 px; widths only: series-1 at 1.5 px and
+  // 80 % (3.1:1 on the light surface, 3.5:1 on the dark one); fixed: the muted grey.
   const lineColor = (s: LevelStatus) => (s === "fixed" ? "var(--viz-text-muted)" : "var(--viz-series-1)")
   const lineWidth = (s: LevelStatus) => (s === "free" ? 2.5 : 1.5)
+  const lineOpacity = (s: LevelStatus) => (s === "partial" ? 0.8 : 1)
+
+  /** Too wide to shade (Γ ≥ 15 % of the visible range): a ↕ mark and its value instead. */
+  const tooWide = (axis: EnergyAxis, item: Item) => {
+    const g = item.width.total
+    const seg = axis.segmentOf(item.level.energy)
+    return g > 0 && seg !== null && !seg.auxiliary && g >= 0.15 * (seg.hi - seg.lo)
+  }
+  const gammaText = (g: number) => {
+    const q = formatQuantity(g * 1e6, "eV")
+    return `${num(q.text)} ${q.unit}`
+  }
 
   /** The ±Γ/2 band, kept inside the level's own axis segment. */
   const widthBand = (axis: EnergyAxis, item: Item, x1: number, x2: number) => {
@@ -505,6 +533,15 @@ export function LevelDiagram({
     if (!(g > 0)) return null
     const seg = axis.segmentOf(item.level.energy)
     if (!seg || seg.auxiliary) return null
+    if (tooWide(axis, item)) {
+      const y = axis.y(item.level.energy)
+      const x = x1 - 5
+      return (
+        <g key={`band-${item.key}`} pointerEvents="none" stroke={lineColor(item.status)} fill="none" strokeWidth={1}>
+          <path d={`M${x},${y - 9}V${y + 9}M${x - 2.5},${y - 6.5}L${x},${y - 9}L${x + 2.5},${y - 6.5}M${x - 2.5},${y + 6.5}L${x},${y + 9}L${x + 2.5},${y + 6.5}`} />
+        </g>
+      )
+    }
     const top = Math.max(seg.top, axis.y(Math.min(item.level.energy + g / 2, seg.hi)))
     const bottom = Math.min(seg.bottom, axis.y(Math.max(item.level.energy - g / 2, seg.lo)))
     if (bottom - top < 2.5) return null
@@ -562,6 +599,8 @@ export function LevelDiagram({
         y2={y}
         stroke={lineColor(item.status)}
         strokeWidth={lineWidth(item.status)}
+        strokeOpacity={lineOpacity(item.status)}
+        strokeDasharray={item.effective ? "6 3" : undefined}
       />
       {item.anc && <circle cx={x1} cy={y} r={3} fill="var(--viz-surface)" stroke={lineColor(item.status)} strokeWidth={1.5} />}
     </>
@@ -691,7 +730,7 @@ export function LevelDiagram({
         </g>
       ) : null
 
-    // Fitted-data range: a light band across the plot, per segment.
+    // Fitted-data range: a 3 px rail on the c.m. (right-hand) axis, per segment.
     const dataBand =
       dataRange &&
       segs.map((s, i) => {
@@ -701,12 +740,7 @@ export function LevelDiagram({
         if (hi <= lo) return null
         const y1 = axis.y(hi)
         const y2 = axis.y(lo)
-        return (
-          <g key={i} pointerEvents="none">
-            <rect x={plotL} y={y1} width={plotR - plotL} height={y2 - y1} fill="var(--viz-text-muted)" opacity={0.07} />
-            <rect x={plotL + 0.5} y={y1} width={3} height={y2 - y1} fill="var(--viz-text-muted)" opacity={0.5} />
-          </g>
-        )
+        return <rect key={i} x={plotR - 1.5} y={y1} width={3} height={y2 - y1} fill="var(--viz-series-1)" pointerEvents="none" />
       })
 
     // Background poles: one band above the top break.
@@ -844,6 +878,8 @@ export function LevelDiagram({
       const cw = (plotR - plotL) / Math.max(1, columns.length)
       const lineLen = Math.min(110, Math.max(18, cw - 14 - BAR_W - 3 - 8 - LABEL_W))
       const groupW = lineLen + BAR_W + 3 + 8 + LABEL_W
+      // Room beside the energy for "· Γ 6.7 MeV" (a width too large to shade).
+      const roomy = cw - groupW - Math.max(10, (cw - groupW) / 2) > 64
       body = columns.map((col, ci) => {
         const x0 = plotL + ci * cw
         const lineStart = x0 + Math.max(10, (cw - groupW) / 2)
@@ -901,8 +937,14 @@ export function LevelDiagram({
                     fontSize={11}
                     fontWeight={isSel || isHov ? 600 : 400}
                     fill={isSel || isHov ? "var(--viz-text)" : "var(--viz-text-muted)"}
+                    stroke="var(--viz-surface)"
+                    strokeWidth={3}
+                    paintOrder="stroke"
+                    strokeLinejoin="round"
                   >
                     {num(formatLevelEnergy(item.level.energy))}
+                    {Math.abs(item.level.energy) < 5e-4 && <tspan fontSize={10.5}> · {t.groundState}</tspan>}
+                    {tooWide(axis, item) && roomy && <tspan fontSize={10.5}> · {t.wideWidth(gammaText(item.width.total))}</tspan>}
                   </text>
                 </g>
               )
@@ -1058,9 +1100,13 @@ export function LevelDiagram({
   /* -- the card ------------------------------------------------------------- */
 
   const anyWidth = items.some((i) => i.width.total > 0)
+  const wideItem = layout && !list ? main.find((i) => tooWide(layout.axis, i)) : undefined
+  const anyWide = Boolean(wideItem)
   const anyAnc = items.some((i) => i.anc)
+  const anyEffective = main.some((i) => i.effective)
   const legendSpecies = species.filter((s) => items.some((i) => i.width.parts.some((p) => p.species === s)))
   const anyPhoton = items.some((i) => i.width.parts.some((p) => p.photon))
+  const bgList = background ? items.filter((i) => background.keys.has(i.key)) : []
 
   return (
     <Card data-level-diagram>
@@ -1071,45 +1117,84 @@ export function LevelDiagram({
           </CardTitle>
           <CardDescription className="mt-1.5">{list ? t.descriptionList : t.description}</CardDescription>
         </div>
-        <div className="flex flex-wrap items-center gap-2 print:hidden">
-          {dataRange && !zoom && (
-            <Button variant="outline" size="sm" onClick={() => setZoom([dataRange.min - 0.05, dataRange.max + 0.05])}>
-              <ZoomIn className="mr-1.5 h-4 w-4" aria-hidden />
-              {t.zoomData}
+        {!list && (
+          <div className="flex flex-wrap items-center gap-2 print:hidden">
+            {dataRange && !zoom && (
+              <Button variant="outline" size="sm" onClick={() => setZoom([dataRange.min - 0.05, dataRange.max + 0.05])}>
+                <ZoomIn className="mr-1.5 h-4 w-4" aria-hidden />
+                {t.zoomData}
+              </Button>
+            )}
+            {zoom && (
+              <Button variant="outline" size="sm" onClick={() => setZoom(null)}>
+                <Maximize2 className="mr-1.5 h-4 w-4" aria-hidden />
+                {t.zoomReset}
+              </Button>
+            )}
+            <Button variant="outline" size="sm" onClick={download}>
+              <ImageDown className="mr-1.5 h-4 w-4" aria-hidden />
+              SVG
             </Button>
-          )}
-          {zoom && (
-            <Button variant="outline" size="sm" onClick={() => setZoom(null)}>
-              <Maximize2 className="mr-1.5 h-4 w-4" aria-hidden />
-              {t.zoomReset}
-            </Button>
-          )}
-          <Button variant="outline" size="sm" onClick={download}>
-            <ImageDown className="mr-1.5 h-4 w-4" aria-hidden />
-            SVG
-          </Button>
-        </div>
+          </div>
+        )}
       </CardHeader>
       <CardContent className="px-3 pb-4 sm:px-6 sm:pb-6">
+        {/* The three line styles, at the figure's top right. */}
+        {!list && (
+          <ul className="mb-1.5 flex flex-wrap justify-end gap-x-4 gap-y-1 text-xs text-muted-foreground" aria-hidden>
+            <li className="inline-flex items-center gap-1.5">
+              <StatusSwatch status="free" />
+              {t.keyEnergyFree}
+            </li>
+            <li className="inline-flex items-center gap-1.5">
+              <StatusSwatch status="partial" />
+              {t.keyWidthsFree}
+            </li>
+            <li className="inline-flex items-center gap-1.5">
+              <StatusSwatch status="fixed" />
+              {t.keyFixed}
+            </li>
+          </ul>
+        )}
         <div ref={wrapRef} className="w-full" style={{ minHeight: layout ? undefined : 440 }}>
-          {figure}
+          {list ? (
+            <LevelList
+              items={main}
+              background={bgList}
+              backgroundEnergy={background?.energy ?? null}
+              thresholds={thresholds}
+              entrance={entrance}
+              pairs={pairs}
+              selected={selected}
+              onSelect={select}
+              hueOf={hueOf}
+            />
+          ) : (
+            figure
+          )}
         </div>
 
-        <p className="mt-2 text-xs text-muted-foreground print:hidden">
-          {zoom
-            ? `${t.zoomed(num(formatLevelEnergy(zoom[0])), num(formatLevelEnergy(zoom[1])))} · ${t.zoomHint}`
-            : crowded
-              ? t.crowded
-              : t.zoomHint}
-        </p>
+        {!list && (
+          <p className="mt-2 text-xs text-muted-foreground print:hidden">
+            {zoom
+              ? `${t.zoomed(num(formatLevelEnergy(zoom[0])), num(formatLevelEnergy(zoom[1])))} · ${t.zoomHint}`
+              : crowded
+                ? t.crowded
+                : t.zoomHint}
+          </p>
+        )}
 
-        <Details item={active} entrance={entrance} selected={Boolean(active && active.key === selected)} hueOf={hueOf} onClear={() => select(null)} />
+        <Details item={active} entrance={entrance} pairs={pairs} selected={Boolean(active && active.key === selected)} hueOf={hueOf} onClear={() => select(null)} />
 
         <Legend
+          list={list}
           anyWidth={anyWidth}
+          anyWide={anyWide}
+          wideExample={wideItem ? gammaText(wideItem.width.total) : ""}
           anyAnc={anyAnc}
+          anyEffective={anyEffective}
           anyThreshold={thresholds.length > 0}
-          anyData={Boolean(dataRange)}
+          anyData={Boolean(dataRange) && !list}
           species={legendSpecies}
           photon={anyPhoton}
           hueOf={hueOf}
@@ -1121,15 +1206,180 @@ export function LevelDiagram({
 
 /* -- small pieces ------------------------------------------------------------- */
 
+function StatusSwatch({ status, dashed = false }: { status: LevelStatus; dashed?: boolean }) {
+  return (
+    <svg width={22} height={12} viewBox="0 0 22 12" aria-hidden className="shrink-0">
+      <line
+        x1={1}
+        x2={21}
+        y1={6}
+        y2={6}
+        stroke={status === "fixed" ? "var(--viz-text-muted)" : "var(--viz-series-1)"}
+        strokeWidth={status === "free" ? 2.5 : 1.5}
+        strokeOpacity={status === "partial" ? 0.8 : 1}
+        strokeDasharray={dashed ? "6 3" : undefined}
+      />
+    </svg>
+  )
+}
+
+/**
+ * The levels as a list, for a narrow container: one row per level, in order
+ * of energy, under a divider at each particle threshold that stays in view
+ * while its levels scroll by. Columns J^pi · E_x · E_c.m. · Γ (keV), with
+ * the decay shares as a small bar; background poles folded at the end.
+ */
+function LevelList({
+  items,
+  background,
+  backgroundEnergy,
+  thresholds,
+  entrance,
+  pairs,
+  selected,
+  onSelect,
+  hueOf,
+}: {
+  items: Item[]
+  background: Item[]
+  backgroundEnergy: number | null
+  thresholds: Threshold[]
+  entrance: Threshold | null
+  pairs?: SchemePair[]
+  selected: string | null
+  onSelect: (key: string | null) => void
+  hueOf: (species: string, photon: boolean) => string
+}) {
+  const t = useEvalDict().levels
+  const lang = useLang()
+  const num = (s: string) => decimal(s, lang)
+  type Row = { energy: number; item?: Item; th?: Threshold }
+  const rows: Row[] = [
+    ...items.map((item): Row => ({ energy: item.level.energy, item })),
+    ...thresholds.map((th): Row => ({ energy: th.energy, th })),
+  ].sort((a, b) => a.energy - b.energy || (a.th ? -1 : 1))
+  const grid = "grid grid-cols-[1rem_3rem_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] items-center gap-x-2"
+  const dot = (item: Item) => (
+    <span
+      aria-hidden
+      className="inline-block h-2.5 w-2.5 rounded-full"
+      style={
+        item.status === "free"
+          ? { background: "var(--viz-series-1)" }
+          : item.status === "partial"
+            ? { boxShadow: "inset 0 0 0 1.5px var(--viz-series-1)" }
+            : { background: "var(--viz-text-muted)" }
+      }
+    />
+  )
+  const bar = (item: Item) => {
+    const g = item.width.total
+    if (!(g > 0)) return null
+    return (
+      <span className="ml-1.5 inline-flex h-1.5 w-3 shrink-0 overflow-hidden rounded-[1px] align-middle" aria-hidden>
+        {item.width.parts.map((p) => (
+          <span key={p.species} style={{ width: `${(p.gamma / g) * 100}%`, background: hueOf(p.species, p.photon) }} />
+        ))}
+      </span>
+    )
+  }
+  const row = (item: Item) => {
+    const isSel = selected === item.key
+    const ecm = entrance ? item.level.energy - entrance.energy : null
+    const g = item.width.total
+    const ground = Math.abs(item.level.energy) < 5e-4
+    const sub = [
+      ground ? t.groundState : null,
+      item.anc
+        ? t.ancIn(ancChannels(item.level).map((c) => pairs?.find((p) => p.number === c.pair)?.label_plain ?? texPlain(c.label)).join(", "))
+        : null,
+      item.effective ? t.effective : null,
+    ].filter(Boolean)
+    return (
+      <li key={item.key}>
+        <button
+          type="button"
+          aria-pressed={isSel}
+          aria-label={t.levelAria(jpiPlain(item.level.jpi), num(formatLevelEnergy(item.level.energy)), t.status[item.status], "")}
+          onClick={() => onSelect(isSel ? null : item.key)}
+          className={`${grid} min-h-11 w-full rounded-md px-2 py-1.5 text-left text-sm tabular-nums transition-colors hover:bg-muted/50 ${
+            isSel ? "bg-[color-mix(in_srgb,var(--viz-series-1)_12%,transparent)]" : ""
+          }`}
+        >
+          {dot(item)}
+          <span className={`font-semibold ${item.effective ? "text-muted-foreground" : ""}`}>
+            <Sci>{jpiPlain(item.level.jpi)}</Sci>
+          </span>
+          <span className="text-right">{num(formatLevelEnergy(item.level.energy))}</span>
+          <span className="text-right text-muted-foreground">{ecm !== null && ecm > 0 ? num(formatLevelEnergy(ecm)) : "—"}</span>
+          <span className="flex items-center justify-end text-right text-muted-foreground">
+            {g > 0 ? <Sci>{numberText(g * 1e3, lang, 3)}</Sci> : "—"}
+            {bar(item)}
+          </span>
+          {sub.length > 0 && (
+            <span className="col-span-4 col-start-2 -mt-0.5 text-xs font-normal text-muted-foreground">
+              <Sci>{sub.join(" · ")}</Sci>
+            </span>
+          )}
+        </button>
+      </li>
+    )
+  }
+  return (
+    <div className="text-sm">
+      <div className={`${grid} border-b px-2 pb-1.5 text-xs text-muted-foreground`}>
+        <span />
+        <span>
+          J<sup>π</sup>
+        </span>
+        <span className="text-right">
+          <i>E</i>
+          <sub>x</sub> (MeV)
+        </span>
+        <span className="text-right">
+          <i>E</i>
+          <sub>c.m.</sub> (MeV)
+        </span>
+        <span className="text-right">{t.columnWidth}</span>
+      </div>
+      <ul>
+        {rows.map((r) =>
+          r.th ? (
+            <li
+              key={r.th.key}
+              className="sticky top-[var(--header-h,4rem)] z-10 border-b border-dashed border-border bg-card px-2 py-1.5 text-xs text-muted-foreground"
+            >
+              <Sci>{t.above(r.th.pair, num(formatLevelEnergy(r.th.energy)))}</Sci>
+            </li>
+          ) : (
+            row(r.item!)
+          ),
+        )}
+      </ul>
+      {background.length > 0 && backgroundEnergy !== null && (
+        <details className="mt-1 border-t px-2 pt-1.5 text-xs text-muted-foreground">
+          <summary className="flex min-h-10 cursor-pointer select-none items-center">
+            {t.backgroundRow(background.length, num(String(Number(backgroundEnergy.toFixed(2)))))}
+          </summary>
+          <ul className="-mx-2">{background.map(row)}</ul>
+        </details>
+      )}
+      <p className="mt-2 px-2 text-xs text-muted-foreground">{t.listLegend}</p>
+    </div>
+  )
+}
+
 function Details({
   item,
   entrance,
+  pairs,
   selected,
   hueOf,
   onClear,
 }: {
   item: Item | undefined
   entrance: Threshold | null
+  pairs?: SchemePair[]
   selected: boolean
   hueOf: (species: string, photon: boolean) => string
   onClear: () => void
@@ -1144,7 +1394,15 @@ function Details({
   const ecm = entrance ? level.energy - entrance.energy : null
   const g = width.total
   const total = g > 0 ? formatQuantity(g * 1e6, "eV") : null
-  const ancs = level.channels.filter((c) => c.quantity === "anc")
+  const ancs = ancChannels(level)
+  const pairName = (c: SchemeLevel["channels"][number]) => {
+    const pair = pairs?.find((p) => p.number === c.pair)
+    return pair?.label_plain ?? texPlain(c.label)
+  }
+  const eV = (v: number) => {
+    const q = formatQuantity(v * 1e6, "eV")
+    return `${num(q.text)} ${q.unit}`
+  }
   return (
     <div className="mt-2 min-h-[3.5rem] rounded-md border bg-muted/30 px-3 py-2 text-sm print:hidden">
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
@@ -1154,6 +1412,7 @@ function Details({
         <span className="tabular-nums">
           <i>E</i>
           <sub>x</sub> = {num(formatLevelEnergy(level.energy))} MeV
+          {Math.abs(level.energy) < 5e-4 && <span className="text-muted-foreground"> ({t.groundState})</span>}
         </span>
         {entrance && ecm !== null && ecm > 0 && (
           <span className="tabular-nums text-muted-foreground">
@@ -1205,26 +1464,49 @@ function Details({
               <sub>
                 <Sci>{texPlain(c.label)}</Sci>
               </sub>{" "}
-              (ℓ = {c.L}) = {num(q.text).replace("-", "−")} <Unit unit={q.unit} />
+              (<Sci>{pairName(c)}</Sci>, ℓ = {c.L}) = {num(q.text).replace("-", "−")} <Unit unit={q.unit} />
             </span>
           )
         })}
       </div>
+      {item.notes.length > 0 && (
+        <ul className="mt-1.5 space-y-1 text-xs leading-relaxed text-muted-foreground">
+          {item.notes.map((n, i) => (
+            <li key={i}>
+              <Sci>
+                {n.kind === "above"
+                  ? t.noteAbove(num(formatLevelEnergy(n.dataMax)))
+                  : n.kind === "overlap"
+                    ? t.noteOverlap(jpiPlain(n.jpi), num(formatLevelEnergy(n.energy)))
+                    : t.notePhoton(eV(n.particle), eV(n.photon))}
+              </Sci>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   )
 }
 
 function Legend({
+  list,
   anyWidth,
+  anyWide,
+  wideExample,
   anyAnc,
+  anyEffective,
   anyThreshold,
   anyData,
   species,
   photon,
   hueOf,
 }: {
+  list: boolean
   anyWidth: boolean
+  anyWide: boolean
+  wideExample: string
   anyAnc: boolean
+  anyEffective: boolean
   anyThreshold: boolean
   anyData: boolean
   species: string[]
@@ -1232,36 +1514,42 @@ function Legend({
   hueOf: (species: string, photon: boolean) => string
 }) {
   const t = useEvalDict().levels
+  const lang = useLang()
+  const g = (anchor: string) => (
+    <>
+      {" "}
+      (
+      <Link href={`${localePath(lang, "/glossary")}#${anchor}`} className="text-link underline-offset-4 hover:underline">
+        {t.glossary}
+      </Link>
+      )
+    </>
+  )
   const swatch = (children: ReactNode) => (
-    <svg width={22} height={12} viewBox="0 0 22 12" aria-hidden className="shrink-0">
+    <svg width={22} height={12} viewBox="0 0 22 12" aria-hidden className="mt-0.5 shrink-0">
       {children}
     </svg>
   )
   const entry = (key: string, icon: ReactNode, label: ReactNode) => (
-    <li key={key} className="inline-flex items-center gap-1.5">
+    <li key={key} className="flex items-start gap-2">
       {icon}
       <span>{label}</span>
     </li>
   )
   return (
-    <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
-      {entry("free", swatch(<line x1={1} x2={21} y1={6} y2={6} stroke="var(--viz-series-1)" strokeWidth={2.5} />), t.legendEnergyFree)}
-      {entry("partial", swatch(<line x1={1} x2={21} y1={6} y2={6} stroke="var(--viz-series-1)" strokeWidth={1.5} />), t.legendWidthsFree)}
-      {entry("fixed", swatch(<line x1={1} x2={21} y1={6} y2={6} stroke="var(--viz-text-muted)" strokeWidth={1.5} />), t.legendFixed)}
-      {anyAnc &&
-        entry(
-          "anc",
-          swatch(
-            <>
-              <line x1={8} x2={21} y1={6} y2={6} stroke="var(--viz-series-1)" strokeWidth={1.5} />
-              <circle cx={5} cy={6} r={3} fill="var(--viz-surface)" stroke="var(--viz-series-1)" strokeWidth={1.5} />
-            </>,
-          ),
-          t.legendAnc,
-        )}
+    <ul className="mt-3 grid gap-x-6 gap-y-1.5 text-xs leading-snug text-muted-foreground md:grid-cols-2">
       {anyThreshold &&
-        entry("thr", swatch(<line x1={1} x2={21} y1={6} y2={6} stroke="var(--viz-text-muted)" strokeDasharray="5 3" />), t.legendThreshold)}
+        !list &&
+        entry(
+          "thr",
+          swatch(<line x1={1} x2={21} y1={6} y2={6} stroke="var(--viz-text-muted)" strokeDasharray="5 3" />),
+          <>
+            {t.plainThreshold}
+            {g("threshold")}
+          </>,
+        )}
       {anyWidth &&
+        !list &&
         entry(
           "width",
           swatch(
@@ -1270,37 +1558,62 @@ function Legend({
               <line x1={1} x2={21} y1={6} y2={6} stroke="var(--viz-series-1)" strokeWidth={1.5} />
             </>,
           ),
-          t.legendWidth,
+          <>
+            {t.plainWidth}
+            {g("resonance")}
+          </>,
         )}
-      {anyData &&
+      {anyWide &&
         entry(
-          "data",
+          "wide",
+          swatch(
+            <path d="M11,1V11M8.5,3.5L11,1L13.5,3.5M8.5,8.5L11,11L13.5,8.5" stroke="var(--viz-series-1)" fill="none" strokeWidth={1} />,
+          ),
+          t.plainWideWidth(wideExample),
+        )}
+      {anyData && entry("data", swatch(<rect x={9.5} y={0} width={3} height={12} fill="var(--viz-series-1)" />), t.plainData)}
+      {anyAnc &&
+        !list &&
+        entry(
+          "anc",
           swatch(
             <>
-              <rect x={0} y={0} width={22} height={12} fill="var(--viz-text-muted)" opacity={0.1} />
-              <rect x={0} y={0} width={3} height={12} fill="var(--viz-text-muted)" opacity={0.5} />
+              <line x1={8} x2={21} y1={6} y2={6} stroke="var(--viz-series-1)" strokeWidth={1.5} />
+              <circle cx={5} cy={6} r={3} fill="var(--viz-surface)" stroke="var(--viz-series-1)" strokeWidth={1.5} />
             </>,
           ),
-          t.legendData,
+          <>
+            {t.plainAnc}
+            {g("anc")}
+          </>,
         )}
+      {anyEffective && entry("effective", <StatusSwatch status="partial" dashed />, t.plainEffective)}
       {anyWidth && (species.length > 0 || photon) && (
-        <li className="inline-flex flex-wrap items-center gap-x-2.5 gap-y-1">
-          <span>
-            Γ<sub>c</sub>/Γ:
+        <li className="flex items-start gap-2">
+          <span className="mt-0.5 inline-flex h-2.5 w-[22px] shrink-0 overflow-hidden rounded-[1px]" aria-hidden>
+            {species.slice(0, 2).map((s) => (
+              <span key={s} className="flex-1" style={{ background: hueOf(s, false) }} />
+            ))}
+            {photon && <span className="flex-1" style={{ background: hueOf("γ", true) }} />}
           </span>
-          {species.map((s) => (
-            <span key={s} className="inline-flex items-center gap-1">
-              <span className="inline-block h-2.5 w-2.5 rounded-[1px]" style={{ background: hueOf(s, false) }} aria-hidden />
-              <span>
-                <Sci>{s}</Sci>
+          <span>
+            {t.plainBar}:{" "}
+            {species.map((s, i) => (
+              <span key={s} className="inline-flex items-center gap-1 whitespace-nowrap">
+                {i > 0 && ", "}
+                <span className="inline-block h-2 w-2 rounded-[1px]" style={{ background: hueOf(s, false) }} aria-hidden />
+                <span>
+                  <Sci>{s}</Sci>
+                </span>
               </span>
-            </span>
-          ))}
-          {photon && (
-            <span className="inline-flex items-center gap-1">
-              <span className="inline-block h-2.5 w-2.5 rounded-[1px]" style={{ background: hueOf("γ", true) }} aria-hidden />γ
-            </span>
-          )}
+            ))}
+            {photon && (
+              <span className="inline-flex items-center gap-1 whitespace-nowrap">
+                {species.length > 0 && ", "}
+                <span className="inline-block h-2 w-2 rounded-[1px]" style={{ background: hueOf("γ", true) }} aria-hidden />γ
+              </span>
+            )}
+          </span>
         </li>
       )}
     </ul>

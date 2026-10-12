@@ -136,10 +136,10 @@ export function dataAngles(segment: DataSegment): { min: number; max: number } |
 }
 
 /** "90°" or "40–60°" for a differential segment, "" otherwise. */
-export function angleText(segment: DataSegment): string {
+export function angleText(segment: DataSegment, lang: Lang = "en"): string {
   const a = dataAngles(segment)
   if (!a) return ""
-  const fmt = (v: number) => `${Number(v.toFixed(1))}`
+  const fmt = (v: number) => decimal(`${Number(v.toFixed(1))}`, lang)
   // A capture angle moves by a fraction of a degree between lab and c.m. as
   // the energy changes; that is one angle, not a range.
   return a.max - a.min < 0.5 ? `${fmt((a.min + a.max) / 2)}°` : `${fmt(a.min)}–${fmt(a.max)}°`
@@ -181,7 +181,7 @@ export function qualifier(segment: DataSegment, lang: Lang = "en"): string {
   if (reaction) bits.push(reaction)
   if (isAngular(segment)) bits.push(energyText(segment, lang))
   else {
-    const angle = angleText(segment)
+    const angle = angleText(segment, lang)
     if (angle) bits.push(angle)
   }
   return bits.join(" · ")

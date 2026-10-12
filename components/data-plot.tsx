@@ -265,7 +265,7 @@ export function DataPlot({
     for (const key of keys) {
       const here = segments.filter((s) => modelKey(s) === key)
       const unit = unitOf(here[0])
-      const qualifierOf = (s: DataSegment) => (xKind(s) === "angle" ? energyText(s, lang) : angleText(s))
+      const qualifierOf = (s: DataSegment) => (xKind(s) === "angle" ? energyText(s, lang) : angleText(s, lang))
       const curve = lineOf(key, data, fine, unit)
       const before = scheme.modified ? lineOf(key, initialData, initialFine, unit) : null
       const initialHere = (initialData ?? []).filter((s) => here.some((h) => h.index === s.index))
@@ -476,7 +476,7 @@ export function DataPlot({
           <li key={s.index} className="flex min-w-0 items-center gap-1.5">
             {marker(i)}
             <span className="min-w-0 truncate text-foreground">
-              {compact ? [datasetName(s), xKind(s) === "angle" ? "" : angleText(s)].filter(Boolean).join(" · ") : segmentTitle(s, lang)}
+              {compact ? [datasetName(s), xKind(s) === "angle" ? "" : angleText(s, lang)].filter(Boolean).join(" · ") : segmentTitle(s, lang)}
             </span>
           </li>
         ))
