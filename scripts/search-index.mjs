@@ -124,7 +124,7 @@ const SYNONYMS = {
   "/atlas/14N-pg-15O": "CNO neutrinos · neutrini CNO · slowest step · passo più lento",
   "/atlas/7Be-pg-8B": "solar neutrinos · neutrini solari · boron-8 neutrinos · neutrini del boro-8",
   "/atlas/1H-pp-2H": "first step · primo passo",
-  "/atlas/s-process": `${GOLD} · ${S_PROCESS}`,
+  "/atlas/s-process": `${GOLD} · ${S_PROCESS} · lead · piombo · from iron to lead · dal ferro al piombo`,
   "/atlas/197Au-ng-198Au": GOLD,
   "/glossary#s-process": "gold · oro · heavy elements · elementi pesanti · slow neutron capture",
   "/glossary#branch-point": "isomer · isomero · bound-state beta decay · decadimento beta in stato legato · stellar half-life · thermometer · termometro",
@@ -139,7 +139,7 @@ const SYNONYMS = {
   "/atlas/4He-aa-12C": "Hoyle state · Hoyle · stato di Hoyle · triple alpha · triple-α · tre alfa · 3α · carbon production · produzione del carbonio",
   "/atlas#he": "Hoyle state · stato di Hoyle · triple alpha · tre alfa · red giant · gigante rossa",
   "/glossary#gamow-window": "Gamow peak · picco di Gamow · Gamow energy · energia di Gamow",
-  "/glossary#electron-screening": "screening · schermaggio · CRYRING",
+  "/glossary#electron-screening": "screening · schermaggio · schermatura elettronica · schermo elettronico · CRYRING",
   "/research#agata": "lifetime · vita media · DSAM · Doppler · gamma-ray tracking · tracciamento",
 }
 const synonyms = (href) => SYNONYMS[href] ?? ""
@@ -182,9 +182,11 @@ const PAGES = [
   { href: "/glossary", en: ["Glossary", "The words the atlas uses, in plain language"], it: ["Glossario", "Le parole dell'atlante, in linguaggio semplice"], k: "glossary glossario terms termini definitions" },
   { href: "/atlas/methods", en: ["Methods and laboratories", "How reactions are measured, and where"], it: ["Metodi e laboratori", "Come si misurano le reazioni, e dove"], k: "methods metodi laboratories laboratori facilities" },
   { href: "/atlas/timeline", en: ["Timeline", "A century of nuclear astrophysics"], it: ["Cronologia", "Un secolo di astrofisica nucleare"], k: "timeline cronologia history storia" },
-  { href: "/atlas/s-process", en: ["The s-process", "How stars make half the heavy elements"], it: ["Il processo s", "Come le stelle producono metà degli elementi pesanti"], k: "s-process processo s slow neutron capture cattura neutronica lenta" },
+  { href: "/atlas/s-process", en: ["The s-process", "How stars make half the heavy elements"], it: ["Il processo s", "Come le stelle producono metà degli elementi pesanti"], k: "s-process processo s slow neutron capture cattura neutronica lenta lead piombo bismuth bismuto barium bario strontium stronzio heavy elements elementi pesanti from iron to lead dal ferro al piombo" },
+  // --- r11 site ---
+  { href: "/about", en: ["About this site", "How it was made and checked, its data, and how to cite it"], it: ["Informazioni sul sito", "Come è stato fatto e verificato, i dati e come citarlo"], k: "about informazioni colophon AI artificial intelligence intelligenza artificiale Claude Anthropic verification verifica sources fonti licence licenza cite citare citation citazione DOI Zenodo github open source codice aperto report error segnala errore contribute contribuire" },
   // --- rates ---
-  { href: "/atlas/rates/s-process", en: ["The s-process, what if", "Neutron sources, poisons and seeds, from iron to bismuth"], it: ["Il processo s, e se…", "Sorgenti di neutroni, veleni e semi, dal ferro al bismuto"], k: "s-process processo s neutron poison veleno neutronico neutron source sorgente di neutroni 13C(a,n) 22Ne(a,n) 14N(n,p) exposure esposizione what if" },
+  { href: "/atlas/rates/s-process", en: ["The s-process, what if", "Neutron sources, poisons and seeds, from iron to bismuth"], it: ["Il processo s, e se…", "Sorgenti di neutroni, veleni e semi, dal ferro al bismuto"], k: "s-process processo s lead piombo bismuth bismuto iron ferro seed seme neutron poison veleno neutronico neutron source sorgente di neutroni 13C(a,n) 22Ne(a,n) 14N(n,p) exposure esposizione what if" },
   { href: "/atlas/rates", en: ["Reaction rates", "How fast each reaction runs, and what if it were different"], it: ["Tassi di reazione", "Quanto è veloce ogni reazione, e se fosse diversa"], k: "reaction rates tassi di reazione rate tasso reaclib pynucastro what if sensitivity sensibilità bottleneck collo di bottiglia waiting time tempo di attesa lifetime network rete pp CNO NeNa MgAl" },
 ]
 

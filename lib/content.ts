@@ -97,6 +97,8 @@ export interface Profile {
   intro: string[]
   links: { label: string; href: string }[]
   cv: { label: string; file: string }
+  /** The site's Zenodo concept DOI (RELEASING.md); empty until there is one. */
+  site_doi?: string
 }
 
 export interface ResearchThread {

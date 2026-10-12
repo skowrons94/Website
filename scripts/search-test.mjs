@@ -38,6 +38,13 @@ const CASES = [
   { lang: "en", q: "why underground", top: ["/atlas/methods#direct-underground", "/glossary#luna"], n: 5 },
   { lang: "it", q: "sottoterra", top: ["/atlas/methods#direct-underground", "/glossary#luna"], n: 4 },
   { lang: "it", q: "perché sottoterra", top: ["/atlas/methods#direct-underground", "/glossary#luna"], n: 4 },
+  // --- r11 site ---
+  { lang: "en", q: "lead", top: ["/atlas/s-process"], n: 3 },
+  { lang: "it", q: "piombo", top: ["/atlas/s-process"], n: 3 },
+  { lang: "en", q: "about this site", first: "/about" },
+  { lang: "it", q: "come citare", top: ["/about"], n: 5 },
+  { lang: "en", q: "Claude", top: ["/about"], n: 3 },
+  { lang: "it", q: "schermatura elettronica", top: ["/glossary#electron-screening"], n: 3 },
   { lang: "en", q: "gold", top: ["/atlas/s-process", "/atlas/197Au-ng-198Au"], n: 2 },
   { lang: "it", q: "oro", top: ["/atlas/s-process", "/atlas/197Au-ng-198Au"], n: 2, none: [/19F|18O-pg-19F|fluor/i] },
   { lang: "en", q: "sun", first: "/atlas#pp", none: [/^https?:/] , nOnly: 3 },

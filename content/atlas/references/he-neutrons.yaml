@@ -355,8 +355,9 @@ rapagnani2022:
   title: SHADES – ²²Ne(α,n)²⁵Mg reaction rate in the Gamow window
   journal: EPJ Web Conf. 260, 11031 (2022)
   year: 2022
+  doi: 10.1051/epjconf/202226011031
   arxiv: "2510.06268"
-  checked: arXiv 2510.06268 abstract page and PDF (journal reference EPJ Web Conf. 260, 11031); DOI not shown, so omitted, 2026-10-11
+  checked: rechecked 2026-10-12 by web search. The EPJ Web of Conferences record for NIC-XVI (volume 260, article 11031, published online 24 February 2022) gives this title, D. Rapagnani as first author and DOI 10.1051/epjconf/202226011031; the arXiv listing 2510.06268, posted 6 October 2025 under physics.ins-det, carries the same title and first author and gives the same journal reference, consistent with a late arXiv posting of the 2022 proceedings
 
 rana2024:
   authors: T. K. Rana et al.

@@ -135,7 +135,7 @@ function Entry({ entry, lang }: { entry: SoftwareEntry; lang: Lang }) {
         </div>
 
         {entry.links && entry.links.length > 0 && (
-          <aside className="mt-8 lg:mt-0">
+          <div className="mt-8 lg:mt-0">
             <h3 className="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">{t.links}</h3>
             <ul className="space-y-0.5 text-sm">
               {entry.links.map((link) => {
@@ -161,7 +161,7 @@ function Entry({ entry, lang }: { entry: SoftwareEntry; lang: Lang }) {
                 )
               })}
             </ul>
-          </aside>
+          </div>
         )}
       </div>
     </article>

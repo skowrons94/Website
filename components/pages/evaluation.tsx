@@ -4,7 +4,9 @@ import { notFound } from "next/navigation"
 
 import { EvaluationHeader, PaperLine, nuclideOf as nuclide } from "@/components/evaluation-header"
 import EvaluationWorkspace from "@/components/evaluation-workspace"
+import { ReportLinks } from "@/components/report-links"
 import { Sci } from "@/components/sci"
+import { SiteDoiLine } from "@/components/site-doi"
 import { getAtlas } from "@/lib/atlas"
 import { azure2Ref, evaluationIds, evaluationMeta, type EvaluationMeta } from "@/lib/evaluation-meta"
 import { dict, localePath, type Lang } from "@/lib/i18n"
@@ -86,6 +88,11 @@ export function EvaluationPage({ id, lang }: { id: string; lang: Lang }) {
           </ul>
         </aside>
       )}
+      {/* --- r11 site --- */}
+      <aside aria-label={dict(lang).report.error} className="mt-12 border-t border-border/70 pt-6">
+        <ReportLinks path={localePath(lang, `/evaluations/${id}`)} section={t.pageTitle(nuclide(id))} strings={dict(lang).report} />
+        <SiteDoiLine lang={lang} />
+      </aside>
     </>
   )
 }

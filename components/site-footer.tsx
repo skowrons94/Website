@@ -2,6 +2,7 @@ import Link from "next/link"
 
 import type { Profile } from "@/lib/content"
 import { dict, localePath, type Lang } from "@/lib/i18n"
+import { REPO } from "@/lib/repo"
 
 /*
  * The footer is the site map: one column for the work (what someone evaluating
@@ -98,8 +99,17 @@ export function SiteFooter({ profile, lang }: { profile: Profile; lang: Lang }) 
         </nav>
       </div>
       <div className="border-t border-border/50">
-        <p className="mx-auto max-w-6xl px-5 py-5 text-xs text-muted-foreground sm:px-8 xl:max-w-7xl">
-          © {new Date().getFullYear()} {profile.name}
+        <p className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3 text-xs text-muted-foreground sm:px-8 xl:max-w-7xl">
+          <span>
+            © {new Date().getFullYear()} {profile.name}
+          </span>
+          {/* --- r11 site --- */}
+          <Link href={localePath(lang, "/about")} className={LINK}>
+            {t.about}
+          </Link>
+          <a href={REPO} target="_blank" rel="noreferrer" className={LINK}>
+            {t.code}
+          </a>
         </p>
       </div>
     </footer>

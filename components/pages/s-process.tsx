@@ -8,6 +8,8 @@ import { LunaBadge, StatusBadge } from "@/components/atlas/status-badge"
 import { Term } from "@/components/atlas/term"
 import { Sci } from "@/components/sci"
 import { SiteUrl } from "@/components/atlas/site-url"
+import { ReportLinks } from "@/components/report-links"
+import { SiteDoiLine } from "@/components/site-doi"
 import { getAtlas, getSProcessPath, pageDate, type Reaction } from "@/lib/atlas"
 import { formatDate } from "@/lib/atlas-format"
 import { dict, localePath, type Lang } from "@/lib/i18n"
@@ -126,6 +128,7 @@ const ORDER = [
   "wisshak2006",
   "reifarth2003",
   "beer1980",
+  "takahashi1987",
   "heil2008lu",
   "guerrero2020",
   "casanovashoste2024",
@@ -341,6 +344,7 @@ export function SProcessPage({ lang }: { lang: Lang }) {
               {updated && `, ${updated}`}, <SiteUrl path="/atlas/s-process" lang={lang} />.
             </p>
             <p className="mt-2 text-xs text-muted-foreground">{t.citeNote}</p>
+            <SiteDoiLine lang={lang} />
             {meta.licence && (
               <p className="mt-3 text-pretty text-sm leading-relaxed text-muted-foreground">
                 {t.licence(meta.licence)}{" "}
@@ -357,6 +361,15 @@ export function SProcessPage({ lang }: { lang: Lang }) {
             <h2 className="mb-4 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">{t.references}</h2>
             <ReferenceList keys={ORDER} references={atlas.references} lang={lang} />
           </section>
+
+          {/* --- r11 site --- */}
+          <ReportLinks
+            path={localePath(lang, "/atlas/s-process")}
+            section={t.title}
+            strings={dict(lang).report}
+            suggest
+            className="mt-12 text-sm text-muted-foreground"
+          />
         </article>
 
         {/* -- contents, on a wide screen ----------------------------------- */}
@@ -639,7 +652,7 @@ function BodyEn({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
             half-life of ¹⁷⁶Lu falls steeply with temperature, by many orders of magnitude.
             ¹⁷⁶Lu and its daughter ¹⁷⁶Hf are both s-only, shielded by ¹⁷⁶Yb: their ratio is an s-process thermometer
           </Sci>{" "}
-          {c("beer1980", "heil2008lu")}.
+          {c("beer1980", "takahashi1987", "heil2008lu")}.
         </InsetFigure>
 
         <div className={prose}>
@@ -922,7 +935,7 @@ function BodyIt({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
             stati, così il tempo di dimezzamento efficace del ¹⁷⁶Lu crolla con la temperatura, di molti ordini di grandezza. Il ¹⁷⁶Lu e suo figlio ¹⁷⁶Hf sono entrambi solo s, schermati dal ¹⁷⁶Yb: il loro rapporto è un
             termometro del processo s
           </Sci>{" "}
-          {c("beer1980", "heil2008lu")}.
+          {c("beer1980", "takahashi1987", "heil2008lu")}.
         </InsetFigure>
 
         <div className={prose}>

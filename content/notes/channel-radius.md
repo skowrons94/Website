@@ -127,8 +127,8 @@ of the level is outside the box. Both are symptoms of the same thing.
 
 ## Why the width saturates
 
-Now ask the question a fitter asks: what happens to the observable if I turn up
-the coupling? Let $\gamma$ grow. The numerator of $\Gamma_c$ grows like $\gamma^2$
+Now ask the question a fitter asks: what happens to the observable as the
+coupling is turned up? Let $\gamma$ grow. The numerator of $\Gamma_c$ grows like $\gamma^2$
 — but so does $N$, because pushing more amplitude through the surface puts more of
 the state outside. A ratio of two quantities both growing like $\gamma^2$ tends to
 a constant:

@@ -1,0 +1,37 @@
+{
+  "title": "Nuclear astrophysics: reaction atlas, R-matrix evaluations and reaction rates",
+  "upload_type": "software",
+  "description": "<p>Source code and content of Jakub Skowronski's research website: a reaction atlas of the nuclear reactions that power stars, with references and plain-language explanations in English and Italian; interactive R-matrix evaluations run with AZURE2, natively or in the browser; a reaction-rate explorer built on JINA REACLIB and pynucastro; and notes on R-matrix theory.</p><p>The site was built with AI assistance (Claude, by Anthropic) under the author's direction and scientific responsibility; see the site's About page.</p>",
+  "creators": [
+    {
+      "name": "Skowronski, Jakub",
+      "orcid": "0000-0001-7292-6353",
+      "affiliation": "Università degli Studi di Padova"
+    }
+  ],
+  "keywords": [
+    "nuclear astrophysics",
+    "nuclear reactions",
+    "R-matrix",
+    "AZURE2",
+    "reaction rates",
+    "REACLIB",
+    "s-process",
+    "LUNA",
+    "underground laboratory",
+    "stellar nucleosynthesis"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "10.1103/PhysRevC.81.045805",
+      "relation": "references",
+      "resource_type": "publication-article"
+    },
+    {
+      "identifier": "https://github.com/pynucastro/pynucastro",
+      "relation": "requires",
+      "resource_type": "software"
+    }
+  ],
+  "language": "eng"
+}

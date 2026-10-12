@@ -9,6 +9,7 @@ import { notFound } from "next/navigation"
 import { ArrowLeft, ArrowRight, ChevronDown, SlidersHorizontal } from "lucide-react"
 
 import { Cite, ReferenceList } from "@/components/atlas/reference-list"
+import { ReportLinks } from "@/components/report-links"
 import { LunaBadge, StatusBadge } from "@/components/atlas/status-badge"
 import { linkTerms } from "@/components/atlas/linked-text"
 import { Term } from "@/components/atlas/term"
@@ -826,6 +827,15 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
               <ReferenceList keys={order} references={atlas.references} lang={lang} />
             </section>
           )}
+
+          {/* --- r11 site --- */}
+          <ReportLinks
+            path={to(`/atlas/${r.id}`)}
+            section={r.label}
+            strings={dict(lang).report}
+            suggest
+            className="mt-12 text-sm text-muted-foreground"
+          />
 
           {/* -- along the network ------------------------------------------- */}
           {(prev || next) && (

@@ -77,6 +77,9 @@ const en = {
     // --- rates ---
     rates: "Reaction rates",
     ratesDescription: "How fast each reaction runs, and what if it were different",
+    // --- r11 site ---
+    about: "About this site",
+    aboutDescription: "How it was made and checked, its data, how to cite it",
   },
   footer: {
     work: "Work",
@@ -94,6 +97,25 @@ const en = {
     notes: "Notes on R-matrix theory",
     // --- rates ---
     rates: "Reaction rates",
+    // --- r11 site ---
+    about: "About this site",
+    code: "Source code",
+  },
+  // --- r11 site ---
+  // "Report an error · Suggest a reaction" (components/report-links.tsx): a new
+  // GitHub issue, filled in. {page} is the page's address, {section} the part
+  // of it (a reaction, a glossary term).
+  report: {
+    found: "Something wrong or missing?",
+    error: "Report an error",
+    suggest: "Suggest a reaction",
+    opensGithub: "opens a new issue on GitHub",
+    errorTitle: "Error on {section}",
+    suggestTitle: "Suggestion: a reaction to add",
+    errorBody:
+      "Page: {page}\nSection: {section}\n\nWhat is wrong:\n\n\nWhat it should be, with a source if you have one (DOI, arXiv, EXFOR):\n\n",
+    suggestBody:
+      "Suggested from: {page}\n\nReaction (e.g. 22Ne(p,g)23Na):\n\nWhere it matters in stars or in the Big Bang:\n\nKey measurements or evaluations (DOI, arXiv, EXFOR):\n\n",
   },
   // --- site (round 3) ---
   search: {
@@ -663,7 +685,7 @@ const it: Dictionary = {
     methodsShort: "Metodi",
     timeline: "Cronologia",
     sProcess: "Il processo s",
-    groups: { work: "Lavoro", explore: "Esplorare", learn: "Approfondimenti" },
+    groups: { work: "Lavoro", explore: "Esplora", learn: "Approfondimenti" },
     descriptions: {
       research: "Misure sotterranee, teoria R-matrix, tracciamento dei raggi γ",
       atlas: "Le reazioni che alimentano le stelle, sulla carta dei nuclidi",
@@ -681,6 +703,9 @@ const it: Dictionary = {
     // --- rates ---
     rates: "Tassi di reazione",
     ratesDescription: "Quanto è veloce ogni reazione, e se fosse diversa",
+    // --- r11 site ---
+    about: "Informazioni sul sito",
+    aboutDescription: "Come è stato fatto e verificato, i dati, come citarlo",
   },
   footer: {
     work: "Lavoro",
@@ -698,6 +723,22 @@ const it: Dictionary = {
     notes: "Note sulla teoria R-matrix",
     // --- rates ---
     rates: "Tassi di reazione",
+    // --- r11 site ---
+    about: "Informazioni sul sito",
+    code: "Codice sorgente",
+  },
+  // --- r11 site ---
+  report: {
+    found: "Qualcosa di sbagliato o mancante?",
+    error: "Segnala un errore",
+    suggest: "Proponi una reazione",
+    opensGithub: "apre una nuova segnalazione su GitHub",
+    errorTitle: "Errore in {section}",
+    suggestTitle: "Proposta: una reazione da aggiungere",
+    errorBody:
+      "Pagina: {page}\nSezione: {section}\n\nCosa è sbagliato:\n\n\nCome dovrebbe essere, con una fonte se ce l'hai (DOI, arXiv, EXFOR):\n\n",
+    suggestBody:
+      "Proposta dalla pagina: {page}\n\nReazione (ad es. 22Ne(p,g)23Na):\n\nDove conta nelle stelle o nel Big Bang:\n\nMisure o valutazioni principali (DOI, arXiv, EXFOR):\n\n",
   },
   // --- site (round 3) ---
   search: {

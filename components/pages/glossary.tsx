@@ -8,6 +8,7 @@ import { ChartDiagram } from "@/components/atlas/chart-diagram"
 import { LunaFigure } from "@/components/atlas/luna-figure"
 import { STATUSES, StatusBadge } from "@/components/atlas/status-badge"
 import { Container, PageHeader } from "@/components/page-header"
+import { ReportLinks } from "@/components/report-links"
 import { Sci } from "@/components/sci"
 import { getGlossary } from "@/lib/atlas"
 import { statusHint } from "@/lib/atlas-format"
@@ -21,6 +22,7 @@ export function GlossaryPage({ lang }: { lang: Lang }) {
   const t = dict(lang).atlas
   const terms = getGlossary(lang)
   const name = new Map(terms.map((term) => [term.id, term.term]))
+  const report = dict(lang).report
 
   return (
     <Container>
@@ -103,6 +105,13 @@ export function GlossaryPage({ lang }: { lang: Lang }) {
                   ))}
                 </p>
               )}
+              {/* --- r11 site --- */}
+              <ReportLinks
+                path={`${localePath(lang, "/glossary")}#${term.id}`}
+                section={`${t.glossaryTitle}: ${term.term}`}
+                strings={{ ...report, found: "" }}
+                className="mt-4 text-xs text-muted-foreground"
+              />
             </dd>
           </div>
         ))}
