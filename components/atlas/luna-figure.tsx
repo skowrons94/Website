@@ -11,6 +11,12 @@ import { cn } from "@/lib/utils"
  * glossary; not to scale. The numbered labels are explained in an HTML list
  * under the picture, which stays legible on a phone; the colours are the
  * chart tokens, so the drawing follows the theme.
+ *
+ * The words in the picture are set in CSS pixels per breakpoint: on a phone
+ * the 640-unit drawing is about half size, so they are drawn twice as large
+ * there to stay at 11 px or more. `compact` draws the picture alone (no
+ * numbered markers and no list), always with the large labels, for a small
+ * place such as the home page.
  */
 
 const MOUNTAIN =
@@ -29,34 +35,51 @@ const MUONS: [number, number, number, number, boolean][] = [
 function Marker({ x, y, n }: { x: number; y: number; n: number }) {
   return (
     <g>
-      <circle cx={x} cy={y} r={11} fill="var(--viz-text)" />
-      <text x={x} y={y + 0.5} textAnchor="middle" dominantBaseline="central" fontSize={13} fontWeight={600} fill="var(--viz-surface)">
+      <circle cx={x} cy={y} r={11} fill="var(--viz-text)" className="[r:15px] sm:[r:12.5px]" />
+      <text
+        x={x}
+        y={y + 0.5}
+        textAnchor="middle"
+        dominantBaseline="central"
+        fontSize={13}
+        fontWeight={600}
+        fill="var(--viz-surface)"
+        className="[font-size:20px] sm:[font-size:15px]"
+      >
         {n}
       </text>
     </g>
   )
 }
 
-export function LunaFigure({ lang, className }: { lang: Lang; className?: string }) {
-  const t = dict(lang).atlas.lunaFigure
+export function LunaFigure({ lang, className, compact = false }: { lang: Lang; className?: string; compact?: boolean }) {
+  const a = dict(lang).atlas
+  const t = a.lunaFigure
   const muon = "var(--viz-series-2)"
   const beam = "var(--viz-series-1)"
+  const id = compact ? "luna-figure-compact" : "luna-figure"
+  // Label sizes: large on a phone (and always when compact), smaller from sm up.
+  const big = compact ? "[font-size:22px]" : "[font-size:22px] sm:[font-size:17px]"
+  const depth = compact ? "[font-size:24px]" : "[font-size:24px] sm:[font-size:19px]"
   return (
     <figure className={cn("rounded-lg border border-border p-3 sm:p-4", className)} style={{ background: "var(--viz-surface)" }}>
-      <svg viewBox="0 0 640 360" role="img" aria-labelledby="luna-figure-title" className="block h-auto w-full">
-        <title id="luna-figure-title">{t.alt}</title>
+      <svg viewBox="0 0 640 360" role="img" aria-labelledby={`${id}-title`} className="block h-auto w-full">
+        <title id={`${id}-title`}>{t.alt}</title>
         <defs>
-          <marker id="luna-muon-head" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <marker id={`${id}-muon-head`} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
             <path d="M0,0 L10,5 L0,10 Z" fill={muon} />
           </marker>
-          <marker id="luna-depth-head" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <marker id={`${id}-depth-head`} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
             <path d="M0,0 L10,5 L0,10 Z" fill="var(--viz-text-muted)" />
           </marker>
         </defs>
 
-        {/* the mountain */}
+        {/* the mountain, named */}
         <path d={MOUNTAIN} fill="var(--atlas-cell-strong)" stroke="var(--viz-text-muted)" strokeWidth={1.2} />
-        <text x={560} y={300} textAnchor="middle" fontSize={14} fill="var(--viz-text-muted)">
+        <text x={575} y={282} textAnchor="middle" fontSize={15} fontWeight={600} fill="var(--viz-text)" className={big}>
+          {a.lunaMountain}
+        </text>
+        <text x={575} y={304} textAnchor="middle" fontSize={14} fill="var(--viz-text-muted)" className={big}>
           {t.rock}
         </text>
 
@@ -71,7 +94,7 @@ export function LunaFigure({ lang, className }: { lang: Lang; className?: string
               stroke={muon}
               strokeWidth={through ? 1.6 : 2}
               strokeDasharray={through ? "5 4" : undefined}
-              markerEnd="url(#luna-muon-head)"
+              markerEnd={`url(#${id}-muon-head)`}
             />
             {!through && (
               <g stroke={muon} strokeWidth={2}>
@@ -81,7 +104,7 @@ export function LunaFigure({ lang, className }: { lang: Lang; className?: string
             )}
           </g>
         ))}
-        <Marker x={88} y={30} n={1} />
+        {!compact && <Marker x={88} y={30} n={1} />}
 
         {/* depth */}
         <line
@@ -91,14 +114,14 @@ export function LunaFigure({ lang, className }: { lang: Lang; className?: string
           y2={292}
           stroke="var(--viz-text-muted)"
           strokeWidth={1.4}
-          markerStart="url(#luna-depth-head)"
-          markerEnd="url(#luna-depth-head)"
+          markerStart={`url(#${id}-depth-head)`}
+          markerEnd={`url(#${id}-depth-head)`}
         />
-        <rect x={250} y={178} width={100} height={26} rx={4} fill="var(--atlas-cell-strong)" />
-        <text x={300} y={196} textAnchor="middle" fontSize={16} fontWeight={600} fill="var(--viz-text)">
+        <rect x={236} y={172} width={128} height={36} rx={4} fill="var(--atlas-cell-strong)" />
+        <text x={300} y={191} textAnchor="middle" dominantBaseline="central" fontSize={16} fontWeight={600} fill="var(--viz-text)" className={depth}>
           ≈ 1400 m
         </text>
-        <Marker x={238} y={191} n={2} />
+        {!compact && <Marker x={218} y={190} n={2} />}
 
         {/* the motorway tunnel and the halls */}
         <line x1={0} y1={338} x2={168} y2={338} stroke="var(--viz-text-muted)" strokeWidth={1.2} strokeDasharray="7 5" />
@@ -110,39 +133,42 @@ export function LunaFigure({ lang, className }: { lang: Lang; className?: string
         <line x1={226} y1={325} x2={268} y2={325} stroke={beam} strokeWidth={2.5} />
         <circle cx={278} cy={325} r={10} fill="none" stroke="var(--viz-text)" strokeWidth={2} />
         <circle cx={278} cy={325} r={2.5} fill="var(--viz-text)" />
-        <Marker x={203} y={290} n={3} />
+        {!compact && <Marker x={203} y={288} n={3} />}
 
         {/* LUNA-MV, Bellotti Ion Beam Facility */}
         <rect x={326} y={307} width={84} height={36} rx={5} fill={beam} />
         <line x1={410} y1={325} x2={456} y2={325} stroke={beam} strokeWidth={2.5} />
         <circle cx={466} cy={325} r={10} fill="none" stroke="var(--viz-text)" strokeWidth={2} />
         <circle cx={466} cy={325} r={2.5} fill="var(--viz-text)" />
-        <Marker x={368} y={290} n={4} />
-        <Marker x={466} y={290} n={5} />
+        {!compact && <Marker x={368} y={288} n={4} />}
+        {!compact && <Marker x={466} y={288} n={5} />}
 
-        <text x={84} y={356} textAnchor="middle" fontSize={12} fill="var(--viz-text-muted)">
-          {t.tunnel}
+        {/* the tunnel, named under its line on the left */}
+        <text x={6} y={356} fontSize={12} fill="var(--viz-text-muted)" className={compact ? "[font-size:20px]" : "[font-size:20px] sm:[font-size:15px]"}>
+          {t.tunnelShort}
         </text>
       </svg>
 
-      <figcaption className="mt-3 text-sm leading-relaxed text-muted-foreground">
-        <ol className="space-y-1.5">
-          {t.items.map((item, i) => (
-            <li key={i} className="flex gap-2.5 text-pretty">
-              <span
-                aria-hidden
-                className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-foreground text-[0.6875rem] font-semibold text-background"
-              >
-                {i + 1}
-              </span>
-              <span>
-                <Sci>{item}</Sci>
-              </span>
-            </li>
-          ))}
-        </ol>
-        <p className="mt-2 text-xs">{t.note}</p>
-      </figcaption>
+      {!compact && (
+        <figcaption className="mt-3 text-sm leading-relaxed text-muted-foreground">
+          <ol className="space-y-1.5">
+            {t.items.map((item, i) => (
+              <li key={i} className="flex gap-2.5 text-pretty">
+                <span
+                  aria-hidden
+                  className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-foreground text-[0.6875rem] font-semibold text-background"
+                >
+                  {i + 1}
+                </span>
+                <span>
+                  <Sci>{item}</Sci>
+                </span>
+              </li>
+            ))}
+          </ol>
+          <p className="mt-2 text-xs">{t.note}</p>
+        </figcaption>
+      )}
     </figure>
   )
 }

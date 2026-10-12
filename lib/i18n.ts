@@ -717,6 +717,7 @@ const en = {
       alt: "Schematic cross-section of the Gran Sasso mountain. Cosmic-ray muons coming from above stop in the rock; only about one in a million reaches the underground halls, about 1400 m below the summit, where the LUNA 400 kV accelerator and the 3.5 MV LUNA-MV accelerator of the Bellotti Ion Beam Facility send their beams onto targets surrounded by detectors.",
       rock: "rock",
       tunnel: "motorway tunnel",
+      tunnelShort: "motorway tunnel",
       items: [
         "At the surface, cosmic rays make a steady rain of muons, which leave signals in any γ-ray detector.",
         "About 1400 m of rock (3800 m water equivalent) stop all but about one muon in a million.",
@@ -1422,6 +1423,7 @@ const it: Dictionary = {
       alt: "Sezione schematica del Gran Sasso. I muoni dei raggi cosmici che arrivano dall'alto si fermano nella roccia; solo circa uno su un milione raggiunge le sale sotterranee, circa 1400 m sotto la vetta, dove l'acceleratore LUNA da 400 kV e l'acceleratore LUNA-MV da 3,5 MV del Bellotti Ion Beam Facility mandano i loro fasci su bersagli circondati da rivelatori.",
       rock: "roccia",
       tunnel: "galleria autostradale",
+      tunnelShort: "galleria",
       items: [
         "In superficie i raggi cosmici producono una pioggia continua di muoni, che lasciano segnali in qualunque rivelatore di raggi γ.",
         "Circa 1400 m di roccia (3800 m di acqua equivalente) fermano tutti i muoni tranne circa uno su un milione.",
