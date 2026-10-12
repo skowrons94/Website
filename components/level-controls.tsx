@@ -436,10 +436,15 @@ function ParameterControl({
   const endLabel = (u: number) => {
     if (control.unit === "eV" && u >= 0) {
       const prefix = u >= 6 ? "MeV" : u >= 3 ? "keV" : "eV"
-      const n = 10 ** (u - (u >= 6 ? 6 : u >= 3 ? 3 : 0))
-      return (
+      const k = u - (u >= 6 ? 6 : u >= 3 ? 3 : 0)
+      // Past 1000 MeV as a power of ten, like the other ends: a short label on a phone.
+      return k <= 3 ? (
         <>
-          {n} {prefix}
+          {10 ** k} {prefix}
+        </>
+      ) : (
+        <>
+          10<sup>{k}</sup> {prefix}
         </>
       )
     }
@@ -550,20 +555,20 @@ function ParameterControl({
         </div>
       </div>
 
-      <div className={`-mt-0.5 flex items-baseline justify-between gap-2 text-[0.6875rem] text-muted-foreground ${isEnergy ? "" : "pl-[2.625rem]"}`}>
+      <div className={`-mt-0.5 flex min-w-0 flex-wrap items-baseline justify-between gap-x-2 text-[0.6875rem] text-muted-foreground ${isEnergy ? "" : "pl-[2.625rem]"}`}>
         {isEnergy ? (
           <>
-            <span className="tabular-nums">{num(significant(lo, 4))}</span>
-            <span className="tabular-nums">{num(significant(hi, 4))}</span>
+            <span className="whitespace-nowrap tabular-nums">{num(significant(lo, 4))}</span>
+            <span className="ml-auto whitespace-nowrap tabular-nums">{num(significant(hi, 4))}</span>
           </>
         ) : (
           <>
-            <span className="tabular-nums">
+            <span className="whitespace-nowrap tabular-nums">
               {negative ? "−" : ""}
               {endLabel(lo)}
             </span>
-            <span>{l.logSlider}</span>
-            <span className="tabular-nums">
+            <span className="whitespace-nowrap">{l.logSlider}</span>
+            <span className="ml-auto whitespace-nowrap tabular-nums">
               {negative ? "−" : ""}
               {endLabel(hi)}
             </span>

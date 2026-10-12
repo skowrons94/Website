@@ -86,6 +86,7 @@ export function LevelScheme({ scheme, evaluation, evaluationId, sessionId, selec
   const t = useEvalDict().workspace
   const l = useEvalDict().levels
   const live = useEvalDict().live
+  const r13 = useEvalDict().r13
   // Controlled by the workspace when it passes a selection, else local.
   const [localSelection, setLocalSelection] = useState<string | null>(null)
   const selectedLevel = shared !== undefined ? shared : localSelection
@@ -512,7 +513,9 @@ export function LevelScheme({ scheme, evaluation, evaluationId, sessionId, selec
             <table className="w-full min-w-[40rem] text-sm">
               <thead>
                 <tr className="border-b text-left text-xs font-medium text-muted-foreground">
-                  <th className="w-8 px-2 py-2" />
+                  <th className="w-8 px-2 py-2">
+                    <span className="sr-only">{r13.detailsColumn}</span>
+                  </th>
                   <th className="px-2 py-2 font-medium normal-case">
                     J<sup>π</sup>
                   </th>

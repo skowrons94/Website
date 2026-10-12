@@ -529,3 +529,11 @@ sub {
 :where(p, li, dd, dt, figcaption, td, blockquote, label, summary) a.text-link:not(nav *):not(.no-underline):hover {
   text-decoration-color: currentColor;
 }
+
+/* --- r13 final --- */
+/* Evaluation plot on a phone: what scrolls under the pinned plot band
+   (components/data-plot.tsx publishes its height as --pin-h, 0 when it is not
+   pinned) is scrolled clear of it when it takes the keyboard focus. */
+[data-pin-scope] :is(a[href], button, input, select, textarea, summary, [tabindex], [role="slider"]):not([data-pinned] *) {
+  scroll-margin-top: calc(var(--header-h, 4rem) + var(--pin-h, 0px) + 0.5rem);
+}

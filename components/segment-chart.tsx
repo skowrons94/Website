@@ -201,6 +201,86 @@ interface Hover {
   curveAt?: { x: number; values: { label: string; y: number; slot: number }[] }
 }
 
+interface PointsProps {
+  series: ChartSeries[]
+  xd: readonly [number, number] | null
+  yd: readonly [number, number] | null
+  W: number
+  H: number
+  logX: boolean
+  logY: boolean
+  r: number
+}
+
+/** A linear or logarithmic scale onto [0, size] (flipped for y), the identity without a domain. */
+function scale(d: readonly [number, number] | null, log: boolean, size: number, flip: boolean) {
+  if (!d) return (v: number) => v
+  const [a, b] = log ? [Math.log10(d[0]), Math.log10(d[1])] : d
+  const f = (v: number) => (((log ? Math.log10(v) : v) - a) / (b - a)) * size
+  return flip ? (v: number) => size - f(v) : f
+}
+
+/** The same points, by value: an edit sends new arrays of the same measurements. */
+function samePoints(a: ChartSeries[], b: ChartSeries[]) {
+  if (a.length !== b.length) return false
+  for (let i = 0; i < a.length; i++) {
+    if (a[i].slot !== b[i].slot) return false
+    const p = a[i].points
+    const q = b[i].points
+    if (p === q) continue
+    if (p.length !== q.length) return false
+    for (let k = 0; k < p.length; k++) if (p[k].x !== q[k].x || p[k].y !== q[k].y || p[k].error !== q[k].error) return false
+  }
+  return true
+}
+
+/**
+ * The measurements (thousands of marks on ²⁴Mg), apart from the curves: an
+ * edit that leaves the axes as they were does not touch them.
+ */
+const PointsLayer = memo(
+  function PointsLayer({ series, xd, yd, W, H, logX, logY, r }: PointsProps) {
+    const sx = scale(xd, logX, W, false)
+    const sy = scale(yd, logY, H, true)
+    const usableX = (x: number) => Number.isFinite(x) && (!logX || x > 0)
+    const usableY = (y: number) => Number.isFinite(y) && (!logY || y > 0)
+    return (
+      <>
+        {series.map((s, i) => {
+          const colour = `var(--viz-series-${(s.slot ?? i) + 1})`
+          return (
+            <g key={`p${i}`}>
+              {s.points.map((p, k) => {
+                if (!usableX(p.x) || !usableY(p.y) || !p.error) return null
+                const lo = logY && p.y - p.error <= 0 ? H + 3 : sy(p.y - p.error)
+                return (
+                  <line key={k} x1={sx(p.x)} x2={sx(p.x)} y1={sy(p.y + p.error)} y2={lo} stroke={colour} strokeWidth={1} opacity={0.75} />
+                )
+              })}
+              {s.points.map((p, k) =>
+                usableX(p.x) && usableY(p.y) ? (
+                  <Marker key={`m${k}`} shape={seriesShape(s.slot ?? i)} x={sx(p.x)} y={sy(p.y)} r={r} fill={colour} halo />
+                ) : null,
+              )}
+            </g>
+          )
+        })}
+      </>
+    )
+  },
+  (a, b) =>
+    a.W === b.W &&
+    a.H === b.H &&
+    a.logX === b.logX &&
+    a.logY === b.logY &&
+    a.r === b.r &&
+    a.xd?.[0] === b.xd?.[0] &&
+    a.xd?.[1] === b.xd?.[1] &&
+    a.yd?.[0] === b.yd?.[0] &&
+    a.yd?.[1] === b.yd?.[1] &&
+    samePoints(a.series, b.series),
+)
+
 function SegmentChartImpl({
   series,
   xLabel,
@@ -606,25 +686,16 @@ function SegmentChartImpl({
               )}
 
               {/* Measurements, each with a thin halo. */}
-              {series.map((s, i) => {
-                const colour = `var(--viz-series-${(s.slot ?? i) + 1})`
-                return (
-                  <g key={`p${i}`}>
-                    {s.points.map((p, k) => {
-                      if (!usableX(p.x) || !usableY(p.y) || !p.error) return null
-                      const lo = logY && p.y - p.error <= 0 ? H + 3 : sy(p.y - p.error)
-                      return (
-                        <line key={k} x1={sx(p.x)} x2={sx(p.x)} y1={sy(p.y + p.error)} y2={lo} stroke={colour} strokeWidth={1} opacity={0.75} />
-                      )
-                    })}
-                    {s.points.map((p, k) =>
-                      usableX(p.x) && usableY(p.y) ? (
-                        <Marker key={`m${k}`} shape={seriesShape(s.slot ?? i)} x={sx(p.x)} y={sy(p.y)} r={r} fill={colour} halo />
-                      ) : null,
-                    )}
-                  </g>
-                )
-              })}
+              <PointsLayer
+                series={series}
+                xd={xAxis ? xAxis.domain : null}
+                yd={yAxis ? yAxis.domain : null}
+                W={W}
+                H={H}
+                logX={logX}
+                logY={logY}
+                r={r}
+              />
 
               {/* The model above the measurements (dense data would bury it), with a thin halo. */}
               {curves.map((c, i) => {

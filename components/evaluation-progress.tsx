@@ -50,13 +50,23 @@ interface Props {
   className?: string
 }
 
-function useTick(running: boolean, ms: number) {
+/**
+ * Re-renders every `ms` while `running` -- but not while the browser tab is
+ * in the background, nor while `anchor` is not displayed (a hidden workspace
+ * tab): the clock is read from `performance.now()`, so the first tick after
+ * it shows again is right.
+ */
+function useTick(running: boolean, ms: number, anchor?: { current: HTMLElement | null }) {
   const [, setTick] = useState(0)
   useEffect(() => {
     if (!running) return
-    const id = setInterval(() => setTick((n) => n + 1), ms)
+    const id = setInterval(() => {
+      if (document.hidden) return
+      if (anchor?.current && anchor.current.offsetParent === null) return
+      setTick((n) => n + 1)
+    }, ms)
     return () => clearInterval(id)
-  }, [running, ms])
+  }, [running, ms, anchor])
 }
 
 function ProgressTimerImpl({ stage, activity, variant = "band", retryAt = null, note = null, className = "" }: Props) {
@@ -66,7 +76,8 @@ function ProgressTimerImpl({ stage, activity, variant = "band", retryAt = null, 
   const r9 = dict.r9
   const r11 = dict.r11
   const running = Boolean(activity) || retryAt !== null
-  useTick(running, 1000)
+  const anchor = useRef<HTMLSpanElement>(null)
+  useTick(running, 1000, anchor)
   // Announced once per stage start, then every 15 s.
   const [spoken, setSpoken] = useState("")
   // The bar never moves back (an estimate that grows, a clock carried over).
@@ -98,7 +109,7 @@ function ProgressTimerImpl({ stage, activity, variant = "band", retryAt = null, 
   }, [activity?.started, bucket, retryAt, label])
 
   const live = (
-    <span className="sr-only" role="status" aria-live="polite">
+    <span ref={anchor} className="sr-only" role="status" aria-live="polite">
       {spoken}
     </span>
   )

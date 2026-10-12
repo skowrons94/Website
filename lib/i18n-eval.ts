@@ -477,6 +477,10 @@ const en = {
     chi2Published: "the published fit; see why it is above 1",
     sLowest: "S at the lowest energy",
   },
+  // --- r13 final ---
+  r13: {
+    detailsColumn: "Details",
+  },
 }
 
 export type EvalDictionary = typeof en
@@ -944,6 +948,10 @@ const it: EvalDictionary = {
     chi2AllDiffers: "su tutti i dati:",
     chi2Published: "il fit pubblicato: perché è sopra 1",
     sLowest: "S all'energia minima",
+  },
+  // --- r13 final ---
+  r13: {
+    detailsColumn: "Dettagli",
   },
 }
 
