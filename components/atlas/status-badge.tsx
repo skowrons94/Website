@@ -111,9 +111,9 @@ export function StatusLegend({ lang, className }: { lang: Lang; className?: stri
       </p>
       <ul className="mt-2 grid gap-x-6 gap-y-2 sm:grid-cols-2">
         {STATUSES.map((s) => (
-          <li key={s} className="flex items-start gap-2">
-            <StatusBadge status={s} lang={lang} className="shrink-0" />
-            <span className="pt-0.5 leading-snug">{statusHint(s, lang)}</span>
+          <li key={s} className="flex min-w-0 flex-wrap items-start gap-x-2 gap-y-1">
+            <StatusBadge status={s} lang={lang} className="max-w-full shrink-0" />
+            <span className="min-w-0 flex-1 basis-40 pt-0.5 leading-snug [overflow-wrap:anywhere]">{statusHint(s, lang)}</span>
           </li>
         ))}
       </ul>

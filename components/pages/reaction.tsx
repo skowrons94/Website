@@ -89,6 +89,31 @@ function Facts({ reaction: r, lang }: { reaction: Reaction; lang: Lang }) {
           </div>
         )}
 
+        {r.kind !== "decay" && r.hasFile && (
+          <div>
+            <dt className="text-muted-foreground">{t.liveEvaluation}</dt>
+            {r.rmatrix.length > 0 ? (
+              r.rmatrix.map((ev) => (
+                <dd key={ev} className="mt-1">
+                  <Link href={localePath(lang, `/evaluations/${ev}?tab=plot`)} className="font-medium text-link underline-offset-4 hover:underline">
+                    {t.plotData}
+                    {" · "}
+                    <Sci>{supCode(ev)}</Sci> →
+                  </Link>
+                </dd>
+              ))
+            ) : (
+              <dd className="mt-1 text-[0.8125rem] text-foreground/85">
+                {t.noLiveEvaluation}
+                {" · "}
+                <Link href={localePath(lang, "/evaluations")} className="text-link underline-offset-4 hover:underline">
+                  {dict(lang).nav.evaluations}
+                </Link>
+              </dd>
+            )}
+          </div>
+        )}
+
         {r.q && (
           <div>
             <dt className="text-muted-foreground">
@@ -246,6 +271,11 @@ function ThermalPlain({ thermal, lang }: { thermal: Reaction["thermal"]; lang: L
   return <span className="text-[0.9375rem] font-medium">{t.thermalPlain(span(kTs), span(mks))}</span>
 }
 
+/** An evaluation id, `13N` → `¹³N`. */
+function supCode(id: string): string {
+  return id.replace(/^(\d+)/, (m) => m.split("").map((d) => "⁰¹²³⁴⁵⁶⁷⁸⁹"[+d]).join(""))
+}
+
 /** `14N` → `¹⁴N`, for the facts box; leaves anything else as it is. */
 function displayCode(code: string): string {
   const match = /^(\d+)([A-Z][a-z]?)$/.exec(code)
@@ -358,7 +388,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
   )
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 xl:max-w-7xl">
+    <div className="mx-auto max-w-6xl px-5 py-14 [overflow-wrap:anywhere] sm:px-8 xl:max-w-7xl">
       <Link
         href={to(family ? familyHref(family.id) : "/atlas")}
         className="-my-2.5 inline-flex py-2.5 items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
@@ -387,7 +417,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
             </span>
           ))}
         </p>
-        <h1 className="mt-3 font-serif text-4xl font-semibold tracking-tight sm:text-5xl">
+        <h1 className="mt-3 font-serif text-[min(2.25rem,11vw)] font-semibold leading-tight tracking-tight sm:text-5xl">
           <Sci>{r.label}</Sci>
         </h1>
         {r.plain && (
@@ -396,16 +426,36 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
             {r.plain}
             <Link
               href={to("/glossary#notation")}
-              className="ml-3 inline-block whitespace-nowrap py-1 text-sm text-link underline-offset-4 hover:underline"
+              className="ml-3 inline-block py-1 text-sm text-link underline-offset-4 hover:underline"
             >
               {t.readNotation}
             </Link>
           </p>
         )}
-        <div className="mt-5 flex flex-wrap items-center gap-2">
+        <div className="mt-5 flex flex-wrap items-center gap-x-2 gap-y-2">
           {r.kind !== "decay" && <StatusBadge status={r.status} pending={!r.hasFile} lang={lang} link />}
           {!r.hasFile && r.kind === "decay" && <StatusBadge status={null} pending lang={lang} />}
           {r.luna && <LunaBadge label={t.measuredAtLuna} />}
+          {r.rmatrix.map((ev) => (
+            <Link
+              key={ev}
+              href={to(`/evaluations/${ev}?tab=plot`)}
+              aria-label={t.plotDataOf(supCode(ev))}
+              className="group inline-flex min-h-9 items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1 text-sm font-medium text-link transition-colors hover:border-foreground/30"
+            >
+              <SlidersHorizontal className="h-3.5 w-3.5 shrink-0" aria-hidden />
+              <span>
+                {t.plotData}
+                {r.rmatrix.length > 1 && (
+                  <>
+                    {" · "}
+                    <Sci>{supCode(ev)}</Sci>
+                  </>
+                )}
+              </span>
+              <ArrowRight className="h-3.5 w-3.5 shrink-0 transition-transform group-hover:translate-x-0.5" aria-hidden />
+            </Link>
+          ))}
         </div>
       </header>
 
@@ -518,9 +568,9 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
               {r.measurements.length > 0 && notice("measurements")}
               {r.measurements.length > 0 && (
                 <details className="group mt-8 rounded-lg border border-border/80">
-                  <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 rounded-lg px-4 py-3 transition-colors hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+                  <summary className="flex min-h-12 cursor-pointer list-none flex-wrap items-center justify-between gap-x-4 gap-y-1 rounded-lg px-4 py-3 transition-colors hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
                     <span className="text-[0.95rem] font-medium tabular">{measurementLine}</span>
-                    <span className="inline-flex shrink-0 items-center gap-1.5 text-sm text-link">
+                    <span className="inline-flex min-w-0 items-center gap-1.5 text-sm text-link">
                       <span className="group-open:hidden">{t.showList}</span>
                       <span className="hidden group-open:inline">{t.hideList}</span>
                       <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" aria-hidden />
@@ -532,7 +582,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
                         const facility = m.facility ? getFacility(m.facility, lang) : undefined
                         const method = m.method ? getMethod(m.method, lang) : undefined
                         return (
-                          <li key={i} className="grid grid-cols-[3.25rem_minmax(0,1fr)] gap-x-4 py-5 sm:grid-cols-[4rem_minmax(0,1fr)]">
+                          <li key={i} className="grid grid-cols-[minmax(36px,auto)_minmax(0,1fr)] gap-x-4 py-5 sm:grid-cols-[4rem_minmax(0,1fr)]">
                             <p className="tabular pt-0.5 text-sm font-medium">{m.year ?? "—"}</p>
                             <div className="min-w-0">
                               {(facility || m.lab || m.luna) && (

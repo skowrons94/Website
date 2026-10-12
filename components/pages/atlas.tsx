@@ -76,7 +76,7 @@ export function AtlasPage({ lang }: { lang: Lang }) {
           <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-90" aria-hidden />
           {t.howToRead}
         </summary>
-        <div className="grid gap-8 px-4 pb-6 pt-2 md:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] md:gap-10">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-8 px-4 pb-6 pt-2 md:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] md:gap-10">
           <ChartDiagram lang={lang} />
           <div className="space-y-5 text-[0.975rem] leading-relaxed">
             <ul className="space-y-2.5">
@@ -96,7 +96,7 @@ export function AtlasPage({ lang }: { lang: Lang }) {
                   <Sci>¹⁴N(p,γ)¹⁵O</Sci>
                 </span>{" "}
                 {t.notation[0]}{" "}
-                <span className="whitespace-nowrap font-serif font-semibold">{t.notation[1]}</span>.{" "}
+                <span className="font-serif font-semibold sm:whitespace-nowrap">{t.notation[1]}</span>.{" "}
                 <Link href={to("/glossary#notation")} className="text-link underline-offset-4 hover:underline">
                   {t.moreInGlossary}
                 </Link>
@@ -109,7 +109,7 @@ export function AtlasPage({ lang }: { lang: Lang }) {
   )
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 xl:max-w-7xl">
+    <div className="mx-auto max-w-6xl px-5 py-14 [overflow-wrap:anywhere] sm:px-8 xl:max-w-7xl">
       {/* the map is some thirty Tab stops down: a way past them */}
       <a
         href="#map"
