@@ -2,6 +2,7 @@
 # file order is kept, so put a new same-year paper where you want it to appear.
 #
 #   kind:      article | proceedings   (anything else becomes its own section)
+#   corresponding: true                I am the corresponding author
 #   role:      my part in it, when that is more than an author's and the author
 #              list does not show it (role_it in Italian); shown under the authors
 #   status:    shown instead of the journal, for anything not yet out
@@ -10,12 +11,19 @@
 #              the LUNA accelerators); drives the "LUNA" filter. Tag only what is
 #              certain: LUNA in the title, the atlas' LUNA flag, or the paper itself.
 #
-# The papers marked on /publications (a rule at the left) are not chosen here:
-# they are those with "J. Skowronski" first in `authors`, and those with a
-# `role` (lib/content.ts). Corresponding authorship is not recorded; to mark a
-# paper on which I am corresponding author, give it a `role`.
+# The papers marked on /publications (a rule at the left) are not chosen by
+# hand: those with "J. Skowronski" first, second or third in `authors` (fourth or
+# fifth when the full author list is given, without "et al."), those marked
+# `corresponding: true`, and those with a `role` (lib/content.ts, isKeyPaper).
 
 publications:
+  - kind: article
+    authors: J. Skowronski, R. J. deBoer, T. Szücs
+    title: Complete ⁷Be evaluation
+    status: submitted to Physical Review C
+    status_it: inviato a Physical Review C
+    year: 2026
+
   - kind: article
     authors: E. Pilotto, J. Skowronski, et al.
     title: The CNO Cycle in the Sun Constrained by a Novel Lifetime Measurement with AGATA

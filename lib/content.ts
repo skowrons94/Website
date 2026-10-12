@@ -66,11 +66,13 @@ export interface Publication {
   kind: string
   /**
    * Marks the entry with a rule in the list. Not set in the YAML: derived
-   * here, true for a first-author paper and for one with a `role`.
+   * here (isKeyPaper).
    */
   highlight?: boolean
   /** My part in it, when the author list does not show it ("analysis lead"). */
   role?: string
+  /** I am the corresponding author. */
+  corresponding?: boolean
   /** Free text shown in place of a journal, e.g. "under review at Nature Physics". */
   status?: string
   /** Topic tags; `luna` marks a paper of the LUNA collaboration (the LUNA filter). */
@@ -188,13 +190,40 @@ export const getOutlook = (lang: Lang = "en"): Outlook | null =>
 /** Jakub first in the author list. */
 export const isFirstAuthor = (p: Pick<Publication, "authors">) => /^J\. Skowronski\b/.test(p.authors.trim())
 
+/**
+ * Jakub's place in the author list (1 = first), or 0 if he is not named. A
+ * list that ends in "et al." only names its first few authors.
+ */
+export const authorPosition = (p: Pick<Publication, "authors">) =>
+  p.authors
+    .split(",")
+    .map((name) => name.trim())
+    .filter((name) => name && !/^et al\.?$/.test(name))
+    .findIndex((name) => /^J\. Skowronski\b/.test(name)) + 1
+
+/**
+ * The papers marked with a rule: first, second or third author; fourth or
+ * fifth on a short paper (its whole author list given, no "et al."); the
+ * corresponding author; or a stated `role`.
+ */
+export const isKeyPaper = (p: Pick<Publication, "authors" | "corresponding" | "role">) => {
+  const position = authorPosition(p)
+  const short = !/et al\./.test(p.authors)
+  return (
+    (position > 0 && position <= 3) ||
+    (short && position > 0 && position <= 5) ||
+    Boolean(p.corresponding) ||
+    Boolean(p.role)
+  )
+}
+
 export const getPublications = (lang: Lang = "en") =>
   // Newest first; ties keep their file order, which is where the manual
   // ordering of same-year entries lives.
   readYaml<{ publications: Publication[] }>("publications.yaml", lang)
     .publications.map((p, i) => ({ ...p, _i: i }))
     .sort((a, b) => b.year - a.year || a._i - b._i)
-    .map(({ _i, ...p }) => ({ ...p, highlight: isFirstAuthor(p) || Boolean(p.role) }))
+    .map(({ _i, ...p }) => ({ ...p, highlight: isKeyPaper(p) }))
 
 export const getSoftware = (lang: Lang = "en") =>
   readYaml<{ software: SoftwareEntry[] }>("software.yaml", lang).software

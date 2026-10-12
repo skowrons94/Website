@@ -252,7 +252,7 @@ const en = {
     description:
       "Peer-reviewed articles and conference proceedings by Jakub Skowronski in experimental nuclear astrophysics.",
     lead: (articles: number, proceedings: number, review: number) =>
-      `${articles} peer-reviewed articles and ${proceedings} conference proceedings${review ? `, and ${review} more under review` : ""}. A rule marks the papers on which I am first author, and those where my role is given beside the authors.`,
+      `${articles} peer-reviewed articles and ${proceedings} conference proceedings${review ? `, and ${review} more under review` : ""}. A rule marks my key papers: those on which I am among the first authors or the corresponding author, and those where my role is given beside the authors.`,
     sections: { article: "Research articles", proceedings: "Conference proceedings" } as Record<string, string>,
     // --- site ---
     profiles: "Complete and current lists, with citations:",
@@ -1131,7 +1131,7 @@ const it: Dictionary = {
     description:
       "Articoli su riviste con revisione paritaria e atti di conferenze di Jakub Skowronski in astrofisica nucleare sperimentale.",
     lead: (articles: number, proceedings: number, review: number) =>
-      `${articles} articoli su riviste con revisione paritaria e ${proceedings} contributi ad atti di conferenze${review ? `, più ${review} in revisione` : ""}. Una linea segna gli articoli di cui sono primo autore e quelli in cui il mio ruolo è indicato accanto agli autori. I titoli sono riportati come pubblicati.`,
+      `${articles} articoli su riviste con revisione paritaria e ${proceedings} contributi ad atti di conferenze${review ? `, più ${review} in revisione` : ""}. Una linea segna i miei articoli principali: quelli in cui sono tra i primi autori o autore corrispondente, e quelli in cui il mio ruolo è indicato accanto agli autori. I titoli sono riportati come pubblicati.`,
     sections: { article: "Articoli di ricerca", proceedings: "Atti di conferenze" },
     // --- site ---
     profiles: "Elenchi completi e aggiornati, con le citazioni:",
