@@ -16,7 +16,9 @@ compiled code, is loaded as a Pyodide wheel.
 
 import argparse
 import glob
+import hashlib
 import io
+import json
 import os
 import shutil
 import subprocess
@@ -45,8 +47,10 @@ SKIP_PREFIXES = (".precomputed-", ".fine-", ".initial-")
 def unused(source):
     """Files of an evaluation the page never reads: its own extrapolations'
     integrals when a derived model calculates them (``extrapolations/``),
-    and ``initial.json``, which the page fetches on its own."""
-    out = {os.path.join(source, "initial.json")}
+    and ``initial.json`` and ``initial-extrapolations.json``, which the
+    page fetches on its own."""
+    out = {os.path.join(source, "initial.json"),
+           os.path.join(source, "initial-extrapolations.json")}
     if os.path.exists(os.path.join(source, "extrapolations", "extrap.azr")):
         out.add(os.path.join(source, "output", "intEC.extrap"))
     return out
@@ -106,8 +110,6 @@ def main():
     for name in PYODIDE_FILES:
         shutil.copy(os.path.join(a.pyodide, name), os.path.join(a.out, "pyodide", name))
     shutil.copy(a.numpy, os.path.join(a.out, "wheels"))
-    with open(os.path.join(a.out, "manifest.json"), "w") as f:
-        f.write('{"wheels": ["%s"]}\n' % os.path.basename(a.numpy))
     shutil.copy(os.path.join(HERE, "worker.js"), os.path.join(a.out, "worker.js"))
 
     buf = io.BytesIO()
@@ -138,6 +140,22 @@ def main():
         if os.path.exists(os.path.join(source, "initial.json")):
             shutil.copy(os.path.join(source, "initial.json"),
                         os.path.join(a.out, "evaluations", entry, "initial.json"))
+        # The published extrapolations, shown faded while a visitor's own
+        # are calculated (app/initial.py).
+        if os.path.exists(os.path.join(source, "initial-extrapolations.json")):
+            shutil.copy(os.path.join(source, "initial-extrapolations.json"),
+                        os.path.join(a.out, "evaluations", entry, "extrapolations.json"))
+
+    # The wheels, and a hash of each zip: the workers keep the zips in the
+    # Cache Storage under it (worker.js), so a new build is fetched anew.
+    hashes = {}
+    for name in ["runtime.zip"] + sorted(
+            "evaluations/" + n for n in os.listdir(os.path.join(a.out, "evaluations"))
+            if n.endswith(".zip")):
+        with open(os.path.join(a.out, name), "rb") as f:
+            hashes[name] = hashlib.sha256(f.read()).hexdigest()[:16]
+    with open(os.path.join(a.out, "manifest.json"), "w") as f:
+        json.dump({"wheels": [os.path.basename(a.numpy)], "hashes": hashes}, f, indent=1)
 
     total = sum(os.path.getsize(os.path.join(d, f))
                 for d, _, fs in os.walk(a.out) for f in fs)

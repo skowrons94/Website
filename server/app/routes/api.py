@@ -121,13 +121,21 @@ def _session_and_labels(session_id):
 @bp.route("/evaluations", methods=["GET"])
 def list_evaluations():
     found = evaluations_module.discover(_root())
-    return jsonify([e.to_dict() for e in found])
+    return jsonify([_with_timings(e) for e in found])
+
+
+def _with_timings(evaluation):
+    """``to_dict`` plus the typical timings stored with ``initial.json``,
+    for the list's "ready in about N s"."""
+    out = evaluation.to_dict()
+    out["timings"] = (initial_module.read(evaluation.path) or {}).get("timings")
+    return out
 
 
 @bp.route("/evaluations/<evaluation_id>", methods=["GET"])
 def get_evaluation(evaluation_id):
     evaluation = evaluations_module.get(_root(), evaluation_id)
-    return jsonify(evaluation.to_dict())
+    return jsonify(_with_timings(evaluation))
 
 
 @bp.route("/evaluations/<evaluation_id>/download", methods=["GET"])

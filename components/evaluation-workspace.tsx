@@ -133,6 +133,7 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
     scheme,
     data,
     extrapolations,
+    publishedExtrap,
     extrapStale,
     fine,
     fineStatus,
@@ -354,8 +355,9 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
   const body = (content: React.ReactNode) => (opening ? starting : unavailable ? down : content)
 
   // An edit made while the session still opens waits for it: the opening is what the timer shows then.
-  const plotActivity = activities.edit ?? activities.data ?? activities.open ?? null
-  const plotStage = activities.edit ? "edit" : activities.data ? "data" : "open"
+  // One clock: an edit, then its smooth curve (the clock carried over).
+  const plotActivity = activities.edit ?? activities.fine ?? activities.data ?? activities.open ?? null
+  const plotStage = activities.edit ? "edit" : activities.fine ? "fine" : activities.data ? "data" : "open"
   const extrapActivity = activities.extrap ?? (!sessionId ? activities.open : undefined) ?? (calculating ? activities.edit : undefined) ?? null
   const extrapStage = activities.extrap ? "extrap" : !sessionId ? "open" : "edit"
 
@@ -487,7 +489,7 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
         {visited.includes("extrap") && (
         <TabsContent value="extrap" className="mt-6" forceMount hidden={tab !== "extrap"}>
           {body(
-            extrapolations === null ? (
+            extrapolations === null && !(publishedExtrap && extrapCalculating) ? (
               <Pending
                 label={t.calculatingExtrap}
                 failed={failed}
@@ -497,18 +499,19 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
               />
             ) : (
               <ExtrapPlot
-                stale={extrapStale}
+                stale={extrapStale || extrapolations === null}
+                published={extrapolations === null}
                 activity={extrapActivity}
                 stage={extrapStage}
                 retryAt={retryAt}
                 headline={evaluation?.reactions?.[0]}
                 scatteringOnly={scatteringOnly}
                 temperatures={temperatures}
-                extrapolations={extrapolations}
+                extrapolations={extrapolations ?? publishedExtrap!}
                 data={data}
                 pairs={scheme?.pairs ?? []}
                 sessionId={sessionId}
-                calculating={extrapCalculating || extrapStale}
+                calculating={extrapCalculating || extrapStale || extrapolations === null}
                 evaluationId={id}
               />
             ),

@@ -19,6 +19,8 @@ import {
   getExtrapolations,
   getFine,
   getInitial,
+  getPublishedExtrapolations,
+  getSessionStatus,
   openEvaluation,
   pingSession,
   prepareSession,
@@ -35,7 +37,9 @@ import {
   type SchemeAndData,
   type EditResult,
   type Timings,
+  type SessionStatus,
 } from "@/lib/api"
+import { typicalTimings } from "@/lib/eval-timings"
 import { useEvalDict } from "@/components/eval-dict"
 
 /** One edit, as it can be undone and redone: the values before and after. */
@@ -54,6 +58,14 @@ export interface Activity {
   estimate: number | null
   /** Waiting for the server's one-off preparation of the model. */
   preparing?: boolean
+  /** Said under the timer (why this wait is long). */
+  note?: string | null
+  /**
+   * Waiting for these derived models to be built first, then `after` seconds
+   * of calculation: the estimate is worked out again as the server reports
+   * its progress (and how many builds share its cores).
+   */
+  wait?: { steps: string[]; after: number }
 }
 export type ActivityKind = "open" | "data" | "fine" | "edit" | "extrap"
 
@@ -63,6 +75,8 @@ interface SessionState {
   scheme: Scheme | null
   data: DataSegment[] | null
   extrapolations: ExtrapSegment[] | null
+  /** The extrapolations at the published parameters, shown faded while the reader's own are first calculated. */
+  publishedExtrap: ExtrapSegment[] | null
   /** The extrapolations shown are those of the parameters before the last edit (new ones on their way). */
   extrapStale: boolean
   /** The model on a fine grid, by data-segment index; null until loaded. */
@@ -194,7 +208,13 @@ const HIDDEN_CLOSE_MS = 5 * 60_000
 const PING_MS = 30_000
 
 export function SessionProvider({ children }: { children: ReactNode }) {
-  const unexpected = useEvalDict().workspace.unexpected
+  const evalDict = useEvalDict()
+  const unexpected = evalDict.workspace.unexpected
+  const r9 = evalDict.r9
+  // When the reader's current wait for the plot began (an edit, then its
+  // smooth curve): one clock for both.
+  const curveClock = useRef<number | null>(null)
+  const burstEnd = useRef(0)
   const [sessionId, setSessionId] = useState<string | null>(null)
   const [evaluation, setEvaluation] = useState<Evaluation | null>(null)
   const [scheme, setScheme] = useState<Scheme | null>(null)
@@ -202,12 +222,15 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [initialData, setInitialData] = useState<DataSegment[] | null>(null)
   const [initialFine, setInitialFine] = useState<Record<number, FineCurve> | null>(null)
   const [extrapolations, setExtrapolations] = useState<ExtrapSegment[] | null>(null)
+  const [publishedExtrap, setPublishedExtrap] = useState<ExtrapSegment[] | null>(null)
   const [extrapStale, setExtrapStale] = useState(false)
   const [fine, setFineState] = useState<Record<number, FineCurve> | null>(null)
   const [fineStatus, setFineStatus] = useState<"idle" | "loading" | "ready" | "failed">("idle")
   const [fineStale, setFineStale] = useState(false)
   const [preview, setPreview] = useState(false)
   const [modern, setModern] = useState(false)
+  const modernRef = useRef(false)
+  modernRef.current = modern
   const [past, setPast] = useState<Edit[]>([])
   const [deltaChi2, setDeltaChi2] = useState<Record<number, number>>({})
   const dataRef = useRef<DataSegment[] | null>(null)
@@ -268,20 +291,123 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   /* -- the progress timer's clock ------------------------------------------- */
 
-  // Typical durations from the server, then what this visit measured.
+  // Typical durations: shipped with the site, then the server's, then what
+  // this visit measured.
   const typical = useRef<Timings>({})
   const measured = useRef<Record<string, number>>({})
   const [activities, setActivities] = useState<Partial<Record<ActivityKind, Activity>>>({})
+  const activitiesRef = useRef(activities)
+  activitiesRef.current = activities
   // When the background preparations were sent (null: not running).
   const preparing = useRef<{ edit: number | null; extrap: number | null }>({ edit: null, extrap: null })
-  const begin = useCallback((kind: ActivityKind, key: string = kind, extra = 0, flag = false) => {
-    const base = measured.current[key] ?? typical.current[key] ?? null
-    const activity: Activity = { started: performance.now(), estimate: base === null ? null : base + extra, preparing: flag }
-    setActivities((current) => ({ ...current, [kind]: activity }))
-    return activity.started
+  /**
+   * The session's preparation as last reported: steps still to build, the
+   * one under way and for how long (at `at`), and how many builds share the
+   * server's cores. The browser build has no report: its workers build the
+   * data and smooth-curve models side by side from `at` (the opening).
+   */
+  const prep = useRef<{ pending: string[]; preparing: string | null; elapsed: number; builds: number; at: number; spare: boolean }>({
+    pending: [],
+    preparing: null,
+    elapsed: 0,
+    builds: 1,
+    at: 0,
+    spare: false,
+  })
+  /** Seconds until `step` (data, fine, extrap) is built, from the typical timings and the last report. */
+  const prepLeft = useCallback((step: string) => {
+    const p = prep.current
+    if (!p.pending.includes(step)) return 0
+    const since = (performance.now() - p.at) / 1000
+    const cost = (s: string) => typical.current[`prepare_${s}`] ?? 0
+    if (IN_BROWSER) {
+      // Data and smooth curves in workers of their own; the extrapolations' after the smooth curves'.
+      const total = step === "extrap" ? cost("fine") + cost("extrap") : cost(step)
+      return Math.max(0, total - since)
+    }
+    // One after the other, in this order; the cores shared with other builds.
+    let left = 0
+    for (const s of ["data", "fine", "extrap"]) {
+      if (!p.pending.includes(s)) continue
+      left += s === p.preparing ? Math.max(cost(s) * 0.2, cost(s) - p.elapsed - since) : cost(s)
+      if (s === step) break
+    }
+    return left * Math.max(1, Math.min(4, p.builds))
   }, [])
+  const begin = useCallback(
+    (kind: ActivityKind, key: string = kind, extra = 0, flag = false, options: { since?: number; wait?: string[]; note?: string | null } = {}) => {
+      const base = measured.current[key] ?? typical.current[key] ?? null
+      const now = performance.now()
+      const previous = activitiesRef.current[kind]
+      // One clock per thing the reader waits for: kept across a queue of
+      // edits, and from an edit to its smooth curve.
+      const started = previous?.started ?? options.since ?? now
+      const elapsed = (now - started) / 1000
+      const estimate = base === null && extra === 0 ? null : elapsed + (base ?? 0) + extra
+      const activity: Activity = {
+        started,
+        estimate: previous?.estimate != null && estimate !== null ? Math.max(previous.estimate, estimate) : estimate,
+        preparing: flag,
+        note: options.note ?? null,
+        wait: options.wait && flag ? { steps: options.wait, after: base ?? 0 } : undefined,
+      }
+      activitiesRef.current = { ...activitiesRef.current, [kind]: activity }
+      setActivities((current) => ({ ...current, [kind]: activity }))
+      return now
+    },
+    [],
+  )
+  /** Work the estimates out again (new timings, or the server's progress report). */
+  const reestimate = useCallback(() => {
+    setActivities((current) => {
+      let changed = false
+      const next = { ...current }
+      for (const [kind, a] of Object.entries(current) as [ActivityKind, Activity][]) {
+        if (!a) continue
+        const elapsed = (performance.now() - a.started) / 1000
+        let estimate = a.estimate
+        if (a.wait) {
+          const left = Math.max(0, ...a.wait.steps.map(prepLeft))
+          estimate = elapsed + left + a.wait.after
+        } else if (estimate === null) {
+          const base = measured.current[kind] ?? typical.current[kind] ?? null
+          if (base !== null) estimate = Math.max(elapsed + 1, base)
+        }
+        if (estimate !== a.estimate) {
+          // Once the models it waited for are built, it is an ordinary calculation.
+          const still = Boolean(a.wait) && estimate !== null && estimate - elapsed > a.wait!.after + 0.05
+          next[kind] = { ...a, estimate, wait: still ? a.wait : undefined, preparing: still ? a.preparing : false }
+          changed = true
+        }
+      }
+      return changed ? next : current
+    })
+  }, [prepLeft])
+  /** Take a report of the server's preparation (/open, /status, the heartbeat). */
+  const takeStatus = useCallback(
+    (status: (SessionStatus & { prepared?: string[] }) | null | undefined) => {
+      if (!status) return
+      const pending = status.pending ?? ["data", "fine", "extrap"].filter((s) => !(status.prepared ?? []).includes(s))
+      const preparing = typeof status.preparing === "string" ? status.preparing : null
+      prep.current = {
+        pending,
+        preparing,
+        elapsed: status.preparing_elapsed ?? 0,
+        builds: Math.max(1, status.builds ?? 1),
+        at: performance.now(),
+        spare: Boolean(status.from_spare),
+      }
+      reestimate()
+    },
+    [reestimate],
+  )
   const finish = useCallback((kind: ActivityKind, key: string = kind, started?: number, ok = true) => {
     if (ok && started !== undefined) measured.current[key] = (performance.now() - started) / 1000
+    if (activitiesRef.current[kind]) {
+      const next = { ...activitiesRef.current }
+      delete next[kind]
+      activitiesRef.current = next
+    }
     setActivities((current) => {
       if (!(kind in current)) return current
       const next = { ...current }
@@ -324,11 +450,15 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         .then((initial) => {
           if (!initial || evaluationId.current !== id) return
           setModern(true)
-          typical.current = {
-            ...normaliseTimings(initial.evaluation?.timings),
-            ...normaliseTimings(initial.timings),
-            ...typical.current,
-          }
+          // The server's own timings replace the shipped ones; the browser
+          // build keeps its own (the stored ones are the server's).
+          if (!IN_BROWSER)
+            typical.current = {
+              ...typical.current,
+              ...normaliseTimings(initial.evaluation?.timings),
+              ...normaliseTimings(initial.timings),
+            }
+          reestimate()
           // Only while what is on screen is still the published fit.
           if (schemeRef.current?.modified) return
           if (!schemeRef.current) {
@@ -344,7 +474,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
           /* the session's own answers follow anyway */
         })
     },
-    [setData, setFine],
+    [setData, setFine, reestimate],
   )
 
   const open = useCallback(
@@ -354,13 +484,24 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       setLoading(true)
       setError(null)
       setExpired(false)
+      // The shipped typical timings, so the clock has an estimate at once.
+      if (first) {
+        typical.current = typicalTimings(id, IN_BROWSER)
+        measured.current = {}
+        setPublishedExtrap(null)
+      }
       if (first) takeInitial(id)
       const started = begin("open")
       let ok = false
       try {
         const opened = await withBusyRetry(() => openEvaluation(id), onBusy)
         ok = true
-        typical.current = { ...normaliseTimings(opened.evaluation.timings), ...normaliseTimings(opened.timings), ...typical.current }
+        if (!IN_BROWSER)
+          typical.current = { ...typical.current, ...normaliseTimings(opened.evaluation.timings), ...normaliseTimings(opened.timings) }
+        // What is left to prepare: the first edit's estimate (a spare, or not).
+        if (IN_BROWSER) takeStatus({ pending: ["data", "fine", "extrap"], builds: 1 })
+        else if (opened.prepared !== undefined) takeStatus(opened)
+        else prep.current = { ...prep.current, pending: [], at: performance.now() }
         if (opened.heartbeat_interval) heartbeat.current = opened.heartbeat_interval * 1000
         // Curves already drawn from the shipped snapshot are the session's own
         // (same parameters): kept rather than asked for again.
@@ -394,7 +535,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         setLoading(false)
       }
     },
-    [handle, setError, setFine, takeInitial, begin, finish, onBusy],
+    [handle, setError, setFine, takeInitial, begin, finish, onBusy, takeStatus],
   )
 
   /* -- the plot's and the extrapolations' curves -------------------------------- */
@@ -423,8 +564,17 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     const asked = version.current
     const key = pristine.current ? "extrap" : "extrap_edit"
     setExtrapCalculating(true)
-    const wait = remaining(preparing.current.extrap, "prepare_extrap")
-    const started = begin("extrap", key, wait, wait > 0)
+    // The published ones, to show faded meanwhile (a static file: no session).
+    if (!pristine.current && evaluationId.current) {
+      const evaluationAsked = evaluationId.current
+      getPublishedExtrapolations(evaluationAsked)
+        .then((list) => {
+          if (list && evaluationId.current === evaluationAsked) setPublishedExtrap((current) => current ?? list)
+        })
+        .catch(() => undefined)
+    }
+    const wait = Math.max(prepLeft("extrap"), remaining(preparing.current.extrap, "prepare_extrap"))
+    const started = begin("extrap", key, wait, wait > 0, { wait: ["extrap"] })
     let ok = false
     try {
       const list = await withBusyRetry(() => getExtrapolations(id), onBusy)
@@ -440,7 +590,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       finish("extrap", key, started, ok && wait === 0)
       setExtrapCalculating(false)
     }
-  }, [handle, setError, begin, finish, onBusy, remaining])
+  }, [handle, setError, begin, finish, onBusy, remaining, prepLeft])
 
   // Not "calculating": the curves already on screen stay usable while the
   // fine grid (whose first build can take a minute) is computed.
@@ -449,7 +599,17 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     if (!id) return
     const asked = version.current
     setFineStatus("loading")
-    const started = begin("fine")
+    // After an edit, the smooth curve is part of the same wait: its clock
+    // goes on from the edit's.
+    const recent = curveClock.current !== null && (activitiesRef.current.edit || performance.now() - burstEnd.current < 3000)
+    const since = recent ? curveClock.current! : undefined
+    const wait = prepLeft("fine")
+    const after = measured.current.fine ?? typical.current.fine ?? (typical.current.edit ?? 0) * 0.6
+    const started = begin("fine", "fine", wait + (measured.current.fine === undefined && typical.current.fine === undefined ? after : 0), wait > 0, {
+      since,
+      wait: ["fine"],
+      note: wait > 0 && !prep.current.spare ? r9.noSpare : null,
+    })
     let ok = false
     try {
       const response = await withBusyRetry(() => getFine(id), onBusy)
@@ -460,9 +620,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     } catch {
       if (asked === version.current) setFineStatus("failed")
     } finally {
-      finish("fine", "fine", started, ok)
+      if (asked === version.current) curveClock.current = null
+      finish("fine", "fine", started, ok && wait === 0)
     }
-  }, [setFine, begin, finish, onBusy])
+  }, [setFine, begin, finish, onBusy, prepLeft, r9])
 
   /* -- a session the server let go of ------------------------------------------- */
 
@@ -531,6 +692,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       schemeRef.current = result.scheme
       setData(result.data)
       setFine(result.fine, true)
+      if (result.fine) curveClock.current = null
       // Extrapolations were computed from the old parameters: kept on screen,
       // faded, and fetched again when their tab is shown.
       setExtrapStale(true)
@@ -551,12 +713,25 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     q.inflight = controller
     const n = ++seq.current
     setCalculating(true)
-    // The first edit may wait for the model's one-off preparation.
+    // The first edit may wait for the model's one-off preparation: the data
+    // model (and on an older server, which holds the session while it
+    // prepares, the smooth curves' too).
     const first = editsDone.current === 0
-    const wait = first ? remaining(preparing.current.edit, "prepare_data") + remaining(preparing.current.edit, "prepare_fine") : 0
-    // Waiting behind the server's preparation (an older server holds the
-    // session while it prepares): said so, with what is left of it.
-    const started = begin("edit", "edit", wait, preparing.current.edit !== null)
+    const legacy = !modernRef.current && !IN_BROWSER
+    const wait = first
+      ? Math.max(
+          prepLeft("data") + (legacy ? prepLeft("fine") : 0),
+          remaining(preparing.current.edit, "prepare_data") + (legacy ? remaining(preparing.current.edit, "prepare_fine") : 0),
+        )
+      : 0
+    // One clock from the first edit of a burst to the last answer.
+    const jobStart = performance.now()
+    if (!activitiesRef.current.edit && !activitiesRef.current.fine) curveClock.current = jobStart
+    const started = begin("edit", "edit", wait, wait > 0, {
+      since: curveClock.current ?? undefined,
+      wait: legacy ? ["data", "fine"] : ["data"],
+      note: wait > 0 && !prep.current.spare ? r9.noSpare : null,
+    })
     const values = schemeRef.current ? currentValues(schemeRef.current) : {}
     const updates =
       job.kind === "params" ? job.updates : job.kind === "undo" ? job.edit.before : job.kind === "redo" ? job.edit.after : null
@@ -564,8 +739,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     try {
       const send = (session: string): Promise<EditResult> =>
         updates === null
-          ? resetParameters(session, controller.signal)
-          : setParameters(session, updates, { seq: n, signal: controller.signal })
+          ? resetParameters(session, controller.signal, dataRef.current)
+          : setParameters(session, updates, { seq: n, signal: controller.signal, measured: dataRef.current })
       const answer = await withBusyRetry(() => send(id), onBusy, { signal: controller.signal }).catch(async (err) => {
         // The server let the session go: reopen it with the changes so far, then send this edit again.
         if (err instanceof ApiError && err.sessionExpired && (await revive())) return send(sessionRef.current!)
@@ -613,13 +788,20 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       }
     } catch (err) {
       handle(err)
+      curveClock.current = null
     } finally {
-      finish("edit", "edit", started, ok && wait === 0)
+      if (ok && wait === 0) measured.current.edit = (performance.now() - jobStart) / 1000
       if (q.inflight === controller) q.inflight = null
       if (q.pending.length > 0) void pump()
-      else setCalculating(false)
+      else {
+        // The burst is answered; its clock goes on only into the smooth curve.
+        burstEnd.current = performance.now()
+        finish("edit", "edit", started, false)
+        setCalculating(false)
+      }
+      void started
     }
-  }, [begin, finish, handle, onBusy, revive, take, remaining])
+  }, [begin, finish, handle, onBusy, revive, take, remaining, prepLeft, r9])
 
   const enqueue = useCallback(
     (job: Job) => {
@@ -692,6 +874,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       pingSession(sessionId)
         .then((status) => {
           if (!status) pinging = false
+          else takeStatus(status)
         })
         .catch((err) => {
           // Let go of by the server (its heartbeat timed out while the tab
@@ -730,7 +913,35 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         /* best effort; the reaper is the backstop */
       })
     }
-  }, [sessionId, revive])
+  }, [sessionId, revive, takeStatus])
+
+  // While the reader waits on the server's preparation, ask how it goes
+  // every 2 s: the estimate follows the step under way and how many builds
+  // share the cores (a second visitor without a spare waits for more).
+  const waitingOnPrep = Object.values(activities).some((a) => a?.wait)
+  useEffect(() => {
+    if (!sessionId || IN_BROWSER || !waitingOnPrep) return
+    let stop = false
+    const poll = () =>
+      getSessionStatus(sessionId)
+        .then((status) => {
+          if (!stop) takeStatus(status)
+        })
+        .catch(() => undefined)
+    void poll()
+    const timer = setInterval(poll, 2000)
+    return () => {
+      stop = true
+      clearInterval(timer)
+    }
+  }, [sessionId, waitingOnPrep, takeStatus])
+  // In the browser build there is no report: the estimate is worked out
+  // again from the typical timings every few seconds.
+  useEffect(() => {
+    if (!IN_BROWSER || !waitingOnPrep) return
+    const timer = setInterval(reestimate, 3000)
+    return () => clearInterval(timer)
+  }, [waitingOnPrep, reestimate])
 
   // Leaving the page: cancel an edit still on its way.
   useEffect(() => () => queue.current.inflight?.abort(), [])
@@ -743,6 +954,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         scheme,
         data,
         extrapolations,
+        publishedExtrap,
         extrapStale,
         fine,
         fineStatus,
