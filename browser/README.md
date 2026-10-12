@@ -35,21 +35,37 @@ worker's interpreter (`InProcessEngine`, with the interface of
 which is what pyazr's per-call change of working directory requires.
 
 **One thread.** WebAssembly side modules have no OpenMP; `omp.h` makes every
-parallel region run on one thread. The ⁷Be extrapolations, which recompute
-external-capture integrals, take about 9 minutes in Chromium against about 6 on
-one native core.
+parallel region run on one thread, so the engine calls take 2–6× what they take
+on the server.
 
-**Precomputed results.** `precompute.py` stores (with `server/app/cache.py`, the same cache the server uses) the data and extrapolation
-curves of every evaluation at its shipped parameters (`precomputed.json` next to
-the model), calculated natively by the same build the server uses. While a
-session's parameters are unchanged, these are returned; the first edit switches
-to the engine. Running the extrapolations and the plots' extended curves also
-leaves AZURE2's external-capture integrals of their grids (`extrapolations/`,
-`fine/`), which ship with the evaluation, so the engine in the page reads them
-rather than recalculating them. The server's background preparation of those
-models (`/prepare`) is not used here: one worker answers every request in
-turn, and a preparation under way would hold up the first edit. After an edit
-the previous smooth curve stays up, faded, until the new one is calculated.
+**Precomputed results.** `precompute.py` warms a copy of every evaluation
+exactly as the server's `make warm` does (`server/app/warm.py`): the data,
+smooth-curve, extrapolation and energy × angle grid results at its shipped
+parameters go to `precomputed.json` (`server/app/cache.py`), calculated
+natively by the same build the server uses. While a session's parameters are
+unchanged, these are returned; the first edit switches to the engine. They are
+matched by the model's fingerprint, not by comparing the parameters: the
+WebAssembly engine reads 90 of ²⁴Mg's parameters back a few ulps (up to
+5·10⁻⁸ relative) away from the native one, and an exact comparison never hit —
+²⁴Mg computed everything in the page and ⁷Be did not finish in 45 minutes.
+Now ²⁴Mg's data, curves and extrapolations come in 0.1–0.2 s each.
+
+Building the derived models also leaves AZURE2's external-capture integrals of
+their grids (`datamodel/`, `fine/`, `extrapolations/`), which ship with the
+evaluation, so the engine in the page reads them rather than recalculating
+them. What the page never reads is left out of `evaluations/<id>.zip`
+(`assemble.py`): AZURE2's `checks/` (shipped as empty directories), the
+evaluation's own extrapolation integrals when a derived model calculates the
+extrapolations, and `initial.json` — the scheme, data and smooth curves at the
+shipped parameters with the server's typical timings (`server/app/initial.py`),
+which is published next to the zip as `evaluations/<id>/initial.json` for the
+page to fetch before the worker has even started. ⁷Be's zip went from 9.5 to
+6.0 MB, ¹⁴N's from 5.7 to 1.6 MB.
+
+The server's background preparation is not used here: one worker answers every
+request in turn, and a preparation under way would hold up the first edit.
+After an edit the previous smooth curve stays up, faded, until the new one is
+calculated.
 
 **Numbers.** The WebAssembly engine and the native one agree to better than
 10⁻⁶ (relative) on ¹³N, ¹⁴N, ²¹Na, ²³Na and ²⁴Mg. On ⁷Be, ⁸Be and ¹⁷F they
