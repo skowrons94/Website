@@ -1,0 +1,16 @@
+{
+  "id": "8Be",
+  "title": "^{8}\\text{Be}",
+  "reference": null,
+  "author": null,
+  "reactions": [
+    "⁴He(α,α)⁴He"
+  ],
+  "datasets": {
+    "tombrello_aa_ang1": "Tombrello",
+    "tombrello_aa_ang2": "Tombrello",
+    "tombrello_aa_ang3": "Tombrello",
+    "tombrello_aa_ang4": "Tombrello",
+    "tombrello_aa_ang5": "Tombrello"
+  }
+}

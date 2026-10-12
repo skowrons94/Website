@@ -3,5 +3,18 @@
   "title": "^{13}\\text{N}",
   "reference": "10.1103/PhysRevC.111.035802",
   "author": "J. Skowronski",
-  "channels": ["p", "\\gamma", "\\gamma_{1}"]
+  "channels": [
+    "p",
+    "\\gamma"
+  ],
+  "reactions": [
+    "¹²C(p,γ)¹³N",
+    "¹²C(p,p)¹²C"
+  ],
+  "datasets": {
+    "skowronski_luna_hpge": "Skowronski, LUNA (HPGe)",
+    "skowronski_luna_bgo": "Skowronski, LUNA (BGO)",
+    "skowronski_fels": "Skowronski, Felsenkeller",
+    "gyurky": "Gyürky"
+  }
 }

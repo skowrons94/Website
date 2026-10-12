@@ -11,7 +11,11 @@ user cannot edit carries ``free_index: null``.
 """
 
 import math
+import os
 from typing import Dict, List, Optional
+
+from app.evaluations import exfor_code
+from app.labels import reaction_plain
 
 
 def _floats(values) -> Optional[List[float]]:
@@ -26,12 +30,25 @@ def _floats(values) -> Optional[List[float]]:
     return [f if math.isfinite(f) else None for f in map(float, values)]
 
 
-def _label_for(pair: int, labels) -> str:
-    """LaTeX label for a pair number, falling back to a plain tag."""
+def _label_for(key: int, labels) -> str:
+    """LaTeX label for a pair *key* (as the .azr file numbers pairs), falling
+    back to a plain tag."""
     for label in labels:
-        if label.number == pair:
+        if label.number == key:
             return label.label
-    return f"\\text{{pair}}{pair}"
+    return f"\\text{{pair}}{key}"
+
+
+def _engine_keys(session) -> Dict[int, int]:
+    """Engine pair number -> .azr pair key.
+
+    AZURE2 renumbers pairs when it builds a model (entrance pair first), so the
+    number a channel parameter or a ``Pair`` carries is not the key the file
+    and its labels use.  Every engine-side pair number goes through this map;
+    the data segments already speak in keys.
+    """
+    return {pair.number: getattr(pair, "key", pair.number)
+            for pair in session.pairs}
 
 
 def _exit_label(exit_key: int, labels) -> str:
@@ -102,6 +119,7 @@ def scheme_to_dict(session, labels) -> Dict:
         return float(params[free_index])
 
     pairs_by_number = {pair.number: pair for pair in session.pairs}
+    keys = _engine_keys(session)
 
     levels = []
     for level in session.scheme.levels:
@@ -110,8 +128,9 @@ def scheme_to_dict(session, labels) -> Dict:
             quantity, unit = channel_quantity(
                 level, channel, pairs_by_number.get(channel.pair))
             channels.append({
-                "pair": channel.pair,
-                "label": _label_for(channel.pair, labels),
+                "pair": keys.get(channel.pair, channel.pair),
+                "label": _label_for(keys.get(channel.pair, channel.pair),
+                                    labels),
                 "L": channel.L,
                 "S": channel.S,
                 "radiation_type": channel.radiation_type,
@@ -142,8 +161,11 @@ def scheme_to_dict(session, labels) -> Dict:
         })
 
     pairs = [{
-        "number": pair.number,
-        "label": _label_for(pair.number, labels),
+        # The .azr file's key: what the file, the AZURE2 GUI and the data
+        # segments call this pair.  The engine's own number is kept apart.
+        "number": keys[pair.number],
+        "engine_number": pair.number,
+        "label": _label_for(keys[pair.number], labels),
         "is_photon": pair.is_photon,
         "is_entrance": pair.is_entrance,
         "Z1": pair.Z1, "M1": pair.M1,
@@ -151,7 +173,7 @@ def scheme_to_dict(session, labels) -> Dict:
         "separation_energy": pair.sep_energy,
         "excitation": pair.excitation,
         "channel_radius": pair.channel_radius,
-    } for pair in session.pairs]
+    } for pair in sorted(session.pairs, key=lambda p: keys[p.number])]
 
     return {
         "pairs": pairs,
@@ -178,15 +200,17 @@ def scheme_to_text(session) -> str:
 
 # -- data segments ------------------------------------------------------------
 
-def chi2_per_point(observed, errors, calculated, norm) -> Optional[float]:
-    """Reduced chi-squared of one segment, or ``None`` if it has no errors.
+def chi2_sum(observed, errors, calculated, norm):
+    """``(chi2, points)`` of one segment, or ``(None, 0)`` without errors.
 
     Follows AZURE2's convention that the normalization scales the data and its
     uncertainty together, so ``norm`` cancels out of a purely statistical
-    comparison but still shifts the data relative to the model.
+    comparison but still shifts the data relative to the model.  This is the
+    data term only; :func:`norm_penalty` is AZURE2's prior on the
+    normalization, reported separately so neither hides the other.
     """
     if observed is None or errors is None or calculated is None:
-        return None
+        return None, 0
     total, count = 0.0, 0
     for value, error, model in zip(observed, errors, calculated):
         if not error or value is None or model is None:
@@ -194,8 +218,27 @@ def chi2_per_point(observed, errors, calculated, norm) -> Optional[float]:
         total += (value * norm - model) ** 2 / (error * norm) ** 2
         count += 1
     if count == 0:
+        return None, 0
+    return total, count
+
+
+def chi2_per_point(observed, errors, calculated, norm) -> Optional[float]:
+    """Reduced chi-squared of one segment, or ``None`` if it has no errors."""
+    total, count = chi2_sum(observed, errors, calculated, norm)
+    return None if total is None else total / count
+
+
+def norm_penalty(segment, norm) -> Optional[float]:
+    """AZURE2's normalization prior, ``((n - n0) / (n0 * err/100))^2``.
+
+    Only defined for a varied normalization with a stated systematic error
+    (percent, as stored in the file); ``None`` otherwise.
+    """
+    nominal = segment.norm or 1.0
+    error = segment.norm_error or 0.0
+    if not segment.vary_norm or error <= 0:
         return None
-    return total / count
+    return ((norm - nominal) / (nominal * error / 100.0)) ** 2
 
 
 def data_to_dict(session, labels, mu, mu_sfactor) -> List[Dict]:
@@ -205,6 +248,8 @@ def data_to_dict(session, labels, mu, mu_sfactor) -> List[Dict]:
     calculated arrays, which is the ordering AZURE2 itself uses.
     """
     measured = session.measured
+    evaluation = session.evaluation
+    by_key = {label.number: label for label in labels}
     segments = []
 
     for i, segment in enumerate(session.datasets):
@@ -212,16 +257,34 @@ def data_to_dict(session, labels, mu, mu_sfactor) -> List[Dict]:
         observed = _floats(measured.cross[i])
         errors = _floats(measured.cross_err[i])
         calculated = _floats(mu[i])
+        chi2, counted = chi2_sum(observed, errors, calculated, norm)
+        entrance = by_key.get(segment.entrance_key)
+        exit_ = by_key.get(segment.exit_key)
+        stem = os.path.splitext(os.path.basename(segment.data_file or ""))[0]
 
         segments.append({
             "index": i,
             "key": segment.key,
             "name": segment.name,
+            # A readable name for the data file ("Kettner", "Elwyn (EXFOR
+            # F0012.002)"); ``name`` stays the raw identifier.
+            "label": evaluation.dataset_label(segment.data_file),
+            "exfor": exfor_code(stem),
             "active": segment.active,
             "entrance": _label_for(segment.entrance_key, labels),
             "exit": _exit_label(segment.exit_key, labels),
             "entrance_key": segment.entrance_key,
             "exit_key": segment.exit_key,
+            # Same species in and out: elastic scattering, for which an
+            # astrophysical S-factor is meaningless.
+            "elastic": bool(entrance and exit_ and not exit_.is_photon
+                            and segment.entrance_key == segment.exit_key),
+            "capture": bool(segment.exit_key == -1
+                            or (exit_ is not None and exit_.is_photon)),
+            "reaction": (reaction_plain(entrance, exit_,
+                                        total=segment.exit_key == -1)
+                         if entrance is not None and not entrance.is_photon
+                         else None),
             "observable": segment.observable,
             "data_file": segment.data_file,
             "energy_min": segment.energy_min,
@@ -231,8 +294,11 @@ def data_to_dict(session, labels, mu, mu_sfactor) -> List[Dict]:
             "norm": norm,
             "vary_norm": segment.vary_norm,
             "norm_error": segment.norm_error,
+            "norm_penalty": norm_penalty(segment, norm),
             "n_points": len(observed) if observed else 0,
-            "chi2": chi2_per_point(observed, errors, calculated, norm),
+            "chi2": None if chi2 is None else chi2 / counted,
+            "chi2_sum": chi2,
+            "chi2_points": counted,
             "energies": _floats(measured.energies[i]),
             "angles": _floats(measured.angles[i]),
             "cross_sections": observed,
