@@ -140,7 +140,8 @@ export interface SoftwareEntry {
   uses?: string[]
   links?: { label: string; href: string }[]
   snippets?: { caption?: string; lang?: string; code: string }[]
-  list?: { title: string; items: { name: string; text: string }[] }
+  /** Items with a `group` are shown under that sub-heading, after the ungrouped ones. */
+  list?: { title: string; items: { name: string; text: string; group?: string }[] }
   /** The reference to cite when using it. */
   cite?: { text: string; doi?: string }
   note?: string
@@ -304,6 +305,30 @@ export function getEvaluationCount(): number {
   const dir = path.join(process.cwd(), "server", "evaluations")
   if (!fs.existsSync(dir)) return 0
   return fs.readdirSync(dir).filter((id) => fs.existsSync(path.join(dir, id, "info.json"))).length
+}
+
+/**
+ * The evaluations, and how many of them come from a published paper: those
+ * whose info.json gives the paper's DOI as `reference`. A submitted paper, or
+ * no paper yet, does not count.
+ */
+export function getEvaluationCounts(): { total: number; published: number } {
+  const dir = path.join(process.cwd(), "server", "evaluations")
+  if (!fs.existsSync(dir)) return { total: 0, published: 0 }
+  let total = 0
+  let published = 0
+  for (const id of fs.readdirSync(dir)) {
+    const file = path.join(dir, id, "info.json")
+    if (!fs.existsSync(file)) continue
+    total++
+    try {
+      const info = JSON.parse(fs.readFileSync(file, "utf8")) as { reference?: unknown }
+      if (typeof info.reference === "string" && info.reference.trim()) published++
+    } catch {
+      // A malformed info.json still counts as an evaluation, not as published.
+    }
+  }
+  return { total, published }
 }
 
 /* -- notes ----------------------------------------------------------------- */

@@ -215,7 +215,7 @@ export function TimelineView({ events }: { events: TimelineItem[] }) {
                   <h3 className="mt-0.5 text-pretty font-serif text-[1.15rem] font-semibold leading-snug tracking-tight sm:mt-0">
                     <Sci>{e.title}</Sci>
                   </h3>
-                  <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs uppercase tracking-[0.1em] text-muted-foreground">
+                  <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs uppercase text-muted-foreground [overflow-wrap:anywhere] sm:tracking-[0.1em]">
                     {e.categories
                       .filter((c) => c !== "luna")
                       .map(label)

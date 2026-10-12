@@ -41,7 +41,9 @@ export function EvolutionChart({
   const [box, width] = useWidth<HTMLDivElement>()
   const narrow = width < 520
   const height = narrow ? 260 : 320
-  const m = { l: narrow ? 44 : 56, r: narrow ? 14 : 70, t: 14, b: 42 }
+  // The nuclide names are drawn at the right end of their lines on every
+  // width, so a phone keeps room for them too ("²⁶Al", 12 px).
+  const m = { l: narrow ? 44 : 56, r: narrow ? 40 : 70, t: 14, b: 42 }
   const [hover, setHover] = useState<number | null>(null)
   const svgRef = useRef<SVGSVGElement>(null)
 

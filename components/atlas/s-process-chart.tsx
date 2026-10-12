@@ -1,3 +1,5 @@
+import { useId } from "react"
+
 import { getSProcessPath, type SCell, type SPath } from "@/lib/atlas"
 import { decimal, type Lang } from "@/lib/i18n"
 
@@ -197,7 +199,10 @@ function OverviewSvg({
   // The leftmost drawn cell of each labelled row.
   const rowStart = new Map<number, number>()
   for (const c of cells) rowStart.set(c.Z, Math.min(rowStart.get(c.Z) ?? Infinity, c.N))
-  const clip = `s-clip-${z0}-${n0}`
+  // Unique per drawing: the whole chart and its first phone piece start at the
+  // same corner, and both are in the page.
+  const uid = useId().replace(/[^A-Za-z0-9_-]/g, "")
+  const clip = `s-clip-${z0}-${n0}-${uid}`
   const tick0 = Math.ceil(n0 / 10) * 10
   const ticks = Array.from({ length: Math.max(0, Math.floor(n1 / 10) - tick0 / 10 + 1) }, (_, i) => tick0 + i * 10)
   const shown = (N: number, Z: number) => N >= n0 && N <= n1 && Z >= z0 && Z <= z1

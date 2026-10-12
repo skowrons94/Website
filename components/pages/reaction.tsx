@@ -1,3 +1,4 @@
+import "@/components/math-styles"
 import fs from "node:fs"
 import { ratesHrefFor } from "@/lib/rates/catalog"
 import path from "node:path"
@@ -97,9 +98,16 @@ function Facts({ reaction: r, lang }: { reaction: Reaction; lang: Lang }) {
               r.rmatrix.map((ev) => (
                 <dd key={ev} className="mt-1">
                   <Link href={localePath(lang, `/evaluations/${ev}?tab=plot`)} className="font-medium text-link underline-offset-4 hover:underline">
-                    {t.plotData}
-                    {" · "}
-                    <Sci>{supCode(ev)}</Sci> →
+                    {otherReaction(ev, r.label) ? (
+                      <Sci>{t.relatedEvaluation(otherReaction(ev, r.label)!, supCode(ev))}</Sci>
+                    ) : (
+                      <>
+                        {t.plotData}
+                        {" · "}
+                        <Sci>{supCode(ev)}</Sci>
+                      </>
+                    )}{" "}
+                    →
                   </Link>
                 </dd>
               ))
@@ -299,6 +307,24 @@ function displayCode(code: string): string {
 
 /* -- page ------------------------------------------------------------------ */
 
+/**
+ * The reaction an evaluation fits instead of `label`, when it does not fit
+ * `label` itself (⁴He(αα,γ)¹²C links to the α+α scattering of ⁸Be), from its
+ * info.json `reactions`; null when it fits this reaction, or cannot tell.
+ */
+function otherReaction(id: string, label: string): string | null {
+  try {
+    const file = path.join(process.cwd(), "server", "evaluations", id, "info.json")
+    const info = JSON.parse(fs.readFileSync(file, "utf8")) as { reactions?: unknown }
+    const reactions = Array.isArray(info.reactions) ? info.reactions.filter((x): x is string => typeof x === "string") : []
+    const key = (x: string) => x.replace(/\s+/g, "")
+    if (reactions.length === 0 || reactions.some((x) => key(x) === key(label))) return null
+    return reactions[0]
+  } catch {
+    return null
+  }
+}
+
 /** The site's own R-matrix evaluations linked from a reaction (rmatrix: in its file). */
 function rmatrixEvaluations(ids: string[]) {
   return ids.map((id) => {
@@ -453,13 +479,21 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
             <Link
               key={ev}
               href={to(`/evaluations/${ev}?tab=plot`)}
-              aria-label={t.plotDataOf(supCode(ev))}
+              aria-label={
+                otherReaction(ev, r.label)
+                  ? t.relatedEvaluationAria(otherReaction(ev, r.label)!, supCode(ev))
+                  : t.plotDataOf(supCode(ev))
+              }
               className="group inline-flex min-h-9 items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1 text-sm font-medium text-link transition-colors hover:border-foreground/30"
             >
               <SlidersHorizontal className="h-3.5 w-3.5 shrink-0" aria-hidden />
               <span>
-                {t.plotData}
-                {r.rmatrix.length > 1 && (
+                {otherReaction(ev, r.label) ? (
+                  <Sci>{t.relatedEvaluation(otherReaction(ev, r.label)!, supCode(ev))}</Sci>
+                ) : (
+                  t.plotData
+                )}
+                {r.rmatrix.length > 1 && !otherReaction(ev, r.label) && (
                   <>
                     {" · "}
                     <Sci>{supCode(ev)}</Sci>

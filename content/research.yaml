@@ -34,9 +34,9 @@ threads:
         now lead the ¹⁹F + p working group at the new Bellotti Ion Beam Facility,
         the 3.5 MV accelerator installed underground at Gran Sasso.
       - >-
-        In parallel I am the collaboration's DAQ Coordinator: the acquisition and
-        slow-control infrastructure of every campaign, and of the MV facility, is
-        designed and operated by me. It is what lets shifts be taken remotely,
+        In parallel I am the collaboration's DAQ Coordinator: I designed and run
+        the acquisition and slow-control infrastructure of every campaign, and of
+        the MV facility. It is what lets shifts be taken remotely,
         which for an experiment under 1.4 km of rock is not a small thing.
     body_it:
       - >-
@@ -105,8 +105,8 @@ threads:
         identical-particle scattering. Alongside that, the GUI, the documentation,
         and support and training for the user community.
       - >-
-        The evaluations section of this site runs that same code on
-        real published analyses.
+        The evaluations section of this site runs that same code on real
+        analyses, published and not yet published.
     body_it:
       - >-
         AZURE2 è il punto in cui un insieme di punti misurati diventa una sezione
@@ -125,7 +125,7 @@ threads:
         la formazione per la comunità degli utenti.
       - >-
         La sezione delle valutazioni di questo sito esegue lo stesso codice su
-        analisi reali e pubblicate.
+        analisi reali, pubblicate e non ancora pubblicate.
     link:
       label: Open the evaluations
       label_it: Apri le valutazioni
@@ -216,6 +216,15 @@ threads:
         della collisione e così affronta la discrepanza da una direzione che un
         normale esperimento su bersaglio non può prendere.
 
+# FOR JAKUB (not shown on the site): the referee asks for one or two concrete
+# 3–5-year objectives. Only you can supply them; candidates, to fill in or drop:
+#   - ¹⁹F + p at the Bellotti IBF: first beam / data taking / publication (dates?)
+#   - a target precision for a rate (which reaction, which uncertainty, by when?)
+#   - the R-matrix evaluation database: first public release (date, which nuclei?)
+#   - GENESIS: your concrete role and deliverables in the project (2026–2031)
+#   - a segmented γ detector or polarization measurement underground: proposal or
+#     test date
+#   - FAIR data: first LUNA data set released openly (which campaign, when?)
 outlook:
   title: What comes next
   title_it: Prospettive
@@ -241,14 +250,16 @@ outlook:
       text: >-
         Too many good measurements have been lost because nobody could keep the
         data, or the software that read them, alive. Maintaining software is no
-        longer the burden it was, so there is no excuse left. I want the data of
+        longer the burden it was, so keeping data alive is now within every
+        collaboration's reach. I want the data of
         the experiments I take part in to be FAIR — findable, accessible,
         interoperable, reusable — from the moment they are recorded, and I keep
         developing the LUNA data acquisition with that aim.
       text_it: >-
         Troppe buone misure sono andate perse perché nessuno riusciva a tenere
         in vita i dati, o il software che li leggeva. Mantenere il software non
-        è più il peso di una volta, quindi non ci sono più scuse. Voglio che i
+        è più il peso di una volta, quindi tenere vivi i dati è ormai alla
+        portata di ogni collaborazione. Voglio che i
         dati degli esperimenti a cui partecipo siano FAIR (reperibili,
         accessibili, interoperabili, riutilizzabili) fin dal momento in cui
         vengono acquisiti, ed è con questo obiettivo che continuo a sviluppare
@@ -260,8 +271,13 @@ outlook:
         resolution, target effects, normalisations, angular distributions. That
         is exactly why I love it. Yet most evaluations live in one person's
         files. The field needs a shared, versioned database of evaluations that
-        anyone can rerun, refit and extend when new data arrive; AZURE2 and the
-        evaluations on this site are a first step.
+        anyone can rerun, refit and extend when new data arrive. It is the
+        direction of GENESIS (NSF, 2026–2031), on quantum-enhanced evaluation of
+        nuclear reaction cross sections in R-matrix theory, in which I take
+        part, and of my work on the IAEA INDEN-LE committee. AZURE2 and the
+        evaluations on this site, which anyone can open, change and rerun in the
+        browser, are a working prototype; the rates explorer shows where such
+        evaluations end up, in the reaction rates of stellar models.
       text_it: >-
         La teoria R-matrix è il punto in cui la teoria incontra ogni dettaglio
         sperimentale: risoluzione, effetti del bersaglio, normalizzazioni,
@@ -269,19 +285,31 @@ outlook:
         maggior parte delle valutazioni vive nei file di una sola persona. Al
         settore serve un database condiviso e versionato di valutazioni, che
         chiunque possa rieseguire, riadattare ed estendere quando arrivano
-        nuovi dati; AZURE2 e le valutazioni di questo sito sono un primo passo.
+        nuovi dati. È la direzione di GENESIS (NSF, 2026–2031), sulla
+        valutazione delle sezioni d'urto nucleari nella teoria R-matrix con
+        metodi quantistici, a cui partecipo, e del mio lavoro nel comitato
+        INDEN-LE della IAEA. AZURE2 e le valutazioni di questo sito, che
+        chiunque può aprire, modificare e ricalcolare nel browser, ne sono un
+        prototipo funzionante; l'esploratore dei tassi mostra dove finiscono
+        queste valutazioni, nei tassi di reazione dei modelli stellari.
     - lead: New observables, underground.
       lead_it: Nuove osservabili, sotto terra.
       text: >-
         I want to keep contributing to LUNA's measurements, and to bring new
         kinds of information to them: a segmented, AGATA-like γ-ray detector
         deep underground, and polarization measurements, which give the
-        R-matrix input independent of the cross section.
+        R-matrix input independent of the cross section. The starting points are
+        the measurements I already lead: ¹⁹F + p at the Bellotti Ion Beam
+        Facility, and the ¹⁵O lifetime measured with AGATA, which constrains the
+        CNO rate and its neutrino flux.
       text_it: >-
         Voglio continuare a contribuire alle misure di LUNA e portarvi
         informazioni di tipo nuovo: un rivelatore γ segmentato, simile ad
         AGATA, in laboratorio sotterraneo, e misure di polarizzazione, che
         danno alla R-matrix un'informazione indipendente dalla sezione d'urto.
+        I punti di partenza sono le misure che già guido: ¹⁹F + p al Bellotti
+        Ion Beam Facility e la vita media dell'¹⁵O misurata con AGATA, che
+        vincola il ritmo del ciclo CNO e il suo flusso di neutrini.
     - lead: Versatility.
       lead_it: Versatilità.
       text: >-
@@ -295,13 +323,13 @@ outlook:
     - lead: AI as a research tool.
       lead_it: L'IA come strumento di ricerca.
       text: >-
-        In the coming months AI will change how research is done. Used with
-        care it takes over the maintenance and boilerplate that used to swallow
+        AI is quickly changing how research is done. Used with care it takes
+        over the maintenance and boilerplate that used to swallow
         our time, leaves more of it for physics, and puts a much broader set of
         tools within reach of a small group. LUNA Skills is how I put this into
         practice, openly, so others can do the same.
       text_it: >-
-        Nei prossimi mesi l'intelligenza artificiale cambierà il modo di fare
+        L'intelligenza artificiale sta cambiando rapidamente il modo di fare
         ricerca. Usata con attenzione si fa carico della manutenzione e del
         lavoro ripetitivo che prima ci consumavano il tempo, ne lascia di più
         alla fisica e mette alla portata di un piccolo gruppo strumenti molto

@@ -55,8 +55,8 @@ facilities:
     depth_it: circa 1400 m di roccia, 3800 metri di acqua equivalente
     accelerator: 50 kV ion accelerator with a windowless gas target
     accelerator_it: acceleratore di ioni da 50 kV con bersaglio gassoso senza finestre
-    years: described in 1994; first result on ³He(³He,2p)⁴He in 1999
-    years_it: descritto nel 1994; primo risultato su ³He(³He,2p)⁴He nel 1999
+    years: described in 1994; first results on ³He(³He,2p)⁴He in 1996
+    years_it: descritto nel 1994; primi risultati su ³He(³He,2p)⁴He nel 1996
     luna: true
     summary: >-
       The first accelerator built deep underground for nuclear astrophysics.
@@ -81,7 +81,7 @@ facilities:
       corrente e telescopi di rivelatori al silicio per i prodotti carichi della
       reazione. Era progettato per ³He(³He,2p)⁴He nel picco di Gamow solare, che
       raggiunse fino a 16,5 keV.
-    refs: [greife1994, bonetti1999, broggini2010]
+    refs: [greife1994, arpesella1996, junker1998, bonetti1999, broggini2010]
 
   - id: luna-400
     name: LUNA 400 kV

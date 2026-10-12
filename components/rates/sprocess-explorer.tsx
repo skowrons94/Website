@@ -354,8 +354,8 @@ export function SProcessExplorer({ lang, sOnly }: { lang: Lang; sOnly: string[] 
                   yLabel={sp.productionFactor}
                   shellLabel={sp.shell}
                   sOnlyLabel={sp.sOnly}
-                  baseLabel={t.baselineLabel}
-                  changedLabel={changed ? t.changedLabel : `${t.changedLabel} = ${t.baselineLabel}`}
+                  baseLabel={changed ? t.baselineLabel : null}
+                  changedLabel={changed ? t.changedLabel : t.baselineLabel}
                   belowLabel={sp.below}
                 />
               </div>
