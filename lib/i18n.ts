@@ -288,6 +288,8 @@ const en = {
       return `${n} ${n === 1 ? one : many}`
     },
     howToCite: "How to cite",
+    aboutEvaluation: "About this evaluation",
+    aboutEvaluationHint: "What was fitted, energies, engine and how to cite",
     citeWithPaper: "Please cite the paper this evaluation belongs to:",
     citeNoPaper:
       "This evaluation has no publication yet. Please cite this page with the date you used it, and the authors listed above.",
@@ -1067,6 +1069,8 @@ const it: Dictionary = {
       return `${n} ${n === 1 ? one : many}`
     },
     howToCite: "Come citare",
+    aboutEvaluation: "Informazioni su questa valutazione",
+    aboutEvaluationHint: "Che cosa è stato adattato, energie, codice e come citare",
     citeWithPaper: "Cita l'articolo a cui appartiene questa valutazione:",
     citeNoPaper:
       "Questa valutazione non è ancora pubblicata. Cita questa pagina, con la data in cui l'hai consultata, e gli autori indicati sopra.",

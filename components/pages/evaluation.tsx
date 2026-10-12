@@ -42,6 +42,7 @@ export function EvaluationPage({ id, lang }: { id: string; lang: Lang }) {
       <EvaluationHeader meta={meta} lang={lang} azure2Ref={azure2Ref()} licence={licence} />
       <EvaluationIntro reaction={meta.reactions[0]} compound={id} lang={lang} />
       <EvaluationWorkspace id={id} known={meta.known} />
+      <EvaluationHeader part="about" meta={meta} lang={lang} azure2Ref={azure2Ref()} licence={licence} />
       {reactions.length > 0 && (
         <aside className="mt-16 border-t border-border/70 pt-8 text-sm">
           <h2 className="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">

@@ -37,7 +37,12 @@ export function EvaluationHeader({
   lang,
   azure2Ref,
   licence,
+  part = "top",
 }: {
+  /** "top": title, reactions and the paper, above the workspace; "about": the
+   *  details (what was fitted, energies, engine, how to cite), below it, so the
+   *  level scheme and the plot start near the top of the page. */
+  part?: "top" | "about"
   meta: EvaluationMeta
   lang: Lang
   azure2Ref: string | null
@@ -78,39 +83,11 @@ export function EvaluationHeader({
     </a>
   ) : null
 
-  return (
-    <header className="border-b border-border/70 pb-8">
-      <Link
-        href={localePath(lang, "/evaluations")}
-        className="-ml-1 mb-5 inline-flex min-h-10 items-center gap-1.5 rounded-md px-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
-      >
-        <ArrowLeft className="h-4 w-4" aria-hidden />
-        {t.allEvaluations}
-      </Link>
-      <p className="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-        {t.headerEyebrow}
-      </p>
-      <h1 className="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
-        <Sci>{t.pageTitle(nuclide)}</Sci>
-      </h1>
-
-      {meta.reactions.length > 0 && (
-        <div className="mt-4">
-          <h2 className="sr-only">{t.reactionsFitted}</h2>
-          <ul className="flex flex-wrap gap-2" aria-label={t.reactionsFitted}>
-            {meta.reactions.map((r) => (
-              <li
-                key={r}
-                className="rounded-md border border-border bg-card px-2.5 py-1 font-serif text-[1.0625rem] font-semibold"
-              >
-                <Sci>{r}</Sci>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      <div className="mt-6 grid gap-x-10 gap-y-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+  if (part === "about") {
+    return (
+      <section id="about" aria-labelledby="about-title" className="mt-16 scroll-mt-24 border-t border-border/70 pt-8">
+        <h2 id="about-title" className="font-serif text-xl font-semibold tracking-tight">{t.aboutEvaluation}</h2>
+      <div className="mt-5 grid gap-x-10 gap-y-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
         <div className="space-y-4">
           {meta.active > 0 && (
             <section>
@@ -228,6 +205,72 @@ export function EvaluationHeader({
           )}
         </dl>
       </div>
+      </section>
+    )
+  }
+
+  return (
+    <header className="pb-2">
+      <Link
+        href={localePath(lang, "/evaluations")}
+        className="-ml-1 mb-5 inline-flex min-h-10 items-center gap-1.5 rounded-md px-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <ArrowLeft className="h-4 w-4" aria-hidden />
+        {t.allEvaluations}
+      </Link>
+      <p className="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
+        {t.headerEyebrow}
+      </p>
+      <h1 className="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
+        <Sci>{t.pageTitle(nuclide)}</Sci>
+      </h1>
+
+      {meta.reactions.length > 0 && (
+        <div className="mt-4">
+          <h2 className="sr-only">{t.reactionsFitted}</h2>
+          <ul className="flex flex-wrap gap-2" aria-label={t.reactionsFitted}>
+            {meta.reactions.map((r) => (
+              <li
+                key={r}
+                className="rounded-md border border-border bg-card px-2.5 py-1 font-serif text-[1.0625rem] font-semibold"
+              >
+                <Sci>{r}</Sci>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {(meta.paper || doiUrl) && (
+        <p className="mt-4 max-w-3xl text-pretty text-sm leading-relaxed text-muted-foreground">
+          {meta.paper ? (
+            <>
+              {meta.paper.authors}
+              {meta.paper.journal && `, ${meta.paper.journal}`}
+              {meta.paper.year && ` (${meta.paper.year})`}
+              {doiUrl && (
+                <>
+                  {" · "}
+                  <a href={doiUrl} className="break-words text-link underline-offset-4 hover:underline">
+                    doi:{meta.doi}
+                  </a>
+                </>
+              )}
+            </>
+          ) : (
+            doiUrl && (
+              <a href={doiUrl} className="break-words text-link underline-offset-4 hover:underline">
+                doi:{meta.doi}
+              </a>
+            )
+          )}
+          {meta.analysis && <> · {t.analysis}: {meta.analysis}</>}
+          {" · "}
+          <a href="#about" className="text-link underline-offset-4 hover:underline" title={t.aboutEvaluationHint}>
+            {t.aboutEvaluation}
+          </a>
+        </p>
+      )}
     </header>
   )
 }
