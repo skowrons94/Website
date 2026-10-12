@@ -11,7 +11,9 @@ import { localePath, type Lang } from "@/lib/locale"
 import { decayMap, decayed, macs, neutronsPerSeed } from "@/lib/rates/analysis"
 import { loadNetwork, loadSensitivity, runBurn, type Baseline, type SensitivityFile } from "@/lib/rates/client"
 import { ratesDict } from "@/lib/rates/i18n"
-import { parseRatesHash, ratesHash } from "@/lib/rates/url"
+import type { CuriosityCardData } from "@/lib/rates/curiosity-data"
+import { CuriosityStrip } from "./curiosity-card"
+import { parseRatesHash, ratesHash, showWhatIf } from "@/lib/rates/url"
 import { networkProvider } from "@/lib/rates/rate-provider"
 import type { RunResult } from "@/lib/rates/run"
 import type { SProcessFirstView } from "@/lib/rates/first-view"
@@ -53,10 +55,13 @@ export function SProcessExplorer({
   lang,
   sOnly,
   firstView,
+  curiosities,
 }: {
   lang: Lang
   sOnly: string[]
   firstView?: SProcessFirstView | null
+  /** the s-process curiosities (lib/rates/curiosity-data.ts), and how many there are in all */
+  curiosities?: { items: CuriosityCardData[]; total: number }
 }) {
   const t = ratesDict(lang)
   const sp = t.sp
@@ -92,6 +97,7 @@ export function SProcessExplorer({
     setCond(fromScenario(s))
     setScale(sc)
     setActive(Object.keys(sc)[0] ?? n.ui.groups?.[0]?.reactions[0] ?? null)
+    if (h.focus) showWhatIf()
   }
   const applyRef = useRef(applyHash)
   applyRef.current = applyHash
@@ -450,6 +456,17 @@ export function SProcessExplorer({
           </div>
         </section>
       </div>
+
+      {curiosities && curiosities.items.length > 0 && (
+        <CuriosityStrip
+          key={scenario.id}
+          items={curiosities.items}
+          first={curiosities.items.filter((c) => c.site === scenario.id).map((c) => c.id)}
+          lang={lang}
+          allHref={localePath(lang, "/atlas/rates/curiosities")}
+          total={curiosities.total}
+        />
+      )}
 
       <Figure id="what-if" step={{ n: 2, label: t.step3 }} title={t.whatIfTitle} lead={sp.whatIfLead}>
         <div className="grid gap-8 lg:grid-cols-[minmax(0,24rem)_minmax(0,1fr)] lg:gap-10">

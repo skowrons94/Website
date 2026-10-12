@@ -16,7 +16,9 @@ import {
   type Baseline,
   type SensitivityFile,
 } from "@/lib/rates/client"
-import { parseRatesHash, ratesHash } from "@/lib/rates/url"
+import type { CuriosityCardData } from "@/lib/rates/curiosity-data"
+import { CuriosityStrip } from "./curiosity-card"
+import { parseRatesHash, ratesHash, showWhatIf } from "@/lib/rates/url"
 import { bottleneck, closes, dominantPath, heaviestProduct, integratedFlows, pathStart } from "@/lib/rates/flow"
 import { LUNA_RATES_PUBLIC } from "@/lib/rates/features"
 import { ratesDict } from "@/lib/rates/i18n"
@@ -150,6 +152,7 @@ export function RatesExplorer({
   initial,
   sProcess = false,
   preload,
+  curiosities,
 }: {
   lang: Lang
   tabs: NetworkTab[]
@@ -158,6 +161,8 @@ export function RatesExplorer({
   sProcess?: boolean
   /** the first network and its baseline, sent with the page: the first view renders on the server */
   preload?: { network: Network; baseline: Baseline | null }
+  /** the light networks' curiosities (lib/rates/curiosity-data.ts), and how many there are in all */
+  curiosities?: { items: CuriosityCardData[]; total: number }
 }) {
   if (preload) primeNetwork(preload.network.id, preload)
   const [init0] = useState(() =>
@@ -217,6 +222,7 @@ export function RatesExplorer({
     setBase(st.base)
     setMod(st.mod)
     setSens(null)
+    if (h?.focus) showWhatIf()
   }, [])
   const dataRef = useRef(data)
   dataRef.current = data
@@ -845,7 +851,7 @@ export function RatesExplorer({
           </button>
         }
       >
-        <div className="grid gap-10 xl:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]">
+        <div className="grid gap-10 xl:grid-cols-[minmax(0,1fr)_minmax(0,384px)]">
           <div className="min-w-0">
             <LifetimeBars
               rows={lifeRows}
@@ -899,6 +905,17 @@ export function RatesExplorer({
           )}
         </div>
       </Figure>
+
+      {curiosities && curiosities.items.length > 0 && (
+        <CuriosityStrip
+          key={netId}
+          items={curiosities.items}
+          first={curiosities.items.filter((c) => c.net === netId).map((c) => c.id)}
+          lang={lang}
+          allHref={localePath(lang, "/atlas/rates/curiosities")}
+          total={curiosities.total}
+        />
+      )}
 
       {/* -- 3. what if -------------------------------------------------------------- */}
       <Figure id="what-if" step={{ n: 3, label: t.step3 }} title={t.whatIfTitle} lead={t.whatIfLead}>

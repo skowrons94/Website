@@ -11,6 +11,7 @@ import { getSProcessPath } from "@/lib/atlas"
 import { dict, localePath, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
 import { sprocessFirstViewFromDisk } from "@/lib/rates/catalog"
+import { curiosityCards } from "@/lib/rates/curiosity-data"
 
 /**
  * /atlas/rates/s-process: the neutron sources, poisons and seeds of the
@@ -124,6 +125,7 @@ export function RatesSProcessPage({ lang }: { lang: Lang }) {
   const t = TEXT[lang]
   const to = (p: string) => localePath(lang, p)
   const path = getSProcessPath(lang)
+  const cards = curiosityCards(lang)
   return (
     <div className="mx-auto max-w-6xl px-5 py-8 [overflow-wrap:anywhere] sm:px-8 sm:py-10 xl:max-w-7xl">
       <div className="flex flex-wrap gap-x-6 gap-y-1">
@@ -152,7 +154,12 @@ export function RatesSProcessPage({ lang }: { lang: Lang }) {
       </header>
 
       <div className="mt-5">
-        <SProcessExplorer lang={lang} sOnly={path.sOnly} firstView={sprocessFirstViewFromDisk(path.sOnly)} />
+        <SProcessExplorer
+          lang={lang}
+          sOnly={path.sOnly}
+          firstView={sprocessFirstViewFromDisk(path.sOnly)}
+          curiosities={{ items: cards.filter((c) => c.net === "sprocess"), total: cards.length }}
+        />
       </div>
 
       <section

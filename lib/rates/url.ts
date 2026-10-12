@@ -12,6 +12,8 @@ export interface RatesAddress {
   site: string | null
   scale: Record<string, number>
   luna: boolean
+  /** a curiosity's "Try it" (&c=<id>): show the result once applied; never written back */
+  focus: string | null
 }
 
 export function parseRatesHash(h: string): RatesAddress {
@@ -24,7 +26,7 @@ export function parseRatesHash(h: string): RatesAddress {
     const v = Number(f)
     if (id && v > 0 && v !== 1) scale[decodeURIComponent(id)] = Math.min(10, Math.max(0.1, v))
   }
-  return { net, site: params.get("site") ?? null, scale, luna: params.get("luna") === "1" }
+  return { net, site: params.get("site") ?? null, scale, luna: params.get("luna") === "1", focus: params.get("c") ?? null }
 }
 
 /** The address of a setting; `site` left out when it is the network's first. */
@@ -35,4 +37,12 @@ export function ratesHash(a: { net?: string; site?: string | null; scale?: Recor
     .join(",")
   const parts = [a.net || "", a.site ? `site=${a.site}` : "", s ? `s=${s}` : "", a.luna ? "luna=1" : ""].filter(Boolean)
   return parts.length ? `#${parts.join("&")}` : ""
+}
+
+/** After a curiosity's "Try it": bring the what-if section into view. */
+export function showWhatIf(tries = 40) {
+  // the s-process page draws its what-if section once the first burn is in
+  const el = document.getElementById("what-if")
+  if (el) requestAnimationFrame(() => el.scrollIntoView({ block: "start" }))
+  else if (tries > 0) setTimeout(() => showWhatIf(tries - 1), 100)
 }

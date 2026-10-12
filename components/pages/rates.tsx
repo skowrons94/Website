@@ -10,6 +10,7 @@ import { Sci } from "@/components/sci"
 import { dict, localePath, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
 import { hasSProcess, preloadNetwork, rateTabs } from "@/lib/rates/catalog"
+import { curiosityCards } from "@/lib/rates/curiosity-data"
 
 /**
  * /atlas/rates: the reaction rates of the light networks (pp, CNO, NeNa,
@@ -132,6 +133,7 @@ export function RatesPage({ lang }: { lang: Lang }) {
   const t = TEXT[lang]
   const to = (p: string) => localePath(lang, p)
   const tabs = rateTabs(lang)
+  const cards = curiosityCards(lang)
   return (
     <div className="mx-auto max-w-6xl px-5 py-8 [overflow-wrap:anywhere] sm:px-8 sm:py-10 xl:max-w-7xl">
       <Link
@@ -158,6 +160,7 @@ export function RatesPage({ lang }: { lang: Lang }) {
           initial={tabs[0]?.id ?? "pp"}
           sProcess={hasSProcess()}
           preload={preloadNetwork(tabs[0]?.id ?? "pp") ?? undefined}
+          curiosities={{ items: cards.filter((c) => c.net !== "sprocess"), total: cards.length }}
         />
       </div>
 
