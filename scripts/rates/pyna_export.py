@@ -44,6 +44,7 @@ is added as a constant set labelled nb20 (GROUND_STATE_DECAYS).
 from __future__ import annotations
 
 import csv
+import re
 import json
 import datetime as _dt
 import math
@@ -129,6 +130,48 @@ def library(libfile: str = LIBFILE):
     return _LIB[libfile]
 
 
+_SUP = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
+
+
+def nuclide_marks(title: str) -> str:
+    """"17O(α,n)20Ne" → "¹⁷O(α,n)²⁰Ne": mass numbers as superscripts."""
+    title = re.sub(r"\b(\d{1,3}) ?([A-Z][a-z]?)(?= ?\(|\b)", lambda m: m[1].translate(_SUP) + m[2], title)
+    return re.sub(r"(\S)\( ?([pnαγ]) ?, ?([pnαγ]) ?\)", r"\1(\2,\3)", title)
+
+
+# pynucastro's rate_sources.csv lost the Greek letters of some titles ("?"),
+# and misspells or truncates a few names and references; these are the
+# papers' own (checked against the DOIs).
+SOURCE_FIXES: dict[str, dict] = {
+    "be13": {"title": "Measurement of the reaction ¹⁷O(α,n)²⁰Ne and its impact on the s process in massive stars",
+             "ref": "Phys. Rev. C 87, 045805"},
+    "da18": {"title": "The ¹⁹F(α,p)²²Ne reaction at energies of astrophysical relevance by means of the Trojan Horse "
+                      "method and its implications in AGB stars", "ref": "ApJ 860, 61"},
+    "ke17": {"author": "K. J. Kelly et al.",
+             "title": "New measurements of low-energy resonances in the ²²Ne(p,γ)²³Na reaction",
+             "ref": "Phys. Rev. C 95, 015806"},
+    "li20": {"title": "Simultaneous measurement of β-delayed proton and γ emission of ²⁶P for the ²⁵Al(p,γ)²⁶Si "
+                      "reaction rate", "ref": "Phys. Rev. C 101, 024305"},
+    "ly18": {"title": "Determination of ²⁰Ne(p,γ)²¹Na cross sections from Eₚ = 500–2000 keV",
+             "ref": "Phys. Rev. C 97, 065802"},
+    "im05": {"title": "S-factor of ¹⁴N(p,γ)¹⁵O at astrophysical energies", "ref": "Eur. Phys. J. A 25, 455"},
+    "co10": {"author": "Costantini, H. et al."},
+    "ka02": {"author": "I. Dillmann et al.", "title": "KADoNiS: the Karlsruhe Astrophysical Database of "
+             "Nucleosynthesis in Stars (v0.2)", "year": "2006"},
+    "dc11": {"title": "The influence of uncertainties in the ¹⁵O(α,γ)¹⁹Ne reaction rate on models of type I X-ray bursts"},
+    "gl12": {"title": "New determination of the ¹³C(α,n)¹⁶O reaction rate and its influence on the s-process "
+                      "nucleosynthesis in AGB stars", "ref": "ApJ 756, 193"},
+    "lg06": {"title": "¹³N(d,n)¹⁴O reaction and the astrophysical ¹³N(p,γ)¹⁴O reaction rate"},
+    "cd08": {"title": "Evaluation of modern ³He(α,γ)⁷Be data"},
+    "fy05": {"title": "Revised rates for the stellar triple-α process from measurement of ¹²C nuclear resonances"},
+    "kg91": {"title": "¹⁷O(n,α)¹⁴C cross section from 25 meV to approximately 1 MeV"},
+    "Ha96": {"ref": "Phys. Rev. C 54, 1999"},
+    "ia08": {"ref": "Phys. Rev. C 77, 045802"},
+    "li10": {"title": "Constraining the S factor of ¹⁵N(p,γ)¹⁶O at astrophysical energies"},
+    "wies": {"author": "M. Wiescher"},
+}
+
+
 def load_sources() -> dict[str, dict]:
     """REACLIB set label → {author, title, ref, year, url}, from pynucastro."""
     path = Path(pyna.__file__).parent / "data" / "rate_sources.csv"
@@ -149,6 +192,11 @@ def load_sources() -> dict[str, dict]:
                 "year": clean(year),
                 "url": clean(url) or None,
             }
+    for k, v in out.items():
+        v["title"] = nuclide_marks(v["title"])
+    for k, fix in SOURCE_FIXES.items():
+        if k in out:
+            out[k].update(fix)
     out["nb20"] = dict(NUBASE_REF)
     # pynucastro's row for ls09 is misparsed (an HTML fragment in the author
     # field, the DOI in the year): the paper is Li et al. 2010, the ANC of
