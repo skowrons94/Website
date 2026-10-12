@@ -143,9 +143,11 @@
   /* The height the sticky header covers at the top of the window, kept
      current by components/site-header.tsx (0 while it is hidden, or where it
      does not stick). These are its values before that script has run: the
-     bar's 4rem where it sticks, nothing on a window too short for it to. */
+     bar's 4rem plus its 1px bottom border where it sticks (so the first
+     measurement matches and nothing is restyled), nothing on a window too
+     short for it to. */
   :root {
-    --header-h: 4rem;
+    --header-h: calc(4rem + 1px);
   }
   @media (max-height: 30em) {
     :root {
@@ -283,25 +285,8 @@ sub {
   @apply opacity-100;
 }
 
-/*
- * KaTeX ships `font-size: 1.21em`, which against a 17px serif body makes inline
- * maths noticeably taller than the words around it and pushes the line box open.
- * 1.08em keeps x-heights close while leaving the glyphs large enough to read.
- * Requires katex.min.css to be imported *before* globals.css (see app/layout).
- */
-.katex {
-  font-size: 1.08em;
-}
-
-/* Display maths is standalone, so it can afford the full size. */
-.katex-display > .katex {
-  font-size: 1.18em;
-}
-
-/* Long expressions scroll rather than being clipped at the column edge. */
-.katex-display {
-  max-width: 100%;
-}
+/* KaTeX's size tuning lives with its stylesheet, in components/math-styles.css,
+   which only the pages that set maths load. */
 
 /*
  * The atlas map (components/atlas/network-map.tsx).

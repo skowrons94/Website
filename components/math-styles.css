@@ -1,0 +1,19 @@
+/*
+ * KaTeX ships `font-size: 1.21em`, which against a 17px serif body makes inline
+ * maths noticeably taller than the words around it and pushes the line box open.
+ * 1.08em keeps x-heights close while leaving the glyphs large enough to read.
+ * Loaded after katex.min.css (components/math-styles.tsx).
+ */
+.katex {
+  font-size: 1.08em;
+}
+
+/* Display maths is standalone, so it can afford the full size. */
+.katex-display > .katex {
+  font-size: 1.18em;
+}
+
+/* Long expressions scroll rather than being clipped at the column edge. */
+.katex-display {
+  max-width: 100%;
+}

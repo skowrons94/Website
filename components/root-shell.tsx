@@ -1,6 +1,5 @@
-// KaTeX first, so the tuning in globals.css (which sizes maths against the
-// surrounding prose) wins over the stylesheet's own defaults.
-import "katex/dist/katex.min.css"
+// KaTeX's stylesheet is not global: the pages that set maths import
+// components/math-styles.tsx.
 import "@/app/globals.css"
 
 import { Alternates } from "@/components/alternates"
