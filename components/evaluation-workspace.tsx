@@ -353,7 +353,8 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
 
   const body = (content: React.ReactNode) => (opening ? starting : unavailable ? down : content)
 
-  const plotActivity = activities.edit ?? activities.data ?? (data === null ? activities.open : undefined) ?? null
+  // An edit made while the session still opens waits for it: the opening is what the timer shows then.
+  const plotActivity = activities.edit ?? activities.data ?? activities.open ?? null
   const plotStage = activities.edit ? "edit" : activities.data ? "data" : "open"
   const extrapActivity = activities.extrap ?? (!sessionId ? activities.open : undefined) ?? (calculating ? activities.edit : undefined) ?? null
   const extrapStage = activities.extrap ? "extrap" : !sessionId ? "open" : "edit"

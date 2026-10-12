@@ -871,6 +871,14 @@ export function DataPlot({
       {/* The first stop in the plot view: past the view settings and the dataset list, straight to the sliders. */}
       <a
         href="#plot-levels"
+        onClick={(event) => {
+          // Focus moves with the reader, so the next Tab is inside the levels.
+          const target = document.getElementById("plot-levels")
+          if (!target) return
+          event.preventDefault()
+          target.focus({ preventScroll: true })
+          target.scrollIntoView({ block: "start" })
+        }}
         className="sr-only w-fit rounded-md bg-card px-3 py-2 text-sm font-medium text-link ring-2 ring-ring focus:not-sr-only focus:inline-flex [&+*]:!mt-0 focus:[&+*]:!mt-4"
       >
         {lv.skipToLevels}
