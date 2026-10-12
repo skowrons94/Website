@@ -8,10 +8,11 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import type { Scheme } from "@/lib/api"
-import { decimal } from "@/lib/i18n"
+import { decimal } from "@/lib/i18n-eval"
 import { formatLevelEnergy, jpiPlain, levelKey } from "@/lib/level-layout"
 import { formatQuantity, quantitySymbol, significant } from "@/lib/viz"
-import { useDict, useLang } from "@/components/lang-provider"
+import { useLang } from "@/components/lang-context"
+import { useEvalDict } from "@/components/eval-dict"
 
 /**
  * Sliders for every free R-matrix parameter, driving a live recalculation.
@@ -48,8 +49,11 @@ interface LevelGroup {
 interface Props {
   scheme: Scheme
   onChange: (updates: Record<number, number>) => void
-  onReset: () => void
+  /** A reset of its own; the plot view has one "Reset all" beside the χ² instead. */
+  onReset?: () => void
   disabled?: boolean
+  /** The level whose panel opens first (the plotted resonance), else the first level. */
+  defaultOpen?: string | null
   /** Level selected elsewhere (diagram, table): its panel opens and scrolls into view. */
   selectedLevel?: string | null
   /** Opening a level's panel selects it. */
@@ -124,9 +128,9 @@ function parseNumber(text: string): number | null {
   return Number.isFinite(value) ? value : null
 }
 
-export function LevelControls({ scheme, onChange, onReset, disabled, selectedLevel, onSelectLevel, deltaChi2 }: Props) {
-  const t = useDict().workspace
-  const l = useDict().levels
+export function LevelControls({ scheme, onChange, onReset, disabled, selectedLevel, onSelectLevel, deltaChi2, defaultOpen }: Props) {
+  const t = useEvalDict().workspace
+  const l = useEvalDict().levels
   const lang = useLang()
   const num = (s: string) => decimal(s, lang)
 
@@ -167,11 +171,16 @@ export function LevelControls({ scheme, onChange, onReset, disabled, selectedLev
     return list.sort((a, b) => a.energy - b.energy)
   }, [scheme, t])
 
-  // Open the first level so the panel is never a wall of collapsed rows.
+  // Open one level so the panel is never a wall of collapsed rows: the most
+  // informative one (the resonance in the plotted range) when the plot says.
   const [open, setOpen] = useState<string[]>([])
   useEffect(() => {
-    setOpen((current) => (current.length > 0 || groups.length === 0 ? current : [groups[0].key]))
-  }, [groups])
+    setOpen((current) => {
+      if (current.length > 0 || groups.length === 0) return current
+      const preferred = defaultOpen && groups.some((g) => g.key === defaultOpen) ? defaultOpen : groups[0].key
+      return [preferred]
+    })
+  }, [groups, defaultOpen])
 
   // A level selected in the diagram: open its panel and bring it into view.
   const groupRefs = useRef(new Map<string, HTMLDivElement>())
@@ -224,7 +233,7 @@ export function LevelControls({ scheme, onChange, onReset, disabled, selectedLev
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
           <h2 className="text-base font-semibold">{t.interactiveLevels}</h2>
           <Badge variant="secondary" className="text-xs">
             {t.nFree(total)}
@@ -243,10 +252,12 @@ export function LevelControls({ scheme, onChange, onReset, disabled, selectedLev
           >
             {open.length === groups.length ? t.collapseAll : t.expandAll}
           </Button>
-          <Button variant="outline" size="sm" onClick={onReset} disabled={disabled || !scheme.modified}>
-            <RotateCcw className="mr-2 h-3.5 w-3.5" />
-            {t.reset}
-          </Button>
+          {onReset && (
+            <Button variant="outline" size="sm" onClick={onReset} disabled={disabled || !scheme.modified}>
+              <RotateCcw className="mr-2 h-3.5 w-3.5" />
+              {t.reset}
+            </Button>
+          )}
         </div>
       </div>
 
@@ -273,7 +284,7 @@ export function LevelControls({ scheme, onChange, onReset, disabled, selectedLev
                 onClick={() => toggle(group.key)}
                 aria-expanded={expanded}
                 aria-label={t.levelGroupAria(jpiPlain(group.jpi), energyText)}
-                className="flex min-h-11 w-full items-center gap-3 px-3 py-2 text-left text-sm hover:bg-muted/50"
+                className="flex min-h-11 w-full flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 text-left text-sm hover:bg-muted/50"
               >
                 {expanded ? (
                   <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
@@ -335,8 +346,8 @@ function ParameterControl({
   onSlide: (value: number) => void
   onCommit: (value: number) => void
 }) {
-  const t = useDict().workspace
-  const l = useDict().levels
+  const t = useEvalDict().workspace
+  const l = useEvalDict().levels
   const lang = useLang()
   const num = (s: string) => decimal(s, lang)
 
@@ -346,9 +357,10 @@ function ParameterControl({
   const negative = value < 0 || (value === 0 && control.initial < 0)
   const [lo, hi] = isEnergy ? energyBounds(control) : logBounds(control, value)
 
-  // The field shows the value in the display unit; while it has focus it
-  // holds what is being typed.
+  // The field shows the value in the display unit to four significant
+  // figures; on focus it holds the exact value, and then what is typed.
   const shown = exact(value / scale.factor)
+  const rounded = isEnergy ? formatLevelEnergy(value) : value === 0 ? "0" : significant(value / scale.factor, 4).replace("-", "−")
   const [text, setText] = useState<string | null>(null)
   const [invalid, setInvalid] = useState(false)
   const commitText = () => {
@@ -426,14 +438,15 @@ function ParameterControl({
             </Badge>
           )}
         </span>
-        <span className="ml-auto flex shrink-0 items-center gap-1.5">
+        <span className="ml-auto flex min-w-0 max-w-full items-center gap-1.5">
           <input
             id={inputId}
             type="text"
             inputMode="decimal"
             spellCheck={false}
             autoComplete="off"
-            value={text ?? num(shown)}
+            value={text ?? num(rounded)}
+            title={invalid ? l.notANumber : num(shown)}
             onFocus={(e) => {
               setText(num(shown))
               e.currentTarget.select()
@@ -456,8 +469,7 @@ function ParameterControl({
             }}
             aria-label={l.valueInput(`${groupLabel}: ${control.name}`, unitText(scale.unit))}
             aria-invalid={invalid || undefined}
-            title={invalid ? l.notANumber : undefined}
-            className={`h-8 w-[6.5rem] rounded-md border bg-background px-2 text-right text-sm tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${invalid ? "border-destructive" : "border-input-strong"}`}
+            className={`h-8 w-[6.5rem] min-w-0 max-w-full rounded-md border bg-background px-2 text-right text-sm tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${invalid ? "border-destructive" : "border-input-strong"}`}
           />
           <span className="min-w-[2.5rem] text-xs text-muted-foreground">
             <UnitText unit={scale.unit} />

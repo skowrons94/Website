@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { ArrowLeft, ExternalLink } from "lucide-react"
 
-import { SiteUrl } from "@/components/atlas/site-url"
+import { EvaluationSiteUrl as SiteUrl } from "@/components/evaluation-site-url"
 import { Sci } from "@/components/sci"
 import type { EvaluationMeta } from "@/lib/evaluation-meta"
 import { dict, localePath, type Lang } from "@/lib/i18n"
@@ -132,7 +132,7 @@ export function EvaluationHeader({
                   <SiteUrl path={`/evaluations/${meta.id}`} lang={lang} />.
                 </li>
               </ol>
-              <p className="text-xs">{t.citeWhat}</p>
+              <p className="text-xs">{paperRef || meta.citation ? t.citeWhat : t.citeWhatNoPaper}</p>
               {licence && (
                 <p className="text-xs">
                   {t.licence(licence.name)}{" "}
@@ -160,20 +160,20 @@ export function EvaluationHeader({
                 {doiUrl && (
                   <a
                     href={doiUrl}
-                    className="inline-flex items-center gap-1 break-all text-link underline-offset-4 hover:underline"
+                    className="break-all text-link underline-offset-4 hover:underline"
                   >
                     doi:{meta.doi}
-                    <ExternalLink className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                    <ExternalLink className="ml-1 inline h-3.5 w-3.5 align-[-0.15em]" aria-hidden />
                   </a>
                 )}
               </>
             ) : doiUrl ? (
               <a
                 href={doiUrl}
-                className="inline-flex items-center gap-1 break-all text-link underline-offset-4 hover:underline"
+                className="break-all text-link underline-offset-4 hover:underline"
               >
                 doi:{meta.doi}
-                <ExternalLink className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                <ExternalLink className="ml-1 inline h-3.5 w-3.5 align-[-0.15em]" aria-hidden />
               </a>
             ) : meta.status === "unpublished" ? (
               t.unpublished
@@ -241,36 +241,48 @@ export function EvaluationHeader({
         </div>
       )}
 
-      {(meta.paper || doiUrl) && (
-        <p className="mt-4 max-w-3xl text-pretty text-sm leading-relaxed text-muted-foreground">
-          {meta.paper ? (
+      <div className="mt-4 max-w-3xl text-sm max-lg:hidden">
+        <PaperLine meta={meta} lang={lang} />
+      </div>
+    </header>
+  )
+}
+
+/**
+ * The paper, the analysis and the way to the details, in one line: under the
+ * title from lg, inside "What am I looking at?" below it.
+ */
+export function PaperLine({ meta, lang }: { meta: EvaluationMeta; lang: Lang }) {
+  const t = dict(lang).evaluations
+  const doiUrl = meta.doi ? `https://doi.org/${meta.doi}` : null
+  return (
+    <p className="text-pretty leading-relaxed text-muted-foreground [overflow-wrap:anywhere]">
+      {meta.paper ? (
+        <>
+          {meta.paper.authors}
+          {meta.paper.journal && `, ${meta.paper.journal}`}
+          {meta.paper.year && ` (${meta.paper.year})`}
+          {doiUrl && (
             <>
-              {meta.paper.authors}
-              {meta.paper.journal && `, ${meta.paper.journal}`}
-              {meta.paper.year && ` (${meta.paper.year})`}
-              {doiUrl && (
-                <>
-                  {" · "}
-                  <a href={doiUrl} className="break-words text-link underline-offset-4 hover:underline">
-                    doi:{meta.doi}
-                  </a>
-                </>
-              )}
-            </>
-          ) : (
-            doiUrl && (
+              {" · "}
               <a href={doiUrl} className="break-words text-link underline-offset-4 hover:underline">
                 doi:{meta.doi}
               </a>
-            )
+            </>
           )}
-          {meta.analysis && <> · {t.analysis}: {meta.analysis}</>}
-          {" · "}
-          <a href="#about" className="text-link underline-offset-4 hover:underline" title={t.aboutEvaluationHint}>
-            {t.aboutEvaluation}
-          </a>
-        </p>
+        </>
+      ) : doiUrl ? (
+        <a href={doiUrl} className="break-words text-link underline-offset-4 hover:underline">
+          doi:{meta.doi}
+        </a>
+      ) : (
+        t.unpublished
       )}
-    </header>
+      {meta.analysis && <> · {t.analysis}: {meta.analysis}</>}
+      {" · "}
+      <a href="#about" className="text-link underline-offset-4 hover:underline" title={t.aboutEvaluationHint}>
+        {t.aboutEvaluation}
+      </a>
+    </p>
   )
 }

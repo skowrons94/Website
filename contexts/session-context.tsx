@@ -27,7 +27,7 @@ import {
   type FineCurve,
   type Scheme,
 } from "@/lib/api"
-import { useDict } from "@/components/lang-provider"
+import { useEvalDict } from "@/components/eval-dict"
 
 /** One edit, as it can be undone and redone: the values before and after. */
 interface Edit {
@@ -115,7 +115,7 @@ function totalChi2(data: DataSegment[] | null): number | null {
 const byIndex = (list: FineCurve[]) => Object.fromEntries(list.map((c) => [c.index, c]))
 
 export function SessionProvider({ children }: { children: ReactNode }) {
-  const unexpected = useDict().workspace.unexpected
+  const unexpected = useEvalDict().workspace.unexpected
   const [sessionId, setSessionId] = useState<string | null>(null)
   const [evaluation, setEvaluation] = useState<Evaluation | null>(null)
   const [scheme, setScheme] = useState<Scheme | null>(null)

@@ -13,8 +13,9 @@ import { Sci } from "@/components/sci"
 import type { DataSegment } from "@/lib/api"
 import { angleText, datasetName } from "@/lib/eval-plot"
 import { formatEnergy, observableLabel } from "@/lib/viz"
-import { useDict, useLang } from "@/components/lang-provider"
-import { decimal } from "@/lib/i18n"
+import { useLang } from "@/components/lang-context"
+import { useEvalDict } from "@/components/eval-dict"
+import { decimal } from "@/lib/i18n-eval"
 
 /**
  * Every data segment with its provenance and fit quality.
@@ -34,7 +35,7 @@ interface Props {
 
 export function DataTable({ data, selected, onToggle }: Props) {
   const lang = useLang()
-  const t = useDict().workspace
+  const t = useEvalDict().workspace
   const [filter, setFilter] = useState("")
   const [sortKey, setSortKey] = useState<SortKey>("key")
   const [ascending, setAscending] = useState(true)
@@ -204,8 +205,8 @@ export function DataTable({ data, selected, onToggle }: Props) {
                     </td>
                     <td className="px-2 py-2">
                       <span className="font-medium">{datasetName(segment)}</span>
-                      {angleText(segment) && (
-                        <span className="text-muted-foreground"> · {angleText(segment)}</span>
+                      {angleText(segment, lang) && (
+                        <span className="text-muted-foreground"> · {angleText(segment, lang)}</span>
                       )}
                       {segment.source?.ref && (
                         <span className="block text-[11px] text-muted-foreground">
@@ -250,7 +251,7 @@ export function DataTable({ data, selected, onToggle }: Props) {
                     <td className="whitespace-nowrap px-2 py-2 text-right tabular-nums">
                       {/* The angles the points were measured at (c.m.), not the
                           segment's filter limits, which may read 0–180. */}
-                      {angleText(segment).replace("°", "") || "—"}
+                      {angleText(segment, lang).replace("°", "") || "—"}
                     </td>
                     <td className="px-2 py-2 text-right tabular-nums">
                       {segment.n_points}

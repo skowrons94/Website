@@ -54,9 +54,72 @@ export function levelStatus(level: SchemeLevel): LevelStatus {
   return level.channels.some((c) => !c.fixed) ? "partial" : "fixed"
 }
 
-/** True when any channel of the level is parametrised by an ANC (below its threshold). */
-export function hasAnc(level: SchemeLevel): boolean {
-  return level.channels.some((c) => c.quantity === "anc")
+/** The level's ANC channels that carry a value (a forbidden channel's fixed zero is not one). */
+export function ancChannels(level: SchemeLevel): SchemeLevel["channels"] {
+  return level.channels.filter((c) => c.quantity === "anc" && c.width !== 0)
+}
+
+/**
+ * Drawn as a bound state fitted by its ANC: a non-zero ANC, and the level
+ * below the entrance threshold (`entrance`, MeV). A resonance with an ANC in
+ * a closed channel (²⁴Mg's forbidden ¹²C + ¹²C channels, ⁷Be's ⁶Li + p₁) is
+ * not marked; its details still list the ANC.
+ */
+export function hasAnc(level: SchemeLevel, entrance?: number | null): boolean {
+  if (ancChannels(level).length === 0) return false
+  return entrance == null || level.energy < entrance
+}
+
+/* -- effective poles -------------------------------------------------------- */
+
+/**
+ * Why a level may be an effective (background) pole rather than a state:
+ * read off the model, never a change to it.
+ *
+ * - `above`: far above the fitted data (beyond their top by more than 2 MeV
+ *   and a quarter of their span); it acts on the fit from outside.
+ * - `overlap`: another level of the same J^pi within 0.25 MeV and within
+ *   their widths: two poles standing in for one broad state and its background.
+ * - `photon`: above the entrance threshold, but its particle widths are under
+ *   1 % of the total; the bar is the (often fixed) γ width.
+ */
+export type PoleNote =
+  | { kind: "above"; dataMax: number }
+  | { kind: "overlap"; jpi: string; energy: number }
+  | { kind: "photon"; particle: number; photon: number }
+
+export function poleNotes(
+  levels: SchemeLevel[],
+  pairs: SchemePair[] | undefined,
+  dataRange: { min: number; max: number } | null | undefined,
+  entrance: number | null | undefined,
+  skip: Set<string> = new Set(),
+): Map<string, PoleNote[]> {
+  const out = new Map<string, PoleNote[]>()
+  const add = (key: string, note: PoleNote) => out.set(key, [...(out.get(key) ?? []), note])
+  const shown = levels.filter((l) => !skip.has(levelKey(l)))
+  if (dataRange) {
+    const limit = dataRange.max + Math.max(2, 0.25 * (dataRange.max - dataRange.min))
+    for (const l of shown) if (l.energy > limit) add(levelKey(l), { kind: "above", dataMax: dataRange.max })
+  }
+  for (const a of shown) {
+    for (const b of shown) {
+      if (a === b || a.jpi !== b.jpi) continue
+      const d = Math.abs(a.energy - b.energy)
+      const g = Math.max(levelWidth(a, pairs).total, levelWidth(b, pairs).total)
+      if (d < 0.25 && d < g / 2) add(levelKey(a), { kind: "overlap", jpi: b.jpi, energy: b.energy })
+    }
+  }
+  if (entrance != null) {
+    for (const l of shown) {
+      if (l.energy <= entrance) continue
+      const w = levelWidth(l, pairs)
+      const particle = w.parts.filter((p) => !p.photon).reduce((a, p) => a + p.gamma, 0)
+      const photon = w.total - particle
+      if (w.total > 0 && photon > 0 && particle < 0.01 * w.total) add(levelKey(l), { kind: "photon", particle, photon })
+    }
+  }
+  return out
 }
 
 /* -- nuclide names ---------------------------------------------------------- */
@@ -372,7 +435,10 @@ export function buildAxis({ core, extra, top, bottom, zoom }: AxisInput): Energy
   if (zoom) {
     clusters = [{ lo: zoom[0], hi: zoom[1], auxiliary: false }]
   } else {
-    clusters = cluster(core.length ? core : [0, 1], 2, 0.35)
+    // A gap of 1 MeV or more that is over a third of what remains is cut:
+    // the empty stretch between a lone ground state and the resonances (¹³N,
+    // ¹⁷F) would otherwise take a third of the height.
+    clusters = cluster(core.length ? core : [0, 1], 1, 0.35)
     // Thresholds next to a cluster join it; the others are gathered into
     // compact segments of their own between the clusters they fall between.
     const loose: number[] = []

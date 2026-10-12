@@ -193,6 +193,8 @@ export interface ExtrapSegment {
   exit: string
   entrance_key: number
   exit_key: number
+  /** A(a,b)B, e.g. "³He(α,γ)⁷Be" (absent from an older API). */
+  reaction?: string | null
   observable: string
   /** Frame of energy_min/max/step: "cm" from this API on (older ones gave lab). */
   energy_frame?: "cm" | "lab"

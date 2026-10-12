@@ -466,8 +466,11 @@ def extrapolations_to_dict(session, labels, energies, angles, mu,
     mu = _aligned(tests, mu)
     mu_sfactor = _aligned(tests, mu_sfactor)
     pairs = {getattr(p, "key", p.number): p for p in session.pairs}
+    by_key = {label.number: label for label in labels}
 
     for i, segment in enumerate(tests):
+        entrance = by_key.get(segment.entrance_key)
+        exit_ = by_key.get(segment.exit_key)
         # The file gives the grid in the laboratory frame of the entrance
         # pair; every energy the page shows is centre-of-mass, so the limits
         # are converted (AZURE2's own calculated energies already are).
@@ -481,6 +484,12 @@ def extrapolations_to_dict(session, labels, energies, angles, mu,
             "exit": _exit_label(segment.exit_key, labels),
             "entrance_key": segment.entrance_key,
             "exit_key": segment.exit_key,
+            # A(a,b)B, as the data segments carry it: what the page names
+            # the curve by.
+            "reaction": (reaction_plain(entrance, exit_,
+                                        total=segment.exit_key == -1)
+                         if entrance is not None and not entrance.is_photon
+                         else None),
             "observable": segment.observable,
             "energy_frame": "cm",
             "energy_min": segment.energy_min * lab_to_cm,
