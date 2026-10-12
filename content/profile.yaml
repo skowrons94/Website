@@ -17,6 +17,36 @@ orcid: 0000-0001-7292-6353
 tagline: Nuclear astrophysics, measured a kilometre underground.
 tagline_it: Astrofisica nucleare, misurata a un chilometro sotto terra.
 
+# The landing page's first paragraph: plain words, for any reader. A link is
+# written [text](/path); /path is an English path and is localized on /it.
+lead: >-
+  Stars shine because atomic nuclei fuse in their cores. I measure those nuclear
+  reactions in the laboratory, at the low energies at which they happen inside
+  stars. There they are so rare that the experiments must be shielded from
+  cosmic rays, under 1400 metres of rock at
+  [LUNA](/atlas/methods#direct-underground), the underground accelerator
+  beneath the Gran Sasso mountain in Italy. I also develop the software that
+  turns the measurements into the reaction rates astrophysicists use.
+lead_it: >-
+  Le stelle brillano perché nel loro cuore i nuclei atomici si fondono tra loro.
+  Io misuro queste reazioni nucleari in laboratorio, alle basse energie a cui
+  avvengono dentro le stelle. A quelle energie sono così rare che gli
+  esperimenti vanno protetti dai raggi cosmici, sotto 1400 metri di roccia: a
+  [LUNA](/atlas/methods#direct-underground), l'acceleratore sotterraneo sotto il
+  Gran Sasso. Sviluppo anche il software che trasforma le misure nei tassi di
+  reazione usati dagli astrofisici.
+
+# "Selected work" on the landing page, in this order. Each entry points at
+# something already on the site, so nothing is restated here: `publication` is
+# a DOI from publications.yaml, `research` an id from research.yaml. An entry
+# that matches nothing is skipped.
+selected:
+  - publication: 10.1103/PhysRevLett.131.162701
+  - publication: 10.1103/PhysRevC.111.035802
+  - research: azure2
+  - research: agata
+
+# The longer introduction, further down the landing page, for specialists.
 intro:
   - >-
     I measure the nuclear reactions that power stars, at the energies at which
@@ -57,6 +87,9 @@ intro_it:
 links:
   - label: ORCID
     href: https://orcid.org/0000-0001-7292-6353
+  # The INSPIRE author profile: fill in the full address of the profile page
+  # (https://inspirehep.net/authors/<number>). A link whose address is empty or
+  # ends at /authors/ is not shown.
   - label: INSPIRE
     href: https://inspirehep.net/authors/
   - label: GitHub

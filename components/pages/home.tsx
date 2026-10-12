@@ -1,24 +1,107 @@
 import Link from "next/link"
+import { Fragment } from "react"
 import { ArrowRight, FileText } from "lucide-react"
 
-import { getAllNotes, getProfile, getResearch } from "@/lib/content"
+import { HomeNetwork } from "@/components/home-network"
+import { getAllNotes, getProfile, getPublications, getResearch } from "@/lib/content"
 import { Sci } from "@/components/sci"
 import { dict, localePath, type Lang } from "@/lib/i18n"
+
+/**
+ * A paragraph with `[text](/path)` links, the only markup the profile's lead
+ * allows. Internal paths are localized; anything else opens as a plain link.
+ */
+function Linked({ text, lang }: { text: string; lang: Lang }) {
+  const parts: React.ReactNode[] = []
+  let last = 0
+  for (const m of text.matchAll(/\[([^\]]+)\]\(([^)\s]+)\)/g)) {
+    const start = m.index ?? 0
+    if (start > last) parts.push(<Sci key={`t${last}`}>{text.slice(last, start)}</Sci>)
+    const [, label, href] = m
+    parts.push(
+      href.startsWith("/") ? (
+        <Link key={`l${start}`} href={localePath(lang, href)} className="text-link underline underline-offset-4 decoration-link/40 hover:decoration-link">
+          {label}
+        </Link>
+      ) : (
+        <a key={`l${start}`} href={href} className="text-link underline underline-offset-4 decoration-link/40 hover:decoration-link">
+          {label}
+        </a>
+      ),
+    )
+    last = start + m[0].length
+  }
+  if (last < text.length) parts.push(<Sci key={`t${last}`}>{text.slice(last)}</Sci>)
+  return <Fragment>{parts}</Fragment>
+}
+
+type Selected = {
+  key: string
+  eyebrow: string
+  title: string
+  detail: string
+  href: string
+  external: boolean
+  lang?: string
+}
+
+/**
+ * The profile's `selected` list, resolved against the publications and the
+ * research threads. Nothing is restated in profile.yaml, so the strip cannot
+ * say anything the rest of the site does not.
+ */
+function selectedWork(lang: Lang): Selected[] {
+  const { selected = [] } = getProfile(lang)
+  const publications = getPublications(lang)
+  const research = getResearch(lang)
+  const t = dict(lang).home
+  const out: Selected[] = []
+  for (const item of selected) {
+    if ("publication" in item) {
+      const p = publications.find((x) => x.doi?.toLowerCase() === item.publication.toLowerCase())
+      if (!p || !p.journal) continue
+      const first = /^J\. Skowronski\b/.test(p.authors)
+      out.push({
+        key: item.publication,
+        eyebrow: `${p.journal} (${p.year})`,
+        title: p.title,
+        detail: first ? t.firstAuthor : p.authors,
+        href: `https://doi.org/${p.doi}`,
+        external: true,
+        // Titles stay as published, in English.
+        lang: lang === "en" ? undefined : "en",
+      })
+    } else if ("research" in item) {
+      const r = research.find((x) => x.id === item.research)
+      if (!r) continue
+      out.push({
+        key: r.id,
+        eyebrow: r.period,
+        title: r.title,
+        detail: r.role,
+        href: localePath(lang, `/research#${r.id}`),
+        external: false,
+      })
+    }
+  }
+  return out
+}
 
 export function HomePage({ lang }: { lang: Lang }) {
   const profile = getProfile(lang)
   const research = getResearch(lang)
   const notes = getAllNotes().slice(0, 3)
+  const selected = selectedWork(lang)
   const t = dict(lang).home
   const to = (path: string) => localePath(lang, path)
 
   return (
     <div className="mx-auto max-w-6xl px-5 sm:px-8 xl:max-w-7xl">
       {/* -- hero ---------------------------------------------------------- */}
-      {/* Headline and prose sit side by side once there is room for both, so a
-          wide window is filled rather than left as margin; below lg they stack
-          back into a single column in the same reading order. */}
-      <section className="py-16 sm:py-24 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:items-start lg:gap-16 lg:py-28 xl:gap-24">
+      {/* One plain paragraph and the two ways in, for any reader; the picture
+          beside it from lg (below it on a phone, so the buttons stay near the
+          top of the first screen). The specialist detail is further down. */}
+      <section className="py-14 sm:py-20 lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-center lg:gap-16 lg:py-24 xl:gap-24">
         <div>
           <p className="mb-5 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
             {profile.role}
@@ -26,43 +109,100 @@ export function HomePage({ lang }: { lang: Lang }) {
           <h1 className="text-balance font-serif text-4xl font-semibold leading-[1.12] tracking-tight sm:text-5xl xl:text-[3.4rem]">
             <Sci>{profile.tagline}</Sci>
           </h1>
+          {profile.lead && (
+            <p className="mt-7 max-w-2xl text-pretty text-[1.0625rem] leading-relaxed text-muted-foreground sm:text-lg sm:leading-relaxed">
+              <Linked text={profile.lead} lang={lang} />
+            </p>
+          )}
+
+          <div className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-3 text-sm">
+            <Link
+              href={to("/atlas")}
+              className="group inline-flex min-h-11 items-center gap-2 rounded-md bg-primary px-4 py-2.5 font-medium text-primary-foreground transition-opacity hover:opacity-90"
+            >
+              {t.exploreAtlas}
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+            <Link
+              href={to("/research")}
+              className="inline-flex min-h-11 items-center rounded-md border border-input-strong px-4 py-2.5 font-medium transition-colors hover:bg-accent"
+            >
+              {t.researchButton}
+            </Link>
+          </div>
         </div>
 
-        <div className="mt-8 space-y-5 text-pretty text-[1.0625rem] leading-relaxed text-muted-foreground lg:mt-1.5">
+        <div className="mt-12 lg:mt-0">
+          <HomeNetwork lang={lang} />
+        </div>
+      </section>
+
+      {/* -- selected work ------------------------------------------------- */}
+      {selected.length > 0 && (
+        <section className="border-t border-border/70 py-14" aria-labelledby="selected-heading">
+          <div className="mb-8 flex items-baseline justify-between gap-4">
+            <h2 id="selected-heading" className="font-serif text-2xl font-semibold tracking-tight">
+              {t.selected}
+            </h2>
+            <Link
+              href={to("/publications")}
+              className="inline-flex min-h-10 items-center text-sm text-link underline-offset-4 hover:underline"
+            >
+              {t.publications}
+            </Link>
+          </div>
+          <ul className="grid gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+            {selected.map((item) => (
+              <li key={item.key} className="border-t-2 border-foreground/15 pt-4">
+                <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
+                  <Sci>{item.eyebrow}</Sci>
+                </p>
+                <h3
+                  lang={item.lang}
+                  className="mt-2 text-pretty font-serif text-[1.05rem] font-semibold leading-snug tracking-tight"
+                >
+                  {item.external ? (
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline-offset-4 hover:text-link hover:underline"
+                    >
+                      <Sci>{item.title}</Sci>
+                    </a>
+                  ) : (
+                    <Link href={item.href} className="underline-offset-4 hover:text-link hover:underline">
+                      <Sci>{item.title}</Sci>
+                    </Link>
+                  )}
+                </h3>
+                <p className="mt-1.5 text-sm text-muted-foreground">
+                  <Sci>{item.detail}</Sci>
+                </p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* -- the longer version, for specialists -------------------------- */}
+      <section className="border-t border-border/70 py-14 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-16 xl:gap-24">
+        <h2 className="font-serif text-2xl font-semibold tracking-tight">{t.about}</h2>
+        <div className="mt-6 max-w-3xl space-y-5 text-pretty leading-relaxed text-muted-foreground lg:mt-0">
           {profile.intro.map((paragraph, i) => (
             <p key={i}>
               <Sci>{paragraph}</Sci>
             </p>
           ))}
-
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-3 pt-5 text-sm">
-            <Link
-              href={to("/evaluations")}
-              className="group inline-flex min-h-10 items-center gap-2 rounded-md bg-primary px-4 py-2.5 font-medium text-primary-foreground transition-opacity hover:opacity-90"
-            >
-              {t.runEvaluation}
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-            </Link>
-            <Link
-              href={to("/atlas")}
-              className="inline-flex min-h-10 items-center text-link underline-offset-4 hover:underline"
-            >
-              {t.exploreAtlas}
-            </Link>
-            <Link
-              href={to("/publications")}
-              className="inline-flex min-h-10 items-center text-link underline-offset-4 hover:underline"
-            >
-              {t.publications}
-            </Link>
-            <Link
-              href={to("/cv")}
-              className="inline-flex min-h-10 items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground"
-            >
+          <p className="flex flex-wrap gap-x-6 gap-y-1 pt-1 text-sm">
+            <Link href={to("/cv")} className="inline-flex min-h-10 items-center gap-1.5 text-link underline-offset-4 hover:underline">
               <FileText className="h-3.5 w-3.5" />
               {t.cv}
             </Link>
-          </div>
+            <Link href={to("/software")} className="inline-flex min-h-10 items-center text-link underline-offset-4 hover:underline">
+              {t.software}
+            </Link>
+          </p>
         </div>
       </section>
 
