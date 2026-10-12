@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
+import { startTransition, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { ArrowRight, Maximize2, Minimize2, X } from "lucide-react"
 
 import { LunaBadge, StatusBadge, StatusLegend } from "@/components/atlas/status-badge"
@@ -181,7 +181,7 @@ function LineKey({ slot, muted = false }: { slot: number; muted?: boolean }) {
 
 /* -- the component --------------------------------------------------------- */
 
-export function NetworkMap({ data }: { data: MapData }) {
+export function NetworkMap({ data, below }: { data: MapData; below?: React.ReactNode }) {
   const { families, networks, reactions, cells, maxZ, maxN } = data
   const lang = useLang()
   const t = useDict().atlas
@@ -195,6 +195,7 @@ export function NetworkMap({ data }: { data: MapData }) {
   const [cellCode, setCellCode] = useState<string | null>(null)
   const [tip, setTip] = useState<{ id: string; x: number; y: number } | null>(null)
 
+  const rootRef = useRef<HTMLDivElement>(null)
   const frameRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const returnFocusRef = useRef<string | null>(null)
@@ -234,14 +235,30 @@ export function NetworkMap({ data }: { data: MapData }) {
     return () => query.removeEventListener("change", update)
   }, [])
 
+  // A finger needs a wider invisible hit path along each arrow than a mouse.
+  const [coarse, setCoarse] = useState(false)
+  useEffect(() => {
+    const query = window.matchMedia("(pointer: coarse)")
+    const update = () => setCoarse(query.matches)
+    update()
+    query.addEventListener("change", update)
+    return () => query.removeEventListener("change", update)
+  }, [])
+
   /* -- deep links: /atlas#cno -------------------------------------------- */
 
+  // A link to a process (/atlas#cno, the home page's "See it in the atlas")
+  // selects it and brings the map into view: no element carries that id, so
+  // the browser would not scroll by itself.
   useEffect(() => {
     const read = () => {
       const hash = window.location.hash.slice(1)
       if (hash && families.some((f) => f.id === hash)) {
         animateRef.current = true
         setFamilyId(hash)
+        requestAnimationFrame(() =>
+          rootRef.current?.scrollIntoView({ block: "start", behavior: prefersReducedMotion() ? "auto" : "smooth" }),
+        )
       }
     }
     read()
@@ -251,7 +268,8 @@ export function NetworkMap({ data }: { data: MapData }) {
 
   const chooseFamily = useCallback((id: string) => {
     animateRef.current = true
-    setFamilyId(id)
+    // The pressed button repaints at once; the map follows as a transition.
+    startTransition(() => setFamilyId(id))
     setTip(null)
     try {
       window.history.replaceState(null, "", `#${id}`)
@@ -363,12 +381,16 @@ export function NetworkMap({ data }: { data: MapData }) {
 
   // px per cell unit; guarded for the first render, before the frame is measured
   const scale = size.w > 0 && view.w > 0 ? size.w / view.w : 1
-  const px = (n: number) => n / scale
+  // The scale the drawing is built for: that of the view being moved to, so
+  // the arrows, cells and labels are computed once per change, not once per
+  // frame of the 380 ms tween (only the viewBox and the axes follow the frame).
+  const drawScale = size.w > 0 && target.w > 0 ? size.w / target.w : 1
+  const px = useCallback((n: number) => n / drawScale, [drawScale])
   // Every cell is labelled when the cells are large enough; on a phone, with a
   // wide process on show, only the nuclides of the process are.
-  const showLabels = scale * CELL >= 17
-  const labelAll = scale * CELL >= 25
-  const labelSize = Math.min(Math.max(scale * 0.27, labelAll ? 9.5 : 8.5), 13.5)
+  const showLabels = drawScale * CELL >= 17
+  const labelAll = drawScale * CELL >= 25
+  const labelSize = Math.min(Math.max(drawScale * 0.27, labelAll ? 9.5 : 8.5), 13.5)
 
   /* -- arrows ---------------------------------------------------------------- */
 
@@ -391,14 +413,14 @@ export function NetworkMap({ data }: { data: MapData }) {
       const slot = slotOf.get(r.id) ?? -1
       const weight = slot >= 0 ? WEIGHT[r.importance] : 1.1
       const f = fan.get(r.id) ?? { index: 0, of: 1 }
-      return { r, slot, ...arrowPath(r, f.index, f.of, maxZ, 5.5 + weight * 1.4, scale) }
+      return { r, slot, ...arrowPath(r, f.index, f.of, maxZ, 5.5 + weight * 1.4, drawScale) }
     })
     // Grey underneath, then colour by importance, so key reactions sit on top.
     const rank = { minor: 0, major: 1, key: 2 }
     return list.sort((a, b) =>
       a.slot < 0 !== b.slot < 0 ? (a.slot < 0 ? -1 : 1) : rank[a.r.importance] - rank[b.r.importance],
     )
-  }, [reactions, slotOf, fan, maxZ, scale])
+  }, [reactions, slotOf, fan, maxZ, drawScale])
 
   const activeCodes = useMemo(() => {
     const set = new Set<string>()
@@ -493,19 +515,27 @@ export function NetworkMap({ data }: { data: MapData }) {
     if (!rect) return
     setTip({ id, x: clientX - rect.left, y: clientY - rect.top })
   }
-  const showTipFor = (a: Arrow) => {
-    setTip({ id: a.r.id, x: (a.mid.x - view.x) * scale, y: (a.mid.y - view.y) * scale })
-  }
+  const showTipFor = useCallback(
+    (a: Arrow) => {
+      const v = viewRef.current
+      const k = size.w / v.w
+      setTip({ id: a.r.id, x: (a.mid.x - v.x) * k, y: (a.mid.y - v.y) * k })
+    },
+    [size.w],
+  )
+  const showTipAtRef = useRef(showTipAt)
+  showTipAtRef.current = showTipAt
 
   const tipReaction = tip ? byId.get(tip.id) : null
 
   /* -- one arrow ------------------------------------------------------------- */
 
-  const renderArrow = (a: (typeof arrows)[number]) => {
+  const tipId = tip?.id ?? null
+  const renderArrow = useCallback((a: (typeof arrows)[number]) => {
     const active = a.slot >= 0
     const style = active ? slotStyle(a.slot) : { color: "var(--viz-axis)", dashed: false }
     const isSelected = a.r.id === selectedId
-    const isHover = tip?.id === a.r.id
+    const isHover = tipId === a.r.id
     const weight = (active ? WEIGHT[a.r.importance] : 1.1) + (isSelected || isHover ? 1 : 0)
     return (
       <g
@@ -538,7 +568,7 @@ export function NetworkMap({ data }: { data: MapData }) {
           focusArrow(chain[next])
         }}
         onPointerMove={(e) => {
-          if (e.pointerType === "mouse") showTipAt(a.r.id, e.clientX, e.clientY)
+          if (e.pointerType === "mouse") showTipAtRef.current(a.r.id, e.clientX, e.clientY)
         }}
         onPointerLeave={() => setTip((t) => (t?.id === a.r.id ? null : t))}
         onFocus={() => {
@@ -548,7 +578,7 @@ export function NetworkMap({ data }: { data: MapData }) {
         onBlur={() => setTip((t) => (t?.id === a.r.id ? null : t))}
       >
         {/* generous hit area, and a surface halo so crossing arrows stay legible */}
-        <path d={a.d} fill="none" stroke="transparent" strokeWidth={px(18)} />
+        <path d={a.d} fill="none" stroke="transparent" strokeWidth={px(coarse ? 30 : 18)} />
         {active && (
           <path
             d={a.d}
@@ -576,7 +606,88 @@ export function NetworkMap({ data }: { data: MapData }) {
         <path d={a.head} fill={style.color} stroke={style.color} strokeWidth={px(0.75)} strokeLinejoin="round" />
       </g>
     )
-  }
+  }, [selectedId, tipId, tabStop, chain, select, focusArrow, showTipFor, px, coarse])
+
+  /* -- the drawing, in layers memoised apart from the viewBox ----------------- */
+
+  const cellLayer = useMemo(
+    () => (
+      <g aria-hidden>
+        {cells.map((c) => {
+          const active = activeCodes.has(c.code)
+          const clickable = involved.has(c.code)
+          return (
+            <rect
+              key={c.code}
+              className={clickable ? "cursor-pointer" : undefined}
+              onClick={
+                clickable
+                  ? () => {
+                      returnFocusRef.current = null
+                      setSelectedId(null)
+                      setCellCode(c.code)
+                      setTip(null)
+                    }
+                  : undefined
+              }
+              x={c.N - CELL / 2}
+              y={maxZ - c.Z - CELL / 2}
+              width={CELL}
+              height={CELL}
+              rx={px(3)}
+              fill={c.stable ? (active ? "var(--atlas-cell-strong)" : "var(--atlas-cell)") : "var(--viz-surface)"}
+              // Dimmed by colour, not opacity: hundreds of translucent
+              // rects leave tiling artefacts in some rasterisers.
+              stroke={active ? "var(--viz-text-muted)" : whole ? "var(--viz-axis)" : "var(--atlas-cell-edge)"}
+              strokeWidth={px(active ? 1.25 : 0.85)}
+            />
+          )
+        })}
+      </g>
+    ),
+    [cells, activeCodes, involved, maxZ, px, whole],
+  )
+  const greyLayer = useMemo(() => <g>{arrows.filter((a) => a.slot < 0).map(renderArrow)}</g>, [arrows, renderArrow])
+  const colourLayer = useMemo(() => <g>{arrows.filter((a) => a.slot >= 0).map(renderArrow)}</g>, [arrows, renderArrow])
+  const labelLayer = useMemo(
+    () =>
+      showLabels ? (
+        <g aria-hidden>
+          {cells.map((c) => {
+            const x = c.N
+            const y = maxZ - c.Z
+            // Cells half under an axis band would show a clipped label.
+            if (x < target.x + AXIS_LEFT + 0.2 || y > target.y + target.h - AXIS_BOTTOM) return null
+            const active = activeCodes.has(c.code)
+            if (!labelAll && !active) return null
+            return (
+              <text
+                key={c.code}
+                x={x}
+                y={y}
+                textAnchor="middle"
+                dominantBaseline="central"
+                fontSize={px(labelSize)}
+                fill={active ? "var(--viz-text)" : "var(--viz-text-muted)"}
+                fontWeight={active ? 500 : 400}
+              >
+                {c.Z === 0 ? (
+                  "n"
+                ) : (
+                  <>
+                    <tspan fontSize={px(labelSize * 0.7)} dy={px(-labelSize * 0.3)}>
+                      {c.A}
+                    </tspan>
+                    <tspan dy={px(labelSize * 0.3)}>{c.symbol}</tspan>
+                  </>
+                )}
+              </text>
+            )
+          })}
+        </g>
+      ) : null,
+    [showLabels, cells, maxZ, target, activeCodes, labelAll, labelSize, px],
+  )
 
   /* -- render ---------------------------------------------------------------- */
 
@@ -587,7 +698,12 @@ export function NetworkMap({ data }: { data: MapData }) {
   const ELEMENT = new Map(cells.map((c) => [c.Z, c.symbol]))
 
   return (
-    <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start lg:gap-10 xl:grid-cols-[minmax(0,1fr)_21rem]">
+    <div
+      ref={rootRef}
+      id="map"
+      tabIndex={-1}
+      className="scroll-mt-20 outline-none lg:grid lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start lg:gap-10 xl:grid-cols-[minmax(0,1fr)_21rem]"
+    >
       <div className="min-w-0">
         {/* -- process picker ------------------------------------------------ */}
         <div className="relative -mx-5 sm:mx-0">
@@ -688,75 +804,10 @@ export function NetworkMap({ data }: { data: MapData }) {
             {/* cells, then grey arrows, then the cell labels, then colour: a
                 label is never crossed by another process's arrow, only by one
                 of the process on show */}
-            <g aria-hidden>
-              {cells.map((c) => {
-                const active = activeCodes.has(c.code)
-                const clickable = involved.has(c.code)
-                return (
-                  <rect
-                    key={c.code}
-                    className={clickable ? "cursor-pointer" : undefined}
-                    onClick={
-                      clickable
-                        ? () => {
-                            returnFocusRef.current = null
-                            setSelectedId(null)
-                            setCellCode(c.code)
-                            setTip(null)
-                          }
-                        : undefined
-                    }
-                    x={c.N - CELL / 2}
-                    y={maxZ - c.Z - CELL / 2}
-                    width={CELL}
-                    height={CELL}
-                    rx={px(3)}
-                    fill={c.stable ? (active ? "var(--atlas-cell-strong)" : "var(--atlas-cell)") : "var(--viz-surface)"}
-                    // Dimmed by colour, not opacity: hundreds of translucent
-                    // rects leave tiling artefacts in some rasterisers.
-                    stroke={active ? "var(--viz-text-muted)" : whole ? "var(--viz-axis)" : "var(--atlas-cell-edge)"}
-                    strokeWidth={px(active ? 1.25 : 0.85)}
-                  />
-                )
-              })}
-            </g>
-            <g>{arrows.filter((a) => a.slot < 0).map(renderArrow)}</g>
-            {showLabels && (
-              <g aria-hidden>
-                {cells.map((c) => {
-                  const x = c.N
-                  const y = maxZ - c.Z
-                  // Cells half under an axis band would show a clipped label.
-                  if (x < view.x + AXIS_LEFT + 0.2 || y > view.y + view.h - AXIS_BOTTOM) return null
-                  const active = activeCodes.has(c.code)
-                  if (!labelAll && !active) return null
-                  return (
-                    <text
-                      key={c.code}
-                      x={x}
-                      y={y}
-                      textAnchor="middle"
-                      dominantBaseline="central"
-                      fontSize={px(labelSize)}
-                      fill={active ? "var(--viz-text)" : "var(--viz-text-muted)"}
-                      fontWeight={active ? 500 : 400}
-                    >
-                      {c.Z === 0 ? (
-                        "n"
-                      ) : (
-                        <>
-                          <tspan fontSize={px(labelSize * 0.7)} dy={px(-labelSize * 0.3)}>
-                            {c.A}
-                          </tspan>
-                          <tspan dy={px(labelSize * 0.3)}>{c.symbol}</tspan>
-                        </>
-                      )}
-                    </text>
-                  )
-                })}
-              </g>
-            )}
-            <g>{arrows.filter((a) => a.slot >= 0).map(renderArrow)}</g>
+            {cellLayer}
+            {greyLayer}
+            {labelLayer}
+            {colourLayer}
 
             {/* axes, on opaque bands so cells scrolled under them do not show through */}
             <g aria-hidden>
@@ -879,6 +930,7 @@ export function NetworkMap({ data }: { data: MapData }) {
           <span className="hidden [@media(hover:none)]:inline">{t.mapHelpTouch}</span>
         </p>
         <StatusLegend lang={lang} className="mt-4 border-t border-border/70 pt-3" />
+        <div key="below">{below}</div>
       </div>
 
       {/* -- side panel; a drawer below lg ------------------------------------- */}

@@ -51,40 +51,27 @@ export function AtlasPage({ lang }: { lang: Lang }) {
     </Link>
   )
 
-  return (
-    <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 xl:max-w-7xl">
-      {/* -- title, and where a newcomer should start ------------------------- */}
-      <header className="border-b border-border/70 pb-8 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:items-end lg:gap-16">
-        <div>
-          <p className="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-            {t.name}
-          </p>
-          <h1 className="text-balance font-serif text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
-            {t.title}
-          </h1>
-          <p className="mt-4 max-w-2xl text-pretty text-[1.0625rem] leading-relaxed text-muted-foreground">
-            {t.description}
-          </p>
-          <nav className="mt-5 flex flex-wrap gap-x-6 gap-y-1 text-sm">
-            <Link href={to("/atlas/s-process")} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
-              {t.sProcessLink}
-            </Link>
-            <Link href={to("/atlas/methods")} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
-              {t.methodsLink}
-            </Link>
-            <Link href={to("/glossary")} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
-              {t.glossaryLink}
-            </Link>
-            <a href="#cite" className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
-              {t.citeTitle}
-            </a>
-          </nav>
-        </div>
-        {startHere("hidden lg:block")}
-      </header>
+  // The pages around the map: in the header from sm up, under the map on a
+  // phone, so the map starts within the first screen.
+  const links = (className: string) => (
+    <nav className={`flex-wrap gap-x-6 gap-y-1 text-sm ${className}`}>
+      <Link href={to("/atlas/s-process")} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
+        {t.sProcessLink}
+      </Link>
+      <Link href={to("/atlas/methods")} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
+        {t.methodsLink}
+      </Link>
+      <Link href={to("/glossary")} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
+        {t.glossaryLink}
+      </Link>
+      <a href="#cite" className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
+        {t.citeTitle}
+      </a>
+    </nav>
+  )
 
-      {/* -- how to read the map, folded ------------------------------------- */}
-      <details className="group mt-6 rounded-lg border border-border/80">
+  const howToRead = (className: string) => (
+      <details className={`group rounded-lg border border-border/80 ${className}`}>
         <summary className="flex min-h-12 cursor-pointer list-none items-center gap-2 rounded-lg px-4 py-3 font-medium transition-colors hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
           <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-90" aria-hidden />
           {t.howToRead}
@@ -119,10 +106,48 @@ export function AtlasPage({ lang }: { lang: Lang }) {
           </div>
         </div>
       </details>
+  )
+
+  return (
+    <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 xl:max-w-7xl">
+      {/* the map is some thirty Tab stops down: a way past them */}
+      <a
+        href="#map"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:mt-[-2.5rem] focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:text-link focus:shadow-md focus:outline-none focus:ring-2 focus:ring-ring"
+      >
+        {t.skipToMap}
+      </a>
+      {/* -- title, and where a newcomer should start ------------------------- */}
+      <header className="border-b border-border/70 pb-8 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:items-end lg:gap-16">
+        <div>
+          <p className="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
+            {t.name}
+          </p>
+          <h1 className="text-balance font-serif text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
+            {t.title}
+          </h1>
+          <p className="mt-4 max-w-2xl text-pretty text-[1.0625rem] leading-relaxed text-muted-foreground">
+            {t.description}
+          </p>
+          {links("mt-5 hidden sm:flex")}
+        </div>
+        {startHere("hidden lg:block")}
+      </header>
+
+      {/* -- how to read the map, folded; under the map on a phone ------------ */}
+      {howToRead("mt-6 hidden sm:block")}
 
       {/* -- the map ------------------------------------------------------- */}
-      <section className="pt-8" aria-label={t.mapLabel}>
-        <NetworkMap data={map} />
+      <section className="pt-6 sm:pt-8" aria-label={t.mapLabel}>
+        <NetworkMap
+          data={map}
+          below={
+            <div className="mt-6 space-y-4 sm:hidden">
+              {howToRead("")}
+              {links("flex")}
+            </div>
+          }
+        />
       </section>
 
       {startHere("mt-10 lg:hidden")}
