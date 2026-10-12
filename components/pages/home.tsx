@@ -245,13 +245,74 @@ export function HomePage({ lang }: { lang: Lang }) {
         </div>
       </section>
 
+      {/* -- resources for the community ---------------------------------- */}
+      {/* First after the opening: what the site offers the field. */}
+      <section aria-labelledby="resources-heading" className="border-t border-border/70 py-14">
+        <h2 id="resources-heading" className="font-serif text-2xl font-semibold tracking-tight">
+          {t.resourcesTitle}
+        </h2>
+        <p className="mt-3 max-w-2xl text-pretty text-[0.95rem] leading-relaxed text-muted-foreground">{t.resourcesLead}</p>
+        <ul className="mt-8 grid gap-x-10 gap-y-7 sm:grid-cols-2 lg:grid-cols-3">
+          {offered.map((r) => (
+            <li key={r.key} className="min-w-0 border-t-2 border-foreground/15 pt-4">
+              <h3 className="font-serif text-[1.05rem] font-semibold tracking-tight">
+                <Link prefetch={false} href={to(r.href)} className="underline-offset-4 hover:text-link hover:underline">
+                  {r.title}
+                </Link>
+              </h3>
+              <p className="mt-1.5 text-pretty text-[0.95rem] leading-relaxed text-muted-foreground">
+                <Sci>{r.text}</Sci>
+              </p>
+              {r.meta.length > 0 && (
+                <p className="mt-2 flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground">
+                  {r.meta.map((m, i) => (
+                    <Fragment key={i}>
+                      {i > 0 && <span aria-hidden>·</span>}
+                      {m.href ? (
+                        m.external ? (
+                          <a href={m.href} target="_blank" rel="noreferrer" className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
+                            {m.text}
+                          </a>
+                        ) : (
+                          <Link prefetch={false} href={to(m.href)} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
+                            {m.text}
+                          </Link>
+                        )
+                      ) : (
+                        <span className="tabular">{m.text}</span>
+                      )}
+                    </Fragment>
+                  ))}
+                </p>
+              )}
+            </li>
+          ))}
+        </ul>
+        {/* Broader impact: the Italian half of the site, and the outreach on record. */}
+        <p className="mt-10 max-w-3xl text-pretty text-[0.95rem] leading-relaxed text-muted-foreground">
+          {t.impactBefore}
+          {lang === "en" ? (
+            <Link prefetch={false} href="/it" hrefLang="it" className="text-link underline underline-offset-4 decoration-link/40 hover:decoration-link">
+              {t.impactLink}
+            </Link>
+          ) : (
+            t.impactLink
+          )}
+          {t.impactAfter}
+          <Link prefetch={false} href={to("/cv#outreach")} className="text-link underline underline-offset-4 decoration-link/40 hover:decoration-link">
+            {t.impactCv}
+          </Link>
+          .
+        </p>
+      </section>
+
       {/* -- roles and recognition ----------------------------------------- */}
-      {/* Straight under the opening, so a reader judging the person sees the
-          responsibilities without opening the CV; each one links to where it
-          is told in full. */}
+      {/* Under the community resources, small: the responsibilities for a
+          reader judging the person, without opening the CV; each one links to
+          where it is told in full. */}
       {roles.length > 0 && (
-        <section aria-labelledby="roles-heading" className="border-t border-border/70 py-10">
-          <div className="mb-5 flex flex-wrap items-baseline justify-between gap-x-4">
+        <section aria-labelledby="roles-heading" className="border-t border-border/70 py-8">
+          <div className="mb-3 flex flex-wrap items-baseline justify-between gap-x-4">
             <h2 id="roles-heading" className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
               {t.rolesTitle}
             </h2>
@@ -259,21 +320,21 @@ export function HomePage({ lang }: { lang: Lang }) {
               {t.rolesMore}
             </Link>
           </div>
-          <ul className="grid gap-x-8 gap-y-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          <ul className="grid gap-x-6 gap-y-0.5 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
             {roles.map((role, i) => (
               <li key={i} className="min-w-0">
                 <Link
                   prefetch={false}
                   href={to(role.href)}
-                  className="group -mx-2 block rounded-md px-2 py-2 transition-colors hover:bg-accent/60"
+                  className="group -mx-2 block rounded-md px-2 py-1.5 transition-colors hover:bg-accent/60"
                 >
-                  <span className="block text-[0.9375rem] font-medium leading-snug text-foreground group-hover:text-link">
+                  <span className="block text-sm leading-snug text-foreground/90 group-hover:text-link">
                     <Sci>{role.label}</Sci>
                   </span>
-                  <span className="block text-pretty text-sm leading-snug text-muted-foreground">
+                  <span className="block text-pretty text-xs leading-snug text-muted-foreground">
                     <Sci>{role.what}</Sci>
                   </span>
-                  <span className="mt-0.5 block text-xs text-muted-foreground">{role.date}</span>
+                  <span className="block text-xs text-muted-foreground">{role.date}</span>
                 </Link>
               </li>
             ))}
@@ -422,66 +483,6 @@ export function HomePage({ lang }: { lang: Lang }) {
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </Link>
         </div>
-      </section>
-
-      {/* -- resources for the community ---------------------------------- */}
-      <section aria-labelledby="resources-heading" className="border-t border-border/70 py-14">
-        <h2 id="resources-heading" className="font-serif text-2xl font-semibold tracking-tight">
-          {t.resourcesTitle}
-        </h2>
-        <p className="mt-3 max-w-2xl text-pretty text-[0.95rem] leading-relaxed text-muted-foreground">{t.resourcesLead}</p>
-        <ul className="mt-8 grid gap-x-10 gap-y-7 sm:grid-cols-2 lg:grid-cols-3">
-          {offered.map((r) => (
-            <li key={r.key} className="min-w-0 border-t-2 border-foreground/15 pt-4">
-              <h3 className="font-serif text-[1.05rem] font-semibold tracking-tight">
-                <Link prefetch={false} href={to(r.href)} className="underline-offset-4 hover:text-link hover:underline">
-                  {r.title}
-                </Link>
-              </h3>
-              <p className="mt-1.5 text-pretty text-[0.95rem] leading-relaxed text-muted-foreground">
-                <Sci>{r.text}</Sci>
-              </p>
-              {r.meta.length > 0 && (
-                <p className="mt-2 flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground">
-                  {r.meta.map((m, i) => (
-                    <Fragment key={i}>
-                      {i > 0 && <span aria-hidden>·</span>}
-                      {m.href ? (
-                        m.external ? (
-                          <a href={m.href} target="_blank" rel="noreferrer" className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
-                            {m.text}
-                          </a>
-                        ) : (
-                          <Link prefetch={false} href={to(m.href)} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
-                            {m.text}
-                          </Link>
-                        )
-                      ) : (
-                        <span className="tabular">{m.text}</span>
-                      )}
-                    </Fragment>
-                  ))}
-                </p>
-              )}
-            </li>
-          ))}
-        </ul>
-        {/* Broader impact: the Italian half of the site, and the outreach on record. */}
-        <p className="mt-10 max-w-3xl text-pretty text-[0.95rem] leading-relaxed text-muted-foreground">
-          {t.impactBefore}
-          {lang === "en" ? (
-            <Link prefetch={false} href="/it" hrefLang="it" className="text-link underline underline-offset-4 decoration-link/40 hover:decoration-link">
-              {t.impactLink}
-            </Link>
-          ) : (
-            t.impactLink
-          )}
-          {t.impactAfter}
-          <Link prefetch={false} href={to("/cv#outreach")} className="text-link underline underline-offset-4 decoration-link/40 hover:decoration-link">
-            {t.impactCv}
-          </Link>
-          .
-        </p>
       </section>
 
       {/* -- notes --------------------------------------------------------- */}
