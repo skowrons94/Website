@@ -54,6 +54,7 @@ const en = {
     `${site}: the slowest step of the ${cycle ? "cycle" : "chain"} is ${reaction}, ${time} on average. Everything else waits for it.`,
   headlineIdle: (list: string) => `Slower than the whole burn, so they barely run here: ${list}.`,
   headlineLeak: (reaction: string) => `The flow leaves the cycle through ${reaction}.`,
+  headlineStall: (nucleus: string) => `So the flow stops and piles up at ${nucleus}.`,
   headlineShort: "Bottleneck",
   tryIt: "What if it were faster?",
   notation: {
@@ -118,6 +119,7 @@ const en = {
     mgal: "At 25 M☉ the ²⁶Al left at the end is what survives its own decay once ²⁵Mg has run out; in a real star the winds carry part of it away before.",
   } as Record<string, string>,
   pathEnd: (path: string, end: string) => `The flow goes ${path}, and ends as ${end}.`,
+  pathStall: (path: string, end: string) => `The flow goes ${path} → ${end}, and piles up at ${end} within the burn.`,
   pathPp: "Most ³He fuses with another ³He (ppI); a share captures ⁴He and goes on through ⁷Be (ppII and ppIII).",
   bottleneck: "bottleneck",
   waits: (nucleus: string) => `${nucleus} nuclei wait`,
@@ -365,6 +367,7 @@ const it: RatesDict = {
     `${site}: il passo più lento ${cycle ? "del ciclo" : "della catena"} è la reazione ${reaction}, in media ${time}. Tutti gli altri devono aspettarla.`,
   headlineIdle: (list: string) => `Più lente dell'intera combustione, quindi qui quasi non avvengono: ${list}.`,
   headlineLeak: (reaction: string) => `Il flusso esce dal ciclo con la ${reaction}.`,
+  headlineStall: (nucleus: string) => `Così il flusso si ferma e si accumula nel ${nucleus}.`,
   headlineShort: "Collo di bottiglia",
   tryIt: "E se fosse più veloce?",
   notation: {
@@ -426,6 +429,7 @@ const it: RatesDict = {
     mgal: "A 25 M☉ il ²⁶Al rimasto alla fine è quello che sopravvive al proprio decadimento dopo che il ²⁵Mg si è esaurito; in una stella vera i venti ne portano via una parte prima.",
   },
   pathEnd: (path: string, end: string) => `Il flusso va ${path} e finisce in ${end}.`,
+  pathStall: (path: string, end: string) => `Il flusso va ${path} → ${end} e, nel tempo della combustione, si accumula nel ${end}.`,
   pathPp: "Quasi tutto il ³He si fonde con un altro ³He (ppI); una parte cattura ⁴He e prosegue attraverso il ⁷Be (ppII e ppIII).",
   bottleneck: "collo di bottiglia",
   waits: (nucleus: string) => `i nuclei di ${nucleus} aspettano`,

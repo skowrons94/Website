@@ -235,8 +235,8 @@ for (const id of ["pp", "cno", "nena", "mgal", "sprocess"]) {
   // burn is not named, nor a leak out of the cycle (lib/rates/flow.ts)
   const want = {
     pp: [["sun-core", "p_p_to_d_beta_pos_reaclib"]],
-    cno: [["nova", /O1[45]_to_N1[45]_beta_pos/]],
-    nena: [["nova-one", /beta_pos|p_to/], ["massive-25", /^(?!Ne20_p)/]],
+    cno: [["nova", /O1[45]_to_N1[45]_beta_pos/], ["massive-15", /./], ["sun-core", /./]],
+    nena: [["nova-one", /beta_pos|p_to/], ["massive-25", /^(?!Ne20_p)/], ["agb-hbb", /./]],
     mgal: [["massive-25", /^(?!Mg24_p)/], ["agb-hbb", /^(?!Al27_p_to_Si28)/]],
   }
   for (const [id, cases] of Object.entries(want)) {
@@ -256,8 +256,18 @@ for (const id of ["pp", "cno", "nena", "mgal", "sprocess"]) {
       console.log(
         `bottleneck ${id} ${sid}: ${network.reactions[b.step.reaction].label}, ${b.tau.toPrecision(3)} s (burn ${tBurn.toPrecision(3)} s)` +
           `${b.idle.length ? `, not running: ${b.idle.map((p) => network.reactions[p.reaction].label).join(", ")}` : ""}` +
-          `${b.leak.length ? `, leak: ${b.leak.map((p) => network.reactions[p.reaction].label).join(", ")}` : ""}`,
+          `${b.leak.length ? `, leak: ${b.leak.map((p) => network.reactions[p.reaction].label).join(", ")}` : ""}` +
+          `${b.stall !== null ? `, piles up at ${network.nuclei[b.stall].label}` : ""}`,
       )
+      // the path ends where the flow stops (r10 expert #1): in an AGB
+      // envelope ²⁶Al(p,γ) takes 21 yr in a 10-yr burn, so ²⁶Al piles up and
+      // ²⁷Al(p,γ)²⁸Si (267 yr) is no leak
+      for (const p of b.path) if (p.nucleus !== fuel && taus[p.reaction] > tBurn) fail(`${id} ${sid}: path runs through idle ${network.reactions[p.reaction].label}`)
+      for (const p of b.leak) if (taus[p.reaction] > tBurn) fail(`${id} ${sid}: leak ${network.reactions[p.reaction].label} slower than the burn`)
+      if (id === "mgal" && sid === "agb-hbb") {
+        if (b.leak.length) fail(`mgal agb-hbb: leak reported`)
+        if (b.stall === null || network.nuclei[b.stall].name !== "al26") fail(`mgal agb-hbb: path does not end at ²⁶Al`)
+      }
       if (typeof re === "string" ? rid !== re : !re.test(rid)) fail(`${id} ${sid}: bottleneck ${rid}`)
       if (b.tau > tBurn && b.step.nucleus !== fuel) fail(`${id} ${sid}: bottleneck ${rid} slower than the burn`)
       if (id === "nena" && /Na22_to/.test(rid) && sid === "nova-one") fail(`nena nova: ²²Na decay taken as bottleneck though ²²Na(p,γ) is faster`)

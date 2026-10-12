@@ -352,10 +352,17 @@ export function RatesExplorer({
     const cycle = (network.ui.cycle ?? []).map((id) => network.reactions.findIndex((r) => r.id === id)).filter((i) => i >= 0)
     const fuel = network.nuclei.findIndex((n) => n.name === network.ui.fuel)
     const start = pathStart(c, taus, cycle, tBurn, fuel)
-    const path = start === undefined ? [] : dominantPath(c, taus, start)
-    const closed = closes(c, path)
-    const slow = bottleneck(path, taus, closed, cycle, tBurn, fuel)
-    return { taus, taus0, path, closed, slow }
+    const full = start === undefined ? [] : dominantPath(c, taus, start)
+    const cyclic = closes(c, full)
+    // "the slowest step of the cycle" when the network's own path is a cycle
+    const isCycle =
+      cycle.length > 1 && heaviestProduct(c, cycle[cycle.length - 1]) === network.reactions[cycle[0]].target
+    const slow = bottleneck(full, taus, cyclic, cycle, tBurn, fuel)
+    // the path the flow takes within the burn: it stops where a step does not
+    // run (²⁶Al in an AGB envelope piles up), so it no longer closes there
+    const path = slow.path
+    const closed = cyclic && slow.stall === null
+    return { taus, taus0, path, closed, isCycle, stall: slow.stall, slow }
   }, [network, scenario, condD, scaleD, changedD, providerD, providerReaclib, tBurn])
 
   const flows = useMemo(() => {
@@ -414,6 +421,7 @@ export function RatesExplorer({
     const last = life.path[life.path.length - 1]
     const endIdx = !life.closed && last ? heaviestProduct(compiled(network), last.reaction) : undefined
     const pathEnd = endIdx !== undefined ? nucleus(endIdx).label : null
+    const stalled = life.stall !== null
     const changes: ChangeRow[] = []
     if (base && mod && changedD) {
       network.nuclei.forEach((n, i) => {
@@ -442,7 +450,7 @@ export function RatesExplorer({
         })
       })
     }
-    return { lifeRows, pathText, pathEnd, changes, evo }
+    return { lifeRows, pathText, pathEnd, stalled, changes, evo }
   }, [network, life, allSteps, slots, scaleD, changedD, base, mod, shown])
   const lifeRefs = useMemo(
     () => [
@@ -489,7 +497,7 @@ export function RatesExplorer({
     )
   }
 
-  const { lifeRows, pathText, pathEnd, changes, evo } = derived
+  const { lifeRows, pathText, pathEnd, stalled, changes, evo } = derived
   const sName = (s: Scenario) => (it ? s.name_it : s.name)
   const custom = !sameConditions(cond, fromScenario(scenario))
 
@@ -610,7 +618,7 @@ export function RatesExplorer({
           <span className="mr-2 rounded bg-foreground px-1.5 py-0.5 text-xs font-medium uppercase tracking-[0.1em] text-background">
             {t.headlineShort}
           </span>
-          <Sci>{L(t.headline(sName(scenario), slowR.label, duration(life.slow.tau, lang), life.closed))}</Sci>{" "}
+          <Sci>{L(t.headline(sName(scenario), slowR.label, duration(life.slow.tau, lang), life.isCycle))}</Sci>{" "}
           <a
             href="#what-if"
             onClick={() => setActive(slowR.id)}
@@ -619,11 +627,12 @@ export function RatesExplorer({
             {t.tryIt} ↓
           </a>
         </p>
-        {(idleList || life.slow.leak.length > 0) && (
+        {(idleList || life.slow.leak.length > 0 || life.stall !== null) && (
           <p className="text-pretty text-sm text-muted-foreground">
             <Sci>
               {[
                 idleList ? L(t.headlineIdle(idleList)) : "",
+                life.stall !== null ? L(t.headlineStall(network.nuclei[life.stall].label)) : "",
                 life.slow.leak.length ? L(t.headlineLeak(network.reactions[life.slow.leak[0].reaction].label)) : "",
               ]
                 .filter(Boolean)
@@ -827,7 +836,7 @@ export function RatesExplorer({
             <p className="mt-3 max-w-[46rem] text-pretty text-xs text-muted-foreground">
               <Sci>
                 {[
-                  pathText ? (pathEnd ? t.pathEnd(pathText, pathEnd) : t.pathNote(pathText)) : "",
+                  pathText ? (pathEnd ? (stalled ? t.pathStall(pathText, pathEnd) : t.pathEnd(pathText, pathEnd)) : t.pathNote(pathText)) : "",
                   network.id === "pp" ? t.pathPp : "",
                   t.lifeFine,
                   network.id === "pp" || (network.id === "mgal" && scenario.id === "massive-25")
@@ -839,7 +848,7 @@ export function RatesExplorer({
               </Sci>
             </p>
           </div>
-          {life.path.length > 1 && (
+          {(life.path.length > 1 || (life.path.length === 1 && !life.closed)) && (
             <div className="min-w-0">
               <h3 className="font-serif text-lg font-semibold tracking-tight">{t.ringTitle}</h3>
               <p className="mt-1 text-sm text-muted-foreground">{t.ringLead}</p>
