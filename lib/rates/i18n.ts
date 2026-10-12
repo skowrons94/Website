@@ -349,7 +349,7 @@ const it: RatesDict = {
     `Al massimo ×${max} qui: idrogeno ed elio si riducono per fare posto, e tengono almeno un decimo della massa.`,
   hydrogen: "Idrogeno",
   helium: "Elio",
-  screening: "Schermatura elettronica",
+  screening: "Schermaggio elettronico",
   screeningHint: "Gli elettroni intorno ai nuclei abbassano un poco la barriera coulombiana.",
   resetConditions: "Torna allo scenario",
   source: "Fonte",
@@ -534,7 +534,7 @@ const it: RatesDict = {
     "τ = 1 / (c · ρ^n · Y_partner · λ · f_scr) per il nucleo bersaglio; per un decadimento τ = 1/λ (t½ / ln 2 in laboratorio; il λ del ²⁶Al cresce con T attraverso il suo isomero popolato termicamente); per una cattura elettronica τ = 1/(ρ Y_e λ). Y = X/A.",
   equationYdot:
     "dYᵢ/dt = Σ_r c_ir · prefattore_r · ρ^(n_r) · (Y_e) · Π Y_reagenti · λ_r(T₉) · f_scr,r — le equazioni di pynucastro, termine per termine.",
-  screenNote: "Schermatura: screen5, come in pynucastro (Wallace, Woosley e Weaver 1982).",
+  screenNote: "Schermaggio: screen5, come in pynucastro (Wallace, Woosley e Weaver 1982).",
   units1: "s⁻¹",
   units2: "cm³ mol⁻¹ s⁻¹",
   units3: "cm⁶ mol⁻² s⁻¹",
