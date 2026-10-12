@@ -61,7 +61,7 @@ recognition:
   - source: research/agata
     label: Spokesperson
     what: AGATA lifetime measurement in ¹⁵O
-    what_it: misura di vita media nell'¹⁵O con AGATA
+    what_it: Misura di vita media nell'¹⁵O con AGATA
   - source: research/luna
     label: Working Group Leader
     label_it: Coordinatore di gruppo di lavoro
@@ -71,7 +71,7 @@ recognition:
     label: DAQ Coordinator
     label_it: Coordinatore DAQ
     what: LUNA collaboration
-    what_it: collaborazione LUNA
+    what_it: Collaborazione LUNA
   - source: cv/research/AZURE2
     label: Maintainer and lead developer
     label_it: Responsabile e sviluppatore principale
@@ -94,7 +94,7 @@ recognition:
     label: Chair
     label_it: Presidente
     what: Carbon Burning workshop, Padova
-    what_it: workshop Carbon Burning, Padova
+    what_it: Workshop Carbon Burning, Padova
   - source: talks/organisation/HELIUM
     label: Co-chair
     label_it: Co-presidente
