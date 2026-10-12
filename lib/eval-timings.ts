@@ -19,7 +19,7 @@ import type { Timings } from "./api"
 export const TYPICAL_TIMINGS: Record<string, { server: Timings; browser: Timings }> = {
   "13N": {
     server: { open: 0.4, prepare_data: 0.02, prepare_fine: 0.6, prepare_extrap: 0.5, edit: 0.12, extrap_edit: 0.1 },
-    browser: { open: 6, prepare_data: 0.1, prepare_fine: 2, prepare_extrap: 2, edit: 0.3, extrap_edit: 0.5, data: 0.2, fine: 0.3 },
+    browser: { open: 6.5, prepare_data: 0.1, prepare_fine: 4, prepare_extrap: 4, edit: 0.3, extrap_edit: 0.3, data: 0.2, fine: 0.45 },
   },
   "14N": {
     server: { open: 0.5, prepare_data: 0.05, prepare_fine: 1.7, prepare_extrap: 0.7, edit: 0.3, extrap_edit: 0.2 },
@@ -39,11 +39,11 @@ export const TYPICAL_TIMINGS: Record<string, { server: Timings; browser: Timings
   },
   "24Mg": {
     server: { open: 1.5, prepare_data: 2.7, prepare_fine: 2.4, prepare_extrap: 3.6, edit: 2.1, extrap_edit: 3.9 },
-    browser: { open: 9, prepare_data: 6, prepare_fine: 10, prepare_extrap: 12, edit: 5, extrap_edit: 8, data: 0.3, fine: 0.5 },
+    browser: { open: 10, prepare_data: 2, prepare_fine: 8, prepare_extrap: 12, edit: 0.7, extrap_edit: 2.5, data: 0.3, fine: 1.2 },
   },
   "7Be": {
     server: { open: 3, prepare_data: 3.9, prepare_fine: 14, prepare_extrap: 9.3, edit: 1.8, extrap_edit: 1.8, grid: 4.2 },
-    browser: { open: 10, prepare_data: 4, prepare_fine: 28, prepare_extrap: 25, edit: 1.8, extrap_edit: 3, grid: 15, data: 0.5, fine: 0.8 },
+    browser: { open: 11, prepare_data: 4, prepare_fine: 27, prepare_extrap: 27, edit: 0.6, extrap_edit: 1.7, grid: 15, data: 0.5, fine: 1.3 },
   },
   "8Be": {
     server: { open: 0.5, prepare_data: 0.01, prepare_fine: 0.7, prepare_extrap: 0.4, edit: 0.03, extrap_edit: 0.01 },

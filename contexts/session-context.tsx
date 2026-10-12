@@ -229,8 +229,6 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [fineStale, setFineStale] = useState(false)
   const [preview, setPreview] = useState(false)
   const [modern, setModern] = useState(false)
-  const modernRef = useRef(false)
-  modernRef.current = modern
   const [past, setPast] = useState<Edit[]>([])
   const [deltaChi2, setDeltaChi2] = useState<Record<number, number>>({})
   const dataRef = useRef<DataSegment[] | null>(null)
@@ -715,12 +713,14 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     // The first edit may wait for the model's one-off preparation: the data
     // model (and on an older server, which holds the session while it
     // prepares, the smooth curves' too).
+    // The reader waits for the smooth curve too (one clock): the estimate
+    // covers its model's preparation as well.
     const first = editsDone.current === 0
-    const legacy = !modernRef.current && !IN_BROWSER
+    const waitSteps = ["data", "fine"]
     const wait = first
       ? Math.max(
-          prepLeft("data") + (legacy ? prepLeft("fine") : 0),
-          remaining(preparing.current.edit, "prepare_data") + (legacy ? remaining(preparing.current.edit, "prepare_fine") : 0),
+          ...waitSteps.map(prepLeft),
+          remaining(preparing.current.edit, "prepare_data") + remaining(preparing.current.edit, "prepare_fine"),
         )
       : 0
     // One clock from the first edit of a burst to the last answer.
@@ -728,7 +728,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     if (!activitiesRef.current.edit && !activitiesRef.current.fine) curveClock.current = jobStart
     const started = begin("edit", "edit", wait, wait > 0, {
       since: curveClock.current ?? undefined,
-      wait: legacy ? ["data", "fine"] : ["data"],
+      wait: waitSteps,
       note: wait > 0 && !prep.current.spare ? r9.noSpare : null,
     })
     const values = schemeRef.current ? currentValues(schemeRef.current) : {}

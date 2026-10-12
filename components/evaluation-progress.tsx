@@ -138,7 +138,7 @@ function ProgressTimerImpl({ stage, activity, variant = "band", retryAt = null, 
       <>
         {live}
         <div className={`flex w-full min-w-0 flex-col justify-center gap-[3px] text-xs tabular-nums ${className}`}>
-          <span className="flex min-w-0 items-center gap-x-1.5 overflow-hidden whitespace-nowrap">
+          <span className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5">
             <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-muted-foreground motion-reduce:animate-none" aria-hidden />
             {text}
             {sideNote && (

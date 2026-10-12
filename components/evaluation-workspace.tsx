@@ -256,6 +256,17 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
     if (extrapolations !== null) prepare(["extrap"])
   }, [tab, sessionId, modern, data, extrapolations, fineStatus, calculating, prepare])
 
+  // The other tabs' code, fetched while the reader looks at this one, so a
+  // tab switch never shows "Loading the view…".
+  useEffect(() => {
+    if (!scheme) return
+    const idle = (window as Window & { requestIdleCallback?: (f: () => void) => number }).requestIdleCallback ?? ((f: () => void) => setTimeout(f, 1500))
+    idle(() => {
+      void import("@/components/data-plot")
+      void import("@/components/extrap-plot")
+    })
+  }, [scheme])
+
   // The plot opens on the headline reaction, unless the link chose.
   useEffect(() => {
     if (!data || selected.length > 0) return

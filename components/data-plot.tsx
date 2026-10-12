@@ -982,7 +982,7 @@ export function DataPlot({
                 over the data, and the plot is not dimmed -- the curve follows
                 the slider, the one being replaced drawn faded.
               */}
-              <div className="flex h-8 items-center px-0.5" aria-live="off">
+              <div className="flex min-h-8 items-center px-0.5" aria-live="off">
                 <ProgressTimer stage={stage} activity={activity ?? null} retryAt={retryAt} />
               </div>
               <div className="space-y-1.5" aria-busy={calculating}>
