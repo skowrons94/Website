@@ -43,11 +43,11 @@ host per hour.
 ```sh
 git clone <repository> website && cd website
 make env                 # creates .env; sets AZURE2_UID/GID for you
-nano .env                # set SITE_DOMAIN, SITE_URL and ACME_EMAIL
+nano .env                # set SITE_DOMAIN and ACME_EMAIL
 ```
 
-**Set `SITE_URL` too** (`https://` plus the domain, e.g. `https://jskowron.eu`).
-It is the one setting that changes what the built pages say about themselves,
+**`SITE_URL`** defaults to `https://` plus `SITE_DOMAIN`; set it in `.env` only
+if the site is served from another address. It is the one setting that changes what the built pages say about themselves,
 and it is baked in at build time:
 
 - the social-preview image (`og:image`, Twitter card) appears only with it:
@@ -63,7 +63,7 @@ After changing it, rebuild the site (`make deploy`); a restart is not enough.
 | Variable | Set it to |
 |---|---|
 | `SITE_DOMAIN` | the bare domain, e.g. `jskowron.eu` (no `https://`, no `www`) |
-| `SITE_URL` | **the site's public address**, `https://` + `SITE_DOMAIN`, no trailing slash (see above) |
+| `SITE_URL` | the site's public address; defaults to `https://` + `SITE_DOMAIN` (see above) |
 | `ACME_EMAIL` | your address, for certificate expiry warnings |
 | `BUILD_JOBS` | `2` on a VPS with 2 GB of RAM or less; leave unset otherwise |
 | `AZURE2_UID`, `AZURE2_GID` | the owner of `server/evaluations` (`make env` fills these in; check with `stat -c '%u:%g' server/evaluations`) |

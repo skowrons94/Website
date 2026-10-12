@@ -39,10 +39,11 @@ services:
         # Empty: the client calls /api on its own origin, so no hostname is
         # compiled into the bundle and the image is domain-agnostic.
         API_BASE: ""
-        # Optional, e.g. https://example.com: makes the hreflang links absolute
-        # and turns on the social-preview image, which must be an absolute URL.
-        # Empty keeps the image domain-agnostic, without the preview image.
-        SITE_URL: ${SITE_URL:-}
+        # The public address: makes the hreflang links absolute, turns on the
+        # social-preview image (which must be an absolute URL) and goes into the
+        # atlas citation and the printed CV. Defaults to https://SITE_DOMAIN;
+        # set SITE_URL in .env only if the site is served elsewhere.
+        SITE_URL: ${SITE_URL:-https://${SITE_DOMAIN}}
     restart: unless-stopped
     expose:
       - "3000"
