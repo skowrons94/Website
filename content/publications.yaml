@@ -43,13 +43,6 @@ publications:
     tags: [luna]
 
   - kind: article
-    authors: J. Cruz, D. Neves, J. Skowronski, et al.
-    title: Experimental determination of the ²³Na(p,p)²³Na excitation function from 2.1 to 4.1 MeV
-    journal: Eur. Phys. J. A 62, 75
-    doi: 10.1140/epja/s10050-026-01847-y
-    year: 2026
-
-  - kind: article
     authors: R. J. deBoer, et al.
     title: Total cross section of ¹⁴N + n from 0.1 to 12 MeV
     journal: Phys. Rev. C 112, 025805
