@@ -31,7 +31,7 @@ role_it: >-
 details: >-
   Below 1 MeV the cross section is the sum of direct capture and of two
   resonances, a 2⁻ state and a 1⁻ state in ¹⁴N observed at proton energies of
-  about 450 and 558 keV. Capture populates the ground state and several excited
+  about 448 and 551 keV. Capture populates the ground state and several excited
   states of ¹⁴N, so the total S-factor at low energy rests on R-matrix fits of
   the individual transitions. For a long time a single data set reported all
   transitions. The LUNA measurement extended the data down to E = 60 keV and,
@@ -94,7 +94,7 @@ rmatrix: [14N]
 details_it: >-
   Sotto 1 MeV la sezione d'urto è la somma della cattura diretta e di due
   risonanze, uno stato 2⁻ e uno stato 1⁻ nel ¹⁴N osservati a energie del
-  protone di circa 450 e 558 keV. La cattura popola lo stato fondamentale e
+  protone di circa 448 e 551 keV. La cattura popola lo stato fondamentale e
   diversi stati eccitati del ¹⁴N, quindi il fattore S totale a bassa energia
   si basa su fit R-matrix delle singole transizioni. Per molto tempo un solo
   insieme di dati riportava tutte le transizioni. La misura di LUNA ha
