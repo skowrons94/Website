@@ -1,0 +1,75 @@
+# How to cite this repository and the site built from it. GitHub shows a
+# "Cite this repository" button from this file; Zenodo reads .zenodo.json.
+# On each release, update `version` and `date-released` (RELEASING.md), and
+# once Zenodo has minted the concept DOI, add it under `identifiers`.
+cff-version: 1.2.0
+message: >-
+  If you use this site, its data or its code, please cite it as below, and
+  cite the original publications of the data it draws on (each page lists
+  them).
+type: software
+title: "Nuclear astrophysics: reaction atlas, R-matrix evaluations and reaction rates"
+abstract: >-
+  Source code and content of Jakub Skowronski's research website: a reaction
+  atlas of the nuclear reactions that power stars, with references and
+  plain-language explanations (English and Italian); interactive R-matrix
+  evaluations run with AZURE2, natively or in the browser; a reaction-rate
+  explorer built on JINA REACLIB and pynucastro; and notes on R-matrix theory.
+authors:
+  - family-names: Skowronski
+    given-names: Jakub
+    orcid: "https://orcid.org/0000-0001-7292-6353"
+    affiliation: "Università degli Studi di Padova"
+    email: jakub.skowronski@unipd.it
+version: 1.0.0
+date-released: "2026-10-12"
+repository-code: "https://github.com/skowrons94/Website"
+keywords:
+  - nuclear astrophysics
+  - nuclear reactions
+  - R-matrix
+  - AZURE2
+  - reaction rates
+  - REACLIB
+  - s-process
+  - LUNA
+  - underground laboratory
+  - stellar nucleosynthesis
+references:
+  - type: article
+    title: "AZURE: An R-matrix code for nuclear astrophysics"
+    authors:
+      - family-names: Azuma
+        given-names: R. E.
+      - name: "et al."
+    journal: Physical Review C
+    volume: 81
+    start: "045805"
+    year: 2010
+    doi: 10.1103/PhysRevC.81.045805
+  - type: article
+    title: "The AME 2020 atomic mass evaluation (II). Tables, graphs and references"
+    authors:
+      - family-names: Wang
+        given-names: M.
+      - name: "et al."
+    journal: Chinese Physics C
+    volume: 45
+    start: "030003"
+    year: 2021
+  - type: article
+    title: "The NUBASE2020 evaluation of nuclear physics properties"
+    authors:
+      - family-names: Kondev
+        given-names: F. G.
+      - name: "et al."
+    journal: Chinese Physics C
+    volume: 45
+    start: "030001"
+    year: 2021
+  - type: software
+    title: pynucastro
+    authors:
+      - name: "pynucastro developers"
+    repository-code: "https://github.com/pynucastro/pynucastro"
+    version: 3.1.0

@@ -1,0 +1,30 @@
+name: Suggest a reaction
+description: A reaction the atlas or the rate explorer should include.
+title: "Suggestion: "
+labels: ["suggestion"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you. Italian is fine too / Va benissimo anche in italiano.
+  - type: input
+    id: reaction
+    attributes:
+      label: Reaction / Reazione
+      placeholder: 22Ne(p,γ)23Na
+    validations:
+      required: true
+  - type: textarea
+    id: where
+    attributes:
+      label: Where it matters / Dove conta
+      description: Which stars, which burning stage, the Big Bang, novae…
+  - type: textarea
+    id: refs
+    attributes:
+      label: Key measurements or evaluations / Misure o valutazioni principali
+      description: DOI, arXiv or EXFOR entries.
+  - type: input
+    id: page
+    attributes:
+      label: Suggested from / Proposta dalla pagina

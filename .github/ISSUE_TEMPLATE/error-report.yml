@@ -1,0 +1,33 @@
+name: Report an error
+description: Something on the site is wrong — a number, a reference, a translation, a broken page.
+title: "Error on "
+labels: ["error"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you. Italian is fine too / Va benissimo anche in italiano.
+  - type: input
+    id: page
+    attributes:
+      label: Page / Pagina
+      description: The address of the page (copy it from the browser).
+      placeholder: https://…/atlas/14N-pg-15O
+    validations:
+      required: true
+  - type: input
+    id: section
+    attributes:
+      label: Section / Sezione
+      description: The reaction, glossary entry, figure or paragraph.
+  - type: textarea
+    id: wrong
+    attributes:
+      label: What is wrong / Cosa è sbagliato
+    validations:
+      required: true
+  - type: textarea
+    id: right
+    attributes:
+      label: What it should be / Come dovrebbe essere
+      description: With a source if you have one (DOI, arXiv, EXFOR entry).
