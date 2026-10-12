@@ -2,7 +2,13 @@
   "id": "21Na",
   "title": "^{21}\\text{Na}",
   "reference": "10.1103/PhysRevC.108.L052801",
-  "author": "J. Skowronski",
+  "paper": {
+    "authors": "E. Masha et al.",
+    "title": "First measurement of the low-energy direct capture in ²⁰Ne(p,γ)²¹Na and improved energy and strength of the E_c.m. = 368 keV resonance",
+    "journal": "Phys. Rev. C 108, L052801",
+    "year": 2023
+  },
+  "analysis": "J. Skowronski",
   "channels": [
     "p",
     "\\gamma_{0}",
@@ -12,5 +18,37 @@
   "reactions": [
     "²⁰Ne(p,γ)²¹Na",
     "²⁰Ne(p,p)²⁰Ne"
-  ]
+  ],
+  "datasets": {
+    "lyons_0": {
+      "label": "Lyons 2018",
+      "ref": "Phys. Rev. C 97, 065802 (2018)",
+      "doi": "10.1103/PhysRevC.97.065802"
+    },
+    "lyons_332": {
+      "label": "Lyons 2018",
+      "ref": "Phys. Rev. C 97, 065802 (2018)",
+      "doi": "10.1103/PhysRevC.97.065802"
+    },
+    "lyons_2425": {
+      "label": "Lyons 2018",
+      "ref": "Phys. Rev. C 97, 065802 (2018)",
+      "doi": "10.1103/PhysRevC.97.065802"
+    },
+    "luna_0": {
+      "label": "Masha 2023, LUNA",
+      "ref": "Phys. Rev. C 108, L052801 (2023)",
+      "doi": "10.1103/PhysRevC.108.L052801"
+    },
+    "luna_332": {
+      "label": "Masha 2023, LUNA",
+      "ref": "Phys. Rev. C 108, L052801 (2023)",
+      "doi": "10.1103/PhysRevC.108.L052801"
+    },
+    "luna_2425": {
+      "label": "Masha 2023, LUNA",
+      "ref": "Phys. Rev. C 108, L052801 (2023)",
+      "doi": "10.1103/PhysRevC.108.L052801"
+    }
+  }
 }

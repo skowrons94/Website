@@ -3,7 +3,7 @@
   "title": "^{7}\\text{Be}",
   "reference": null,
   "status": "unpublished",
-  "author": "R. J. deBoer & J. Skowronski",
+  "analysis": "R. J. deBoer, J. Skowronski",
   "channels": [
     "^{3}\\text{He} + \\alpha",
     "^{6}\\text{Li} + p_{0}",
@@ -20,6 +20,10 @@
   "datasets": {
     "Mccray-A1410002": "McCray (EXFOR A1410.002)",
     "Mccray-A1410003": "McCray (EXFOR A1410.003)",
-    "DiLeva-C1729001": "Di Leva (EXFOR C1729.001)"
+    "DiLeva-C1729001": {
+      "label": "Di Leva 2009 (EXFOR C1729.001)",
+      "ref": "Phys. Rev. Lett. 102, 232502 (2009)",
+      "doi": "10.1103/PhysRevLett.102.232502"
+    }
   }
 }

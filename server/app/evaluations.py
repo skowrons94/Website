@@ -5,10 +5,17 @@ An evaluation is just a directory containing one ``.azr`` file, alongside the
 one means dropping the folder in -- there is no registry to update.
 
 Everything shown about an evaluation is derived from the model itself (see
-:mod:`app.labels`) except the two things a file cannot know: who produced it and
+:mod:`app.labels`) except the things a file cannot know: who produced it and
 what to cite.  Those live in an optional ``info.json``::
 
-    {"author": "J. Skowronski", "reference": "10.1103/PhysRevC.111.035802"}
+    {"reference": "10.1103/PhysRevC.108.L052801",
+     "paper": {"authors": "E. Masha et al.", "title": "...",
+               "journal": "Phys. Rev. C 108, L052801", "year": 2023},
+     "analysis": "J. Skowronski"}
+
+``paper.authors`` are the paper's authors as cited (first author et al.);
+``analysis`` is who did the R-matrix analysis, which need not be the same
+person.  The older single ``author`` field is still read, as ``analysis``.
 
 ``title`` and ``channels`` may also be set there to override the derived values,
 but need not be -- an evaluation with no ``info.json`` still works, it just has
@@ -20,8 +27,10 @@ Optional fields read by the web page (all pass through untouched):
   from the data segments when absent.
 * ``citation`` -- the full "how to cite" text; ``summary`` / ``summary_it`` --
   one paragraph on what was fitted.
-* ``datasets`` -- readable names for data files, keyed by the file's stem
-  (``{"kettner_0": "Kettner"}``).  Unlisted files are named by
+* ``datasets`` -- readable names for data files, keyed by the file's stem:
+  either a string (``{"kettner_0": "Kettner"}``) or an object with the source,
+  ``{"label": "Lyons 2018", "ref": "Phys. Rev. C 97, 065802 (2018)",
+  "doi": "10.1103/PhysRevC.97.065802"}``.  Unlisted files are named by
   :func:`dataset_label`.
 """
 
@@ -59,13 +68,27 @@ class Evaluation:
         ref = re.sub(r"^(https?://(dx\.)?doi\.org/|doi:)", "", ref, flags=re.I)
         return ref if re.match(r"^10\.\d{4,9}/\S+$", ref) else None
 
-    def dataset_label(self, data_file: str) -> str:
-        """Readable name for a data file, from ``info.json`` or the file name."""
+    def _dataset_entry(self, data_file: str):
         stem = os.path.splitext(os.path.basename(data_file or ""))[0]
         names = self.info.get("datasets")
-        if isinstance(names, dict) and isinstance(names.get(stem), str):
-            return names[stem]
+        entry = names.get(stem) if isinstance(names, dict) else None
+        return stem, entry
+
+    def dataset_label(self, data_file: str) -> str:
+        """Readable name for a data file, from ``info.json`` or the file name."""
+        stem, entry = self._dataset_entry(data_file)
+        if isinstance(entry, str) and entry.strip():
+            return entry
+        if isinstance(entry, dict) and _text(entry.get("label")):
+            return entry["label"]
         return dataset_label(stem)
+
+    def dataset_source(self, data_file: str) -> Dict:
+        """``{"ref", "doi"}`` of a data file, where ``info.json`` gives them."""
+        _, entry = self._dataset_entry(data_file)
+        if not isinstance(entry, dict):
+            return {"ref": None, "doi": None}
+        return {"ref": _text(entry.get("ref")), "doi": _text(entry.get("doi"))}
 
     @property
     def entrance_label(self) -> Optional[ChannelLabel]:
@@ -90,6 +113,8 @@ class Evaluation:
             "entrance": entrance.reaction if entrance else None,
             "reactions": self.reactions,
             "status": _text(info.get("status")),
+            "analysis": self.author,
+            "paper": info.get("paper") if isinstance(info.get("paper"), dict) else None,
             "citation": _text(info.get("citation")),
             "summary": _text(info.get("summary")),
             "summary_it": _text(info.get("summary_it")),
@@ -106,7 +131,10 @@ _EXFOR = re.compile(r"^([A-Z0-9]\d{4})(\d{3})$")
 # Words in file names that are acronyms or abbreviations, not surnames.
 _WORDS = {"luna": "LUNA", "tunl": "TUNL", "bgo": "BGO", "hpge": "HPGe",
           "fels": "Felsenkeller", "gs": "g.s.", "fes": "1st exc.",
-          "pp": "(p,p)", "total": "total"}
+          "total": "total"}
+# Reaction tags in file names (``Lambert_pp``): the segment states its
+# reaction itself, so these add nothing to the name.
+_REACTION_TAGS = {"pp", "pg", "pa", "aa", "ag", "pn", "an"}
 
 
 def exfor_code(stem: str) -> Optional[str]:
@@ -144,7 +172,7 @@ def dataset_label(stem: str) -> str:
         if _EXFOR.match(token):
             extras.append(f"EXFOR {_EXFOR.match(token).group(1)}."
                           f"{_EXFOR.match(token).group(2)}")
-        elif token.isdigit():
+        elif token.isdigit() or token.lower() in _REACTION_TAGS:
             continue
         else:
             extras.append(_WORDS.get(token.lower(), token))
@@ -205,7 +233,7 @@ def load(directory: str) -> Optional[Evaluation]:
         azr_path=os.path.abspath(azr_path),
         title=info.get("title") or derived_title,
         channels=[c.label for c in labels],
-        author=info.get("author"),
+        author=_text(info.get("analysis")) or _text(info.get("author")),
         reference=info.get("reference"),
         labels=labels,
         entrance_key=entrance,
