@@ -169,12 +169,12 @@ export function PublicationFilter({
             <span className="tabular opacity-80">{o.count}</span>
           </button>
         ))}
-        <label className="ml-1 inline-flex min-h-10 items-center gap-2">
+        <label className="ml-1 inline-flex min-h-10 max-w-full flex-wrap items-center gap-2">
           <span className="text-muted-foreground">{labels.year}</span>
           <select
             value={year ?? ""}
             onChange={(e) => update({ ...state, year: e.target.value ? Number(e.target.value) : null })}
-            className="min-h-10 rounded-md border border-input-strong bg-background px-2.5 tabular text-foreground"
+            className="min-h-10 max-w-full rounded-md border border-input-strong bg-background px-2.5 tabular text-foreground"
           >
             <option value="">{labels.allYears}</option>
             {years.map((y) => {

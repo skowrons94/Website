@@ -146,6 +146,9 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "kern" 1, "liga" 1;
+    /* A word longer than its line (a DOI, "Schwerionenforschung", a heading
+       at 200% text on a phone) breaks rather than widening the page. */
+    overflow-wrap: break-word;
   }
   /* Anchor targets clear the sticky header. */
   :target {

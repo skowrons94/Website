@@ -36,6 +36,8 @@ function groups(lang: Lang): { title: string; links: { href: string; label: stri
   ]
 }
 
+// The columns are two from 20em (320 px at the default text size), so with
+// text at 200% on a phone they stack rather than run off the screen.
 // Roomy tap targets wherever the pointer is a finger (a tablet is as wide as a
 // laptop), a compact list once there is a mouse.
 const LINK =
@@ -45,8 +47,8 @@ export function SiteFooter({ profile, lang }: { profile: Profile; lang: Lang }) 
   const t = dict(lang).footer
   return (
     <footer className="mt-24 border-t border-border/70 print:hidden">
-      <div className="mx-auto grid max-w-6xl grid-cols-2 gap-x-8 gap-y-10 px-5 py-12 sm:px-8 lg:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))] xl:max-w-7xl">
-        <div className="col-span-2 space-y-1 text-sm text-muted-foreground lg:col-span-1">
+      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-x-8 gap-y-10 px-5 py-12 sm:px-8 xl:max-w-7xl [@media(min-width:20em)]:grid-cols-2 lg:!grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))]">
+        <div className="space-y-1 text-sm text-muted-foreground [@media(min-width:20em)]:col-span-2 lg:!col-span-1">
           <p className="font-medium text-foreground">{profile.name}</p>
           <p>{profile.department}</p>
           <p>
