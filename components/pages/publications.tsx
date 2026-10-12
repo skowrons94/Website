@@ -67,7 +67,7 @@ function Entry({ publication, lang }: { publication: Publication; lang: Lang }) 
         first
           ? "border-l-2 border-foreground/80 pl-5"
           : publication.highlight
-            ? "border-l-2 border-foreground/20 pl-5"
+            ? "border-l-2 border-foreground/25 pl-5"
             : "pl-[calc(1.25rem+2px)]"
       }`}
     >
