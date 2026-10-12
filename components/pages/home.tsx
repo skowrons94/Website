@@ -130,6 +130,18 @@ function resources(lang: Lang): Resource[] {
         { text: t.howToCite, href: "/atlas#cite" },
       ],
     },
+    // --- r9 rates ---
+    {
+      key: "rates",
+      title: t.resourceRates,
+      text: t.resourceRatesText,
+      href: "/atlas/rates",
+      meta: [
+        ...(meta.licence ? [{ text: t.licence(meta.licence) }] : []),
+        { text: "JINA REACLIB · pynucastro" },
+        { text: t.resourceRatesSources, href: "/atlas/rates#credits" },
+      ],
+    },
     {
       key: "s-process",
       title: t.resourceSProcess,
@@ -144,7 +156,7 @@ function resources(lang: Lang): Resource[] {
       title: t.resourceEvaluations,
       text: t.resourceEvaluationsSplit(evaluations, publishedEvaluations),
       href: "/evaluations",
-      meta: [{ text: t.resourceEvaluationsMeta }],
+      meta: [{ text: t.resourceEvaluationsMeta }, { text: t.resourceRatesLink, href: "/atlas/rates#cno&luna=1" }],
     })
   if (lunasrim)
     out.push({
