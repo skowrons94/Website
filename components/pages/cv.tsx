@@ -25,8 +25,8 @@ function Section({
   children: React.ReactNode
 }) {
   return (
-    <section className="border-t border-border/70 pt-8">
-      <h2 className="mb-6 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
+    <section className="border-t border-border/70 pt-8 print:pt-5">
+      <h2 className="mb-6 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground print:mb-4">
         {title}
       </h2>
       {children}
@@ -40,9 +40,9 @@ function Section({
  */
 function Timeline({ entries }: { entries: TimelineEntry[] }) {
   return (
-    <ol className="space-y-7">
+    <ol className="space-y-7 print:space-y-[1.1rem]">
       {entries.map((entry, i) => (
-        <li key={i} className="sm:grid sm:grid-cols-[10.5rem_1fr] sm:gap-6">
+        <li key={i} className="break-inside-avoid sm:grid sm:grid-cols-[10.5rem_1fr] sm:gap-6">
           <p className="text-sm text-muted-foreground sm:pt-0.5">
             {entry.period}
           </p>
@@ -76,9 +76,9 @@ function Timeline({ entries }: { entries: TimelineEntry[] }) {
 
 function Talks({ entries }: { entries: TalkEntry[] }) {
   return (
-    <ol className="space-y-6">
+    <ol className="space-y-6 print:space-y-[1.1rem]">
       {entries.map((entry, i) => (
-        <li key={i} className="sm:grid sm:grid-cols-[10.5rem_1fr] sm:gap-6">
+        <li key={i} className="break-inside-avoid sm:grid sm:grid-cols-[10.5rem_1fr] sm:gap-6">
           <p className="text-sm text-muted-foreground sm:pt-0.5">{entry.date}</p>
           <div className="mt-1 sm:mt-0">
             <h3 className="text-pretty font-serif text-[1.05rem] font-semibold tracking-tight">
@@ -109,15 +109,27 @@ export function CVPage({ lang }: { lang: Lang }) {
   const cv = getExperience(lang)
   const talks = getTalks(lang)
   const t = dict(lang).cv
+  // The site's own address, for the printed copy: known only when SITE_URL is
+  // set at build time (DEPLOY.md), and left out otherwise.
+  const site = process.env.SITE_URL
+    ? `${process.env.SITE_URL.replace(/\/$/, "")}${process.env.BASE_PATH ?? ""}`.replace(/^https?:\/\//, "")
+    : ""
 
   return (
     <Container wide>
+      {/* On paper the page has no header or footer, so the name and how to
+          reach him go on top. */}
+      <p className="mb-4 hidden text-sm print:block">
+        <span className="font-semibold">{profile.name}</span>
+        {profile.email && <> · {profile.email}</>}
+        {site && <> · {site}</>}
+      </p>
       <PageHeader
         title={t.title}
         lead={`${profile.role} · ${profile.affiliation}`}
       />
 
-      <div className="mb-14 flex flex-wrap items-center gap-x-6 gap-y-3">
+      <div className="mb-14 flex flex-wrap items-center gap-x-6 gap-y-3 print:hidden">
         {profile.cv.file && (
         <a
           href={profile.cv.file.startsWith("/") ? `${process.env.BASE_PATH ?? ""}${profile.cv.file}` : profile.cv.file}
@@ -135,7 +147,7 @@ export function CVPage({ lang }: { lang: Lang }) {
         </Link>
       </div>
 
-      <div className="space-y-12">
+      <div className="space-y-12 print:space-y-8">
         <Section title={t.employment}>
           <Timeline entries={cv.employment} />
         </Section>
@@ -170,9 +182,9 @@ export function CVPage({ lang }: { lang: Lang }) {
           <Timeline entries={cv.outreach} />
         </Section>
         <Section title={t.skills}>
-          <dl className="space-y-5">
+          <dl className="space-y-5 print:space-y-[0.9rem]">
             {cv.skills.map((skill) => (
-              <div key={skill.label} className="sm:grid sm:grid-cols-[10.5rem_1fr] sm:gap-6">
+              <div key={skill.label} className="break-inside-avoid sm:grid sm:grid-cols-[10.5rem_1fr] sm:gap-6">
                 <dt className="text-sm text-muted-foreground">{skill.label}</dt>
                 <dd className="mt-1 text-pretty text-[0.95rem] leading-relaxed sm:mt-0">
                   <Sci>{skill.items}</Sci>
