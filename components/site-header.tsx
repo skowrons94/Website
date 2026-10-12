@@ -6,6 +6,7 @@ import { useEffect, useId, useRef, useState } from "react"
 import { ChevronDown, Menu, X } from "lucide-react"
 
 import { LanguageSwitch } from "@/components/language-switch"
+import { Sci } from "@/components/sci"
 import { SearchButton } from "@/components/search/search-button"
 import { ThemeToggle } from "@/components/theme-toggle"
 import type { ChromeStrings } from "@/lib/chrome-strings"
@@ -220,12 +221,12 @@ export function SiteHeader({
             <span className="sm:hidden" aria-hidden>
               {shortName}
             </span>
-            <span className="sr-only sm:not-sr-only">{name}</span>
+            <span className="sr-only whitespace-nowrap sm:not-sr-only">{name}</span>
           </Link>
         </div>
 
         <nav aria-label={t.label} className={`${DESKTOP_FLEX} items-center`}>
-          <ul className="flex items-center gap-5 xl:gap-6">
+          <ul className="flex items-center gap-4 xl:gap-6">
             {bar.map((entry) => (
               <li key={entry.href}>
                 <BarLink item={entry} active={isActive(entry.href)} />
@@ -295,7 +296,7 @@ export function SiteHeader({
                           {entry.label}
                         </span>
                         <span className="block text-pretty text-[0.8125rem] leading-snug text-muted-foreground">
-                          {entry.description}
+                          <Sci>{entry.description}</Sci>
                         </span>
                       </Link>
                     </li>
@@ -304,7 +305,7 @@ export function SiteHeader({
               </section>
             ))}
             {/* On a phone EN/IT and the theme are here rather than in the bar. */}
-            <div className={`flex flex-wrap items-center gap-x-2 gap-y-2 border-t border-border/70 pt-3 ${NARROW_ONLY}`}>
+            <div className={`-mx-3 flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-border/70 pt-3 ${NARROW_ONLY}`}>
               <LanguageSwitch lang={lang} strings={strings.language} variant="menu" />
               <ThemeToggle label={t.theme} withLabel />
             </div>

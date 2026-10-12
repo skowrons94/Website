@@ -342,7 +342,7 @@ export default function CommandPalette({
                         )}
                       </div>
                       {/* What kind of thing it is, in a word. */}
-                      <span className="hidden shrink-0 text-xs text-muted-foreground min-[22.5em]:inline">
+                      <span className="hidden shrink-0 text-xs text-muted-foreground [@media(min-width:22.5em)]:inline">
                         {strings.types[entry.t] ?? entry.t}
                       </span>
                       <CornerDownLeft aria-hidden className={`h-4 w-4 shrink-0 text-muted-foreground ${on ? "opacity-100" : "opacity-0"}`} />

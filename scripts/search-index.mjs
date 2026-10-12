@@ -282,7 +282,9 @@ function evaluationEntries(lang) {
     out.push({
       t: "evaluation",
       l: `${display}: ${reactions.join(", ")}`,
-      s: short(summary || [paper.authors, paper.journal].filter(Boolean).join(", "), 110),
+      // The summary's first sentence; else the paper, whole ("Phys. Rev. C"
+      // is not the end of a sentence).
+      s: summary ? short(summary, 110) : clean([paper.authors, paper.journal, paper.year].filter(Boolean).join(", ")),
       h: loc(lang, `/evaluations/${id}`),
       k: clean(
         [
