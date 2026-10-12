@@ -260,6 +260,7 @@ const en = {
   },
   builtBy:
     "Built by J. Skowronski; rates from his AZURE2 evaluations can be dropped in for REACLIB's, as ¹²C(p,γ) and ¹³C(p,γ) are here (What if ▸ LUNA/AZURE2 rates).",
+  builtByPlain: "Built by J. Skowronski; the explorer can take rates from his AZURE2 evaluations in place of REACLIB's.",
   lunaChip: "LUNA",
   lunaChipTitle: (refs: string) => `Measured underground at LUNA: ${refs}`,
   // -- the s-process explorer --------------------------------------------------
@@ -565,6 +566,7 @@ const it: RatesDict = {
   },
   builtBy:
     "Realizzato da J. Skowronski; i tassi delle sue valutazioni AZURE2 possono prendere il posto di quelli di REACLIB, come qui per la ¹²C(p,γ) e la ¹³C(p,γ) (E se ▸ tassi LUNA/AZURE2).",
+  builtByPlain: "Realizzato da J. Skowronski; l'esploratore può usare i tassi delle sue valutazioni AZURE2 al posto di quelli di REACLIB.",
   lunaChip: "LUNA",
   lunaChipTitle: (refs: string) => `Misurata sotto terra a LUNA: ${refs}`,
   sp: {

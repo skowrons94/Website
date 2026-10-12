@@ -306,7 +306,9 @@ parameters on a grid of its own (a derived copy of the .azr with only its
 extrapolation segments replaced: 1 keV to 4 MeV, refined around narrow
 levels), integrates the Maxwell–Boltzmann average numerically and writes a
 table; `build.py` puts it into the network file as the reaction's
-`alternatives`. Rerun it when an evaluation changes. The LUNA marks and the
+`alternatives`. Rerun it when an evaluation changes. The switch is off
+until `LUNA_RATES_PUBLIC` in `lib/rates/features.ts` is set to true (the
+tables and their tests are in place either way; the LUNA marks always show). The LUNA marks and the
 "newer data" notes come from the atlas (`content/atlas/reactions/*.yaml`:
 underground measurements and evaluations newer than the REACLIB sets).
 

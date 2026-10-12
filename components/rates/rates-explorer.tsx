@@ -17,6 +17,7 @@ import {
   type SensitivityFile,
 } from "@/lib/rates/client"
 import { bottleneck, closes, dominantPath, heaviestProduct, integratedFlows, pathStart } from "@/lib/rates/flow"
+import { LUNA_RATES_PUBLIC } from "@/lib/rates/features"
 import { ratesDict } from "@/lib/rates/i18n"
 import { compiled, historyOf, providerFor, requestKey, type RunResult } from "@/lib/rates/run"
 import type { Network, Reaction, Scenario } from "@/lib/rates/schema"
@@ -119,7 +120,7 @@ function parseHash(h: string) {
     const v = Number(f)
     if (id && v > 0 && v !== 1) scale[decodeURIComponent(id)] = Math.min(10, Math.max(0.1, v))
   }
-  return { net, site: params.get("site") ?? null, scale, luna: params.get("luna") === "1" }
+  return { net, site: params.get("site") ?? null, scale, luna: LUNA_RATES_PUBLIC && params.get("luna") === "1" }
 }
 
 /** Everything the explorer shows first for a network, from its files alone (no worker). */
@@ -256,7 +257,8 @@ export function RatesExplorer({
   const network = data?.network?.id === netId ? data.network : null
   const scenario = network?.scenarios.find((s) => s.id === scenarioId) ?? null
   const altIds = useMemo(
-    () => network?.reactions.filter((r) => r.alternatives?.length).map((r) => r.id) ?? [],
+    () =>
+      LUNA_RATES_PUBLIC ? (network?.reactions.filter((r) => r.alternatives?.length).map((r) => r.id) ?? []) : [],
     [network],
   )
   const alts = useMemo(() => (lunaD ? altIds : []), [lunaD, altIds])
@@ -275,7 +277,7 @@ export function RatesExplorer({
       .filter(([, v]) => v !== 1)
       .map(([id, v]) => `${id}:${v}`)
       .join(",")
-    const h = `#${network.id}${scenario.id !== network.scenarios[0].id ? `&site=${scenario.id}` : ""}${s ? `&s=${s}` : ""}${luna ? "&luna=1" : ""}`
+    const h = `#${network.id}${scenario.id !== network.scenarios[0].id ? `&site=${scenario.id}` : ""}${s ? `&s=${s}` : ""}${LUNA_RATES_PUBLIC && luna ? "&luna=1" : ""}`
     if (window.location.hash !== h) window.history.replaceState(null, "", h)
   }, [network, scenario, scale, luna])
 
@@ -1045,7 +1047,7 @@ export function RatesExplorer({
               )}
             </p>
             <p className="text-pretty leading-relaxed text-muted-foreground">
-              <Sci>{t.builtBy}</Sci> <Sci>{t.gamowResonances}</Sci>
+              <Sci>{LUNA_RATES_PUBLIC ? t.builtBy : t.builtByPlain}</Sci> <Sci>{t.gamowResonances}</Sci>
             </p>
             <ul className="space-y-1.5 font-mono text-[0.8rem] leading-relaxed">
               <li>

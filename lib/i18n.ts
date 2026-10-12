@@ -226,7 +226,7 @@ const en = {
     // --- r9 rates ---
     resourceRates: "Reaction-rate explorer",
     resourceRatesText:
-      "The pp chains, CNO, NeNa, MgAl and the s-process. Find the slowest step at a stellar site, change a rate and watch the abundances respond, computed in your browser from JINA REACLIB, with the LUNA rates of ¹²C(p,γ) and ¹³C(p,γ) from the evaluations on this site.",
+      "The pp chains, CNO, NeNa, MgAl and the s-process. Find the slowest step at a stellar site, change a rate and watch the abundances respond, computed in your browser from JINA REACLIB.",
     resourceRatesSources: "Sources",
     resourceRatesLink: "See where a rate ends up: the rate explorer",
     // --- r7 site ---
@@ -827,7 +827,7 @@ const it: Dictionary = {
     // --- r9 rates ---
     resourceRates: "Esploratore dei tassi di reazione",
     resourceRatesText:
-      "Le catene pp, i cicli CNO, NeNa e MgAl e il processo s. Trova il passo più lento in un ambiente stellare, cambia un tasso e guarda come rispondono le abbondanze, calcolate nel tuo browser da JINA REACLIB, con i tassi LUNA della ¹²C(p,γ) e della ¹³C(p,γ) dalle valutazioni di questo sito.",
+      "Le catene pp, i cicli CNO, NeNa e MgAl e il processo s. Trova il passo più lento in un ambiente stellare, cambia un tasso e guarda come rispondono le abbondanze, calcolate nel tuo browser da JINA REACLIB.",
     resourceRatesSources: "Fonti",
     resourceRatesLink: "Dove va a finire un tasso: l'esploratore dei tassi",
     // --- r7 site ---
