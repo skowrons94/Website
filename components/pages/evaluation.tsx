@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import { notFound } from "next/navigation"
 
 import { EvaluationHeader, nuclideOf as nuclide } from "@/components/evaluation-header"
 import EvaluationWorkspace from "@/components/evaluation-workspace"
@@ -10,10 +11,11 @@ import { dict, localePath, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
 
 /**
- * Every evaluation directory that holds a .azr file, so a static build has a
- * page for each. On the server build a new evaluation is still served on
- * demand without rebuilding the site (it renders without the header, which
- * is read from the repository at build time).
+ * Every evaluation directory that holds a .azr file, so each build has a page
+ * for each. The routes set `dynamicParams = false`: an id that is not in this
+ * list is a 404 rendered by the server, not a client-side "not found" with an
+ * HTTP 200. A new evaluation therefore needs a rebuild of the site, which is
+ * also what gives it its server-rendered header.
  */
 export function evaluationParams() {
   return evaluationIds().map((id) => ({ id }))
@@ -21,6 +23,7 @@ export function evaluationParams() {
 
 export function evaluationMetadata(id: string, lang: Lang): Metadata {
   const t = dict(lang).evaluations
+  if (!evaluationIds().includes(id)) return { title: t.notFoundTitle }
   return pageMetadata(t.pageTitle(nuclide(id)), t.pageDescription(nuclide(id)), lang)
 }
 
@@ -28,12 +31,15 @@ export function EvaluationPage({ id, lang }: { id: string; lang: Lang }) {
   const t = dict(lang).evaluations
   // The atlas entries that point at this evaluation (rmatrix: in their file),
   // so the way back to the physics is as short as the way in.
-  const reactions = getAtlas(lang).reactions.filter((r) => r.rmatrix.includes(id))
   const meta = evaluationMeta(id)
+  if (!meta.known) notFound()
+  const atlas = getAtlas(lang)
+  const reactions = atlas.reactions.filter((r) => r.rmatrix.includes(id))
+  const licence = atlas.meta.licence ? { name: atlas.meta.licence, url: atlas.meta.licenceUrl ?? null } : null
 
   return (
     <>
-      {meta.known && <EvaluationHeader meta={meta} lang={lang} azure2Ref={azure2Ref()} />}
+      <EvaluationHeader meta={meta} lang={lang} azure2Ref={azure2Ref()} licence={licence} />
       <EvaluationWorkspace id={id} known={meta.known} />
       {reactions.length > 0 && (
         <aside className="mt-16 border-t border-border/70 pt-8 text-sm">
@@ -60,3 +66,4 @@ export function EvaluationPage({ id, lang }: { id: string; lang: Lang }) {
     </>
   )
 }
+

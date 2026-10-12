@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { ArrowLeft, ExternalLink } from "lucide-react"
 
+import { SiteUrl } from "@/components/atlas/site-url"
 import { Sci } from "@/components/sci"
 import type { EvaluationMeta } from "@/lib/evaluation-meta"
 import { dict, localePath, type Lang } from "@/lib/i18n"
@@ -10,8 +11,8 @@ export function nuclideOf(id: string): string {
   return id.replace(/^(\d+)/, (m) => m.replace(/\d/g, (d) => "⁰¹²³⁴⁵⁶⁷⁸⁹"[Number(d)]))
 }
 
-/** "E_c.m." with a real subscript. */
-function withEcm(text: string) {
+/** "E_c.m." with a real subscript; `sci` sets nuclide notation in the rest. */
+function withEcm(text: string, sci = false) {
   const parts = text.split("E_c.m.")
   return parts.map((part, i) => (
     <span key={i}>
@@ -21,7 +22,7 @@ function withEcm(text: string) {
           <sub>c.m.</sub>
         </>
       )}
-      {part}
+      {sci ? <Sci>{part}</Sci> : part}
     </span>
   ))
 }
@@ -35,10 +36,13 @@ export function EvaluationHeader({
   meta,
   lang,
   azure2Ref,
+  licence,
 }: {
   meta: EvaluationMeta
   lang: Lang
   azure2Ref: string | null
+  /** The site's content licence (the atlas', content/atlas/atlas.yaml). */
+  licence?: { name: string; url: string | null } | null
 }) {
   const t = dict(lang).evaluations
   const nuclide = nuclideOf(meta.id)
@@ -48,6 +52,31 @@ export function EvaluationHeader({
     .map(([code, n]) => t.observableCount(n, code))
     .join(", ")
   const doiUrl = meta.doi ? `https://doi.org/${meta.doi}` : null
+  const paperRef = meta.paper ? (
+    <>
+      {meta.paper.authors}
+      {meta.paper.title && (
+        <>
+          , “{withEcm(meta.paper.title, true)}”
+        </>
+      )}
+      {meta.paper.journal && `, ${meta.paper.journal}`}
+      {meta.paper.year && ` (${meta.paper.year})`}
+      {doiUrl && (
+        <>
+          ,{" "}
+          <a href={doiUrl} className="break-words text-link underline-offset-4 hover:underline">
+            doi:{meta.doi}
+          </a>
+        </>
+      )}
+      .
+    </>
+  ) : doiUrl ? (
+    <a href={doiUrl} className="break-words text-link underline-offset-4 hover:underline">
+      doi:{meta.doi}
+    </a>
+  ) : null
 
   return (
     <header className="border-b border-border/70 pb-8">
@@ -91,33 +120,52 @@ export function EvaluationHeader({
               </p>
             </section>
           )}
-          <details className="group max-w-2xl rounded-md border border-border/70 bg-card/60 px-4 py-2.5 text-sm">
+          <details id="cite" className="group max-w-2xl scroll-mt-24 rounded-md border border-border/70 bg-card/60 px-4 py-2.5 text-sm">
             <summary className="cursor-pointer select-none font-semibold marker:text-muted-foreground">
               {t.howToCite}
             </summary>
-            <div className="mt-2 space-y-2 leading-relaxed text-muted-foreground">
-              {meta.citation ? (
-                <p>{meta.citation}</p>
-              ) : doiUrl ? (
-                <p>
-                  {t.citeWithPaper}{" "}
-                  <a href={doiUrl} className="break-words text-link underline-offset-4 hover:underline">
-                    doi:{meta.doi}
+            <div className="mt-3 space-y-3 leading-relaxed text-muted-foreground">
+              <p>{meta.citation ? null : paperRef ? t.citeWithPaper : t.citeNoPaper}</p>
+              <ol className="list-decimal space-y-2 pl-5 marker:text-muted-foreground">
+                {meta.citation ? (
+                  <li className="text-foreground">{meta.citation}</li>
+                ) : (
+                  paperRef && <li className="text-foreground">{paperRef}</li>
+                )}
+                <li className="text-foreground">
+                  R. E. Azuma <i>et al.</i>, “AZURE: An R-matrix code for nuclear astrophysics”, Phys. Rev. C{" "}
+                  <b>81</b>, 045805 (2010),{" "}
+                  <a
+                    href="https://doi.org/10.1103/PhysRevC.81.045805"
+                    className="break-words text-link underline-offset-4 hover:underline"
+                  >
+                    doi:10.1103/PhysRevC.81.045805
                   </a>
+                  .
+                </li>
+                <li className="text-foreground">
+                  E. Uberseder and R. J. deBoer, <i>AZURE2 User Manual</i>, version 1.0 (2015).
+                </li>
+                <li className="text-foreground">
+                  {meta.analysis ? `${meta.analysis}, ` : ""}
+                  <i>
+                    <Sci>{t.pageTitle(nuclide)}</Sci>
+                  </i>
+                  {meta.version && `, ${t.citeVersion} ${meta.version}`},{" "}
+                  <SiteUrl path={`/evaluations/${meta.id}`} lang={lang} />.
+                </li>
+              </ol>
+              <p className="text-xs">{t.citeWhat}</p>
+              {licence && (
+                <p className="text-xs">
+                  {t.licence(licence.name)}{" "}
+                  {licence.url && (
+                    <a href={licence.url} rel="license noreferrer" className="text-link underline-offset-4 hover:underline">
+                      {licence.url.replace(/^https?:\/\//, "")}
+                    </a>
+                  )}
                 </p>
-              ) : (
-                <p>{t.citeNoPaper}</p>
               )}
-              <p>
-                {t.citeAzure} {t.azureReference},{" "}
-                <a
-                  href="https://doi.org/10.1103/PhysRevC.81.045805"
-                  className="break-words text-link underline-offset-4 hover:underline"
-                >
-                  doi:10.1103/PhysRevC.81.045805
-                </a>
-                .
-              </p>
             </div>
           </details>
         </div>
@@ -125,7 +173,24 @@ export function EvaluationHeader({
         <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-2 self-start text-sm">
           <dt className="text-muted-foreground">{t.paper}</dt>
           <dd className="min-w-0">
-            {doiUrl ? (
+            {meta.paper ? (
+              <>
+                <span className="block">
+                  {meta.paper.authors}
+                  {meta.paper.journal && `, ${meta.paper.journal}`}
+                  {meta.paper.year && ` (${meta.paper.year})`}
+                </span>
+                {doiUrl && (
+                  <a
+                    href={doiUrl}
+                    className="inline-flex items-center gap-1 break-all text-link underline-offset-4 hover:underline"
+                  >
+                    doi:{meta.doi}
+                    <ExternalLink className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                  </a>
+                )}
+              </>
+            ) : doiUrl ? (
               <a
                 href={doiUrl}
                 className="inline-flex items-center gap-1 break-all text-link underline-offset-4 hover:underline"
@@ -139,10 +204,10 @@ export function EvaluationHeader({
               (meta.reference ?? t.noReference)
             )}
           </dd>
-          {meta.author && (
+          {meta.analysis && (
             <>
-              <dt className="text-muted-foreground">{t.authors}</dt>
-              <dd>{meta.author}</dd>
+              <dt className="text-muted-foreground">{t.analysis}</dt>
+              <dd>{meta.analysis}</dd>
             </>
           )}
           <dt className="text-muted-foreground">{t.energies}</dt>

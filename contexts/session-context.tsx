@@ -17,12 +17,14 @@ import {
   closeSession,
   getData,
   getExtrapolations,
+  getFine,
   openEvaluation,
   resetParameters,
   setParameters,
   type DataSegment,
   type Evaluation,
   type ExtrapSegment,
+  type FineCurve,
   type Scheme,
 } from "@/lib/api"
 import { useDict } from "@/components/lang-provider"
@@ -33,6 +35,9 @@ interface SessionState {
   scheme: Scheme | null
   data: DataSegment[] | null
   extrapolations: ExtrapSegment[] | null
+  /** The model on a fine grid, by data-segment index; null until loaded. */
+  fine: Record<number, FineCurve> | null
+  fineStatus: "idle" | "loading" | "ready" | "failed"
   loading: boolean
   calculating: boolean
   error: string | null
@@ -43,6 +48,7 @@ interface SessionState {
   open: (id: string) => Promise<void>
   loadData: () => Promise<void>
   loadExtrapolations: () => Promise<void>
+  loadFine: () => Promise<void>
   updateParameters: (updates: Record<number, number>) => Promise<void>
   reset: () => Promise<void>
   dismissError: () => void
@@ -59,6 +65,20 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [extrapolations, setExtrapolations] = useState<ExtrapSegment[] | null>(
     null,
   )
+  const [fine, setFineState] = useState<Record<number, FineCurve> | null>(null)
+  const [fineStatus, setFineStatus] = useState<"idle" | "loading" | "ready" | "failed">("idle")
+  // Every change of parameters bumps this, so a fine grid computed for older
+  // parameters is never shown with newer data.
+  const version = useRef(0)
+  const setFine = useCallback((list: FineCurve[] | null | undefined) => {
+    if (!list) {
+      setFineState(null)
+      setFineStatus("idle")
+      return
+    }
+    setFineState(Object.fromEntries(list.map((c) => [c.index, c])))
+    setFineStatus("ready")
+  }, [])
   const [loading, setLoading] = useState(false)
   const [calculating, setCalculating] = useState(false)
   const [error, setErrorText] = useState<string | null>(null)
@@ -97,6 +117,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         setScheme(opened.scheme)
         setData(null)
         setExtrapolations(null)
+        version.current++
+        setFine(null)
       } catch (err) {
         handle(err)
       } finally {
@@ -134,6 +156,21 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     }
   }, [handle])
 
+  // Not "calculating": the curves already on screen stay usable while the
+  // fine grid (whose first build can take a minute) is computed.
+  const loadFine = useCallback(async () => {
+    const id = sessionRef.current
+    if (!id) return
+    const asked = version.current
+    setFineStatus("loading")
+    try {
+      const list = await getFine(id)
+      if (asked === version.current) setFine(list)
+    } catch {
+      if (asked === version.current) setFineStatus("failed")
+    }
+  }, [setFine])
+
   const updateParameters = useCallback(
     async (updates: Record<number, number>) => {
       const id = sessionRef.current
@@ -141,8 +178,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       setCalculating(true)
       try {
         const result = await setParameters(id, updates)
+        version.current++
         setScheme(result.scheme)
         setData(result.data)
+        setFine(result.fine)
         // Extrapolations were computed from the old parameters; drop them so the
         // extrapolation tab refetches rather than showing a stale curve.
         setExtrapolations(null)
@@ -162,8 +201,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setCalculating(true)
     try {
       const result = await resetParameters(id)
+      version.current++
       setScheme(result.scheme)
       setData(result.data)
+      setFine(result.fine)
       setExtrapolations(null)
       setError(null)
     } catch (err) {
@@ -205,6 +246,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         scheme,
         data,
         extrapolations,
+        fine,
+        fineStatus,
         loading,
         calculating,
         error,
@@ -213,6 +256,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         open,
         loadData,
         loadExtrapolations,
+        loadFine,
         updateParameters,
         reset,
         dismissError: () => setError(null),

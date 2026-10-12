@@ -15,7 +15,8 @@ import { localePath } from "@/lib/i18n"
 export interface CardMeta {
   id: string
   reactions: string[]
-  author: string | null
+  analysis: string | null
+  paper: { authors: string; journal: string | null; year: number | null } | null
   doi: string | null
   reference: string | null
   status: string | null
@@ -31,17 +32,19 @@ function Intro() {
         {t.eyebrow}
       </p>
       <h1 className="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">{t.title}</h1>
-      <p className="mt-4 max-w-2xl text-pretty leading-relaxed text-muted-foreground">
-        {t.introBefore}
-        <code className="font-mono text-[0.85em]">.azr</code>
-        {t.introAfter}
-      </p>
+      {/* Who this is for comes first: a visitor after the stars is sent to the
+          atlas before reading about level energies and reduced widths. */}
       <p className="mt-4 max-w-2xl text-pretty rounded-md border-l-2 border-link/60 bg-card/60 py-2 pl-4 pr-3 text-sm leading-relaxed">
         {t.specialistBefore}
         <Link href={localePath(lang, "/atlas")} className="font-medium text-link underline-offset-4 hover:underline">
           {t.specialistLink}
         </Link>
         {t.specialistAfter}
+      </p>
+      <p className="mt-4 max-w-2xl text-pretty leading-relaxed text-muted-foreground">
+        {t.introBefore}
+        <code className="font-mono text-[0.85em]">.azr</code>
+        {t.introAfter}
       </p>
     </div>
   )
@@ -89,7 +92,8 @@ export function EvaluationsIndex({ initial = [] }: { initial?: CardMeta[] }) {
       known: Boolean(known),
       title: api?.title ?? null,
       reactions: known?.reactions.length ? known.reactions : (api?.reactions ?? []),
-      author: known?.author ?? api?.author ?? null,
+      analysis: known?.analysis ?? api?.analysis ?? api?.author ?? null,
+      paper: known?.paper ?? (api?.paper ? { authors: api.paper.authors, journal: api.paper.journal ?? null, year: api.paper.year ?? null } : null),
       doi: known?.doi ?? api?.doi ?? null,
       status: known?.status ?? api?.status ?? null,
       filename: api?.filename ?? known?.filename ?? `${id}.azr`,
@@ -135,13 +139,22 @@ export function EvaluationsIndex({ initial = [] }: { initial?: CardMeta[] }) {
       ) : (
         <ul className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {cards.map((card) => {
-            const name = card.known || !card.title ? nuclide(card.id) : texPlain(card.title)
+            const nucleus = card.known || !card.title ? nuclide(card.id) : texPlain(card.title)
+            // The reaction is the heading (what a physicist looks for); the
+            // compound nucleus, which names the evaluation, comes second.
+            const [lead, ...others] = card.reactions
+            const name = lead ?? nucleus
+            const paper = card.paper
+              ? `${card.paper.authors}${card.paper.journal ? `, ${card.paper.journal}` : ""}${card.paper.year ? ` (${card.paper.year})` : ""}`
+              : card.doi
+                ? `doi:${card.doi}`
+                : t.unpublished
             return (
               <li
                 key={card.id}
                 className="group relative flex min-h-[13.5rem] flex-col rounded-lg border border-border bg-card p-5 transition-colors focus-within:border-foreground/40 hover:border-foreground/30"
               >
-                <h2 className="font-serif text-2xl font-semibold tracking-tight">
+                <h2 className="font-serif text-[1.375rem] font-semibold leading-snug tracking-tight">
                   {/* The title link covers the whole card (after:inset-0), so
                       the card is one target without nesting the download link
                       inside another link. */}
@@ -150,25 +163,32 @@ export function EvaluationsIndex({ initial = [] }: { initial?: CardMeta[] }) {
                     aria-label={t.openAria(name)}
                     className="after:absolute after:inset-0 after:rounded-lg focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-ring group-hover:text-link"
                   >
-                    {card.known || !card.title ? <Sci>{nuclide(card.id)}</Sci> : <Tex math={card.title} />}
+                    {lead ? <Sci>{lead}</Sci> : card.known || !card.title ? <Sci>{nucleus}</Sci> : <Tex math={card.title} />}
                   </Link>
                 </h2>
-                {card.reactions.length > 0 && (
-                  <p className="mt-2 font-serif text-[1.0625rem] leading-snug">
-                    <Sci>{card.reactions.join(" · ")}</Sci>
+                {others.length > 0 && (
+                  <p className="mt-1 font-serif text-[1.0625rem] leading-snug text-muted-foreground">
+                    <Sci>{others.join(" · ")}</Sci>
+                  </p>
+                )}
+                {lead && (
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    <Sci>{t.compound(nucleus)}</Sci>
                   </p>
                 )}
                 <p className="mt-2 text-sm text-muted-foreground">
-                  {card.author && <span className="block">{card.author}</span>}
-                  <span className="block break-all font-mono text-xs">
-                    {card.doi ? `doi:${card.doi}` : card.status === "unpublished" ? t.unpublished : t.noReference}
-                  </span>
+                  <span className="block break-words">{paper}</span>
+                  {card.analysis && (
+                    <span className="block">
+                      {t.analysis}: {card.analysis}
+                    </span>
+                  )}
                 </p>
                 <div className="mt-auto flex items-end justify-between gap-3 pt-4">
                   <p className="min-h-[1.5rem] min-w-0 text-xs text-muted-foreground">
                     {card.channels && (
                       <>
-                        <span className="mr-1.5">{t.channelsLabel}:</span>
+                        {t.channelsLabel}:{" "}
                         {card.channels.map((channel, i) => (
                           <span key={i}>
                             {i > 0 && ", "}

@@ -65,6 +65,8 @@ function Workspace({ id, known }: { id: string; known: boolean }) {
     scheme,
     data,
     extrapolations,
+    fine,
+    fineStatus,
     loading,
     calculating,
     error,
@@ -73,6 +75,7 @@ function Workspace({ id, known }: { id: string; known: boolean }) {
     open,
     loadData,
     loadExtrapolations,
+    loadFine,
     updateParameters,
     reset,
   } = useSession()
@@ -90,7 +93,10 @@ function Workspace({ id, known }: { id: string; known: boolean }) {
     if (!sessionId) return
     if ((tab === "data" || tab === "plot") && data === null) loadData()
     if (tab === "extrap" && extrapolations === null) loadExtrapolations()
-  }, [tab, sessionId, data, extrapolations, loadData, loadExtrapolations])
+    // The smooth model curves, once the data are in (after an edit the
+    // server sends them along when they are cheap; otherwise ask again).
+    if (tab === "plot" && data !== null && !calculating && fineStatus === "idle") loadFine()
+  }, [tab, sessionId, data, extrapolations, loadData, loadExtrapolations, loadFine, fineStatus, calculating])
 
   if (errorStatus === 404 && !scheme) return <NotFoundState id={id} heading={known ? "h2" : "h1"} />
 
@@ -198,6 +204,8 @@ function Workspace({ id, known }: { id: string; known: boolean }) {
             ) : (
               <DataPlot
                 data={data}
+                fine={fine}
+                fineStatus={fineStatus}
                 scheme={scheme!}
                 calculating={calculating}
                 onParameterChange={updateParameters}

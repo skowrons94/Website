@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process"
 import fs from "node:fs"
 import path from "node:path"
 
@@ -17,6 +18,23 @@ import path from "node:path"
 
 const ROOT = path.join(process.cwd(), "server", "evaluations")
 
+/** The paper an evaluation was published in (info.json `paper`). */
+export interface EvaluationPaper {
+  /** As cited: "E. Masha et al." */
+  authors: string
+  title: string | null
+  /** "Phys. Rev. C 108, L052801" */
+  journal: string | null
+  year: number | null
+}
+
+/** A data file's source, from info.json `datasets` (string or object form). */
+export interface DatasetSource {
+  label: string
+  ref: string | null
+  doi: string | null
+}
+
 export interface EvaluationMeta {
   id: string
   /** The model is in this build's tree (so the page was prerendered). */
@@ -24,7 +42,11 @@ export interface EvaluationMeta {
   reactions: string[]
   reference: string | null
   doi: string | null
-  author: string | null
+  /** Who did the R-matrix analysis (info.json `analysis`, or the older `author`). */
+  analysis: string | null
+  paper: EvaluationPaper | null
+  /** Date of the last change to the evaluation's files (git), or info.json `version`. */
+  version: string | null
   status: string | null
   citation: string | null
   summary: string | null
@@ -37,8 +59,8 @@ export interface EvaluationMeta {
   files: number
   /** Observable codes of the active segments, counted. */
   observables: Record<string, number>
-  /** Data-file stem → readable name, from info.json. */
-  datasets: Record<string, string>
+  /** Data-file stem → readable name and source, from info.json. */
+  datasets: Record<string, DatasetSource>
 }
 
 const OBSERVABLE: Record<number, string> = {
@@ -68,6 +90,47 @@ function doiOf(reference: string | null): string | null {
   return /^10\.\d{4,9}\/\S+$/.test(ref) ? ref : null
 }
 
+function paperOf(value: unknown): EvaluationPaper | null {
+  if (!value || typeof value !== "object") return null
+  const p = value as Record<string, unknown>
+  const authors = text(p.authors)
+  if (!authors) return null
+  return {
+    authors,
+    title: text(p.title),
+    journal: text(p.journal),
+    year: typeof p.year === "number" ? p.year : null,
+  }
+}
+
+function datasetsOf(value: unknown): Record<string, DatasetSource> {
+  if (!value || typeof value !== "object") return {}
+  const out: Record<string, DatasetSource> = {}
+  for (const [stem, entry] of Object.entries(value as Record<string, unknown>)) {
+    if (typeof entry === "string") out[stem] = { label: entry, ref: null, doi: null }
+    else if (entry && typeof entry === "object") {
+      const e = entry as Record<string, unknown>
+      const label = text(e.label)
+      if (label) out[stem] = { label, ref: text(e.ref), doi: doiOf(text(e.doi)) }
+    }
+  }
+  return out
+}
+
+/** The date (YYYY-MM-DD) of the last commit touching the evaluation, if git can tell. */
+function lastChange(id: string): string | null {
+  try {
+    const out = execFileSync("git", ["log", "-1", "--format=%cs", "--", path.join(ROOT, id)], {
+      cwd: process.cwd(),
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim()
+    return /^\d{4}-\d{2}-\d{2}$/.test(out) ? out : null
+  } catch {
+    return null
+  }
+}
+
 /** Every evaluation directory that holds a .azr file, sorted by id. */
 export function evaluationIds(): string[] {
   if (!fs.existsSync(ROOT)) return []
@@ -87,7 +150,9 @@ export function evaluationMeta(id: string): EvaluationMeta {
     reactions: [],
     reference: null,
     doi: null,
-    author: null,
+    analysis: null,
+    paper: null,
+    version: null,
     status: null,
     citation: null,
     summary: null,
@@ -110,20 +175,15 @@ export function evaluationMeta(id: string): EvaluationMeta {
     reactions: Array.isArray(info.reactions) ? info.reactions.filter((r): r is string => typeof r === "string") : [],
     reference: text(info.reference),
     doi: doiOf(text(info.reference)),
-    author: text(info.author),
+    analysis: text(info.analysis) ?? text(info.author),
+    paper: paperOf(info.paper),
+    version: lastChange(id) ?? text(info.version),
     status: text(info.status),
     citation: text(info.citation),
     summary: text(info.summary),
     summary_it: text(info.summary_it),
     filename: azr,
-    datasets:
-      info.datasets && typeof info.datasets === "object"
-        ? Object.fromEntries(
-            Object.entries(info.datasets as Record<string, unknown>).filter(
-              (e): e is [string, string] => typeof e[1] === "string",
-            ),
-          )
-        : {},
+    datasets: datasetsOf(info.datasets),
   }
 
   if (azr) {

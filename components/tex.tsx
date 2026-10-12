@@ -176,7 +176,10 @@ export function Unit({ unit }: { unit: string }) {
   )
 }
 
-/** Plain-text form of a unit, for aria-valuetext: "fm^(-1/2)" → "fm^−1/2". */
+/**
+ * Plain-text form of a unit, for aria-valuetext: "fm^(-1/2)" → "fm−1/2" (the
+ * caret is read out literally by screen readers; a minus sign is not).
+ */
 export function unitPlain(unit: string): string {
-  return unit.replace(/\^\(?([^)]*)\)?/, (_, exp: string) => `^${exp.replace(/-/g, "−")}`)
+  return unit.replace(/\^\(?([^)]*)\)?/, (_, exp: string) => exp.replace(/-/g, "−"))
 }

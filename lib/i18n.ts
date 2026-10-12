@@ -243,12 +243,12 @@ const en = {
       "A research tool for nuclear physicists, built to be used rather than read. For what these reactions do in stars and how they are measured, the ",
     specialistLink: "reaction atlas",
     specialistAfter: " is the place to start.",
-    openAria: (name: string) => `Open the ${name} evaluation`,
+    openAria: (name: string) => `Open the evaluation: ${name}`,
     reactionsFitted: "Reactions fitted",
     channelsLabel: "Channels",
     paper: "Paper",
     unpublished: "Unpublished",
-    noReference: "Not yet published",
+    noReference: "Unpublished",
     allEvaluations: "All evaluations",
     headerEyebrow: "R-matrix evaluation · AZURE2",
     authors: "Authors",
@@ -283,6 +283,13 @@ const en = {
     notFoundTitle: "No such evaluation",
     notFoundText: (id: string) =>
       `There is no evaluation called “${id}”. It may have been renamed or removed; the list of evaluations has every one this site serves.`,
+    // --- evaluations (round 2) ---
+    analysis: "R-matrix analysis",
+    compound: (nuclide: string) => `Compound nucleus ${nuclide}`,
+    citeVersion: "version",
+    citeWhat:
+      "Cite the paper for the evaluation, AZURE2 for the code, and this page (with its version) if you use the interactive calculation or its numbers. The measured data belong to their authors: cite the original papers listed in the Data tab.",
+    licence: (name: string) => `This page and the model file are shared under ${name}.`,
   },
 
   /* -- the evaluation workspace ------------------------------------------- */
@@ -382,7 +389,7 @@ const en = {
     dataset: "Dataset",
     reaction: "Reaction",
     observable: "Observable",
-    angle: "Angle (°)",
+    angle: "Angle, c.m. (°)",
     points: "Points",
     norm: "Norm",
     inactive: "inactive",
@@ -417,6 +424,28 @@ const en = {
     previewHint: "The plot stays pinned while you scroll the levels.",
     nothingToPlot: "Nothing to plot: a log axis hides non-positive values.",
     model: "model",
+    // --- evaluations (round 2) ---
+    chi2Shown: "χ²/N of the shown datasets",
+    chi2None: "No χ² for the shown datasets (no uncertainties)",
+    chi2All: "all active",
+    residuals: "Residuals",
+    residualAxis: "(d − m)/σ",
+    residualAria: (names: string) =>
+      `Residuals, (normalised data − model) / uncertainty, against centre-of-mass energy: ${names}.`,
+    ratioRutherford: "σ / σ Rutherford",
+    rutherfordNote:
+      "Elastic dσ/dΩ divided by the Rutherford cross section (Mott for identical particles), in the centre of mass; other segments are shown as cross sections.",
+    fineLoading: "Calculating the model on a fine energy grid… the line through the points is shown meanwhile.",
+    finePointwise: (names: string) =>
+      `Model shown at the measured energies only, joined by straight lines: ${names}. For these segments a calculation on an energy grid of their own does not reproduce AZURE2's values at the data (or they have no single angle or energy range), so no smooth curve is drawn.`,
+    sZero: (energy: string) => `S at ${energy}`,
+    sZeroNote:
+      "The model's S-factor at the lowest energy of each selected extrapolation (centre of mass), read from the curve itself; it is S(0) only if that energy is close enough to zero.",
+    rateNote:
+      "Reaction rates (N_A⟨σv⟩) are not calculated here: the engine interface used by this site does not expose AZURE2's rate integration, and a rate integrated from these curves would miss narrow resonances between grid points.",
+    source: "Source",
+    backgroundPoles: (energy: string, n: number) =>
+      `${n} background poles at ${energy} MeV (fixed, one per spin-parity; axis broken)`,
   },
 
   /* -- atlas -------------------------------------------------------------- */
@@ -838,7 +867,9 @@ const it: Dictionary = {
     noneText: "Aggiungi una cartella con un file .azr alla cartella delle valutazioni del server.",
     open: "Apri",
     download: (file: string) => `Scarica ${file}`,
-    pageTitle: (nuclide: string) => `Valutazione R-matrix del ${nuclide}`,
+    // "dell'⁸Be": the article follows the spoken mass number (otto, undici, diciotto).
+    pageTitle: (nuclide: string) =>
+      `Valutazione R-matrix ${/^(⁸|¹¹|¹⁸)[A-Z]/.test(nuclide) ? "dell'" : "del "}${nuclide}`,
     pageDescription: (nuclide: string) =>
       `Una valutazione R-matrix interattiva del sistema ${nuclide} con AZURE2: schema dei livelli, dati del fit ed estrapolazione alle energie stellari.`,
     inAtlas: "Nell'atlante delle reazioni",
@@ -848,12 +879,12 @@ const it: Dictionary = {
       "Uno strumento di ricerca per fisici nucleari, pensato per essere usato più che letto. Per sapere che cosa fanno queste reazioni nelle stelle e come si misurano, il punto di partenza è l'",
     specialistLink: "atlante delle reazioni",
     specialistAfter: ".",
-    openAria: (name: string) => `Apri la valutazione del ${name}`,
+    openAria: (name: string) => `Apri la valutazione: ${name}`,
     reactionsFitted: "Reazioni nel fit",
     channelsLabel: "Canali",
     paper: "Articolo",
     unpublished: "Non pubblicata",
-    noReference: "Non ancora pubblicata",
+    noReference: "Non pubblicata",
     allEvaluations: "Tutte le valutazioni",
     headerEyebrow: "Valutazione R-matrix · AZURE2",
     authors: "Autori",
@@ -888,6 +919,13 @@ const it: Dictionary = {
     notFoundTitle: "Valutazione inesistente",
     notFoundText: (id: string) =>
       `Non esiste una valutazione chiamata “${id}”. Potrebbe essere stata rinominata o rimossa; l'elenco delle valutazioni le riporta tutte.`,
+    // --- evaluations (round 2) ---
+    analysis: "Analisi R-matrix",
+    compound: (nuclide: string) => `Nucleo composto ${nuclide}`,
+    citeVersion: "versione",
+    citeWhat:
+      "Cita l'articolo per la valutazione, AZURE2 per il codice e questa pagina (con la sua versione) se usi il calcolo interattivo o i suoi numeri. I dati misurati appartengono ai loro autori: cita gli articoli originali elencati nella scheda Dati.",
+    licence: (name: string) => `Questa pagina e il file del modello sono distribuiti con licenza ${name}.`,
   },
 
   /* -- the evaluation workspace ------------------------------------------- */
@@ -989,7 +1027,7 @@ const it: Dictionary = {
     dataset: "Insieme di dati",
     reaction: "Reazione",
     observable: "Osservabile",
-    angle: "Angolo (°)",
+    angle: "Angolo, c.m. (°)",
     points: "Punti",
     norm: "Norm.",
     inactive: "inattivo",
@@ -1024,6 +1062,28 @@ const it: Dictionary = {
     previewHint: "Il grafico resta in vista mentre scorri i livelli.",
     nothingToPlot: "Niente da mostrare: una scala logaritmica nasconde i valori non positivi.",
     model: "modello",
+    // --- evaluations (round 2) ---
+    chi2Shown: "χ²/N dei dataset mostrati",
+    chi2None: "Nessun χ² per i dataset mostrati (mancano le incertezze)",
+    chi2All: "tutti gli attivi",
+    residuals: "Residui",
+    residualAxis: "(d − m)/σ",
+    residualAria: (names: string) =>
+      `Residui, (dati normalizzati − modello) / incertezza, in funzione dell'energia nel centro di massa: ${names}.`,
+    ratioRutherford: "σ / σ Rutherford",
+    rutherfordNote:
+      "dσ/dΩ elastica divisa per la sezione d'urto di Rutherford (di Mott per particelle identiche), nel centro di massa; gli altri segmenti sono mostrati come sezioni d'urto.",
+    fineLoading: "Calcolo del modello su una griglia fine in energia… nel frattempo è mostrata la linea che unisce i punti.",
+    finePointwise: (names: string) =>
+      `Modello mostrato solo alle energie misurate, con i punti uniti da segmenti: ${names}. Per questi segmenti un calcolo su una griglia di energie propria non riproduce i valori di AZURE2 nei punti misurati (oppure non hanno un unico angolo o un intervallo di energie), quindi non viene tracciata una curva continua.`,
+    sZero: (energy: string) => `S a ${energy}`,
+    sZeroNote:
+      "Il fattore S del modello all'energia più bassa di ciascuna estrapolazione selezionata (centro di massa), letto dalla curva stessa; è S(0) solo se quell'energia è abbastanza vicina a zero.",
+    rateNote:
+      "I tassi di reazione (N_A⟨σv⟩) non sono calcolati qui: l'interfaccia del codice usata da questo sito non espone l'integrazione dei tassi di AZURE2, e un tasso integrato da queste curve perderebbe le risonanze strette tra un punto e l'altro della griglia.",
+    source: "Fonte",
+    backgroundPoles: (energy: string, n: number) =>
+      `${n} poli di fondo a ${energy} MeV (fissi, uno per spin-parità; asse interrotto)`,
   },
 
   /* -- atlas -------------------------------------------------------------- */

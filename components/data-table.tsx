@@ -10,7 +10,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Sci } from "@/components/sci"
 import type { DataSegment } from "@/lib/api"
-import { datasetName, qualifier } from "@/lib/eval-plot"
+import { angleText, datasetName, qualifier } from "@/lib/eval-plot"
 import { formatEnergy, observableLabel } from "@/lib/viz"
 import { useDict, useLang } from "@/components/lang-provider"
 import { decimal } from "@/lib/i18n"
@@ -193,6 +193,20 @@ export function DataTable({ data }: Props) {
                       {qualifier(segment) && (
                         <span className="text-muted-foreground"> · {qualifier(segment)}</span>
                       )}
+                      {segment.source?.ref && (
+                        <span className="block text-[11px] text-muted-foreground">
+                          {segment.source.doi ? (
+                            <a
+                              href={`https://doi.org/${segment.source.doi}`}
+                              className="text-link underline-offset-4 hover:underline"
+                            >
+                              {segment.source.ref}
+                            </a>
+                          ) : (
+                            segment.source.ref
+                          )}
+                        </span>
+                      )}
                       <span className="block font-mono text-[11px] text-muted-foreground">
                         {segment.data_file.replace(/^.*\//, "")}
                       </span>
@@ -220,11 +234,9 @@ export function DataTable({ data }: Props) {
                       {range(segment)}
                     </td>
                     <td className="whitespace-nowrap px-2 py-2 text-right tabular-nums">
-                      {segment.observable.startsWith("differential")
-                        ? segment.angle_min === segment.angle_max
-                          ? segment.angle_min.toFixed(1)
-                          : `${segment.angle_min.toFixed(0)}–${segment.angle_max.toFixed(0)}`
-                        : "—"}
+                      {/* The angles the points were measured at (c.m.), not the
+                          segment's filter limits, which may read 0–180. */}
+                      {angleText(segment).replace("°", "") || "—"}
                     </td>
                     <td className="px-2 py-2 text-right tabular-nums">
                       {segment.n_points}
