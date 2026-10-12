@@ -172,10 +172,12 @@ def test_extrap_model_drops_inactive_and_splits(tmp_path):
     azr = os.path.join(EVALUATIONS, "7Be", "7Be.azr")
     tests = TestSegmentSet.from_file(azr)
     captures = fine.capture_keys(azr)
-    path, slots = fine.extrap_model(azr, str(tmp_path), captures)
-    assert len(slots) == sum(t.active for t in tests)
-    # The last two active lines are the total captures: one line per pair.
-    assert [len(g) for g in slots[-2:]] == [len(captures)] * 2
+    path, plan = fine.extrap_model(azr, str(tmp_path), captures)
+    assert len(plan) == sum(t.active for t in tests)
+    # The last two active lines are the total captures: one line per pair,
+    # on their own grid (one piece).
+    assert [len(p) for p in plan[-2:]] == [1, 1]
+    assert [len(p[0]) for p in plan[-2:]] == [len(captures)] * 2
 
 
 def test_angular_distribution_gets_an_angle_grid(tmp_path):
