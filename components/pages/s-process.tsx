@@ -7,7 +7,9 @@ import { SProcessInset, SProcessLegend, SProcessOverview, type Inset } from "@/c
 import { LunaBadge, StatusBadge } from "@/components/atlas/status-badge"
 import { Term } from "@/components/atlas/term"
 import { Sci } from "@/components/sci"
-import { getAtlas, getSProcessPath, type Reaction } from "@/lib/atlas"
+import { SiteUrl } from "@/components/atlas/site-url"
+import { getAtlas, getSProcessPath, pageDate, type Reaction } from "@/lib/atlas"
+import { formatDate } from "@/lib/atlas-format"
 import { dict, localePath, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
 
@@ -32,6 +34,15 @@ const TEXT = {
     overviewLabel:
       "Chart of nuclides from iron (Z = 26) to bismuth (Z = 83), with the s-process path drawn as a line through the stable nuclei it visits, the closed neutron shells N = 50, 82 and 126 shaded, s-only nuclei highlighted and three regions marked A, B and C.",
     tapHint: "The boxes A, B and C are links to the close-ups further down.",
+    tapHintPhone: "The squares are small on a phone: tap A, B or C for a close-up drawn larger, or zoom the page.",
+    pathTitle: "How the path is drawn",
+    sbException:
+      "¹²³Sb, which the rule would mark r-only, is left unmarked: the rule draws no branchings at A = 121 and 122, where some of the s-process flow can pass, and it is not among the r-only nuclei of the literature",
+    updated: "Last updated",
+    citeTitle: "How to cite this page",
+    citeIn: "in",
+    citeNote: "Cite the date you used; it is the last change to this page or to the atlas content.",
+    licence: (name: string) => `Like the rest of the atlas, this page is released under the ${name} licence: you may reuse it, with credit.`,
     insetsTitle: "Three branch points, close up",
     reactionsTitle: "The reactions in the atlas",
     reactionsText:
@@ -53,6 +64,15 @@ const TEXT = {
     overviewLabel:
       "Carta dei nuclidi dal ferro (Z = 26) al bismuto (Z = 83), con il percorso del processo s tracciato come una linea attraverso i nuclei stabili che visita, i gusci di neutroni chiusi N = 50, 82 e 126 ombreggiati, i nuclei solo s evidenziati e tre regioni indicate con A, B e C.",
     tapHint: "I riquadri A, B e C sono link agli ingrandimenti più in basso.",
+    tapHintPhone: "Su un telefono i quadratini sono piccoli: tocca A, B o C per un ingrandimento disegnato più grande, oppure ingrandisci la pagina.",
+    pathTitle: "Come è tracciato il percorso",
+    sbException:
+      "Il ¹²³Sb, che la regola segnerebbe come solo r, non è evidenziato: la regola non disegna diramazioni ad A = 121 e 122, dove può passare parte del flusso del processo s, e non è tra i nuclei solo r della letteratura",
+    updated: "Ultimo aggiornamento",
+    citeTitle: "Come citare questa pagina",
+    citeIn: "in",
+    citeNote: "Cita la data che hai usato: è quella dell'ultima modifica di questa pagina o dei contenuti dell'atlante.",
+    licence: (name: string) => `Come il resto dell'atlante, questa pagina è distribuita con licenza ${name}: puoi riutilizzarla, citandone la fonte.`,
     insetsTitle: "Tre punti di diramazione, da vicino",
     reactionsTitle: "Le reazioni nell'atlante",
     reactionsText:
@@ -80,25 +100,38 @@ const INSETS: Record<Lang, Inset[]> = {
 /** Every reference the page cites, in order of first citation. */
 const ORDER = [
   "kaeppeler2011",
+  "schanz1991",
   "b2fh1957",
   "straniero2006",
   "domingopardo2006",
   "ratzel2004",
   "clayton1961",
   "mohr2016",
+  "merrill1952",
+  "bernatowicz1987",
+  "vaneck2001",
+  "cowan1977",
+  "hampel2016",
   "raut2013",
   "lugaro2011",
   "abbondanno2004",
   "wisshak2006",
-  "heil2008lu",
+  "reifarth2003",
   "beer1980",
+  "heil2008lu",
+  "guerrero2020",
+  "casanovashoste2024",
+  "tagliente2013",
   "bao2000",
   "guerrero2013",
+  "weiss2015",
+  "patronis2023",
   "massimi2014",
   "weigand2015",
   "lederer2013",
   "ratynski1988",
   "lederer2011",
+  "carlson2018",
   "reifarth2009",
   "tessler2015",
   "dillmann2008",
@@ -123,21 +156,23 @@ export function SProcessPage({ lang }: { lang: Lang }) {
   const path = getSProcessPath(lang)
   const to = (p: string) => localePath(lang, p)
   const insets = INSETS[lang]
+  const updated = pageDate("components/pages/s-process.tsx", lang)
+  const meta = atlas.meta
   const c = (...keys: string[]) => (
     <span className="whitespace-nowrap">
       <Cite keys={keys} order={ORDER} />
     </span>
   )
-  // Short terms do not break at their hyphen ("s-" | "process").
+  // Short one-word terms do not break at their hyphen ("s-" | "process").
   const term = (id: string, text: string) => (
-    <Term id={id} lang={lang} className={text.length < 24 ? "whitespace-nowrap" : undefined}>
+    <Term id={id} lang={lang} className={text.length < 24 && !text.includes(" ") ? "whitespace-nowrap" : undefined}>
       <Sci>{text}</Sci>
     </Term>
   )
   const reactionLink = (id: string) => {
     const r = atlas.reactions.find((x) => x.id === id)
     return (
-      <Link href={to(`/atlas/${id}`)} className="whitespace-nowrap font-medium text-link underline-offset-4 hover:underline">
+      <Link href={to(`/atlas/${id}`)} className="font-medium text-link underline-offset-4 hover:underline sm:whitespace-nowrap">
         <Sci>{r?.label ?? id}</Sci>
       </Link>
     )
@@ -165,7 +200,7 @@ export function SProcessPage({ lang }: { lang: Lang }) {
   const prose = "mt-5 max-w-[46rem] space-y-4 text-[1.0625rem] leading-[1.75] text-foreground/90"
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 xl:max-w-7xl">
+    <div className="mx-auto max-w-6xl px-5 py-14 [overflow-wrap:anywhere] sm:px-8 xl:max-w-7xl">
       <Link
         href={to("/atlas")}
         className="-my-2.5 inline-flex items-center gap-1.5 py-2.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
@@ -180,6 +215,16 @@ export function SProcessPage({ lang }: { lang: Lang }) {
           {t.title}
         </h1>
         <p className="mt-4 max-w-2xl text-pretty text-[1.0625rem] leading-relaxed text-muted-foreground">{t.lead}</p>
+        {updated && (
+          <p className="mt-4 text-xs text-muted-foreground">
+            {t.updated}{" "}
+            <time dateTime={updated}>{formatDate(updated, lang)}</time>
+            {" · "}
+            <a href="#cite" className="text-link underline-offset-4 hover:underline">
+              {t.citeTitle}
+            </a>
+          </p>
+        )}
       </header>
 
       {/* -- the overview -------------------------------------------------- */}
@@ -200,12 +245,24 @@ export function SProcessPage({ lang }: { lang: Lang }) {
               <SProcessOverview lang={lang} insets={insets} label={t.overviewLabel} describedBy="overview-description" />
             </div>
           </div>
-          <p className="mt-2 text-xs text-muted-foreground">{t.tapHint}</p>
+          <p className="mt-2 text-xs text-muted-foreground md:hidden">{t.tapHintPhone}</p>
+          <p className="mt-2 hidden text-xs text-muted-foreground md:block">{t.tapHint}</p>
           <figcaption className="mt-3 space-y-3">
             <SProcessLegend lang={lang} />
-            <p id="overview-description" className="max-w-[46rem] text-pretty text-sm leading-relaxed text-muted-foreground">
-              <Sci>{t.pathNote(path.nodes.length, path.sOnly.length)}</Sci>
-            </p>
+            <details className="group max-w-[46rem] rounded-lg border border-border/80">
+              <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+                {t.pathTitle}
+                <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden />
+              </summary>
+              <div id="overview-description" className="space-y-3 px-4 pb-4 text-pretty text-sm leading-relaxed text-muted-foreground">
+                <p>
+                  <Sci>{t.pathNote(path.nodes.length, path.sOnly.length)}</Sci>
+                </p>
+                <p>
+                  <Sci>{t.sbException}</Sci> {c("kaeppeler2011", "schanz1991")}.
+                </p>
+              </div>
+            </details>
           </figcaption>
         </figure>
       </section>
@@ -253,6 +310,27 @@ export function SProcessPage({ lang }: { lang: Lang }) {
             </div>
           </section>
 
+          <section id="cite" className="mt-16 scroll-mt-24 rounded-lg border border-border p-4 sm:p-6" aria-labelledby="cite-heading">
+            <h2 id="cite-heading" className="font-serif text-lg font-semibold tracking-tight">
+              {t.citeTitle}
+            </h2>
+            <p className="mt-3 break-words rounded-md bg-secondary/60 px-4 py-3 font-mono text-[0.8125rem] leading-relaxed">
+              {meta.author}, <i>{t.title}</i>, {t.citeIn} <i>{meta.title}</i>
+              {updated && `, ${updated}`}, <SiteUrl path="/atlas/s-process" lang={lang} />.
+            </p>
+            <p className="mt-2 text-xs text-muted-foreground">{t.citeNote}</p>
+            {meta.licence && (
+              <p className="mt-3 text-pretty text-sm leading-relaxed text-muted-foreground">
+                {t.licence(meta.licence)}{" "}
+                {meta.licenceUrl && (
+                  <a href={meta.licenceUrl} target="_blank" rel="license noreferrer" className="text-link underline-offset-4 hover:underline">
+                    {a.licenceLink}: {meta.licence}
+                  </a>
+                )}
+              </p>
+            )}
+          </section>
+
           <section id="references" className="mt-16 scroll-mt-24 border-t border-border/70 pt-8">
             <h2 className="mb-4 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">{t.references}</h2>
             <ReferenceList keys={ORDER} references={atlas.references} lang={lang} />
@@ -266,6 +344,7 @@ export function SProcessPage({ lang }: { lang: Lang }) {
             <ul className="space-y-0.5 border-l border-border text-sm">
               {(lang === "it" ? TOC_IT : TOC_EN).concat([
                 { id: "reactions-heading", label: t.reactionsTitle },
+                { id: "cite", label: t.citeTitle },
                 { id: "references", label: t.references },
               ]).map((item) => (
                 <li key={item.id}>
@@ -303,6 +382,7 @@ const TOC_EN = [
   { id: "peaks", label: "Peaks at the magic numbers" },
   { id: "components", label: "Main and weak components" },
   { id: "s-and-r", label: "s, r and the isotopes only one makes" },
+  { id: "evidence", label: "Technetium, stardust and lead stars" },
   { id: "branchings", label: "Branch points" },
   { id: "measuring", label: "How the captures are measured" },
 ]
@@ -312,6 +392,7 @@ const TOC_IT = [
   { id: "peaks", label: "I picchi ai numeri magici" },
   { id: "components", label: "Componente principale e debole" },
   { id: "s-and-r", label: "s, r e gli isotopi che solo uno produce" },
+  { id: "evidence", label: "Tecnezio, polvere di stelle e stelle al piombo" },
   { id: "branchings", label: "Punti di diramazione" },
   { id: "measuring", label: "Come si misurano le catture" },
 ]
@@ -365,17 +446,19 @@ function BodyEn({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
             modest: about 10<sup>7</sup> neutrons per cubic centimetre in the ¹³C pocket of an AGB star, up to
             about 10<sup>10</sup> in its brief ²²Ne bursts {c("straniero2006")}, and about 10<sup>11</sup>–10
             <sup>12</sup> in the carbon-burning shell of a massive star {c("kaeppeler2011")}. With a typical capture
-            cross section of a tenth of a barn, a nucleus in the pocket waits about a century between two captures.
+            cross section of a tenth of a barn, a nucleus in the pocket waits about 250 years between two captures,
+            and in the ²²Ne bursts about two months.
           </P>
           <P>
             The path therefore zigzags along the valley of stable nuclei, from iron through krypton, strontium,
             tin and barium to lead and bismuth. <Sci>²⁰⁹Bi</Sci> is the last nucleus it reaches that practically
             does not decay: it is only quasi-stable, with an α half-life of about 2 × 10<sup>19</sup> years. One more
-            capture gives <Sci>²¹⁰Bi</Sci>, which decays to <Sci>²¹⁰Po</Sci>, whose α decay returns the matter to{" "}
-            <Sci>²⁰⁶Pb</Sci>, so the s-process ends in a lead–bismuth cycle {c("domingopardo2006")}. In the laboratory
-            part of the captures make a long-lived isomer of <Sci>²¹⁰Bi</Sci> (about 3 million years); in the star
-            thermal photons empty it quickly into the five-day ground state, so the cycle still closes through{" "}
-            <Sci>²¹⁰Po</Sci> {c("ratzel2004")}.
+            capture gives <Sci>²¹⁰Bi</Sci>, either in its five-day ground state or in a long-lived isomer (about 3
+            million years). The ground state decays to <Sci>²¹⁰Po</Sci>, whose α decay returns the matter to{" "}
+            <Sci>²⁰⁶Pb</Sci>; the isomer ends at <Sci>²⁰⁶Pb</Sci> too, by α decay to <Sci>²⁰⁶Tl</Sci>. Through both
+            states the s-process ends in a lead–bismuth cycle {c("domingopardo2006", "ratzel2004")}. The cycle leaks a
+            little: <Sci>²¹⁰Po</Sci> (138 days) and the isomer can capture one more neutron before they decay, and
+            what they become decays to <Sci>²⁰⁷Pb</Sci> {c("domingopardo2006")}.
           </P>
         </div>
       </section>
@@ -420,7 +503,7 @@ function BodyEn({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
             low-mass {term("agb-star", "AGB stars")}. After each {term("thermal-pulse", "thermal pulse")}, a helium flash
             in the shell around the core, some protons are mixed down into the helium-rich layer and form a thin{" "}
             {term("c13-pocket", "¹³C pocket")}. Between pulses <Sci>¹³C</Sci> burns there quietly by {r("13C-an-16O")}, at a
-            thermal energy kT of about 8 keV; the next pulse, reaching about 300 million kelvin (kT ≈ 23 keV), briefly
+            thermal energy kT of about 8 keV; the next pulse, reaching about 270 million kelvin (kT ≈ 23 keV), briefly
             ignites {r("22Ne-an-25Mg")} as well, with a higher neutron density {c("straniero2006", "kaeppeler2011")}. Where
             the pocket also holds <Sci>¹⁴N</Sci>, the reaction {r("14N-np-14C")} steals neutrons from the iron: it is a strong{" "}
             {term("neutron-poison", "neutron poison")} of AGB stars {c("straniero2006")}.
@@ -460,6 +543,39 @@ function BodyEn({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
         </div>
       </section>
 
+      <section className="mt-14" aria-labelledby="evidence">
+        <H2 id="evidence">The evidence: technetium, stardust and lead stars</H2>
+        <div className={prose}>
+          <P>
+            In 1952 Paul Merrill found lines of technetium in the spectra of red giants of class S{" "}
+            {c("merrill1952")}. Technetium has no stable isotope, and even its longest-lived ones last a few million
+            years, far less than the age of these stars: it had been made inside them, recently. It was the first
+            direct proof that stars build elements, and the s-process makes <Sci>⁹⁹Tc</Sci> on its way{" "}
+            {c("kaeppeler2011")}.
+          </P>
+          <P>
+            In 1987 grains of silicon carbide less than a micrometre across were found in the Murray meteorite,
+            with isotopic compositions unlike anything formed in the Solar System {c("bernatowicz1987")}. They
+            condensed in the winds of AGB stars before the Sun was born, and the krypton, strontium and barium
+            trapped in them carry the s-process pattern of a single star, measured atom by atom in the laboratory{" "}
+            {c("kaeppeler2011")}.
+          </P>
+          <P>
+            In a star poor in iron the same neutrons fall on fewer seeds, so each seed captures more of them and
+            the flow runs through to lead. Classical analyses of the solar abundances needed a third,{" "}
+            <i>strong</i> component to make about half of the <Sci>²⁰⁸Pb</Sci>; AGB stars of low metallicity supply
+            it {c("kaeppeler2011")}. In 2001 three such stars were found that are more enriched in lead than in any other
+            element heavier than iron, as the models predicted {c("vaneck2001")}.
+          </P>
+          <P>
+            Some old stars show a mixture that neither the s- nor the r-process explains. When hydrogen is mixed
+            into a hot helium layer, <Sci>¹³C</Sci> forms and burns at once, and the neutron density climbs to
+            about 10<sup>15</sup> per cubic centimetre, between the s and the r values: the intermediate or{" "}
+            <i>i</i>-process, first suggested by Cowan and Rose in 1977 {c("cowan1977", "hampel2016")}.
+          </P>
+        </div>
+      </section>
+
       <section className="mt-14" aria-labelledby="branchings">
         <H2 id="branchings">Branch points: a thermometer and a gauge of neutron density</H2>
         <div className={prose}>
@@ -490,18 +606,31 @@ function BodyEn({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
             abundance ratio measures the neutron density. At ¹⁵¹Sm (94.6 yr) the path forks again towards ¹⁵²Sm or ¹⁵¹Eu. Its
             capture cross section was measured on radioactive samples at n_TOF and Karlsruhe
           </Sci>{" "}
-          {c("kaeppeler2011", "abbondanno2004", "wisshak2006")}.
+          {c("kaeppeler2011", "abbondanno2004", "wisshak2006")}
+          <Sci>; that of ¹⁴⁷Pm by activating 28 nanograms of it at Karlsruhe</Sci> {c("reifarth2003")}.
         </InsetFigure>
 
         <InsetFigure inset={lu} lang={lang}>
           <Sci>
             ¹⁷⁶Lu lives 37 billion years in the laboratory. Capture on ¹⁷⁵Lu feeds both this ground state and a short-lived
             isomer, ¹⁷⁶Luᵐ (3.66 h), which decays to ¹⁷⁶Hf; in a star thermal photons connect the two states, so the effective
-            half-life of ¹⁷⁶Lu falls steeply with temperature, to days.
+            half-life of ¹⁷⁶Lu falls steeply with temperature, by many orders of magnitude.
             ¹⁷⁶Lu and its daughter ¹⁷⁶Hf are both s-only, shielded by ¹⁷⁶Yb: their ratio is an s-process thermometer
           </Sci>{" "}
           {c("beer1980", "heil2008lu")}.
         </InsetFigure>
+
+        <div className={prose}>
+          <P>
+            Radioactive branch points can now be measured directly, on samples made in reactors. {r("171Tm-ng-172Tm")},
+            on thulium that lives two years, was measured at n_TOF and at SARAF; it captures 2.6 times less readily
+            than the data libraries said {c("guerrero2020")}. {r("204Tl-ng-205Tl")}, on nine milligrams of thallium
+            that lives almost four years, decides how much of the s-only <Sci>²⁰⁴Pb</Sci> is made, and was measured
+            for the first time in 2024 {c("casanovashoste2024")}. <Sci>⁹³Zr</Sci> lives 1.6 million years: in the star
+            it captures like a stable nucleus, and what is left of it decays later to niobium; {r("93Zr-ng-94Zr")} has
+            been measured at n_TOF up to 8 keV {c("tagliente2013")}.
+          </P>
+        </div>
       </section>
 
       <section className="mt-14" aria-labelledby="measuring">
@@ -528,7 +657,10 @@ function BodyEn({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
             energies; the time each takes to reach the sample, along a flight path of tens to hundreds of
             metres, gives its energy, and detectors around the sample count the γ-rays of each capture. The cross
             section is measured at every energy and then averaged for any temperature. Facilities are{" "}
-            {f("n-tof", "n_TOF at CERN")}, with a 185 m flight path from a lead spallation target {c("guerrero2013")};{" "}
+            {f("n-tof", "n_TOF at CERN")}, with a 185 m flight path from a lead spallation target {c("guerrero2013")},
+            a second, vertical one of about 20 m since 2014, whose far more intense beam suits small and
+            radioactive samples {c("weiss2015")}, and since 2021 the NEAR station next to the target, for
+            activations {c("patronis2023")};{" "}
             {f("gelina", "GELINA at the JRC in Geel")}, an electron linear accelerator with flight paths from 10 to 400 m{" "}
             {c("massimi2014")}; and {f("lansce-dance", "DANCE at LANSCE")} in Los Alamos, a ball of 160 barium fluoride
             crystals that can measure samples of a milligram, radioactive ones included {c("weigand2015")}. Such
@@ -542,7 +674,8 @@ function BodyEn({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
             <Sci>⁷Li(p,n)⁷Be</Sci>, give neutrons whose spectrum closely resembles a Maxwell–Boltzmann distribution at
             kT = 25 keV {c("beer1980", "ratynski1988")}. Gold foils measured in this way fixed{" "}
             {r("197Au-ng-198Au")}, the standard to which most stellar captures are referred; time-of-flight data at
-            n_TOF and GELINA later differed from it by about 5% {c("ratynski1988", "lederer2011", "massimi2014")}. The
+            n_TOF and GELINA later differed from it by about 5% {c("ratynski1988", "lederer2011", "massimi2014")}, and the
+            neutron standards of the IAEA now recommend 620 ± 11 mb at kT = 30 keV {c("carlson2018")}. The
             same idea continues at {f("franz", "FRANZ in Frankfurt")}, designed to be about a thousand times more intense{" "}
             {c("reifarth2009")}, and at {f("saraf-lilit", "SARAF")}, where a liquid-lithium target gives a quasi-Maxwellian
             spectrum at kT ≈ 30 keV {c("tessler2015")}.
@@ -585,18 +718,20 @@ function BodyIt({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
             cubo nella tasca di ¹³C di una stella AGB, fino a circa 10<sup>10</sup> nei suoi brevi lampi del ²²Ne{" "}
             {c("straniero2006")}, e circa 10<sup>11</sup>–10<sup>12</sup> nel guscio in cui brucia il carbonio di una
             stella massiccia {c("kaeppeler2011")}. Con una tipica sezione d&apos;urto di cattura di un decimo di barn,
-            un nucleo nella tasca aspetta circa un secolo tra una cattura e l&apos;altra.
+            un nucleo nella tasca aspetta circa 250 anni tra una cattura e l&apos;altra, e nei lampi del ²²Ne circa
+            due mesi.
           </P>
           <P>
             Il percorso procede quindi a zigzag lungo la valle dei nuclei stabili, dal ferro attraverso il kripton,
             lo stronzio, lo stagno e il bario fino al piombo e al bismuto. Il <Sci>²⁰⁹Bi</Sci> è l&apos;ultimo nucleo
-            che raggiunge a non decadere in pratica: è solo quasi stabile, con un tempo di dimezzamento α di circa
-            2 × 10<sup>19</sup> anni. Un&apos;altra cattura dà il <Sci>²¹⁰Bi</Sci>, che decade in <Sci>²¹⁰Po</Sci>, il cui
-            decadimento α riporta la materia al <Sci>²⁰⁶Pb</Sci>: il processo s finisce in un ciclo piombo–bismuto{" "}
-            {c("domingopardo2006")}. In laboratorio una parte delle catture produce un isomero a vita lunga del{" "}
-            <Sci>²¹⁰Bi</Sci> (circa 3 milioni di anni); nella stella i fotoni termici lo svuotano in fretta nello stato
-            fondamentale, che vive cinque giorni, e il ciclo si chiude comunque attraverso il <Sci>²¹⁰Po</Sci>{" "}
-            {c("ratzel2004")}.
+            raggiunto che in pratica non decade: è solo quasi stabile, con un tempo di dimezzamento α di circa
+            2 × 10<sup>19</sup> anni. Un&apos;altra cattura dà il <Sci>²¹⁰Bi</Sci>, nel suo stato fondamentale, che vive
+            cinque giorni, oppure in un isomero di vita lunga (circa 3 milioni di anni). Lo stato fondamentale decade
+            in <Sci>²¹⁰Po</Sci>, il cui decadimento α riporta la materia al <Sci>²⁰⁶Pb</Sci>; anche l&apos;isomero finisce
+            nel <Sci>²⁰⁶Pb</Sci>, con un decadimento α in <Sci>²⁰⁶Tl</Sci>. Attraverso entrambi gli stati il processo s
+            finisce in un ciclo piombo–bismuto {c("domingopardo2006", "ratzel2004")}. Il ciclo perde un po&apos; di
+            materia: il <Sci>²¹⁰Po</Sci> (138 giorni) e l&apos;isomero possono catturare un altro neutrone prima di
+            decadere, e ciò che diventano decade in <Sci>²⁰⁷Pb</Sci> {c("domingopardo2006")}.
           </P>
         </div>
       </section>
@@ -644,7 +779,7 @@ function BodyIt({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
             protoni vengono rimescolati verso il basso nello strato ricco di elio e formano una sottile{" "}
             {term("c13-pocket", "tasca di ¹³C")}. Tra un impulso e l&apos;altro il <Sci>¹³C</Sci> vi brucia tranquillamente
             con la {r("13C-an-16O")}, a un&apos;energia termica kT di circa 8 keV; l&apos;impulso successivo, che arriva a
-            circa 300 milioni di kelvin (kT ≈ 23 keV), accende brevemente anche la {r("22Ne-an-25Mg")}, con una
+            circa 270 milioni di kelvin (kT ≈ 23 keV), accende brevemente anche la {r("22Ne-an-25Mg")}, con una
             densità di neutroni più alta {c("straniero2006", "kaeppeler2011")}. Dove la tasca contiene anche{" "}
             <Sci>¹⁴N</Sci>, la {r("14N-np-14C")} sottrae neutroni al ferro: è un forte{" "}
             {term("neutron-poison", "veleno neutronico")} delle stelle AGB {c("straniero2006")}.
@@ -686,6 +821,41 @@ function BodyIt({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
         </div>
       </section>
 
+      <section className="mt-14" aria-labelledby="evidence">
+        <H2 id="evidence">Le prove: tecnezio, polvere di stelle e stelle al piombo</H2>
+        <div className={prose}>
+          <P>
+            Nel 1952 Paul Merrill trovò le righe del tecnezio negli spettri delle giganti rosse di classe S{" "}
+            {c("merrill1952")}. Il tecnezio non ha isotopi stabili, e anche i più longevi durano pochi milioni di
+            anni, molto meno dell&apos;età di quelle stelle: era stato prodotto al loro interno, di recente. Fu la
+            prima prova diretta che le stelle costruiscono gli elementi, e il processo s produce il{" "}
+            <Sci>⁹⁹Tc</Sci> lungo il suo percorso {c("kaeppeler2011")}.
+          </P>
+          <P>
+            Nel 1987 nel meteorite di Murray furono trovati grani di carburo di silicio di meno di un micrometro,
+            con composizioni isotopiche diverse da tutto ciò che si è formato nel Sistema Solare{" "}
+            {c("bernatowicz1987")}. Si condensarono nei venti di stelle AGB prima che nascesse il Sole, e il kripton,
+            lo stronzio e il bario intrappolati al loro interno portano l&apos;impronta del processo s di una singola
+            stella, misurata atomo per atomo in laboratorio {c("kaeppeler2011")}.
+          </P>
+          <P>
+            In una stella povera di ferro gli stessi neutroni cadono su meno semi, quindi ogni seme ne cattura di
+            più e il flusso arriva fino al piombo. Le analisi classiche delle abbondanze solari avevano bisogno di
+            una terza componente, quella <i>forte</i>, per produrre circa metà del <Sci>²⁰⁸Pb</Sci>; la forniscono le
+            stelle AGB di bassa metallicità {c("kaeppeler2011")}. Nel 2001 furono scoperte tre di queste stelle,
+            arricchite di piombo più che di qualunque altro elemento più pesante del ferro, come prevedevano i
+            modelli {c("vaneck2001")}.
+          </P>
+          <P>
+            Alcune stelle antiche mostrano una miscela che né il processo s né il processo r spiegano. Quando
+            l&apos;idrogeno viene rimescolato in uno strato di elio caldo, il <Sci>¹³C</Sci> si forma e brucia subito, e
+            la densità di neutroni sale fino a circa 10<sup>15</sup> per centimetro cubo, tra i valori del processo s
+            e quelli del processo r: è il processo intermedio, o processo <i>i</i>, proposto per la prima volta da
+            Cowan e Rose nel 1977 {c("cowan1977", "hampel2016")}.
+          </P>
+        </div>
+      </section>
+
       <section className="mt-14" aria-labelledby="branchings">
         <H2 id="branchings">Punti di diramazione: un termometro e un misuratore della densità di neutroni</H2>
         <div className={prose}>
@@ -719,18 +889,32 @@ function BodyIt({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
             biforca di nuovo verso il ¹⁵²Sm o il ¹⁵¹Eu. La sua sezione d&apos;urto di cattura è stata misurata su campioni
             radioattivi a n_TOF e a Karlsruhe
           </Sci>{" "}
-          {c("kaeppeler2011", "abbondanno2004", "wisshak2006")}.
+          {c("kaeppeler2011", "abbondanno2004", "wisshak2006")}
+          <Sci>; quella del ¹⁴⁷Pm attivandone 28 nanogrammi a Karlsruhe</Sci> {c("reifarth2003")}.
         </InsetFigure>
 
         <InsetFigure inset={lu} lang={lang}>
           <Sci>
             Il ¹⁷⁶Lu vive 37 miliardi di anni in laboratorio. La cattura sul ¹⁷⁵Lu alimenta sia questo stato fondamentale sia un
             isomero di vita breve, il ¹⁷⁶Luᵐ (3,66 ore), che decade in ¹⁷⁶Hf; in una stella i fotoni termici collegano i due
-            stati, così il tempo di dimezzamento efficace del ¹⁷⁶Lu crolla con la temperatura, fino a pochi giorni. Il ¹⁷⁶Lu e suo figlio ¹⁷⁶Hf sono entrambi solo s, schermati dal ¹⁷⁶Yb: il loro rapporto è un
+            stati, così il tempo di dimezzamento efficace del ¹⁷⁶Lu crolla con la temperatura, di molti ordini di grandezza. Il ¹⁷⁶Lu e suo figlio ¹⁷⁶Hf sono entrambi solo s, schermati dal ¹⁷⁶Yb: il loro rapporto è un
             termometro del processo s
           </Sci>{" "}
           {c("beer1980", "heil2008lu")}.
         </InsetFigure>
+
+        <div className={prose}>
+          <P>
+            Oggi i punti di diramazione radioattivi si possono misurare direttamente, su campioni prodotti nei
+            reattori. La {r("171Tm-ng-172Tm")}, sul tulio che vive due anni, è stata misurata a n_TOF e a SARAF: il
+            tulio-171 cattura 2,6 volte meno facilmente di quanto dicevano le librerie di dati {c("guerrero2020")}.
+            La {r("204Tl-ng-205Tl")}, su nove milligrammi di tallio che vive quasi quattro anni, decide quanto
+            piombo-204, prodotto solo dal processo s, si forma, ed è stata misurata per la prima volta nel 2024{" "}
+            {c("casanovashoste2024")}. Il <Sci>⁹³Zr</Sci> vive 1,6 milioni di anni: nella stella cattura come un nucleo
+            stabile, e quello che ne resta decade più tardi in niobio; la {r("93Zr-ng-94Zr")} è stata misurata a
+            n_TOF fino a 8 keV {c("tagliente2013")}.
+          </P>
+        </div>
       </section>
 
       <section className="mt-14" aria-labelledby="measuring">
@@ -758,7 +942,9 @@ function BodyIt({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
             decine a centinaia di metri, ne dà l&apos;energia, e i rivelatori intorno al campione contano i raggi γ di
             ogni cattura. La sezione d&apos;urto si misura a ogni energia e poi si media per qualunque temperatura. Gli
             impianti sono {f("n-tof", "n_TOF al CERN")}, con una base di volo di 185 m da un bersaglio di spallazione di
-            piombo {c("guerrero2013")}; {f("gelina", "GELINA al JRC di Geel")}, un acceleratore lineare di elettroni con
+            piombo {c("guerrero2013")}, una seconda base verticale di circa 20 m dal 2014, il cui fascio molto più
+            intenso si presta a campioni piccoli e radioattivi {c("weiss2015")}, e dal 2021 la stazione NEAR accanto
+            al bersaglio, per le attivazioni {c("patronis2023")}; {f("gelina", "GELINA al JRC di Geel")}, un acceleratore lineare di elettroni con
             basi di volo da 10 a 400 m {c("massimi2014")}; e {f("lansce-dance", "DANCE a LANSCE")} a Los Alamos, una sfera
             di 160 cristalli di fluoruro di bario che può misurare campioni di un milligrammo, anche radioattivi{" "}
             {c("weigand2015")}. Campioni simili hanno permesso di misurare i punti di diramazione:{" "}
@@ -772,7 +958,8 @@ function BodyIt({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
             kT = 25 keV {c("beer1980", "ratynski1988")}. Fogli d&apos;oro misurati in questo modo hanno fissato la{" "}
             {r("197Au-ng-198Au")}, il campione di riferimento per la maggior parte delle catture stellari; i dati a tempo
             di volo di n_TOF e GELINA se ne sono poi discostati di circa il 5%{" "}
-            {c("ratynski1988", "lederer2011", "massimi2014")}. La stessa idea continua a {f("franz", "FRANZ a Francoforte")},
+            {c("ratynski1988", "lederer2011", "massimi2014")}, e gli standard neutronici dell&apos;IAEA raccomandano ora
+            620 ± 11 mb a kT = 30 keV {c("carlson2018")}. La stessa idea continua a {f("franz", "FRANZ a Francoforte")},
             progettata per essere circa mille volte più intensa {c("reifarth2009")}, e a {f("saraf-lilit", "SARAF")}, dove
             un bersaglio di litio liquido dà uno spettro quasi maxwelliano a kT ≈ 30 keV {c("tessler2015")}.
           </P>
