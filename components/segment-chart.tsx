@@ -146,7 +146,7 @@ export function SegmentChart({
   }
 
   return (
-    <div role="img" aria-label={ariaLabel ?? `${yLabel} / ${xLabel}`} className="h-full w-full" style={frame}>
+    <div role="img" aria-label={ariaLabel ?? `${yLabel} / ${xLabel}`} className="h-full w-full overflow-hidden" style={frame}>
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart data={rows} margin={{ top: 8, right: 16, bottom: 28, left: 8 }}>
           <CartesianGrid stroke="var(--viz-grid)" strokeDasharray="3 3" />
