@@ -250,6 +250,9 @@ export function NetworkMap({ data }: { data: MapData }) {
     if (!frame) return
     const measure = () => {
       const w = frame.clientWidth
+      // A frame that is momentarily unlaid-out (0 wide) would give a NaN
+      // aspect ratio and NaN geometry; keep the last good size instead.
+      if (w <= 0) return
       // Taller than wide on a phone, where the frame is narrow and the page
       // scrolls anyway; landscape on a desktop, where height is the scarce side.
       const h = Math.round(Math.min(w < 560 ? w * 1.08 : w * 0.72, 680))
