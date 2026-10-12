@@ -25,6 +25,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { LevelDiagram } from "@/components/level-diagram"
+import { useSession } from "@/contexts/session-context"
+import { dataRangeFromSegments, levelKey } from "@/lib/level-layout"
 import {
   evaluationDownloadUrl,
   schemeExportUrl,
@@ -76,6 +78,9 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
   const [energyMin, setEnergyMin] = useState("")
   const [energyMax, setEnergyMax] = useState("")
   const [expanded, setExpanded] = useState<string[]>([])
+  const [selectedLevel, setSelectedLevel] = useState<string | null>(null)
+  const { data } = useSession()
+  const dataRange = useMemo(() => dataRangeFromSegments(data, scheme.pairs), [data, scheme.pairs])
 
   const allJpi = useMemo(() => {
     const seen = new Map<string, number>()
@@ -243,7 +248,13 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
         </CardContent>
       </Card>
 
-      <LevelDiagram levels={filtered} />
+      <LevelDiagram
+        levels={filtered}
+        pairs={scheme.pairs}
+        selectedLevel={selectedLevel}
+        onSelectLevel={setSelectedLevel}
+        dataRange={dataRange}
+      />
 
       <Card>
         <CardHeader className="pb-3">
@@ -282,7 +293,7 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
                     <Fragment key={key}>
                       <tr
                         onClick={() => toggleExpanded(key)}
-                        className="cursor-pointer border-b hover:bg-muted/40"
+                        className={`cursor-pointer border-b hover:bg-muted/40 ${selectedLevel === levelKey(level) ? "bg-muted/60" : ""}`}
                       >
                         <td className="px-1 py-1 text-muted-foreground">
                           <button
