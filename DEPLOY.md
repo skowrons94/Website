@@ -25,8 +25,12 @@ The whole site runs as three containers from `docker-compose.yml`: Caddy
   with spares, 6 without. On 8 GB: 8 (the default). A full server answers a
   new visitor at once with "busy, retry in 15 s" (HTTP 503) instead of
   hanging, after first evicting a spare of another evaluation and then the
-  least recently used idle session. A tab closed without notice (crash,
-  phone) is noticed within 2 minutes (heartbeats).
+  session seen least recently -- never one whose page pinged in the last
+  minute (`AZURE2_EVICT_AFTER`). A tab closed without notice (crash,
+  phone) is noticed within 2 minutes (heartbeats). With memory to spare,
+  `AZURE2_SPARES=7Be:2,24Mg:1` serves two ⁷Be visitors arriving together
+  at once (+0.9 GB); replacements are built one at a time, when no visitor
+  is preparing.
 - **Disk: 5 GB free** for the images (about 650 MB) and the build cache.
 - Install Docker Engine and the Compose plugin:
 
@@ -84,6 +88,7 @@ After changing it, rebuild the site (`make deploy`); a restart is not enough.
 | `AZURE2_UID`, `AZURE2_GID` | the owner of `server/evaluations` (`make env` fills these in; check with `stat -c '%u:%g' server/evaluations`) |
 | `AZURE2_MAX_SESSIONS` | how many evaluations may be open at once, spares included (default 8); see the memory table in section 1 |
 | `AZURE2_SPARES` | `auto` (default) keeps one prepared ⁷Be and ²⁴Mg session ready (1.3 GB); `0` on a box under 4 GB |
+| `AZURE2_EVICT_AFTER` | seconds a session must have been unseen (no request, no heartbeat) before a newcomer may evict it; `0` (default): 2 heartbeat intervals, at least 60 |
 
 Clone as the user that will run `make`, not as root, so the evaluations
 directory belongs to that user and `make env` picks the right ID.
