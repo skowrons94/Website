@@ -733,6 +733,10 @@ export function RatesExplorer({
                 />
               </div>
               <p className="mt-2 text-xs text-muted-foreground">{t.scrubHint}</p>
+              {/* in the chart's own column, so it flows up beside a tall sidebar */}
+              <p className="mt-3 max-w-[46rem] text-pretty text-xs text-muted-foreground">
+                <Sci>{t.decaysNote}</Sci>
+              </p>
               {t.notation[network.id] && (
                 <p className="mt-1 max-w-[46rem] text-pretty text-xs text-muted-foreground">
                   <Sci>{t.notation[network.id]}</Sci>
@@ -794,13 +798,11 @@ export function RatesExplorer({
                     lang={lang}
                   />
                 </div>
+                <p className="mt-2 text-pretty text-xs text-muted-foreground">
+                  <Sci>{t.gamowResonances}</Sci>
+                </p>
               </div>
             </aside>
-          </div>
-          <div className="mt-4 max-w-[46rem] text-muted-foreground">
-            <p className="text-pretty text-xs">
-              <Sci>{t.decaysNote}</Sci>
-            </p>
           </div>
         </section>
       </div>
@@ -1056,7 +1058,7 @@ export function RatesExplorer({
               )}
             </p>
             <p className="text-pretty leading-relaxed text-muted-foreground">
-              <Sci>{LUNA_RATES_PUBLIC ? t.builtBy : t.builtByPlain}</Sci> <Sci>{t.gamowResonances}</Sci>
+              <Sci>{LUNA_RATES_PUBLIC ? t.builtBy : t.builtByPlain}</Sci>
             </p>
             <ul className="space-y-1.5 font-mono text-[0.8rem] leading-relaxed">
               <li>

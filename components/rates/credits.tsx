@@ -45,6 +45,7 @@ export const SPROCESS_REFS = [
   "pignatari2010",
   "woosley2002",
   "jung1992",
+  "takahashi1987",
   "wallace1982",
   "sandu1997",
   "shampine1997",
@@ -130,6 +131,12 @@ export const RATES_REFS: RatesRef[] = [
     text: "M. Jung et al., First observation of bound-state β⁻ decay, Phys. Rev. Lett. 69, 2164 (1992)",
     note: { en: "why ¹⁶⁴Er is not made here", it: "perché qui non si forma il ¹⁶⁴Er" },
     doi: "10.1103/PhysRevLett.69.2164",
+  },
+  {
+    key: "takahashi1987",
+    text: "K. Takahashi and K. Yokoi, Beta-decay rates of highly ionized heavy atoms in stellar interiors, At. Data Nucl. Data Tables 36, 375 (1987)",
+    note: { en: "why ¹⁷⁶Hf is not modelled here", it: "perché qui il ¹⁷⁶Hf non è modellato" },
+    doi: "10.1016/0092-640X(87)90010-6",
   },
   {
     key: "wallace1982",
