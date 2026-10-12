@@ -2,8 +2,13 @@
   "id": "7Be",
   "title": "^{7}\\text{Be}",
   "reference": null,
-  "status": "unpublished",
-  "analysis": "R. J. deBoer, J. Skowronski",
+  "status": "submitted",
+  "paper": {
+    "authors": "J. Skowronski, R. J. deBoer, T. Szücs",
+    "journal": "submitted to Phys. Rev. C",
+    "year": 2026
+  },
+  "analysis": "J. Skowronski, R. J. deBoer",
   "channels": [
     "^{3}\\text{He} + \\alpha",
     "^{6}\\text{Li} + p_{0}",

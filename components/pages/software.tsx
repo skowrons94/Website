@@ -84,16 +84,21 @@ function Entry({ entry, lang }: { entry: SoftwareEntry; lang: Lang }) {
               <h3 className="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
                 {entry.list.title}
               </h3>
-              <dl className="divide-y divide-border/70 border-y border-border/70 text-sm">
-                {entry.list.items.map((item) => (
-                  <div key={item.name} className="py-2.5 sm:grid sm:grid-cols-[14rem_minmax(0,1fr)] sm:gap-4">
-                    <dt className="break-words font-mono text-[0.8125rem]">{item.name}</dt>
-                    <dd className="mt-0.5 text-pretty text-muted-foreground sm:mt-0">
-                      <Sci>{item.text}</Sci>
-                    </dd>
-                  </div>
-                ))}
-              </dl>
+              {listGroups(entry.list.items).map(({ group, items }) => (
+                <div key={group ?? ""} className={group ? "mt-6" : undefined}>
+                  {group && <h4 className="mb-2 text-sm font-semibold">{group}</h4>}
+                  <dl className="divide-y divide-border/70 border-y border-border/70 text-sm">
+                    {items.map((item) => (
+                      <div key={item.name} className="py-2.5 sm:grid sm:grid-cols-[14rem_minmax(0,1fr)] sm:gap-4">
+                        <dt className="break-words font-mono text-[0.8125rem]">{item.name}</dt>
+                        <dd className="mt-0.5 text-pretty text-muted-foreground sm:mt-0">
+                          <Sci>{item.text}</Sci>
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              ))}
             </div>
           )}
 
@@ -161,6 +166,17 @@ function Entry({ entry, lang }: { entry: SoftwareEntry; lang: Lang }) {
       </div>
     </article>
   )
+}
+
+/** A list's items, the ungrouped ones first, then each `group` in order of appearance. */
+function listGroups<T extends { group?: string }>(items: T[]): { group: string | null; items: T[] }[] {
+  const groups = new Map<string | null, T[]>([[null, []]])
+  for (const item of items) {
+    const key = item.group ?? null
+    if (!groups.has(key)) groups.set(key, [])
+    groups.get(key)!.push(item)
+  }
+  return [...groups].filter(([, list]) => list.length > 0).map(([group, list]) => ({ group, items: list }))
 }
 
 export function SoftwarePage({ lang }: { lang: Lang }) {

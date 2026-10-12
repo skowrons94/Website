@@ -174,7 +174,7 @@ const en = {
     openAtlas: "Open the atlas",
     evaluationsTitle: "R-matrix evaluations, live",
     evaluationsText:
-      "Published evaluations, running the real AZURE2 code. Open a compound nucleus, look at its level scheme and the data it was fitted to, move a level energy or a reduced width, and watch the cross section and the χ² respond. Nothing is installed, and the input files can be downloaded and run locally.",
+      "Evaluations from published and forthcoming work, running the real AZURE2 code. Open a compound nucleus, look at its level scheme and the data it was fitted to, move a level energy or a reduced width, and watch the cross section and the χ² respond. Nothing is installed, and the input files can be downloaded and run locally.",
     browseEvaluations: "Browse the evaluations",
     notes: "Notes",
     allNotes: "All notes",
@@ -223,6 +223,9 @@ const en = {
       ", for students and the public as well as specialists. Outreach so far includes Stelle sulla Terra, nuclear astrophysics for children with disabilities (2024), and courses on nuclear astrophysics for high-school students (PCTO, 2021–2022): ",
     impactCv: "outreach in the CV",
     outlookMore: "What comes next →",
+    // --- r7 site ---
+    resourceEvaluationsSplit: (n: number, published: number) =>
+      `${n} R-matrix evaluations running AZURE2 in the browser: ${published} from published papers, ${n - published} not yet published. Each comes with its input files, to download and run locally.`,
   },
 
   /* -- research ----------------------------------------------------------- */
@@ -258,14 +261,14 @@ const en = {
     description:
       "Peer-reviewed articles and conference proceedings by Jakub Skowronski in experimental nuclear astrophysics.",
     lead: (articles: number, proceedings: number, review: number) =>
-      `${articles} peer-reviewed articles and ${proceedings} conference proceedings${review ? `, and ${review} more under review` : ""}. A rule marks my key papers: those on which I am among the first authors or the corresponding author, and those where my role is given beside the authors.`,
+      `${articles} peer-reviewed articles and ${proceedings} conference proceedings${review ? `, and ${review} more submitted or under review` : ""}. A dark rule marks the papers I wrote as first author; a light rule marks my other key papers: those on which I am among the first authors or the corresponding author, and those where my role is given beside the authors.`,
     sections: { article: "Research articles", proceedings: "Conference proceedings" } as Record<string, string>,
     // --- site ---
     profiles: "Complete and current lists, with citations:",
     filter: "Show",
     all: "All",
     firstAuthor: "First author",
-    underReview: "Under review",
+    underReview: "Submitted or under review",
     underReviewNote: "Submitted and not yet published, so not counted among the peer-reviewed articles above.",
     // --- site (round 2) ---
     luna: "LUNA",
@@ -274,6 +277,11 @@ const en = {
     shown: (n: number) => (n === 1 ? "1 publication shown" : `${n} publications shown`),
     // --- site (round 3) ---
     none: "No publication matches this filter.",
+    // --- r7 site ---
+    /** "First author: 5 articles (Phys. Rev. Lett., 3 × Phys. Rev. C, J. Phys. G), 2 conference proceedings and 1 submitted." */
+    firstAuthorSummary: (articles: number, venues: string, proceedings: number, submitted: number) =>
+      `First author: ${articles} ${articles === 1 ? "article" : "articles"}${venues ? ` (${venues})` : ""}, ${proceedings} ${proceedings === 1 ? "conference proceeding" : "conference proceedings"}${submitted ? ` and ${submitted} submitted` : ""}.`,
+    firstAuthorTag: "First author",
   },
 
   /* -- CV ----------------------------------------------------------------- */
@@ -610,6 +618,11 @@ const en = {
     // --- atlas (round 4) ---
     plotData: "Plot the data",
     plotDataOf: (system: string) => `Plot the data of the ${system} evaluation`,
+    // --- r7 site ---
+    /** An evaluation linked from a reaction it does not itself fit: "⁴He(α,α)⁴He (⁸Be) evaluation". */
+    relatedEvaluation: (reaction: string, system: string) => `${reaction} (${system}) evaluation`,
+    relatedEvaluationAria: (reaction: string, system: string) =>
+      `Open the ${system} evaluation, which fits ${reaction}, not this reaction`,
     liveEvaluation: "Live evaluation",
     noLiveEvaluation: "No live evaluation yet",
   },
@@ -757,7 +770,7 @@ const it: Dictionary = {
     openAtlas: "Apri l'atlante",
     evaluationsTitle: "Valutazioni R-matrix, dal vivo",
     evaluationsText:
-      "Valutazioni pubblicate, calcolate con il vero codice AZURE2. Apri un nucleo composto, guarda il suo schema dei livelli e i dati su cui è stato fatto il fit, sposta l'energia di un livello o una larghezza ridotta e osserva come rispondono la sezione d'urto e il χ². Non serve installare nulla, e i file di input si possono scaricare ed eseguire in locale.",
+      "Valutazioni da lavori pubblicati e di prossima pubblicazione, calcolate con il vero codice AZURE2. Apri un nucleo composto, guarda il suo schema dei livelli e i dati su cui è stato fatto il fit, sposta l'energia di un livello o una larghezza ridotta e osserva come rispondono la sezione d'urto e il χ². Non serve installare nulla, e i file di input si possono scaricare ed eseguire in locale.",
     browseEvaluations: "Sfoglia le valutazioni",
     notes: "Note",
     allNotes: "Tutte le note",
@@ -805,6 +818,9 @@ const it: Dictionary = {
       " oltre che in inglese, per arrivare a studenti e pubblico e non solo agli specialisti. Tra le attività di divulgazione: Stelle sulla Terra, astrofisica nucleare per bambini con disabilità (2024), e percorsi di astrofisica nucleare per le scuole superiori (PCTO, 2021–2022): ",
     impactCv: "la divulgazione nel CV",
     outlookMore: "Prospettive →",
+    // --- r7 site ---
+    resourceEvaluationsSplit: (n: number, published: number) =>
+      `${n} valutazioni R-matrix calcolate con AZURE2 nel browser: ${published} da articoli pubblicati, ${n - published} non ancora pubblicate. Ognuna ha i suoi file di input, da scaricare ed eseguire in locale.`,
   },
 
   /* -- research ----------------------------------------------------------- */
@@ -840,14 +856,14 @@ const it: Dictionary = {
     description:
       "Articoli su riviste con revisione paritaria e atti di conferenze di Jakub Skowronski in astrofisica nucleare sperimentale.",
     lead: (articles: number, proceedings: number, review: number) =>
-      `${articles} articoli su riviste con revisione paritaria e ${proceedings} contributi ad atti di conferenze${review ? `, più ${review} in revisione` : ""}. Una linea segna i miei articoli principali: quelli in cui sono tra i primi autori o autore corrispondente, e quelli in cui il mio ruolo è indicato accanto agli autori. I titoli sono riportati come pubblicati.`,
+      `${articles} articoli su riviste con revisione paritaria e ${proceedings} contributi ad atti di conferenze${review ? `, più ${review} inviati o in revisione` : ""}. Una linea scura segna gli articoli di cui sono primo autore; una linea chiara gli altri miei articoli principali: quelli in cui sono tra i primi autori o autore corrispondente, e quelli in cui il mio ruolo è indicato accanto agli autori. I titoli sono riportati come pubblicati.`,
     sections: { article: "Articoli di ricerca", proceedings: "Atti di conferenze" },
     // --- site ---
     profiles: "Elenchi completi e aggiornati, con le citazioni:",
     filter: "Mostra",
     all: "Tutte",
     firstAuthor: "Primo autore",
-    underReview: "In revisione",
+    underReview: "Inviati o in revisione",
     underReviewNote: "Inviati alle riviste e non ancora pubblicati, quindi non contati tra gli articoli con revisione paritaria qui sopra.",
     // --- site (round 2) ---
     luna: "LUNA",
@@ -856,6 +872,10 @@ const it: Dictionary = {
     shown: (n: number) => (n === 1 ? "1 pubblicazione mostrata" : `${n} pubblicazioni mostrate`),
     // --- site (round 3) ---
     none: "Nessuna pubblicazione corrisponde a questo filtro.",
+    // --- r7 site ---
+    firstAuthorSummary: (articles: number, venues: string, proceedings: number, submitted: number) =>
+      `Primo autore: ${articles} ${articles === 1 ? "articolo" : "articoli"}${venues ? ` (${venues})` : ""}, ${proceedings} ${proceedings === 1 ? "contributo" : "contributi"} ad atti di conferenze${submitted ? ` e ${submitted} ${submitted === 1 ? "inviato" : "inviati"}` : ""}.`,
+    firstAuthorTag: "Primo autore",
   },
 
   /* -- CV ----------------------------------------------------------------- */
@@ -1194,6 +1214,10 @@ const it: Dictionary = {
     // --- atlas (round 4) ---
     plotData: "Mostra i dati",
     plotDataOf: (system: string) => `Mostra i dati della valutazione del ${system}`,
+    // --- r7 site ---
+    relatedEvaluation: (reaction: string, system: string) => `Valutazione ${reaction} (${system})`,
+    relatedEvaluationAria: (reaction: string, system: string) =>
+      `Apri la valutazione del ${system}, che descrive la ${reaction}, non questa reazione`,
     liveEvaluation: "Valutazione interattiva",
     noLiveEvaluation: "Nessuna valutazione interattiva per ora",
   },

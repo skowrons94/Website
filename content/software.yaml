@@ -59,11 +59,13 @@ software:
       text: "R. E. Azuma et al., AZURE: An R-matrix code for nuclear astrophysics, Phys. Rev. C 81, 045805 (2010)"
       doi: 10.1103/PhysRevC.81.045805
     note: >-
-      The evaluations on this site run AZURE2 itself on published analyses;
-      the input files can be downloaded and run locally.
+      The evaluations on this site run AZURE2 itself, on published analyses and
+      on work not yet published (each page says which); the input files can be
+      downloaded and run locally.
     note_it: >-
-      Le valutazioni di questo sito eseguono AZURE2 stesso su analisi
-      pubblicate; i file di input si possono scaricare ed eseguire in locale.
+      Le valutazioni di questo sito eseguono AZURE2 stesso, su analisi
+      pubblicate e su lavori non ancora pubblicati (ogni pagina indica quale);
+      i file di input si possono scaricare ed eseguire in locale.
 
   - id: lunasrim
     name: LunaSRIM
@@ -162,13 +164,13 @@ software:
       - Geant4 simulations of underground γ-ray set-ups and of AGATA
       - Femtosecond lifetimes with the Doppler-shift attenuation method
       - R-matrix calculations, fits and rates with AZURE2
-      - Writing papers and proposals, figures in the Physical Review C style, and talks
+      - "Writing and communication: plain prose, figures in the Physical Review C style, and slides"
     uses_it:
       - Rese, forme dei picchi, efficienza di rivelazione e correzioni di somma, profili dei bersagli
       - Simulazioni Geant4 di apparati per raggi γ in laboratorio sotterraneo e di AGATA
       - Vite medie di femtosecondi con il metodo dell'attenuazione dello spostamento Doppler (DSAM)
       - Calcoli, fit e tassi di reazione R-matrix con AZURE2
-      - Scrittura di articoli e proposte, figure nello stile di Physical Review C, e seminari
+      - "Scrittura e comunicazione: prosa semplice, figure nello stile di Physical Review C e slide"
     links:
       - { label: Source on GitHub, label_it: Codice sorgente su GitHub, href: "https://github.com/skowrons94/LUNA-Skills" }
     snippets:
@@ -178,6 +180,7 @@ software:
         code: |-
           git clone https://github.com/skowrons94/LUNA-Skills.git && cd LUNA-Skills
           for s in */; do [ -f "$s/SKILL.md" ] && ln -sfn "$PWD/${s%/}" ~/.claude/skills/"${s%/}"; done
+    # Items with a `group` are shown under that sub-heading, after the others.
     list:
       title: The skills
       title_it: Le skill
@@ -191,9 +194,9 @@ software:
         - { name: delta-beta-dsam, text: "Femtosecond lifetimes with the Doppler-velocity (Δβ) DSAM method", text_it: "Vite medie di femtosecondi con il metodo DSAM a velocità Doppler (Δβ)" }
         - { name: azure2, text: "AZURE2 and pyazr R-matrix calculations, fits, decompositions, extrapolations and rates", text_it: "Calcoli, fit, decomposizioni, estrapolazioni e tassi di reazione R-matrix con AZURE2 e pyazr" }
         - { name: nuclear-research-project, text: "Layout, provenance and reports of reproducible feasibility studies", text_it: "Struttura, tracciabilità e rapporti di studi di fattibilità riproducibili" }
-        - { name: clear-experimental-writing, text: "Experimental manuscripts, abstracts, captions and referee replies", text_it: "Manoscritti sperimentali, abstract, didascalie e risposte ai referee" }
-        - { name: methods-paper-style, text: "Formalism, methods and R-matrix sections in a plain technical register", text_it: "Sezioni di formalismo, metodi e R-matrix in un registro tecnico piano" }
-        - { name: proposal-style, text: "Proposals, grants, fellowships and beam-time requests", text_it: "Proposte, domande di finanziamento, borse e richieste di tempo fascio" }
-        - { name: unslop, text: "Editing prose to remove formulaic wording", text_it: "Revisione dei testi per eliminare le formule fatte" }
-        - { name: prc-figures, text: "Figures in the Physical Review C and ROOT style: spectra, S-factors, heatmaps", text_it: "Figure nello stile di Physical Review C e di ROOT: spettri, fattori S, mappe di calore" }
-        - { name: research-slides, text: "Talks in a consistent layout, Manim animations, rendering and a deck audit", text_it: "Seminari con un'impaginazione coerente, animazioni Manim, rendering e revisione delle slide" }
+        - { name: clear-experimental-writing, group: Writing and communication, group_it: Scrittura e comunicazione, text: "Experimental manuscripts, abstracts, captions and referee replies", text_it: "Manoscritti sperimentali, abstract, didascalie e risposte ai referee" }
+        - { name: methods-paper-style, group: Writing and communication, group_it: Scrittura e comunicazione, text: "Formalism, methods and R-matrix sections in a plain technical register", text_it: "Sezioni di formalismo, metodi e R-matrix in un registro tecnico piano" }
+        - { name: proposal-style, group: Writing and communication, group_it: Scrittura e comunicazione, text: "Proposals, grants, fellowships and beam-time requests", text_it: "Proposte, domande di finanziamento, borse e richieste di tempo fascio" }
+        - { name: unslop, group: Writing and communication, group_it: Scrittura e comunicazione, text: "Plain-English editing", text_it: "Revisione per un inglese semplice e diretto" }
+        - { name: prc-figures, group: Writing and communication, group_it: Scrittura e comunicazione, text: "Figures in the Physical Review C and ROOT style: spectra, S-factors, heatmaps", text_it: "Figure nello stile di Physical Review C e di ROOT: spettri, fattori S, mappe di calore" }
+        - { name: research-slides, group: Writing and communication, group_it: Scrittura e comunicazione, text: "Talks in a consistent layout, Manim animations, rendering and a deck audit", text_it: "Seminari con un'impaginazione coerente, animazioni Manim, rendering e revisione delle slide" }

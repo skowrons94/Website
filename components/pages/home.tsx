@@ -7,7 +7,7 @@ import { HomeNetwork } from "@/components/home-network"
 import { getAtlas } from "@/lib/atlas"
 import {
   getAllNotes,
-  getEvaluationCount,
+  getEvaluationCounts,
   getOutlook,
   getProfile,
   getPublications,
@@ -116,7 +116,7 @@ function resources(lang: Lang): Resource[] {
   const meta = atlas.meta as { licence?: string; version?: string | null }
   const lunasrim = getSoftware(lang).find((s) => s.id === "lunasrim")
   const pypi = lunasrim?.links?.find((l) => /pypi/i.test(l.href))
-  const evaluations = getEvaluationCount()
+  const { total: evaluations, published: publishedEvaluations } = getEvaluationCounts()
   const notes = getAllNotes().length
   const out: Resource[] = [
     {
@@ -142,7 +142,7 @@ function resources(lang: Lang): Resource[] {
     out.push({
       key: "evaluations",
       title: t.resourceEvaluations,
-      text: t.resourceEvaluationsText(evaluations),
+      text: t.resourceEvaluationsSplit(evaluations, publishedEvaluations),
       href: "/evaluations",
       meta: [{ text: t.resourceEvaluationsMeta }],
     })
