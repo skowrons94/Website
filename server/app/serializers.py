@@ -236,7 +236,9 @@ def scheme_to_dict(session, labels, params=None) -> Dict:
         "pairs": pairs,
         "levels": levels,
         "n_free": len(params),
-        "modified": params != list(session.initial_params),
+        "modified": (params != list(session.initial_params)
+                     if hasattr(session, "initial_params")
+                     else bool(getattr(session, "is_modified", False))),
     }
 
 
