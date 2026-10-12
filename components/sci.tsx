@@ -41,20 +41,58 @@ const SUBSCRIPTS: Record<string, string> = {
 // the browser break a mass number across a line.
 const MARKS = /[⁰-ₜ²³¹]+/g
 
+/*
+ * Two line breaks that should never happen: between a number and its unit
+ * ("6.79⏎MeV") and inside "R-matrix" ("R-⏎matrix"). The first is a
+ * no-break space (U+00A0, the same width as the space it replaces, so the line
+ * looks exactly as it did); the second is a nowrap span around the word, which
+ * keeps the ordinary hyphen-minus so the text still copies and searches as
+ * typed. Both look only at prose handed to <Sci>: never maths (KaTeX is not
+ * routed through here) and never an address, because the patterns refuse to
+ * start right after a letter, a digit, "/", "." or "-".
+ */
+export const UNIT_SPACE =
+  /(?<![\p{L}\d/.,-])(\d+(?:[.,]\d+)?(?:\s?[–-]\s?\d+(?:[.,]\d+)?)?) (?=(?:[kMGTm]?eV|[MG]?K|[mµμnpf]?b|[kcmµμnf]?m|[mµμnpf]?s|[kM]?V|M☉|%|m w\.e\.)(?![\p{L}\d]))/gu
+export const NOBREAK_WORD = /(?<![\p{L}\d/.-])R-matri(?:x|ces)(?![\p{L}\d/-])/gu
+
+/** `text` with a no-break space between each number and its unit. */
+export function bindUnits(text: string): string {
+  return text.replace(UNIT_SPACE, "$1\u00a0")
+}
+
+/** Plain text, with "R-matrix" wrapped so it cannot break at its hyphen. */
+function prose(text: string, key: string): ReactNode[] {
+  const out: ReactNode[] = []
+  let last = 0
+  for (const match of text.matchAll(NOBREAK_WORD)) {
+    const start = match.index ?? 0
+    if (start > last) out.push(text.slice(last, start))
+    out.push(
+      <span key={`${key}-${start}`} className="nobr">
+        {match[0]}
+      </span>,
+    )
+    last = start + match[0].length
+  }
+  if (last < text.length) out.push(text.slice(last))
+  return out
+}
+
 /**
  * Split `text` into plain strings and `<sup>`/`<sub>` elements.
  *
  * Exported for the places that need the pieces rather than a wrapper element —
  * a page `<title>`, say, cannot hold markup.
  */
-export function sci(text: string): ReactNode[] {
+export function sci(input: string): ReactNode[] {
+  const text = bindUnits(input)
   const out: ReactNode[] = []
   let last = 0
 
   for (const match of text.matchAll(MARKS)) {
     const run = match[0]
     const start = match.index ?? 0
-    if (start > last) out.push(text.slice(last, start))
+    if (start > last) out.push(...prose(text.slice(last, start), `p${last}`))
 
     // A run is either superscript or subscript; the two never interleave in
     // practice, and if they somehow did, the first character decides so the
@@ -70,7 +108,7 @@ export function sci(text: string): ReactNode[] {
     last = start + run.length
   }
 
-  if (last < text.length) out.push(text.slice(last))
+  if (last < text.length) out.push(...prose(text.slice(last), `p${last}`))
   return out
 }
 

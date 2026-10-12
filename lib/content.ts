@@ -24,6 +24,7 @@ import remarkParse from "remark-parse"
 import remarkRehype from "remark-rehype"
 import { unified } from "unified"
 
+import { bindUnits, NOBREAK_WORD } from "@/components/sci"
 import type { Lang } from "@/lib/i18n"
 import { localize } from "@/lib/localize.mjs"
 
@@ -78,6 +79,10 @@ export interface Profile {
   email: string
   orcid: string
   tagline: string
+  /** The landing page's plain-language paragraph; `[text](/path)` links. */
+  lead?: string
+  /** "Selected work" on the landing page: DOIs and research-thread ids. */
+  selected?: ({ publication: string } | { research: string })[]
   intro: string[]
   links: { label: string; href: string }[]
   cv: { label: string; file: string }
@@ -125,6 +130,8 @@ export interface SoftwareEntry {
   links?: { label: string; href: string }[]
   snippets?: { caption?: string; lang?: string; code: string }[]
   list?: { title: string; items: { name: string; text: string }[] }
+  /** The reference to cite when using it. */
+  cite?: { text: string; doi?: string }
   note?: string
 }
 
@@ -139,7 +146,20 @@ function readYaml<T>(name: string, lang: Lang = "en"): T {
   return localize(yaml.load(fs.readFileSync(file, "utf8")), lang) as T
 }
 
-export const getProfile = (lang: Lang = "en") => readYaml<Profile>("profile.yaml", lang)
+/**
+ * A profile link is shown only when it goes somewhere: an empty address, or a
+ * profile-site root with the person's id still missing (`…/authors/`), is a
+ * placeholder waiting to be filled in, and a link to it would look broken.
+ */
+export function isRealLink(href: string | undefined | null): href is string {
+  if (!href || !href.trim()) return false
+  return !/\/(authors?|profile|user|users)\/?$/i.test(href.trim())
+}
+
+export const getProfile = (lang: Lang = "en"): Profile => {
+  const profile = readYaml<Profile>("profile.yaml", lang)
+  return { ...profile, links: (profile.links ?? []).filter((l) => isRealLink(l.href)) }
+}
 
 export const getResearch = (lang: Lang = "en") =>
   readYaml<{ threads: ResearchThread[] }>("research.yaml", lang).threads
@@ -297,6 +317,28 @@ function rehypeUnicodeScripts() {
     return out
   }
 
+  // Text nodes with "R-matrix" split around a nowrap span holding the word.
+  const nobreak = (nodes: any[]) =>
+    nodes.flatMap((n) => {
+      if (n.type !== "text") return [n]
+      const out: any[] = []
+      let last = 0
+      for (const match of n.value.matchAll(NOBREAK_WORD)) {
+        const start = match.index ?? 0
+        if (start > last) out.push({ type: "text", value: n.value.slice(last, start) })
+        out.push({
+          type: "element",
+          tagName: "span",
+          properties: { className: ["nobr"] },
+          children: [{ type: "text", value: match[0] }],
+        })
+        last = start + match[0].length
+      }
+      if (last === 0) return [n]
+      if (last < n.value.length) out.push({ type: "text", value: n.value.slice(last) })
+      return out
+    })
+
   const walk = (node: any) => {
     if (!node.children) return
     // KaTeX output carries its own scripts; so does anything the author put in
@@ -309,9 +351,13 @@ function rehypeUnicodeScripts() {
     }
     const children: any[] = []
     for (const child of node.children) {
+      // Number and unit on one line, "R-matrix" unbroken (see components/sci.tsx).
+      if (child.type === "text") child.value = bindUnits(child.value)
       if (child.type === "text" && MARKS.test(child.value)) {
         MARKS.lastIndex = 0
-        children.push(...rewrite(child.value))
+        children.push(...nobreak(rewrite(child.value)))
+      } else if (child.type === "text") {
+        children.push(...nobreak([child]))
       } else {
         walk(child)
         children.push(child)
