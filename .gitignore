@@ -35,3 +35,7 @@ public/atlas/data.json
 # Built by browser/assemble.py for the static (GitHub Pages) build
 /public/azure2/
 /build/
+
+# Results cache written next to each evaluation (server/app/cache.py)
+server/evaluations/*/precomputed.json
+server/evaluations/*/.precomputed-*

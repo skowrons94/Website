@@ -27,6 +27,7 @@ import time
 import uuid
 from typing import Dict, List, Optional
 
+from app import cache
 from app.engine import Engine, EngineError
 
 log = logging.getLogger(__name__)
@@ -157,12 +158,24 @@ class Session:
     def calculate_data(self):
         """Cross sections and S-factors for every data segment, at the current
         parameters.  Returns ``(mu, mu_sfactor)``."""
-        return self._engine_call(self.engine.calculate_data)
+        return self._cached("data", self.engine.calculate_data)
 
     def calculate_extrapolations(self):
         """Energies, angles, cross sections and S-factors for every
         extrapolation segment.  Returns ``(energies, angles, mu, mu_sfactor)``."""
-        return self._engine_call(self.engine.calculate_extrapolations)
+        return self._cached("extrap", self.engine.calculate_extrapolations)
+
+    def _cached(self, key, method):
+        """At the evaluation's own parameters, answer from ``app.cache`` when
+        it can and fill it when it cannot; after an edit, always calculate."""
+        if self.is_modified:
+            return self._engine_call(method)
+        hit = cache.read(self.evaluation.path, self.params, key)
+        if hit is not None:
+            return hit
+        result = self._engine_call(method)
+        cache.write(self.evaluation.path, self.params, key, result)
+        return result
 
     def _engine_call(self, method):
         """Run one engine call, reporting a lost worker as a dead session.

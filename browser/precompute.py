@@ -28,7 +28,7 @@ import numpy as np  # noqa: E402
 
 from app import evaluations as evaluations_module  # noqa: E402
 from app.engine import _dispatch  # noqa: E402
-from bridge import CACHE_FILE, encode  # noqa: E402
+from app import cache  # noqa: E402
 
 
 def main(source, destination):
@@ -41,7 +41,7 @@ def main(source, destination):
         if os.path.exists(target):
             shutil.rmtree(target)
         shutil.copytree(evaluation.path, target,
-                        ignore=shutil.ignore_patterns("checks", "__pycache__"))
+                        ignore=shutil.ignore_patterns("checks", "__pycache__", ".precomputed-*"))
         os.makedirs(os.path.join(target, "checks"), exist_ok=True)
 
         t = time.time()
@@ -50,9 +50,8 @@ def main(source, destination):
         data = _dispatch(azr, "data", params)
         extrap = _dispatch(azr, "extrap", params)
         azr.close()
-        with open(os.path.join(target, CACHE_FILE), "w") as f:
-            json.dump({"params": [float(v) for v in params],
-                       "data": encode(data), "extrap": encode(extrap)}, f)
+        cache.write(target, params, "data", data)
+        cache.write(target, params, "extrap", extrap)
         print(f"{evaluation.id}: {time.time() - t:.1f} s", flush=True)
 
     with open(os.path.join(destination, "index.json"), "w") as f:

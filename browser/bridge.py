@@ -19,45 +19,12 @@ Two things differ from the server:
   what makes opening one immediate.
 """
 
-import json
-import os
-
-import numpy as np
-
 from app import session as session_module
-from app.engine import EngineError, ModelInfo, _dispatch, model_info  # noqa: F401
+from app.engine import EngineError, _dispatch, model_info
 from app.session import SessionManager
 
-CACHE_FILE = "precomputed.json"
-
-
-# -- results to and from JSON ---------------------------------------------------
-
-def encode(value):
-    """Engine output (tuples and lists of arrays) as plain JSON."""
-    if isinstance(value, np.ndarray):
-        return {"__ndarray__": value.tolist(), "dtype": str(value.dtype)}
-    if isinstance(value, (list, tuple)):
-        return [encode(v) for v in value]
-    if isinstance(value, (np.floating, np.integer)):
-        return value.item()
-    return value
-
-
-def decode(value):
-    if isinstance(value, dict) and "__ndarray__" in value:
-        return np.asarray(value["__ndarray__"], dtype=value["dtype"])
-    if isinstance(value, list):
-        return [decode(v) for v in value]
-    return value
-
-
-def read_cache(directory):
-    path = os.path.join(directory, CACHE_FILE)
-    if not os.path.exists(path):
-        return None
-    with open(path) as f:
-        return json.load(f)
+# Results at the shipped parameters come from the server's own cache
+# (app/cache.py, used by app.session), filled at build time by precompute.py.
 
 
 # -- the engine ---------------------------------------------------------------
@@ -72,16 +39,7 @@ class InProcessEngine:
         except Exception as err:
             raise EngineError(f"{type(err).__name__}: {err}") from err
         self.info = model_info(self._azr)
-        self._cache = read_cache(cwd)
         self._closed = False
-
-    def _cached(self, key, params):
-        cache = self._cache
-        if not cache or key not in cache:
-            return None
-        if [float(v) for v in params] != cache["params"]:
-            return None
-        return tuple(decode(cache[key]))
 
     def _run(self, command, params):
         try:
@@ -90,10 +48,10 @@ class InProcessEngine:
             raise EngineError(f"{type(err).__name__}: {err}") from err
 
     def calculate_data(self, params):
-        return self._cached("data", params) or self._run("data", params)
+        return self._run("data", params)
 
     def calculate_extrapolations(self, params):
-        return self._cached("extrap", params) or self._run("extrap", params)
+        return self._run("extrap", params)
 
     def is_alive(self):
         return not self._closed

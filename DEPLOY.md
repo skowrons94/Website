@@ -75,6 +75,19 @@ AZURE2) and needs about 2 GB of RAM at `BUILD_JOBS=4`. Then:
   scheme appears within a few seconds, and the Plot tab shows curves.
 - `https://<domain>/atlas` and `https://<domain>/it` load.
 
+Then fill the results cache, once:
+
+```sh
+make warm                # about 2 minutes; prints one line per evaluation
+```
+
+Each evaluation's data and extrapolation curves at its published parameters
+are stored next to the model (`server/evaluations/<id>/precomputed.json`) and
+served from there until a visitor edits a level. Without it the first visitor
+to open the ⁷Be extrapolations waits about 2.5 minutes; with it, about 2
+seconds. The cache fills itself anyway as visitors use the site, and it
+invalidates itself when an evaluation's `.azr` or data files change.
+
 ## 5. Updating
 
 ```sh
@@ -88,7 +101,7 @@ make update              # rebuilds the site only (content/, app/, components/, 
 safe; unchanged layers are reused.
 
 A new or corrected evaluation under `server/evaluations/` needs only
-`make evaluations` (restarts the API, no rebuild).
+`make evaluations` (restarts the API, no rebuild), then `make warm`.
 
 ## 6. Where things live
 

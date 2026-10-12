@@ -12,7 +12,7 @@ COMPOSE ?= docker compose
 
 .DEFAULT_GOAL := help
 .PHONY: help env deploy update restart down logs logs-web logs-azure2 check \
-        evaluations dev-server dev-site
+        evaluations warm dev-server dev-site
 
 help:                       ## show this list
 	@grep -hE '^[a-z0-9-]+:.*?## ' $(MAKEFILE_LIST) \
@@ -61,6 +61,9 @@ check:                      ## container status, and what the API reports
 evaluations:                ## pick up new or edited evaluations, without a rebuild
 	$(COMPOSE) restart azure2
 	@$(MAKE) --no-print-directory check
+
+warm:                       ## precompute every evaluation's curves, so first visits are instant
+	$(COMPOSE) exec -T azure2 python3 -m app.warm
 
 # -- local development -------------------------------------------------------
 # The API needs pyazr, which ships with AZURE2. Point AZURE2_SRC at a checkout

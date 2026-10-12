@@ -39,7 +39,7 @@ parallel region run on one thread. The ⁷Be extrapolations, which recompute
 external-capture integrals, take about 9 minutes in Chromium against about 6 on
 one native core.
 
-**Precomputed results.** `precompute.py` stores the data and extrapolation
+**Precomputed results.** `precompute.py` stores (with `server/app/cache.py`, the same cache the server uses) the data and extrapolation
 curves of every evaluation at its shipped parameters (`precomputed.json` next to
 the model), calculated natively by the same build the server uses. While a
 session's parameters are unchanged, these are returned; the first edit switches
