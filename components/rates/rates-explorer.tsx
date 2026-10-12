@@ -16,6 +16,7 @@ import {
   type Baseline,
   type SensitivityFile,
 } from "@/lib/rates/client"
+import { parseRatesHash, ratesHash } from "@/lib/rates/url"
 import { bottleneck, closes, dominantPath, heaviestProduct, integratedFlows, pathStart } from "@/lib/rates/flow"
 import { LUNA_RATES_PUBLIC } from "@/lib/rates/features"
 import { ratesDict } from "@/lib/rates/i18n"
@@ -110,17 +111,10 @@ const rangeOf = (lo: number, hi: number): [number, number] => {
 }
 const fill3 = (ids: string[]): (string | null)[] => [ids[0] ?? null, ids[1] ?? null, ids[2] ?? null]
 
-/** #cno&site=nova&s=N14_p_to_O15_reaclib:2 — a setting as an address. */
+/** #cno&site=nova&s=N14_p_to_O15_reaclib:2 — a setting as an address (lib/rates/url.ts). */
 function parseHash(h: string) {
-  const [net, ...rest] = h.replace(/^#/, "").split("&")
-  const params = new Map(rest.map((p) => p.split("=") as [string, string]))
-  const scale: Record<string, number> = {}
-  for (const pair of (params.get("s") ?? "").split(",").filter(Boolean)) {
-    const [id, f] = pair.split(":")
-    const v = Number(f)
-    if (id && v > 0 && v !== 1) scale[decodeURIComponent(id)] = Math.min(10, Math.max(0.1, v))
-  }
-  return { net, site: params.get("site") ?? null, scale, luna: LUNA_RATES_PUBLIC && params.get("luna") === "1" }
+  const a = parseRatesHash(h)
+  return { ...a, luna: LUNA_RATES_PUBLIC && a.luna }
 }
 
 /** Everything the explorer shows first for a network, from its files alone (no worker). */
@@ -208,20 +202,45 @@ export function RatesExplorer({
   const [sens, setSens] = useState<SensitivityFile | null>(null)
   const pending = useRef<ReturnType<typeof parseHash> | null>(null)
 
+  // set every control from a network file and an address (or the defaults)
+  const apply = useCallback((d: { network: Network; baseline: Baseline | null }, h: ReturnType<typeof parseHash> | null) => {
+    const st = initState(d.network, d.baseline, h)
+    setData(d)
+    setScenarioId(st.scenarioId)
+    setCond(st.cond)
+    setScale(st.scale)
+    setRefId(st.refId)
+    setSlots(st.slots)
+    setShown(st.shown)
+    setActive(st.active)
+    setLuna(st.luna)
+    setBase(st.base)
+    setMod(st.mod)
+    setSens(null)
+  }, [])
+  const dataRef = useRef(data)
+  dataRef.current = data
+
   // the network in the address: /atlas/rates#cno (and a shared setting)
   useEffect(() => {
-    const fromHash = () => {
+    const fromHash = (e?: Event) => {
       const h = parseHash(window.location.hash)
-      if (tabs.some((x) => x.id === h.net)) {
-        pending.current = h
-        setNetId(h.net)
-        setData((d) => (d && d.network.id === h.net ? { ...d } : d))
+      if (!tabs.some((x) => x.id === h.net)) return
+      const d = dataRef.current
+      // a new address on the network already open (#cno → #cno&site=nova,
+      // back/forward, a curiosity's "Try it"): apply it here, as the load
+      // below only runs when the network changes
+      if (e && d && d.network.id === h.net) {
+        apply(d, h)
+        return
       }
+      pending.current = h
+      setNetId(h.net)
     }
     fromHash()
     window.addEventListener("hashchange", fromHash)
     return () => window.removeEventListener("hashchange", fromHash)
-  }, [tabs])
+  }, [tabs, apply])
 
   useEffect(() => {
     let live = true
@@ -229,30 +248,17 @@ export function RatesExplorer({
     loadNetwork(netId)
       .then((d) => {
         if (!live) return
-        const n = d.network
-        const h = pending.current && pending.current.net === n.id ? pending.current : null
+        const h = pending.current && pending.current.net === d.network.id ? pending.current : null
         // only the load it was meant for consumes a shared setting: the
         // preloaded first network may resolve first and must not clear it
         if (h) pending.current = null
-        const st = initState(n, d.baseline, h)
-        setData(d)
-        setScenarioId(st.scenarioId)
-        setCond(st.cond)
-        setScale(st.scale)
-        setRefId(st.refId)
-        setSlots(st.slots)
-        setShown(st.shown)
-        setActive(st.active)
-        setLuna(st.luna)
-        setBase(st.base)
-        setMod(st.mod)
-        setSens(null)
+        apply(d, h)
       })
       .catch((e) => live && setError(String(e)))
     return () => {
       live = false
     }
-  }, [netId])
+  }, [netId, apply])
 
   const network = data?.network?.id === netId ? data.network : null
   const scenario = network?.scenarios.find((s) => s.id === scenarioId) ?? null
@@ -273,11 +279,12 @@ export function RatesExplorer({
   // keep the address in step (replace, so the back button leaves the page)
   useEffect(() => {
     if (!network || !scenario) return
-    const s = Object.entries(scale)
-      .filter(([, v]) => v !== 1)
-      .map(([id, v]) => `${id}:${v}`)
-      .join(",")
-    const h = `#${network.id}${scenario.id !== network.scenarios[0].id ? `&site=${scenario.id}` : ""}${s ? `&s=${s}` : ""}${LUNA_RATES_PUBLIC && luna ? "&luna=1" : ""}`
+    const h = ratesHash({
+      net: network.id,
+      site: scenario.id !== network.scenarios[0].id ? scenario.id : null,
+      scale,
+      luna: LUNA_RATES_PUBLIC && luna,
+    })
     if (window.location.hash !== h) window.history.replaceState(null, "", h)
   }, [network, scenario, scale, luna])
 

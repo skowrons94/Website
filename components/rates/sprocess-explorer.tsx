@@ -11,6 +11,7 @@ import { localePath, type Lang } from "@/lib/locale"
 import { decayMap, decayed, macs, neutronsPerSeed } from "@/lib/rates/analysis"
 import { loadNetwork, loadSensitivity, runBurn, type Baseline, type SensitivityFile } from "@/lib/rates/client"
 import { ratesDict } from "@/lib/rates/i18n"
+import { parseRatesHash, ratesHash } from "@/lib/rates/url"
 import { networkProvider } from "@/lib/rates/rate-provider"
 import type { RunResult } from "@/lib/rates/run"
 import type { SProcessFirstView } from "@/lib/rates/first-view"
@@ -79,16 +80,27 @@ export function SProcessExplorer({
   const [sensOpen, setSensOpen] = useState(false)
   const [sens, setSens] = useState<SensitivityFile | null>(null)
 
+  // a setting from the address (#site=massive-he-core&s=…): on load, and
+  // when the address changes on the page (back/forward, a curiosity's "Try it")
+  const applyHash = (n: Network) => {
+    const h = parseRatesHash(window.location.hash)
+    const s = n.scenarios.find((x) => x.id === h.site) ?? n.scenarios[0]
+    const sc = Object.fromEntries(Object.entries(h.scale).filter(([id]) => n.reactions.some((r) => r.id === id)))
+    setScenarioId(s.id)
+    setCond(fromScenario(s))
+    setScale(sc)
+    setActive(Object.keys(sc)[0] ?? n.ui.groups?.[0]?.reactions[0] ?? null)
+  }
+  const applyRef = useRef(applyHash)
+  applyRef.current = applyHash
+
   useEffect(() => {
     let live = true
     loadNetwork(NETWORK)
       .then((d) => {
         if (!live) return
         setData(d)
-        const s = d.network.scenarios[0]
-        setScenarioId(s.id)
-        setCond(fromScenario(s))
-        setActive(d.network.ui.groups?.[0]?.reactions[0] ?? null)
+        applyRef.current(d.network)
       })
       .catch((e) => live && setError(String(e)))
     return () => {
@@ -96,11 +108,26 @@ export function SProcessExplorer({
     }
   }, [])
 
+  useEffect(() => {
+    if (!data) return
+    const on = () => applyRef.current(data.network)
+    window.addEventListener("hashchange", on)
+    return () => window.removeEventListener("hashchange", on)
+  }, [data])
+
   const network = data?.network ?? null
   const scenario = network?.scenarios.find((s) => s.id === scenarioId) ?? null
   const provider = useMemo(() => (network ? networkProvider(network) : null), [network])
   const decays = useMemo(() => (network && provider ? decayMap(network, provider) : null), [network, provider])
   const changed = Object.values(scale).some((v) => v !== 1)
+
+  // keep the address in step (replace, so the back button leaves the page)
+  useEffect(() => {
+    if (!network || !scenario) return
+    const h = ratesHash({ site: scenario.id !== network.scenarios[0].id ? scenario.id : null, scale })
+    if (window.location.hash !== h && (h || window.location.hash))
+      window.history.replaceState(null, "", h || window.location.pathname + window.location.search)
+  }, [network, scenario, scale])
 
   const seq = useRef(0)
   useEffect(() => {

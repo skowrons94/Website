@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Loader2, X } from "lucide-react"
 
 import { Sci } from "@/components/sci"
@@ -213,8 +213,17 @@ export function StatusLine({
 }) {
   const t = ratesDict(lang)
   const s = useElapsed(busy)
+  // a drag makes many results a second: the screen reader hears only the
+  // last one, once nothing has changed for 0.8 s, and never "Calculating…"
+  const doneRef = useRef<HTMLSpanElement>(null)
+  const [said, setSaid] = useState("")
+  useEffect(() => {
+    if (busy) return
+    const id = setTimeout(() => setSaid(error ? `${t.failed} ${error}` : (doneRef.current?.textContent ?? "")), 800)
+    return () => clearTimeout(id)
+  }, [busy, error, t])
   return (
-    <p className="flex min-h-5 items-center gap-2 text-xs text-muted-foreground" role="status" aria-live="polite">
+    <p className="flex min-h-5 items-center gap-2 text-xs text-muted-foreground">
       {busy ? (
         <>
           <Loader2 className="h-3.5 w-3.5 animate-spin motion-reduce:animate-none" aria-hidden />
@@ -225,8 +234,11 @@ export function StatusLine({
           {t.failed} {error}
         </span>
       ) : (
-        done
+        <span ref={doneRef}>{done}</span>
       )}
+      <span className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+        {said}
+      </span>
     </p>
   )
 }
@@ -272,7 +284,7 @@ export function ResultStrip({
         <span className="shrink-0 text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
           {t.stripTitle}
         </span>
-        <div className="min-w-0 flex-1 text-sm" aria-live="polite">
+        <div className="min-w-0 flex-1 text-sm">
           {busy ? (
             <span className="inline-flex items-center gap-1.5 text-muted-foreground">
               <Loader2 className="h-3.5 w-3.5 animate-spin motion-reduce:animate-none" aria-hidden />
