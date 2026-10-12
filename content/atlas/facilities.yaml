@@ -863,7 +863,7 @@ facilities:
       Un istituto di ricerca nazionale giapponese i cui acceleratori producono
       fasci di nuclei a vita breve frammentando in volo nuclei più pesanti. Qui
       è stata fatta, con il separatore di frammenti RIPS, la prima misura della
-      dissociazione coulombiana del ⁸B.
+      dissociazione coulombiana dell'⁸B.
     refs: [motobayashi1994]
 
   - id: gsi
@@ -880,5 +880,5 @@ facilities:
     summary_it: >-
       Un laboratorio di acceleratori di ioni pesanti. Il suo separatore di
       frammenti fornisce fasci veloci di nuclei a vita breve, usati per misurare
-      la dissociazione coulombiana del ⁸B e la rottura del ⁶Li.
+      la dissociazione coulombiana dell'⁸B e la rottura del ⁶Li.
     refs: [schumann2006, hammache2010]

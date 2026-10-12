@@ -8,6 +8,7 @@ import { ArrowLeft, ArrowRight, ChevronDown, SlidersHorizontal } from "lucide-re
 
 import { Cite, ReferenceList } from "@/components/atlas/reference-list"
 import { LunaBadge, StatusBadge } from "@/components/atlas/status-badge"
+import { linkTerms } from "@/components/atlas/linked-text"
 import { Term } from "@/components/atlas/term"
 import { Sci } from "@/components/sci"
 import {
@@ -65,6 +66,8 @@ function Facts({ reaction: r, lang }: { reaction: Reaction; lang: Lang }) {
   const atlas = getAtlas(lang)
   const t = dict(lang).atlas
   const annihilation = r.q ? t.qAnnihilation(decimal(r.q.kinetic.toFixed(3), lang)) : []
+  // Glossary links inside the facts box: once each, in this box.
+  const seen = new Set<string>(["gamow", "q"])
   return (
     <div className="rounded-lg border border-border bg-card p-5 sm:p-6">
       <Label>{t.facts}</Label>
@@ -77,7 +80,7 @@ function Facts({ reaction: r, lang }: { reaction: Reaction; lang: Lang }) {
               </Term>
             </dt>
             <dd className="mt-1 text-pretty text-[0.8125rem] leading-relaxed text-foreground/85">
-              <Sci>{r.statusNote || statusHint(r.status, lang)}</Sci>
+              {linkTerms(r.statusPlain || r.statusNote || statusHint(r.status, lang), lang, seen)}
             </dd>
           </div>
         )}
@@ -87,7 +90,8 @@ function Facts({ reaction: r, lang }: { reaction: Reaction; lang: Lang }) {
             <dt className="text-muted-foreground">
               <Term id="q-value" lang={lang}>
                 {t.qValue}
-              </Term>
+              </Term>{" "}
+              <span className="text-xs">· {r.q.value < 0 ? t.qNeeded : t.qReleased}</span>
             </dt>
             <dd className="mt-0.5 text-base font-medium tabular">{formatQ(r.q, lang)}</dd>
             {r.q.annihilation && (
@@ -133,18 +137,21 @@ function Facts({ reaction: r, lang }: { reaction: Reaction; lang: Lang }) {
                 {r.gamow.map((g) => (
                   <li key={`${g.T9}-${g.label}`}>
                     <span className="font-medium tabular">{formatGamow(g, lang)}</span>
+                    {g.thresholdLimited && g.threshold !== undefined && (
+                      <span className="block text-xs text-foreground/80">
+                        <Term id="threshold" lang={lang}>
+                          {t.thresholdLimited(decimal((g.threshold / 1000).toFixed(2), lang))}
+                        </Term>
+                      </span>
+                    )}
                     <span className="block text-xs text-muted-foreground">
-                      <Sci>{g.label}</Sci>, {formatTemperature(g.T9, lang)} (
+                      {linkTerms(g.label, lang, seen)},{" "}
+                      {linkTerms(formatTemperature(g.T9, lang), lang, seen)} (
                       {atlas.networks.find((n) => n.id === g.network)?.name ?? g.network})
                     </span>
                   </li>
                 ))}
               </ul>
-              <p className="mt-2 text-xs leading-snug text-muted-foreground">
-                {t.gamowNote[0]}
-                <sub>{t.gamowNote[1]}</sub>
-                {t.gamowNote[2]}
-              </p>
             </dd>
           </div>
         )}
@@ -261,11 +268,22 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
   const toc = [
     r.hasFile && (r.summary || r.role) ? { id: "summary", label: t.summaryAnchor } : null,
     methods.length > 0 || r.measurements.length > 0 ? { id: "measured", label: t.howMeasured } : null,
-    html ? { id: "details", label: t.details } : null,
+    html || (r.statusPlain && r.statusNote) || r.gamow.length > 0 ? { id: "details", label: t.details } : null,
     r.evaluations.length > 0 ? { id: "evaluations", label: t.evaluationsTitle } : null,
     r.openQuestions.length > 0 ? { id: "open-questions", label: t.openQuestions } : null,
     order.length > 0 ? { id: "references", label: t.references } : null,
   ].filter((x): x is { id: string; label: string } => x !== null)
+  // Glossary links in the running text, once each, in reading order.
+  const seen = new Set<string>()
+  const summaryText = linkTerms(r.summary, lang, seen)
+  const roleText = linkTerms(r.role, lang, seen)
+  const noteTexts = r.measurements.map((m) => linkTerms(m.note, lang, seen))
+  const questionTexts = r.openQuestions.map((q) => linkTerms(q, lang, seen))
+  // The technical status note, when the facts box shows a plain one instead.
+  const statusDetail = r.statusPlain && r.statusNote ? r.statusNote : ""
+  const thresholdLimited = r.gamow.some((g) => g.thresholdLimited)
+  const hasNumbers = r.gamow.length > 0
+  const showDetails = Boolean(html || statusDetail || hasNumbers)
   const measurementLine = t.measurementCount(
     r.measurements.length,
     yearSpan,
@@ -324,20 +342,36 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
         </div>
       </header>
 
+      {toc.length > 2 && (
+        <details className="group mt-6 rounded-lg border border-border/80 xl:hidden">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+            {t.onThisPage}
+            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden />
+          </summary>
+          <nav aria-label={t.onThisPage} className="px-4 pb-3">
+            <ul className="flex flex-wrap gap-x-5 gap-y-1 text-sm">
+              {toc.map((item) => (
+                <li key={item.id}>
+                  <a href={`#${item.id}`} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </details>
+      )}
+
       <div className="mt-10 lg:grid lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-14 xl:grid-cols-[minmax(0,1fr)_20rem]">
         <article className="min-w-0 max-w-[46rem] xl:max-w-[50rem]">
           {/* -- for a general reader --------------------------------------- */}
           {r.hasFile ? (
             <div id="summary" className="scroll-mt-24 space-y-5">
               {r.summary && (
-                <p className="text-pretty text-xl leading-relaxed">
-                  <Sci>{r.summary}</Sci>
-                </p>
+                <p className="text-pretty text-xl leading-relaxed">{summaryText}</p>
               )}
               {r.role && (
-                <p className="text-pretty text-[1.0625rem] leading-[1.75] text-foreground/90">
-                  <Sci>{r.role}</Sci>
-                </p>
+                <p className="text-pretty text-[1.0625rem] leading-[1.75] text-foreground/90">{roleText}</p>
               )}
             </div>
           ) : (
@@ -388,9 +422,10 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
                     <li key={m.id}>
                       <Link
                         href={to(`/atlas/methods#${m.id}`)}
-                        className="inline-block rounded-md border border-border px-2.5 py-1 text-sm text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
+                        className="inline-flex min-h-8 items-center gap-1 rounded-md border border-border px-2.5 py-1 text-sm text-link underline-offset-4 transition-colors hover:border-foreground/30 hover:underline"
                       >
                         <Sci>{m.name}</Sci>
+                        <ArrowRight className="h-3.5 w-3.5" aria-hidden />
                       </Link>
                     </li>
                   ))}
@@ -456,9 +491,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
                               </p>
                               {m.note && (
                                 <p className="mt-2 text-pretty text-[0.95rem] leading-relaxed text-foreground/90">
-                                  <span lang={enLang("measurements")}>
-                                    <Sci>{m.note}</Sci>
-                                  </span>{" "}
+                                  <span lang={enLang("measurements")}>{noteTexts[i]}</span>{" "}
                                   <Cite keys={m.refs} order={order} />
                                 </p>
                               )}
@@ -509,11 +542,33 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
             </section>
           )}
 
-          {html && (
+          {showDetails && (
             <section className="mt-14">
               <SectionTitle id="details">{t.details}</SectionTitle>
-              {english("details") && <InEnglish lang={lang} />}
-              <div lang={enLang("details")} className="prose-note mt-5" dangerouslySetInnerHTML={{ __html: html }} />
+              {statusDetail && (
+                <p className="mt-5 text-pretty text-[1rem] leading-relaxed text-foreground/90">
+                  <span className="font-medium">{t.statusInDetail}: </span>
+                  <Sci>{statusDetail}</Sci>
+                </p>
+              )}
+              {html && (
+                <>
+                  {english("details") && <InEnglish lang={lang} />}
+                  <div
+                    lang={enLang("details")}
+                    className="prose-note mt-5 !font-sans !text-[1rem]"
+                    dangerouslySetInnerHTML={{ __html: html }}
+                  />
+                </>
+              )}
+              {hasNumbers && (
+                <p className="mt-6 text-pretty border-l-2 border-border pl-4 text-sm leading-relaxed text-muted-foreground">
+                  {t.gamowNote[0]}
+                  <sub>{t.gamowNote[1]}</sub>
+                  {t.gamowNote[2]}
+                  {thresholdLimited && ` ${t.thresholdExplain}`}
+                </p>
+              )}
             </section>
           )}
 
@@ -560,7 +615,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
               <ul lang={enLang("openQuestions")} className="mt-5 space-y-3 border-l-2 border-border pl-5 text-[0.95rem] leading-relaxed text-foreground/90">
                 {r.openQuestions.map((q, i) => (
                   <li key={i} className="text-pretty">
-                    <Sci>{q}</Sci>
+                    {questionTexts[i]}
                   </li>
                 ))}
               </ul>

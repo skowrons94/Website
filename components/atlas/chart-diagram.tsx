@@ -1,3 +1,4 @@
+import { Sci } from "@/components/sci"
 import { dict, type Lang } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 
@@ -144,5 +145,66 @@ export function ChartDiagram({ lang, className }: { lang: Lang; className?: stri
         </g>
       </svg>
     </figure>
+  )
+}
+
+/** The arrow of each kind of reaction, as (ΔN, ΔZ) on the chart. */
+const ARROW_KINDS: [number, number][] = [
+  [0, 1], // (p,γ)
+  [2, 2], // (α,γ)
+  [-2, -1], // (p,α)
+  [1, 2], // (α,n)
+  [1, 0], // (n,γ)
+  [1, -1], // β⁺
+  [4, 4], // ¹²C + ¹²C → ²⁰Ne + α
+]
+
+/** A key to the arrows of the map: one small vector per kind of reaction. */
+export function ArrowKey({ lang, className }: { lang: Lang; className?: string }) {
+  const t = dict(lang).atlas
+  return (
+    <div className={className}>
+      <p className="text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">{t.arrowKeyTitle}</p>
+      <ul className="mt-2 grid gap-x-6 gap-y-1.5 sm:grid-cols-2">
+        {t.arrowKey.map(([name, text], i) => {
+          const [dN, dZ] = ARROW_KINDS[i] ?? [1, 0]
+          const unit = Math.abs(dN) > 2 || Math.abs(dZ) > 2 ? 6 : 11
+          const x1 = 22 - (dN * unit) / 2
+          const y1 = 15 + (dZ * unit) / 2
+          const x2 = 22 + (dN * unit) / 2
+          const y2 = 15 - (dZ * unit) / 2
+          const len = Math.hypot(x2 - x1, y2 - y1) || 1
+          const ux = (x2 - x1) / len
+          const uy = (y2 - y1) / len
+          const h = 5.5
+          return (
+            <li key={name} className="flex items-center gap-2.5 text-sm">
+              <svg width="44" height="30" viewBox="0 0 44 30" aria-hidden className="shrink-0">
+                <circle cx={x1} cy={y1} r={1.8} fill="var(--viz-text-muted)" />
+                <line
+                  x1={x1}
+                  y1={y1}
+                  x2={x2 - ux * h * 0.8}
+                  y2={y2 - uy * h * 0.8}
+                  stroke="var(--viz-series-1)"
+                  strokeWidth={1.8}
+                  strokeLinecap="round"
+                />
+                <path
+                  d={`M${x2},${y2} L${x2 - ux * h - uy * h * 0.55},${y2 - uy * h + ux * h * 0.55} L${x2 - ux * h + uy * h * 0.55},${y2 - uy * h - ux * h * 0.55} Z`}
+                  fill="var(--viz-series-1)"
+                />
+              </svg>
+              <span className="min-w-0">
+                <span className="font-serif font-semibold">
+                  <Sci>{name}</Sci>
+                </span>{" "}
+                <span className="text-muted-foreground">{text}</span>
+              </span>
+            </li>
+          )
+        })}
+      </ul>
+    </div>
   )
 }

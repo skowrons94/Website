@@ -73,4 +73,7 @@ evaluations: [angulo1999, iliadis2010]
 open_questions:
   - Direct measurements of the lowest-energy resonances, which require an underground laboratory.
   - The competition with ²⁷Al(p,α)²⁴Mg, which decides whether the MgAl cycle closes.
+open_questions_it:
+  - "Misure dirette delle risonanze di energia più bassa, che richiedono un laboratorio sotterraneo."
+  - "La competizione con ²⁷Al(p,α)²⁴Mg, che decide se il ciclo MgAl si chiude."
 related: [27Al-pa-24Mg, 26Mg-pg-27Al, 24Mg-pg-25Al]

@@ -450,7 +450,7 @@ const en = {
     methodsCardText: "How a cross section at stellar energies is measured, directly or indirectly, and where.",
     dataCard: "The data",
     dataCardText: (reactions: number, written: number, references: number) =>
-      `The whole atlas as one JSON file: ${reactions} reactions (${written} with an entry), ${references} references, with Q-values and Gamow windows computed from AME2020.`,
+      `The whole atlas as one JSON file: ${reactions} reactions${written === reactions ? "" : ` (${written} with an entry)`}, ${references} references, with Q-values and Gamow windows computed from AME2020.`,
     dataInEnglish: "",
     lunaMarks: "marks LUNA work throughout the atlas. Q-values from the AME2020 mass evaluation, half-lives from NUBASE2020.",
     measuredAtLuna: "Measured at LUNA",
@@ -570,7 +570,7 @@ const en = {
     legendOther: "Other processes",
     legendStable: "Stable, radioactive",
     mapHelp:
-      "Hover over an arrow for its name and click it for the details. With a keyboard, Tab reaches the map and the arrow keys move along the reactions of the process on show.",
+      "Hover over an arrow for its name and click it for the details, or click a square for the reactions of that nucleus. With a keyboard, Tab reaches the map and the arrow keys move along the reactions of the process on show.",
     closeDetails: "Close details",
     close: "Close",
     selectArrow: "Select an arrow to see what the reaction does, its energy release and how well it is known.",
@@ -587,17 +587,19 @@ const en = {
     fullEntry: "The full entry",
     soFar: "What there is so far",
     // --- atlas ---
-    mapHelpTouch: "Tap an arrow to see what the reaction does; the buttons above the map choose the process in colour.",
+    mapHelpTouch:
+      "Tap an arrow to see what the reaction does, or tap a square to list the reactions of that nucleus; the buttons above the map choose the process in colour.",
     startHere: "Start here",
-    startHereTitle: "A century of stellar fusion in five minutes",
-    startHereText:
-      "From Eddington's guess in 1920 to measurements deep under a mountain: how we learned what makes the stars shine.",
+    startHereTitle: (n: number) => `A century of stellar fusion in ${n} moments`,
+    startHereText: (total: number) =>
+      `From Eddington's guess in 1920 to measurements deep under a mountain: how we learned what makes the stars shine. The full timeline has ${total} entries.`,
     howToRead: "How to read the map",
     readSteps: [
       "Each square is an atomic nucleus. One step up adds a proton and makes the next element; one step to the right adds a neutron.",
       "Each arrow is a reaction or a decay. Straight up: a proton is captured. Two up and two right: a helium nucleus is captured. One down and one right: a β⁺ decay, in which a proton turns into a neutron.",
       "Squares filled in grey are stable nuclei; outlined squares are radioactive.",
       "The colour of an arrow tells which process it belongs to; the buttons above the map choose the process. Thicker lines are the more important reactions.",
+      "Some arrows jump far. When two nuclei heavier than helium fuse, as in carbon burning, they form a highly excited nucleus that at once breaks up: ¹²C + ¹²C makes ²⁴Mg*, which falls apart into ²⁰Ne and an alpha particle or into ²³Na and a proton. The arrow goes straight from ¹²C to the end product.",
     ],
     diagram: {
       label:
@@ -646,6 +648,43 @@ const en = {
     seeAlso: "See also",
     readMore: "Read more",
     readLess: "Show less",
+    // --- atlas (round 2) ---
+    qReleased: "energy released",
+    qNeeded: "energy needed",
+    thresholdLimited: (q: string) => `Above the ${q} MeV threshold`,
+    thresholdExplain:
+      "For an endothermic reaction the ordinary window would lie partly or wholly below the threshold, |Q|, where the reaction cannot happen; the range shown starts at the threshold and runs to where the product of the Boltzmann factor and the Coulomb penetration, exp(−E/kT − 2πη), has fallen by 1/e from its maximum above threshold.",
+    statusInDetail: "How well known, in detail",
+    highlights: "Highlights",
+    arrowKeyTitle: "The kinds of arrow",
+    arrowKey: [
+      ["(p,γ)", "a proton is captured: one up"],
+      ["(α,γ)", "a helium nucleus is captured: two up, two right"],
+      ["(p,α)", "a proton in, a helium nucleus out: one down, two left"],
+      ["(α,n)", "a helium nucleus in, a neutron out: two up, one right"],
+      ["(n,γ)", "a neutron is captured: one right"],
+      ["β⁺", "a proton turns into a neutron: one down, one right"],
+      ["¹²C + ¹²C", "two heavy nuclei fuse: a long jump"],
+    ] as [string, string][],
+    nuclide: "Nucleus",
+    stableNuclide: "stable",
+    cellFrom: (name: string) => `Reactions starting from ${name}`,
+    cellTo: (name: string) => `Reactions making ${name}`,
+    cellNone: "No reaction of the atlas starts or ends here.",
+    lunaFigureTitle: "Why underground",
+    lunaFigure: {
+      alt: "Schematic cross-section of the Gran Sasso mountain. Cosmic-ray muons coming from above stop in the rock; only about one in a million reaches the underground halls, about 1400 m below the summit, where the LUNA 400 kV accelerator and the 3.5 MV LUNA-MV accelerator of the Bellotti Ion Beam Facility send their beams onto targets surrounded by detectors.",
+      rock: "rock",
+      tunnel: "motorway tunnel",
+      items: [
+        "At the surface, cosmic rays make a steady rain of muons, which leave signals in any γ-ray detector.",
+        "About 1400 m of rock (3800 m water equivalent) stop all but about one muon in a million.",
+        "LUNA 400 kV: proton and helium beams for hydrogen burning, since the early 2000s.",
+        "LUNA-MV, 3.5 MV, at the Bellotti Ion Beam Facility, inaugurated in 2023: proton, helium and carbon beams for helium and carbon burning.",
+        "The beam hits a target; a detector around it counts the γ-rays or particles from the few reactions.",
+      ],
+      note: "Schematic, not to scale.",
+    },
   },
 }
 
@@ -1050,7 +1089,7 @@ const it: Dictionary = {
   atlas: {
     name: "Atlante delle reazioni",
     description:
-      "Le reazioni nucleari che alimentano le stelle e producono gli elementi: dove si trovano sulla carta dei nuclidi, quanto bene è noto ciascuna, e come è stata misurata.",
+      "Le reazioni nucleari che alimentano le stelle e producono gli elementi: dove si trovano sulla carta dei nuclidi, quanto bene è nota ciascuna, e come è stata misurata.",
     title: "Le reazioni nucleari che fanno brillare le stelle",
     history: "Una storia della disciplina",
     methodsLink: "Metodi e laboratori",
@@ -1067,7 +1106,7 @@ const it: Dictionary = {
     methodsCardText: "Come si misura una sezione d'urto alle energie stellari, in modo diretto o indiretto, e dove.",
     dataCard: "I dati",
     dataCardText: (reactions: number, written: number, references: number) =>
-      `L'intero atlante in un unico file JSON: ${reactions} reazioni (${written} con una scheda), ${references} riferimenti bibliografici, con valori Q e finestre di Gamow calcolati da AME2020.`,
+      `L'intero atlante in un unico file JSON: ${reactions} reazioni${written === reactions ? "" : ` (${written} con una scheda)`}, ${references} riferimenti bibliografici, con valori Q e finestre di Gamow calcolati da AME2020.`,
     dataInEnglish: "Il file è in inglese.",
     lunaMarks:
       "indica il lavoro di LUNA in tutto l'atlante. Valori Q dalla valutazione delle masse AME2020, tempi di dimezzamento da NUBASE2020.",
@@ -1188,7 +1227,7 @@ const it: Dictionary = {
     legendOther: "Altri processi",
     legendStable: "Stabile, radioattivo",
     mapHelp:
-      "Passa con il mouse su una freccia per vederne il nome e fai clic per i dettagli. Da tastiera, Tab porta alla mappa e i tasti freccia si spostano tra le reazioni del processo mostrato.",
+      "Passa con il mouse su una freccia per vederne il nome e fai clic per i dettagli, oppure fai clic su una casella per le reazioni di quel nucleo. Da tastiera, Tab porta alla mappa e i tasti freccia si spostano tra le reazioni del processo mostrato.",
     closeDetails: "Chiudi i dettagli",
     close: "Chiudi",
     selectArrow:
@@ -1206,17 +1245,19 @@ const it: Dictionary = {
     fullEntry: "La scheda completa",
     soFar: "Quello che c'è finora",
     // --- atlas ---
-    mapHelpTouch: "Tocca una freccia per vedere che cosa fa la reazione; i pulsanti sopra la mappa scelgono il processo a colori.",
+    mapHelpTouch:
+      "Tocca una freccia per vedere che cosa fa la reazione, o una casella per l'elenco delle reazioni di quel nucleo; i pulsanti sopra la mappa scelgono il processo a colori.",
     startHere: "Inizia da qui",
-    startHereTitle: "Un secolo di fusione stellare in cinque minuti",
-    startHereText:
-      "Dall'intuizione di Eddington nel 1920 alle misure sotto una montagna: come abbiamo capito che cosa fa brillare le stelle.",
+    startHereTitle: (n: number) => `Un secolo di fusione stellare in ${n} momenti`,
+    startHereText: (total: number) =>
+      `Dall'intuizione di Eddington nel 1920 alle misure sotto una montagna: come abbiamo capito che cosa fa brillare le stelle. La cronologia completa ha ${total} voci.`,
     howToRead: "Come leggere la mappa",
     readSteps: [
       "Ogni casella è un nucleo atomico. Un passo verso l'alto aggiunge un protone e dà l'elemento successivo; un passo verso destra aggiunge un neutrone.",
       "Ogni freccia è una reazione o un decadimento. Dritta in alto: viene catturato un protone. Due passi in alto e due a destra: viene catturato un nucleo di elio. Uno in basso e uno a destra: un decadimento β⁺, in cui un protone si trasforma in un neutrone.",
       "Le caselle piene, in grigio, sono nuclei stabili; quelle solo contornate sono radioattive.",
       "Il colore di una freccia indica il processo a cui appartiene; i pulsanti sopra la mappa scelgono il processo. Le linee più spesse sono le reazioni più importanti.",
+      "Alcune frecce fanno salti lunghi. Quando si fondono due nuclei più pesanti dell'elio, come nella combustione del carbonio, formano un nucleo molto eccitato che si spezza subito: ¹²C + ¹²C dà ²⁴Mg*, che si divide in ²⁰Ne e una particella alfa oppure in ²³Na e un protone. La freccia va direttamente dal ¹²C al prodotto finale.",
     ],
     diagram: {
       label:
@@ -1264,6 +1305,43 @@ const it: Dictionary = {
     seeAlso: "Vedi anche",
     readMore: "Leggi tutto",
     readLess: "Mostra meno",
+    // --- atlas (round 2) ---
+    qReleased: "energia liberata",
+    qNeeded: "energia richiesta",
+    thresholdLimited: (q: string) => `Sopra la soglia di ${q} MeV`,
+    thresholdExplain:
+      "Per una reazione endotermica la finestra ordinaria cadrebbe in parte o del tutto sotto la soglia, |Q|, dove la reazione non può avvenire; l'intervallo mostrato parte dalla soglia e arriva fin dove il prodotto del fattore di Boltzmann e della penetrazione coulombiana, exp(−E/kT − 2πη), è sceso di 1/e rispetto al suo massimo sopra soglia.",
+    statusInDetail: "Quanto è nota, nel dettaglio",
+    highlights: "In evidenza",
+    arrowKeyTitle: "I tipi di freccia",
+    arrowKey: [
+      ["(p,γ)", "viene catturato un protone: uno in alto"],
+      ["(α,γ)", "viene catturato un nucleo di elio: due in alto, due a destra"],
+      ["(p,α)", "entra un protone, esce un nucleo di elio: uno in basso, due a sinistra"],
+      ["(α,n)", "entra un nucleo di elio, esce un neutrone: due in alto, uno a destra"],
+      ["(n,γ)", "viene catturato un neutrone: uno a destra"],
+      ["β⁺", "un protone diventa un neutrone: uno in basso, uno a destra"],
+      ["¹²C + ¹²C", "due nuclei pesanti si fondono: un salto lungo"],
+    ] as [string, string][],
+    nuclide: "Nucleo",
+    stableNuclide: "stabile",
+    cellFrom: (name: string) => `Reazioni che partono da ${name}`,
+    cellTo: (name: string) => `Reazioni che producono ${name}`,
+    cellNone: "Nessuna reazione dell'atlante parte o arriva qui.",
+    lunaFigureTitle: "Perché sotto terra",
+    lunaFigure: {
+      alt: "Sezione schematica del Gran Sasso. I muoni dei raggi cosmici che arrivano dall'alto si fermano nella roccia; solo circa uno su un milione raggiunge le sale sotterranee, circa 1400 m sotto la vetta, dove l'acceleratore LUNA da 400 kV e l'acceleratore LUNA-MV da 3,5 MV del Bellotti Ion Beam Facility mandano i loro fasci su bersagli circondati da rivelatori.",
+      rock: "roccia",
+      tunnel: "galleria autostradale",
+      items: [
+        "In superficie i raggi cosmici producono una pioggia continua di muoni, che lasciano segnali in qualunque rivelatore di raggi γ.",
+        "Circa 1400 m di roccia (3800 m di acqua equivalente) fermano tutti i muoni tranne circa uno su un milione.",
+        "LUNA 400 kV: fasci di protoni e di elio per la combustione dell'idrogeno, dai primi anni 2000.",
+        "LUNA-MV, 3,5 MV, al Bellotti Ion Beam Facility, inaugurato nel 2023: fasci di protoni, elio e carbonio per la combustione dell'elio e del carbonio.",
+        "Il fascio colpisce un bersaglio; un rivelatore intorno conta i raggi γ o le particelle delle poche reazioni.",
+      ],
+      note: "Schema, non in scala.",
+    },
   },
 }
 

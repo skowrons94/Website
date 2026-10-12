@@ -98,4 +98,6 @@ measurements:
 evaluations: [adelberger2011, acharya2025]
 open_questions:
   - The direct-capture contribution to the ground state, which sets the S-factor below the lower resonance.
+open_questions_it:
+  - "Il contributo della cattura diretta verso lo stato fondamentale, che fissa il fattore S al di sotto della risonanza più bassa."
 related: [15N-pa-12C, 16O-pg-17F, 14N-pg-15O]

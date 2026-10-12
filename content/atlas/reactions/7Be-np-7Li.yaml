@@ -74,4 +74,6 @@ measurements:
 evaluations: [descouvemont2004, iliadis2020]
 open_questions:
   - The contribution of transitions to the first excited state of ⁷Li at BBN energies, which the total cross-section measurements of 1988 and 2018 do not separate.
+open_questions_it:
+  - "Il contributo delle transizioni al primo stato eccitato del ⁷Li alle energie della nucleosintesi primordiale, che le misure della sezione d'urto totale del 1988 e del 2018 non separano."
 related: [3He-ag-7Be, 7Be-ec-7Li, 7Li-pa-4He]

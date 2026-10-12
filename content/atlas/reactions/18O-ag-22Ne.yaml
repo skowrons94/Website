@@ -66,4 +66,6 @@ measurements:
 evaluations: [angulo1999, iliadis2010]
 open_questions:
   - The strength of the 569 keV resonance, known to 50%, and the agreement between the partial and total strengths of the 472 keV resonance.
+open_questions_it:
+  - "L'intensità della risonanza a 569 keV, nota al 50 %, e l'accordo tra le intensità parziali e quella totale della risonanza a 472 keV."
 related: [14N-ag-18F, 18F-bp-18O, 22Ne-an-25Mg, 22Ne-ag-26Mg]

@@ -100,28 +100,77 @@ terms:
       reazioni ed è così difficile contarle.
     see: [s-factor, gamow-window]
 
+  - id: differential-cross-section
+    term: Differential cross section
+    term_it: Sezione d'urto differenziale
+    also: dσ/dΩ
+    text: >-
+      The cross section per unit of solid angle in a given direction: how
+      likely it is that the product of a reaction, or a scattered nucleus,
+      flies off at that angle. Summed over all directions it gives the total
+      cross section. Elastic scattering data, which are often used in
+      R-matrix fits, are differential cross sections, usually divided by the
+      Rutherford value expected from the electric repulsion alone.
+    text_it: >-
+      La sezione d'urto per unità di angolo solido in una data direzione:
+      quanto è probabile che il prodotto di una reazione, o un nucleo
+      diffuso, esca a quell'angolo. Sommata su tutte le direzioni dà la
+      sezione d'urto totale. I dati di diffusione elastica, spesso usati nei
+      fit R-matrix, sono sezioni d'urto differenziali, di solito divise per il
+      valore di Rutherford atteso dalla sola repulsione elettrica.
+    see: [cross-section, r-matrix]
+
   - id: s-factor
     term: Astrophysical S-factor
     term_it: Fattore astrofisico S
     also: S(E), S(0); keV b
     text: >-
-      The cross section with its steepest, well-understood part taken out.
+      The cross section with its steepest, well-understood parts taken out.
       Because nuclei must tunnel through their electric repulsion, the cross
-      section falls by many orders of magnitude as the energy drops. Dividing
-      out the tunnelling probability leaves the S-factor, which changes only
-      slowly with energy (except near resonances) and is therefore much easier
-      to extend from measured energies down to stellar ones. S(0) is its value
-      extrapolated to zero energy; it is quoted in keV b or MeV b.
+      section falls by many orders of magnitude as the energy drops. Writing
+      σ(E) = S(E) exp(−2πη) / E, that is, dividing out the tunnelling
+      probability (the Gamow factor exp(−2πη)) and a factor 1/E that comes
+      from the quantum-mechanical size of the colliding nuclei, leaves the
+      S-factor, which changes only slowly with energy (except near
+      resonances) and is therefore much easier to extend from measured
+      energies down to stellar ones. S(0) is its value extrapolated to zero
+      energy; it is quoted in keV b or MeV b. For two carbon nuclei a modified
+      S-factor, S*, divides out a further factor that remains in such a heavy
+      system.
     text_it: >-
-      La sezione d'urto privata della sua parte più ripida, che è ben nota.
+      La sezione d'urto privata delle sue parti più ripide, che sono ben note.
       Poiché i nuclei devono attraversare per effetto tunnel la loro
       repulsione elettrica, la sezione d'urto crolla di molti ordini di
-      grandezza quando l'energia scende. Dividendo per la probabilità di
-      tunnel resta il fattore S, che varia lentamente con l'energia (tranne
-      vicino alle risonanze) ed è quindi molto più facile da prolungare dalle
-      energie misurate a quelle stellari. S(0) è il suo valore estrapolato a
-      energia zero; si esprime in keV b o MeV b.
+      grandezza quando l'energia scende. Scrivendo σ(E) = S(E) exp(−2πη) / E,
+      cioè dividendo per la probabilità di tunnel (il fattore di Gamow
+      exp(−2πη)) e per un fattore 1/E che viene dalle dimensioni quantistiche
+      dei nuclei che si urtano, resta il fattore S, che varia lentamente con
+      l'energia (tranne vicino alle risonanze) ed è quindi molto più facile da
+      prolungare dalle energie misurate a quelle stellari. S(0) è il suo
+      valore estrapolato a energia zero; si esprime in keV b o MeV b. Per due
+      nuclei di carbonio si usa un fattore S modificato, S*, che divide anche
+      per un ulteriore fattore che resta in un sistema così pesante.
     see: [cross-section, r-matrix]
+
+  - id: coulomb-barrier
+    term: Coulomb barrier
+    term_it: Barriera coulombiana
+    text: >-
+      The electric repulsion between two positively charged nuclei, which
+      keeps them apart until they come close enough for the strong nuclear
+      force to take over. For a proton and nitrogen‑14 the barrier is about
+      2–3 MeV high, while in the Sun the typical energy is about a thousand
+      times smaller; fusion still happens, rarely, by quantum tunnelling
+      through the barrier. A neutron has no charge and feels no barrier.
+    text_it: >-
+      La repulsione elettrica tra due nuclei carichi positivamente, che li
+      tiene separati finché non arrivano abbastanza vicini perché prevalga la
+      forza nucleare forte. Per un protone e l'azoto‑14 la barriera è alta
+      2–3 MeV, mentre nel Sole l'energia tipica è circa mille volte più
+      piccola; la fusione avviene lo stesso, raramente, per effetto tunnel
+      attraverso la barriera. Un neutrone non ha carica e non sente alcuna
+      barriera.
+    see: [gamow-window, s-factor]
 
   - id: gamow-window
     term: Gamow window
@@ -167,6 +216,46 @@ terms:
       importante del lavoro.
     see: [r-matrix]
 
+  - id: excited-state
+    term: Excited state
+    term_it: Stato eccitato
+    also: energy level
+    also_it: livello energetico
+    text: >-
+      A nucleus, like an atom, can exist only at certain energies. The lowest
+      is the ground state; the others are excited states, which usually give
+      up their extra energy within a tiny fraction of a second by emitting a
+      γ ray or a particle. Each nucleus has its own pattern of levels, and the
+      ones just above the energy at which two nuclei can merge decide where a
+      reaction has resonances.
+    text_it: >-
+      Un nucleo, come un atomo, può esistere solo a certe energie. La più
+      bassa è lo stato fondamentale; le altre sono stati eccitati, che di
+      solito cedono la loro energia in più in una minuscola frazione di
+      secondo emettendo un raggio γ o una particella. Ogni nucleo ha il suo
+      schema di livelli, e quelli appena sopra l'energia a cui due nuclei
+      possono unirsi decidono dove una reazione ha risonanze.
+    see: [resonance, compound-nucleus]
+
+  - id: compound-nucleus
+    term: Compound nucleus
+    term_it: Nucleo composto
+    text: >-
+      The nucleus formed for a moment when two nuclei merge: a proton and
+      nitrogen‑14 form oxygen‑15, two carbon nuclei form magnesium‑24. It is
+      born in an excited state and at once gets rid of the extra energy, by
+      emitting a γ ray (a capture) or by breaking up into other particles.
+      Which way it decays does not depend on how it was formed, only on its
+      energy and its other properties.
+    text_it: >-
+      Il nucleo che si forma per un istante quando due nuclei si uniscono: un
+      protone e l'azoto‑14 formano l'ossigeno‑15, due nuclei di carbonio il
+      magnesio‑24. Nasce in uno stato eccitato e si libera subito dell'energia
+      in più, emettendo un raggio γ (una cattura) o spezzandosi in altre
+      particelle. Il modo in cui decade non dipende da come si è formato, ma
+      solo dalla sua energia e dalle sue altre proprietà.
+    see: [excited-state, branching-ratio, resonance]
+
   - id: q-value
     term: Q-value
     term_it: Valore Q
@@ -184,6 +273,48 @@ terms:
       misurate della valutazione delle masse del 2020 (AME2020).
     see: [notation]
 
+  - id: threshold
+    term: Threshold and endothermic reactions
+    term_it: Soglia e reazioni endotermiche
+    also: endothermic, Q < 0
+    also_it: endotermica, Q < 0
+    text: >-
+      A reaction with a negative Q-value is endothermic: it takes energy
+      instead of releasing it, and it can happen only if the colliding nuclei
+      bring at least that much energy with them, the threshold (|Q| in the
+      centre of mass). In a star only the fastest nuclei are above it, so for
+      such a reaction the atlas shows the range of energies just above the
+      threshold, not the ordinary Gamow window, which would lie partly or
+      wholly below it.
+    text_it: >-
+      Una reazione con valore Q negativo è endotermica: assorbe energia invece
+      di liberarla, e può avvenire solo se i nuclei che si urtano portano con
+      sé almeno quell'energia, la soglia (|Q| nel centro di massa). In una
+      stella solo i nuclei più veloci la superano, quindi per una reazione di
+      questo tipo l'atlante mostra l'intervallo di energie appena sopra la
+      soglia, non la finestra di Gamow ordinaria, che cadrebbe in parte o del
+      tutto al di sotto.
+    see: [q-value, gamow-window]
+
+  - id: branching-ratio
+    term: Branching ratio
+    term_it: Rapporto di diramazione
+    also: branch
+    also_it: ramo
+    text: >-
+      When a nucleus can decay, or a reaction can end, in more than one way,
+      the branching ratio is the fraction that goes each way. Two carbon
+      nuclei, for example, end up as neon‑20 and an alpha particle or as
+      sodium‑23 and a proton; the split between the two decides how much
+      sodium a star makes.
+    text_it: >-
+      Quando un nucleo può decadere, o una reazione può concludersi, in più di
+      un modo, il rapporto di diramazione è la frazione che segue ciascuna
+      via. Due nuclei di carbonio, per esempio, finiscono in neon‑20 e una
+      particella alfa oppure in sodio‑23 e un protone; la ripartizione tra le
+      due vie decide quanto sodio produce una stella.
+    see: [compound-nucleus]
+
   - id: rate
     term: Reaction rate
     term_it: Tasso di reazione
@@ -193,13 +324,23 @@ terms:
       matter. It combines the cross section at every energy with the
       distribution of speeds of the nuclei at the temperature of the star.
       Stellar models use tables of rates against temperature, which is why
-      the atlas says how well each rate is known.
+      the atlas says how well each rate is known. What the tables give is
+      N_A⟨σv⟩, the rate per pair of particles, in cm³ mol⁻¹ s⁻¹; the number of
+      reactions per cubic centimetre and per second is
+      r = n₁n₂⟨σv⟩ / (1 + δ₁₂), with n₁ and n₂ the number densities of the
+      two nuclei and δ₁₂ = 1 for identical ones, so that each pair is counted
+      once.
     text_it: >-
       Quante reazioni avvengono al secondo in una data quantità di materia
       stellare. Combina la sezione d'urto a ogni energia con la distribuzione
       delle velocità dei nuclei alla temperatura della stella. I modelli
       stellari usano tabelle di tassi in funzione della temperatura: per
-      questo l'atlante dice quanto bene è noto ciascun tasso.
+      questo l'atlante dice quanto bene è noto ciascun tasso. Le tabelle
+      riportano N_A⟨σv⟩, il tasso per coppia di particelle, in
+      cm³ mol⁻¹ s⁻¹; il numero di reazioni per centimetro cubo e per secondo
+      è r = n₁n₂⟨σv⟩ / (1 + δ₁₂), con n₁ e n₂ le densità numeriche dei due
+      nuclei e δ₁₂ = 1 se sono identici, così che ogni coppia sia contata una
+      volta sola.
     see: [cross-section, status]
 
   - id: status
@@ -255,6 +396,23 @@ terms:
       stelle. Una stella di 15 M☉ ha quindici volte la massa del Sole; la massa
       decide quanto si scalda il nucleo della stella e quindi quali reazioni vi
       avvengono.
+
+  - id: main-sequence
+    term: Main sequence
+    term_it: Sequenza principale
+    text: >-
+      The long, stable phase in which a star burns hydrogen into helium in its
+      core, by the pp chains or the CNO cycle. Stars spend most of their lives
+      there; the Sun has been on the main sequence for about 4.6 billion
+      years. When the hydrogen in the core runs out, the star leaves it and
+      becomes a red giant.
+    text_it: >-
+      La lunga fase stabile in cui una stella brucia idrogeno in elio nel suo
+      nucleo, con le catene pp o con il ciclo CNO. Le stelle vi trascorrono la
+      maggior parte della loro vita; il Sole è sulla sequenza principale da
+      circa 4,6 miliardi di anni. Quando l'idrogeno nel nucleo si esaurisce,
+      la stella la lascia e diventa una gigante rossa.
+    see: [solar-mass]
 
   - id: half-life
     term: Half-life
@@ -346,18 +504,25 @@ terms:
       laboratory deep underground is shielded by the rock above it. LUNA, at
       the Gran Sasso National Laboratories of INFN in Italy, has run
       accelerators under about 1400 m of rock since the early 1990s; the rock
-      reduces the cosmic-ray muons by about a factor of a million. Other
-      underground accelerators now run in China (JUNA), the United States
-      (CASPAR) and Germany (Felsenkeller).
+      reduces the cosmic-ray muons by about a factor of a million. Besides
+      its 400 kV accelerator, LUNA now uses a 3.5 MV machine (LUNA-MV) at the
+      Bellotti Ion Beam Facility, inaugurated there in 2023, for helium and
+      carbon burning. Other deep underground accelerators run in China (JUNA)
+      and the United States (CASPAR); Felsenkeller in Dresden, under 45 m of
+      rock, is a shallow-underground laboratory that adds active muon vetoes.
     text_it: >-
       In superficie i raggi cosmici lasciano in un rivelatore di raggi γ molti
       più segnali delle poche reazioni di una misura alle energie stellari. Un
       laboratorio in profondità è schermato dalla roccia che lo sovrasta. LUNA,
       ai Laboratori Nazionali del Gran Sasso dell'INFN, usa acceleratori sotto
       circa 1400 m di roccia dall'inizio degli anni Novanta; la roccia riduce i
-      muoni cosmici di circa un milione di volte. Altri acceleratori sotterranei
-      sono oggi in funzione in Cina (JUNA), negli Stati Uniti (CASPAR) e in
-      Germania (Felsenkeller).
+      muoni cosmici di circa un milione di volte. Oltre al suo acceleratore da
+      400 kV, LUNA usa oggi una macchina da 3,5 MV (LUNA-MV) al Bellotti Ion
+      Beam Facility, inaugurato nel 2023, per la combustione dell'elio e del
+      carbonio. Altri acceleratori in profondità sono in funzione in Cina
+      (JUNA) e negli Stati Uniti (CASPAR); il Felsenkeller di Dresda, sotto
+      45 m di roccia, è un laboratorio a bassa profondità che aggiunge veti
+      attivi per i muoni.
     see: [mwe, gamow-window]
 
   - id: mwe
@@ -424,18 +589,82 @@ terms:
     term_it: Coefficiente di normalizzazione asintotica
     also: ANC
     text: >-
-      At very low energy a capture happens far outside the nucleus, where only
-      the tail of the final nucleus' wave function matters. The ANC measures
-      the size of that tail. It can be found from transfer reactions at higher
-      energy, where the cross section is large, and then gives the capture
-      rate at stellar energies without measuring the capture itself.
+      When a capture at very low energy goes directly, without passing
+      through a resonance, it happens mostly far outside the nucleus (it is
+      peripheral), where only the tail of the final nucleus' wave function
+      matters. The ANC measures the size of that tail. It can be found from
+      transfer reactions at higher energy, where the cross section is large,
+      and then gives the direct, non-resonant part of the capture at stellar
+      energies without measuring the capture itself; resonances are added
+      separately.
     text_it: >-
-      A energie molto basse una cattura avviene lontano dal nucleo, dove conta
-      solo la coda della funzione d'onda del nucleo finale. L'ANC misura
-      l'ampiezza di quella coda. Si può ricavare da reazioni di trasferimento a
-      energia più alta, dove la sezione d'urto è grande, e dà poi il tasso di
-      cattura alle energie stellari senza misurare la cattura stessa.
+      Quando una cattura a energie molto basse avviene in modo diretto, senza
+      passare per una risonanza, avviene per lo più lontano dal nucleo (è
+      periferica), dove conta solo la coda della funzione d'onda del nucleo
+      finale. L'ANC misura l'ampiezza di quella coda. Si può ricavare da
+      reazioni di trasferimento a energia più alta, dove la sezione d'urto è
+      grande, e dà poi la parte diretta, non risonante, della cattura alle
+      energie stellari senza misurare la cattura stessa; le risonanze si
+      aggiungono a parte.
     see: [r-matrix]
+
+  - id: coincidence
+    term: Particle–γ coincidence
+    term_it: Coincidenza particella–γ
+    text: >-
+      Recording a particle and a γ ray only when they arrive together, within
+      a few billionths of a second. A real reaction often gives both, a
+      proton and the γ ray of the nucleus left behind, while most background
+      gives only one; requiring the two together removes most of the
+      background, at the cost of missing the decays that give no γ ray.
+    text_it: >-
+      Registrare una particella e un raggio γ solo quando arrivano insieme,
+      entro pochi miliardesimi di secondo. Una reazione vera dà spesso
+      entrambi, un protone e il raggio γ del nucleo rimasto, mentre la maggior
+      parte del fondo ne dà uno solo; richiederli insieme toglie quasi tutto il
+      fondo, al prezzo di perdere i decadimenti che non emettono raggi γ.
+    see: [cross-section]
+
+  - id: normalisation
+    term: Normalisation
+    term_it: Normalizzazione
+    also: scale factor, systematic uncertainty
+    also_it: fattore di scala, incertezza sistematica
+    text: >-
+      Every measured data set carries an overall scale uncertainty, from the
+      beam current, the number of target nuclei or the detector efficiency,
+      which moves all its points up or down together. In a fit such as an
+      R-matrix evaluation each data set may be given a normalisation factor,
+      allowed to move only within its quoted scale uncertainty.
+    text_it: >-
+      Ogni insieme di dati misurati porta con sé un'incertezza di scala
+      complessiva, dovuta alla corrente del fascio, al numero di nuclei del
+      bersaglio o all'efficienza del rivelatore, che sposta tutti i suoi punti
+      in su o in giù insieme. In un fit come una valutazione R-matrix a ogni
+      insieme di dati si può dare un fattore di normalizzazione, libero di
+      muoversi solo entro la sua incertezza di scala dichiarata.
+    see: [r-matrix, chi-squared]
+
+  - id: chi-squared
+    term: χ² (chi-squared)
+    term_it: χ² (chi quadro)
+    also: χ²/N
+    also_it: χ²/N
+    text: >-
+      A measure of how well a model fits data: for each point, the difference
+      between model and measurement divided by the measurement's
+      uncertainty, squared, and summed over all points. Divided by the number
+      of points, χ²/N close to 1 means the model agrees with the data within
+      their uncertainties; much larger values mean it does not, or that the
+      uncertainties are underestimated.
+    text_it: >-
+      Una misura di quanto un modello descrive bene i dati: per ogni punto, la
+      differenza tra modello e misura divisa per l'incertezza della misura,
+      elevata al quadrato e sommata su tutti i punti. Diviso per il numero di
+      punti, un χ²/N vicino a 1 significa che il modello è in accordo con i
+      dati entro le loro incertezze; valori molto più grandi indicano che non
+      lo è, o che le incertezze sono sottostimate.
+    see: [r-matrix, normalisation]
 
   - id: trojan-horse
     term: Trojan Horse method

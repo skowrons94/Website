@@ -25,7 +25,7 @@ role_it: >-
   Una volta formato, l'³He può incontrare un altro nucleo di ³He o un nucleo di
   ⁴He. La prima strada conclude la catena pp-I e non produce altri neutrini; la
   seconda apre i rami pp-II e pp-III, che emettono i neutrini solari del ⁷Be e
-  del ⁸B. La competizione tra le due fissa quindi quanti di questi neutrini
+  dell'⁸B. La competizione tra le due fissa quindi quanti di questi neutrini
   emette il Sole. Negli anni Novanta la reazione fu misurata anche per
   verificare l'idea che una risonanza sconosciuta a bassa energia potesse
   spiegare il deficit di neutrini solari.
@@ -107,4 +107,7 @@ evaluations: [adelberger2011, acharya2025]
 open_questions:
   - The origin of the electron-screening enhancement, which is larger than expected.
   - The shape of the three-body proton spectrum and its effect on detection efficiencies.
+open_questions_it:
+  - "L'origine dell'aumento dovuto allo schermaggio elettronico, più grande del previsto."
+  - "La forma dello spettro dei protoni a tre corpi e il suo effetto sulle efficienze di rivelazione."
 related: [3He-ag-7Be, 2H-pg-3He, 3He-dp-4He]

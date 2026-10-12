@@ -52,6 +52,13 @@ status_note_it: >-
   Ciò che conta è il rapporto (α,n)/(α,γ); entrambi i canali sono stati misurati
   direttamente, ma non alle energie più basse della combustione centrale
   dell'elio.
+status_plain: >-
+  What matters is how this reaction competes with ¹⁷O(α,γ)²¹Ne; both have
+  been measured, but not at the lowest energies of helium burning.
+status_plain_it: >-
+  Ciò che conta è come questa reazione compete con la ¹⁷O(α,γ)²¹Ne; entrambe
+  sono state misurate, ma non alle energie più basse della combustione
+  dell'elio.
 methods: [direct-surface, inverse-kinematics]
 measurements:
   - year: 2013
@@ -76,4 +83,6 @@ measurements:
 evaluations: [angulo1999]
 open_questions:
   - The ratio of ¹⁷O(α,n)²⁰Ne to ¹⁷O(α,γ)²¹Ne at the temperatures of core helium burning and shell carbon burning.
+open_questions_it:
+  - "Il rapporto tra ¹⁷O(α,n)²⁰Ne e ¹⁷O(α,γ)²¹Ne alle temperature della combustione centrale dell'elio e della combustione del carbonio in shell."
 related: [22Ne-an-25Mg, 13C-an-16O, 17O-pa-14N]

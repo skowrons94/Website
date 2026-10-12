@@ -28,7 +28,11 @@ nuclear-data/          AME2020 mass excesses and NUBASE2020 half-lives (read, ne
 - Energies are in keV, centre-of-mass, unless a field says otherwise.
 - Q-values, half-lives and Gamow windows are computed by the site from
   `nuclear-data/` and the temperatures given in `networks.yaml`. Do not type
-  them into the reaction files.
+  them into the reaction files. For an endothermic reaction (Q < 0) whose
+  window would reach below the threshold −Q, the site shows the
+  threshold-limited range instead: from the threshold to where
+  exp(−E/kT − 2πη) has fallen by 1/e (`thresholdWindow` in
+  `lib/atlas-core.mjs`).
 - Text has two registers. `summary` and `role` are for a general reader:
   short sentences, no jargon left undefined, no equations. `details`,
   `measurements` and `open_questions` are for a physicist: precise, with
@@ -71,6 +75,9 @@ details: >-                      # specialist paragraph(s), Markdown allowed
 status: improving                # well-known | improving | uncertain | unmeasured
 status_note: >-                  # one sentence: how well the rate is known, and why
   ...
+status_plain: >-                 # optional: the same in plain words, when status_note is
+  ...                            # technical; the facts box then shows this, and
+                                 # status_note moves to the Details section
 methods: [direct-underground, direct-surface, inverse-kinematics, anc]   # ids from methods.yaml
 measurements:                    # chronological; the main ones, not an exhaustive list
   - year: 2006

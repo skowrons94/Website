@@ -49,6 +49,14 @@ status_note_it: >-
   Le due risonanze chiave sono state misurate direttamente a LUNA, il che limita
   l'incertezza sul tasso a 0,07 GK a −35 %/+50 %; la forza della risonanza più
   bassa è ancora in tensione tra dati diretti e dati da trasferimento.
+status_plain: >-
+  Its two key resonances were measured at LUNA, which narrows the rate to
+  between about a third lower and a half higher than its best value; direct
+  and indirect data still disagree on the lowest resonance.
+status_plain_it: >-
+  Le sue due risonanze chiave sono state misurate a LUNA, il che restringe
+  il tasso tra circa un terzo in meno e la metà in più del valore migliore;
+  dati diretti e indiretti non concordano ancora sulla risonanza più bassa.
 methods: [direct-underground, direct-surface, anc]
 measurements:
   - year: 2013
@@ -94,5 +102,8 @@ evaluations: [angulo1999, acharya2025]
 open_questions:
   - The strength of the lowest resonance (E_cm ≈ 133 keV), where the direct LUNA value and the transfer data of Marshall et al. (2023) disagree.
   - The direct capture S-factor at the energies of the Gamow window, which so far comes from extrapolation.
+open_questions_it:
+  - "L'intensità della risonanza più bassa (E_cm ≈ 133 keV), per la quale il valore diretto di LUNA e i dati di trasferimento di Marshall et al. (2023) non concordano."
+  - "Il fattore S della cattura diretta alle energie della finestra di Gamow, che finora viene da un'estrapolazione."
 related: [23Na-pa-20Ne, 22Ne-pg-23Na, 24Mg-pg-25Al, 12C-12Cp-23Na]
 rmatrix: [24Mg]

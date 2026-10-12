@@ -46,6 +46,12 @@ status_note_it: >-
   Calcolata a circa l'1 % alle energie della nucleosintesi primordiale, con
   una teoria vincolata dalle misure di cattura di neutroni lenti e di deutoni
   spezzati da raggi γ.
+status_plain: >-
+  Calculated to about 1 % at the energies of the Big Bang, with a theory
+  checked against laboratory measurements.
+status_plain_it: >-
+  Calcolata a circa l'1 % alle energie della nucleosintesi primordiale, con
+  una teoria verificata su misure di laboratorio.
 methods: [theory]
 measurements:
   - year: 2000

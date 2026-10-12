@@ -14,7 +14,7 @@ summary: >-
 summary_it: >-
   Un nucleo di ³He cattura un nucleo di ⁴He (una particella alfa) e diventa ⁷Be,
   emettendo un raggio γ. Apre i rami della catena pp che emettono i neutrini
-  solari del ⁷Be e del ⁸B, e dopo il Big Bang produsse la maggior parte del
+  solari del ⁷Be e dell'⁸B, e dopo il Big Bang produsse la maggior parte del
   litio.
 role: >-
   In the Sun, a ³He nucleus either fuses with another ³He or captures an alpha
@@ -28,7 +28,7 @@ role: >-
 role_it: >-
   Nel Sole un nucleo di ³He o si fonde con un altro ³He o cattura una particella
   alfa attraverso questa reazione. La frazione che segue questa strada fissa il
-  numero di neutrini del ⁷Be e del ⁸B, contati da rivelatori come Borexino e
+  numero di neutrini del ⁷Be e dell'⁸B, contati da rivelatori come Borexino e
   Super-Kamiokande. È la principale incertezza nucleare sui flussi previsti di
   questi neutrini. Dopo il Big Bang il ⁷Be prodotto qui decadde poi in ⁷Li,
   quindi la reazione fissa anche la quantità prevista di litio primordiale.
@@ -147,5 +147,8 @@ evaluations: [adelberger2011, acharya2025, descouvemont2004, iliadis2020]
 open_questions:
   - The energy dependence of the S-factor between 100 keV and 1 MeV, which controls the extrapolation to the solar Gamow window.
   - The disagreement in slope and normalization above 1 MeV between recoil-separator and γ-ray data.
+open_questions_it:
+  - "L'andamento in energia del fattore S tra 100 keV e 1 MeV, che controlla l'estrapolazione alla finestra di Gamow solare."
+  - "Il disaccordo di pendenza e di normalizzazione sopra 1 MeV tra i dati ottenuti con separatori di rinculo e quelli con raggi γ."
 related: [3He-3He2p-4He, 7Be-pg-8B, 7Be-ec-7Li, 3H-ag-7Li, 7Be-np-7Li]
 rmatrix: [7Be]

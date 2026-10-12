@@ -43,6 +43,14 @@ status_note_it: >-
   I dati diretti arrivano a 85 keV ed escludono un grande contributo a 90 keV;
   la componente di cattura diretta e la risonanza a 20 keV vanno ancora
   studiate.
+status_plain: >-
+  Measured directly down to low energies, which ruled out a large
+  contribution once thought possible; the lowest-energy part still needs
+  study.
+status_plain_it: >-
+  Misurata direttamente fino a basse energie, il che ha escluso un grande
+  contributo un tempo ritenuto possibile; la parte a energia più bassa va
+  ancora studiata.
 methods: [direct-underground, direct-surface]
 measurements:
   - year: 2012
@@ -82,4 +90,7 @@ evaluations: [acharya2025]
 open_questions:
   - The direct-capture S-factor at low energy, which Solar Fusion III flags for further study.
   - The strength of the 20 keV resonance, known only from indirect data.
+open_questions_it:
+  - "Il fattore S della cattura diretta a bassa energia, che Solar Fusion III indica come da studiare ancora."
+  - "L'intensità della risonanza a 20 keV, nota solo da dati indiretti."
 related: [18O-pa-15N, 19F-pa-16O, 19F-pg-20Ne]

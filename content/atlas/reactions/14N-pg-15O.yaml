@@ -54,6 +54,14 @@ status_note_it: >-
   I dati diretti arrivano a 70 keV; l'incertezza residua viene dalla
   suddivisione nelle singole transizioni γ e dall'estrapolazione alle energie
   solari.
+status_plain: >-
+  Measured underground close to the energies of the Sun. What remains
+  uncertain is how the reaction divides among its several ways of giving off
+  γ-rays, and the last step down to solar energies.
+status_plain_it: >-
+  Misurata sotto terra vicino alle energie del Sole. Resta incerto come la
+  reazione si ripartisca tra i diversi modi in cui emette raggi γ, e
+  l'ultimo passo fino alle energie solari.
 methods: [direct-underground, direct-surface, activation, lifetime, anc]
 measurements:
   - year: 2001
@@ -103,7 +111,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "119–367 keV (effective)"
-    energy_it: "119–367 keV (efficace)"
+    energy_it: "119–367 keV (energia efficace)"
     note: >-
       Full account of the LUNA solid-target campaign with TiN targets and HPGe
       detectors. Because of the level structure of ¹⁵O, the extrapolated S(0)
@@ -189,4 +197,7 @@ evaluations: [adelberger2011, acharya2025]
 open_questions:
   - The ground-state transition, whose contribution at low energy depends on interference in the R-matrix fit.
   - The lifetime of the 6.79 MeV state of ¹⁵O, for which the published values disagree.
+open_questions_it:
+  - "La transizione allo stato fondamentale, il cui contributo a bassa energia dipende dall'interferenza nel fit R-matrix."
+  - "La vita media dello stato a 6,79 MeV del ¹⁵O, per la quale i valori pubblicati non concordano."
 related: [13C-pg-14N, 15O-bp-15N, 15N-pa-12C, 15N-pg-16O, 12C-pg-13N]

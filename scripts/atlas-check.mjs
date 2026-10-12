@@ -258,7 +258,7 @@ for (const [id, { file, data: r }] of reactionFiles) {
   checkEnum(file, r.importance, "importance")
   // The general-reader fields are expected in Italian; the specialist ones
   // (details, measurement notes, open questions) may stay English.
-  checkTranslations(file, r, ["summary", "role", "status_note"])
+  checkTranslations(file, r, ["summary", "role", "status_note", "status_plain"])
   checkEnum(file, r.status, "status")
 
   for (const field of ["target", "product"]) {

@@ -2,7 +2,8 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { ArrowRight, ChevronRight, Download } from "lucide-react"
 
-import { ChartDiagram } from "@/components/atlas/chart-diagram"
+import { ArrowKey, ChartDiagram } from "@/components/atlas/chart-diagram"
+import { LunaFigure } from "@/components/atlas/luna-figure"
 import { NetworkMap } from "@/components/atlas/network-map"
 import { SiteUrl } from "@/components/atlas/site-url"
 import { LunaBadge } from "@/components/atlas/status-badge"
@@ -30,6 +31,25 @@ export function AtlasPage({ lang }: { lang: Lang }) {
   const luna = atlas.reactions.filter((r) => r.luna)
   const written = atlas.reactions.filter((r) => r.hasFile).length
   const meta = atlas.meta
+  const highlights = atlas.timeline.filter((e) => e.highlight).length
+  // Where a newcomer should start: the short version of the timeline. In the
+  // header beside the title on a wide screen; under the map on a phone, so
+  // the map starts high on the page.
+  const startHere = (className: string) => (
+    <Link
+      href={to(highlights > 0 ? "/atlas/timeline?only=highlights" : "/atlas/timeline")}
+      className={`group block rounded-lg border border-border bg-card p-5 transition-colors hover:border-foreground/30 ${className}`}
+    >
+      <p className="text-xs font-medium uppercase tracking-[0.14em] text-link">{t.startHere}</p>
+      <p className="mt-1.5 font-serif text-lg font-semibold leading-snug tracking-tight group-hover:text-link">
+        {t.startHereTitle(highlights > 0 ? highlights : atlas.timeline.length)}
+      </p>
+      <p className="mt-1.5 text-pretty text-sm leading-relaxed text-muted-foreground">
+        {t.startHereText(atlas.timeline.length)}
+      </p>
+      <ArrowRight className="mt-3 h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden />
+    </Link>
+  )
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 xl:max-w-7xl">
@@ -57,17 +77,7 @@ export function AtlasPage({ lang }: { lang: Lang }) {
             </a>
           </nav>
         </div>
-        <Link
-          href={to("/atlas/timeline")}
-          className="group mt-6 block rounded-lg border border-border bg-card p-5 transition-colors hover:border-foreground/30 lg:mt-0"
-        >
-          <p className="text-xs font-medium uppercase tracking-[0.14em] text-link">{t.startHere}</p>
-          <p className="mt-1.5 font-serif text-lg font-semibold leading-snug tracking-tight group-hover:text-link">
-            {t.startHereTitle}
-          </p>
-          <p className="mt-1.5 text-pretty text-sm leading-relaxed text-muted-foreground">{t.startHereText}</p>
-          <ArrowRight className="mt-3 h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden />
-        </Link>
+        {startHere("hidden lg:block")}
       </header>
 
       {/* -- how to read the map, folded ------------------------------------- */}
@@ -102,6 +112,7 @@ export function AtlasPage({ lang }: { lang: Lang }) {
                 </Link>
               </p>
             </div>
+            <ArrowKey lang={lang} />
           </div>
         </div>
       </details>
@@ -111,13 +122,18 @@ export function AtlasPage({ lang }: { lang: Lang }) {
         <NetworkMap data={map} />
       </section>
 
+      {startHere("mt-10 lg:hidden")}
+
       {/* -- the primer: why, and why underground ---------------------------- */}
       <section className="mt-16 border-t border-border/70 pt-10" aria-labelledby="primer-heading">
         <h2 id="primer-heading" className="max-w-3xl text-balance font-serif text-2xl font-semibold tracking-tight">
           {t.primerTitle}
         </h2>
-        <div className="mt-5 max-w-3xl space-y-4 text-pretty text-[1.0625rem] leading-relaxed text-muted-foreground">
-          {lang === "it" ? <IntroIt /> : <IntroEn />}
+        <div className="mt-5 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-start xl:grid-cols-[minmax(0,1fr)_minmax(0,30rem)]">
+          <div className="max-w-3xl space-y-4 text-pretty text-[1.0625rem] leading-relaxed text-muted-foreground">
+            {lang === "it" ? <IntroIt /> : <IntroEn />}
+          </div>
+          <LunaFigure lang={lang} className="lg:sticky lg:top-24" />
         </div>
       </section>
 
@@ -223,8 +239,10 @@ function IntroEn() {
   return (
     <>
       <p>
-        Stars shine because light nuclei fuse into heavier ones, and almost every element heavier than
-        helium was made this way. To model a star, or to read the composition of an old one, we need to
+        Stars shine because light nuclei fuse into heavier ones. Fusion in stars made most of the
+        elements from carbon up to iron; most of those beyond iron were made instead by neutron
+        captures, slow ones mainly in red giants and rapid ones in stellar explosions and neutron-star
+        mergers. To model a star, or to read the composition of an old one, we need to
         know how fast each of these reactions runs at the temperature inside it.
       </p>
       <p>
@@ -260,8 +278,10 @@ function IntroIt() {
   return (
     <>
       <p>
-        Le stelle brillano perché i nuclei leggeri si fondono in nuclei più pesanti, e quasi tutti gli
-        elementi più pesanti dell'elio sono nati così. Per costruire il modello di una stella, o per
+        Le stelle brillano perché i nuclei leggeri si fondono in nuclei più pesanti. La fusione nelle
+        stelle ha prodotto la maggior parte degli elementi dal carbonio al ferro; quasi tutti quelli più
+        pesanti del ferro sono nati invece da catture di neutroni, lente soprattutto nelle giganti rosse e rapide
+        nelle esplosioni stellari e nelle fusioni di stelle di neutroni. Per costruire il modello di una stella, o per
         interpretare la composizione di una stella antica, dobbiamo sapere con quale rapidità avviene
         ciascuna di queste reazioni alla temperatura che c'è al suo interno: il suo tasso di reazione.
       </p>

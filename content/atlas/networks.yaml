@@ -142,7 +142,7 @@ networks:
       A rare branch: ⁷Be captures a proton to make ⁸B, whose decay emits the
       high-energy solar neutrinos first detected in the Homestake mine.
     summary_it: >-
-      Un ramo raro: il ⁷Be cattura un protone e forma il ⁸B, il cui decadimento
+      Un ramo raro: il ⁷Be cattura un protone e forma l'⁸B, il cui decadimento
       emette i neutrini solari di alta energia rivelati per la prima volta nella
       miniera di Homestake.
     temperatures:
@@ -302,6 +302,10 @@ networks:
       o ²⁴Mg.
     temperatures:
       - { label: "core carbon burning, 15 M☉ star", label_it: "combustione centrale del carbonio, stella di 15 M☉", T9: 0.83 }
+      # Carbon ignition in a superburst on an accreting neutron star:
+      # 6 × 10⁸ K, or 5 × 10⁸ K with a resonance near the 1.5 MeV Gamow peak
+      # (Cooper, Steiner and Brown 2009, ApJ 702, 660; cooper2009).
+      - { label: "superburst ignition, accreting neutron star", label_it: "innesco di un superburst, stella di neutroni in accrescimento", T9: 0.5 }
     reactions: [12C-12Ca-20Ne, 12C-12Cp-23Na, 12C-12Cn-23Mg, 23Na-pa-20Ne, 23Na-pg-24Mg]
 
   - id: neutron-sources

@@ -68,6 +68,14 @@ status_note_it: >-
   tasso a 0,1 GK è scesa di circa tre ordini di grandezza; restano in
   discussione la normalizzazione alle risonanze di riferimento a energia più
   alta e la componente non risonante.
+status_plain: >-
+  Underground measurements have found or ruled out the low-energy
+  resonances, and the uncertainty of the rate fell about a thousandfold;
+  some details of the analysis are still debated.
+status_plain_it: >-
+  Le misure sotterranee hanno trovato o escluso le risonanze a bassa
+  energia, e l'incertezza sul tasso è scesa di circa mille volte; alcuni
+  dettagli dell'analisi sono ancora discussi.
 methods: [direct-underground, direct-surface, inverse-kinematics]
 measurements:
   - year: 2014
@@ -152,5 +160,9 @@ open_questions:
   - The strength of the E_cm = 458 keV reference resonance, where the DRAGON value is significantly lower than earlier forward-kinematics results; strengths normalised to it inherit the discrepancy.
   - The size of the non-resonant component (direct capture and subthreshold states) between the resonances.
   - Whether the updated rate is enough for AGB models to reproduce the sodium–oxygen anticorrelation in globular clusters.
+open_questions_it:
+  - "L'intensità della risonanza di riferimento a E_cm = 458 keV, per la quale il valore di DRAGON è significativamente più basso dei risultati precedenti in cinematica diretta; le intensità normalizzate a essa ne ereditano la discrepanza."
+  - "L'entità della componente non risonante (cattura diretta e stati sotto soglia) tra le risonanze."
+  - "Se il tasso aggiornato basti ai modelli di stelle AGB per riprodurre l'anticorrelazione sodio–ossigeno negli ammassi globulari."
 related: [23Na-pg-24Mg, 23Na-pa-20Ne, 21Ne-pg-22Na, 22Ne-an-25Mg, 22Ne-ag-26Mg]
 rmatrix: [23Na]

@@ -62,4 +62,6 @@ measurements:
 evaluations: [angulo1999]
 open_questions:
   - The direct-capture S-factor at energies below 1 MeV, where no measurement exists.
+open_questions_it:
+  - "Il fattore S della cattura diretta a energie inferiori a 1 MeV, dove non esiste alcuna misura."
 related: [12C-ag-16O]

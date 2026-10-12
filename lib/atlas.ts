@@ -87,6 +87,14 @@ export interface GamowWindow {
   E0: number
   /** keV, 1/e full width. */
   width: number
+  /**
+   * Endothermic reaction whose ordinary window would reach below the
+   * threshold: the window is then [lo, hi] above it (keV), and E0 its maximum.
+   */
+  thresholdLimited?: boolean
+  lo?: number
+  hi?: number
+  threshold?: number
 }
 
 export interface ThermalEnergy {
@@ -128,6 +136,8 @@ export interface Reaction {
   details: string
   status: Status | null
   statusNote: string
+  /** Plain-language version of statusNote, when that one is technical. */
+  statusPlain: string
   methods: string[]
   measurements: Measurement[]
   evaluations: string[]
@@ -205,6 +215,8 @@ export interface TimelineEvent {
   reactions: string[]
   refs: string[]
   facility: string | null
+  /** Shown under the timeline's "Highlights" filter. */
+  highlight: boolean
 }
 
 export interface AtlasMeta {
@@ -354,6 +366,8 @@ export interface MapReaction {
   importance: Importance
   status: Status | null
   statusNote: string
+  /** Plain-language version of statusNote, when that one is technical. */
+  statusPlain: string
   q: QValue | null
   gamow: GamowWindow[]
   windowNote: string | null
@@ -413,6 +427,7 @@ export function getMapData(lang: Lang = "en"): MapData {
       importance: r.importance,
       status: r.status,
       statusNote: r.statusNote,
+      statusPlain: r.statusPlain,
       q: r.q,
       gamow: r.gamow,
       windowNote: r.windowNote,

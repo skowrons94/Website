@@ -78,4 +78,6 @@ measurements:
 evaluations: [descouvemont2004, bosch1992, pisanti2021, fields2020]
 open_questions:
   - The normalization of the S-factor at BBN energies, where the evaluations differ.
+open_questions_it:
+  - "La normalizzazione del fattore S alle energie della nucleosintesi primordiale, dove le valutazioni differiscono."
 related: [2H-dp-3H, 2H-pg-3He, 3He-dp-4He]

@@ -78,4 +78,6 @@ measurements:
 evaluations: [descouvemont2004, bosch1992]
 open_questions:
   - The electron-screening potential extracted from the lowest-energy direct data, which exceeds the adiabatic estimate, while the Trojan Horse analysis finds a value consistent with it.
+open_questions_it:
+  - "Il potenziale di schermaggio elettronico ricavato dai dati diretti alle energie più basse, che supera la stima adiabatica, mentre l'analisi con il metodo del cavallo di Troia trova un valore compatibile con essa."
 related: [3H-dn-4He, 2H-dn-3He, 3He-3He2p-4He]

@@ -72,6 +72,16 @@ status_note_it: >-
   terra, a LUNA e a JUNA; la ripartizione tra stato fondamentale e isomero,
   soprattutto per la risonanza a 92 keV, è la principale incertezza residua
   sulla resa di ²⁶Al nello stato fondamentale.
+status_plain: >-
+  The key resonances were measured directly underground, at LUNA and at
+  JUNA. The main uncertainty left is how much of the product is made in the
+  long-lived form of aluminium-26, the one that γ-ray telescopes see in the
+  Galaxy.
+status_plain_it: >-
+  Le risonanze chiave sono state misurate direttamente sotto terra, a LUNA e
+  a JUNA. L'incertezza principale rimasta è quanta parte del prodotto si
+  formi nello stato a vita lunga dell'alluminio-26, quello che i telescopi
+  per raggi γ vedono nella Galassia.
 methods: [direct-underground, direct-surface]
 measurements:
   - year: 1990
@@ -115,4 +125,8 @@ open_questions:
   - The ground-state fraction of the 92 keV resonance, which sets how much of the rate produces ²⁶Al in its ground state and therefore the 1809 keV line.
   - The comparison of the LUNA and JUNA strengths of the 92 keV resonance, the two direct measurements in deep underground laboratories.
   - The effect of the higher isomer production on the ²⁶Al yields of Wolf–Rayet and massive AGB stars.
+open_questions_it:
+  - "La frazione verso lo stato fondamentale della risonanza a 92 keV, che fissa quanta parte del tasso produce ²⁶Al nel suo stato fondamentale, e quindi la riga a 1809 keV."
+  - "Il confronto tra le intensità della risonanza a 92 keV misurate da LUNA e da JUNA, le due misure dirette in laboratori sotterranei profondi."
+  - "L'effetto della maggiore produzione dell'isomero sulle rese di ²⁶Al delle stelle di Wolf–Rayet e delle AGB massicce."
 related: [26Al-bp-26Mg, 24Mg-pg-25Al, 25Al-bp-25Mg, 26Mg-pg-27Al, 22Ne-an-25Mg]

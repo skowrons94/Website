@@ -97,4 +97,6 @@ measurements:
 evaluations: [descouvemont2004]
 open_questions:
   - The size of the residual E1 contribution at BBN energies.
+open_questions_it:
+  - "L'entità del contributo E1 residuo alle energie della nucleosintesi primordiale."
 related: [2H-dn-3He, 2H-dp-3H, 3H-ag-7Li]

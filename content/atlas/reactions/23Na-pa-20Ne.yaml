@@ -55,6 +55,14 @@ status_note_it: >-
   viste direttamente nel canale (p,α), quindi è fissato da limiti superiori e
   dalle larghezze protoniche ricavate dal canale (p,γ) e da reazioni di
   trasferimento.
+status_plain: >-
+  At the lowest temperatures the rate depends on resonances not yet seen in
+  this reaction, so it rests on upper limits and on information from other
+  reactions.
+status_plain_it: >-
+  Alle temperature più basse il tasso dipende da risonanze non ancora
+  osservate in questa reazione, quindi si basa su limiti superiori e su
+  informazioni ricavate da altre reazioni.
 methods: [direct-surface, direct-underground, anc]
 measurements:
   - year: 2004
@@ -94,4 +102,8 @@ open_questions:
   - A direct observation of the 133 keV resonance in the (p,α) channel, the aim of the planned LUNA campaign.
   - The proton width of the 133 keV state, where transfer data and the direct (p,γ) strength disagree.
   - The ratio of the (p,α) and (p,γ) rates near 0.05–0.1 GK, which decides whether material cycles back to neon or leaks to magnesium.
+open_questions_it:
+  - "Un'osservazione diretta della risonanza a 133 keV nel canale (p,α), l'obiettivo della campagna prevista a LUNA."
+  - "La larghezza protonica dello stato a 133 keV, per la quale i dati di trasferimento e l'intensità diretta in (p,γ) non concordano."
+  - "Il rapporto tra i tassi (p,α) e (p,γ) intorno a 0,05–0,1 GK, che decide se la materia torna al neon o sfugge verso il magnesio."
 related: [23Na-pg-24Mg, 20Ne-pg-21Na, 22Ne-pg-23Na, 12C-12Cp-23Na]

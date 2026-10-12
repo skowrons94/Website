@@ -44,6 +44,14 @@ status_note_it: >-
   La risonanza che domina alle temperature della combustione dell'idrogeno è
   stata misurata direttamente sotto terra con buona precisione; al di sotto il
   tasso si basa sulla cattura diretta estrapolata.
+status_plain: >-
+  The resonance that matters most in hydrogen-burning stars has been
+  measured underground with good precision; at lower energies the rate still
+  relies on an extrapolation.
+status_plain_it: >-
+  La risonanza che conta di più nelle stelle che bruciano idrogeno è stata
+  misurata sotto terra con buona precisione; a energie più basse il tasso si
+  basa ancora su un'estrapolazione.
 methods: [direct-underground, direct-surface]
 measurements:
   - year: 2010
@@ -59,4 +67,6 @@ measurements:
 evaluations: [angulo1999]
 open_questions:
   - The direct capture S-factor below the 214 keV resonance, which so far comes from extrapolation of higher-energy data.
+open_questions_it:
+  - "Il fattore S della cattura diretta sotto la risonanza a 214 keV, che finora viene dall'estrapolazione di dati a energia più alta."
 related: [25Al-bp-25Mg, 25Mg-pg-26Al, 23Na-pg-24Mg, 27Al-pa-24Mg]
