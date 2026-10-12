@@ -457,8 +457,8 @@ terms:
   - id: s-process
     term: s-process
     term_it: Processo s
-    keywords: ["slow neutron capture", "¹⁷⁶Lu", "¹⁵¹Sm", "heavy elements", "gold", "lead"]
-    keywords_it: ["cattura lenta di neutroni", "¹⁷⁶Lu", "¹⁵¹Sm", "elementi pesanti", "oro", "piombo"]
+    keywords: ["slow neutron capture", "heavy elements", "gold", "lead"]
+    keywords_it: ["cattura lenta di neutroni", "elementi pesanti", "oro", "piombo"]
     also: slow neutron capture
     also_it: cattura lenta di neutroni
     text: >-
@@ -625,8 +625,8 @@ terms:
   - id: branch-point
     term: Branch point
     term_it: Punto di diramazione
-    keywords: ["isomer", "¹⁷⁶Lu", "¹⁵¹Sm", "¹⁸⁵W", "bound-state beta decay", "¹⁶³Dy"]
-    keywords_it: ["isomero", "¹⁷⁶Lu", "¹⁵¹Sm", "¹⁸⁵W", "decadimento beta in stato legato", "¹⁶³Dy"]
+    keywords: ["isomer", "¹⁸⁵W", "bound-state beta decay", "¹⁶³Dy"]
+    keywords_it: ["isomero", "¹⁸⁵W", "decadimento beta in stato legato", "¹⁶³Dy"]
     text: >-
       A radioactive nucleus on the s-process path that lives long enough to
       capture a neutron before it decays, but not always. There the path
