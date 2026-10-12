@@ -62,6 +62,9 @@ def fingerprint(directory):
     """A hash of the model: its .azr file(s) and everything under data/."""
     h = hashlib.sha256()
     h.update(f"revision {REVISION}".encode())
+    # Toggling the split total-capture calculation changes every result.
+    from app.fine import split_enabled
+    h.update(f"split {split_enabled(directory)}".encode())
     paths = [os.path.join(directory, f) for f in sorted(os.listdir(directory))
              if f.endswith(".azr")]
     data = os.path.join(directory, "data")

@@ -292,6 +292,33 @@ integrals, which take minutes to recompute, so those two are kept. `fine/` is
 written by the server (the model on a fine grid for the plots,
 `server/app/fine.py`) and is not committed.
 
+#### Total capture and `split_total_capture`
+
+AZURE2 at the pinned revision (`7e533b7`) calculates a total capture over
+several capture pairs (a data segment with exit `-1`) as the first pair plus one
+*component segment* per further pair, and mishandles the components'
+external-capture integrals whenever `output/intEC.*` already exists: if the
+file holds only the regular segments' integrals (as the shipped ones do) the
+components read zeros, so the total is the first transition alone; if it holds
+both, the count check fails and the components read the wrong numbers
+(`EData::CountECAmplitudes` counts regular segments only, while
+`InitializeComponentSegments` reuses the file whatever that check decided). A
+fresh calculation is right. 17F's total capture came out ~15x low, 7Be's
+³He(α,γ) ~20% low.
+
+An evaluation opts in to the workaround with `"split_total_capture": true` in
+its `info.json`: the server then calculates the data through a copy of the model
+in which each total capture is one angle-integrated segment per capture pair
+(appended, with fixed normalisations, so no key or free parameter moves) and
+sums them back (`server/app/fine.py` `split_data_model`, `server/app/engine.py`);
+the extrapolations and the fine-grid curves likewise. Those integrals can be
+reused, and live in `datamodel/` and `extrap/` (not committed). Without the
+flag a total capture is calculated as AZURE2 does as shipped, so a published
+fit looks exactly as published. It is set for 17F, 7Be and 23Na, where the
+corrected total reproduces the data; 14N is left off (corrected, its LUNA total
+capture is 20% above the data, χ²/N 0.9 → 95: the fit needs checking). The flag
+is part of the results-cache key, so toggling it recalculates.
+
 ## Development
 
 ```sh

@@ -71,6 +71,25 @@ def capture_keys(azr_path) -> List[int]:
     return sorted(keys)
 
 
+FLAG = "split_total_capture"
+
+
+def split_enabled(directory) -> bool:
+    """Has the evaluation opted in (``"split_total_capture": true`` in its
+    ``info.json``) to the split total-capture calculation?
+
+    Off by default: a published evaluation then looks exactly as AZURE2
+    calculates it as shipped, integral reuse included (see :func:`summed`),
+    until its author has checked the corrected numbers.
+    """
+    import json
+    try:
+        with open(os.path.join(directory, "info.json")) as f:
+            return json.load(f).get(FLAG) is True
+    except (OSError, ValueError, AttributeError):
+        return False
+
+
 def summed(segments, captures) -> bool:
     """Does AZURE2 build *component* segments for this set?
 
@@ -82,7 +101,8 @@ def summed(segments, captures) -> bool:
     shipped files), or out of step -- garbage -- when it holds both.  ¹⁷F's
     total capture then came out as the ground-state transition alone, ~15x
     below the data, and ⁷Be's ³He(α,γ) 20% low.  A fresh calculation is
-    right.  See :mod:`app.engine` for how each model avoids the reuse.
+    right.  See :mod:`app.engine` for how a model avoids the reuse -- only
+    when its ``info.json`` opts in (:func:`split_enabled`; README.md).
     """
     if len(captures) < 2:
         return False
@@ -137,7 +157,7 @@ def plan(azr_path, cwd, segments, captures=None) -> List[Optional[Tuple[List[str
       capture (whose integrals are unreliable, see :func:`summed`).
     """
     if captures is None:
-        captures = capture_keys(azr_path)
+        captures = capture_keys(azr_path) if split_enabled(cwd) else []
     out = []
     for segment in segments:
         code = _TEST_CODE.get(segment.observable)

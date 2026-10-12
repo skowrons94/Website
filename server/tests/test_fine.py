@@ -115,3 +115,79 @@ def test_split_data_model_keeps_keys_and_parameters(tmp_path):
     assert lines[6][2] == "3" and lines[6][7] == "0" and lines[6][9] == "0"
     target = re.search(r"<targetInt>\n(.*?)</targetInt>", text, re.S).group(1)
     assert '"4,5,6"' in target and "7" not in target.split('"')[1]
+
+
+def _copy(name, tmp_path, flag):
+    """An evaluation copied with ``split_total_capture`` set to ``flag``."""
+    import json
+    import shutil
+    target = tmp_path / name
+    shutil.copytree(os.path.join(EVALUATIONS, name), target,
+                    ignore=shutil.ignore_patterns("output", "fine", "extrap", "datamodel", "precomputed.json"))
+    info = json.loads((target / "info.json").read_text())
+    if flag is None:
+        info.pop(fine.FLAG, None)
+    else:
+        info[fine.FLAG] = flag
+    (target / "info.json").write_text(json.dumps(info))
+    return str(target)
+
+
+def test_split_is_opt_in(tmp_path):
+    """Without the flag a total capture is planned as AZURE2's own (one
+    code-4 line), exactly as before; with it, one line per capture pair."""
+    pytest.importorskip("pyazr")
+    from pyazr.datasets import SegmentSet
+
+    off = _copy("17F", tmp_path / "off", None)
+    on = _copy("17F", tmp_path / "on", True)
+    assert not fine.split_enabled(off) and fine.split_enabled(on)
+    for directory, lines in ((off, 1), (on, 2)):
+        azr = os.path.join(directory, "17F.azr")
+        planned = fine.plan(azr, directory, SegmentSet.from_file(azr))
+        total = planned[0][0]
+        assert len(total) == lines
+        if lines == 1:
+            t = total[0].split()
+            assert t[2] == "-1" and t[9] == "4"
+
+
+def test_flag_changes_the_cache_key(tmp_path):
+    from app import cache
+    off = _copy("17F", tmp_path / "off", False)
+    on = _copy("17F", tmp_path / "on", True)
+    assert cache.fingerprint(off) != cache.fingerprint(on)
+
+
+def test_shipped_flags():
+    """Opted in where the split reproduces the data; 14N stays as published."""
+    for name, expected in (("17F", True), ("7Be", True), ("23Na", True), ("14N", False)):
+        assert fine.split_enabled(os.path.join(EVALUATIONS, name)) is expected
+
+
+def test_engine_paths_17F(tmp_path):
+    """The two calculations of 17F's total capture (Hester): flag off gives
+    AZURE2 as shipped (ground-state transition only, ~0.5 keV b), flag on
+    the sum over both capture pairs (~7.4 keV b, what the data show)."""
+    pytest.importorskip("pyazr")
+    import shutil
+    import numpy as np
+    import pyazr
+    from app.engine import _dispatch
+
+    results = {}
+    for flag in (False, True):
+        directory = _copy("17F", tmp_path / str(flag), flag)
+        shutil.copytree(os.path.join(EVALUATIONS, "17F", "output"), os.path.join(directory, "output"))
+        os.makedirs(os.path.join(directory, "checks"), exist_ok=True)
+        azr = pyazr.azure2(os.path.join(directory, "17F.azr"), cwd=directory)
+        try:
+            params = np.asarray(azr.params, dtype=np.float64)
+            _, sfactor = _dispatch(azr, "data", params)
+            results[flag] = float(sfactor[0][0]) * 1e3
+        finally:
+            for model in (getattr(azr, "_data_state", {}).get("model"), azr):
+                if model is not None:
+                    model.close()
+    assert results[False] == pytest.approx(0.48, rel=0.05)
+    assert results[True] == pytest.approx(7.40, rel=0.02)

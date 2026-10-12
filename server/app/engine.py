@@ -190,7 +190,8 @@ def _needs_split(azr) -> bool:
     if needs is None:
         from app import fine
         try:
-            needs = fine.summed(azr.datasets, fine.capture_keys(azr.file))
+            needs = (fine.split_enabled(azr.cwd)
+                     and fine.summed(azr.datasets, fine.capture_keys(azr.file)))
         except Exception:
             needs = False
         azr._needs_split = needs
@@ -293,7 +294,7 @@ def extrap_curves(state, azr_path, cwd, params):
         captures = fine.capture_keys(azr_path)
         tests = TestSegmentSet.from_file(azr_path)
         slots = None
-        if fine.summed(tests, captures):
+        if fine.split_enabled(cwd) and fine.summed(tests, captures):
             workdir = fine.workdir_for(cwd, "extrap")
             with fine.building(workdir):
                 path, slots = fine.extrap_model(azr_path, workdir, captures)
