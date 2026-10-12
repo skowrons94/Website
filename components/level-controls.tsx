@@ -333,11 +333,7 @@ function LevelControlsImpl({ scheme, onChange, onReset, disabled, selectedLevel,
           <Badge variant="secondary" className="text-xs">
             {t.nFree(total)}
           </Badge>
-          {scheme.modified && (
-            <Badge variant="outline" className="text-xs">
-              {t.modified}
-            </Badge>
-          )}
+          {/* No "modified" badge here: each changed parameter carries one, and Reset is live only then (it pushed "Expand all" onto a line of its own). */}
         </div>
         <div className="flex items-center gap-2">
           <Button

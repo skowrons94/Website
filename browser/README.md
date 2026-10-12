@@ -51,7 +51,7 @@ process, the page runs one worker per role (`lib/browser-engine.ts`):
 |---|---|---|
 | `azure2-data` | the Flask app (sessions, serializers) and the data model | on opening |
 | `azure2-fine` | the smooth curves' model | once the data worker has the files |
-| `azure2-extrap` | the extrapolations' model | likewise, built alongside |
+| `azure2-extrap` | the extrapolations' model | likewise (on a phone: when first shown) |
 | `azure2-grid` | the energy × angle grids' model | when a grid is first shown |
 
 The data worker answers `500 {code: "delegate", role}` for what another
@@ -63,8 +63,11 @@ copy, edited in step with the data worker's (same rules as
 An edit's smooth curve is calculated alongside its data; a burst of edits
 calculates only the latest parameters. ⁷Be: an edit 22 s → 1.5–2 s.
 
-Each worker is a Pyodide of its own, about 150–250 MB (⁷Be's three: about
-0.6 GB; four with a grid open). The files are downloaded once: the role
+Each worker is a Pyodide of its own with its model: the page's renderer
+grows to about 0.7 GB with ¹³N's three workers, 1.0 GB with ²⁴Mg's and
+1.5 GB with ⁷Be's (Chromium; a fourth with a grid open). So a phone (a
+coarse pointer) or a machine reporting under 8 GB (`navigator.deviceMemory`)
+starts the extrapolations' worker only when they are first shown. The files are downloaded once: the role
 workers start when the data worker has the runtime and the evaluation, the
 zips are kept in the Cache Storage under the hash `assemble.py` writes to
 `manifest.json` (a new build is fetched anew), and Pyodide's own files come

@@ -23,8 +23,9 @@
  *   (a copy kept here, edited in step with the data worker's), hands the
  *   result to the data worker and asks again. An edit's smooth curve is
  *   calculated alongside its data, not after it.
- * - Each worker is a Pyodide of its own: about 150–250 MB each (four with a
- *   grid open). The runtime and the evaluation are downloaded once: the role
+ * - Each worker is a Pyodide of its own with its model: ¹³N's three workers
+ *   take about 0.7 GB in all, ⁷Be's 1.5 GB. A phone or a small machine
+ *   starts the extrapolations' worker only when they are first shown. The runtime and the evaluation are downloaded once: the role
  *   workers start when the data worker has them (worker.js keeps the zips in
  *   the Cache Storage; Pyodide's own files are in the HTTP cache).
  */
@@ -214,6 +215,18 @@ function mirror(session: Session, body: string | null, reset: boolean) {
 
 /* -- preparing the other roles ---------------------------------------------------- */
 
+/**
+ * Whether to start the extrapolations' worker before it is asked for: each
+ * worker costs 150–500 MB (⁷Be's three: about 1.5 GB in all), so a phone or
+ * a small machine starts it only when the extrapolations are first shown.
+ */
+function roomy(): boolean {
+  if (typeof navigator === "undefined") return false
+  const memory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory
+  const coarse = typeof matchMedia === "function" && matchMedia("(pointer: coarse)").matches
+  return !coarse && (memory === undefined || memory >= 8)
+}
+
 let opening: string | null = null
 
 /**
@@ -225,7 +238,7 @@ let opening: string | null = null
 function startRoles() {
   const evaluation = opening
   if (!evaluation) return
-  for (const role of ["fine", "extrap"] as const)
+  for (const role of roomy() ? (["fine", "extrap"] as const) : (["fine"] as const))
     worker(role)
       .call("role_prepare", [role, evaluation], evaluation)
       .catch(() => {
