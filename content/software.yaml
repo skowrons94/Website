@@ -139,6 +139,11 @@ software:
         skill is a folder with its instructions and, where needed, scripts and
         reference material; the analysis skills ship an offline demo that must
         print PASS.
+      - >-
+        I think AI will soon be part of how research is done: it lets a
+        researcher spend more time on physics and reach for tools well beyond
+        their own field. These skills are how I use it, shared so others can
+        too.
     summary_it:
       - >-
         Un insieme di skill per Claude Code e per gli altri agenti che usano il
@@ -147,6 +152,11 @@ software:
         al seminario. Ogni skill è una cartella con le sue istruzioni e, dove
         serve, script e materiale di riferimento; le skill di analisi includono
         una demo offline che deve stampare PASS.
+      - >-
+        Credo che l'IA entrerà presto nel modo di fare ricerca: permette a chi
+        fa ricerca di dedicare più tempo alla fisica e di usare strumenti ben
+        oltre il proprio campo. Queste skill sono il modo in cui la uso,
+        condivise perché possano usarle anche altri.
     uses:
       - Yields, peak shapes, detection efficiency and summing corrections, and target profiles
       - Geant4 simulations of underground γ-ray set-ups and of AGATA
