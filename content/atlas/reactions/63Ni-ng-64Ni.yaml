@@ -50,6 +50,12 @@ status_note: >-
 status_note_it: >-
   Misurata dal 2013 su un campione radioattivo a n_TOF e a DANCE, con
   incertezze del 15–20%.
+status_plain: >-
+  Measured only since 2013, on a small radioactive sample; known to
+  15–20%.
+status_plain_it: >-
+  Misurata solo dal 2013, su un piccolo campione radioattivo; nota al
+  15–20%.
 methods: [neutron-beams]
 measurements:
   - year: 2013

@@ -44,6 +44,13 @@ status_note: >-
 status_note_it: >-
   La rivalutazione del 2016 di tutti i dati ha cambiato l'andamento in
   energia della sezione d'urto stellare raccomandata.
+status_plain: >-
+  Measured, but small and hard to measure; a 2016 review of all the data
+  changed how the recommended value varies with temperature.
+status_plain_it: >-
+  Misurata, ma piccola e difficile da misurare; una revisione del 2016 di
+  tutti i dati ha cambiato come il valore raccomandato varia con la
+  temperatura.
 methods: [neutron-beams]
 measurements:
   - year: 1995

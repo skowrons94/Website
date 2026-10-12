@@ -7,6 +7,8 @@ ejectile: g
 product: 210Bi
 networks: [s-main]
 importance: major
+keywords: ["bismuth", "lead–bismuth cycle", "Pb–Bi cycle", "isomer", "end of the s-process"]
+keywords_it: ["bismuto", "ciclo piombo–bismuto", "ciclo Pb–Bi", "isomero", "fine del processo s"]
 summary: >-
   Bismuth-209 captures a neutron. It is the end of the s-process: what
   follows decays back to lead, and the path closes into a cycle.
@@ -15,16 +17,20 @@ summary_it: >-
   segue decade di nuovo in piombo, e il percorso si chiude in un ciclo.
 role: >-
   Bismuth-209 is the heaviest nucleus the s-process reaches. When it
-  captures a neutron it becomes bismuth-210, which decays within days to
-  polonium-210; polonium emits an alpha particle and becomes lead-206. The
-  neutrons that reach bismuth therefore keep cycling through lead and
+  captures a neutron it becomes bismuth-210, in one of two forms. The
+  ground state decays within days to polonium-210, which emits an alpha
+  particle and becomes lead-206; a long-lived excited form, the isomer, also
+  ends as lead-206, through an alpha decay to thallium-206. The neutrons that reach bismuth therefore keep cycling through lead and
   bismuth instead of building anything heavier. The cross section decides
   how much of the bismuth in the Solar System the s-process made, and so how
   much is left for the rapid r-process to explain.
 role_it: >-
   Il bismuto-209 è il nucleo più pesante che il processo s raggiunge. Quando
-  cattura un neutrone diventa bismuto-210, che decade in pochi giorni in
-  polonio-210; il polonio emette una particella alfa e diventa piombo-206. I
+  cattura un neutrone diventa bismuto-210, in una di due forme. Lo stato
+  fondamentale decade in pochi giorni in polonio-210, che emette una
+  particella alfa e diventa piombo-206; una forma eccitata di vita lunga,
+  l'isomero, finisce anch'essa in piombo-206, con un decadimento alfa in
+  tallio-206. I
   neutroni che arrivano al bismuto continuano quindi a circolare tra piombo
   e bismuto invece di costruire qualcosa di più pesante. La sezione d'urto
   decide quanta parte del bismuto del Sistema Solare è stata prodotta dal
@@ -34,9 +40,13 @@ details: >-
   β⁻-decays to ²¹⁰Po, and a long-lived isomer (t½ ≈ 3 × 10⁶ yr in the
   laboratory). Activation at Karlsruhe measured the stellar cross sections of
   ²⁰⁸Pb and ²⁰⁹Bi at the termination of the path and the partial cross
-  section to the ground state; at s-process temperatures the isomer is
-  quickly depopulated to the ground state, so the cycle closes through
-  ²¹⁰Po (Ratzel et al. 2004). ²⁰⁹Bi itself is only quasi-stable: it
+  section to the ground state (Ratzel et al. 2004). Both states close the
+  cycle at ²⁰⁶Pb: the ground state through ²¹⁰Po (138 d) and its α decay,
+  the 271 keV isomer through its own α decay to ²⁰⁶Tl and β⁻ decay to
+  ²⁰⁶Pb. Both branch: ²¹⁰Po can capture a neutron (²¹¹Po → ²⁰⁷Pb), and
+  capture on the isomer gives ²¹¹Bi (α, 2.17 min → ²⁰⁷Tl → ²⁰⁷Pb), so part
+  of the cycle leaks to ²⁰⁷Pb, by an amount that depends on the neutron
+  density and the temperature (Domingo-Pardo et al. 2006). ²⁰⁹Bi itself is only quasi-stable: it
   α-decays with t½ ≈ 2 × 10¹⁹ yr. The capture resonances of ²⁰⁹Bi were measured at n_TOF with the
   pulse-height weighting technique, with a set-up of
   practically negligible neutron sensitivity. In the stellar range
@@ -50,6 +60,12 @@ status_note: >-
 status_note_it: >-
   I dati di risonanza sono stati rivisti a n_TOF nel 2006, alzando il tasso
   stellare alle basse temperature di circa il 16%.
+status_plain: >-
+  Measured with neutron beams; a 2006 measurement at CERN raised the rate
+  at the lowest stellar temperatures by about 16%.
+status_plain_it: >-
+  Misurata con fasci di neutroni; una misura del 2006 al CERN ha alzato il
+  tasso alle temperature stellari più basse di circa il 16%.
 methods: [neutron-beams]
 measurements:
   - year: 2004

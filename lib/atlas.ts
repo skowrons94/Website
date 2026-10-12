@@ -12,6 +12,7 @@ import {
   buildAtlas,
   chartCells,
   exportAtlas,
+  fileDate,
   firstSentence,
   readRaw,
   sProcessPath,
@@ -147,6 +148,8 @@ export interface Reaction {
   statusNote: string
   /** Plain-language version of statusNote, when that one is technical. */
   statusPlain: string
+  /** Other names a reader may search for (`keywords:` / `keywords_it:`). */
+  keywords: string[]
   methods: string[]
   measurements: Measurement[]
   evaluations: string[]
@@ -246,6 +249,8 @@ export interface GlossaryTerm {
   text: string
   see: string[]
   page: string | null
+  /** Other names a reader may search for (`keywords:` / `keywords_it:`). */
+  keywords: string[]
 }
 
 export interface Atlas {
@@ -516,6 +521,17 @@ export interface SPath {
 const sCache = new Map<Lang, SPath>()
 
 /** The s-process path from ⁵⁶Fe to the Pb–Bi cycle, from NUBASE2020 and AME2020. */
+/**
+ * The date of the last change to a page whose text lives in code (the
+ * s-process page): the later of its file's last commit and the atlas version.
+ */
+export function pageDate(file: string, lang: Lang = "en"): string | null {
+  const own = fileDate(file) as string | null
+  const atlas = getAtlas(lang).meta.version
+  if (own && atlas) return own > atlas ? own : atlas
+  return own ?? atlas ?? null
+}
+
 export function getSProcessPath(lang: Lang = "en"): SPath {
   let path = sCache.get(lang)
   if (!path) {
