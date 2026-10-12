@@ -139,17 +139,18 @@ export function TimelineView({ events }: { events: TimelineItem[] }) {
   return (
     <div>
       {/* -- filters and the decade bar ------------------------------------ */}
-      {/* On a phone, filters and decades are one row that scrolls sideways;
-          from sm up, two rows. */}
+      {/* On a phone and a tablet, filters and decades are one row that
+          scrolls sideways; from lg up, two rows; from xl up the decades move
+          to a column of their own beside the line. */}
       <div
         ref={bar}
         className="sticky top-16 z-20 -mx-5 border-b border-border/70 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/85 sm:-mx-8"
       >
         <div
           data-scroll-row
-          className="flex snap-x scroll-px-5 items-center gap-1.5 overflow-x-auto whitespace-nowrap px-5 py-2.5 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:whitespace-normal sm:px-8 sm:py-3 [&::-webkit-scrollbar]:hidden"
+          className="flex snap-x scroll-px-5 items-center gap-1.5 overflow-x-auto whitespace-nowrap px-5 py-2.5 [scrollbar-width:none] sm:scroll-px-8 sm:px-8 lg:flex-wrap lg:overflow-visible lg:whitespace-normal lg:py-3 [&::-webkit-scrollbar]:hidden"
         >
-          <div role="group" aria-label={t.show} className="flex shrink-0 gap-1.5 sm:min-w-0 sm:shrink sm:flex-wrap">
+          <div role="group" aria-label={t.show} className="flex shrink-0 gap-1.5 lg:min-w-0 lg:shrink lg:flex-wrap">
             {highlights > 0 && (
               <Chip on={only === HIGHLIGHTS} onClick={() => choose(only === HIGHLIGHTS ? null : HIGHLIGHTS)}>
                 {t.highlights} <span className="tabular opacity-70">{highlights}</span>
@@ -164,25 +165,26 @@ export function TimelineView({ events }: { events: TimelineItem[] }) {
               </Chip>
             ))}
           </div>
-          <span aria-hidden className="mx-1 h-5 w-px shrink-0 bg-border sm:hidden" />
-          <nav aria-label={t.decades} className="flex shrink-0 gap-x-1 text-xs text-muted-foreground sm:basis-full sm:flex-wrap sm:gap-x-1.5">
+          <span aria-hidden className="mx-1 h-5 w-px shrink-0 bg-border lg:hidden" />
+          <nav aria-label={t.decades} className="flex shrink-0 gap-x-1 text-xs text-muted-foreground lg:basis-full lg:flex-wrap lg:gap-x-1.5 xl:hidden">
             {decades.map((d) => (
               <a
                 key={d.decade}
                 href={`#d${d.decade}`}
                 aria-current={current === d.decade ? "true" : undefined}
-                className="tabular inline-flex min-h-10 snap-start items-center rounded-full px-2 underline-offset-2 hover:text-foreground hover:underline aria-[current=true]:bg-secondary aria-[current=true]:font-medium aria-[current=true]:text-foreground sm:min-h-7"
+                className="tabular inline-flex min-h-10 snap-start items-center rounded-full px-2 underline-offset-2 hover:text-foreground hover:underline aria-[current=true]:bg-secondary aria-[current=true]:font-medium aria-[current=true]:text-foreground lg:min-h-7"
               >
                 {d.decade ? t.decade(d.decade) : t.undated}
               </a>
             ))}
           </nav>
         </div>
-        <span aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-background to-transparent sm:hidden" />
+        <span aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-background to-transparent lg:hidden" />
       </div>
 
-      {/* -- the line -------------------------------------------------------- */}
-      <div className="mt-10">
+      {/* -- the line, and on a wide screen the decades beside it ------------ */}
+      <div className="mt-10 xl:grid xl:grid-cols-[minmax(0,1fr)_13rem] xl:gap-16">
+      <div className="min-w-0">
         {decades.length === 0 && <p className="text-muted-foreground">{t.nothingHere}</p>}
         {decades.map((d) => (
           <section key={d.decade} aria-labelledby={`d${d.decade}`} className="relative">
@@ -294,6 +296,26 @@ export function TimelineView({ events }: { events: TimelineItem[] }) {
             </ol>
           </section>
         ))}
+      </div>
+      <aside className="hidden xl:block">
+        <nav aria-label={t.decades} className="sticky top-36">
+          <p className="mb-2 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">{t.decades}</p>
+          <ul className="space-y-0.5 border-l border-border text-sm">
+            {decades.map((d) => (
+              <li key={d.decade}>
+                <a
+                  href={`#d${d.decade}`}
+                  aria-current={current === d.decade ? "true" : undefined}
+                  className="tabular -ml-px flex items-baseline justify-between gap-3 border-l border-transparent py-1 pl-3 text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground aria-[current=true]:border-foreground aria-[current=true]:font-medium aria-[current=true]:text-foreground"
+                >
+                  {d.decade ? t.decade(d.decade) : t.undated}
+                  <span className="text-xs text-muted-foreground/80">{d.events.length}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </aside>
       </div>
     </div>
   )
