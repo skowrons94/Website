@@ -85,6 +85,20 @@ function checkList(file, entry, field, where = "") {
  * no translation is only counted, and reported as one warning per file.
  */
 const untranslated = new Map() // file -> ["id: field", ...]
+/**
+ * `keywords:` (optional): other names a reader may search for, a list of
+ * short text entries; `keywords_it:` the Italian list (checked as a
+ * translation). Indexed by the site search.
+ */
+function checkKeywords(file, entry, where = "") {
+  if (!entry || typeof entry !== "object" || entry.keywords === undefined) return
+  if (!isList(entry.keywords) || !entry.keywords.every(isText)) {
+    error(file, `${where}\`keywords\` must be a list of text`)
+  } else if (entry.keywords.some((k) => String(k).length > 60)) {
+    warn(file, `${where}a keyword longer than 60 characters`)
+  }
+}
+
 function checkTranslations(file, entry, fields, where = "") {
   if (!entry || typeof entry !== "object" || isList(entry)) return
   for (const key of Object.keys(entry)) {
@@ -271,7 +285,8 @@ for (const [id, { file, data: r }] of reactionFiles) {
   checkEnum(file, r.importance, "importance")
   // The general-reader fields are expected in Italian; the specialist ones
   // (details, measurement notes, open questions) may stay English.
-  checkTranslations(file, r, ["summary", "role", "status_note", "status_plain"])
+  checkTranslations(file, r, ["summary", "role", "status_note", "status_plain", "keywords"])
+  checkKeywords(file, r)
   checkEnum(file, r.status, "status")
 
   for (const field of ["target", "product"]) {
@@ -388,7 +403,8 @@ if (raw.glossary && typeof raw.glossary === "object") {
     requireFields(file, t, ["id", "term", "text"], where)
     if (t?.id && ids.has(t.id)) error(file, `${where}id \`${t.id}\` used twice`)
     if (t?.id) ids.add(t.id)
-    checkTranslations(file, t, ["term", "text"], where)
+    checkTranslations(file, t, ["term", "text", "keywords"], where)
+    checkKeywords(file, t, where)
     if (t?.page !== undefined && !/^\/[a-z0-9/-]*$/.test(String(t.page))) error(file, `${where}\`page\` must be a site path such as /atlas/s-process`)
   })
   terms.forEach((t, i) => {

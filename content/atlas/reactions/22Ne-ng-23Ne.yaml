@@ -46,6 +46,12 @@ status_note: >-
 status_note_it: >-
   La rianalisi R-matrix del 2014 ha cambiato in modo sostanziale i tassi
   stellari degli isotopi del neon rispetto alle compilazioni precedenti.
+status_plain: >-
+  Measured, but a 2014 reanalysis changed the values for the neon isotopes
+  substantially from the older compilations.
+status_plain_it: >-
+  Misurata, ma una rianalisi del 2014 ha cambiato in modo sostanziale i
+  valori per gli isotopi del neon rispetto alle compilazioni precedenti.
 methods: [activation, neutron-beams]
 measurements:
   - year: 2002

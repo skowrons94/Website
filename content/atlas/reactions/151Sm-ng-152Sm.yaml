@@ -7,6 +7,8 @@ ejectile: g
 product: 152Sm
 networks: [s-main]
 importance: key
+keywords: ["samarium-151", "Sm-151", "branch point"]
+keywords_it: ["samario-151", "Sm-151", "punto di diramazione"]
 summary: >-
   Radioactive samarium-151 captures a neutron. It is a classic branch point
   of the s-process, whose capture has been measured on a radioactive sample.
@@ -51,6 +53,12 @@ status_note_it: >-
   Misurata a n_TOF e a Karlsruhe con campioni radioattivi; la dipendenza
   dalla temperatura del decadimento nella stella resta un ingrediente a
   parte.
+status_plain: >-
+  Measured on radioactive samples at CERN and Karlsruhe; how fast
+  samarium-151 decays in a hot star is a separate question.
+status_plain_it: >-
+  Misurata su campioni radioattivi al CERN e a Karlsruhe; quanto in fretta
+  il samario-151 decade in una stella calda è una questione a parte.
 methods: [neutron-beams]
 measurements:
   - year: 2004

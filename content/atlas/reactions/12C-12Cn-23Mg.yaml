@@ -7,6 +7,8 @@ ejectile: n
 product: 23Mg
 networks: [carbon-burning]
 importance: minor
+keywords: ["12C+12C", "12C12C", "C+C", "carbon fusion", "carbon burning"]
+keywords_it: ["12C+12C", "12C12C", "C+C", "fusione del carbonio", "combustione del carbonio"]
 summary: >-
   A rare outcome of carbon fusion: magnesium-23 and a neutron. It needs extra
   energy, so it happens only in the hottest carbon-burning environments.

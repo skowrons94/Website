@@ -7,6 +7,8 @@ ejectile: g
 product: 198Au
 networks: [s-main]
 importance: major
+keywords: ["gold", "Au-197", "neutron standard", "MACS standard"]
+keywords_it: ["oro", "Au-197", "standard neutronico"]
 summary: >-
   Gold-197 captures a neutron. Its cross section is the yardstick: most
   stellar neutron-capture cross sections are measured relative to it.
@@ -53,6 +55,14 @@ status_note_it: >-
   Nota a qualche percento; una differenza di circa il 5% tra il riferimento
   per attivazione del 1988 e i dati a tempo di volo e le valutazioni
   successive è stata il principale punto aperto.
+status_plain: >-
+  Known to a few percent, and used as the yardstick for most other
+  captures; the main open point was a 5% difference between two kinds of
+  measurement.
+status_plain_it: >-
+  Nota a qualche percento, e usata come metro di riferimento per la
+  maggior parte delle altre catture; il principale punto aperto era una
+  differenza del 5% tra due tipi di misura.
 methods: [activation, neutron-beams]
 measurements:
   - year: 1988

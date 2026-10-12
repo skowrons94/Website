@@ -7,6 +7,8 @@ ejectile: 1H
 product: 23Na
 networks: [carbon-burning]
 importance: key
+keywords: ["12C+12C", "12C12C", "C+C", "carbon fusion", "carbon burning"]
+keywords_it: ["12C+12C", "12C12C", "C+C", "fusione del carbonio", "combustione del carbonio"]
 summary: >-
   Two carbon nuclei fuse, and the compound nucleus breaks up into sodium-23
   and a proton. Together with the branch to neon-20, it is how carbon burns

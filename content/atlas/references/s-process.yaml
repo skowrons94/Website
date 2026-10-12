@@ -105,9 +105,9 @@ beer2002:
 tomyo2003:
   authors: A. Tomyo, Y. Nagai, Y. Nobuhara, T. Shima, H. Makii, K. Mishima, M. Igashira
   title: Neutron capture cross section measurement of ²⁰,²²Ne for stellar nucleosynthesis
-  journal: Nucl. Phys. A 718 (2003)
+  journal: Nucl. Phys. A 718, 527c (2003)
   year: 2003
-  checked: EXFOR entry (authors, Tokyo Institute of Technology, Maxwellian-averaged cross sections of ²²Ne from s- and p-wave direct capture plus resonances) and ETDE/OSTI record (title, journal); first page not confirmed; the group's ApJ 623, L153 (2005) time-of-flight letter is cited in reviews but was not seen, by web search, 2026-10-12
+  checked: "EXFOR entry 22775 (authors, Tokyo Institute of Technology; main reference Nucl. Phys. A 718, 527c (2003), a conference contribution) and ETDE/OSTI record (title, journal), by web search, 2026-10-12. The group's time-of-flight letter, cited in reviews as ApJ 623, L153 (2005), could not be confirmed from any record (two searches, 2026-10-12), so it is not cited."
 
 massimi2012:
   authors: C. Massimi et al. (n_TOF Collaboration)
@@ -257,7 +257,7 @@ domingopardo2006:
   year: 2006
   doi: 10.1103/PhysRevC.74.025807
   arxiv: nucl-ex/0610040
-  checked: arXiv nucl-ex/0610040 and HAL in2p3-00098239 and Hertfordshire records (pulse-height weighting at n_TOF; rate at kT = 5–8 keV about 16% above the accepted value; s fraction of solar Bi 19 ± 3%); DOI by APS scheme, 2026-10-12
+  checked: arXiv nucl-ex/0610040 and HAL in2p3-00098239 and Hertfordshire records (pulse-height weighting at n_TOF; rate at kT = 5–8 keV about 16% above the accepted value; s fraction of solar Bi 19 ± 3%); DOI by APS scheme, 2026-10-12. Introduction re-checked on 2026-10-12 — branchings in the α recycling at ²¹⁰Po (138 d) and at ²¹⁰Biᵐ (3 Myr); ²¹⁰Po may capture a neutron and enhance ²⁰⁷Pb; capture on the 271 keV isomer of ²¹⁰Bi leads to ²¹¹Bi (α, 2.17 min), another contribution to ²⁰⁷Pb
 
 ratzel2004:
   authors: U. Ratzel, C. Arlandini, F. Käppeler et al.
@@ -265,7 +265,7 @@ ratzel2004:
   journal: Phys. Rev. C 70, 065803 (2004)
   year: 2004
   doi: 10.1103/PhysRevC.70.065803
-  checked: ResearchGate and library records (December 2004, DOI; abstract on stellar cross sections of ²⁰⁸Pb(n,γ) and ²⁰⁹Bi(n,γ)²¹⁰Bi, capture to the ²¹⁰Bi ground state that decays to ²¹⁰Po, the isomer quickly depopulated to the ground state at s-process temperatures), by web search, 2026-10-12
+  checked: ResearchGate and library records (December 2004, DOI; abstract on stellar cross sections of ²⁰⁸Pb(n,γ) and ²⁰⁹Bi(n,γ)²¹⁰Bi, capture to the ²¹⁰Bi ground state that decays to ²¹⁰Po, recycling at the termination point in a 3 M☉, [Fe/H] = −1.3 AGB model), by web search, 2026-10-12. Re-checked on 2026-10-12 (round 4) — no record available to us confirms that the ²¹⁰Bi isomer is depopulated to the ground state in the star, so the site no longer cites this paper for that statement
 
 jung1992:
   authors: M. Jung, F. Bosch et al.
@@ -293,4 +293,101 @@ tessler2015:
   year: 2015
   arxiv: "1511.04701"
   checked: arXiv 1511.04701 and DOAJ journal record (pp. 418–422; LiLiT at SARAF, quasi-Maxwellian kT ≈ 30 keV, 3–5 × 10¹⁰ n/s; MACS 28.0 ± 0.6 mb for ⁹⁴Zr and 12.4 ± 0.5 mb for ⁹⁶Zr), 2026-10-12
+
+# --- Round 4: observations, branch points, n_TOF areas -------------------------
+
+merrill1952:
+  authors: P. W. Merrill
+  title: Spectroscopic observations of stars of class S
+  journal: Astrophys. J. 116, 21 (1952)
+  year: 1952
+  doi: 10.1086/145589
+  checked: "Wikipedia articles on technetium stars and on P. W. Merrill (citation with bibcode 1952ApJ...116...21M and DOI) and FRIB/MSU history articles (technetium lines in R Andromedae and other S-type red giants, 1952), by web search, 2026-10-12"
+
+bernatowicz1987:
+  authors: T. Bernatowicz, G. Fraundorf, T. Ming, E. Anders, B. Wopenka, E. Zinner, P. Fraundorf
+  title: Evidence for interstellar SiC in the Murray carbonaceous meteorite
+  journal: Nature 330, 728 (1987)
+  year: 1987
+  doi: 10.1038/330728a0
+  checked: "Nature article page and NASA NTRS and UMSL records (SiC grains of 0.1–1 μm in Murray separates rich in anomalous Ne and Xe; C, N and Si isotopes point to a presolar origin, probably in red-giant atmospheres), by web search, 2026-10-12"
+
+vaneck2001:
+  authors: S. Van Eck, S. Goriely, A. Jorissen, B. Plez
+  title: Discovery of three lead-rich stars
+  journal: Nature 412, 793 (2001)
+  year: 2001
+  doi: 10.1038/35090514
+  checked: "Nature abstract, IDEAS/RePEc and Montpellier records (HD 187861, HD 196944, HD 224959: low-metallicity stars more enriched in lead than in any other element beyond iron, as predicted for AGB stars of low metallicity), by web search, 2026-10-12"
+
+cowan1977:
+  authors: J. J. Cowan, W. K. Rose
+  title: Production of ¹⁴C and neutrons in red giants
+  journal: Astrophys. J. 212, 149 (1977)
+  year: 1977
+  doi: 10.1086/155030
+  checked: "DOI record and ADS bibcode 1977ApJ...212..149C (hydrogen mixed into the helium-flash convective zone; neutron flux many orders of magnitude above the classical s-process, suggesting an intermediate process), by web search, 2026-10-12"
+
+hampel2016:
+  authors: M. Hampel, R. J. Stancliffe, M. Lugaro, B. S. Meyer
+  title: The intermediate neutron-capture process and carbon-enhanced metal-poor stars
+  journal: Astrophys. J. 831, 171 (2016)
+  year: 2016
+  doi: 10.3847/0004-637X/831/2/171
+  arxiv: "1608.08634"
+  checked: "Heidelberg library record and arXiv 1608.08634 listing (network calculations at constant neutron densities of 10⁷–10¹⁵ cm⁻³; the i process between the s and r densities as an explanation of CEMP-s/r stars), by web search, 2026-10-12"
+
+reifarth2003:
+  authors: R. Reifarth et al.
+  title: "Stellar neutron capture on promethium: implications for the s-process neutron density"
+  journal: Astrophys. J. 582, 1251 (2003)
+  year: 2003
+  checked: "University of Hertfordshire record and EXFOR entry 22829 (activation at Karlsruhe of a 28 ng ¹⁴⁷Pm sample, about 10¹⁴ atoms; partial cross sections to the ground state and the 41.3 d isomer of ¹⁴⁸Pm; total 709 ± 100 mb at kT = 30 keV), by web search, 2026-10-12"
+
+guerrero2020:
+  authors: C. Guerrero et al. (n_TOF Collaboration)
+  title: Neutron capture on the s-process branching point ¹⁷¹Tm via time-of-flight and activation
+  journal: Phys. Rev. Lett. 125, 142701 (2020)
+  year: 2020
+  doi: 10.1103/PhysRevLett.125.142701
+  checked: "INAF, KIT, ANU and JRC repository records (first resonance parameters of ¹⁷¹Tm at n_TOF; activation at SARAF-LiLiT giving a MACS at 30 keV of 384(40) mb, 2.6 times below JEFF-3.3 and ENDF/B-VIII; sample made at ILL and PSI); DOI by APS scheme, by web search, 2026-10-12"
+
+casanovashoste2024:
+  authors: A. Casanovas-Hoste et al. (n_TOF Collaboration)
+  title: Shedding light on the origin of ²⁰⁴Pb, the heaviest s-process-only isotope in the Solar System
+  journal: Phys. Rev. Lett. 133, 052702 (2024)
+  year: 2024
+  doi: 10.1103/PhysRevLett.133.052702
+  checked: "KIT, ANU, Granada and CIEMAT repository records (first measurement of ²⁰⁴Tl(n,γ), at n_TOF with 9 mg of ²⁰⁴Tl made at the ILL; MACS 580(168) mb at kT ≈ 8 keV and 260(90) mb at 30 keV), by web search, 2026-10-12"
+
+tagliente2013:
+  authors: G. Tagliente et al. (n_TOF Collaboration)
+  title: The ⁹³Zr(n,γ) reaction up to 8 keV neutron energy
+  journal: Phys. Rev. C 87, 014622 (2013)
+  year: 2013
+  doi: 10.1103/PhysRevC.87.014622
+  checked: "Seville, Bologna, HAL in2p3-00824209 and JRC records (resonance parameters of the radioactive ⁹³Zr at n_TOF up to 8 keV; capture widths about 14% smaller than in an earlier experiment); DOI by APS scheme, by web search, 2026-10-12"
+
+weiss2015:
+  authors: C. Weiss et al.
+  title: The new vertical neutron beam line at the CERN n_TOF facility design and outlook on the performance
+  journal: Nucl. Instrum. Methods A 799, 90 (2015)
+  year: 2015
+  checked: "HAL in2p3-01266473, Vienna, Granada and Hertfordshire records (the vertical beam line EAR2, built in 2014, FLUKA design for a higher flux), with the flight paths of 185 m (EAR1) and about 20 m (EAR2) from n_TOF NEAR-station papers, by web search, 2026-10-12"
+
+patronis2023:
+  authors: N. Patronis, A. Mengoni, S. Goula et al. (n_TOF Collaboration)
+  title: Status report of the n_TOF facility after the 2nd CERN long shutdown period
+  journal: EPJ Tech. Instrum. 10, 13 (2023)
+  year: 2023
+  doi: 10.1140/epjti/s40485-023-00100-w
+  checked: "SpringerOpen article page and Granada, HZDR and Edinburgh records (new nitrogen-cooled lead spallation target in 2019–2021; the NEAR station close to the target for activation measurements), by web search, 2026-10-12"
+
+schanz1991:
+  authors: W. Schanz, G. Rupp, F. Käppeler
+  title: The stellar cross sections of ¹²⁰Sn, ¹²¹Sb, ¹²³Sb and ¹²⁸Te – a study of possible s-process branchings at A = 121, 122
+  journal: Report KfK-4953 (NEANDC(E)-322 U Vol. 5), Kernforschungszentrum Karlsruhe (1991)
+  year: 1991
+  url: https://publikationen.bibliothek.kit.edu/270031359
+  checked: "KIT library catalogue record (title, authors, 1991, in the German nuclear-data progress report KfK-4953), by web search, 2026-10-12"
 

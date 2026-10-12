@@ -551,7 +551,10 @@ export function NetworkMap({ data, below }: { data: MapData; below?: React.React
     const style = active ? slotStyle(a.slot) : { color: "var(--viz-axis)", dashed: false }
     const isSelected = a.r.id === selectedId
     const isHover = tipId === a.r.id
-    const weight = (active ? WEIGHT[a.r.importance] : 1.1) + (isSelected || isHover ? 1 : 0)
+    // On a phone the grey arrows of the processes not on show are thinner and
+    // fainter, so the crowded light nuclei (³He, ⁴He) stay readable.
+    const weight = (active ? WEIGHT[a.r.importance] : wide ? 1.1 : 0.6) + (isSelected || isHover ? 1 : 0)
+    const faint = !active && !wide && !isSelected && !isHover
     return (
       <g
         key={a.r.id}
@@ -615,13 +618,21 @@ export function NetworkMap({ data, below }: { data: MapData; below?: React.React
           fill="none"
           stroke={style.color}
           strokeWidth={px(weight)}
+          strokeOpacity={faint ? 0.6 : undefined}
           strokeLinecap="round"
           strokeDasharray={style.dashed ? `${px(6)} ${px(4)}` : undefined}
         />
-        <path d={a.head} fill={style.color} stroke={style.color} strokeWidth={px(0.75)} strokeLinejoin="round" />
+        <path
+          d={a.head}
+          fill={style.color}
+          stroke={style.color}
+          strokeWidth={px(faint ? 0.4 : 0.75)}
+          strokeLinejoin="round"
+          opacity={faint ? 0.6 : undefined}
+        />
       </g>
     )
-  }, [selectedId, tipId, tabStop, chain, select, focusArrow, showTipFor, px, coarse])
+  }, [selectedId, tipId, tabStop, chain, select, focusArrow, showTipFor, px, coarse, wide])
 
   /* -- the drawing, in layers memoised apart from the viewBox ----------------- */
 

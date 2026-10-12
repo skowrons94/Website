@@ -175,6 +175,8 @@ terms:
   - id: gamow-window
     term: Gamow window
     term_it: Finestra di Gamow
+    keywords: ["Gamow peak", "stellar energies"]
+    keywords_it: ["picco di Gamow", "energie stellari"]
     also: Gamow peak, E₀
     also_it: picco di Gamow, E₀
     text: >-
@@ -455,6 +457,8 @@ terms:
   - id: s-process
     term: s-process
     term_it: Processo s
+    keywords: ["slow neutron capture", "¹⁷⁶Lu", "¹⁵¹Sm", "heavy elements", "gold", "lead"]
+    keywords_it: ["cattura lenta di neutroni", "¹⁷⁶Lu", "¹⁵¹Sm", "elementi pesanti", "oro", "piombo"]
     also: slow neutron capture
     also_it: cattura lenta di neutroni
     text: >-
@@ -477,6 +481,8 @@ terms:
   - id: r-process
     term: r-process
     term_it: Processo r
+    keywords: ["rapid neutron capture", "kilonova", "neutron-star merger"]
+    keywords_it: ["cattura rapida di neutroni", "kilonova", "fusione di stelle di neutroni"]
     also: rapid neutron capture
     also_it: cattura rapida di neutroni
     text: >-
@@ -581,16 +587,16 @@ terms:
     text: >-
       The number of free neutrons per cubic centimetre in a star. In the
       s-process it is low: about 10⁷ per cubic centimetre in the ¹³C pocket of
-      an AGB star, where a typical nucleus waits about a century between two
-      captures, up to about 10¹⁰ in the brief ²²Ne bursts of the thermal
+      an AGB star, where a nucleus with a typical cross section of a tenth of
+      a barn waits about 250 years between two captures, up to about 10¹⁰ in the brief ²²Ne bursts of the thermal
       pulses, and about 10¹¹–10¹² in the carbon-burning shell of a massive
       star. In the r-process it is higher still by many orders of magnitude,
       above 10²⁰. Branch points of the s-process measure it.
     text_it: >-
       Il numero di neutroni liberi per centimetro cubo in una stella. Nel
       processo s è bassa: circa 10⁷ per centimetro cubo nella tasca di ¹³C di
-      una stella AGB, dove un nucleo tipico aspetta circa un secolo tra due
-      catture, fino a circa 10¹⁰ nei brevi lampi del ²²Ne durante gli impulsi
+      una stella AGB, dove un nucleo con una tipica sezione d'urto di un
+      decimo di barn aspetta circa 250 anni tra due catture, fino a circa 10¹⁰ nei brevi lampi del ²²Ne durante gli impulsi
       termici, e circa 10¹¹–10¹² nel guscio in cui brucia il carbonio di una
       stella massiccia. Nel processo r è più alta ancora di molti ordini di
       grandezza, oltre 10²⁰. I punti di diramazione del processo s la misurano.
@@ -619,6 +625,8 @@ terms:
   - id: branch-point
     term: Branch point
     term_it: Punto di diramazione
+    keywords: ["isomer", "¹⁷⁶Lu", "¹⁵¹Sm", "¹⁸⁵W", "bound-state beta decay", "¹⁶³Dy"]
+    keywords_it: ["isomero", "¹⁷⁶Lu", "¹⁵¹Sm", "¹⁸⁵W", "decadimento beta in stato legato", "¹⁶³Dy"]
     text: >-
       A radioactive nucleus on the s-process path that lives long enough to
       capture a neutron before it decays, but not always. There the path
@@ -639,6 +647,8 @@ terms:
   - id: s-only
     term: s-only and r-only isotopes
     term_it: Isotopi solo s e solo r
+    keywords: ["s-only isotopes", "shielded nuclei", "¹⁵⁰Sm", "²⁰⁴Pb"]
+    keywords_it: ["isotopi solo s", "nuclei schermati", "¹⁵⁰Sm", "²⁰⁴Pb"]
     text: >-
       A stable isotope is s-only when a stable isobar of lower Z (a nucleus
       with the same mass number and fewer protons) shields it from the decays that follow the
@@ -717,6 +727,8 @@ terms:
   - id: luna
     term: LUNA and underground laboratories
     term_it: LUNA e i laboratori sotterranei
+    keywords: ["underground", "why underground", "Gran Sasso"]
+    keywords_it: ["sottoterra", "perché sottoterra", "Gran Sasso"]
     also: Laboratory for Underground Nuclear Astrophysics
     text: >-
       At the Earth's surface, cosmic rays leave far more signals in a γ-ray
@@ -831,23 +843,29 @@ terms:
   - id: spin-parity
     term: Spin and parity
     term_it: Spin e parità
+    keywords: ["Jπ", "angular momentum", "parity"]
+    keywords_it: ["Jπ", "momento angolare", "parità"]
     also: Jπ
     also_it: Jπ
     text: >-
-      Two labels every nuclear level carries, written together as Jπ, for
-      example 3/2⁻. J is the level's spin, its total angular momentum in units
-      of ħ; the parity π, + or −, says whether its wave function keeps or
-      changes sign when mirrored through the centre. Both are conserved in a
-      reaction, so they decide which levels two colliding nuclei can form, and
-      with how much orbital angular momentum they must come together.
+      How a nuclear level spins, and how it looks in a mirror: the two labels
+      that decide which levels two colliding nuclei can form. Every level
+      carries them, written together as Jπ, for example 3/2⁻. J is the spin,
+      the level's total angular momentum, counted in units of ħ; the parity
+      π, + or −, says whether its wave function stays the same or changes
+      sign when mirrored through the centre. Both are conserved in a
+      reaction, so they fix which levels can form and with how much orbital
+      angular momentum the two nuclei must come together.
     text_it: >-
-      Due etichette che ogni livello nucleare porta, scritte insieme come Jπ,
-      per esempio 3/2⁻. J è lo spin del livello, il suo momento angolare
-      totale in unità di ħ; la parità π, + o −, dice se la sua funzione d'onda
-      resta uguale o cambia segno quando la si specchia attraverso il centro.
-      Entrambi si conservano in una reazione, quindi decidono quali livelli
-      possono formare due nuclei che si scontrano, e con quanto momento
-      angolare orbitale devono avvicinarsi.
+      Come ruota un livello nucleare e come appare allo specchio: le due
+      etichette che decidono quali livelli possono formare due nuclei che si
+      scontrano. Ogni livello le porta, scritte insieme come Jπ, per esempio
+      3/2⁻. J è lo spin, il momento angolare totale del livello, contato in
+      unità di ħ; la parità π, + o −, dice se la sua funzione d'onda resta
+      uguale o cambia segno quando la si specchia attraverso il centro.
+      Entrambi si conservano in una reazione, quindi fissano quali livelli
+      possono formarsi e con quanto momento angolare orbitale i due nuclei
+      devono avvicinarsi.
     see: [excited-state, resonance]
 
   - id: reduced-width

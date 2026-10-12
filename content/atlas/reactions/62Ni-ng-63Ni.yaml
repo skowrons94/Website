@@ -47,6 +47,12 @@ status_note_it: >-
   Nota al 4,5% a kT = 30 keV dai dati di n_TOF, che hanno abbassato la
   sezione d'urto alle temperature più alte della combustione del carbonio
   fino a un fattore 1,6.
+status_plain: >-
+  Known to about 5%, from neutron-beam measurements at CERN, which lowered
+  the value for the hottest burning in massive stars.
+status_plain_it: >-
+  Nota a circa il 5%, da misure con fasci di neutroni al CERN, che ne hanno
+  abbassato il valore per la combustione più calda delle stelle massicce.
 methods: [neutron-beams]
 measurements:
   - year: 2014

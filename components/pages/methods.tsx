@@ -87,7 +87,7 @@ function MethodCard({ method: m, examples, lang }: { method: Method; examples: R
   const strengths = asList(m.strengths)
   const limits = asList(m.limits)
   return (
-    <article id={m.id} className="scroll-mt-24 rounded-lg border border-border bg-card p-6 sm:p-7">
+    <article id={m.id} className="min-w-0 scroll-mt-24 rounded-lg border border-border bg-card p-4 [overflow-wrap:anywhere] sm:p-7">
       <h3 className="font-serif text-xl font-semibold tracking-tight">
         <Sci>{m.name}</Sci>
       </h3>
@@ -100,7 +100,7 @@ function MethodCard({ method: m, examples, lang }: { method: Method; examples: R
       )}
       {m.details && <Specialist text={m.details} lang={lang} />}
       {(strengths.length > 0 || limits.length > 0) && (
-        <div className="mt-5 grid gap-5 sm:grid-cols-2">
+        <div className="mt-5 grid grid-cols-[minmax(0,1fr)] gap-5 sm:grid-cols-2">
           {strengths.length > 0 && (
             <div>
               <h4 className="text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">{t.strengths}</h4>
@@ -158,7 +158,7 @@ function FacilityCard({ facility: f, reactions, lang }: { facility: Facility; re
   return (
     <article
       id={f.id}
-      className="scroll-mt-24 rounded-lg border border-border bg-card p-6"
+      className="min-w-0 scroll-mt-24 rounded-lg border border-border bg-card p-4 [overflow-wrap:anywhere] sm:p-6"
     >
       <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
         <h3 className="font-serif text-lg font-semibold tracking-tight">
@@ -260,7 +260,7 @@ export function MethodsPage({ lang }: { lang: Lang }) {
         {atlas.methods.length === 0 ? (
           <p className="text-muted-foreground">{t.methodsPending}</p>
         ) : (
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-2">
             {atlas.methods.map((m) => (
               <MethodCard key={m.id} method={m} examples={examplesFor(m)} lang={lang} />
             ))}
@@ -273,7 +273,7 @@ export function MethodsPage({ lang }: { lang: Lang }) {
           <h2 className="font-serif text-2xl font-semibold tracking-tight">{g.title}</h2>
           <p className="mt-2 max-w-2xl text-pretty leading-relaxed text-muted-foreground">{g.lead}</p>
           {g.id === "underground" && <LunaFigure lang={lang} className="mt-6 max-w-3xl" />}
-          <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <div className="mt-6 grid grid-cols-[minmax(0,1fr)] gap-5 md:grid-cols-2 xl:grid-cols-3">
             {g.facilities.map((f) => (
               <FacilityCard key={f.id} facility={f} reactions={measuredAt(f)} lang={lang} />
             ))}

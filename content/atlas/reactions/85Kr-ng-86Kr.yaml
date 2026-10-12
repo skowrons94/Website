@@ -7,6 +7,8 @@ ejectile: g
 product: 86Kr
 networks: [s-main, s-weak]
 importance: key
+keywords: ["krypton-85", "Kr-85", "branch point", "stardust"]
+keywords_it: ["kripton-85", "Kr-85", "punto di diramazione", "polvere di stelle"]
 summary: >-
   Radioactive krypton-85 captures a neutron. Whether it does so or decays
   first tells how dense the neutrons were in the star, and it has never been
@@ -16,9 +18,11 @@ summary_it: >-
   prima dice quanto densi erano i neutroni nella stella, e la reazione non è
   mai stata misurata direttamente.
 role: >-
-  Krypton-85 lives about ten years in the laboratory, which is comparable to
-  the time between two neutron captures in a star. If neutrons are few, it
-  decays into rubidium-85; if they are many, it captures another one and
+  Krypton-85 lives about ten years in the laboratory. In the ¹³C pocket of
+  an AGB star a nucleus waits a few centuries for its next neutron, and in
+  the brief ²²Ne bursts only a few months, so whether krypton-85 decays or
+  captures depends on where it is made. If neutrons are few, it decays into
+  rubidium-85; if they are many, it captures another one and
   becomes krypton-86, and the flow then reaches rubidium-87 through the next
   capture. The amounts of krypton-86 and of the two rubidium isotopes
   therefore record the neutron density, which differs between the two
@@ -26,8 +30,10 @@ role: >-
   Krypton-86 in stardust grains from AGB stars, found in meteorites, is one
   of the clues read in this way.
 role_it: >-
-  Il kripton-85 vive circa dieci anni in laboratorio, un tempo paragonabile a
-  quello tra due catture di neutroni in una stella. Se i neutroni sono pochi,
+  Il kripton-85 vive circa dieci anni in laboratorio. Nella tasca di ¹³C di
+  una stella AGB un nucleo aspetta qualche secolo il neutrone successivo, e
+  nei brevi lampi del ²²Ne solo qualche mese: se il kripton-85 decada o
+  catturi dipende quindi da dove si forma. Se i neutroni sono pochi,
   decade in rubidio-85; se sono molti, ne cattura un altro e diventa
   kripton-86, e con la cattura successiva il flusso arriva al rubidio-87. Le
   quantità di kripton-86 e dei due isotopi del rubidio registrano quindi la

@@ -908,6 +908,11 @@ const en = {
     thermalBySite: "By stellar site",
     skipToMap: "Skip to the map",
     lunaMountain: "Gran Sasso",
+    // --- atlas (round 4) ---
+    plotData: "Plot the data",
+    plotDataOf: (system: string) => `Plot the data of the ${system} evaluation`,
+    liveEvaluation: "Live evaluation",
+    noLiveEvaluation: "No live evaluation yet",
   },
 }
 
@@ -1793,6 +1798,11 @@ const it: Dictionary = {
     thermalBySite: "Per ambiente stellare",
     skipToMap: "Vai alla mappa",
     lunaMountain: "Gran Sasso",
+    // --- atlas (round 4) ---
+    plotData: "Mostra i dati",
+    plotDataOf: (system: string) => `Mostra i dati della valutazione del ${system}`,
+    liveEvaluation: "Valutazione interattiva",
+    noLiveEvaluation: "Nessuna valutazione interattiva per ora",
   },
 }
 
