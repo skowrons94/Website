@@ -67,4 +67,5 @@ links:
 cv:
   label: Curriculum Vitae (PDF)
   label_it: Curriculum vitae (PDF)
-  file: /IGNIS_B2_v4.pdf
+  # A PDF in public/, e.g. /cv.pdf. Empty: no download button on /cv.
+  file: ""

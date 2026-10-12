@@ -118,6 +118,7 @@ export function CVPage({ lang }: { lang: Lang }) {
       />
 
       <div className="mb-14 flex flex-wrap items-center gap-x-6 gap-y-3">
+        {profile.cv.file && (
         <a
           href={profile.cv.file.startsWith("/") ? `${process.env.BASE_PATH ?? ""}${profile.cv.file}` : profile.cv.file}
           className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
@@ -125,6 +126,7 @@ export function CVPage({ lang }: { lang: Lang }) {
           <Download className="h-4 w-4" />
           {profile.cv.label}
         </a>
+        )}
         <Link href={localePath(lang, "/publications")} className="inline-flex min-h-10 items-center text-sm text-link underline-offset-4 hover:underline">
           {t.publications}
         </Link>
