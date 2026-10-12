@@ -163,6 +163,7 @@ export function SiteHeader({
     item("/atlas/methods", t.methods, d.methods),
     item("/atlas/timeline", t.timeline, d.timeline),
     item("/atlas/s-process", t.sProcess, d.sProcess),
+    item("/atlas/rates", t.rates, t.ratesDescription),
   ]
   const bar: Item[] = [research, atlas, evaluations, publications, software, cv]
   const groups: { id: string; title: string; items: Item[] }[] = [

@@ -58,6 +58,9 @@ export function AtlasPage({ lang }: { lang: Lang }) {
       <Link href={to("/atlas/s-process")} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
         {t.sProcessLink}
       </Link>
+      <Link href={to("/atlas/rates")} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
+        {t.ratesLink}
+      </Link>
       <Link href={to("/atlas/methods")} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
         {t.methodsLink}
       </Link>
@@ -205,7 +208,7 @@ export function AtlasPage({ lang }: { lang: Lang }) {
       )}
 
       {/* -- further ------------------------------------------------------- */}
-      <section className="mt-16 grid gap-6 border-t border-border/70 pt-10 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="mt-16 grid gap-6 border-t border-border/70 pt-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         <Link href={to("/atlas/timeline")} className="group block rounded-lg border border-border bg-card p-6">
           <h2 className="font-serif text-lg font-semibold tracking-tight group-hover:text-link">{t.timelineCard}</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t.timelineCardText}</p>
@@ -214,6 +217,11 @@ export function AtlasPage({ lang }: { lang: Lang }) {
         <Link href={to("/atlas/s-process")} className="group block rounded-lg border border-border bg-card p-6">
           <h2 className="font-serif text-lg font-semibold tracking-tight group-hover:text-link">{t.sProcessCard}</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t.sProcessCardText}</p>
+          <ArrowRight className="mt-4 h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+        </Link>
+        <Link href={to("/atlas/rates")} className="group block rounded-lg border border-border bg-card p-6">
+          <h2 className="font-serif text-lg font-semibold tracking-tight group-hover:text-link">{t.ratesCard}</h2>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t.ratesCardText}</p>
           <ArrowRight className="mt-4 h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
         </Link>
         <Link href={to("/atlas/methods")} className="group block rounded-lg border border-border bg-card p-6">

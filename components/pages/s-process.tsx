@@ -49,6 +49,10 @@ const TEXT = {
       "The neutron sources, the poisons that compete with the seeds, and some of the captures along the path, each with its own entry.",
     references: "References",
     sources: "Sources",
+    // --- rates ---
+    whatIf: "What if the sources and poisons were different?",
+    whatIfText:
+      "Scale ¹³C(α,n), ²²Ne(α,n), the neutron poisons and the iron seed, and watch the neutron exposure and the isotopes from iron to bismuth change, in a network calculated in your browser.",
     pathNote: (nodes: number, sOnly: number) =>
       `The path is computed by this site from the NUBASE2020 half-lives and AME2020 masses with one simple rule: a nucleus that lives longer than a year captures a neutron, one that lives less decays (by β⁻ where the masses allow, by electron capture otherwise), and at the classic branch points it does both. Where a short-lived nucleus decays both ways (⁶⁴Cu, ¹²⁸I, ¹⁵²Eu, ¹⁶⁴Ho), both arms are drawn, a weak one dashed; ¹⁶³Dy, stable in the laboratory, decays to ¹⁶³Ho only in the hot, ionised star, and is drawn so. It visits ${nodes} nuclides; ${sOnly} stable nuclei on it are shielded from the r-process by a stable isobar of lower Z, among them ¹⁵²Gd and ¹⁶⁴Er. ¹⁴⁸Nd, ¹⁸⁶W and ⁹⁶Zr, usually counted as r-only, drop out of that class here only because the branches at ¹⁴⁷Nd, ¹⁸⁵W and ⁹⁵Zr are drawn. Real stellar half-lives and neutron densities move the branchings; the rule shows the shape, not the abundances.`,
   },
@@ -79,6 +83,10 @@ const TEXT = {
       "Le sorgenti di neutroni, i veleni che competono con i semi e alcune delle catture lungo il percorso, ciascuna con la sua scheda.",
     references: "Bibliografia",
     sources: "Fonti",
+    // --- rates ---
+    whatIf: "E se le sorgenti e i veleni fossero diversi?",
+    whatIfText:
+      "Scala la ¹³C(α,n), la ²²Ne(α,n), i veleni neutronici e il seme di ferro, e guarda cambiare l'esposizione ai neutroni e gli isotopi dal ferro al bismuto, in una rete calcolata nel tuo browser.",
     pathNote: (nodes: number, sOnly: number) =>
       `Il percorso è calcolato da questo sito dai tempi di dimezzamento di NUBASE2020 e dalle masse di AME2020 con una sola regola semplice: un nucleo che vive più di un anno cattura un neutrone, uno che vive meno decade (β⁻ dove le masse lo permettono, altrimenti per cattura elettronica), e nei classici punti di diramazione fa entrambe le cose. Dove un nucleo di vita breve decade nei due modi (⁶⁴Cu, ¹²⁸I, ¹⁵²Eu, ¹⁶⁴Ho) sono disegnati entrambi i rami, quello debole tratteggiato; il ¹⁶³Dy, stabile in laboratorio, decade in ¹⁶³Ho solo nella stella calda e ionizzata, ed è disegnato così. Visita ${nodes} nuclidi; ${sOnly} nuclei stabili lungo il percorso sono schermati dal processo r da un isobaro stabile con Z minore, tra cui il ¹⁵²Gd e il ¹⁶⁴Er. Il ¹⁴⁸Nd, il ¹⁸⁶W e il ⁹⁶Zr, di solito considerati solo r, escono da questa classe qui soltanto perché sono disegnate le diramazioni a ¹⁴⁷Nd, ¹⁸⁵W e ⁹⁵Zr. I tempi di dimezzamento stellari e le densità di neutroni reali spostano le diramazioni; la regola mostra la forma, non le abbondanze.`,
   },
@@ -266,6 +274,20 @@ export function SProcessPage({ lang }: { lang: Lang }) {
           </figcaption>
         </figure>
       </section>
+
+      {/* --- rates --- the what-if explorer of the sources and poisons */}
+      <Link
+        href={to("/atlas/rates/s-process")}
+        className="group mt-10 flex max-w-[46rem] items-start gap-4 rounded-lg border border-border bg-card p-5 transition-colors hover:border-foreground/30"
+      >
+        <span className="min-w-0">
+          <span className="block font-serif text-lg font-semibold leading-snug tracking-tight group-hover:text-link">{t.whatIf}</span>
+          <span className="mt-1.5 block text-pretty text-sm leading-relaxed text-muted-foreground">
+            <Sci>{t.whatIfText}</Sci>
+          </span>
+        </span>
+        <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden />
+      </Link>
 
       <div className="mt-14 lg:grid lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-14 xl:grid-cols-[minmax(0,1fr)_20rem]">
         <article className="min-w-0">

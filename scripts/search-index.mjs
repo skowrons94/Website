@@ -183,6 +183,9 @@ const PAGES = [
   { href: "/atlas/methods", en: ["Methods and laboratories", "How reactions are measured, and where"], it: ["Metodi e laboratori", "Come si misurano le reazioni, e dove"], k: "methods metodi laboratories laboratori facilities" },
   { href: "/atlas/timeline", en: ["Timeline", "A century of nuclear astrophysics"], it: ["Cronologia", "Un secolo di astrofisica nucleare"], k: "timeline cronologia history storia" },
   { href: "/atlas/s-process", en: ["The s-process", "How stars make half the heavy elements"], it: ["Il processo s", "Come le stelle producono metà degli elementi pesanti"], k: "s-process processo s slow neutron capture cattura neutronica lenta" },
+  // --- rates ---
+  { href: "/atlas/rates/s-process", en: ["The s-process, what if", "Neutron sources, poisons and seeds, from iron to bismuth"], it: ["Il processo s, e se…", "Sorgenti di neutroni, veleni e semi, dal ferro al bismuto"], k: "s-process processo s neutron poison veleno neutronico neutron source sorgente di neutroni 13C(a,n) 22Ne(a,n) 14N(n,p) exposure esposizione what if" },
+  { href: "/atlas/rates", en: ["Reaction rates", "How fast each reaction runs, and what if it were different"], it: ["Tassi di reazione", "Quanto è veloce ogni reazione, e se fosse diversa"], k: "reaction rates tassi di reazione rate tasso reaclib pynucastro what if sensitivity sensibilità bottleneck collo di bottiglia waiting time tempo di attesa lifetime network rete pp CNO NeNa MgAl" },
 ]
 
 /* -- reactions: every way of writing one --------------------------------- */

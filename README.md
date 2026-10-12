@@ -16,6 +16,8 @@ CORS configuration anywhere and nothing to point at anything else.
 /atlas/[id]          one reaction or decay
 /atlas/timeline
 /atlas/methods       methods and laboratories
+/atlas/rates         reaction rates: how fast, and what if (pp, CNO, NeNa, MgAl)
+/atlas/rates/s-process  the s-process: neutron sources, poisons and seeds, what if
 /atlas/data.json     the whole atlas, written at build time
 /software
 /publications
@@ -249,6 +251,83 @@ derived numbers included, to `public/atlas/data.json` with
 
 `ATLAS_DIR=/some/copy npm run check:atlas` (or `… npx next build`) points the
 check and the site at another copy of the directory, for trying out changes.
+
+### The reaction rates explorer
+
+`/atlas/rates` (and `/atlas/rates/s-process`) plot REACLIB rates against
+temperature, show how long a nucleus waits before each reaction at a chosen
+site, and rerun a one-zone burn when a rate is scaled. Everything runs in the
+browser from static files, so it works the same on the server and on GitHub
+Pages.
+
+```
+scripts/rates/networks.yaml     the networks, as data (nuclei, selection, key reactions)
+scripts/rates/scenarios.yaml    the astrophysical sites, every value with its source
+scripts/rates/pyna_export.py    pynucastro → network JSON, as importable functions
+scripts/rates/build.py          writes public/rates/<id>.json        (Python, pynucastro)
+scripts/rates/reference.py      pynucastro + scipy BDF answers       (Python, pynucastro)
+scripts/rates/baseline.mjs      the precomputed first view           (Node, the browser's solver)
+scripts/rates/test.mjs          npm run test:rates: browser vs pynucastro
+lib/rates/                      schema, rate providers, screening, sparse LU, solver, worker
+components/rates/               the explorer's charts and controls
+```
+
+The JSON is committed: `npm run build` needs no Python. To change a network,
+a scenario or the REACLIB snapshot:
+
+```sh
+pip install pynucastro numpy scipy pyyaml numba
+python scripts/rates/build.py          # public/rates/<id>.json
+python scripts/rates/reference.py      # scripts/rates/reference/<id>.json
+npm run rates:baseline                 # public/rates/<id>.baseline.json
+npm run test:rates                     # must pass
+```
+
+The s-process network (`builder: sprocess` in `networks.yaml`; 481 nuclei,
+739 reactions) is built by `s_process_rates` in `pyna_export.py`: every
+nucleus of Lodders' solar mixture from iron to polonium, closed under (n,γ)
+from anything living longer than six hours and under decay, plus the light
+nuclei that make and steal the neutrons. `reference.py` integrates it with
+numba's JIT switched off (a child process; compiling it would take longer
+than running it), about a minute for its three scenarios.
+
+Accuracy (`npm run test:rates`): rates agree with pynucastro's `Rate.eval`
+to 1e-11; burns at rtol 1e-6 agree with pynucastro's own network integrated
+by scipy BDF to ≤ 2.3e-6 (light networks) and ≤ 1.4e-6 (s-process), and at
+the tolerances the explorer uses (1e-4; 1e-3 for the s-process) to ≤ 8e-5.
+
+#### Design
+
+Made to be reused when pynucastro also runs on the server and stellar
+tracks drive the network:
+
+- **The network file is a versioned schema** (`schema`, `schema_version`;
+  `lib/rates/schema.ts`, documented in `pyna_export.py`). Units are in the
+  field names (`T9`, `time_s`, `Q_MeV`, `halfLife_s`) and spelled out in
+  `units`; every reaction carries its rate as data (`rate.kind: "reaclib"`
+  with the seven coefficients of each set and the fit's validity range; a
+  `"table"` kind is already understood) and its provenance (REACLIB set
+  labels with author, reference and link). Nothing about a network is written
+  in a component: key reactions, the cycle whose slowest step is the
+  bottleneck, the default plot reference and the nuclei shown first are in
+  `ui`.
+- **The solver is a pure TypeScript module** (`lib/rates/solver.ts`, no DOM):
+  `integrate(compile(network), {scale, history, X0, tEnd_s, until,
+  screening})` returns abundances over time. `history` is constant T and ρ or
+  a time series `{t_s[], T9[], rho[]}` (a MIST central track, later the
+  output of a stellar code). The equations are pynucastro's term for term,
+  with its `screen5` screening; the integrator is an L-stable Rosenbrock
+  method (ode23s) on a sparse LU whose fill is found once per network. The
+  Web Worker (`lib/rates/worker.ts`) and the Node scripts run the same code;
+  Node 22 imports the `.ts` files directly.
+- **Rates sit behind one interface**, `RateProvider.rate(reactionId, T9) →
+  N_A⟨σv⟩` (`lib/rates/rate-provider.ts`). The network's own REACLIB fits are
+  the default; `overrideProvider` swaps in any reaction from elsewhere (a
+  server-computed table, an AZURE2 evaluation) without touching the solver.
+- **pynucastro is called from functions** (`scripts/rates/pyna_export.py`:
+  `network_rates`, `export_network`, `resolve_composition`,
+  `python_network`), so a server endpoint can build a network for a spec of
+  its own and hand the same JSON to the same solver.
 
 ### Software
 

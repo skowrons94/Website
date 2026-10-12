@@ -28,6 +28,7 @@ function groups(lang: Lang): { title: string; links: { href: string; label: stri
       links: local([
         { href: "/atlas", label: t.atlas },
         { href: "/atlas/timeline", label: t.timeline },
+        { href: "/atlas/rates", label: t.rates },
         { href: "/atlas/methods", label: t.methods },
         { href: "/glossary", label: t.glossary },
         { href: "/notes", label: t.notes },

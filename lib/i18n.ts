@@ -74,6 +74,9 @@ const en = {
       sProcess: "How stars make half the heavy elements",
     },
     breadcrumb: "Breadcrumb",
+    // --- rates ---
+    rates: "Reaction rates",
+    ratesDescription: "How fast each reaction runs, and what if it were different",
   },
   footer: {
     work: "Work",
@@ -89,6 +92,8 @@ const en = {
     glossary: "Glossary",
     methods: "Methods and laboratories",
     notes: "Notes on R-matrix theory",
+    // --- rates ---
+    rates: "Reaction rates",
   },
   // --- site (round 3) ---
   search: {
@@ -542,6 +547,12 @@ const en = {
       "The words the atlas uses, in plain language. Each reaction page links here the first time a term appears.",
     seeAlso: "See also",
     familyPageLink: (name: string) => `${name}, from iron to lead`,
+    // --- rates ---
+    exploreRates: "Explore the rates",
+    exploreRatesOf: (name: string) => `Explore the rates: ${name}`,
+    ratesLink: "Reaction rates",
+    ratesCard: "Reaction rates, live",
+    ratesCardText: "How fast each reaction runs in a star, and what changes when a rate does. Calculated in your browser.",
     sProcessLink: "The s-process",
     sProcessCard: "The s-process",
     sProcessCardText:
@@ -648,6 +659,9 @@ const it: Dictionary = {
       sProcess: "Come le stelle producono metà degli elementi pesanti",
     },
     breadcrumb: "Percorso",
+    // --- rates ---
+    rates: "Tassi di reazione",
+    ratesDescription: "Quanto è veloce ogni reazione, e se fosse diversa",
   },
   footer: {
     work: "Lavoro",
@@ -663,6 +677,8 @@ const it: Dictionary = {
     glossary: "Glossario",
     methods: "Metodi e laboratori",
     notes: "Note sulla teoria R-matrix",
+    // --- rates ---
+    rates: "Tassi di reazione",
   },
   // --- site (round 3) ---
   search: {
@@ -1115,6 +1131,12 @@ const it: Dictionary = {
       "Le parole che l'atlante usa, in linguaggio semplice. Ogni pagina di reazione rimanda qui la prima volta che un termine compare.",
     seeAlso: "Vedi anche",
     familyPageLink: (name: string) => `${name}, dal ferro al piombo`,
+    // --- rates ---
+    exploreRates: "Esplora i tassi",
+    exploreRatesOf: (name: string) => `Esplora i tassi: ${name}`,
+    ratesLink: "Tassi di reazione",
+    ratesCard: "Tassi di reazione, dal vivo",
+    ratesCardText: "Quanto è veloce ogni reazione in una stella, e che cosa cambia quando cambia un tasso. Calcolati nel tuo browser.",
     sProcessLink: "Il processo s",
     sProcessCard: "Il processo s",
     sProcessCardText:
