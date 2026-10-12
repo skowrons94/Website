@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 
 import { Sci } from "@/components/sci"
 import type { Lang } from "@/lib/locale"
@@ -23,7 +23,8 @@ export interface SensitivityTable {
  * with the rate); the value is written in the cell when it is at least 0.1.
  * Rows are ordered by reach (Σ min(1, |s|) over the nuclei shown), so a rate
  * that moves many nuclei comes before a decay that only sets its own parent.
- * A cell is a button: it tries that rate ×2.
+ * A cell is a button: it tries that rate ×2. The grid is one tab stop (a
+ * roving tabindex): the arrow keys, Home and End move between the cells.
  */
 export function SensitivityMap({
   network,
@@ -55,6 +56,23 @@ export function SensitivityMap({
     .filter((r) => r.max >= 0.01)
     .sort((a, b) => b.reach - a.reach)
   const shown = all ? rows : rows.slice(0, 8)
+  const [focus, setFocus] = useState<[number, number]>([0, 0])
+  const tableRef = useRef<HTMLTableElement>(null)
+  const fr = Math.min(focus[0], shown.length - 1)
+  const fc = Math.min(focus[1], cols.length - 1)
+  const move = (e: React.KeyboardEvent) => {
+    let [r, c] = [fr, fc]
+    if (e.key === "ArrowRight") c = Math.min(cols.length - 1, c + 1)
+    else if (e.key === "ArrowLeft") c = Math.max(0, c - 1)
+    else if (e.key === "ArrowDown") r = Math.min(shown.length - 1, r + 1)
+    else if (e.key === "ArrowUp") r = Math.max(0, r - 1)
+    else if (e.key === "Home") c = 0
+    else if (e.key === "End") c = cols.length - 1
+    else return
+    e.preventDefault()
+    setFocus([r, c])
+    tableRef.current?.querySelector<HTMLButtonElement>(`[data-cell="${r}-${c}"]`)?.focus()
+  }
   const fmt = (v: number) =>
     dec((v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v).toFixed(Math.abs(v) >= 10 ? 0 : 1), lang)
 
@@ -64,9 +82,8 @@ export function SensitivityMap({
         className="overflow-x-auto overscroll-x-contain rounded-md border border-border [scrollbar-width:thin]"
         role="region"
         aria-label={t.sensLabel}
-        tabIndex={0}
       >
-        <table className="border-collapse text-xs">
+        <table ref={tableRef} className="border-collapse text-xs" onKeyDown={move}>
           <thead>
             <tr>
               <th className="sticky left-0 z-10 bg-card px-2 py-1.5 text-left font-medium text-muted-foreground">×2</th>
@@ -78,7 +95,7 @@ export function SensitivityMap({
             </tr>
           </thead>
           <tbody>
-            {shown.map(({ id, i }) => (
+            {shown.map(({ id, i }, ri) => (
               <tr key={id} className="border-t border-border/50">
                 <th
                   scope="row"
@@ -86,7 +103,7 @@ export function SensitivityMap({
                 >
                   <Sci>{rlabel(id)}</Sci>
                 </th>
-                {cols.map((j) => {
+                {cols.map((j, ci) => {
                   const v = table.s[i][j]
                   const a = Math.min(1, Math.abs(v)) ** 0.7
                   const col = v > 0 ? "var(--rates-up)" : "var(--rates-down)"
@@ -95,6 +112,9 @@ export function SensitivityMap({
                     <td key={j} className="p-0.5">
                       <button
                         type="button"
+                        data-cell={`${ri}-${ci}`}
+                        tabIndex={ri === fr && ci === fc ? 0 : -1}
+                        onFocus={() => setFocus([ri, ci])}
                         onClick={() => onTry?.(id)}
                         title={t.sensCell(rlabel(id), label(table.nuclei[j]), fmt(v))}
                         aria-label={t.sensCell(rlabel(id), label(table.nuclei[j]), fmt(v))}

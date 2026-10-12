@@ -6,22 +6,42 @@ import { Sci } from "@/components/sci"
 import { pow10 } from "./format"
 
 /** The width of an element, followed as it resizes. */
-export function useWidth<T extends HTMLElement>(initial = 640): [React.RefObject<T | null>, number] {
+/** The reader's text size against the default 16 px (200% text: 2). */
+function textScale(): number {
+  if (typeof window === "undefined") return 1
+  const px = parseFloat(getComputedStyle(document.documentElement).fontSize)
+  return Number.isFinite(px) && px > 16 ? Math.min(2.5, px / 16) : 1
+}
+
+/**
+ * The width of a chart's box in the chart's own units, and the reader's text
+ * scale k: a chart lays itself out for `width` and draws its SVG at k times
+ * that size (`width * k` by `height * k`, viewBox in chart units), so its
+ * text grows with the reader's font size (WCAG 1.4.4) and a chart under
+ * large text takes its narrow layout.
+ */
+export function useWidth<T extends HTMLElement>(initial = 640): [React.RefObject<T | null>, number, number] {
   const ref = useRef<T>(null)
-  const [width, setWidth] = useState(initial)
+  const [box, setBox] = useState({ width: initial, k: 1 })
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    setWidth(el.clientWidth > 40 ? el.clientWidth : initial)
+    const set = (w: number) => {
+      // large text grows the chart's text, but a chart keeps at least 240
+      // units of width: on a phone at 200% the text grows less than 2×
+      const k = Math.max(1, Math.min(textScale(), w / 240))
+      setBox((b) => (b.width === w / k && b.k === k ? b : { width: w / k, k }))
+    }
+    set(el.clientWidth > 40 ? el.clientWidth : initial)
     const ro = new ResizeObserver((entries) => {
       const w = entries[0]?.contentRect.width
       // a box not laid out yet (hidden, or skipped by content-visibility) reports 0
-      if (w && w > 40) setWidth(w)
+      if (w && w > 40) set(w)
     })
     ro.observe(el)
     return () => ro.disconnect()
   }, [initial])
-  return [ref, width]
+  return [ref, box.width, box.k]
 }
 
 /** Is the page in dark mode (the `dark` class next-themes sets)? */

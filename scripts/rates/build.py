@@ -45,6 +45,29 @@ def family_titles() -> dict[str, dict]:
     return {f["id"]: {"en": f["name"], "it": f.get("name_it", f["name"])} for f in nets["families"]}
 
 
+def atlas_meta() -> dict:
+    """What the atlas knows about each reaction that the explorer shows:
+    underground measurements (LUNA and others) and evaluations, with their
+    references, for the LUNA marks and the "newer data" notes."""
+    refs: dict[str, dict] = {}
+    for f in sorted((ATLAS / "references").glob("*.yaml")):
+        refs.update(yaml.safe_load(f.read_text(encoding="utf-8")) or {})
+    fac = {f["id"]: f for f in yaml.safe_load((ATLAS / "facilities.yaml").read_text(encoding="utf-8"))["facilities"]}
+    out = {}
+    for p in sorted((ATLAS / "reactions").glob("*.yaml")):
+        d = yaml.safe_load(p.read_text(encoding="utf-8"))
+        meas = []
+        for m in d.get("measurements") or []:
+            f = fac.get(m.get("facility") or "")
+            if not f or not f.get("underground"):
+                continue
+            meas.append({"year": int(m["year"]), "facility": f["id"], "facility_name": f["name"],
+                         "luna": bool(f.get("luna")), "refs": [refs[r] | {"id": r} for r in m.get("refs", []) if r in refs]})
+        evals = [refs[r] | {"id": r} for r in d.get("evaluations") or [] if r in refs]
+        out[d["id"]] = {"measured": meas, "evaluations": evals}
+    return out
+
+
 def load_specs() -> tuple[list[dict], dict[str, dict]]:
     nets = yaml.safe_load((HERE / "networks.yaml").read_text(encoding="utf-8"))["networks"]
     scen = yaml.safe_load((HERE / "scenarios.yaml").read_text(encoding="utf-8"))["scenarios"]
@@ -64,10 +87,12 @@ def main() -> None:
     specs, scenarios = load_specs()
     atlas_ids = atlas_reaction_ids()
     titles = family_titles()
+    meta = atlas_meta()
     for spec in specs:
         if only and spec["id"] not in only:
             continue
-        write(px.export_network(spec, scenarios, atlas_ids=atlas_ids, title=titles.get(spec["family"])))
+        write(px.export_network(spec, scenarios, atlas_ids=atlas_ids, title=titles.get(spec["family"]),
+                                atlas_meta=meta))
 
 
 if __name__ == "__main__":

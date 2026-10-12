@@ -21,7 +21,10 @@ every unit out:
                   (a later kind "table" would carry {T9[], log10[]} instead)
     ui            {key[], reference, fuel, cycle[], show[], groups, knobs, track, notes,
                    newer{reaction: {en, it}}, not_modelled{nucleus: {en, it}}}  (what to show first)
-    scenarios[]   {id, name, name_it, T9, rho, time_s, until, X{name: X}, ...}
+    scenarios[]   {id, name, name_it, T9, rho, time_s, until, X{name: X}, profile?, ...}
+                  profile (optional): T(t)/T9 and ρ(t)/rho at times t_s, a burn whose
+                  conditions change (T9 and rho are then the peak values); the solver
+                  interpolates T linearly and ρ log-linearly between the points
     solar         Lodders mass fractions of the network's nuclei
     solver        optional {rtol, atol} for the explorer's burns
     screening     constants of pynucastro's screen5 plasma factors
@@ -41,6 +44,7 @@ is added as a constant set labelled nb20 (GROUND_STATE_DECAYS).
 from __future__ import annotations
 
 import csv
+import json
 import datetime as _dt
 import math
 from pathlib import Path
@@ -146,6 +150,17 @@ def load_sources() -> dict[str, dict]:
                 "url": clean(url) or None,
             }
     out["nb20"] = dict(NUBASE_REF)
+    # pynucastro's row for ls09 is misparsed (an HTML fragment in the author
+    # field, the DOI in the year): the paper is Li et al. 2010, the ANC of
+    # ¹³N from the ¹²C(⁷Li,⁶He)¹³N transfer reaction and the direct-capture
+    # rate of ¹²C(p,γ)¹³N derived from it (arXiv:0905.1530)
+    out["ls09"] = {
+        "author": "Li, Z. H. et al.",
+        "title": "ANC of ¹³N from ¹²C(⁷Li,⁶He)¹³N and the ¹²C(p,γ)¹³N rate",
+        "ref": "Sci. China Phys. Mech. Astron. 53 (2010)",
+        "year": "2010",
+        "url": "https://doi.org/10.1007/s11433-010-0128-8",
+    }
     return out
 
 
@@ -400,6 +415,89 @@ def rate_json(r, index: dict, sources: dict, atlas_ids) -> dict:
     }
 
 
+def _first_author(authors: str) -> str:
+    """The first author's surname, from "J. Skowronski et al.", "A. Di Leva, …",
+    "Angulo C.", "Descouvemont, P", "G R Caughlan" or "Guo et al"."""
+    a = authors.split("(")[0].replace(" et al.", "").replace(" et al", "").strip()
+    if not a:
+        return ""
+    first, _, rest = a.partition(",")
+    toks = first.split()
+    if len(toks) == 1 and rest.strip() and len(rest.strip().rstrip(".")) <= 2:
+        return toks[0]  # "Descouvemont, P"
+    words = [t for t in toks if not t.endswith(".") and not (len(t) == 1 and t.isupper())]
+    if toks and toks[-1].endswith(".") and words:
+        return " ".join(words)  # "Angulo C."
+    # surname after the initials: "A. Di Leva", "K. J. Kelly", "G R Caughlan"
+    i = 0
+    while i < len(toks) - 1 and (toks[i].endswith(".") or (len(toks[i]) == 1 and toks[i].isupper())):
+        i += 1
+    return " ".join(toks[i:])
+
+
+def _cite(ref: dict) -> dict:
+    """An atlas reference → {short, doi}: "Skowronski et al. 2023, Phys. Rev. Lett. 131, 162701"."""
+    journal = str(ref.get("journal", "")).split(" (")[0]
+    many = " et al." in ref.get("authors", "") or ref.get("authors", "").count(",") > 1
+    short = f"{_first_author(ref.get('authors', ''))}{' et al.' if many else ''} {ref.get('year', '')}"
+    return {"short": f"{short}, {journal}" if journal else short, "doi": ref.get("doi")}
+
+
+SOLAR_FUSION = {"adelberger2011": "Solar Fusion II", "acharya2025": "Solar Fusion III"}
+
+
+def newer_note(rj: dict, meta: dict) -> dict | None:
+    """REACLIB's sources for a reaction, and the underground measurements and
+    evaluations of the atlas that are newer than all of them."""
+    years = [int(s["year"]) for s in rj["sources"] if str(s.get("year", "")).isdigit()]
+    if not years:
+        return None
+    since = max(years)
+    meas = [m for m in meta["measured"] if m["year"] > since]
+    evals = [e for e in meta["evaluations"] if int(e.get("year", 0)) > since]
+    if not meas and not evals:
+        return None
+    sets = ", ".join(f"{s['set']} ({(_first_author(s.get('author', '')) + ' ').lstrip()}{s.get('year', '')})"
+                     for s in rj["sources"])
+    parts_en, parts_it = [], []
+    seen = set()
+    for m in meas:
+        for r in m["refs"]:
+            if r["id"] in seen:
+                continue
+            seen.add(r["id"])
+            lab = "LUNA" if m["luna"] else m["facility_name"]
+            parts_en.append(f"{lab}, {_cite(r)['short']}")
+            parts_it.append(f"{lab}, {_cite(r)['short']}")
+    for e in evals:
+        name = SOLAR_FUSION.get(e["id"])
+        c = _cite(e)["short"]
+        parts_en.append(f"evaluation: {name + ' (' + c + ')' if name else c}")
+        parts_it.append(f"valutazione: {name + ' (' + c + ')' if name else c}")
+    return {"en": f"REACLIB: {sets}. Newer: {'; '.join(parts_en)}.",
+            "it": f"REACLIB: {sets}. Più recenti: {'; '.join(parts_it)}."}
+
+
+EVALUATED = Path(__file__).resolve().parent / "evaluated"
+
+
+def evaluated_rate(reaction_id: str) -> dict | None:
+    """A rate computed from one of the site's AZURE2 evaluations
+    (scripts/rates/evaluated_rates.py), as an alternative to REACLIB's."""
+    path = EVALUATED / f"{reaction_id}.json"
+    if not path.exists():
+        return None
+    d = json.loads(path.read_text(encoding="utf-8"))
+    return {
+        "id": "luna",
+        "evaluation": d["evaluation"],
+        "rate": {"kind": "table", "T9": d["T9"], "log10": d["log10"], "validity_T9": [d["T9"][0], d["T9"][-1]]},
+        "paper": d["paper"],
+        "fit": d["fit"],
+        "method": d["method"],
+    }
+
+
 def screening_constants() -> dict:
     """The temperature-independent factors of pynucastro's PlasmaState."""
     return {
@@ -426,20 +524,46 @@ def scenario_json(s: dict, nucs) -> dict:
         "source": s["source"], "source_it": s["source_it"],
         "note": s.get("note"), "note_it": s.get("note_it"),
     }
-    for k in ("history", "extra"):
-        if k in s:
-            out[k] = s[k]
+    if "history" in s:
+        out["profile"] = history_profile(s["history"], time)
+    if "extra" in s:
+        out["extra"] = s["extra"]
     return out
+
+
+def history_profile(h: dict, time_s: float) -> dict:
+    """A scenarios.yaml `history` → the profile the solver interpolates.
+
+    kind cooling: the burn starts at the peak and cools exponentially,
+    T(t) = T_peak e^(−t/τ), while the envelope expands adiabatically,
+    ρ(t) = ρ_peak (T/T_peak)^n (n = 3 for a radiation-dominated gas, γ = 4/3).
+    Sampled every τ/8 (linear interpolation of T is then good to 0.2%).
+    """
+    if h.get("kind") != "cooling":
+        raise ValueError(f"unknown history kind {h.get('kind')!r}")
+    tau = float(h["tau_s"])
+    n = float(h.get("rho_exp", 3))
+    m = int(math.ceil(time_s / (tau / 8)))
+    ts = [time_s * i / m for i in range(m + 1)]
+    T = [math.exp(-t / tau) for t in ts]
+    return {
+        "kind": "cooling", "tau_s": tau, "rho_exp": n,
+        "t_s": [_sig(t) for t in ts], "T": [_sig(x) for x in T], "rho": [_sig(x ** n) for x in T],
+    }
 
 
 def export_network(spec: dict, scenarios: dict | None = None, *, atlas_ids=frozenset(),
                    title: dict | None = None, libfile: str = LIBFILE, rates=None, nuclei=None,
-                   hl: dict | None = None) -> dict:
+                   hl: dict | None = None, atlas_meta: dict | None = None) -> dict:
     """A network spec (a networks.yaml entry) → the schema's dict.
 
     `scenarios` maps ids to scenarios.yaml entries; `atlas_ids` holds the
     atlas reaction ids rates may link to; `title` is {en, it}. `rates` and
     `nuclei` override the selection (a caller that built its own list).
+    `atlas_meta` (build.py: atlas_meta) gives each atlas reaction its
+    underground measurements and evaluations: they become the reaction's
+    `measured` list and, when newer than its REACLIB sets, its `ui.newer`
+    note (a hand-written `newer` in networks.yaml is kept after it).
     """
     hl = nubase_halflives() if hl is None else hl
     if rates is None:
@@ -456,6 +580,27 @@ def export_network(spec: dict, scenarios: dict | None = None, *, atlas_ids=froze
               + ([ui["reference"]] if ui.get("reference") else [])):
         if k not in ids:
             raise ValueError(f"{spec['id']}: {k} is not a rate of the network")
+    reactions = [rate_json(r, index, sources, atlas_ids) for r in rates]
+    for rj in reactions:
+        alt = evaluated_rate(rj["id"])
+        if alt:
+            rj["alternatives"] = [alt]
+    if atlas_meta:
+        auto = {}
+        for rj in reactions:
+            m = atlas_meta.get(rj["atlas"] or "")
+            if not m:
+                continue
+            if m["measured"]:
+                rj["measured"] = [{"facility": x["facility"], "name": x["facility_name"], "luna": x["luna"],
+                                   "year": x["year"], "refs": [_cite(r) for r in x["refs"]]} for x in m["measured"]]
+            note = newer_note(rj, m)
+            if note:
+                auto[rj["id"]] = note
+        hand = ui.get("newer") or {}
+        ui["newer"] = {k: ({"en": f"{auto[k]['en']} {hand[k]['en']}", "it": f"{auto[k]['it']} {hand[k]['it']}"}
+                           if k in auto and k in hand else auto.get(k) or hand[k])
+                       for k in list(auto) + [k for k in hand if k not in auto]} or None
     solar = lodders()
     return {
         "schema": SCHEMA,
@@ -474,7 +619,7 @@ def export_network(spec: dict, scenarios: dict | None = None, *, atlas_ids=froze
         # NUBASE2020 half-lives (the atlas' table), pynucastro's where it has none
         "nuclei": [{"name": n.raw, "Z": n.Z, "A": n.A, "label": sci(n), "code": code(n),
                     "halfLife_s": (None if not math.isfinite(half_life(n, hl)) else half_life(n, hl))} for n in nucs],
-        "reactions": [rate_json(r, index, sources, atlas_ids) for r in rates],
+        "reactions": reactions,
         "ui": ui,
         "scenarios": [scenario_json(scenarios[s], nucs) for s in spec.get("scenarios", [])] if scenarios else [],
         "solar": {n.raw: _sig(solar.get(comp_key(n), 0.0)) for n in nucs},

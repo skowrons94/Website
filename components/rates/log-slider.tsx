@@ -8,7 +8,8 @@ import { useId, useRef } from "react"
  * of the page's own drawing. A factor slider (its range spans ×1) shows a
  * tick at ×1 and fills outward from it, violet up and brown down, only when
  * the value is not 1; dragging snaps to ×1 near the middle, the arrow keys
- * step freely (one step is about 2%).
+ * step freely (one step is about 2%, or `keyStep` in log10 when given, with
+ * Page Up / Page Down a factor √2).
  */
 export function LogSlider({
   label,
@@ -19,6 +20,7 @@ export function LogSlider({
   onChange,
   valueText,
   hideLabel,
+  keyStep,
   className = "",
 }: {
   label: React.ReactNode
@@ -29,6 +31,8 @@ export function LogSlider({
   onChange: (v: number) => void
   valueText: string
   hideLabel?: boolean
+  /** the arrow keys' step in log10 (the slider's own fine step when absent) */
+  keyStep?: number
   className?: string
 }) {
   const id = useId()
@@ -87,6 +91,24 @@ export function LogSlider({
           onPointerUp={() => (dragging.current = false)}
           onPointerCancel={() => (dragging.current = false)}
           onBlur={() => (dragging.current = false)}
+          onKeyDown={(e) => {
+            if (!keyStep) return
+            const d =
+              e.key === "ArrowRight" || e.key === "ArrowUp"
+                ? keyStep
+                : e.key === "ArrowLeft" || e.key === "ArrowDown"
+                  ? -keyStep
+                  : e.key === "PageUp"
+                    ? Math.log10(Math.SQRT2)
+                    : e.key === "PageDown"
+                      ? -Math.log10(Math.SQRT2)
+                      : 0
+            if (!d) return
+            e.preventDefault()
+            // land on ×1 when the step crosses it
+            const next = Math.min(hi, Math.max(lo, v + d))
+            onChange(centred && v * next < 0 ? 1 : 10 ** next)
+          }}
           onChange={(e) => {
             const x = 10 ** Number(e.target.value)
             // a drag snaps to ×1 near the middle; the keyboard never does

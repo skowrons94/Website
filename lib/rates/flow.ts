@@ -104,3 +104,76 @@ export function integratedFlows(
   }
   return out
 }
+
+/**
+ * The bottleneck as the page states it: the slowest step of the path that
+ * actually runs during the burn. Every step is timed by its reaction's own
+ * waiting time (`taus`, what the waiting-time chart shows), so the headline
+ * and the chart give one number.
+ *
+ * - Steps slower than the burn itself do not run in it (²⁴Mg(p,γ) in the
+ *   core of a 25 M☉ star, 63 Gyr against 6.7 Myr): they are returned apart,
+ *   in `idle`, not named as the bottleneck. A step that burns the fuel
+ *   itself (p + p) always runs: it is what sets the length of the burn.
+ * - On a path that does not close, a last step whose reaction is not one of
+ *   the network's cycle (`cycle`) is a leak out of it (²⁷Al(p,γ)²⁸Si in an
+ *   AGB envelope), not a step of the cycle: `leak` holds it.
+ */
+export interface Bottleneck {
+  step: PathStep | null
+  /** the reaction's own waiting time, s */
+  tau: number
+  idle: PathStep[]
+  leak: PathStep[]
+}
+
+export function bottleneck(
+  path: PathStep[],
+  taus: ArrayLike<number>,
+  closed: boolean,
+  cycle: number[] | null,
+  tBurn: number,
+  fuel?: number,
+): Bottleneck {
+  const leak: PathStep[] = []
+  let steps = path
+  if (!closed && cycle && cycle.length && path.length > 1 && !cycle.includes(path[path.length - 1].reaction)) {
+    leak.push(path[path.length - 1])
+    steps = path.slice(0, -1)
+  }
+  const tauOf = (p: PathStep) => taus[p.reaction]
+  const runs = (p: PathStep) => p.nucleus === fuel || !(tauOf(p) > tBurn)
+  const idle = steps.filter((p) => !runs(p))
+  const running = steps.filter((p) => runs(p) && Number.isFinite(tauOf(p)))
+  const step = running.reduce<PathStep | null>((a, b) => (!a || tauOf(b) > tauOf(a) ? b : a), null)
+  return { step, tau: step ? tauOf(step) : NaN, idle, leak }
+}
+
+/**
+ * Where the path starts: the first stable nucleus of the cycle that burns
+ * within the burn time (the most processed fuel), so a cycle whose first
+ * step does not run (²⁴Mg at 38 MK) is followed from the nucleus that does
+ * (²⁵Mg).
+ */
+export function pathStart(
+  c: Compiled,
+  taus: ArrayLike<number>,
+  cycle: number[],
+  tBurn: number,
+  fuel?: number,
+): number | undefined {
+  if (!cycle.length) return undefined
+  const first = c.network.reactions[cycle[0]].target
+  for (const k of cycle) {
+    const target = c.network.reactions[k].target
+    if (target === fuel) return target
+    // start on a stable nucleus: one the star holds, not one made on the way
+    if (c.network.nuclei[target].halfLife_s !== null) continue
+    let rate = 0
+    c.network.reactions.forEach((r, i) => {
+      if (r.target === target && Number.isFinite(taus[i]) && taus[i] > 0) rate += 1 / taus[i]
+    })
+    if (rate > 0 && 1 / rate <= tBurn) return target
+  }
+  return first
+}

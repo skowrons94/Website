@@ -8,7 +8,7 @@ import { elideItalian } from "@/lib/localize.mjs"
 import type { Lang } from "@/lib/locale"
 import { composition, metalsMax, METALS_RANGE, metalFraction } from "@/lib/rates/composition"
 import { ratesDict } from "@/lib/rates/i18n"
-import { scenarioRequest, type RunRequest } from "@/lib/rates/run"
+import { historyOf, scenarioRequest, type RunRequest } from "@/lib/rates/run"
 import type { Network, Scenario } from "@/lib/rates/schema"
 import { density, duration, NB, sig2, tShort, temperature } from "./format"
 import { LogSlider } from "./log-slider"
@@ -55,16 +55,18 @@ export function conditionsRequest(
   s: Scenario,
   c: Conditions,
   scale: Record<string, number>,
+  alternatives: string[] = [],
 ): RunRequest {
   const base = scenarioRequest(network, s, c.screening)
   const fuel = s.until?.nucleus ?? network.ui.fuel
   return {
     ...base,
-    history: { kind: "constant", T9: c.T9, rho: c.rho },
+    history: historyOf(s, c.T9, c.rho),
     X0: composition(network, s, c),
     tEnd_s: c.time_s,
     until: c.until && fuel ? { nucleus: fuel, fraction: s.until?.fraction ?? 0.01 } : null,
     scale: Object.fromEntries(Object.entries(scale).filter(([, v]) => v !== 1)),
+    ...(alternatives.length ? { alternatives } : {}),
   }
 }
 
@@ -148,7 +150,7 @@ export function ScenarioPanel({
                     <Sci>{shortName(s, lang)}</Sci>
                   </span>
                   <span className={`tabular text-xs ${on ? "text-background/75" : "text-muted-foreground"}`}>
-                    {tShort(s.T9, lang)}
+                    {temperature(s.T9, lang)}
                   </span>
                   <span className="sr-only">
                     <Sci>{sName(s)}</Sci>
@@ -239,7 +241,7 @@ export function ScenarioPanel({
               min={tRange[0]}
               max={tRange[1]}
               onChange={(v) => setCond({ ...cond, T9: Number(v.toPrecision(3)) })}
-              valueText={`${temperature(cond.T9, lang)} (T₉${NB}=${NB}${sig2(cond.T9, lang)})`}
+              valueText={temperature(cond.T9, lang)}
             />
             <LogSlider
               label={t.density}

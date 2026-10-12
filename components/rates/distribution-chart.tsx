@@ -25,6 +25,8 @@ const SHELLS = [
   { N: 82, A: [136, 142] },
   { N: 126, A: [204, 209] },
 ]
+/** The elements of each s-process peak (element symbols read the same in every language). */
+const PEAKS: Record<number, string> = { 50: "Sr Y Zr", 82: "Ba La Ce", 126: "Pb" }
 
 /**
  * Production factors against mass number: one dot per stable isotope, grey
@@ -63,10 +65,10 @@ export const DistributionChart = memo(function DistributionChart({
   changed?: boolean
   notModelledLabel?: string
 }) {
-  const [box, width] = useWidth<HTMLDivElement>()
+  const [box, width, k] = useWidth<HTMLDivElement>()
   const narrow = width < 520
   const height = narrow ? 300 : 380
-  const m = { l: narrow ? 44 : 56, r: 12, t: 22, b: 44 }
+  const m = { l: narrow ? 44 : 56, r: 12, t: 38, b: 44 }
   const [hoverA, setHoverA] = useState<number | null>(null)
   const svgRef = useRef<SVGSVGElement>(null)
 
@@ -105,8 +107,8 @@ export const DistributionChart = memo(function DistributionChart({
         role="img"
         aria-label={label}
         tabIndex={0}
-        width={width}
-        height={height}
+        width={width * k}
+        height={height * k}
         viewBox={`0 0 ${width} ${height}`}
         className="block touch-pan-y select-none rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         onPointerMove={(e) => {
@@ -145,12 +147,26 @@ export const DistributionChart = memo(function DistributionChart({
               />
               <text
                 x={x((s.A[0] + s.A[1]) / 2)}
-                y={m.t - 7}
+                y={m.t - 22}
                 textAnchor="middle"
                 fontSize={11}
                 fill="var(--viz-text-muted)"
               >
                 {shellLabel(s.N)}
+              </text>
+              {/* the peak the closed shell makes, by its elements */}
+              <text
+                x={x((s.A[0] + s.A[1]) / 2)}
+                y={m.t - 8}
+                textAnchor="middle"
+                fontSize={11}
+                fontWeight={600}
+                fill="var(--viz-text)"
+                stroke={C.surface}
+                strokeWidth={3}
+                paintOrder="stroke"
+              >
+                {PEAKS[s.N] ?? ""}
               </text>
             </g>
           ) : null,
@@ -202,11 +218,21 @@ export const DistributionChart = memo(function DistributionChart({
             if (!(p.base > 0)) continue
             const cxp = x(p.A)
             if (p.notModelled) {
-              const cy = height - m.b - r - 2
+              // a row of their own, above the floor where the burnt isotopes sit
+              const cy = height - m.b - 2 * r - 14
               nm.push(
                 <g key={p.name}>
-                  <rect x={cxp - r} y={cy - r} width={2 * r} height={2 * r} fill="none" stroke={C.muted} strokeWidth={1.25} strokeDasharray="2 1.5" />
-                  <text x={cxp} y={cy - r - 4} textAnchor="middle" fontSize={10} fill={C.muted}>
+                  <rect
+                    x={cxp - r - 1}
+                    y={cy - r - 1}
+                    width={2 * r + 2}
+                    height={2 * r + 2}
+                    fill={C.surface}
+                    stroke={C.muted}
+                    strokeWidth={1.25}
+                    strokeDasharray="2 1.5"
+                  />
+                  <text x={cxp} y={cy} dy="0.35em" textAnchor="middle" fontSize={7} fontWeight={600} fill={C.muted}>
                     ?
                   </text>
                 </g>,
@@ -290,7 +316,7 @@ export const DistributionChart = memo(function DistributionChart({
       {hoverA !== null && at.length > 0 && (
         <div
           className="pointer-events-none absolute top-6 z-10 rounded-md border border-border bg-popover px-3 py-2 text-xs shadow-md"
-          style={hx > width / 2 ? { right: width - hx + 12 } : { left: hx + 12 }}
+          style={hx > width / 2 ? { right: (width - hx) * k + 12 } : { left: hx * k + 12 }}
         >
           <p className="font-medium">A = {hoverA}</p>
           <ul className="mt-1 space-y-0.5">

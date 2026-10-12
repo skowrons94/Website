@@ -223,6 +223,12 @@ const en = {
       ", for students and the public as well as specialists. Outreach so far includes Stelle sulla Terra, nuclear astrophysics for children with disabilities (2024), and courses on nuclear astrophysics for high-school students (PCTO, 2021–2022): ",
     impactCv: "outreach in the CV",
     outlookMore: "What comes next →",
+    // --- r9 rates ---
+    resourceRates: "Reaction-rate explorer",
+    resourceRatesText:
+      "The pp chains, CNO, NeNa, MgAl and the s-process. Find the slowest step at a stellar site, change a rate and watch the abundances respond, computed in your browser from JINA REACLIB.",
+    resourceRatesSources: "Sources",
+    resourceRatesLink: "See where a rate ends up: the rate explorer",
     // --- r7 site ---
     resourceEvaluationsSplit: (n: number, published: number) =>
       `${n} R-matrix evaluations running AZURE2 in the browser: ${published} from published papers, ${n - published} not yet published. Each comes with its input files, to download and run locally.`,
@@ -818,6 +824,12 @@ const it: Dictionary = {
       " oltre che in inglese, per arrivare a studenti e pubblico e non solo agli specialisti. Tra le attività di divulgazione: Stelle sulla Terra, astrofisica nucleare per bambini con disabilità (2024), e percorsi di astrofisica nucleare per le scuole superiori (PCTO, 2021–2022): ",
     impactCv: "la divulgazione nel CV",
     outlookMore: "Prospettive →",
+    // --- r9 rates ---
+    resourceRates: "Esploratore dei tassi di reazione",
+    resourceRatesText:
+      "Le catene pp, i cicli CNO, NeNa e MgAl e il processo s. Trova il passo più lento in un ambiente stellare, cambia un tasso e guarda come rispondono le abbondanze, calcolate nel tuo browser da JINA REACLIB.",
+    resourceRatesSources: "Fonti",
+    resourceRatesLink: "Dove va a finire un tasso: l'esploratore dei tassi",
     // --- r7 site ---
     resourceEvaluationsSplit: (n: number, published: number) =>
       `${n} valutazioni R-matrix calcolate con AZURE2 nel browser: ${published} da articoli pubblicati, ${n - published} non ancora pubblicate. Ognuna ha i suoi file di input, da scaricare ed eseguire in locale.`,

@@ -17,6 +17,7 @@ import {
 } from "@/lib/content"
 import { Sci } from "@/components/sci"
 import { dict, localePath, type Lang } from "@/lib/i18n"
+import { LUNA_RATES_PUBLIC } from "@/lib/rates/features"
 
 /**
  * A paragraph with `[text](/path)` links, the only markup the profile's lead
@@ -130,6 +131,18 @@ function resources(lang: Lang): Resource[] {
         { text: t.howToCite, href: "/atlas#cite" },
       ],
     },
+    // --- r9 rates ---
+    {
+      key: "rates",
+      title: t.resourceRates,
+      text: t.resourceRatesText,
+      href: "/atlas/rates",
+      meta: [
+        ...(meta.licence ? [{ text: t.licence(meta.licence) }] : []),
+        { text: "JINA REACLIB · pynucastro" },
+        { text: t.resourceRatesSources, href: "/atlas/rates#credits" },
+      ],
+    },
     {
       key: "s-process",
       title: t.resourceSProcess,
@@ -144,7 +157,7 @@ function resources(lang: Lang): Resource[] {
       title: t.resourceEvaluations,
       text: t.resourceEvaluationsSplit(evaluations, publishedEvaluations),
       href: "/evaluations",
-      meta: [{ text: t.resourceEvaluationsMeta }],
+      meta: [{ text: t.resourceEvaluationsMeta }, { text: t.resourceRatesLink, href: LUNA_RATES_PUBLIC ? "/atlas/rates#cno&luna=1" : "/atlas/rates#cno" }],
     })
   if (lunasrim)
     out.push({

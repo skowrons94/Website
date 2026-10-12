@@ -253,7 +253,7 @@ export function SProcessExplorer({
         {label}
         {hint && (
           <span className="mt-0.5 block text-[0.7rem] leading-snug">
-            <Formula>{hint}</Formula>
+            <Sci>{hint}</Sci>
           </span>
         )}
       </dt>
@@ -310,7 +310,7 @@ export function SProcessExplorer({
   const headline = sb ? (
     <p className="max-w-[52rem] text-pretty leading-relaxed sm:text-[1.0625rem]">
       <Sci>
-        {sp.headline(sName, `${sig3(sm && changed ? sm.tau : sb.tau)}${NB}mb⁻¹`, sig3(sm && changed ? sm.nc : sb.nc))}
+        {sp.headline(sName, sig3(sm && changed ? sm.nc : sb.nc))}
       </Sci>
     </p>
   ) : null
@@ -381,7 +381,7 @@ export function SProcessExplorer({
                     shellLabel={sp.shell}
                     sOnlyLabel={sp.sOnly}
                     baseLabel={changed ? t.baselineLabel : null}
-                    changedLabel={changed ? t.changedLabel : t.baselineLabel}
+                    changedLabel={changed ? t.changedLabel : sp.isotope}
                     belowLabel={sp.below}
                     changed={changed}
                     notModelledLabel={sp.notModelled}
@@ -389,7 +389,9 @@ export function SProcessExplorer({
                 </div>
               </div>
               {headline && <div className="mt-4 sm:hidden">{headline}</div>}
-              <p className="mt-2 max-w-[46rem] text-pretty text-sm text-muted-foreground">{sp.distLead}</p>
+              <p className="mt-2 max-w-[46rem] text-pretty text-sm text-muted-foreground">
+                {sp.distLead} {sp.peaks}
+              </p>
               <p className="mt-1 text-xs text-muted-foreground">
                 <Sci>{sp.decayNote}</Sci>
                 {Object.entries(notModelled).map(([name, note]) => (
@@ -420,7 +422,7 @@ export function SProcessExplorer({
         </section>
       </div>
 
-      <Figure id="what-if" step={{ n: 2, label: t.step3 }} title={t.whatIfTitle} lead={sp.lead}>
+      <Figure id="what-if" step={{ n: 2, label: t.step3 }} title={t.whatIfTitle} lead={sp.whatIfLead}>
         <div className="grid gap-8 lg:grid-cols-[minmax(0,24rem)_minmax(0,1fr)] lg:gap-10">
           <div className="lg:sticky lg:top-20 lg:self-start">
             <ReactionPicker
@@ -456,7 +458,7 @@ export function SProcessExplorer({
               }
             />
             <div className={`space-y-8 transition-opacity motion-reduce:transition-none ${busy ? "opacity-55" : ""}`}>
-              <div className="relative rounded-lg border border-border bg-card p-3 sm:p-4">
+              <div id="sprocess-changes" className="relative rounded-lg border border-border bg-card p-3 sm:p-4">
                 <BusyLine busy={busy} />
                 <div className="flex flex-wrap items-end justify-between gap-3">
                   <div>
@@ -567,7 +569,14 @@ export function SProcessExplorer({
             </div>
           )}
         </div>
-        <ResultStrip rows={changes} busy={busy} href="#sprocess-results" lang={lang} />
+        <ResultStrip
+          rows={changes}
+          busy={busy}
+          href="#sprocess-results"
+          lang={lang}
+          active={changed || altered}
+          watch="sprocess-changes"
+        />
       </Figure>
 
       {/* -- for specialists -------------------------------------------------------- */}
@@ -587,7 +596,7 @@ export function SProcessExplorer({
               </li>
               <li>
                 <Formula>
-                  {"τ = ∫ n_n v_T dt,  n_n = ρ N_A Y_n,  v_T = (2kT/m_n)^(1/2);  MACS = N_A⟨σv⟩ / (N_A v_T)"}
+                  {`${sp.exposureFormula},  n_n = ρ N_A Y_n,  v_T = (2kT/m_n)^(1/2);  MACS = N_A⟨σv⟩ / (N_A v_T)`}
                 </Formula>
               </li>
             </ul>
@@ -691,7 +700,7 @@ function FirstView({ view, lang }: { view: SProcessFirstView; lang: Lang }) {
   const s = view.scenario
   const headline = (
     <p className="max-w-[52rem] text-pretty leading-relaxed sm:text-[1.0625rem]">
-      <Sci>{sp.headline(it ? s.name_it : s.name, `${sig3(view.stats.tau)}${NB}mb⁻¹`, sig3(view.stats.nc))}</Sci>
+      <Sci>{sp.headline(it ? s.name_it : s.name, sig3(view.stats.nc))}</Sci>
     </p>
   )
   const stat = (label: string, hint: string | null, v: string) => (
@@ -700,7 +709,7 @@ function FirstView({ view, lang }: { view: SProcessFirstView; lang: Lang }) {
         {label}
         {hint && (
           <span className="mt-0.5 block text-[0.7rem] leading-snug">
-            <Formula>{hint}</Formula>
+            <Sci>{hint}</Sci>
           </span>
         )}
       </dt>
@@ -765,13 +774,15 @@ function FirstView({ view, lang }: { view: SProcessFirstView; lang: Lang }) {
                 shellLabel={sp.shell}
                 sOnlyLabel={sp.sOnly}
                 baseLabel={null}
-                changedLabel={t.baselineLabel}
+                changedLabel={sp.isotope}
                 belowLabel={sp.below}
                 notModelledLabel={sp.notModelled}
               />
             </div>
             <div className="mt-4 sm:hidden">{headline}</div>
-            <p className="mt-2 max-w-[46rem] text-pretty text-sm text-muted-foreground">{sp.distLead}</p>
+            <p className="mt-2 max-w-[46rem] text-pretty text-sm text-muted-foreground">
+              {sp.distLead} {sp.peaks}
+            </p>
           </div>
           <dl className="grid content-start gap-2 min-[420px]:grid-cols-3 lg:grid-cols-1">
             {stat(sp.exposure, sp.exposureHint, `${sig3(view.stats.tau)}${NB}mb⁻¹`)}
