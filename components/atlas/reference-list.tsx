@@ -104,7 +104,7 @@ export function Cite({ keys, order }: { keys: string[]; order: string[] }) {
           {i > 0 && ", "}
           <a
             href={`#ref-${key}`}
-            className="-my-1 inline-flex min-h-6 min-w-6 items-center justify-center rounded-sm align-baseline underline-offset-2 hover:text-link hover:underline"
+            className="-my-1 inline-flex min-h-6 min-w-6 items-center justify-center rounded-sm align-baseline underline decoration-muted-foreground/45 underline-offset-2 hover:text-link hover:decoration-current"
           >
             {order.indexOf(key) + 1}
           </a>

@@ -153,15 +153,15 @@ export function TimelineView({ events }: { events: TimelineItem[] }) {
           <div role="group" aria-label={t.show} className="flex shrink-0 gap-1.5 lg:min-w-0 lg:shrink lg:flex-wrap">
             {highlights > 0 && (
               <Chip on={only === HIGHLIGHTS} onClick={() => choose(only === HIGHLIGHTS ? null : HIGHLIGHTS)}>
-                {t.highlights} <span className="tabular opacity-70">{highlights}</span>
+                {t.highlights} <span className="tabular opacity-90">{highlights}</span>
               </Chip>
             )}
             <Chip on={only === null} onClick={() => choose(null)}>
-              {t.all} <span className="tabular opacity-70">{events.length}</span>
+              {t.all} <span className="tabular opacity-90">{events.length}</span>
             </Chip>
             {CATEGORIES.filter((c) => counts.get(c)).map((c) => (
               <Chip key={c} on={only === c} onClick={() => choose(only === c ? null : c)}>
-                {label(c)} <span className="tabular opacity-70">{counts.get(c)}</span>
+                {label(c)} <span className="tabular opacity-90">{counts.get(c)}</span>
               </Chip>
             ))}
           </div>
@@ -309,7 +309,7 @@ export function TimelineView({ events }: { events: TimelineItem[] }) {
                   className="tabular -ml-px flex items-baseline justify-between gap-3 border-l border-transparent py-1 pl-3 text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground aria-[current=true]:border-foreground aria-[current=true]:font-medium aria-[current=true]:text-foreground"
                 >
                   {d.decade ? t.decade(d.decade) : t.undated}
-                  <span className="text-xs text-muted-foreground/80">{d.events.length}</span>
+                  <span className="text-xs text-muted-foreground">{d.events.length}</span>
                 </a>
               </li>
             ))}

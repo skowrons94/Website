@@ -128,7 +128,7 @@ export function SProcessOverview({
   const widest = Math.max(...PIECES.map(width))
   const it = lang === "it"
   return (
-    <div role="img" aria-label={label} aria-describedby={describedBy} className="space-y-1">
+    <div role="group" aria-label={label} aria-describedby={describedBy} className="space-y-1">
       {PIECES.map((piece, i) => {
         const from = path.cells.find((c) => c.Z === piece.z[0])?.symbol
         const to = path.cells.find((c) => c.Z === piece.z[1])?.symbol
@@ -212,7 +212,8 @@ function OverviewSvg({
       viewBox={`0 0 ${W} ${H}`}
       width={W}
       height={H}
-      role={whole ? "img" : undefined}
+      // A group, not an image: the inset boxes inside are links.
+      role={whole ? "group" : undefined}
       aria-hidden={whole ? undefined : true}
       aria-label={whole ? label : undefined}
       aria-describedby={whole ? describedBy : undefined}
@@ -361,7 +362,7 @@ function OverviewSvg({
           const top = y(inset.z[1]) - P / 2 - 2
           const bottom = y(inset.z[0]) + P / 2 + 2
           return (
-            <a key={inset.id} href={`#${inset.id}`} aria-label={inset.label} className="group">
+            <a key={inset.id} href={`#${inset.id}`} aria-label={inset.label} tabIndex={whole ? undefined : -1} className="group">
               <rect
                 x={left - 4}
                 y={top - 4}

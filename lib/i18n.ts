@@ -663,7 +663,7 @@ const it: Dictionary = {
     methodsShort: "Metodi",
     timeline: "Cronologia",
     sProcess: "Il processo s",
-    groups: { work: "Lavoro", explore: "Esplorare", learn: "Approfondimenti" },
+    groups: { work: "Lavoro", explore: "Esplora", learn: "Approfondimenti" },
     descriptions: {
       research: "Misure sotterranee, teoria R-matrix, tracciamento dei raggi γ",
       atlas: "Le reazioni che alimentano le stelle, sulla carta dei nuclidi",
