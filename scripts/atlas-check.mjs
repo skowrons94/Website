@@ -364,6 +364,31 @@ if (raw.timelineMissing) {
   })
 }
 
+/* -- glossary and the atlas' own metadata ---------------------------------- */
+
+if (raw.glossary && typeof raw.glossary === "object") {
+  const file = "glossary.yaml"
+  const terms = isList(raw.glossary) ? raw.glossary : checkList(file, raw.glossary, "terms")
+  const ids = new Set()
+  terms.forEach((t, i) => {
+    const where = `terms[${i}] (${t?.id ?? "?"}): `
+    requireFields(file, t, ["id", "term", "text"], where)
+    if (t?.id && ids.has(t.id)) error(file, `${where}id \`${t.id}\` used twice`)
+    if (t?.id) ids.add(t.id)
+    checkTranslations(file, t, ["term", "text"], where)
+  })
+  terms.forEach((t, i) => {
+    for (const see of checkList(file, t, "see", `terms[${i}]: `)) {
+      if (!ids.has(String(see))) error(file, `terms[${i}] (${t?.id}): \`see\` names unknown term \`${see}\``)
+    }
+  })
+}
+if (raw.meta && typeof raw.meta === "object" && raw.meta.version !== undefined) {
+  const v = raw.meta.version
+  const ok = v instanceof Date || /^\d{4}-\d{2}-\d{2}$/.test(String(v))
+  if (!ok) error("atlas.yaml", "`version` must be a date, YYYY-MM-DD")
+}
+
 for (const [file, missing] of untranslated) {
   warn(file, `${missing.length} field(s) without an Italian translation (English is shown on /it): ${missing.slice(0, 6).join(", ")}${missing.length > 6 ? ", …" : ""}`)
 }

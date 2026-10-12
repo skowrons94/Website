@@ -113,3 +113,15 @@ export function referenceHref(ref: Reference): string | undefined {
   const doi = ref.doi?.replace(/^https?:\/\/(dx\.)?doi\.org\//i, "")
   return doi ? `https://doi.org/${doi}` : ref.arxiv ? `https://arxiv.org/abs/${ref.arxiv}` : ref.url
 }
+
+/** `2026-10-12` → `12 October 2026` / `12 ottobre 2026`. */
+export function formatDate(iso: string, lang: Lang = "en"): string {
+  const [y, m, d] = iso.split("-").map(Number)
+  if (!y || !m || !d) return iso
+  return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString(lang === "it" ? "it-IT" : "en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  })
+}
