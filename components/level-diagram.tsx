@@ -35,6 +35,8 @@ const PLOT_H = HEIGHT - PAD.top - PAD.bottom
 const BAND = 34
 /** Least vertical distance between two energy labels in a column. */
 const LABEL_GAP = 11
+/** Furthest a label may be moved from its level before it is dropped. */
+const MAX_SHIFT = 16
 
 interface Props {
   levels: SchemeLevel[]
@@ -101,18 +103,16 @@ export function LevelDiagram({ levels }: Props) {
       .map((l) => ({ key: `${l.jgroup}-${l.level}`, y: scale(l.energy) }))
       .sort((a, b) => b.y - a.y)
     const placed = new Map<string, number>()
+    const floor = PAD.top + (background ? BAND + 8 : 6)
     let last = Infinity
     for (const item of items) {
       const y = Math.min(item.y, last - LABEL_GAP)
+      // A label that would sit far from its level, or above the frame, is
+      // left out rather than stacked into a column of numbers: in a crowded
+      // model (24Mg) the table below has every energy.
+      if (item.y - y > MAX_SHIFT || y < floor) continue
       placed.set(item.key, y)
       last = y
-    }
-    // If the stack ran off the top of the frame, shift it back down.
-    const minY = Math.min(...placed.values())
-    const floor = PAD.top + (background ? BAND + 8 : 6)
-    if (minY < floor) {
-      const shift = floor - minY
-      for (const [k, v] of placed) placed.set(k, v + shift)
     }
     return placed
   }
@@ -265,14 +265,17 @@ export function LevelDiagram({ levels }: Props) {
 
             {columns.map(([jpi, group], columnIndex) => {
               const x0 = PAD.left + columnIndex * columnWidth
-              const lineStart = x0 + columnWidth * 0.18
-              const lineEnd = x0 + columnWidth * 0.82
+              // Room on the right for a label ("12.96" plus its leader) before
+              // the next column's lines begin.
+              const lineStart = x0 + Math.min(columnWidth * 0.18, 16)
+              const lineEnd = Math.max(lineStart + 24, x0 + columnWidth - 44)
               const labels = labelPositions(group)
+              const centre = x0 + columnWidth / 2
 
               return (
                 <g key={jpi}>
                   <text
-                    x={(lineStart + lineEnd) / 2}
+                    x={centre}
                     y={HEIGHT - 14}
                     textAnchor="middle"
                     fontSize={12}
