@@ -17,15 +17,20 @@ import { decimal } from "@/lib/i18n-eval"
  *
  * One clock per thing the reader waits for: the activity's `started` is when
  * they asked (an edit followed by more edits and by its smooth curve keeps
- * the first edit's clock), and the bar never moves back when the estimate
- * grows. Past the estimate it says "almost done", and "taking longer than
- * usual" only once the estimate is exceeded by half.
+ * its smooth curve), and the bar never moves back when the estimate grows.
+ * The numbers appear after 2 s (a quick calculation shows only its stage).
+ * Past the estimate it does not invent more time: "almost done", then,
+ * past max(estimate × 1.5, estimate + 5 s), "still working", with the
+ * elapsed time only and the bar sweeping. Why the wait is long (a first
+ * change, no model prepared in advance, other models being prepared) is
+ * said beside it, and on a phone on a line of its own.
  *
  * It keeps its own clock, so its once-a-second tick re-renders this small
  * component only, never the plot around it. The bar's motion is a CSS
  * transition (and a sweep past the estimate), off with reduced motion.
- * Screen readers hear the stage when it starts and a short update every
- * 15 s, not every tick.
+ * Screen readers hear nothing for a quick calculation (a drag would make
+ * them chatter): an update every 15 s of a long wait, and each retry of a
+ * busy server with its delay.
  */
 
 export type Stage = "open" | "edit" | "data" | "fine" | "extrap"
@@ -59,6 +64,7 @@ function ProgressTimerImpl({ stage, activity, variant = "band", retryAt = null, 
   const dict = useEvalDict()
   const t = dict.live
   const r9 = dict.r9
+  const r11 = dict.r11
   const running = Boolean(activity) || retryAt !== null
   useTick(running, 1000)
   // Announced once per stage start, then every 15 s.
@@ -68,9 +74,11 @@ function ProgressTimerImpl({ stage, activity, variant = "band", retryAt = null, 
   const elapsed = activity ? Math.max(0, (performance.now() - activity.started) / 1000) : 0
   const estimate = activity?.estimate ?? null
   const left = estimate !== null ? estimate - elapsed : null
-  // Past the estimate: "almost done"; past it by half: "longer than usual".
-  const late = left !== null && left < 0
-  const over = estimate !== null && elapsed > estimate * 1.5 + 1
+  // Past the estimate: "almost done"; well past it: "still working".
+  const late = left !== null && left < 0.5
+  const over = estimate !== null && elapsed > Math.max(estimate * 1.5, estimate + 5)
+  // A quick calculation shows its stage only; the numbers from 2 s on.
+  const counting = elapsed >= 2
   const label = activity?.preparing ? t.stagePreparing : t.stages[stage]
   const secs = (s: number) => (s >= 90 ? t.minutes(decimal(Math.round(s / 60), lang)) : t.seconds(decimal(Math.max(1, Math.round(s)), lang)))
   // Counting down to the retry; once it is under way, back to the stage.
@@ -83,11 +91,11 @@ function ProgressTimerImpl({ stage, activity, variant = "band", retryAt = null, 
       return
     }
     if (busy !== null) setSpoken(t.busy(decimal(busy, lang)))
-    else if (bucket === 0) setSpoken(label)
-    else setSpoken(`${label} ${t.elapsedLong(secs(elapsed))}${left !== null && left > 0 ? `, ${t.left(secs(left))}` : ""}`)
-    // Only when the stage or the 15-s bucket changes.
+    else if (bucket === 0) setSpoken("")
+    else setSpoken(`${label} ${t.elapsedLong(secs(elapsed))}${left !== null && left > 0.5 ? `, ${t.left(secs(left))}` : ""}`)
+    // Only when the stage, the 15-s bucket or the retry changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activity?.started, bucket, busy !== null, label])
+  }, [activity?.started, bucket, retryAt, label])
 
   const live = (
     <span className="sr-only" role="status" aria-live="polite">
@@ -109,16 +117,16 @@ function ProgressTimerImpl({ stage, activity, variant = "band", retryAt = null, 
     ) : (
       <>
         <span className="font-medium text-foreground">{label}</span>
-        {elapsed >= 1 && <span className="text-muted-foreground">· {secs(elapsed)}</span>}
-        {left !== null && elapsed >= 1 && (
-          <span className="text-muted-foreground">· {over ? t.longer : late ? r9.almost : t.left(secs(left!))}</span>
+        {counting && <span className="text-muted-foreground">· {secs(elapsed)}</span>}
+        {counting && left !== null && (
+          <span className="text-muted-foreground">· {over ? r11.stillWorking : late ? r9.almost : t.left(secs(left!))}</span>
         )}
       </>
     )
 
   const bar = (
     <span className="relative block h-[3px] w-full overflow-hidden rounded-full bg-muted" aria-hidden>
-      {fraction !== null && !over && busy === null ? (
+      {fraction !== null && !late && busy === null ? (
         <span
           className="absolute inset-y-0 left-0 rounded-full bg-[var(--viz-series-1)] transition-[width] duration-1000 ease-linear motion-reduce:transition-none"
           style={{ width: `${Math.max(4, fraction * 100)}%` }}
@@ -129,8 +137,13 @@ function ProgressTimerImpl({ stage, activity, variant = "band", retryAt = null, 
     </span>
   )
 
-  const prepNote = activity?.preparing ? (activity.note ?? t.firstChange) : (activity?.note ?? null)
-  const sideNote = prepNote ?? note
+  // Why this wait is long: what is prepared for the first time, said for the
+  // stage it is (a first extrapolation is not a "first change"), and that
+  // other models share the server.
+  const firstNote = stage === "extrap" ? r11.firstExtrap : stage === "fine" ? r11.firstCurve : t.firstChange
+  const prepNote = activity?.preparing ? (activity.note ?? firstNote) : (activity?.note ?? null)
+  const busyNote = activity?.busy && counting ? r11.serverBusy : null
+  const sideNote = busy !== null ? null : [prepNote ?? note, busyNote].filter(Boolean).join(" · ") || null
 
   if (variant === "band") {
     // One line in a band of its own above the plot: never over the data.
@@ -147,6 +160,8 @@ function ProgressTimerImpl({ stage, activity, variant = "band", retryAt = null, 
               </span>
             )}
           </span>
+          {/* A phone has no room beside it: the reason on a line of its own. */}
+          {sideNote && <span className="text-[0.6875rem] leading-snug text-muted-foreground sm:hidden">{sideNote}</span>}
           {bar}
         </div>
       </>
@@ -162,7 +177,7 @@ function ProgressTimerImpl({ stage, activity, variant = "band", retryAt = null, 
           {text}
         </span>
         {bar}
-        {sideNote && <span className="text-[11px] leading-snug text-muted-foreground">{sideNote}</span>}
+        {sideNote && <span className="text-[0.6875rem] leading-snug text-muted-foreground">{sideNote}</span>}
       </div>
     </>
   )
@@ -170,3 +185,18 @@ function ProgressTimerImpl({ stage, activity, variant = "band", retryAt = null, 
 
 /** Memoised: the parent's re-renders do not restart or re-render the clock. */
 export const ProgressTimer = memo(ProgressTimerImpl)
+
+/**
+ * Under a smooth curve whose model is still being built (its first build
+ * can take half a minute in the browser): when it will be ready, counting
+ * down on its own clock, else `fallback`.
+ */
+export function CurveEta({ activity, fallback }: { activity: Activity | null; fallback: string }) {
+  const lang = useLang()
+  const r11 = useEvalDict().r11
+  const waiting = Boolean(activity?.preparing && activity.estimate)
+  useTick(waiting, 1000)
+  if (!waiting || !activity) return <>{fallback}</>
+  const left = activity.estimate! - (performance.now() - activity.started) / 1000
+  return <>{left >= 1.5 ? r11.curveSoon(decimal(Math.round(left), lang)) : r11.curveAlmost}</>
+}

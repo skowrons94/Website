@@ -15,6 +15,7 @@ All under `/api`. JSON in and out; errors are `{"error": "...", "code": "..."}`.
 | `GET /evaluations/<id>` | one evaluation | |
 | `GET /evaluations/<id>/download` | the `.azr` file | |
 | `GET /evaluations/<id>/initial` | **no session**: what the page draws first (below) | `?parts=scheme,data,fine` trims it; 404 `code: "not_prepared"` if `make warm` (or a first session) has not written it yet |
+| `GET /evaluations/<id>/availability` | `{spare_ready, spare_building, full, builds, measured}` | not cached: what an /open now would meet, for the page's first estimate |
 | `POST /evaluations/<id>/open` | start a session → 201 `{session_id, evaluation, scheme, n_data_segments, n_extrapolations, generation, heartbeat_interval, timings}` | **503** `code: "busy"` + `Retry-After` when every slot is in use |
 | `POST /sessions/<sid>/ping` | heartbeat → `/status` body | send every `heartbeat_interval` s (30) while the page is visible |
 | `GET /sessions/<sid>/status` | `{prepared, preparing, running, busy, modified, generation, fine_ready}` | `preparing` is `"data"`, `"fine"`, `"extrap"`, `"grid"` or null |
@@ -40,9 +41,18 @@ see browser/README.md). 400 for a malformed request.
 
 `/open` also says whether the session came from a spare and what is
 prepared (`from_spare`, `prepared`, `preparing`, `builds`); `/status` and the
-heartbeat add `preparing_elapsed` and `pending` (steps still to build) and
-`builds` (model builds running on the machine): the page's timer scales its
-estimate by them. `GET /evaluations/<id>/initial/extrapolations` gives the
+heartbeat add `preparing_elapsed` and `pending` (steps still to build),
+`step_started` and `step_took` (per step, epoch seconds and seconds; `now` is
+the server's clock), `builds` (model builds running on the machine) and
+`measured`: the last duration of each step *on this server* for this
+evaluation (`open_cold`, `open_spare`, `prepare_<step>`; a step paused for a
+visitor is not recorded). The page's timer counts the step under way down
+from `measured`, so its estimate follows the machine as it is now, not the
+warm-up's `timings`.
+
+A session opened with `?client=<token>` (a page that sends heartbeats) that
+never pings is closed `AZURE2_HEARTBEAT_TTL` seconds after it was last seen:
+its page moved on while /open was on its way. `GET /evaluations/<id>/initial/extrapolations` gives the
 extrapolations at the shipped parameters, which the page shows faded while a
 visitor's own are calculated.
 

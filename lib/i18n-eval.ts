@@ -446,7 +446,7 @@ const en = {
       "17F": "The slowest step of the second CNO cycle.",
       "21Na": "The first and slowest step of the NeNa cycle.",
       "23Na": "The main way stars make sodium-23, the only stable sodium isotope, while they burn hydrogen.",
-      "24Mg": "Proton scattering on sodium-23: the magnesium-24 levels through which ²³Na(p,γ)²⁴Mg destroys sodium in stars.",
+      "24Mg": "Proton scattering on sodium-23: the magnesium-24 levels through which ²³Na(p,α) and ²³Na(p,γ) destroy sodium in stars.",
       "7Be": "Opens the branches of the pp chain that emit the ⁷Be and ⁸B solar neutrinos, and made most of the lithium after the Big Bang.",
       "8Be": "Alpha–alpha scattering: the beryllium-8 states behind the first step of the triple-alpha process, which makes the carbon in stars.",
     } as Record<string, string>,
@@ -461,6 +461,21 @@ const en = {
     noSpare: "First change on this model: it is still being prepared for you. Later changes are much quicker.",
     publishedShown: "Published curves shown, faded; yours appear when ready.",
     gridSummaryOne: (ne: number, e0: string, e1: string, a: string) => `${ne} energies (${e0}–${e1} MeV) at ${a}°`,
+  },
+
+  // --- r11 eval ---
+  r11: {
+    stillWorking: "still working",
+    serverBusy: "Server busy: other models are being prepared too",
+    coldOpen: "No copy of this model was ready in advance: starting one takes a little longer.",
+    firstCurve: "First smooth curve on this model: it is still being prepared. Later ones are much quicker.",
+    firstExtrap: "First extrapolations on this model: they are still being prepared. Later ones are much quicker.",
+    curveSoon: (s: string) => `Smooth curve ready in about ${s} s; the line through the points is shown meanwhile.`,
+    curveAlmost: "Smooth curve almost ready; the line through the points is shown meanwhile.",
+    chi2Settled: (v: string) => `χ²/N of the shown datasets: ${v}.`,
+    chi2AllDiffers: "on all data:",
+    chi2Published: "the published fit; see why it is above 1",
+    sLowest: "S at the lowest energy",
   },
 }
 
@@ -765,7 +780,7 @@ const it: EvalDictionary = {
     resetAllHint: "Torna ai parametri della valutazione (tutti i livelli)",
     view: "Vista",
     chi2Plain:
-      "χ²/N vicino a 1 vuol dire che la linea passa per i punti entro le barre d'errore; sopra 1 ne manca alcuni di più, spesso per normalizzazioni ed effetti sistematici che le barre d'errore non includono.",
+      "χ²/N vicino a 1 vuol dire che la linea passa per i punti entro le barre d'errore; sopra 1 la linea si allontana di più dai punti, spesso per normalizzazioni ed effetti sistematici che le barre d'errore non includono.",
     chi2NormNote: (allOne: boolean) =>
       `Questa pagina non riadatta le normalizzazioni: restano ai valori memorizzati nel file${allOne ? " (n = 1 per ogni insieme di dati)" : ""}, e il χ² mostrato conta solo l'incertezza di ciascun punto, non quella sulla scala complessiva di un insieme di dati.`,
     chi2AllSummary: "χ² per tutti i dati del fit",
@@ -899,7 +914,7 @@ const it: EvalDictionary = {
       "17F": "Il passo più lento del secondo ciclo CNO.",
       "21Na": "Il primo e più lento passo del ciclo NeNa.",
       "23Na": "Il modo principale in cui le stelle producono il sodio-23, l'unico isotopo stabile del sodio, mentre bruciano idrogeno.",
-      "24Mg": "Diffusione di protoni sul sodio-23: i livelli del magnesio-24 attraverso cui ²³Na(p,γ)²⁴Mg distrugge il sodio nelle stelle.",
+      "24Mg": "Diffusione di protoni sul sodio-23: i livelli del magnesio-24 attraverso cui ²³Na(p,α) e ²³Na(p,γ) distruggono il sodio nelle stelle.",
       "7Be": "Apre i rami della catena pp che emettono i neutrini solari del ⁷Be e dell'⁸B, e dopo il Big Bang produsse la maggior parte del litio.",
       "8Be": "Diffusione alfa–alfa: gli stati del berillio-8 alla base del primo passo del processo tre alfa, che produce il carbonio nelle stelle.",
     },
@@ -914,6 +929,21 @@ const it: EvalDictionary = {
     noSpare: "Prima modifica su questo modello: lo stiamo ancora preparando per te. Le modifiche successive sono molto più rapide.",
     publishedShown: "Sono mostrate, sbiadite, le curve pubblicate; le tue compaiono appena pronte.",
     gridSummaryOne: (ne: number, e0: string, e1: string, a: string) => `${ne} energie (${e0}–${e1} MeV) a ${a}°`,
+  },
+
+  // --- r11 eval ---
+  r11: {
+    stillWorking: "sto ancora lavorando",
+    serverBusy: "Server occupato: si stanno preparando anche altri modelli",
+    coldOpen: "Nessuna copia di questo modello era pronta in anticipo: avviarne una richiede un po' più di tempo.",
+    firstCurve: "Prima curva continua su questo modello: è ancora in preparazione. Le successive sono molto più rapide.",
+    firstExtrap: "Prime estrapolazioni su questo modello: sono ancora in preparazione. Le successive sono molto più rapide.",
+    curveSoon: (s: string) => `Curva continua pronta tra circa ${s} s; nel frattempo è mostrata la linea che unisce i punti.`,
+    curveAlmost: "Curva continua quasi pronta; nel frattempo è mostrata la linea che unisce i punti.",
+    chi2Settled: (v: string) => `χ²/N degli insiemi di dati mostrati: ${v}.`,
+    chi2AllDiffers: "su tutti i dati:",
+    chi2Published: "il fit pubblicato: perché è sopra 1",
+    sLowest: "S all'energia minima",
   },
 }
 

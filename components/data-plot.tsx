@@ -1,6 +1,6 @@
 "use client"
 
-import { startTransition, useEffect, useMemo, useRef, useState } from "react"
+import { memo, startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Download, Redo2, RotateCcw, SlidersHorizontal, Undo2, ZoomOut } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { LevelControls } from "@/components/level-controls"
-import { ProgressTimer, type Stage } from "@/components/evaluation-progress"
+import { CurveEta, ProgressTimer, type Stage } from "@/components/evaluation-progress"
 import type { Activity } from "@/contexts/session-context"
 import { EXTENSION_OPACITY, SegmentChart, extensionDash, type ChartSeries } from "@/components/segment-chart"
 import { DataTable } from "@/components/data-table"
@@ -252,6 +252,7 @@ export function DataPlot({
   const lang = useLang()
   const t = useEvalDict().workspace
   const lv = useEvalDict().live
+  const r11 = useEvalDict().r11
   const [logXOverride, setLogX] = useState<boolean | null>(null)
   const [logYOverride, setLogY] = useState<boolean | null>(null)
   const [listOpen, setListOpen] = useState(false)
@@ -525,14 +526,22 @@ export function DataPlot({
     [initialData, selected],
   )
   const initialAll = useMemo(() => (initialData ? pooledChi2(initialData.filter((s) => s.active)) : null), [initialData])
+  // Said once the reader has stopped (0.8 s with nothing calculated), as the
+  // screen shows it: a drag announced every answer (ui r10 #4).
   const [announcement, setAnnouncement] = useState("")
   const wasCalculating = useRef(false)
   useEffect(() => {
-    if (wasCalculating.current && !calculating && meanChi2 !== null) {
-      setAnnouncement(t.chi2Status(decimal(meanChi2.toFixed(2), lang)))
+    if (calculating) {
+      wasCalculating.current = true
+      return
     }
-    wasCalculating.current = calculating
-  }, [calculating, meanChi2, t, lang])
+    if (!wasCalculating.current || meanChi2 === null) return
+    const timer = setTimeout(() => {
+      wasCalculating.current = false
+      setAnnouncement(r11.chi2Settled(chi2Text(meanChi2, lang)))
+    }, 800)
+    return () => clearTimeout(timer)
+  }, [calculating, meanChi2, r11, lang])
 
   // The level whose sliders open first: one with free parameters that sits
   // in the plotted range (the 2.368 MeV resonance for ¹³N, not the ground
@@ -557,18 +566,16 @@ export function DataPlot({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scheme.levels, scheme.pairs, energyKey])
 
-  const toggle = (index: number, checked: boolean) =>
-    startTransition(() =>
-      onSelect(checked ? [...selected.filter((i) => i !== index), index] : selected.filter((i) => i !== index)),
-    )
-
-  const listed = useMemo(() => {
-    const needle = filter.trim().toLowerCase()
-    if (!needle) return data
-    return data.filter((s) =>
-      [segmentTitle(s, lang), s.name, s.data_file, observableLabel(s.observable, lang)].some((v) => v.toLowerCase().includes(needle)),
-    )
-  }, [data, filter, lang])
+  const toggle = useCallback(
+    (index: number, checked: boolean) =>
+      startTransition(() =>
+        onSelect(checked ? [...selected.filter((i) => i !== index), index] : selected.filter((i) => i !== index)),
+      ),
+    [onSelect, selected],
+  )
+  // The table drawer is drawn only while open: closed, every answer of a
+  // drag re-rendered each dataset's row in it.
+  const [tableShown, setTableShown] = useState(Boolean(tableOpen))
 
   const exportName = `${evaluationId}_${quantity}`
   const exportCharts = () => [...charts.current.values()].filter((v): v is SVGSVGElement => Boolean(v))
@@ -636,7 +643,8 @@ export function DataPlot({
         segments.map((s, i) => (
           <li key={s.index} className="flex min-w-0 items-center gap-1.5">
             {marker(i)}
-            <span className="min-w-0 truncate text-foreground">
+            {/* Wrapped, not cut: the end of a name ("…, LUNA") is what tells two datasets apart. */}
+            <span className="min-w-0 break-words text-foreground">
               {compact ? [datasetName(s), xKind(s) === "angle" ? "" : angleText(s, lang)].filter(Boolean).join(" · ") : segmentTitle(s, lang)}
             </span>
           </li>
@@ -811,6 +819,14 @@ export function DataPlot({
     )
   }
   const huge = scheme.modified && meanChi2 !== null && initialShown !== null && meanChi2 >= 10 * initialShown
+  // Does the change on all the data tell another story than on the shown ones?
+  const allDiffers = (() => {
+    if (!scheme.modified || meanChi2 === null || initialShown === null || allChi2 === null || initialAll === null) return false
+    const shown = meanChi2 - initialShown
+    const all = allChi2 - initialAll
+    const same = (d: number) => Math.abs(d) < 0.005
+    return same(shown) !== same(all) || (!same(all) && Math.sign(shown) !== Math.sign(all))
+  })()
 
   const chi2Line = (
     <p className="min-w-0 tabular-nums">
@@ -821,6 +837,21 @@ export function DataPlot({
           </a>{" "}
           <span className="font-semibold">{chi2Text(meanChi2, lang)}</span>{" "}
           <span className="text-muted-foreground">{t.chi2ShownShort}</span> {delta(meanChi2, initialShown)}
+          {/* The shown data unchanged (or better) while all the data got worse, or the reverse: both said, not one. */}
+          {allDiffers && (
+            <span className="text-muted-foreground">
+              {" "}
+              · {r11.chi2AllDiffers} {delta(allChi2, initialAll)}
+            </span>
+          )}
+          {!scheme.modified && meanChi2 > 2 && (
+            <>
+              {" "}
+              <a href="#chi2-why" className="text-xs text-muted-foreground underline decoration-dotted underline-offset-4 hover:text-link">
+                ({r11.chi2Published})
+              </a>
+            </>
+          )}
         </>
       ) : (
         <span className="text-muted-foreground">{t.chi2None}</span>
@@ -852,7 +883,9 @@ export function DataPlot({
 
   const chi2Notes = (
     <div className="space-y-1.5 text-xs leading-relaxed text-muted-foreground">
-      <p>{t.chi2Plain}</p>
+      <p id="chi2-why" className="scroll-mt-28">
+        {t.chi2Plain}
+      </p>
       {huge && <p className="text-foreground/80">{lv.chi2Huge}</p>}
       {allChi2 !== null && allChi2 > 5 && <p>{t.chi2NormNote(allOne)}</p>}
       {allChi2 !== null && (
@@ -1025,11 +1058,11 @@ export function DataPlot({
 
           {(fineStatus === "loading" || pointwise.length > 0) && chosen.length > 0 && (
             <p className="text-xs text-muted-foreground max-lg:order-5">
-              {fineStatus === "loading"
-                ? fineStale
-                  ? t.fineUpdating
-                  : t.fineLoading
-                : t.finePointwise(pointwise.map((s) => segmentTitle(s, lang)).join("; "))}
+              {fineStatus === "loading" ? (
+                <CurveEta activity={stage === "fine" ? (activity ?? null) : null} fallback={fineStale ? t.fineUpdating : t.fineLoading} />
+              ) : (
+                t.finePointwise(pointwise.map((s) => segmentTitle(s, lang)).join("; "))
+              )}
             </p>
           )}
 
@@ -1041,44 +1074,7 @@ export function DataPlot({
             <summary className="flex min-h-11 cursor-pointer select-none items-center px-4 text-sm font-semibold">
               {t.showDatasets(chosen.length, data.length)}
             </summary>
-            <div className="border-t px-4 pb-1 pt-3">
-              <Input
-                value={filter}
-                onChange={(event) => setFilter(event.target.value)}
-                placeholder={t.filterDatasets}
-                aria-label={t.filterDatasets}
-                className="h-9"
-              />
-            </div>
-            <div className="grid max-h-72 gap-x-6 gap-y-2.5 overflow-y-auto px-4 pb-4 pt-3 sm:grid-cols-2">
-              {listed.map((segment) => (
-                <div key={segment.index} className="flex items-start gap-2">
-                  <input
-                    type="checkbox"
-                    id={`seg-${segment.index}`}
-                    checked={selected.includes(segment.index)}
-                    onChange={(event) => toggle(segment.index, event.target.checked)}
-                    className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded-sm border-input-strong accent-[var(--viz-series-1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  />
-                  <Label htmlFor={`seg-${segment.index}`} className="min-w-0 flex-1 cursor-pointer text-xs font-normal leading-snug">
-                    <span className="block truncate font-medium">
-                      {datasetName(segment)}
-                      {qualifier(segment, lang) && <span className="font-normal text-muted-foreground"> · {qualifier(segment, lang)}</span>}
-                    </span>
-                    <span className="text-muted-foreground">
-                      {observableLabel(segment.observable, lang)}
-                      {segment.chi2 !== null && ` · χ²/N ${decimal(segment.chi2.toFixed(1), lang)}`}
-                    </span>
-                  </Label>
-                  {!segment.active && (
-                    <Badge variant="outline" className="text-[10px]">
-                      {t.off}
-                    </Badge>
-                  )}
-                </div>
-              ))}
-              {listed.length === 0 && <p className="text-xs text-muted-foreground">{t.noMatch(filter)}</p>}
-            </div>
+            {listOpen && <DatasetList data={data} selected={selected} filter={filter} onFilter={setFilter} onToggle={toggle} />}
           </details>
         </div>
 
@@ -1102,14 +1098,86 @@ export function DataPlot({
         </Card>
       </div>
 
-      <details open={tableOpen || undefined} className="group min-w-0 rounded-lg border bg-card">
+      <details
+        open={tableOpen || undefined}
+        onToggle={(event) => setTableShown((event.target as HTMLDetailsElement).open)}
+        className="group min-w-0 rounded-lg border bg-card"
+      >
         <summary className="flex min-h-11 cursor-pointer select-none items-center px-4 text-sm font-semibold">
           {t.tableDrawer(data.length)}
         </summary>
-        <div className="border-t p-3 sm:p-4">
-          <DataTable data={data} selected={selected} onToggle={toggle} />
-        </div>
+        <div className="border-t p-3 sm:p-4">{tableShown && <DataTable data={data} selected={selected} onToggle={toggle} />}</div>
       </details>
     </div>
   )
 }
+
+/**
+ * The dataset filter's list: drawn only while its fold is open, and not again
+ * unless what it shows changed (each answer of a drag re-rendered all of it).
+ */
+const DatasetList = memo(function DatasetList({
+  data,
+  selected,
+  filter,
+  onFilter,
+  onToggle,
+}: {
+  data: DataSegment[]
+  selected: number[]
+  filter: string
+  onFilter: (value: string) => void
+  onToggle: (index: number, checked: boolean) => void
+}) {
+  const lang = useLang()
+  const t = useEvalDict().workspace
+  const listed = useMemo(() => {
+    const needle = filter.trim().toLowerCase()
+    if (!needle) return data
+    return data.filter((s) =>
+      [segmentTitle(s, lang), s.name, s.data_file, observableLabel(s.observable, lang)].some((v) => v.toLowerCase().includes(needle)),
+    )
+  }, [data, filter, lang])
+  return (
+    <>
+      <div className="border-t px-4 pb-1 pt-3">
+        <Input
+          value={filter}
+          onChange={(event) => onFilter(event.target.value)}
+          placeholder={t.filterDatasets}
+          aria-label={t.filterDatasets}
+          className="h-9"
+        />
+      </div>
+      <div className="grid max-h-72 gap-x-6 gap-y-2.5 overflow-y-auto px-4 pb-4 pt-3 sm:grid-cols-2">
+        {listed.map((segment) => (
+          <div key={segment.index} className="flex items-start gap-2">
+            <input
+              type="checkbox"
+              id={`seg-${segment.index}`}
+              checked={selected.includes(segment.index)}
+              onChange={(event) => onToggle(segment.index, event.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded-sm border-input-strong accent-[var(--viz-series-1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            />
+            <Label htmlFor={`seg-${segment.index}`} className="min-w-0 flex-1 cursor-pointer text-xs font-normal leading-snug">
+              <span className="block truncate font-medium">
+                {datasetName(segment)}
+                {qualifier(segment, lang) && <span className="font-normal text-muted-foreground"> · {qualifier(segment, lang)}</span>}
+              </span>
+              <span className="text-muted-foreground">
+                {observableLabel(segment.observable, lang)}
+                {segment.chi2 !== null && ` · χ²/N ${decimal(segment.chi2.toFixed(1), lang)}`}
+              </span>
+            </Label>
+            {!segment.active && (
+              <Badge variant="outline" className="text-[0.625rem]">
+                {t.off}
+              </Badge>
+            )}
+          </div>
+        ))}
+        {listed.length === 0 && <p className="text-xs text-muted-foreground">{t.noMatch(filter)}</p>}
+      </div>
+    </>
+  )
+})

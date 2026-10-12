@@ -598,3 +598,68 @@ def test_session_that_never_pinged_is_evictable_sooner():
     manager._sessions = {"silent": silent, "live": live}
     # Both last seen 30 s ago: only the one without a heartbeat may go.
     assert manager._evict_candidate() is silent
+
+
+# -- r11: orphaned sessions and live timings ------------------------------------------
+
+def test_client_session_that_never_pinged_expires(fake):
+    """A session opened by a page that named itself (``?client=``) but never
+    pinged -- the page moved on while /open was on its way -- is closed after
+    ``heartbeat_ttl``, not kept for the full ``ttl``."""
+    manager = session_module.SessionManager(ttl=600, heartbeat_ttl=0.2, max_sessions=4)
+    try:
+        orphan = manager.create(fake)
+        assert manager.attach_client("pagetoken1", orphan)
+        legacy = manager.create(fake)          # no client token: an older page
+        alive = manager.create(fake)
+        assert manager.attach_client("pagetoken2", alive)
+        time.sleep(0.3)
+        alive.ping()
+        assert manager.reap() == 1
+        assert orphan.closed and not legacy.closed and not alive.closed
+    finally:
+        manager.close_all()
+
+
+def test_status_reports_step_times_and_live_durations(client):
+    c, manager = client
+    FakeEngine.delays.update(prepare={"fine": 0.15})
+    sid = c.post("/api/evaluations/X/open?client=abcdefgh12").get_json()["session_id"]
+    assert c.post(f"/api/sessions/{sid}/prepare", json={"steps": ["data", "fine"]}).status_code == 200
+    status = c.get(f"/api/sessions/{sid}/status").get_json()
+    assert set(status["step_started"]) == {"data", "fine"}
+    assert status["step_took"]["fine"] >= 0.14
+    assert status["now"] >= status["step_started"]["fine"]
+    measured = status["measured"]
+    assert measured["prepare_fine"] >= 0.14 and "open_cold" in measured
+    avail = c.get("/api/evaluations/X/availability")
+    assert avail.headers["Cache-Control"] == "no-store"
+    body = avail.get_json()
+    assert body["spare_ready"] is False and body["full"] is True
+    assert body["measured"]["prepare_fine"] == measured["prepare_fine"]
+
+
+def test_paused_step_is_not_measured(fake):
+    """A spare's step paused for a visitor says nothing about how long the
+    step takes: it is not recorded."""
+    FakeEngine.delays.update(prepare={"fine": 0.1})
+    manager = session_module.SessionManager(max_sessions=2)
+    try:
+        session = manager.create(fake)
+        session._paused_in_step = False
+        real = FakeEngine.prepare
+
+        def pausing(self, step):
+            if step == "fine":
+                session._paused_in_step = True
+            return real(self, step)
+        FakeEngine.prepare = pausing
+        try:
+            session.prepare("data")
+            session.prepare("fine")
+        finally:
+            FakeEngine.prepare = real
+        assert "prepare_data" in manager.measured("X")
+        assert "prepare_fine" not in manager.measured("X")
+    finally:
+        manager.close_all()

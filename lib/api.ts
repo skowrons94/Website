@@ -286,6 +286,17 @@ export interface OpenedSession {
   preparing?: string | null
   /** Model builds running on the server now (this one's included). */
   builds?: number
+  /** The last measured duration of each step on this server (open_cold, open_spare, prepare_<step>). */
+  measured?: Timings | null
+}
+
+/** What an /open now would meet (GET /evaluations/<id>/availability, a newer server). */
+export interface Availability {
+  spare_ready: boolean
+  spare_building: boolean
+  full: boolean
+  builds: number
+  measured?: Timings | null
 }
 
 /** What a newer server reports of a session (/status, and the heartbeat's answer). */
@@ -303,6 +314,8 @@ export interface SessionStatus {
   modified?: boolean
   generation?: number
   fine_ready?: boolean
+  /** The last measured duration of each step on this server (open_cold, open_spare, prepare_<step>). */
+  measured?: Timings | null
 }
 
 export interface SchemeAndData {
@@ -590,6 +603,12 @@ function pageToken(): string {
     if (event.persisted) clientToken = newToken()
   })
   return clientToken
+}
+
+/** Whether a prepared copy of the model is waiting on the server, and its live timings (null: an older server, or the browser build). */
+export function getAvailability(id: string): Promise<Availability | null> {
+  if (IN_BROWSER) return Promise.resolve(null)
+  return optional("availability", () => request<Availability>(`/api/evaluations/${encodeURIComponent(id)}/availability`))
 }
 
 export function openEvaluation(id: string): Promise<OpenedSession> {

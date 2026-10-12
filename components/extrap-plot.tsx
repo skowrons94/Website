@@ -169,6 +169,14 @@ const cutIndex = (segment: number, angle: number) => 1_000_000 + segment * 1000 
 
 const TEMPERATURES = [0.01, 0.015, 0.02, 0.03, 0.05, 0.1, 0.2, 0.3, 0.5, 1, 2, 3]
 
+/** An energy (MeV) for a reader, as a plain decimal: 0.00856 → "0.009", 0.8565 → "0.86", 2.368 → "2.37". */
+function plainEnergy(v: number, lang: "en" | "it"): string {
+  if (!Number.isFinite(v)) return "–"
+  if (v === 0) return "0"
+  const digits = Math.abs(v) >= 1 ? 2 : Math.min(6, Math.max(2, -Math.floor(Math.log10(Math.abs(v)))))
+  return decimal(String(Number(v.toFixed(digits))), lang)
+}
+
 /** Gamow peak and 1/e width (MeV) — the same expressions as the atlas (lib/atlas-core.mjs). */
 function gamow(pair: SchemePair, T9: number) {
   const mu = (pair.M1 * pair.M2) / (pair.M1 + pair.M2)
@@ -220,6 +228,7 @@ export function ExtrapPlot({
   const t = useEvalDict().workspace
   const lv = useEvalDict().live
   const r9 = useEvalDict().r9
+  const r11 = useEvalDict().r11
   const [selected, setSelected] = useState<number[]>([])
   const [overlaid, setOverlaid] = useState<number[]>([])
   const [quantity, setQuantity] = useState<Quantity>(scatteringOnly ? "cross_section" : "sfactor")
@@ -500,7 +509,7 @@ export function ExtrapPlot({
     .filter((v): v is { segment: ExtrapSegment; energy: number; value: number } => v !== null)
   const marks =
     quantity === "sfactor" && !overLimit
-      ? lowest.map((l) => ({ x: l.energy, y: l.value * unitFor("sfactor", l.segment.observable).factor, label: "S(Eₘᵢₙ)" }))
+      ? lowest.map((l) => ({ x: l.energy, y: l.value * unitFor("sfactor", l.segment.observable).factor, label: r11.sLowest }))
       : []
 
   const fmt = (v: number) => numberText(v, lang, 3)
@@ -556,7 +565,7 @@ export function ExtrapPlot({
                     <SelectLabel className="text-xs font-normal text-muted-foreground">{t.atlasTemperatures}</SelectLabel>
                     {temperatures.map((x) => (
                       <SelectItem key={x.T9} value={String(x.T9)}>
-                        T₉ = {decimal(String(x.T9), lang)} · {x.label}
+                        {x.label.charAt(0).toUpperCase() + x.label.slice(1)} · {kelvin(x.T9)}
                       </SelectItem>
                     ))}
                   </SelectGroup>
@@ -753,14 +762,14 @@ export function ExtrapPlot({
                         ) : (
                           <>
                             {curveDetail(segment)} ·{" "}
-                            <Sci>{`${numberText(segment.energy_min, lang, 3)}–${numberText(segment.energy_max, lang, 4)}`}</Sci> MeV
+                            {`${plainEnergy(segment.energy_min, lang)}–${plainEnergy(segment.energy_max, lang)}`} MeV
                             {segment.energy_frame === "cm" ? " (c.m.)" : ""}
                           </>
                         )}
                       </span>
                     </Label>
                     {!segment.active && (
-                      <Badge variant="outline" className="text-[10px]">
+                      <Badge variant="outline" className="text-[0.625rem]">
                         {t.off}
                       </Badge>
                     )}
@@ -1025,7 +1034,7 @@ const GridMap = memo(function GridMap({ rows, label, aria, lang }: { rows: GridR
         <text x={-6} y={10} fontSize={12} textAnchor="end" fill="var(--viz-text-muted)">{fmt(a1)}°</text>
         <text x={-6} y={H / 2} fontSize={12} textAnchor="end" fill="var(--viz-text-muted)">θ</text>
       </svg>
-      <figcaption className="mt-1 flex items-center gap-2 text-[11px] text-muted-foreground">
+      <figcaption className="mt-1 flex items-center gap-2 text-[0.6875rem] text-muted-foreground">
         <span>{fmt(10 ** lo)}</span>
         <span className="h-2 w-24 rounded-sm" style={{ background: `linear-gradient(to right, ${mix(lo)}, ${mix(hi)})` }} aria-hidden />
         <span>{fmt(10 ** hi)}</span>

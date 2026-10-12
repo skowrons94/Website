@@ -26,9 +26,12 @@
  * - Each worker is a Pyodide of its own with its model: ¹³N's three workers
  *   take about 0.7 GB in all, ⁷Be's 1.5 GB. A phone or a small machine
  *   starts the extrapolations' worker only when they are first shown.
- * - Everything is downloaded once: the role workers start when the data
- *   worker has the runtime and the evaluation, and worker.js keeps the large
- *   files (Pyodide, NumPy, the zips) in the Cache Storage.
+ * - The role workers start when the page loads (its first request, for the
+ *   static first paint), side by side with the data worker: starting them
+ *   once the data worker had opened the model left ⁷Be's smooth curve
+ *   34 s after the load. Everything is still downloaded once: worker.js
+ *   keeps the large files in the Cache Storage, and a file two workers ask
+ *   for at once is fetched by one while the other waits (a Web Lock).
  */
 
 const ROOT = `${process.env.BASE_PATH ?? ""}/azure2`
@@ -66,8 +69,9 @@ class RoleWorker {
       if (data.progress) {
         if (role !== "data") return
         progressListeners.forEach((l) => l(data.progress))
-        // The runtime and the evaluation are in the caches now.
-        if (data.progress === "Opening the model") startRoles()
+        // Started with the page already; this is for a page that opened
+        // without asking for the first paint.
+        if (data.progress === "Opening the model" && opening) startRoles(opening)
         return
       }
       const p = this.pending.get(data.id)
@@ -230,21 +234,38 @@ function roomy(): boolean {
 
 let opening: string | null = null
 
+/** Each role's model, by evaluation: when its preparation was sent (performance.now()), and whether it is built. */
+const rolePrep = new Map<string, { started: number; done: boolean }>()
+
 /**
  * Start the smooth curves' and the extrapolations' workers and build their
  * models, side by side (each is one thread: on a machine with a few cores
  * they do not slow each other down, and the extrapolations are then ready
- * about when the curves are).
+ * about when the curves are). Once per evaluation and role.
  */
-function startRoles() {
-  const evaluation = opening
-  if (!evaluation) return
-  for (const role of roomy() ? (["fine", "extrap"] as const) : (["fine"] as const))
+function startRoles(evaluation: string) {
+  for (const role of roomy() ? (["fine", "extrap"] as const) : (["fine"] as const)) {
+    const key = `${evaluation}:${role}`
+    const known = rolePrep.get(key)
+    if (known && workers.has(role)) continue
+    const entry = { started: performance.now(), done: false }
+    rolePrep.set(key, entry)
     worker(role)
       .call("role_prepare", [role, evaluation], evaluation)
-      .catch(() => {
-        /* best effort: a calculation builds its model when it is asked for */
-      })
+      .then(
+        () => (entry.done = true),
+        () => rolePrep.delete(key), // a calculation builds its model when it is asked for
+      )
+  }
+}
+
+/**
+ * How far the in-browser preparation of `role`'s model for `evaluation` has
+ * got: started when (performance.now()), and whether it is built; null when
+ * it has not been started. For the progress timer's estimate.
+ */
+export function rolePreparation(evaluation: string, role: Derived): { started: number; done: boolean } | null {
+  return rolePrep.get(`${evaluation}:${role}`) ?? null
 }
 
 /* -- requests ------------------------------------------------------------------------ */
@@ -272,6 +293,9 @@ async function staticJson(path: string): Promise<WorkerResponse> {
   return { status: 200, contentType: "application/json", text: await r.text() }
 }
 
+/** What has been handed to the data worker, by session and role: the parameters (key) of the last result. */
+const delivered = new Map<string, string>()
+
 /** Ask the data worker; when it delegates, have that role's worker calculate, hand the result over and ask again. */
 async function viaData(sid: string | null, method: string, path: string, body: string | null): Promise<WorkerResponse> {
   const data = worker("data")
@@ -288,9 +312,18 @@ async function viaData(sid: string | null, method: string, path: string, body: s
     }
     if (!role) return response
     const result = await calc(session, role).get(session.params)
-    await data.call("inject", [sid, role, result.key, result.bytes])
+    // Every request waiting on one calculation gets it: handed over once
+    // (each used to hand over its own copy of the same 244 kB).
+    const slot = `${sid}:${role}`
+    if (delivered.get(slot) !== result.key) {
+      const kept = await data.call<boolean>("inject", [sid, role, result.key, result.bytes])
+      if (kept) delivered.set(slot, result.key)
+    }
   }
 }
+
+/** Reads (GET) under way, by session, path and parameters: asked again meanwhile, the same answer. */
+const reading = new Map<string, Promise<WorkerResponse>>()
 
 /** One API request, answered in the page. */
 export async function browserRequest(method: string, path: string, body?: string | null): Promise<WorkerResponse> {
@@ -306,6 +339,12 @@ export async function browserRequest(method: string, path: string, body?: string
   // Drawn before any worker starts: static files of the build.
   const initial = route.match(/^\/api\/evaluations\/([^/]+)\/initial(\/extrapolations)?$/)
   if (method === "GET" && initial) {
+    // The page has loaded: the derived models' workers start now, beside
+    // the data worker the page is about to open the model in.
+    if (!initial[2]) {
+      opening = decodeURIComponent(initial[1])
+      startRoles(opening)
+    }
     const id = encodeURIComponent(decodeURIComponent(initial[1]))
     return staticJson(`evaluations/${id}/${initial[2] ? "extrapolations.json" : "initial.json"}`)
   }
@@ -338,8 +377,21 @@ export async function browserRequest(method: string, path: string, body?: string
         .get(session.params)
         .catch(() => undefined)
   }
+  if (session && method === "GET") {
+    // A burst of edits left several /fine requests waiting on one
+    // calculation: one request to the worker, one answer for all of them.
+    const key = `${sid}|${path}|${JSON.stringify(session.params)}`
+    const running = reading.get(key)
+    if (running) return running
+    const read = viaData(sid, method, path, null).finally(() => reading.delete(key))
+    reading.set(key, read)
+    return read
+  }
   const response = await viaData(sid, method, path, body ?? null)
-  if (sid && (method === "DELETE" || tail === "/close")) sessions.delete(sid)
+  if (sid && (method === "DELETE" || tail === "/close")) {
+    sessions.delete(sid)
+    for (const slot of [...delivered.keys()]) if (slot.startsWith(`${sid}:`)) delivered.delete(slot)
+  }
   return response
 }
 

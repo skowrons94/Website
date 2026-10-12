@@ -60,6 +60,15 @@ const netFetch = self.fetch.bind(self)
  */
 async function cachedResponse(name) {
   const hash = manifest?.hashes?.[name]
+  // The page starts its workers together: one downloads a file while the
+  // others wait for it (a Web Lock per file), then read it from the cache.
+  const locks = hash && self.caches ? self.navigator?.locks : null
+  if (locks) return locks.request(`azure2:${name}:${hash}`, () => cachedResponseNow(name))
+  return cachedResponseNow(name)
+}
+
+async function cachedResponseNow(name) {
+  const hash = manifest?.hashes?.[name]
   const url = `${BASE}${name}${hash ? `?v=${hash}` : ""}`
   let cache = null
   try {
