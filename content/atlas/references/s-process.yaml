@@ -223,6 +223,14 @@ beer1980:
   doi: 10.1103/PhysRevC.21.534
   checked: DOI resolver listing and EXFOR entry 21647 (activation at a pulsed Van de Graaff, 1.911 MeV protons on ⁷Li giving a nearly Maxwellian spectrum of 22–24 keV, partial cross section to the 3.68 h isomer of ¹⁷⁶Lu), 2026-10-12
 
+takahashi1987:
+  authors: K. Takahashi, K. Yokoi
+  title: Beta-decay rates of highly ionized heavy atoms in stellar interiors
+  journal: At. Data Nucl. Data Tables 36, 375 (1987)
+  year: 1987
+  doi: 10.1016/0092-640X(87)90010-6
+  checked: ADS record 1987ADNDT..36..375T (title, authors, volume 36, pp. 375–409) and the reference lists of Eur. Phys. J. A 59 (2023) and A&A 538 (2012) giving the same volume, page and DOI, by web search, 2026-10-12
+
 ratynski1988:
   authors: W. Ratynski, F. Käppeler
   title: "Neutron capture cross section of ¹⁹⁷Au: a standard for stellar nucleosynthesis"

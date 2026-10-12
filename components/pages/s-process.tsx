@@ -126,6 +126,7 @@ const ORDER = [
   "wisshak2006",
   "reifarth2003",
   "beer1980",
+  "takahashi1987",
   "heil2008lu",
   "guerrero2020",
   "casanovashoste2024",
@@ -639,7 +640,7 @@ function BodyEn({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
             half-life of ¹⁷⁶Lu falls steeply with temperature, by many orders of magnitude.
             ¹⁷⁶Lu and its daughter ¹⁷⁶Hf are both s-only, shielded by ¹⁷⁶Yb: their ratio is an s-process thermometer
           </Sci>{" "}
-          {c("beer1980", "heil2008lu")}.
+          {c("beer1980", "takahashi1987", "heil2008lu")}.
         </InsetFigure>
 
         <div className={prose}>
@@ -922,7 +923,7 @@ function BodyIt({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
             stati, così il tempo di dimezzamento efficace del ¹⁷⁶Lu crolla con la temperatura, di molti ordini di grandezza. Il ¹⁷⁶Lu e suo figlio ¹⁷⁶Hf sono entrambi solo s, schermati dal ¹⁷⁶Yb: il loro rapporto è un
             termometro del processo s
           </Sci>{" "}
-          {c("beer1980", "heil2008lu")}.
+          {c("beer1980", "takahashi1987", "heil2008lu")}.
         </InsetFigure>
 
         <div className={prose}>
