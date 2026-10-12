@@ -395,7 +395,7 @@ networks:
     temperatures:
       - { label: AGB ¹³C pocket, label_it: "tasca di ¹³C nelle AGB", T9: 0.09 }
       - { label: AGB thermal pulse, label_it: "impulso termico nelle AGB", T9: 0.27 }
-    reactions: [56Fe-ng-57Fe, 85Kr-ng-86Kr, 151Sm-ng-152Sm, 197Au-ng-198Au, 209Bi-ng-210Bi]
+    reactions: [56Fe-ng-57Fe, 85Kr-ng-86Kr, 93Zr-ng-94Zr, 147Pm-ng-148Pm, 151Sm-ng-152Sm, 171Tm-ng-172Tm, 197Au-ng-198Au, 204Tl-ng-205Tl, 209Bi-ng-210Bi]
 
   - id: s-weak
     family: s-process

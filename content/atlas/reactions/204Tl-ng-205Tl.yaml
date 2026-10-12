@@ -1,0 +1,71 @@
+id: 204Tl-ng-205Tl
+label: ²⁰⁴Tl(n,γ)²⁰⁵Tl
+kind: capture
+target: 204Tl
+projectile: n
+ejectile: g
+product: 205Tl
+networks: [s-main]
+importance: major
+keywords: [thallium-204, Tl-204, lead-204, Pb-204, branch point]
+keywords_it: [tallio-204, Tl-204, piombo-204, Pb-204, punto di diramazione]
+summary: >-
+  Radioactive thallium-204 captures a neutron. It decides how much lead-204,
+  the heaviest nucleus made only by the s-process, the stars make; it was
+  measured for the first time in 2024.
+summary_it: >-
+  Il tallio-204 radioattivo cattura un neutrone. Decide quanto piombo-204, il
+  nucleo più pesante prodotto solo dal processo s, fanno le stelle; è stata
+  misurata per la prima volta nel 2024.
+role: >-
+  Thallium-204 lives almost four years in the laboratory. If it decays, it
+  becomes lead-204, which the r-process cannot make, so all of it in the
+  Solar System comes from the s-process. If it captures a neutron first, the
+  flow passes to thallium-205 and lead-204 is skipped. The share between the
+  two sets the amount of lead-204, which is used to check how the s-process
+  models share out lead among its isotopes.
+role_it: >-
+  Il tallio-204 vive quasi quattro anni in laboratorio. Se decade, diventa
+  piombo-204, che il processo r non può produrre: tutto quello del Sistema
+  Solare viene quindi dal processo s. Se prima cattura un neutrone, il
+  flusso passa al tallio-205 e il piombo-204 viene saltato. La ripartizione
+  tra le due strade fissa la quantità di piombo-204, che serve a controllare
+  come i modelli del processo s distribuiscono il piombo tra i suoi isotopi.
+details: >-
+  The first measurement of ²⁰⁴Tl(n,γ) was made at n_TOF on a 9 mg sample
+  produced at the ILL high-flux reactor. Combined with semi-empirical
+  calculations, it gives a MACS of 580(168) mb at kT ≈ 8 keV and 260(90) mb
+  at kT ≈ 30 keV, about 3% lower and 20% higher than the purely theoretical
+  values used until then (Casanovas-Hoste et al. 2024).
+details_it: >-
+  La prima misura della ²⁰⁴Tl(n,γ) è stata fatta a n_TOF su un campione di
+  9 mg prodotto al reattore ad alto flusso dell'ILL. Combinata con calcoli
+  semi-empirici, dà una MACS di 580(168) mb a kT ≈ 8 keV e di 260(90) mb a
+  kT ≈ 30 keV, circa il 3% più bassa e il 20% più alta dei valori puramente
+  teorici usati fino ad allora (Casanovas-Hoste et al. 2024).
+status: uncertain
+status_note: >-
+  One measurement (n_TOF, 2024), with uncertainties of about 30% at the
+  stellar energies; before it, only theory.
+status_note_it: >-
+  Una sola misura (n_TOF, 2024), con incertezze di circa il 30% alle energie
+  stellari; prima di essa, solo la teoria.
+status_plain: >-
+  Measured once, in 2024, on nine milligrams of radioactive thallium; known
+  to about 30%.
+status_plain_it: >-
+  Misurata una sola volta, nel 2024, su nove milligrammi di tallio
+  radioattivo; nota a circa il 30%.
+methods: [neutron-beams]
+measurements:
+  - year: 2024
+    facility: n-tof
+    method: neutron-beams
+    energy: "neutron energies up to the keV region"
+    energy_it: "energie del neutrone fino alla regione dei keV"
+    note: >-
+      9 mg sample made at the ILL; MACS 580(168) mb at kT ≈ 8 keV and
+      260(90) mb at kT ≈ 30 keV, with semi-empirical calculations.
+    refs: [casanovashoste2024]
+evaluations: [bao2000, dillmann2008]
+related: [209Bi-ng-210Bi, 171Tm-ng-172Tm, 197Au-ng-198Au]

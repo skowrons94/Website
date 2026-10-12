@@ -1,0 +1,72 @@
+id: 93Zr-ng-94Zr
+label: ⁹³Zr(n,γ)⁹⁴Zr
+kind: capture
+target: 93Zr
+projectile: n
+ejectile: g
+product: 94Zr
+networks: [s-main]
+importance: major
+keywords: [zirconium-93, Zr-93, niobium-93, long-lived radioactive]
+keywords_it: [zirconio-93, Zr-93, niobio-93, radioattivo a vita lunga]
+summary: >-
+  Radioactive zirconium-93 captures a neutron. It lives so long that in a
+  star it behaves almost like a stable nucleus; what is left of it decays
+  later into niobium.
+summary_it: >-
+  Lo zirconio-93 radioattivo cattura un neutrone. Vive così a lungo che in
+  una stella si comporta quasi come un nucleo stabile; quello che ne resta
+  decade più tardi in niobio.
+role: >-
+  Zirconium-93 lives about 1.6 million years, far longer than the wait
+  between two neutron captures, so in an AGB star it captures neutrons and
+  the path continues to zirconium-94. The zirconium-93 still left when the
+  star throws off its envelope decays afterwards into niobium-93, the only
+  stable isotope of niobium. Its capture rate therefore matters both for
+  the zirconium isotopes and for the niobium the s-process makes.
+role_it: >-
+  Lo zirconio-93 vive circa 1,6 milioni di anni, molto più dell'attesa tra
+  due catture di neutroni: in una stella AGB cattura neutroni e il percorso
+  prosegue verso lo zirconio-94. Lo zirconio-93 ancora presente quando la
+  stella espelle il suo involucro decade poi in niobio-93, l'unico isotopo
+  stabile del niobio. La sua velocità di cattura conta quindi sia per gli
+  isotopi dello zirconio sia per il niobio prodotto dal processo s.
+details: >-
+  The capture on the radioactive ⁹³Zr was measured at n_TOF and analysed in
+  resolved resonances up to 8 keV neutron energy; the capture widths came
+  out about 14% smaller than in an earlier experiment (Tagliente et al.
+  2013). Above 8 keV the stellar cross section still rests on evaluations,
+  so the MACS at kT = 30 keV is only partly measured.
+details_it: >-
+  La cattura sul ⁹³Zr radioattivo è stata misurata a n_TOF e analizzata
+  in risonanze risolte fino a 8 keV di energia del neutrone; le larghezze di
+  cattura sono risultate circa il 14% più piccole che in un esperimento
+  precedente (Tagliente et al. 2013). Sopra 8 keV la sezione d'urto stellare
+  si basa ancora su valutazioni, quindi la MACS a kT = 30 keV è misurata
+  solo in parte.
+status: uncertain
+status_note: >-
+  Resonances measured at n_TOF up to 8 keV; the higher energies that matter
+  at kT = 30 keV come from evaluations.
+status_note_it: >-
+  Risonanze misurate a n_TOF fino a 8 keV; le energie più alte che contano a
+  kT = 30 keV vengono da valutazioni.
+status_plain: >-
+  Measured at CERN at low energies only; at the higher energies of a star it
+  still rests on estimates.
+status_plain_it: >-
+  Misurata al CERN solo alle basse energie; alle energie più alte di una
+  stella si basa ancora su stime.
+methods: [neutron-beams]
+measurements:
+  - year: 2013
+    facility: n-tof
+    method: neutron-beams
+    energy: "resolved resonances up to 8 keV (neutron energy)"
+    energy_it: "risonanze risolte fino a 8 keV (energia del neutrone)"
+    note: >-
+      Radioactive ⁹³Zr sample; capture widths about 14% smaller than in an
+      earlier experiment.
+    refs: [tagliente2013]
+evaluations: [bao2000, dillmann2008]
+related: [85Kr-ng-86Kr, 56Fe-ng-57Fe, 197Au-ng-198Au]

@@ -1,0 +1,86 @@
+id: 147Pm-ng-148Pm
+label: ¹⁴⁷Pm(n,γ)¹⁴⁸Pm
+kind: capture
+target: 147Pm
+projectile: n
+ejectile: g
+product: 148Pm
+networks: [s-main]
+importance: major
+keywords: [promethium-147, Pm-147, branch point, samarium-148]
+keywords_it: [promezio-147, Pm-147, punto di diramazione, samario-148]
+summary: >-
+  Radioactive promethium-147 captures a neutron. It is one of the branch
+  points that decide how much of the s-process flow passes by samarium-148.
+summary_it: >-
+  Il promezio-147 radioattivo cattura un neutrone. È uno dei punti di
+  diramazione che decidono quanta parte del flusso del processo s passa
+  oltre il samario-148.
+role: >-
+  Promethium-147 lives about two and a half years in the laboratory. In an
+  AGB star it either decays into samarium-147 or captures a neutron and
+  moves on to promethium-148, which can capture again. Together with the
+  branchings at neodymium-147 and promethium-148, the share decides how
+  much of the flow skips samarium-148. Samarium-148 and samarium-150 are
+  both made only by the s-process, and only the first is bypassed, so their
+  ratio in the Solar System measures the neutron density in the stars that
+  made them.
+role_it: >-
+  Il promezio-147 vive circa due anni e mezzo in laboratorio. In una stella
+  AGB decade in samario-147 oppure cattura un neutrone e passa al
+  promezio-148, che può catturare di nuovo. Insieme alle diramazioni al
+  neodimio-147 e al promezio-148, la ripartizione decide quanta parte del
+  flusso salta il samario-148. Il samario-148 e il samario-150 sono prodotti
+  entrambi solo dal processo s, e solo il primo viene saltato: il loro
+  rapporto nel Sistema Solare misura quindi la densità di neutroni nelle
+  stelle che li hanno prodotti.
+details: >-
+  The stellar cross section was measured by activation at the Karlsruhe Van
+  de Graaff with a quasi-Maxwellian spectrum. The 2.62 yr half-life limited
+  the sample to 28 ng, about 10¹⁴ atoms. The partial cross sections to the
+  5.37 d ground state and to the 41.3 d isomer of ¹⁴⁸Pm were determined
+  separately, giving a total of 709 ± 100 mb at kT = 30 keV; the cross
+  sections of the other branch points, ¹⁴⁷Nd and ¹⁴⁸Pm, and the effect of
+  thermally excited states came from statistical-model calculations
+  (Reifarth et al. 2003). The branchings at ¹⁴⁷Nd, ¹⁴⁷Pm and ¹⁴⁸Pm set the
+  ¹⁴⁸Sm/¹⁵⁰Sm ratio of the two s-only samarium isotopes (Käppeler et al.
+  2011).
+details_it: >-
+  La sezione d'urto stellare è stata misurata per attivazione al Van de
+  Graaff di Karlsruhe con uno spettro quasi maxwelliano. Il tempo di
+  dimezzamento di 2,62 anni limitava il campione a 28 ng, circa 10¹⁴ atomi.
+  Le sezioni d'urto parziali verso lo stato fondamentale di 5,37 giorni e
+  verso l'isomero di 41,3 giorni del ¹⁴⁸Pm sono state determinate
+  separatamente, per un totale di 709 ± 100 mb a kT = 30 keV; le sezioni
+  d'urto degli altri punti di diramazione, ¹⁴⁷Nd e ¹⁴⁸Pm, e l'effetto degli
+  stati eccitati termicamente vengono da calcoli con il modello statistico
+  (Reifarth et al. 2003). Le diramazioni a ¹⁴⁷Nd, ¹⁴⁷Pm e ¹⁴⁸Pm fissano il
+  rapporto ¹⁴⁸Sm/¹⁵⁰Sm dei due isotopi del samario prodotti solo dal
+  processo s (Käppeler et al. 2011).
+status: uncertain
+status_note: >-
+  One activation measurement, on a 28 ng sample, known to about 14%; the
+  neighbouring branch points ¹⁴⁷Nd and ¹⁴⁸Pm rest on calculations.
+status_note_it: >-
+  Una sola misura per attivazione, su un campione di 28 ng, nota a circa il
+  14%; i punti di diramazione vicini, ¹⁴⁷Nd e ¹⁴⁸Pm, si basano su calcoli.
+status_plain: >-
+  Measured once, on a tiny radioactive sample, to about 14%; its
+  neighbouring branch points are known only from calculations.
+status_plain_it: >-
+  Misurata una sola volta, su un minuscolo campione radioattivo, a circa il
+  14%; i punti di diramazione vicini sono noti solo da calcoli.
+methods: [activation]
+measurements:
+  - year: 2003
+    facility: karlsruhe-vdg
+    method: activation
+    energy: "quasi-Maxwellian neutron spectrum"
+    energy_it: "spettro di neutroni quasi maxwelliano"
+    note: >-
+      28 ng sample (about 10¹⁴ atoms); partial cross sections to the ground
+      state and the 41.3 d isomer of ¹⁴⁸Pm; total 709 ± 100 mb at
+      kT = 30 keV.
+    refs: [reifarth2003]
+evaluations: [bao2000, dillmann2008, kaeppeler2011]
+related: [151Sm-ng-152Sm, 171Tm-ng-172Tm, 85Kr-ng-86Kr]

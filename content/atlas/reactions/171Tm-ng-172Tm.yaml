@@ -1,0 +1,87 @@
+id: 171Tm-ng-172Tm
+label: ¹⁷¹Tm(n,γ)¹⁷²Tm
+kind: capture
+target: 171Tm
+projectile: n
+ejectile: g
+product: 172Tm
+networks: [s-main]
+importance: major
+keywords: [thulium-171, Tm-171, branch point, ytterbium-171, SARAF]
+keywords_it: [tulio-171, Tm-171, punto di diramazione, itterbio-171, SARAF]
+summary: >-
+  Radioactive thulium-171 captures a neutron. Measured for the first time in
+  2020, both by time of flight and by activation, it turned out to capture
+  far less readily than the libraries said.
+summary_it: >-
+  Il tulio-171 radioattivo cattura un neutrone. Misurata per la prima volta
+  nel 2020, sia a tempo di volo sia per attivazione, la cattura è risultata
+  molto meno facile di quanto dicevano le librerie di dati.
+role: >-
+  Thulium-171 lives about two years in the laboratory. In an AGB star it
+  either decays into ytterbium-171 or captures a neutron and moves on to
+  thulium-172, so how readily it captures sets how much ytterbium-171 the
+  star makes. Stardust grains from AGB stars, found in meteorites, record
+  that amount, and they can be compared with the models only if the capture
+  is known.
+role_it: >-
+  Il tulio-171 vive circa due anni in laboratorio. In una stella AGB decade
+  in itterbio-171 oppure cattura un neutrone e passa al tulio-172: quanto
+  facilmente cattura fissa quindi quanto itterbio-171 produce la stella. I
+  grani di polvere stellare delle stelle AGB, trovati nei meteoriti,
+  registrano quella quantità, e si possono confrontare con i modelli solo se
+  la cattura è nota.
+details: >-
+  The sample was produced at the ILL high-flux reactor and separated at
+  PSI. At n_TOF the capture yield gave the first set of resonance
+  parameters of ¹⁷¹Tm; at SARAF the liquid-lithium target LiLiT provided a
+  quasi-Maxwellian spectrum for an activation that gave the MACS at
+  kT = 30 keV directly, 384(40) mb, in agreement with the time-of-flight
+  estimate. The value is 2.6 times lower than JEFF-3.3 and ENDF/B-VIII,
+  25% lower than Bao et al. (2000) and 1.6 times higher than KADoNiS v1;
+  with it, AGB models make more ¹⁷¹Yb, closer to the presolar SiC grains
+  (Guerrero et al. 2020).
+details_it: >-
+  Il campione è stato prodotto al reattore ad alto flusso dell'ILL e
+  separato al PSI. A n_TOF la resa di cattura ha dato la prima serie di
+  parametri di risonanza del ¹⁷¹Tm; a SARAF il bersaglio di litio liquido
+  LiLiT ha fornito uno spettro quasi maxwelliano per un'attivazione che ha
+  dato direttamente la MACS a kT = 30 keV, 384(40) mb, in accordo con la
+  stima a tempo di volo. Il valore è 2,6 volte più basso di JEFF-3.3 e di
+  ENDF/B-VIII, il 25% più basso di Bao et al. (2000) e 1,6 volte più alto di
+  KADoNiS v1; con esso i modelli AGB producono più ¹⁷¹Yb, più vicino ai
+  grani presolari di SiC (Guerrero et al. 2020).
+status: improving
+status_note: >-
+  Measured in 2020 by time of flight at n_TOF and by activation at SARAF;
+  the MACS at 30 keV is known to about 10%.
+status_note_it: >-
+  Misurata nel 2020 a tempo di volo a n_TOF e per attivazione a SARAF; la
+  MACS a 30 keV è nota a circa il 10%.
+status_plain: >-
+  Measured for the first time in 2020, at CERN and in Israel, to about 10%.
+status_plain_it: >-
+  Misurata per la prima volta nel 2020, al CERN e in Israele, a circa il
+  10%.
+methods: [neutron-beams, activation]
+measurements:
+  - year: 2020
+    facility: n-tof
+    method: neutron-beams
+    energy: "resolved resonances (neutron energy)"
+    energy_it: "risonanze risolte (energia del neutrone)"
+    note: >-
+      First resonance parameters of ¹⁷¹Tm, on a sample made at the ILL;
+      the MACS extrapolated from them agrees with the activation value.
+    refs: [guerrero2020]
+  - year: 2020
+    facility: saraf-lilit
+    method: activation
+    energy: "quasi-Maxwellian kT ≈ 30 keV"
+    energy_it: "quasi maxwelliana, kT ≈ 30 keV"
+    note: >-
+      MACS at kT = 30 keV of 384(40) mb, 2.6 times below the JEFF-3.3 and
+      ENDF/B-VIII evaluations.
+    refs: [guerrero2020]
+evaluations: [bao2000, dillmann2008]
+related: [147Pm-ng-148Pm, 204Tl-ng-205Tl, 151Sm-ng-152Sm]

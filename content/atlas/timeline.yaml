@@ -172,6 +172,25 @@ events:
     refs: [salpeter1952]
     reactions: [4He-aa-12C]
 
+  - year: 1952
+    title: Technetium is found in red giants
+    title_it: Il tecnezio viene trovato nelle giganti rosse
+    category: observation
+    text: >-
+      Paul Merrill found lines of technetium in the spectra of red giants of
+      class S. Technetium has no stable isotope, and even its longest-lived
+      ones last only a few million years, far less than the age of these
+      stars. It must have been made inside them: the first direct proof that
+      stars build elements, by the slow neutron captures of the s-process.
+    text_it: >-
+      Paul Merrill trovò le righe del tecnezio negli spettri delle giganti
+      rosse di classe S. Il tecnezio non ha isotopi stabili, e anche i più
+      longevi durano solo pochi milioni di anni, molto meno dell'età di quelle
+      stelle. Doveva essere stato prodotto al loro interno: la prima prova
+      diretta che le stelle costruiscono gli elementi, con le catture lente di
+      neutroni del processo s.
+    refs: [merrill1952, kaeppeler2011]
+
   - year: 1953
     month: 11
     title: The 7.68 MeV state of carbon-12 is found
@@ -373,6 +392,26 @@ events:
       prima rivelazione di neutrini da una stella diversa dal Sole.
     refs: [hirata1987]
 
+  - year: 1987
+    title: Stardust from AGB stars in a meteorite
+    title_it: Polvere di stelle AGB in un meteorite
+    category: observation
+    text: >-
+      Grains of silicon carbide less than a micrometre across were found in
+      the Murray meteorite, with isotopic compositions unlike anything formed
+      in the Solar System. They condensed around red giants before the Sun
+      was born. The heavy elements trapped in such grains carry the s-process
+      pattern of a single star, measured atom by atom in the laboratory.
+    text_it: >-
+      Nel meteorite di Murray furono trovati grani di carburo di silicio di
+      meno di un micrometro, con composizioni isotopiche diverse da tutto ciò
+      che si è formato nel Sistema Solare. Si condensarono intorno a giganti
+      rosse prima che nascesse il Sole. Gli elementi pesanti intrappolati in
+      questi grani portano l'impronta del processo s di una singola stella,
+      misurata atomo per atomo in laboratorio.
+    refs: [bernatowicz1987, kaeppeler2011]
+    reactions: [85Kr-ng-86Kr, 171Tm-ng-172Tm]
+
   - year: 1989
     title: Kamiokande-II sees ⁸B solar neutrinos
     title_it: Kamiokande-II vede i neutrini solari dell'⁸B
@@ -529,6 +568,24 @@ events:
       riferimento per i modelli del processo s, proseguito oggi dalla banca
       dati KADoNiS.
     refs: [bao2000, dillmann2008]
+
+  - year: 2001
+    title: Three lead stars are discovered
+    title_it: Vengono scoperte tre stelle al piombo
+    category: observation
+    text: >-
+      Van Eck, Goriely, Jorissen and Plez found three old, iron-poor stars
+      more enriched in lead than in any other element heavier than iron. With
+      fewer iron seeds for the same neutrons, the s-process in such stars runs
+      through to lead, as the models of AGB stars had predicted.
+    text_it: >-
+      Van Eck, Goriely, Jorissen e Plez trovarono tre stelle antiche, povere
+      di ferro, arricchite di piombo più che di qualunque altro elemento più
+      pesante del ferro. Con meno semi di ferro per gli stessi neutroni, in
+      queste stelle il processo s arriva fino al piombo, come avevano previsto
+      i modelli delle stelle AGB.
+    refs: [vaneck2001]
+    reactions: [209Bi-ng-210Bi, 204Tl-ng-205Tl]
 
   - year: 2002
     title: SNO shows that solar neutrinos change flavour
