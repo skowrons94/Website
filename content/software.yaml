@@ -1,6 +1,7 @@
 # Software, rendered in order on /software. `summary` paragraphs are plain text
 # for any reader; `uses` is a short list of what the code is for; `snippets` are
-# shown as code blocks, with `lang` only as a label. Every field but `id`,
+# shown as code blocks, with `lang` only as a label; `cite` is the reference to
+# cite when using the program (`text`, and its `doi`). Every field but `id`,
 # `name` and `summary` is optional. A field ending in `_it` is the Italian
 # version of the field before it, shown under /it.
 
@@ -51,8 +52,12 @@ software:
       - Separazione di una sezione d'urto misurata nelle sue parti risonanti e non risonanti
     links:
       - { label: Website and documentation, label_it: Sito web e documentazione, href: "https://azure.nd.edu" }
-      - { label: Source on GitHub, label_it: Codice sorgente su GitHub, href: "https://github.com/AZURE2DEV/AZURE2" }
+      - { label: Source on GitHub, label_it: Codice sorgente su GitHub, href: "https://github.com/rdeboer1/AZURE2" }
       - { label: Run it in the browser, label_it: Eseguilo nel browser, href: /evaluations }
+    # The code paper, as the AZURE2 repository's own reference list gives it.
+    cite:
+      text: "R. E. Azuma et al., AZURE: An R-matrix code for nuclear astrophysics, Phys. Rev. C 81, 045805 (2010)"
+      doi: 10.1103/PhysRevC.81.045805
     note: >-
       The evaluations on this site run AZURE2 itself on published analyses;
       the input files can be downloaded and run locally.

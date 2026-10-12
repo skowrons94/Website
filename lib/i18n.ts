@@ -88,7 +88,6 @@ const en = {
 
   /* -- landing ------------------------------------------------------------ */
   home: {
-    runEvaluation: "Run an R-matrix evaluation",
     exploreAtlas: "Explore the reaction atlas",
     publications: "Publications",
     cv: "CV",
@@ -105,6 +104,17 @@ const en = {
     notes: "Notes",
     allNotes: "All notes",
     notesInEnglish: "",
+    // --- site ---
+    researchButton: "Research and publications",
+    software: "Software",
+    figureAlt: (name: string) =>
+      `${name}, drawn on the chart of nuclides: each square is a nucleus, with one more proton going up and one more neutron going right; each arrow is a reaction.`,
+    figureCaption: (name: string, summary: string) =>
+      `${name}. ${summary} Going up adds a proton, going right a neutron.`,
+    figureLink: "See it in the atlas",
+    selected: "Selected work",
+    firstAuthor: "First author",
+    about: "In more detail",
   },
 
   /* -- research ----------------------------------------------------------- */
@@ -130,6 +140,8 @@ const en = {
     licence: (l: string) => `${l} licence`,
     uses: "What it is for",
     links: "Links",
+    // --- site ---
+    cite: "How to cite",
   },
 
   /* -- publications ------------------------------------------------------- */
@@ -137,11 +149,16 @@ const en = {
     title: "Publications",
     description:
       "Peer-reviewed articles and conference proceedings by Jakub Skowronski in experimental nuclear astrophysics.",
-    lead: (n: number) =>
-      `${n} peer-reviewed articles and proceedings. Entries marked with a rule are those I authored or co-authored in a leading role.`,
-    orcidBefore: "A complete and current list is on ",
-    orcidAfter: ".",
+    lead: (articles: number, proceedings: number, review: number) =>
+      `${articles} peer-reviewed articles and ${proceedings} conference proceedings${review ? `, and ${review} more under review` : ""}. Entries marked with a rule are those I authored or co-authored in a leading role.`,
     sections: { article: "Research articles", proceedings: "Conference proceedings" } as Record<string, string>,
+    // --- site ---
+    profiles: "Complete and current lists, with citations:",
+    filter: "Show",
+    all: "All",
+    firstAuthor: "First author",
+    underReview: "Under review",
+    underReviewNote: "Submitted and not yet published, so not counted among the peer-reviewed articles above.",
   },
 
   /* -- CV ----------------------------------------------------------------- */
@@ -336,9 +353,9 @@ const en = {
     history: "A history of the field",
     methodsLink: "Methods and laboratories",
     mapLabel: "Network map",
-    lunaTitle: "LUNA measurements",
+    lunaTitle: "LUNA results in the atlas",
     lunaOnTimeline: "LUNA on the timeline",
-    myLuna: "My work at LUNA",
+    myLuna: "My part in LUNA, since 2020",
     lunaText:
       "Reactions in the atlas with at least one measurement published by the LUNA collaboration, with the years of those measurements.",
     timelineCard: "Timeline",
@@ -540,7 +557,6 @@ const it: Dictionary = {
 
   /* -- landing ------------------------------------------------------------ */
   home: {
-    runEvaluation: "Prova una valutazione R-matrix",
     exploreAtlas: "Esplora l'atlante delle reazioni",
     publications: "Pubblicazioni",
     cv: "CV",
@@ -557,6 +573,17 @@ const it: Dictionary = {
     notes: "Note",
     allNotes: "Tutte le note",
     notesInEnglish: "Le note sono scritte in inglese.",
+    // --- site ---
+    researchButton: "Ricerca e pubblicazioni",
+    software: "Software",
+    figureAlt: (name: string) =>
+      `${name}, disegnato sulla carta dei nuclidi: ogni quadrato è un nucleo, con un protone in più salendo e un neutrone in più andando a destra; ogni freccia è una reazione.`,
+    figureCaption: (name: string, summary: string) =>
+      `${name}. ${summary} Salendo si aggiunge un protone, andando a destra un neutrone.`,
+    figureLink: "Guardalo nell'atlante",
+    selected: "Lavori scelti",
+    firstAuthor: "Primo autore",
+    about: "Più nel dettaglio",
   },
 
   /* -- research ----------------------------------------------------------- */
@@ -582,6 +609,8 @@ const it: Dictionary = {
     licence: (l: string) => `licenza ${l}`,
     uses: "A cosa serve",
     links: "Link",
+    // --- site ---
+    cite: "Come citarlo",
   },
 
   /* -- publications ------------------------------------------------------- */
@@ -589,11 +618,16 @@ const it: Dictionary = {
     title: "Pubblicazioni",
     description:
       "Articoli su riviste con revisione paritaria e atti di conferenze di Jakub Skowronski in astrofisica nucleare sperimentale.",
-    lead: (n: number) =>
-      `${n} articoli con revisione paritaria e atti di conferenze. Le voci segnate da una linea sono quelle di cui sono autore o coautore con un ruolo di primo piano. I titoli sono riportati come pubblicati.`,
-    orcidBefore: "Un elenco completo e aggiornato è su ",
-    orcidAfter: ".",
+    lead: (articles: number, proceedings: number, review: number) =>
+      `${articles} articoli su riviste con revisione paritaria e ${proceedings} contributi ad atti di conferenze${review ? `, più ${review} in revisione` : ""}. Le voci segnate da una linea sono quelle di cui sono autore o coautore con un ruolo di primo piano. I titoli sono riportati come pubblicati.`,
     sections: { article: "Articoli di ricerca", proceedings: "Atti di conferenze" },
+    // --- site ---
+    profiles: "Elenchi completi e aggiornati, con le citazioni:",
+    filter: "Mostra",
+    all: "Tutte",
+    firstAuthor: "Primo autore",
+    underReview: "In revisione",
+    underReviewNote: "Inviati alle riviste e non ancora pubblicati, quindi non contati tra gli articoli con revisione paritaria qui sopra.",
   },
 
   /* -- CV ----------------------------------------------------------------- */
@@ -791,9 +825,9 @@ const it: Dictionary = {
     history: "Una storia della disciplina",
     methodsLink: "Metodi e laboratori",
     mapLabel: "Mappa delle reazioni",
-    lunaTitle: "Le misure di LUNA",
+    lunaTitle: "Risultati LUNA nell'atlante",
     lunaOnTimeline: "LUNA nella cronologia",
-    myLuna: "Il mio lavoro a LUNA",
+    myLuna: "Il mio ruolo in LUNA, dal 2020",
     lunaText:
       "Le reazioni dell'atlante con almeno una misura pubblicata dalla collaborazione LUNA, con gli anni di quelle misure.",
     timelineCard: "Cronologia",

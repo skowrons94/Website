@@ -95,6 +95,31 @@ function Entry({ entry, lang }: { entry: SoftwareEntry; lang: Lang }) {
             </div>
           )}
 
+          {entry.cite && (
+            <div className="mt-8 rounded-md border border-border bg-card px-4 py-3.5 sm:px-5">
+              <h3 className="mb-1.5 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
+                {t.cite}
+              </h3>
+              {/* The reference is quoted as published, in English. */}
+              <p lang={lang === "en" ? undefined : "en"} className="text-pretty text-[0.95rem] leading-relaxed">
+                <Sci>{entry.cite.text}</Sci>
+                {entry.cite.doi && (
+                  <>
+                    {". "}
+                    <a
+                      href={`https://doi.org/${entry.cite.doi}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="print-no-url break-all font-mono text-xs text-link underline-offset-2 hover:underline"
+                    >
+                      doi:{entry.cite.doi}
+                    </a>
+                  </>
+                )}
+              </p>
+            </div>
+          )}
+
           {entry.note && (
             <p className="mt-7 text-pretty text-[0.95rem] leading-relaxed text-muted-foreground">
               <Sci>{entry.note}</Sci>
@@ -105,13 +130,13 @@ function Entry({ entry, lang }: { entry: SoftwareEntry; lang: Lang }) {
         {entry.links && entry.links.length > 0 && (
           <aside className="mt-8 lg:mt-0">
             <h3 className="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">{t.links}</h3>
-            <ul className="space-y-2 text-sm">
+            <ul className="space-y-0.5 text-sm">
               {entry.links.map((link) => {
                 const internal = link.href.startsWith("/")
                 return (
                   <li key={link.href}>
                     {internal ? (
-                      <Link href={localePath(lang, link.href)} className="text-link underline-offset-4 hover:underline">
+                      <Link href={localePath(lang, link.href)} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
                         {link.label}
                       </Link>
                     ) : (
@@ -119,7 +144,7 @@ function Entry({ entry, lang }: { entry: SoftwareEntry; lang: Lang }) {
                         href={link.href}
                         target="_blank"
                         rel="noreferrer"
-                        className="group inline-flex items-center gap-1 text-link underline-offset-4 hover:underline"
+                        className="group inline-flex min-h-8 items-center gap-1 text-link underline-offset-4 hover:underline"
                       >
                         {link.label}
                         <ArrowUpRight className="h-3.5 w-3.5 opacity-60 transition-opacity group-hover:opacity-100" />
@@ -147,12 +172,12 @@ export function SoftwarePage({ lang }: { lang: Lang }) {
         lead={t.lead}
       />
 
-      <nav className="mb-16 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+      <nav className="mb-16 flex flex-wrap gap-x-6 gap-y-1 text-sm">
         {software.map((entry) => (
           <a
             key={entry.id}
             href={`#${entry.id}`}
-            className="text-muted-foreground underline-offset-4 transition-colors hover:text-link hover:underline"
+            className="inline-flex min-h-10 items-center text-muted-foreground underline-offset-4 transition-colors hover:text-link hover:underline"
           >
             {entry.name}
           </a>
