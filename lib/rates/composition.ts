@@ -24,7 +24,16 @@ export interface CompositionChange {
   knobs: Record<string, number>
 }
 
-const isMetal = (network: Network, name: string) => (network.nuclei.find((n) => n.name === name)?.Z ?? 0) > 2
+const zOf = new WeakMap<Network, Map<string, number>>()
+/** Z > 2, by nucleus name (a map per network: the s-process has 481 nuclei) */
+const isMetal = (network: Network, name: string) => {
+  let z = zOf.get(network)
+  if (!z) {
+    z = new Map(network.nuclei.map((n) => [n.name, n.Z]))
+    zOf.set(network, z)
+  }
+  return (z.get(name) ?? 0) > 2
+}
 
 /** The scenario's metal mass fraction (Z > 2) among the network's nuclei. */
 export function metalFraction(network: Network, s: Scenario): number {

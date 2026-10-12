@@ -76,6 +76,9 @@ export interface Scenario {
   id: string
   name: string
   name_it: string
+  /** a word or two for chart labels */
+  short?: string
+  short_it?: string
   T9: number
   rho: number
   time_s: number
@@ -115,6 +118,10 @@ export interface Network {
     track?: string[] | null
     /** a caveat for specialists */
     notes?: { en: string; it: string } | null
+    /** rates REACLIB takes from an older source although newer data exist */
+    newer?: Record<string, { en: string; it: string }> | null
+    /** nuclei whose production needs physics the network lacks */
+    not_modelled?: Record<string, { en: string; it: string }> | null
   }
   scenarios: Scenario[]
   /** Lodders (2021) mass fractions of these nuclei */

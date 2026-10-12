@@ -1,10 +1,10 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { memo, useRef, useState } from "react"
 
 import { Sci } from "@/components/sci"
 import type { Lang } from "@/lib/locale"
-import { DASHES, SERIES, SvgSci, decades, logScale, useWidth } from "./chart-kit"
+import { BASE_DASH, C, SERIES, Shape, SvgSci, decades, logScale, useWidth } from "./chart-kit"
 import { pow10, sci, shortTime, YEAR_S } from "./format"
 
 export interface EvolutionSeries {
@@ -22,21 +22,26 @@ export interface EvolutionSeries {
 const TIME_TICKS = [1e-3, 1, 60, 3600, 86400, YEAR_S, 1e3 * YEAR_S, 1e6 * YEAR_S, 1e9 * YEAR_S, 1e12 * YEAR_S]
 
 /**
- * Mass fractions against time, log–log: one line per chosen nucleus in its
- * own colour (and dash), the unchanged burn as a thin faded line beside it.
+ * Mass fractions against time, log–log: one solid line per chosen nucleus in
+ * its own colour, ending in its slot's marker shape and its name. Once a rate
+ * is changed the unchanged burn appears beside it, faded and dashed — the
+ * only meaning a dash has on these pages.
  */
-export function EvolutionChart({
+export const EvolutionChart = memo(function EvolutionChart({
   series,
   lang,
   label,
   xLabel,
   yLabel,
+  baseWord = "unchanged",
 }: {
   series: EvolutionSeries[]
   lang: Lang
   label: string
   xLabel: string
   yLabel: string
+  /** the word for the unchanged burn in the readout */
+  baseWord?: string
 }) {
   const [box, width] = useWidth<HTMLDivElement>()
   const narrow = width < 520
@@ -91,17 +96,18 @@ export function EvolutionChart({
     .map((s) => {
       let i = s.t.length - 1
       while (i > 0 && !(s.X[i] >= y.lo)) i--
-      return { s, py: y.px(Math.min(Math.max(s.X[i], y.lo), y.hi)) }
+      const py = y.px(Math.min(Math.max(s.X[i], y.lo), y.hi))
+      return { s, py, y0: py, px: x.px(s.t[i]) }
     })
     .sort((a, b) => a.py - b.py)
   for (let i = 1; i < ends.length; i++) if (ends[i].py - ends[i - 1].py < 15) ends[i].py = ends[i - 1].py + 15
 
-  const at = (s: EvolutionSeries, t: number) => {
+  const near = (ts: number[], xs: number[], t: number) => {
     let best = 0
-    for (let i = 0; i < s.t.length; i++)
-      if (Math.abs(Math.log(s.t[i] / t)) < Math.abs(Math.log(s.t[best] / t))) best = i
-    return s.X[best]
+    for (let i = 0; i < ts.length; i++) if (Math.abs(Math.log(ts[i] / t)) < Math.abs(Math.log(ts[best] / t))) best = i
+    return xs[best]
   }
+  const at = (s: EvolutionSeries, t: number) => near(s.t, s.X, t)
 
   return (
     <div ref={box} className="relative">
@@ -120,7 +126,7 @@ export function EvolutionChart({
           const px = ((e.clientX - rect.left) / rect.width) * width
           setHover(px >= m.l && px <= width - m.r ? x.inv(px) : null)
         }}
-        onPointerLeave={() => setHover(null)}
+        onPointerLeave={(e) => e.pointerType === "mouse" && setHover(null)}
         onBlur={() => setHover(null)}
         onKeyDown={(e) => {
           const step = (tMax / tMin) ** (1 / 40)
@@ -167,9 +173,9 @@ export function EvolutionChart({
               d={path(s.baseT, s.baseX)}
               fill="none"
               stroke={SERIES[s.slot]}
-              strokeOpacity={0.45}
+              strokeOpacity={0.5}
               strokeWidth={1.5}
-              strokeDasharray="4 3"
+              strokeDasharray={BASE_DASH}
             />
           ) : null,
         )}
@@ -180,14 +186,16 @@ export function EvolutionChart({
             fill="none"
             stroke={SERIES[s.slot]}
             strokeWidth={2}
-            strokeDasharray={s.baseT ? undefined : DASHES[s.slot] || undefined}
             strokeLinejoin="round"
           />
         ))}
-        {ends.map(({ s, py }) => (
-          <text key={s.name} x={width - m.r + 6} y={py} dy="0.32em" fontSize={12} fill="var(--viz-text)">
-            <SvgSci>{s.label}</SvgSci>
-          </text>
+        {ends.map(({ s, py, y0, px }) => (
+          <g key={s.name}>
+            <Shape slot={s.slot} x={px} y={y0} r={4} fill={SERIES[s.slot]} stroke={C.surface} strokeWidth={1.25} />
+            <text x={width - m.r + 8} y={py} dy="0.32em" fontSize={12} fill={C.ink}>
+              <SvgSci>{s.label}</SvgSci>
+            </text>
+          </g>
         ))}
         {hover !== null && (
           <line x1={x.px(hover)} x2={x.px(hover)} y1={m.t} y2={height - m.b} stroke="var(--viz-text-muted)" />
@@ -208,7 +216,13 @@ export function EvolutionChart({
                     <Sci>{s.label}</Sci>
                   </span>
                 </span>
-                <span className="tabular text-muted-foreground">{sci(at(s, hover), lang, 3)}</span>
+                <span className="tabular text-muted-foreground">
+                  <Sci>
+                    {s.baseT && s.baseX
+                      ? `${sci(at(s, hover), lang, 3)} · ${baseWord} ${sci(near(s.baseT, s.baseX, hover), lang, 3)}`
+                      : sci(at(s, hover), lang, 3)}
+                  </Sci>
+                </span>
               </li>
             ))}
           </ul>
@@ -216,4 +230,4 @@ export function EvolutionChart({
       )}
     </div>
   )
-}
+})

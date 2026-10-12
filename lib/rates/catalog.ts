@@ -2,6 +2,8 @@ import fs from "node:fs"
 import path from "node:path"
 
 import { withoutArticle, type Lang } from "@/lib/i18n"
+import type { Baseline } from "./client"
+import { sprocessFirstView, type SProcessFirstView } from "./first-view"
 import type { Network } from "./schema"
 
 /**
@@ -60,3 +62,26 @@ export function networkCount(): { networks: number; reactions: number } {
 }
 
 export const hasSProcess = (): boolean => load().has(SPROCESS_NETWORK)
+
+/**
+ * A light network with its precomputed first view, for the page to send with
+ * its HTML: the explorer then renders its first chart on the server, with no
+ * request and no worker. Only for the light networks (a few kB each).
+ */
+export function preloadNetwork(id: string): { network: Network; baseline: Baseline | null } | null {
+  const network = load().get(id)
+  if (!network || id === SPROCESS_NETWORK) return null
+  const file = path.join(DIR, `${id}.baseline.json`)
+  const baseline = fs.existsSync(file) ? (JSON.parse(fs.readFileSync(file, "utf8")) as Baseline) : null
+  return { network, baseline }
+}
+
+/** The s-process page's first view (lib/rates/first-view.ts), from the files on disk. */
+export function sprocessFirstViewFromDisk(sOnly: string[]): SProcessFirstView | null {
+  const network = load().get(SPROCESS_NETWORK)
+  const file = path.join(DIR, `${SPROCESS_NETWORK}.baseline.json`)
+  if (!network || !fs.existsSync(file)) return null
+  const baseline = JSON.parse(fs.readFileSync(file, "utf8")) as Baseline
+  const run = baseline.runs[network.scenarios[0].id]
+  return run ? sprocessFirstView(network, run, sOnly) : null
+}

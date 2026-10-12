@@ -44,16 +44,36 @@ export const dec = (s: string, lang: Lang) => (lang === "it" ? s.replace(".", ",
 
 /** Two significant figures, plain. */
 export function sig2(x: number, lang: Lang): string {
-  if (x >= 100) return Number(x.toPrecision(2)).toLocaleString(lang === "it" ? "it-IT" : "en-GB")
+  // grouped by hand, not by toLocaleString: the server's and the browser's
+  // ICU disagree on Italian four-digit numbers (3500 or 3.500), which breaks
+  // hydration. Italian groups from 10 000 (CLDR), English from 1,000.
+  if (x >= 100) {
+    const v = String(Math.round(Number(x.toPrecision(2))))
+    if (v.length < (lang === "it" ? 5 : 4)) return v
+    return v.replace(/\B(?=(\d{3})+(?!\d))/g, lang === "it" ? "." : ",")
+  }
   return dec(Number(x.toPrecision(2)).toString(), lang)
+}
+
+/** A narrow no-break space, between a number and its unit. */
+export const NB = "\u202f"
+
+/**
+ * A count with its noun, singular or plural as the rounded number reads:
+ * "1 miliardo di anni", "2,5 miliardi di anni", "1 million years". Italian
+ * nouns after a decimal take the plural ("1,5 milioni").
+ */
+export function counted(v: number, lang: Lang, one: string, many: string): string {
+  const shown = Number(v.toPrecision(2))
+  return `${sig2(v, lang)} ${shown === 1 ? one : many}`
 }
 
 /** A duration a general reader can feel: 3.2 seconds, 17 days, 4.1 million years. */
 export function duration(s: number, lang: Lang): string {
   const it = lang === "it"
   if (!Number.isFinite(s)) return it ? "per sempre" : "forever"
-  const u = (v: number, one: string, many: string) => `${sig2(v, lang)} ${Number(v.toPrecision(2)) === 1 ? one : many}`
-  if (s < 1e-3) return `${sci(s, lang)} s`
+  const u = (v: number, one: string, many: string) => counted(v, lang, one, many)
+  if (s < 1e-3) return `${sci(s, lang)}${NB}s`
   if (s < 1) return it ? u(s * 1000, "millisecondo", "millisecondi") : u(s * 1000, "millisecond", "milliseconds")
   if (s < 120) return it ? u(s, "secondo", "secondi") : u(s, "second", "seconds")
   if (s < 7200) return it ? u(s / 60, "minuto", "minuti") : u(s / 60, "minute", "minutes")
@@ -61,9 +81,14 @@ export function duration(s: number, lang: Lang): string {
   if (s < YEAR) return it ? u(s / 86400, "giorno", "giorni") : u(s / 86400, "day", "days")
   const y = s / YEAR
   if (y < 1e4) return it ? u(y, "anno", "anni") : u(y, "year", "years")
-  if (y < 1e6) return it ? `${sig2(y / 1e3, lang)} mila anni` : `${sig2(y / 1e3, lang)} thousand years`
-  if (y < 1e9) return it ? `${sig2(y / 1e6, lang)} milioni di anni` : `${sig2(y / 1e6, lang)} million years`
-  if (y < 1e12) return it ? `${sig2(y / 1e9, lang)} miliardi di anni` : `${sig2(y / 1e9, lang)} billion years`
+  if (y < 1e6)
+    return it
+      ? Number((y / 1e3).toPrecision(2)) === 1
+        ? "mille anni"
+        : `${sig2(y / 1e3, lang)} mila anni`
+      : `${sig2(y / 1e3, lang)} thousand years`
+  if (y < 1e9) return it ? u(y / 1e6, "milione di anni", "milioni di anni") : `${sig2(y / 1e6, lang)} million years`
+  if (y < 1e12) return it ? u(y / 1e9, "miliardo di anni", "miliardi di anni") : `${sig2(y / 1e9, lang)} billion years`
   return it ? `${sci(y, lang)} anni` : `${sci(y, lang)} years`
 }
 
@@ -72,27 +97,33 @@ export function shortTime(s: number, lang: Lang): string {
   const it = lang === "it"
   const yr = it ? "a" : "yr"
   const fmt = (v: number) => sig2(v, lang)
-  if (s < 1) return `${sci(s, lang, 1)} s`
-  if (s < 60) return `${fmt(s)} s`
-  if (s < 3600) return `${fmt(s / 60)} min`
-  if (s < 86400) return `${fmt(s / 3600)} h`
-  if (s < YEAR) return `${fmt(s / 86400)} ${it ? "g" : "d"}`
+  if (s < 1) return `${sci(s, lang, 1)}${NB}s`
+  if (s < 60) return `${fmt(s)}${NB}s`
+  if (s < 3600) return `${fmt(s / 60)}${NB}min`
+  if (s < 86400) return `${fmt(s / 3600)}${NB}h`
+  if (s < YEAR) return `${fmt(s / 86400)}${NB}${it ? "g" : "d"}`
   const y = s / YEAR
-  if (y < 1e3) return `${fmt(y)} ${yr}`
-  if (y < 1e6) return `${fmt(y / 1e3)} k${yr}`
-  if (y < 1e9) return `${fmt(y / 1e6)} M${yr}`
-  return `${fmt(y / 1e9)} G${yr}`
+  if (y < 1e3) return `${fmt(y)}${NB}${yr}`
+  if (y < 1e6) return `${fmt(y / 1e3)}${NB}k${yr}`
+  if (y < 1e9) return `${fmt(y / 1e6)}${NB}M${yr}`
+  if (y < 1e12) return `${fmt(y / 1e9)}${NB}G${yr}`
+  return `${sci(y, lang, 1)}${NB}${yr}`
 }
 
 /** T9 as the reader likes it: 16 million K, 0.25 GK. */
 export function temperature(T9: number, lang: Lang): string {
   const mk = T9 * 1000
   if (mk < 1000) return lang === "it" ? `${sig2(mk, lang)} milioni di K` : `${sig2(mk, lang)} million K`
-  return `${sig2(T9, lang)} GK`
+  return `${sig2(T9, lang)}${NB}GK`
+}
+
+/** T9 compactly, for chart labels and chips: 16 MK, 1.2 GK. */
+export function tShort(T9: number, lang: Lang): string {
+  return T9 < 1 ? `${sig2(T9 * 1000, lang)}${NB}MK` : `${sig2(T9, lang)}${NB}GK`
 }
 
 export function density(rho: number, lang: Lang): string {
-  return `${rho >= 0.01 && rho < 1e4 ? sig2(rho, lang) : sci(rho, lang)} g/cm³`
+  return `${rho >= 0.01 && rho < 1e4 ? sig2(rho, lang) : sci(rho, lang)}${NB}g/cm³`
 }
 
 export const YEAR_S = YEAR

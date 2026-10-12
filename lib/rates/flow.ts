@@ -47,19 +47,29 @@ export function dominantPath(c: Compiled, taus: ArrayLike<number>, start: number
     })
     if (best < 0 || !(total > 0)) break
     out.push({ nucleus: i, reaction: best, tau: 1 / total, share: bestRate / total })
-    const r = network.reactions[best]
-    const next = [...r.products].sort((a, b) => network.nuclei[b].A - network.nuclei[a].A || network.nuclei[b].Z - network.nuclei[a].Z)[0]
+    const next = heaviestProduct(c, best)
     if (next === undefined) break
     i = next
   }
   return out
 }
 
-/** Does the path close on itself (a cycle rather than a chain)? */
+/** The heaviest product of a reaction: where the flow goes on. */
+export function heaviestProduct(c: Compiled, reaction: number): number | undefined {
+  const { network } = c
+  return [...network.reactions[reaction].products].sort(
+    (a, b) => network.nuclei[b].A - network.nuclei[a].A || network.nuclei[b].Z - network.nuclei[a].Z,
+  )[0]
+}
+
+/**
+ * Does the path close on itself (a cycle rather than a chain)? Only when
+ * the heavy product of its last step is where it started: the protons that
+ * ³He + ³He gives back do not make the pp chain a cycle.
+ */
 export function closes(c: Compiled, path: PathStep[]): boolean {
   if (path.length < 2) return false
-  const last = c.network.reactions[path[path.length - 1].reaction]
-  return last.products.includes(path[0].nucleus)
+  return heaviestProduct(c, path[path.length - 1].reaction) === path[0].nucleus
 }
 
 /** The slowest step of a path. */
@@ -94,4 +104,3 @@ export function integratedFlows(
   }
   return out
 }
-

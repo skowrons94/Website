@@ -9,6 +9,7 @@
 # A one-zone model holds T and ρ fixed for the whole burn: it shows which
 # reactions matter and how, not the yields of a real star.
 #
+#   short     a name of a word or two for chart labels (and short_it)
 #   T9        temperature in GK
 #   rho       density in g/cm³
 #   time      burn time in seconds
@@ -33,6 +34,8 @@ scenarios:
   # zero-age main sequence). The metals keep the Lodders surface mixture:
   # in the real core ¹²C has already turned into ¹⁴N, which the burn redoes.
   - id: sun-core
+    short: "☉ Sun"
+    short_it: "☉ Sole"
     name: Centre of the Sun today
     name_it: Centro del Sole oggi
     T9: 0.0157
@@ -51,6 +54,8 @@ scenarios:
   # hydrogen burning in a 15 M☉ star: T = 0.035 GK, ρ = 5.8 g/cm³,
   # duration 1.1 × 10⁷ yr. Initial composition: Lodders solar.
   - id: massive-15
+    short: "15 M☉"
+    short_it: "15 M☉"
     name: Core of a 15 M☉ star, hydrogen burning
     name_it: Nucleo di una stella di 15 M☉, combustione dell'idrogeno
     T9: 0.035
@@ -67,6 +72,8 @@ scenarios:
   # hydrogen burning of massive stars makes the ²⁶Al later blown out by
   # Wolf-Rayet winds, and runs the NeNa cycle.
   - id: massive-25
+    short: "25 M☉"
+    short_it: "25 M☉"
     name: Core of a 25 M☉ star, hydrogen burning
     name_it: Nucleo di una stella di 25 M☉, combustione dell'idrogeno
     T9: 0.038
@@ -85,6 +92,8 @@ scenarios:
   # At fixed T the proton captures depend only on ρ × t, so the density and
   # the burn time are one parameter; 10 years is a choice (see `note`).
   - id: agb-hbb
+    short: "AGB envelope"
+    short_it: "inviluppo AGB"
     name: AGB star, hot-bottom burning
     name_it: Stella AGB, combustione alla base dell'inviluppo
     T9: 0.08
@@ -104,6 +113,8 @@ scenarios:
   # ¹⁶O. The density is an order of magnitude, the 300 s burn a choice; a
   # real nova cools as it expands.
   - id: nova
+    short: "CO nova"
+    short_it: "nova CO"
     name: Classical nova on a carbon–oxygen white dwarf
     name_it: Nova classica su una nana bianca al carbonio e ossigeno
     T9: 0.25
@@ -126,6 +137,8 @@ scenarios:
   # ²⁶Mg 0.011, ¹²C 0.009); the ~2% of minor nuclei is given to ²⁰Ne. ONe
   # novae are the hotter ones; 0.3 GK is within the range above.
   - id: nova-one
+    short: "ONe nova"
+    short_it: "nova ONe"
     name: Classical nova on an oxygen–neon white dwarf
     name_it: Nova classica su una nana bianca all'ossigeno e neon
     T9: 0.3
@@ -158,6 +171,8 @@ scenarios:
   # al. 2006); the exposure of a pocket burnt to the end does not depend on
   # ρ at all.
   - id: agb-13c-pocket
+    short: "¹³C pocket"
+    short_it: "tasca di ¹³C"
     name: AGB star, ¹³C pocket between pulses
     name_it: Stella AGB, tasca di ¹³C tra due impulsi
     T9: 0.09
@@ -174,6 +189,8 @@ scenarios:
     note_it: "X(¹³C) = 0,005 e X(¹⁴N) = 0,0005 sono illustrativi: quanto ¹³C contenga la tasca è il principale parametro libero dei modelli AGB, perciò si possono scalare entrambi. La combustione continua finché il 99,9% del ¹³C non è consumato; ρ ne fissa solo la rapidità (è scelta perché la densità di neutroni risulti vicina a 10⁷ cm⁻³)."
 
   - id: agb-thermal-pulse
+    short: "thermal pulse"
+    short_it: "impulso termico"
     name: AGB star, ²²Ne in a thermal pulse
     name_it: Stella AGB, ²²Ne in un impulso termico
     T9: 0.27
@@ -189,6 +206,8 @@ scenarios:
     note_it: "La sorgente di ²²Ne brucia solo brevemente al picco di un impulso; ρ è scelta perché la densità di neutroni risulti vicina a 10¹⁰ cm⁻³ (Straniero et al. 2006). A questa densità l'elio brucia troppo in fretta: in cinque anni il ⁴He scende da 0,74 a 0,24, molto più che in un impulso vero, quindi i nuclei leggeri vanno letti con cautela. Qui i semi partono solari; in una stella sono ciò che ha prodotto la tasca."
 
   - id: massive-he-core
+    short: "He core"
+    short_it: "nucleo di He"
     name: Massive star, end of core helium burning
     name_it: Stella massiccia, fine della combustione centrale dell'elio
     T9: 0.3

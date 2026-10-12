@@ -21,23 +21,40 @@ const en = {
   networks: "Choose a network",
   sProcessTab: "s-process",
   where: "Where it burns",
+  site: "Site",
   conditions: "Conditions",
   adjust: "Change the conditions",
   temperature: "Temperature",
   density: "Density",
   burnTime: "Burn time",
-  stopOnFuel: (fuel: string, f = 0.01) => `Stop when ${fuel} falls to ${+(f * 100).toPrecision(2)}% of its initial amount`,
+  stopOnFuel: (fuel: string, f = 0.01) =>
+    `Stop when ${fuel} falls to ${+(f * 100).toPrecision(2)}% of its initial amount`,
   metals: "Heavier elements",
-  metalsHint: "× the scenario's",
+  metalsHint: (f: string) => (f === "1" ? "×1 (as in the scenario)" : `×${f} the scenario's`),
+  metalsCap: (max: string) =>
+    `At most ×${max} here: hydrogen and helium shrink to make room, and keep at least a tenth of the mass.`,
   hydrogen: "Hydrogen",
+  helium: "Helium",
   screening: "Electron screening",
-  screeningHint: "The electrons around the nuclei lower the Coulomb barrier a little (screen5, as in pynucastro).",
+  screeningHint: "The electrons around the nuclei lower the Coulomb barrier a little.",
   resetConditions: "Back to the scenario",
   source: "Source",
   sourceOf: "Where these numbers come from",
+  sources: "Sources",
   million: "million",
   validity: (t: string) =>
     `${t} is outside the temperature range REACLIB fits are made for (0.01–10 GK): treat the rates with care.`,
+  howTo: "Pick a network and a site; drag the temperature; then change a rate and see what changes.",
+
+  // the page's story
+  step1: "How fast",
+  step2: "Who is slowest",
+  step3: "What if",
+  headline: (site: string, reaction: string, time: string) =>
+    `${site}: the slowest step is ${reaction}, ${time} on average. Everything else waits for it.`,
+  headlineShort: "Bottleneck",
+  tryIt: "What if it were faster?",
+  notation: "¹⁴N(p,γ)¹⁵O: nitrogen-14 captures a proton (p), gives off a gamma ray (γ) and becomes oxygen-15.",
 
   // rates vs temperature
   ratesTitle: "How the rates change with temperature",
@@ -49,58 +66,102 @@ const en = {
   plotMode: "Show",
   showAll: "Show every reaction",
   showKey: "Show the main reactions",
+  showAllNuclei: "Show every nucleus",
+  showKeyNuclei: "Show the main nuclei",
   rateAxis: "N_A⟨σv⟩ (cm³ mol⁻¹ s⁻¹)",
+  faster: "↑ faster",
   ratioAxis: (ref: string) => `ratio to ${ref}`,
   tAxis: "Temperature (GK)",
   tAxisMK: "million K",
-  decaysNote: "Decays do not depend on temperature here (laboratory half-lives); they appear in the next chart.",
-  pickHint: "Pick up to three reactions to colour; the others stay grey.",
+  decaysNote:
+    "Not plotted: decays, which do not depend on temperature (laboratory half-lives), and ⁷Be's electron capture, which depends on the electron density; both are in the next chart.",
+  pickHint: "Pick up to three reactions to colour (a fourth waits until you free a colour); the others stay grey.",
+  scrubHint: "Drag across the chart, or use the slider below it, to change the temperature.",
+  pickFull: "Three reactions are coloured: unpick one first.",
   highlight: "Colour",
   now: "now",
   sites: "Sites",
   hoverAt: (t: string) => `At ${t}`,
   ratesChartLabel: (n: number) =>
     `Line chart of the reaction rates of ${n} reactions against temperature, both on logarithmic scales.`,
+  scaledBand: (f: string) => `shaded: your ×${f}`,
+
+  // the Gamow peak
+  gamowTitle: "Why heat matters so much",
+  gamowLead: (reaction: string) =>
+    `For ${reaction}: few nuclei are fast (grey falling curve), and only fast ones tunnel through the Coulomb barrier (grey rising curve). The reactions happen where the two overlap, the Gamow peak.`,
+  gamowPeak: (e0: string, w: string) => `Gamow peak: E₀ = ${e0} ± ${w}`,
+  gamowAxis: "Energy (keV)",
+  gamowMB: "how many nuclei",
+  gamowTunnel: "chance to tunnel",
+  gamowProduct: "reactions",
+  gamowNone: "Pick a reaction between two charged nuclei to see its Gamow peak.",
+  gamowLabel: (reaction: string, T: string) =>
+    `The Gamow peak of ${reaction} at ${T}: the Maxwell–Boltzmann distribution, the tunnelling probability and their product against energy.`,
 
   // lifetimes
   lifeTitle: "How long does a nucleus wait?",
   lifeLead:
-    "At these conditions, how long a nucleus waits, on average, before each reaction turns it into something else. The longest wait in the cycle is the bottleneck: it sets the pace of the whole chain.",
+    "At these conditions, how long a nucleus waits, on average, before each reaction turns it into something else. Each dot is one reaction, on a logarithmic time axis.",
+  lifeFine:
+    "Waiting times at the start of the burn, with the scenario's initial composition: as the partners of a reaction are used up or built up, the waits change (in the pp chain, ³He starts at its protosolar value, so its waits are shorter than in the Sun today).",
   bottleneck: "bottleneck",
   waits: (nucleus: string) => `${nucleus} nuclei wait`,
   lifeAxis: "Mean waiting time",
-  lifeChartLabel: "Bar chart of the mean waiting time of a nucleus before each reaction, on a logarithmic time axis.",
+  lifeChartLabel: "Dot chart of the mean waiting time of a nucleus before each reaction, on a logarithmic time axis.",
   never: "never (no partner)",
-  bottleneckSentence: (reaction: string, time: string) =>
-    `The bottleneck is ${reaction}: ${time} on average. Every other step of the cycle waits for it.`,
-  cycleOnly: "Bottleneck taken among the steps of the main cycle.",
+  burnRef: "burn time",
+  sunRef: "age of the Sun",
+  unscaled: "unchanged",
+  cycleOnly: "Bottleneck taken along the path the flow actually takes.",
+  pathNote: (path: string) => `The flow goes ${path}.`,
+
+  // the flow ring
+  ringTitle: "Where the matter flows",
+  ringLead:
+    "The path a nucleus takes, from the network itself: each arrow's width is how much matter went through that step during the burn; side arrows are leaks out of the path.",
+  ringLabel: (path: string) => `Diagram of the flow along ${path}; arrow widths are the integrated flows of the burn.`,
+  ringChangedKey: "coloured: with your changes; grey outline: unchanged",
+  ringSlowest: "slowest",
 
   // what if
   whatIfTitle: "What if a rate were different?",
   whatIfLead:
-    "Every rate is known only within an uncertainty, from a few percent to factors of ten. Change one, and see which nuclei come out different at the end of the burn.",
+    "Every rate is known only within an uncertainty, from a few percent to a factor of ten. Choose one, change it, and see which nuclei come out different at the end of the burn.",
+  pickReaction: "Choose a reaction to change",
+  moreReactionsPick: "Any reaction of the network…",
+  yourChanges: "Your changes",
+  noChanges: "No rate changed yet.",
+  remove: (label: string) => `Undo the change to ${label}`,
   factor: "factor",
-  half: "×0.5",
+  half: "÷2",
   double: "×2",
   resetAll: "Reset all rates",
   reset: "Reset",
   moreReactions: "Every reaction of the network",
   changedTitle: "What changes most",
-  changedLead: (time: string) =>
-    `Final mass fraction after ${time}, changed ÷ unchanged. Bars to the right: more of that nucleus.`,
-  noChange: "Change a rate above to see what it does: for now every nucleus ends as in the unchanged burn.",
+  changedLead: (time: string, baseTime?: string) =>
+    baseTime && baseTime !== time
+      ? `Final mass fraction, changed ÷ unchanged: the changed burn stopped after ${time}, the unchanged one after ${baseTime}. Bars to the right: more of that nucleus.`
+      : `Final mass fraction after ${time}, changed ÷ unchanged. Bars to the right: more of that nucleus.`,
+  noChange: "Change a rate to see what it does: for now every nucleus ends as in the unchanged burn.",
+  stripNone: "Change a rate: the biggest effects show here.",
+  stripTitle: "Effect",
+  seeAll: "All results",
   more: "more",
   less: "less",
   ratioAxis2: "changed ÷ unchanged",
   changeChartLabel:
     "Bar chart of the ratio between the final abundances with the changed rates and without, per nucleus, on a logarithmic scale.",
   evolutionTitle: "Abundances during the burn",
-  evolutionLead: "Mass fraction of each nucleus against time. Solid: with your changes; dashed: unchanged.",
+  evolutionLead: "Mass fraction of each nucleus against time.",
+  evolutionChanged: "Solid: with your changes; dashed: unchanged.",
   evolutionChartLabel: "Line chart of mass fractions against time, both on logarithmic scales.",
   massFraction: "Mass fraction",
   time: "Time",
-  pickNuclei: "Nuclei shown",
+  pickNuclei: "Nuclei shown (up to three)",
   calculating: "Calculating…",
+  calculatingFor: (s: string) => `Calculating… ${s}`,
   calculated: (ms: number, steps: number) => `Recalculated in your browser: ${ms} ms, ${steps} steps.`,
   precomputed: "Precomputed with the same solver; change anything to recalculate in your browser.",
   stoppedUntil: (fuel: string, time: string, f = 0.01) =>
@@ -109,6 +170,23 @@ const en = {
   failed: "The calculation failed:",
   baselineLabel: "unchanged",
   changedLabel: "changed",
+  share: "Link to this setting",
+  copied: "Link copied",
+
+  // sensitivity
+  sensTitle: "Which rate matters most?",
+  sensLead:
+    "Every rate doubled in turn, at the scenario's own conditions: the colour says how much each nucleus at the end of the burn follows it. +1: it doubles with the rate; −1: it halves.",
+  sensButton: "Show the sensitivity map",
+  sensHide: "Hide the sensitivity map",
+  sensCustom: "Precomputed for the scenario's own conditions; back to the scenario to compare with them.",
+  sensTry: "Click a cell to try that rate ×2.",
+  sensCell: (reaction: string, nucleus: string, s: string) => `${reaction} ×2: ${nucleus} ${s}`,
+  sensLabel: "Heat map of the sensitivity of each nucleus to each reaction rate.",
+  sensMore: "more of it",
+  sensLess: "less of it",
+  sensAll: "Every reaction",
+  sensTop: "The most influential",
 
   // expert
   forExperts: "For specialists",
@@ -121,6 +199,7 @@ const en = {
   colLife: "τ (s)",
   colScale: "×",
   colSource: "Source",
+  colNote: "Note",
   colNucleus: "Nucleus",
   colX0: "X initial",
   colXBase: "X final, unchanged",
@@ -128,12 +207,14 @@ const en = {
   colRatio: "ratio",
   equationRate: "λ(T₉) = Σ_sets exp(a₀ + a₁/T₉ + a₂ T₉^(−1/3) + a₃ T₉^(1/3) + a₄ T₉ + a₅ T₉^(5/3) + a₆ ln T₉)",
   equationLife:
-    "τ = 1 / (c · ρ^n · Y_partner · λ · f_scr) for the target nucleus; for a decay τ = 1/λ = t½ / ln 2. Y = X/A.",
+    "τ = 1 / (c · ρ^n · Y_partner · λ · f_scr) for the target nucleus; for a decay τ = 1/λ = t½ / ln 2; for an electron capture τ = 1/(ρ Y_e λ). Y = X/A.",
   equationYdot:
-    "dYᵢ/dt = Σ_r c_ir · prefactor_r · ρ^(n_r) · (Ye) · Π Y_reactants · λ_r(T₉) · f_scr,r — pynucastro's equations term for term.",
+    "dYᵢ/dt = Σ_r c_ir · prefactor_r · ρ^(n_r) · (Y_e) · Π Y_reactants · λ_r(T₉) · f_scr,r — pynucastro's equations term for term.",
+  screenNote: "Screening: screen5, as in pynucastro (Wallace, Woosley & Weaver 1982).",
   units1: "s⁻¹",
   units2: "cm³ mol⁻¹ s⁻¹",
   units3: "cm⁶ mol⁻² s⁻¹",
+  unitsEC: "cm³ mol⁻¹ s⁻¹ (×ρY_e → s⁻¹)",
   download: "Download",
   downloadCsv: "Rates and waiting times (CSV)",
   downloadRun: "This burn (JSON)",
@@ -141,22 +222,36 @@ const en = {
   atlasPage: "Atlas page",
   provenance: (lib: string, tool: string) => `${lib} — ${tool}`,
   dataNote:
-    "Rates are the REACLIB fits themselves, evaluated in your browser. Reverse rates are left out (negligible at these temperatures); nuclei outside the network are inert.",
+    "Rates are the REACLIB fits themselves, evaluated in your browser. Reverse rates are left out (negligible at these temperatures); nuclei outside the network are inert. Decays of nuclei that NUBASE2020 gives as stable or longer-lived than 10⁸ years are dropped.",
+  newerTitle: "Rates with newer data",
   // -- the s-process explorer --------------------------------------------------
   sp: {
     lightTab: "Light-element networks",
+    lead: "Pick a site, then change a neutron source, a poison or the seed and watch the heavy isotopes move.",
+    headline: (site: string, tau: string, nc: string) =>
+      `${site}: a neutron exposure of ${tau}, about ${nc} neutrons captured by every iron-group seed.`,
     groups: {
       sources: ["Neutron sources", "The reactions that release the neutrons."],
-      competitors: ["Competitors and recyclers", "²²Ne(α,γ) burns the source without a neutron; ¹⁷O(α,n) gives back a neutron a poison took."],
-      poisons: ["Neutron poisons", "Light nuclei, far more abundant than iron, that capture neutrons before the seeds can."],
+      competitors: [
+        "Competing and recycling reactions",
+        "²²Ne(α,γ) burns the source without a neutron; ¹⁷O(α,n) gives back a neutron a poison took.",
+      ],
+      poisons: [
+        "Neutron poisons",
+        "Light nuclei, far more abundant than iron, that capture neutrons before the seeds can.",
+      ],
       seeds: ["The seed", "Iron, where the chain starts."],
-      branches: ["Branch points", "Unstable nuclei that can capture a neutron before they decay: their captures steer the path."],
+      branches: [
+        "Branch points",
+        "Unstable nuclei that can capture a neutron before they decay: their captures steer the path. Laboratory half-lives (¹⁵¹Sm's, for one, is shorter in a star), and ⁸⁵Kr without its isomer.",
+      ],
     } as Record<string, [string, string]>,
     knobsTitle: "How much fuel and poison",
     knob: (n: string) => `Initial ${n}`,
     statsTitle: "The neutrons",
     exposure: "Neutron exposure",
-    exposureHint: "τ = ∫ n_n v_T dt: how many neutrons per millibarn a nucleus has been offered",
+    exposureHint:
+      "τ = ∫ n_n v_T dt: how many neutrons per millibarn a nucleus has been offered (1 mb = 10⁻²⁷ cm², a nucleus's target area)",
     peak: "Peak neutron density",
     perSeed: "Neutrons captured per seed",
     perSeedHint: "per heavy nucleus from iron up",
@@ -164,25 +259,29 @@ const en = {
     unchangedWord: "unchanged",
     distTitle: "What the burn made, from iron to bismuth",
     distLead:
-      "Each dot is a stable isotope: how much more of it there is at the end of the burn than at the start, which is the solar mix. Squares are s-only isotopes, made by the s-process alone; the shaded bands are the closed neutron shells, where the flow piles up.",
-    distLabel: "Production factors of the stable isotopes from iron to bismuth against mass number, on a logarithmic scale.",
+      "Each dot is a stable isotope: how much more of it there is at the end of the burn than at the start, which is the solar mix. In this small layer, not in the whole star. Squares are s-only isotopes, made by the s-process alone; the shaded bands are the closed neutron shells, where the flow piles up.",
+    distLabel:
+      "Production factors of the stable isotopes from iron to bismuth against mass number, on a logarithmic scale.",
     massNumber: "Mass number A",
     productionFactor: "end ÷ start",
     shell: (n: number) => `N = ${n}`,
     sOnly: "s-only",
     below: "below a hundredth of the start (burnt)",
+    notModelled: "needs a stellar decay this network lacks",
     heavy: "Iron and up",
     toResults: "See what changed",
     light: "Light nuclei",
     neutronTitle: "Neutron density during the burn",
-    neutronLead: "Free neutrons per cubic centimetre. Solid: with your changes; dashed: unchanged.",
+    neutronLead: "Free neutrons per cubic centimetre.",
     neutronAxis: "neutrons per cm³",
     neutronLabel: "Line chart of the neutron density against time, both on logarithmic scales.",
     decayNote:
       "Abundances after the decay of every nucleus with a half-life under 10⁸ years (laboratory half-lives, as in REACLIB: the stellar half-lives of branch points such as ¹⁷⁶Lu or ⁷⁹Se are not modelled).",
-    macsCol: "MACS at kT (mb)",
+    macsCol: (kT: string) => `MACS at kT = ${kT} (mb)`,
+    macs30: "MACS at 30 keV (mb)",
     networkNote: (n: number, r: number) =>
       `${n} nuclei and ${r} reactions: the light nuclei that make and steal neutrons, and every nucleus from iron to polonium that the solar mix holds or that a neutron capture or a decay reaches from one living longer than six hours. Between heavy nuclei only (n,γ) and decays.`,
+    sensNuclei: "Iron, the s-only isotopes and the peaks",
   },
 }
 
@@ -193,25 +292,39 @@ const it: RatesDict = {
   networks: "Scegli una rete",
   sProcessTab: "processo s",
   where: "Dove brucia",
+  site: "Ambiente",
   conditions: "Condizioni",
   adjust: "Cambia le condizioni",
   temperature: "Temperatura",
   density: "Densità",
   burnTime: "Durata della combustione",
   stopOnFuel: (fuel: string, f = 0.01) =>
-    `Fermati quando ${fuel} scende ${alPercent(f)} della quantità iniziale`,
+    `Ferma la combustione quando ${fuel} scende ${alPercent(f)} della quantità iniziale`,
   metals: "Elementi più pesanti",
-  metalsHint: "× quelli dello scenario",
+  metalsHint: (f: string) => (f === "1" ? "×1 (come nello scenario)" : `×${f} rispetto allo scenario`),
+  metalsCap: (max: string) =>
+    `Al massimo ×${max} qui: idrogeno ed elio si riducono per fare posto, e tengono almeno un decimo della massa.`,
   hydrogen: "Idrogeno",
-  screening: "Schermo elettronico",
-  screeningHint:
-    "Gli elettroni intorno ai nuclei abbassano un poco la barriera coulombiana (screen5, come in pynucastro).",
+  helium: "Elio",
+  screening: "Schermatura elettronica",
+  screeningHint: "Gli elettroni intorno ai nuclei abbassano un poco la barriera coulombiana.",
   resetConditions: "Torna allo scenario",
   source: "Fonte",
   sourceOf: "Da dove vengono questi numeri",
+  sources: "Fonti",
   million: "milioni",
   validity: (t: string) =>
     `${t} è fuori dall'intervallo di temperature per cui sono fatti i fit di REACLIB (0,01–10 GK): prendi i tassi con cautela.`,
+  howTo: "Scegli una rete e un ambiente; trascina la temperatura; poi cambia un tasso e guarda che cosa cambia.",
+
+  step1: "Quanto sono veloci",
+  step2: "Chi è il più lento",
+  step3: "E se",
+  headline: (site: string, reaction: string, time: string) =>
+    `${site}: il passo più lento è la ${reaction}, in media ${time}. Tutti gli altri devono aspettarla.`,
+  headlineShort: "Collo di bottiglia",
+  tryIt: "E se fosse più veloce?",
+  notation: "¹⁴N(p,γ)¹⁵O: l'azoto-14 cattura un protone (p), emette un raggio gamma (γ) e diventa ossigeno-15.",
 
   ratesTitle: "Come cambiano i tassi con la temperatura",
   ratesLead:
@@ -222,60 +335,100 @@ const it: RatesDict = {
   plotMode: "Mostra",
   showAll: "Mostra tutte le reazioni",
   showKey: "Mostra le reazioni principali",
+  showAllNuclei: "Mostra tutti i nuclei",
+  showKeyNuclei: "Mostra i nuclei principali",
   rateAxis: "N_A⟨σv⟩ (cm³ mol⁻¹ s⁻¹)",
+  faster: "↑ più veloce",
   ratioAxis: (ref: string) => `rapporto con ${ref}`,
   tAxis: "Temperatura (GK)",
   tAxisMK: "milioni di K",
   decaysNote:
-    "I decadimenti qui non dipendono dalla temperatura (tempi di dimezzamento di laboratorio): compaiono nel grafico successivo.",
-  pickHint: "Scegli fino a tre reazioni da colorare; le altre restano grigie.",
+    "Non sono nel grafico: i decadimenti, che non dipendono dalla temperatura (tempi di dimezzamento di laboratorio), e la cattura elettronica del ⁷Be, che dipende dalla densità di elettroni; entrambi sono nel grafico successivo.",
+  pickHint: "Scegli fino a tre reazioni da colorare (per una quarta libera prima un colore); le altre restano grigie.",
+  scrubHint: "Trascina sul grafico, o usa il cursore sotto, per cambiare la temperatura.",
+  pickFull: "Ci sono già tre reazioni colorate: togline una.",
   highlight: "Colora",
   now: "ora",
   sites: "Ambienti",
   hoverAt: (t: string) => `A ${t}`,
   ratesChartLabel: (n: number) =>
     `Grafico a linee dei tassi di ${n} reazioni in funzione della temperatura, entrambi in scala logaritmica.`,
+  scaledBand: (f: string) => `in ombra: il tuo ×${f}`,
+
+  gamowTitle: "Perché il calore conta tanto",
+  gamowLead: (reaction: string) =>
+    `Per la ${reaction}: pochi nuclei sono veloci (curva grigia che scende), e solo quelli veloci attraversano per effetto tunnel la barriera coulombiana (curva grigia che sale). Le reazioni avvengono dove le due si sovrappongono, il picco di Gamow.`,
+  gamowPeak: (e0: string, w: string) => `Picco di Gamow: E₀ = ${e0} ± ${w}`,
+  gamowAxis: "Energia (keV)",
+  gamowMB: "quanti nuclei",
+  gamowTunnel: "probabilità di tunnel",
+  gamowProduct: "reazioni",
+  gamowNone: "Scegli una reazione tra due nuclei carichi per vedere il suo picco di Gamow.",
+  gamowLabel: (reaction: string, T: string) =>
+    `Il picco di Gamow della ${reaction} a ${T}: la distribuzione di Maxwell–Boltzmann, la probabilità di tunnel e il loro prodotto in funzione dell'energia.`,
 
   lifeTitle: "Quanto aspetta un nucleo?",
   lifeLead:
-    "In queste condizioni, quanto aspetta in media un nucleo prima che ciascuna reazione lo trasformi in qualcos'altro. L'attesa più lunga del ciclo è il collo di bottiglia: detta il ritmo di tutta la catena.",
+    "In queste condizioni, quanto aspetta in media un nucleo prima che ciascuna reazione lo trasformi in qualcos'altro. Ogni punto è una reazione, su un asse dei tempi logaritmico.",
+  lifeFine:
+    "Tempi di attesa all'inizio della combustione, con la composizione iniziale dello scenario: mentre i partner di una reazione si consumano o si accumulano, le attese cambiano (nella catena pp il ³He parte dal valore protosolare, quindi le sue attese sono più brevi che nel Sole di oggi).",
   bottleneck: "collo di bottiglia",
   waits: (nucleus: string) => `i nuclei di ${nucleus} aspettano`,
   lifeAxis: "Tempo medio di attesa",
   lifeChartLabel:
-    "Grafico a barre del tempo medio di attesa di un nucleo prima di ciascuna reazione, su un asse dei tempi logaritmico.",
+    "Grafico a punti del tempo medio di attesa di un nucleo prima di ciascuna reazione, su un asse dei tempi logaritmico.",
   never: "mai (manca il partner)",
-  bottleneckSentence: (reaction: string, time: string) =>
-    `Il collo di bottiglia è la ${reaction}: in media ${time}. Ogni altro passo del ciclo aspetta lei.`,
-  cycleOnly: "Collo di bottiglia scelto tra i passi del ciclo principale.",
+  burnRef: "durata",
+  sunRef: "età del Sole",
+  unscaled: "originale",
+  cycleOnly: "Collo di bottiglia scelto lungo il percorso che il flusso segue davvero.",
+  pathNote: (path: string) => `Il flusso va ${path}.`,
+
+  ringTitle: "Dove scorre la materia",
+  ringLead:
+    "Il percorso di un nucleo, ricavato dalla rete stessa: lo spessore di ogni freccia è quanta materia è passata per quel passo durante la combustione; le frecce laterali sono le fughe dal percorso.",
+  ringLabel: (path: string) =>
+    `Diagramma del flusso lungo ${path}; lo spessore delle frecce è il flusso integrato della combustione.`,
+  ringChangedKey: "a colori: con le tue modifiche; contorno grigio: originale",
+  ringSlowest: "il più lento",
 
   whatIfTitle: "E se un tasso fosse diverso?",
   whatIfLead:
-    "Ogni tasso è noto solo entro un'incertezza, da pochi punti percentuali a fattori dieci. Cambiane uno e guarda quali nuclei escono diversi alla fine della combustione.",
+    "Ogni tasso è noto solo entro un'incertezza, da pochi punti percentuali fino a un fattore dieci. Scegline uno, cambialo e guarda quali nuclei escono diversi alla fine della combustione.",
+  pickReaction: "Scegli una reazione da cambiare",
+  moreReactionsPick: "Un'altra reazione della rete…",
+  yourChanges: "Le tue modifiche",
+  noChanges: "Nessun tasso cambiato, per ora.",
+  remove: (label: string) => `Annulla la modifica alla ${label}`,
   factor: "fattore",
-  half: "×0,5",
+  half: "÷2",
   double: "×2",
   resetAll: "Ripristina tutti i tassi",
   reset: "Ripristina",
   moreReactions: "Tutte le reazioni della rete",
   changedTitle: "Che cosa cambia di più",
-  changedLead: (time: string) =>
-    `Frazione di massa finale dopo ${time}, modificata ÷ originale. Barre a destra: più di quel nucleo.`,
-  noChange:
-    "Cambia un tasso qui sopra per vedere che cosa fa: per ora ogni nucleo finisce come nella combustione originale.",
+  changedLead: (time: string, baseTime?: string) =>
+    baseTime && baseTime !== time
+      ? `Frazione di massa finale, modificata ÷ originale: la combustione modificata si è fermata dopo ${time}, quella originale dopo ${baseTime}. Barre a destra: più di quel nucleo.`
+      : `Frazione di massa finale dopo ${time}, modificata ÷ originale. Barre a destra: più di quel nucleo.`,
+  noChange: "Cambia un tasso per vedere che cosa fa: per ora ogni nucleo finisce come nella combustione originale.",
+  stripNone: "Cambia un tasso: qui compaiono gli effetti maggiori.",
+  stripTitle: "Effetto",
+  seeAll: "Tutti i risultati",
   more: "di più",
   less: "di meno",
   ratioAxis2: "modificata ÷ originale",
   changeChartLabel:
     "Grafico a barre del rapporto tra le abbondanze finali con i tassi modificati e senza, per nucleo, in scala logaritmica.",
   evolutionTitle: "Le abbondanze durante la combustione",
-  evolutionLead:
-    "Frazione di massa di ciascun nucleo in funzione del tempo. Linea continua: con le tue modifiche; tratteggiata: originale.",
+  evolutionLead: "Frazione di massa di ciascun nucleo in funzione del tempo.",
+  evolutionChanged: "Linea continua: con le tue modifiche; tratteggiata: originale.",
   evolutionChartLabel: "Grafico a linee delle frazioni di massa in funzione del tempo, entrambe in scala logaritmica.",
   massFraction: "Frazione di massa",
   time: "Tempo",
-  pickNuclei: "Nuclei mostrati",
+  pickNuclei: "Nuclei mostrati (fino a tre)",
   calculating: "Calcolo in corso…",
+  calculatingFor: (s: string) => `Calcolo in corso… ${s}`,
   calculated: (ms: number, steps: number) => `Ricalcolato nel tuo browser: ${ms} ms, ${steps} passi.`,
   precomputed: "Precalcolato con lo stesso risolutore; cambia qualcosa per ricalcolare nel tuo browser.",
   stoppedUntil: (fuel: string, time: string, f = 0.01) =>
@@ -284,6 +437,22 @@ const it: RatesDict = {
   failed: "Il calcolo non è riuscito:",
   baselineLabel: "originale",
   changedLabel: "modificata",
+  share: "Link a questa configurazione",
+  copied: "Link copiato",
+
+  sensTitle: "Quale tasso conta di più?",
+  sensLead:
+    "Ogni tasso raddoppiato a turno, alle condizioni dello scenario: il colore dice quanto ciascun nucleo alla fine della combustione lo segue. +1: raddoppia con il tasso; −1: si dimezza.",
+  sensButton: "Mostra la mappa di sensibilità",
+  sensHide: "Nascondi la mappa di sensibilità",
+  sensCustom: "Precalcolata per le condizioni dello scenario; torna allo scenario per confrontarla.",
+  sensTry: "Fai clic su una casella per provare quel tasso ×2.",
+  sensCell: (reaction: string, nucleus: string, s: string) => `${reaction} ×2: ${nucleus} ${s}`,
+  sensLabel: "Mappa di calore della sensibilità di ciascun nucleo a ciascun tasso di reazione.",
+  sensMore: "ne aumenta",
+  sensLess: "ne diminuisce",
+  sensAll: "Tutte le reazioni",
+  sensTop: "Le più influenti",
 
   forExperts: "Per specialisti",
   expertTable: "I numeri",
@@ -295,6 +464,7 @@ const it: RatesDict = {
   colLife: "τ (s)",
   colScale: "×",
   colSource: "Fonte",
+  colNote: "Nota",
   colNucleus: "Nucleo",
   colX0: "X iniziale",
   colXBase: "X finale, originale",
@@ -302,12 +472,14 @@ const it: RatesDict = {
   colRatio: "rapporto",
   equationRate: "λ(T₉) = Σ_set exp(a₀ + a₁/T₉ + a₂ T₉^(−1/3) + a₃ T₉^(1/3) + a₄ T₉ + a₅ T₉^(5/3) + a₆ ln T₉)",
   equationLife:
-    "τ = 1 / (c · ρ^n · Y_partner · λ · f_scr) per il nucleo bersaglio; per un decadimento τ = 1/λ = t½ / ln 2. Y = X/A.",
+    "τ = 1 / (c · ρ^n · Y_partner · λ · f_scr) per il nucleo bersaglio; per un decadimento τ = 1/λ = t½ / ln 2; per una cattura elettronica τ = 1/(ρ Y_e λ). Y = X/A.",
   equationYdot:
-    "dYᵢ/dt = Σ_r c_ir · prefattore_r · ρ^(n_r) · (Ye) · Π Y_reagenti · λ_r(T₉) · f_scr,r — le equazioni di pynucastro, termine per termine.",
+    "dYᵢ/dt = Σ_r c_ir · prefattore_r · ρ^(n_r) · (Y_e) · Π Y_reagenti · λ_r(T₉) · f_scr,r — le equazioni di pynucastro, termine per termine.",
+  screenNote: "Schermatura: screen5, come in pynucastro (Wallace, Woosley e Weaver 1982).",
   units1: "s⁻¹",
   units2: "cm³ mol⁻¹ s⁻¹",
   units3: "cm⁶ mol⁻² s⁻¹",
+  unitsEC: "cm³ mol⁻¹ s⁻¹ (×ρY_e → s⁻¹)",
   download: "Scarica",
   downloadCsv: "Tassi e tempi di attesa (CSV)",
   downloadRun: "Questa combustione (JSON)",
@@ -315,21 +487,35 @@ const it: RatesDict = {
   atlasPage: "Scheda nell'atlante",
   provenance: (lib: string, tool: string) => `${lib} — ${tool}`,
   dataNote:
-    "I tassi sono i fit di REACLIB stessi, calcolati nel tuo browser. I tassi inversi sono esclusi (trascurabili a queste temperature); i nuclei fuori dalla rete sono inerti.",
+    "I tassi sono i fit di REACLIB stessi, calcolati nel tuo browser. I tassi inversi sono esclusi (trascurabili a queste temperature); i nuclei fuori dalla rete sono inerti. I decadimenti dei nuclei che NUBASE2020 dà come stabili o con vita più lunga di 10⁸ anni sono esclusi.",
+  newerTitle: "Tassi con dati più recenti",
   sp: {
     lightTab: "Reti degli elementi leggeri",
+    lead: "Scegli un ambiente, poi cambia una sorgente di neutroni, un veleno o il seme e guarda come si spostano gli isotopi pesanti.",
+    headline: (site: string, tau: string, nc: string) =>
+      `${site}: un'esposizione ai neutroni di ${tau}, circa ${nc} neutroni catturati da ogni seme del gruppo del ferro.`,
     groups: {
       sources: ["Sorgenti di neutroni", "Le reazioni che liberano i neutroni."],
-      competitors: ["Concorrenti e riciclatori", "La ²²Ne(α,γ) consuma la sorgente senza un neutrone; la ¹⁷O(α,n) restituisce un neutrone preso da un veleno."],
-      poisons: ["Veleni neutronici", "Nuclei leggeri, molto più abbondanti del ferro, che catturano i neutroni prima dei semi."],
+      competitors: [
+        "Reazioni concorrenti e di recupero",
+        "La ²²Ne(α,γ) consuma la sorgente senza un neutrone; la ¹⁷O(α,n) restituisce un neutrone preso da un veleno.",
+      ],
+      poisons: [
+        "Veleni neutronici",
+        "Nuclei leggeri, molto più abbondanti del ferro, che catturano i neutroni prima dei semi.",
+      ],
       seeds: ["Il seme", "Il ferro, da cui parte la catena."],
-      branches: ["Punti di diramazione", "Nuclei instabili che possono catturare un neutrone prima di decadere: le loro catture orientano il percorso."],
+      branches: [
+        "Punti di diramazione",
+        "Nuclei instabili che possono catturare un neutrone prima di decadere: le loro catture orientano il percorso. Tempi di dimezzamento di laboratorio (quello del ¹⁵¹Sm, per esempio, in una stella è più breve), e ⁸⁵Kr senza il suo isomero.",
+      ],
     } as Record<string, [string, string]>,
     knobsTitle: "Quanto combustibile e quanto veleno",
     knob: (n: string) => `${n} iniziale`,
     statsTitle: "I neutroni",
     exposure: "Esposizione ai neutroni",
-    exposureHint: "τ = ∫ n_n v_T dt: quanti neutroni per millibarn sono stati offerti a un nucleo",
+    exposureHint:
+      "τ = ∫ n_n v_T dt: quanti neutroni per millibarn sono stati offerti a un nucleo (1 mb = 10⁻²⁷ cm², l'area bersaglio di un nucleo)",
     peak: "Densità di neutroni massima",
     perSeed: "Neutroni catturati per seme",
     perSeedHint: "per nucleo pesante, dal ferro in su",
@@ -337,25 +523,29 @@ const it: RatesDict = {
     unchangedWord: "originale",
     distTitle: "Che cosa ha prodotto la combustione, dal ferro al bismuto",
     distLead:
-      "Ogni punto è un isotopo stabile: quanto ce n'è alla fine della combustione rispetto all'inizio, che è la miscela solare. I quadrati sono gli isotopi solo s, prodotti soltanto dal processo s; le bande ombreggiate sono i gusci di neutroni chiusi, dove il flusso si accumula.",
-    distLabel: "Fattori di produzione degli isotopi stabili dal ferro al bismuto in funzione del numero di massa, in scala logaritmica.",
+      "Ogni punto è un isotopo stabile: quanto ce n'è alla fine della combustione rispetto all'inizio, che è la miscela solare. In questo piccolo strato, non in tutta la stella. I quadrati sono gli isotopi solo s, prodotti soltanto dal processo s; le bande ombreggiate sono i gusci di neutroni chiusi, dove il flusso si accumula.",
+    distLabel:
+      "Fattori di produzione degli isotopi stabili dal ferro al bismuto in funzione del numero di massa, in scala logaritmica.",
     massNumber: "Numero di massa A",
     productionFactor: "fine ÷ inizio",
     shell: (n: number) => `N = ${n}`,
     sOnly: "solo s",
     below: "sotto un centesimo dell'inizio (bruciati)",
+    notModelled: "richiede un decadimento stellare che la rete non ha",
     heavy: "Dal ferro in su",
     toResults: "Guarda che cosa è cambiato",
     light: "Nuclei leggeri",
     neutronTitle: "La densità di neutroni durante la combustione",
-    neutronLead: "Neutroni liberi per centimetro cubo. Linea continua: con le tue modifiche; tratteggiata: originale.",
+    neutronLead: "Neutroni liberi per centimetro cubo.",
     neutronAxis: "neutroni per cm³",
     neutronLabel: "Grafico a linee della densità di neutroni in funzione del tempo, entrambi in scala logaritmica.",
     decayNote:
       "Abbondanze dopo il decadimento di ogni nucleo con tempo di dimezzamento inferiore a 10⁸ anni (tempi di dimezzamento di laboratorio, come in REACLIB: i tempi stellari dei punti di diramazione come il ¹⁷⁶Lu o il ⁷⁹Se non sono modellati).",
-    macsCol: "MACS a kT (mb)",
+    macsCol: (kT: string) => `MACS a kT = ${kT} (mb)`,
+    macs30: "MACS a 30 keV (mb)",
     networkNote: (n: number, r: number) =>
       `${n} nuclei e ${r} reazioni: i nuclei leggeri che producono e sottraggono neutroni, e ogni nucleo dal ferro al polonio presente nella miscela solare o raggiunto, con una cattura neutronica o un decadimento, da uno che vive più di sei ore. Tra i nuclei pesanti solo (n,γ) e decadimenti.`,
+    sensNuclei: "Il ferro, gli isotopi solo s e i picchi",
   },
 }
 

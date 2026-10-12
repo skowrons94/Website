@@ -413,7 +413,7 @@ export function integrate(c: Compiled, opts: IntegrateOptions): IntegrateResult 
   const NA = c.network.screening.NA
   const nDensity = (time: number, yn: number) => {
     const { T9, rho } = stateAt(opts.history, time)
-    return { n: rho * NA * Math.max(yn, 0), v: Math.sqrt((2 * 1.380649e-16 * T9 * 1e9) / 1.67492750e-24) }
+    return { n: rho * NA * Math.max(yn, 0), v: Math.sqrt((2 * 1.380649e-16 * T9 * 1e9) / 1.6749275e-24) }
   }
   let tau = 0
   let peak = iN >= 0 ? nDensity(0, y[iN]).n : 0
@@ -483,46 +483,46 @@ export function integrate(c: Compiled, opts: IntegrateOptions): IntegrateResult 
         if (r > err) err = r
       }
     } else {
-    if (!fresh) sys.rhs(t, y, F0)
-    fresh = true
-    // Jacobian at (t, y): W = I − h d J
-    sys.fluxes(t, y)
-    val.fill(0)
-    sys.addJacobian(y, -h * D, val)
-    for (let i = 0; i < n; i++) val[pattern.diag[i]] += 1
-    factor(pattern, val, work)
-    if (timeDependent) {
-      const dt = Math.max(1e-7 * Math.abs(t), 1e-7 * h)
-      sys.rhs(t + dt, y, Tt)
-      for (let i = 0; i < n; i++) Tt[i] = (Tt[i] - F0[i]) / dt
-    }
-    // k1 = W⁻¹ (F0 + h d T)
-    for (let i = 0; i < n; i++) ytmp[i] = F0[i] + (timeDependent ? h * D * Tt[i] : 0)
-    lu(ytmp, k1)
-    for (let i = 0; i < n; i++) ytmp[i] = y[i] + 0.5 * h * k1[i]
-    sys.rhs(t + 0.5 * h, ytmp, F1)
-    for (let i = 0; i < n; i++) ytmp[i] = F1[i] - k1[i]
-    lu(ytmp, k2)
-    for (let i = 0; i < n; i++) {
-      k2[i] += k1[i]
-      ynew[i] = y[i] + h * k2[i]
-    }
-    sys.rhs(t + h, ynew, F2)
-    for (let i = 0; i < n; i++) {
-      ytmp[i] = F2[i] - E32 * (k2[i] - F1[i]) - 2 * (k1[i] - F0[i]) + (timeDependent ? h * D * Tt[i] : 0)
-    }
-    lu(ytmp, k3)
-    // the error estimate, filtered through W⁻¹ (Shampine's device for stiff
-    // components, whose raw estimate is not damped and would hold the step
-    // down in quasi-equilibrium)
-    for (let i = 0; i < n; i++) ytmp[i] = (h / 6) * (k1[i] - 2 * k2[i] + k3[i])
-    lu(ytmp, k3)
-    for (let i = 0; i < n; i++) {
-      const e = Math.abs(k3[i])
-      const sc = atol + rtol * Math.max(Math.abs(y[i]), Math.abs(ynew[i]))
-      const r = e / sc
-      if (r > err) err = r
-    }
+      if (!fresh) sys.rhs(t, y, F0)
+      fresh = true
+      // Jacobian at (t, y): W = I − h d J
+      sys.fluxes(t, y)
+      val.fill(0)
+      sys.addJacobian(y, -h * D, val)
+      for (let i = 0; i < n; i++) val[pattern.diag[i]] += 1
+      factor(pattern, val, work)
+      if (timeDependent) {
+        const dt = Math.max(1e-7 * Math.abs(t), 1e-7 * h)
+        sys.rhs(t + dt, y, Tt)
+        for (let i = 0; i < n; i++) Tt[i] = (Tt[i] - F0[i]) / dt
+      }
+      // k1 = W⁻¹ (F0 + h d T)
+      for (let i = 0; i < n; i++) ytmp[i] = F0[i] + (timeDependent ? h * D * Tt[i] : 0)
+      lu(ytmp, k1)
+      for (let i = 0; i < n; i++) ytmp[i] = y[i] + 0.5 * h * k1[i]
+      sys.rhs(t + 0.5 * h, ytmp, F1)
+      for (let i = 0; i < n; i++) ytmp[i] = F1[i] - k1[i]
+      lu(ytmp, k2)
+      for (let i = 0; i < n; i++) {
+        k2[i] += k1[i]
+        ynew[i] = y[i] + h * k2[i]
+      }
+      sys.rhs(t + h, ynew, F2)
+      for (let i = 0; i < n; i++) {
+        ytmp[i] = F2[i] - E32 * (k2[i] - F1[i]) - 2 * (k1[i] - F0[i]) + (timeDependent ? h * D * Tt[i] : 0)
+      }
+      lu(ytmp, k3)
+      // the error estimate, filtered through W⁻¹ (Shampine's device for stiff
+      // components, whose raw estimate is not damped and would hold the step
+      // down in quasi-equilibrium)
+      for (let i = 0; i < n; i++) ytmp[i] = (h / 6) * (k1[i] - 2 * k2[i] + k3[i])
+      lu(ytmp, k3)
+      for (let i = 0; i < n; i++) {
+        const e = Math.abs(k3[i])
+        const sc = atol + rtol * Math.max(Math.abs(y[i]), Math.abs(ynew[i]))
+        const r = e / sc
+        if (r > err) err = r
+      }
     }
     if (!Number.isFinite(err)) err = 1e10
     if (err > 1) {

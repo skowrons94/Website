@@ -1,9 +1,13 @@
 "use client"
 
+import { memo } from "react"
+
 import Link from "next/link"
 
 import { Sci } from "@/components/sci"
 import { localePath, type Lang } from "@/lib/locale"
+import { C, SERIES, Shape } from "./chart-kit"
+import { factorText } from "./factor-slider"
 import { duration, shortTime, YEAR_S } from "./format"
 
 export interface LifeRow {
@@ -12,10 +16,19 @@ export interface LifeRow {
   /** the nucleus that waits, e.g. ¹⁴N */
   target: string
   tau: number
+  /** the waiting time at the unchanged rate, when the reader scaled it */
+  tau0?: number
   atlas: string | null
   bottleneck: boolean
-  /** the rate is scaled by the reader */
+  /** the colour slot of a picked reaction (−1: not picked) */
+  slot: number
+  /** the reader's factor on this rate */
   scaled?: number
+}
+
+export interface TimeRef {
+  t: number
+  label: string
 }
 
 const TICKS = [
@@ -34,18 +47,22 @@ const TICKS = [
 ]
 
 /**
- * Horizontal bars of the mean waiting time before each reaction, on a log
- * time axis with ticks at human units. Bars run from the left edge of the
- * axis, so a longer bar is a longer wait; the bottleneck takes the second
- * colour and says so in words.
+ * The mean waiting time before each reaction as a dot on a logarithmic time
+ * axis (no bar: on a log axis a bar's length would only measure the distance
+ * from an arbitrary floor). Vertical rules mark times that give the dots a
+ * meaning: the burn time, the age of the Sun. Grey dots; a picked reaction
+ * in its series colour and shape; the bottleneck in ink, named; a changed
+ * rate leaves a hollow dot at its old waiting time.
  */
-export function LifetimeBars({
+export const LifetimeBars = memo(function LifetimeBars({
   rows,
   lang,
   label,
   waits,
   bottleneckWord,
   never,
+  refs = [],
+  unscaledWord,
 }: {
   rows: LifeRow[]
   lang: Lang
@@ -53,37 +70,73 @@ export function LifetimeBars({
   waits: (n: string) => string
   bottleneckWord: string
   never: string
+  refs?: TimeRef[]
+  unscaledWord: string
 }) {
-  const finite = rows.map((r) => r.tau).filter((t) => Number.isFinite(t) && t > 0)
+  const finite = rows.flatMap((r) => [r.tau, r.tau0 ?? r.tau]).filter((t) => Number.isFinite(t) && t > 0)
   if (!finite.length) return null
   let lo = Math.log10(Math.min(...finite))
   let hi = Math.log10(Math.max(...finite))
-  lo = Math.floor(lo - 0.3)
-  hi = Math.ceil(hi + 0.3)
+  const shownRefs = refs.filter((r) => Math.log10(r.t) > lo - 2 && Math.log10(r.t) < hi + 3)
+  for (const r of shownRefs) {
+    lo = Math.min(lo, Math.log10(r.t))
+    hi = Math.max(hi, Math.log10(r.t))
+  }
+  lo = Math.floor(lo - 0.4)
+  hi = Math.ceil(hi + 0.4)
   if (hi - lo < 3) lo = hi - 3
-  // the axis takes 70% of the track; the rest is room for the value label
-  const frac = (t: number) => 0.7 * Math.min(1, Math.max(0.006, (Math.log10(t) - lo) / (hi - lo)))
+  const frac = (t: number) => Math.min(1, Math.max(0, (Math.log10(t) - lo) / (hi - lo)))
   let ticks = TICKS.filter((t) => Math.log10(t) >= lo && Math.log10(t) <= hi)
-  if (ticks.length > 6) ticks = ticks.filter((_, i) => i % 2 === ticks.length % 2)
+  if (ticks.length > 6) {
+    // keep the largest tick (1 Gyr when the bottleneck is billions of years)
+    const keep = ticks.length % 2 === 1 ? 0 : 1
+    ticks = ticks.filter((_, i) => i % 2 === keep)
+  }
+  const pct = (t: number) => `${(frac(t) * 100).toFixed(2)}%`
 
   return (
     <div role="figure" aria-label={label}>
-      <div className="relative ml-0 h-6 sm:ml-[16rem]" aria-hidden>
-        {ticks.map((t) => (
-          <span
-            key={t}
-            className="tabular absolute -translate-x-1/2 whitespace-nowrap text-[0.7rem] text-muted-foreground"
-            style={{ left: `${frac(t) * 100}%` }}
-          >
-            {shortTime(t, lang)}
-          </span>
-        ))}
+      <div className="grid grid-cols-1 gap-x-4 sm:grid-cols-[14rem_minmax(0,1fr)]">
+        <span className="hidden sm:block" />
+        <div className="relative mx-3" style={{ height: `${1.4 + 1.1 * shownRefs.length}rem` }} aria-hidden>
+          {ticks.map((t) => (
+            <span
+              key={t}
+              className="tabular absolute bottom-0 -translate-x-1/2 whitespace-nowrap text-[0.7rem] text-muted-foreground"
+              style={{ left: pct(t) }}
+            >
+              {shortTime(t, lang)}
+            </span>
+          ))}
+          {shownRefs.map((r, i) => (
+            <span
+              key={r.label}
+              className="absolute whitespace-nowrap text-[0.7rem] font-medium text-foreground"
+              style={{
+                top: `${1.1 * i}rem`,
+                ...(frac(r.t) > 0.5
+                  ? { right: `calc(${(100 - frac(r.t) * 100).toFixed(2)}% - 1px)` }
+                  : { left: `calc(${pct(r.t)} - 1px)` }),
+              }}
+            >
+              {frac(r.t) > 0.5 ? `${r.label} ┐` : `┌ ${r.label}`}
+            </span>
+          ))}
+        </div>
       </div>
-      <ul className="divide-y divide-border/60 border-y border-border/60">
+      <ul className="border-y border-border/60">
         {rows.map((r) => {
           const fin = Number.isFinite(r.tau)
+          const color = r.bottleneck ? C.ink : r.slot >= 0 ? SERIES[r.slot] : "var(--viz-text-muted)"
+          const right = frac(r.tau) < 0.62
+          // the value label clears both dots when a rate was changed
+          const ghost = r.tau0 !== undefined && Number.isFinite(r.tau0) ? r.tau0 : r.tau
+          const edge = right ? Math.max(frac(r.tau), frac(ghost)) : Math.min(frac(r.tau), frac(ghost))
           return (
-            <li key={r.id} className="grid grid-cols-1 gap-x-4 gap-y-1 py-2.5 sm:grid-cols-[15rem_minmax(0,1fr)]">
+            <li
+              key={r.id}
+              className="grid grid-cols-1 items-center gap-x-4 gap-y-1 border-b border-border/40 py-2 last:border-b-0 sm:grid-cols-[14rem_minmax(0,1fr)]"
+            >
               <div className="min-w-0 text-sm leading-snug">
                 {r.atlas ? (
                   <Link
@@ -98,42 +151,100 @@ export function LifetimeBars({
                   </span>
                 )}
                 {r.scaled !== undefined && r.scaled !== 1 && (
-                  <span className="tabular ml-1.5 rounded bg-secondary px-1 text-[0.7rem] text-muted-foreground">
-                    ×{r.scaled.toPrecision(2)}
+                  <span className="tabular ml-1.5 rounded bg-[var(--rates-changed)] px-1 text-[0.7rem] font-medium text-[var(--viz-surface)]">
+                    {factorText(r.scaled, lang)}
                   </span>
                 )}
                 <span className="block text-xs text-muted-foreground">
                   <Sci>{waits(r.target)}</Sci>
                 </span>
               </div>
-              <div className="relative flex min-h-7 items-center">
-                {/* decade grid */}
+              <div className="relative mx-3 h-8">
+                <span className="absolute inset-x-0 top-1/2 h-px bg-[var(--viz-grid)]" aria-hidden />
                 {ticks.map((t) => (
                   <span
                     key={t}
-                    className="absolute inset-y-0 w-px bg-[var(--viz-grid)]"
-                    style={{ left: `${frac(t) * 100}%` }}
+                    className="absolute inset-y-1 w-px bg-[var(--viz-grid)]"
+                    style={{ left: pct(t) }}
+                    aria-hidden
+                  />
+                ))}
+                {shownRefs.map((x) => (
+                  <span
+                    key={x.label}
+                    className="absolute inset-y-0 w-px bg-[var(--viz-text-muted)] opacity-60"
+                    style={{ left: pct(x.t) }}
                     aria-hidden
                   />
                 ))}
                 {fin ? (
                   <>
+                    {r.tau0 !== undefined && Number.isFinite(r.tau0) && r.tau0 !== r.tau && (
+                      <>
+                        <span
+                          className="absolute top-1/2 h-px -translate-y-1/2 bg-[var(--rates-changed)]"
+                          style={{
+                            left: pct(Math.min(r.tau, r.tau0)),
+                            width: `${Math.abs(frac(r.tau) - frac(r.tau0)) * 100}%`,
+                          }}
+                          aria-hidden
+                        />
+                        <svg
+                          className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 overflow-visible"
+                          style={{ left: pct(r.tau0) }}
+                          width="12"
+                          height="12"
+                          aria-hidden
+                        >
+                          <circle cx="6" cy="6" r="4.5" fill="none" stroke={C.base} strokeWidth="1.5" />
+                          <title>{`${unscaledWord}: ${duration(r.tau0, lang)}`}</title>
+                        </svg>
+                      </>
+                    )}
+                    <svg
+                      className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 overflow-visible"
+                      style={{ left: pct(r.tau) }}
+                      width="14"
+                      height="14"
+                      aria-hidden
+                    >
+                      {r.slot >= 0 && !r.bottleneck ? (
+                        <Shape
+                          slot={r.slot}
+                          x={7}
+                          y={7}
+                          r={5}
+                          fill={color}
+                          stroke="var(--viz-surface)"
+                          strokeWidth={1.5}
+                        />
+                      ) : (
+                        <circle
+                          cx="7"
+                          cy="7"
+                          r={r.bottleneck ? 6 : 5}
+                          fill={color}
+                          stroke="var(--viz-surface)"
+                          strokeWidth="1.5"
+                        />
+                      )}
+                    </svg>
                     <span
-                      className="relative h-3.5 shrink-0 rounded-r-[4px]"
-                      style={{
-                        width: `${frac(r.tau) * 100}%`,
-                        background: r.bottleneck ? "var(--viz-series-2)" : "var(--viz-series-1)",
-                      }}
-                    />
-                    <span
-                      className={`tabular relative ml-2 min-w-0 text-xs leading-tight ${r.bottleneck ? "font-semibold text-foreground" : "text-muted-foreground"}`}
+                      className={`tabular absolute top-1/2 -translate-y-1/2 whitespace-nowrap text-xs leading-tight ${r.bottleneck ? "font-semibold text-foreground" : "text-muted-foreground"}`}
+                      style={
+                        right
+                          ? { left: `calc(${(edge * 100).toFixed(2)}% + 12px)` }
+                          : { right: `calc(${(100 - edge * 100).toFixed(2)}% + 12px)` }
+                      }
                     >
                       {duration(r.tau, lang)}
                       {r.bottleneck && ` · ${bottleneckWord}`}
                     </span>
                   </>
                 ) : (
-                  <span className="relative text-xs italic text-muted-foreground">{never}</span>
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 text-xs italic text-muted-foreground">
+                    {never}
+                  </span>
                 )}
               </div>
             </li>
@@ -142,4 +253,4 @@ export function LifetimeBars({
       </ul>
     </div>
   )
-}
+})

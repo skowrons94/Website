@@ -1,14 +1,19 @@
 "use client"
 
+import { useId, useState } from "react"
+import { Settings2 } from "lucide-react"
+
 import { Sci } from "@/components/sci"
 import { elideItalian } from "@/lib/localize.mjs"
 import type { Lang } from "@/lib/locale"
+import { composition, metalsMax, METALS_RANGE, metalFraction } from "@/lib/rates/composition"
 import { ratesDict } from "@/lib/rates/i18n"
 import { scenarioRequest, type RunRequest } from "@/lib/rates/run"
 import type { Network, Scenario } from "@/lib/rates/schema"
-import { Fold } from "./chart-kit"
-import { density, duration, sig2, temperature } from "./format"
+import { density, duration, NB, sig2, tShort, temperature } from "./format"
 import { LogSlider } from "./log-slider"
+
+export { composition }
 
 /** What the reader can change about a scenario. */
 export interface Conditions {
@@ -44,30 +49,13 @@ export const sameConditions = (a: Conditions, b: Conditions) =>
   Object.entries(a.knobs).every(([k, v]) => v === (b.knobs[k] ?? 1)) &&
   Object.entries(b.knobs).every(([k, v]) => v === (a.knobs[k] ?? 1))
 
-/**
- * The scenario's composition with its metals (Z > 2) and the knobs' nuclei
- * scaled; ⁴He (or, without it, the most abundant nucleus) takes up the
- * difference so the mass fractions still add up.
- */
-export function composition(network: Network, s: Scenario, c: Pick<Conditions, "metals" | "knobs">): Record<string, number> {
-  const knobs = Object.entries(c.knobs).filter(([, v]) => v !== 1)
-  if (c.metals === 1 && !knobs.length) return s.X
-  const X: Record<string, number> = { ...s.X }
-  let delta = 0
-  for (const n of network.nuclei) {
-    const f = (n.Z > 2 ? c.metals : 1) * (c.knobs[n.name] ?? 1)
-    if (f !== 1 && X[n.name]) {
-      delta += X[n.name] * (1 - f)
-      X[n.name] *= f
-    }
-  }
-  const sink = "he4" in X && X.he4 + delta >= 0 ? "he4" : Object.entries(X).sort((a, b) => b[1] - a[1])[0][0]
-  X[sink] = Math.max(0, X[sink] + delta)
-  return X
-}
-
 /** The worker request for a scenario under the reader's conditions and rate scaling. */
-export function conditionsRequest(network: Network, s: Scenario, c: Conditions, scale: Record<string, number>): RunRequest {
+export function conditionsRequest(
+  network: Network,
+  s: Scenario,
+  c: Conditions,
+  scale: Record<string, number>,
+): RunRequest {
   const base = scenarioRequest(network, s, c.screening)
   const fuel = s.until?.nucleus ?? network.ui.fuel
   return {
@@ -80,7 +68,13 @@ export function conditionsRequest(network: Network, s: Scenario, c: Conditions, 
   }
 }
 
-/** The scenario cards, the conditions line, the controls and the sources. */
+export const shortName = (s: Scenario, lang: Lang) => (lang === "it" ? (s.short_it ?? s.name_it) : (s.short ?? s.name))
+
+/**
+ * The control bar at the top of an explorer: the networks (when given), the
+ * sites as one row of chips, the conditions in one line with a gear that
+ * opens their sliders, and the sources of the numbers.
+ */
 export function ScenarioPanel({
   network,
   scenario,
@@ -90,6 +84,7 @@ export function ScenarioPanel({
   lang,
   tRange = [0.005, 2],
   metals = true,
+  tabs,
   children,
 }: {
   network: Network
@@ -101,7 +96,9 @@ export function ScenarioPanel({
   tRange?: [number, number]
   /** offer the metallicity slider */
   metals?: boolean
-  /** more controls, inside the fold */
+  /** the network tabs, above the sites */
+  tabs?: React.ReactNode
+  /** more controls, inside the conditions panel */
   children?: React.ReactNode
 }) {
   const t = ratesDict(lang)
@@ -112,153 +109,203 @@ export function ScenarioPanel({
   const outOfRange = cond.T9 < 0.01 || cond.T9 > 10
   const fuel = scenario.until?.nucleus ?? network.ui.fuel
   const nuc = network.nuclei.find((n) => n.name === fuel)
-  const fuelLabel = fuel === "p" ? (it ? "l'idrogeno" : "hydrogen") : fuel === "he4" ? (it ? "l'elio" : "helium") : (nuc?.label ?? "")
-  const hasMetals = metals && network.nuclei.some((n) => n.Z > 2)
+  const fuelLabel =
+    fuel === "p" ? (it ? "l'idrogeno" : "hydrogen") : fuel === "he4" ? (it ? "l'elio" : "helium") : (nuc?.label ?? "")
+  const hasMetals = metals && metalFraction(network, scenario) > 1e-4
+  const mMax = hasMetals ? metalsMax(network, scenario) : 1
+  const [open, setOpen] = useState(false)
+  const [srcOpen, setSrcOpen] = useState(false)
+  const panelId = useId()
+  const srcId = useId()
 
   return (
-    <div className="rounded-lg border border-border bg-card p-4 sm:p-6">
-      <fieldset>
-        <legend className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">{t.where}</legend>
-        <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-          {network.scenarios.map((s, i) => {
-            const on = s.id === scenario.id
-            return (
-              <label
-                key={s.id}
-                className={`relative flex cursor-pointer gap-3 rounded-md border p-3 transition-colors focus-within:ring-2 focus-within:ring-ring ${
-                  on ? "border-foreground/60 bg-accent/40" : "border-border hover:border-foreground/30"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name={`scenario-${network.id}`}
-                  value={s.id}
-                  checked={on}
-                  onChange={() => onScenario(s)}
-                  className="sr-only"
-                />
-                <span
-                  className={`tabular mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[0.7rem] ${
-                    on ? "border-foreground bg-foreground text-background" : "border-border text-muted-foreground"
+    <div className="rounded-lg border border-border bg-card p-3 sm:p-4">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-4">
+        {tabs}
+        {tabs && <span className="hidden h-7 w-px bg-border lg:block" aria-hidden />}
+        <fieldset className="min-w-0">
+          <legend className="sr-only">{t.where}</legend>
+          <div className="relative -mx-3 flex gap-1.5 overflow-x-auto px-3 pb-0.5 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
+            {network.scenarios.map((s) => {
+              const on = s.id === scenario.id
+              return (
+                <label
+                  key={s.id}
+                  title={sName(s)}
+                  className={`inline-flex min-h-10 shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap rounded-full border px-3.5 text-sm transition-colors focus-within:ring-2 focus-within:ring-ring ${
+                    on ? "border-foreground bg-foreground text-background" : "border-border hover:border-foreground/40"
                   }`}
-                  aria-hidden
                 >
-                  {i + 1}
-                </span>
-                <span className="min-w-0">
-                  <span className="block text-sm font-medium leading-snug">
+                  <input
+                    type="radio"
+                    name={`scenario-${network.id}`}
+                    value={s.id}
+                    checked={on}
+                    onChange={() => onScenario(s)}
+                    className="sr-only"
+                  />
+                  <span className="font-medium">
+                    <Sci>{shortName(s, lang)}</Sci>
+                  </span>
+                  <span className={`tabular text-xs ${on ? "text-background/75" : "text-muted-foreground"}`}>
+                    {tShort(s.T9, lang)}
+                  </span>
+                  <span className="sr-only">
                     <Sci>{sName(s)}</Sci>
                   </span>
-                  <span className="mt-0.5 block text-xs text-muted-foreground">
-                    <Sci>{`${temperature(s.T9, lang)} · ${density(s.rho, lang)}`}</Sci>
-                  </span>
-                </span>
-              </label>
-            )
-          })}
-        </div>
-      </fieldset>
+                </label>
+              )
+            })}
+          </div>
+        </fieldset>
+      </div>
 
-      <p className="mt-4 text-pretty text-sm leading-relaxed text-muted-foreground">
-        <span className="font-medium text-foreground">{t.conditions}:</span>{" "}
-        <Sci>{`${temperature(cond.T9, lang)} (T₉ = ${sig2(cond.T9, lang)}), ${density(cond.rho, lang)}, ${t.burnTime.toLowerCase()} ${duration(cond.time_s, lang)}`}</Sci>
-        {custom && (
+      <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm">
+        <p className="min-w-0 text-pretty text-muted-foreground">
+          <span className="font-medium text-foreground">
+            <Sci>{sName(scenario)}</Sci>
+          </span>
+          <span className="tabular">
+            {" · "}
+            <Sci>{`${tShort(cond.T9, lang)} · ${density(cond.rho, lang)} · ${duration(cond.time_s, lang)}`}</Sci>
+          </span>
+          {custom && (
+            <button
+              type="button"
+              onClick={() => setCond(fromScenario(scenario))}
+              className="ml-2 text-link underline-offset-4 hover:underline"
+            >
+              {t.resetConditions}
+            </button>
+          )}
+        </p>
+        <span className="ml-auto flex flex-wrap gap-x-3 gap-y-1">
           <button
             type="button"
-            onClick={() => setCond(fromScenario(scenario))}
-            className="ml-2 text-link underline-offset-4 hover:underline"
+            aria-expanded={open}
+            aria-controls={panelId}
+            onClick={() => setOpen(!open)}
+            className={`inline-flex min-h-9 items-center gap-1.5 rounded-md border px-2.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+              open || custom
+                ? "border-foreground/50 text-foreground"
+                : "border-border text-muted-foreground hover:text-foreground"
+            }`}
           >
-            {t.resetConditions}
+            <Settings2 className="h-4 w-4" aria-hidden />
+            <span className="sm:hidden">{t.conditions}</span>
+            <span className="hidden sm:inline">{t.adjust}</span>
           </button>
-        )}
-      </p>
+          <button
+            type="button"
+            aria-expanded={srcOpen}
+            aria-controls={srcId}
+            onClick={() => setSrcOpen(!srcOpen)}
+            className="min-h-9 text-sm text-link underline-offset-4 hover:underline"
+          >
+            <span className="sm:hidden">{t.sources}</span>
+            <span className="hidden sm:inline">{t.sourceOf}</span>
+          </button>
+        </span>
+      </div>
       {outOfRange && (
         <p role="status" className="mt-2 rounded-md bg-secondary px-3 py-2 text-sm">
           <Sci>{t.validity(temperature(cond.T9, lang))}</Sci>
         </p>
       )}
 
-      <Fold title={t.adjust} className="mt-4 bg-background">
-        <div className="grid gap-x-8 gap-y-5 pt-2 md:grid-cols-2">
-          <LogSlider
-            label={t.temperature}
-            value={cond.T9}
-            min={tRange[0]}
-            max={tRange[1]}
-            onChange={(v) => setCond({ ...cond, T9: Number(v.toPrecision(3)) })}
-            valueText={temperature(cond.T9, lang)}
-          />
-          <LogSlider
-            label={t.density}
-            value={cond.rho}
-            min={0.01}
-            max={1e6}
-            onChange={(v) => setCond({ ...cond, rho: Number(v.toPrecision(3)) })}
-            valueText={density(cond.rho, lang)}
-          />
-          <LogSlider
-            label={t.burnTime}
-            value={cond.time_s}
-            min={1}
-            max={3e17}
-            onChange={(v) => setCond({ ...cond, time_s: Number(v.toPrecision(3)) })}
-            valueText={duration(cond.time_s, lang)}
-          />
-          {hasMetals && (
-            <LogSlider
-              label={t.metals}
-              value={cond.metals}
-              min={0.01}
-              max={10}
-              onChange={(v) => setCond({ ...cond, metals: Number(v.toPrecision(3)) })}
-              valueText={`×${sig2(cond.metals, lang)} ${t.metalsHint}`}
-            />
-          )}
-          {fuel && (
-            <label className="flex items-start gap-3 text-sm">
-              <input
-                type="checkbox"
-                checked={cond.until}
-                onChange={(e) => setCond({ ...cond, until: e.target.checked })}
-                className="mt-0.5 h-4 w-4 accent-[hsl(var(--link))]"
-              />
-              <span>
-                <Sci>{L(t.stopOnFuel(fuelLabel, scenario.until?.fraction ?? 0.01))}</Sci>
-              </span>
-            </label>
-          )}
-          <label className="flex items-start gap-3 text-sm">
-            <input
-              type="checkbox"
-              checked={cond.screening}
-              onChange={(e) => setCond({ ...cond, screening: e.target.checked })}
-              className="mt-0.5 h-4 w-4 accent-[hsl(var(--link))]"
-            />
-            <span>
-              {t.screening}
-              <span className="block text-xs text-muted-foreground">{t.screeningHint}</span>
-            </span>
-          </label>
-        </div>
-        {children}
-      </Fold>
-
-      <details className="group mt-3 text-sm">
-        <summary className="inline-flex min-h-8 cursor-pointer list-none items-center gap-1 text-link underline-offset-4 hover:underline [&::-webkit-details-marker]:hidden">
-          {t.sourceOf}
-        </summary>
-        <div className="mt-2 space-y-2 text-pretty leading-relaxed text-muted-foreground">
-          <p>
+      {srcOpen && (
+        <div
+          id={srcId}
+          className="mt-3 space-y-2 border-t border-border/70 pt-3 text-sm leading-relaxed text-muted-foreground"
+        >
+          <p className="text-pretty">
             <span className="font-medium text-foreground">{t.source}:</span>{" "}
             <Sci>{it ? scenario.source_it : scenario.source}</Sci>
           </p>
           {(it ? scenario.note_it : scenario.note) && (
-            <p>
+            <p className="text-pretty">
               <Sci>{(it ? scenario.note_it : scenario.note) ?? ""}</Sci>
             </p>
           )}
         </div>
-      </details>
+      )}
+
+      {open && (
+        <div id={panelId} className="mt-3 border-t border-border/70 pt-3">
+          <div className="grid gap-x-8 gap-y-4 md:grid-cols-2">
+            <LogSlider
+              label={t.temperature}
+              value={cond.T9}
+              min={tRange[0]}
+              max={tRange[1]}
+              onChange={(v) => setCond({ ...cond, T9: Number(v.toPrecision(3)) })}
+              valueText={`${temperature(cond.T9, lang)} (T₉${NB}=${NB}${sig2(cond.T9, lang)})`}
+            />
+            <LogSlider
+              label={t.density}
+              value={cond.rho}
+              min={0.01}
+              max={1e6}
+              onChange={(v) => setCond({ ...cond, rho: Number(v.toPrecision(3)) })}
+              valueText={density(cond.rho, lang)}
+            />
+            <LogSlider
+              label={t.burnTime}
+              value={cond.time_s}
+              min={1}
+              max={3e17}
+              onChange={(v) => setCond({ ...cond, time_s: Number(v.toPrecision(3)) })}
+              valueText={duration(cond.time_s, lang)}
+            />
+            {hasMetals && (
+              <div>
+                <LogSlider
+                  label={t.metals}
+                  value={cond.metals}
+                  min={METALS_RANGE[0]}
+                  max={mMax}
+                  onChange={(v) =>
+                    setCond({
+                      ...cond,
+                      metals: Math.min(mMax, Number(v.toPrecision(2))),
+                    })
+                  }
+                  valueText={t.metalsHint(sig2(cond.metals, lang))}
+                />
+                {mMax < METALS_RANGE[1] && (
+                  <p className="mt-1 text-xs text-muted-foreground">{t.metalsCap(sig2(mMax, lang))}</p>
+                )}
+              </div>
+            )}
+            {fuel && (
+              <label className="flex items-start gap-3 text-sm">
+                <input
+                  type="checkbox"
+                  checked={cond.until}
+                  onChange={(e) => setCond({ ...cond, until: e.target.checked })}
+                  className="mt-0.5 h-4 w-4 accent-[var(--viz-text)]"
+                />
+                <span>
+                  <Sci>{L(t.stopOnFuel(fuelLabel, scenario.until?.fraction ?? 0.01))}</Sci>
+                </span>
+              </label>
+            )}
+            <label className="flex items-start gap-3 text-sm">
+              <input
+                type="checkbox"
+                checked={cond.screening}
+                onChange={(e) => setCond({ ...cond, screening: e.target.checked })}
+                className="mt-0.5 h-4 w-4 accent-[var(--viz-text)]"
+              />
+              <span>
+                {t.screening}
+                <span className="block text-xs text-muted-foreground">{t.screeningHint}</span>
+              </span>
+            </label>
+          </div>
+          {children}
+        </div>
+      )}
     </div>
   )
 }

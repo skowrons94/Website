@@ -419,6 +419,7 @@ def scenario_json(s: dict, nucs) -> dict:
     out = {
         "id": s["id"],
         "name": s["name"], "name_it": s["name_it"],
+        "short": s.get("short", s["name"]), "short_it": s.get("short_it", s["name_it"]),
         "T9": float(s["T9"]), "rho": float(s["rho"]), "time_s": time,
         "until": s.get("until"),
         "X": {n.raw: _sig(X.get(comp_key(n), 0.0)) for n in nucs},

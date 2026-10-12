@@ -77,7 +77,7 @@ export function macs(network: Network, provider: RateProvider, reactionId: strin
   if (!r || r.reactants.length !== 2) return null
   const [a, b] = r.reactants.map((i) => network.nuclei[i])
   if (a.Z !== 0 && b.Z !== 0) return null
-  const u = 1.66053906660e-24
+  const u = 1.6605390666e-24
   const mu = ((a.A * b.A) / (a.A + b.A)) * u
   const vT = Math.sqrt((2 * 1.380649e-16 * T9 * 1e9) / mu)
   return (provider.rate(reactionId, T9) / (network.screening.NA * vT)) * 1e27
