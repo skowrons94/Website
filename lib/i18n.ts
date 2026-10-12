@@ -38,7 +38,10 @@ export function decimal(text: string | number, lang: Lang): string {
 /** `The CNO cycles` → `CNO cycles`, `Le catene pp` → `Catene pp`: a chip label. */
 export function withoutArticle(name: string): string {
   const stripped = name.replace(/^(The|Il|Lo|La|I|Gli|Le)\s+/, "").replace(/^L['’]/, "")
-  return stripped === name ? name : stripped.charAt(0).toUpperCase() + stripped.slice(1)
+  if (stripped === name) return name
+  // `s-process`: a lower-case symbol stays lower case.
+  if (/^[a-z]-/.test(stripped)) return stripped
+  return stripped.charAt(0).toUpperCase() + stripped.slice(1)
 }
 
 const en = {
@@ -469,6 +472,8 @@ const en = {
     ],
     halfLifeOf: "Half-life of",
     halfLifeLab: "In the laboratory, as a neutral atom. In a star the electron density, and so the rate, differs.",
+    halfLifeLabCapture:
+      "In the laboratory. In a star, thermally excited states and ionisation can change it; it decides how often this nucleus decays before it captures a neutron.",
     gamow: "Gamow window",
     gamowNote: ["Peak energy E", "0", " ± half the 1/e width, centre of mass, from the AME2020 masses."],
     thermal: "Thermal energy kT",
@@ -646,6 +651,13 @@ const en = {
     glossaryLead:
       "The words the atlas uses, in plain language. Each reaction page links here the first time a term appears.",
     seeAlso: "See also",
+    familyPageLink: (name: string) => `${name}, from iron to lead`,
+    sProcessLink: "The s-process",
+    sProcessCard: "The s-process",
+    sProcessCardText:
+      "How slow neutron captures carry iron to lead: the path on the chart of nuclides, its branch points, and how the captures are measured.",
+    glossaryPage: "Read more on its own page",
+    alsoInAtlas: "In the atlas",
     readMore: "Read more",
     readLess: "Show less",
     // --- atlas (round 2) ---
@@ -1124,6 +1136,8 @@ const it: Dictionary = {
       " sono ripartiti tra il positrone e il neutrino.",
     ],
     halfLifeOf: "Tempo di dimezzamento del",
+    halfLifeLabCapture:
+      "In laboratorio. In una stella gli stati eccitati dalla temperatura e la ionizzazione possono cambiarlo; decide quanto spesso questo nucleo decade prima di catturare un neutrone.",
     halfLifeLab:
       "In laboratorio, come atomo neutro. In una stella la densità di elettroni, e quindi il tasso, è diversa.",
     gamow: "Finestra di Gamow",
@@ -1303,6 +1317,13 @@ const it: Dictionary = {
     glossaryLead:
       "Le parole che l'atlante usa, in linguaggio semplice. Ogni pagina di reazione rimanda qui la prima volta che un termine compare.",
     seeAlso: "Vedi anche",
+    familyPageLink: (name: string) => `${name}, dal ferro al piombo`,
+    sProcessLink: "Il processo s",
+    sProcessCard: "Il processo s",
+    sProcessCardText:
+      "Come le catture lente di neutroni portano il ferro fino al piombo: il percorso sulla carta dei nuclidi, i suoi punti di diramazione e come si misurano le catture.",
+    glossaryPage: "Approfondisci nella pagina dedicata",
+    alsoInAtlas: "Nell'atlante",
     readMore: "Leggi tutto",
     readLess: "Mostra meno",
     // --- atlas (round 2) ---

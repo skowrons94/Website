@@ -119,7 +119,7 @@ function Facts({ reaction: r, lang }: { reaction: Reaction; lang: Lang }) {
             </dd>
             {r.kind !== "decay" && (
               <dd className="mt-1 text-xs leading-snug text-muted-foreground">
-                {t.halfLifeLab}
+                {r.projectile === "n" ? t.halfLifeLabCapture : t.halfLifeLab}
               </dd>
             )}
           </div>
@@ -253,6 +253,20 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
     .map((nid) => atlas.networks.find((n) => n.id === nid))
     .filter((n): n is NonNullable<typeof n> => Boolean(n))
   const family = networks[0] ? atlas.families.find((f) => f.id === networks[0].family) : undefined
+  // Where a family lives: its own page (the s-process) or its place on the map.
+  const familyHref = (id: string) => atlas.families.find((f) => f.id === id)?.page ?? `/atlas#${id}`
+  // Pages of the families this reaction belongs to, or that they point to.
+  const familyPages = [
+    ...new Map(
+      r.families
+        .flatMap((fid) => {
+          const f = atlas.families.find((x) => x.id === fid)
+          return f ? [f, ...f.see.map((id) => atlas.families.find((x) => x.id === id))] : []
+        })
+        .filter((f): f is NonNullable<typeof f> => Boolean(f?.page))
+        .map((f) => [f.page!, f]),
+    ).values(),
+  ]
 
   // Previous and next along the first network the reaction belongs to.
   const sequence = networks[0]?.reactions ?? []
@@ -293,7 +307,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
   return (
     <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 xl:max-w-7xl">
       <Link
-        href={to(family ? `/atlas#${family.id}` : "/atlas")}
+        href={to(family ? familyHref(family.id) : "/atlas")}
         className="-my-2.5 inline-flex py-2.5 items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" />
@@ -314,7 +328,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
           {networks.map((n, i) => (
             <span key={n.id}>
               {i > 0 && ", "}
-              <Link href={to(`/atlas#${n.family}`)} className="underline-offset-4 hover:text-foreground hover:underline">
+              <Link href={to(familyHref(n.family))} className="underline-offset-4 hover:text-foreground hover:underline">
                 <Sci>{n.name}</Sci>
               </Link>
             </span>
@@ -381,6 +395,22 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
                 {t.preparationText(networks.length === 1)}
               </p>
             </div>
+          )}
+
+          {familyPages.length > 0 && (
+            <ul className="mt-6 space-y-2">
+              {familyPages.map((f) => (
+                <li key={f.page}>
+                  <Link
+                    href={to(f.page!)}
+                    className="group inline-flex min-h-10 items-center gap-2 rounded-md border border-border bg-card px-3.5 py-2 text-[0.95rem] font-medium text-link transition-colors hover:border-foreground/30"
+                  >
+                    <Sci>{t.familyPageLink(f.name)}</Sci>
+                    <ArrowRight className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-0.5" aria-hidden />
+                  </Link>
+                </li>
+              ))}
+            </ul>
           )}
 
           {/* facts sit here on a phone, beside the text on a wide screen */}
