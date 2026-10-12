@@ -455,6 +455,8 @@ const en = {
   // --- r9 eval ---
   r9: {
     almost: "almost done",
+    worse: "much worse",
+    better: "much better",
     sharing: "the server is preparing other models too",
     noSpare: "First change on this model: it is still being prepared for you. Later changes are much quicker.",
     publishedShown: "Published curves shown, faded; yours appear when ready.",
@@ -906,6 +908,8 @@ const it: EvalDictionary = {
   // --- r9 eval ---
   r9: {
     almost: "quasi finito",
+    worse: "molto peggio",
+    better: "molto meglio",
     sharing: "il server sta preparando anche altri modelli",
     noSpare: "Prima modifica su questo modello: lo stiamo ancora preparando per te. Le modifiche successive sono molto più rapide.",
     publishedShown: "Sono mostrate, sbiadite, le curve pubblicate; le tue compaiono appena pronte.",

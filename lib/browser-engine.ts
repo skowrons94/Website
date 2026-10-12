@@ -15,8 +15,8 @@
  *   edit). So:
  *     data    the Flask app: sessions, the data model, every response;
  *     fine    the plots' smooth curves;
- *     extrap  the extrapolations (its model built once the smooth curves'
- *             is, or when first needed);
+ *     extrap  the extrapolations (its model built alongside the smooth
+ *             curves');
  *     grid    the energy × angle grids (only when one is asked for).
  *   The data worker answers "delegate" for what another calculates; this
  *   module then has that worker calculate it at the session's parameters
@@ -216,17 +216,21 @@ function mirror(session: Session, body: string | null, reset: boolean) {
 
 let opening: string | null = null
 
-/** Start the smooth curves' worker and build its model; then the extrapolations'. */
+/**
+ * Start the smooth curves' and the extrapolations' workers and build their
+ * models, side by side (each is one thread: on a machine with a few cores
+ * they do not slow each other down, and the extrapolations are then ready
+ * about when the curves are).
+ */
 function startRoles() {
   const evaluation = opening
   if (!evaluation) return
-  worker("fine")
-    .call("role_prepare", ["fine", evaluation], evaluation)
-    .catch(() => undefined)
-    .then(() => worker("extrap").call("role_prepare", ["extrap", evaluation], evaluation))
-    .catch(() => {
-      /* best effort: a calculation builds its model when it is asked for */
-    })
+  for (const role of ["fine", "extrap"] as const)
+    worker(role)
+      .call("role_prepare", [role, evaluation], evaluation)
+      .catch(() => {
+        /* best effort: a calculation builds its model when it is asked for */
+      })
 }
 
 /* -- requests ------------------------------------------------------------------------ */

@@ -51,7 +51,7 @@ process, the page runs one worker per role (`lib/browser-engine.ts`):
 |---|---|---|
 | `azure2-data` | the Flask app (sessions, serializers) and the data model | on opening |
 | `azure2-fine` | the smooth curves' model | once the data worker has the files |
-| `azure2-extrap` | the extrapolations' model | likewise; built after the smooth curves' |
+| `azure2-extrap` | the extrapolations' model | likewise, built alongside |
 | `azure2-grid` | the energy × angle grids' model | when a grid is first shown |
 
 The data worker answers `500 {code: "delegate", role}` for what another
@@ -99,8 +99,8 @@ page to fetch before the worker has even started. ⁷Be's zip went from 9.5 to
 6.0 MB, ¹⁴N's from 5.7 to 1.6 MB.
 
 The models are prepared in the background as on the server, each in its own
-worker: the data model as soon as the session opens, the smooth curves' as
-soon as their worker has started, then the extrapolations'. After an edit the
+worker: the data model as soon as the session opens, the smooth curves' and
+the extrapolations' as soon as their workers have started. After an edit the
 previous smooth curve stays up, faded, until the new one is calculated.
 
 **Numbers.** The WebAssembly engine and the native one agree to better than

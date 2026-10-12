@@ -390,6 +390,7 @@ function ParameterControl({
 }) {
   const t = useEvalDict().workspace
   const l = useEvalDict().levels
+  const r9 = useEvalDict().r9
   const lang = useLang()
   const num = (s: string) => decimal(s, lang)
 
@@ -473,8 +474,15 @@ function ParameterControl({
             <Badge variant="outline" className="self-center text-[11px] font-medium">
               {t.changed}
               {delta !== undefined && Number.isFinite(delta) && (
-                <span className="ml-1 tabular-nums">
-                  · {l.deltaChi2(`${delta > 0 ? "+" : delta < 0 ? "−" : "±"}${numberText(Math.abs(delta), lang, 2)}`)}
+                <span
+                  className="ml-1 whitespace-nowrap tabular-nums"
+                  title={l.deltaChi2(`${delta > 0 ? "+" : delta < 0 ? "−" : "±"}${numberText(Math.abs(delta), lang, 3)}`)}
+                >
+                  {/* A change in the thousands reads better in words than as "+8.2 × 10⁵" (the number is in the tooltip). */}
+                  ·{" "}
+                  {Math.abs(delta) >= 1000
+                    ? l.deltaChi2(delta > 0 ? r9.worse : r9.better)
+                    : l.deltaChi2(`${delta > 0 ? "+" : delta < 0 ? "−" : "±"}${numberText(Math.abs(delta), lang, 2)}`)}
                 </span>
               )}
             </Badge>

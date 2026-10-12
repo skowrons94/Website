@@ -321,9 +321,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     const since = (performance.now() - p.at) / 1000
     const cost = (s: string) => typical.current[`prepare_${s}`] ?? 0
     if (IN_BROWSER) {
-      // Data and smooth curves in workers of their own; the extrapolations' after the smooth curves'.
-      const total = step === "extrap" ? cost("fine") + cost("extrap") : cost(step)
-      return Math.max(0, total - since)
+      // Each model in a worker of its own, all built from the opening on.
+      return Math.max(0, cost(step) - since)
     }
     // One after the other, in this order; the cores shared with other builds.
     let left = 0
