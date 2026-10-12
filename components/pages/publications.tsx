@@ -163,7 +163,17 @@ export function PublicationsPage({ lang }: { lang: Lang }) {
       )}
 
       <PublicationFilter
-        lang={lang}
+        labels={{
+          filter: t.filter,
+          all: t.all,
+          first: t.firstAuthor,
+          luna: t.luna,
+          year: t.year,
+          allYears: t.allYears,
+          shown: t.shown(Number.NaN).replace("NaN", "{n}"),
+          shownOne: t.shown(1),
+          none: t.none,
+        }}
         items={all.map((p) => ({ year: p.year, first: isFirstAuthor(p), luna: isLuna(p) }))}
       >
         <div className="space-y-14">
