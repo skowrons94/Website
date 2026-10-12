@@ -43,8 +43,13 @@ one native core.
 curves of every evaluation at its shipped parameters (`precomputed.json` next to
 the model), calculated natively by the same build the server uses. While a
 session's parameters are unchanged, these are returned; the first edit switches
-to the engine. Running the extrapolations also refreshes AZURE2's cache of
-external-capture integrals (`output/intEC.*`), which ships with the evaluation.
+to the engine. Running the extrapolations and the plots' extended curves also
+leaves AZURE2's external-capture integrals of their grids (`extrapolations/`,
+`fine/`), which ship with the evaluation, so the engine in the page reads them
+rather than recalculating them. The server's background preparation of those
+models (`/prepare`) is not used here: one worker answers every request in
+turn, and a preparation under way would hold up the first edit. After an edit
+the previous smooth curve stays up, faded, until the new one is calculated.
 
 **Numbers.** The WebAssembly engine and the native one agree to better than
 10⁻⁶ (relative) on ¹³N, ¹⁴N, ²¹Na, ²³Na and ²⁴Mg. On ⁷Be, ⁸Be and ¹⁷F they

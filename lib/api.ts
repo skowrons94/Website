@@ -166,12 +166,20 @@ export interface DataSegment {
 }
 
 /**
- * The model on a fine energy grid for one data segment (server/app/fine.py),
- * with the values at the measured energies merged in. Segments the server
- * could not match on a grid are absent and are drawn through their points.
+ * The model on a fine grid for one distinct calculation (server/app/fine.py):
+ * from below the lowest measurement to above the highest, resonances
+ * resolved, the values at the measured energies merged in. Shared by every
+ * data segment that measures it; segments the server could not match on a
+ * grid have none and are drawn through their points.
  */
 export interface FineCurve {
-  index: number
+  /** The calculation: segments with the same id share the curve. */
+  id: number
+  /**
+   * Set (c.m. MeV) on a copy for one segment whose energy shift matters: the
+   * curve as that segment's data-mode values follow it, moved by −shift.
+   */
+  shift?: number
   /** What the grid runs along: energy (an excitation function) or c.m. angle (an angular distribution). */
   axis?: "energy" | "angle"
   /** The c.m. angles of an angular-distribution curve (axis "angle"). */
@@ -182,6 +190,12 @@ export interface FineCurve {
   calculated: (number | null)[]
   sfactor_energies: number[]
   calculated_sfactor: (number | null)[]
+}
+
+/** The fine curves as the API sends them: each curve once, and which segment it draws. */
+export interface FineResponse {
+  curves: FineCurve[]
+  segments: { index: number; curve: number; shift?: number }[]
 }
 
 export interface ExtrapSegment {
@@ -225,7 +239,7 @@ export interface SchemeAndData {
   scheme: Scheme
   data: DataSegment[]
   /** Present when the server could calculate it without building its model. */
-  fine?: FineCurve[]
+  fine?: FineResponse
 }
 
 /** Thrown for any non-2xx response, carrying the server's message and status. */
@@ -344,8 +358,20 @@ export function getData(sessionId: string): Promise<DataSegment[]> {
   return request<DataSegment[]>(`/api/sessions/${sessionId}/data`)
 }
 
-export function getFine(sessionId: string): Promise<FineCurve[]> {
-  return request<FineCurve[]>(`/api/sessions/${sessionId}/fine`)
+export function getFine(sessionId: string): Promise<FineResponse> {
+  return request<FineResponse>(`/api/sessions/${sessionId}/fine`)
+}
+
+/**
+ * Have the server build the session's derived models (the plots' extended
+ * grid, the extrapolations') now, so the first edit does not wait for them.
+ * Fire and forget: it may take a while and answers nothing the page shows.
+ */
+export function prepareSession(sessionId: string, steps?: ("data" | "fine" | "extrap")[]): Promise<{ prepared: string[] }> {
+  return request<{ prepared: string[] }>(`/api/sessions/${sessionId}/prepare`, {
+    method: "POST",
+    body: JSON.stringify(steps ? { steps } : {}),
+  })
 }
 
 export function getExtrapolations(sessionId: string): Promise<ExtrapSegment[]> {

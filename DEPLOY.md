@@ -8,8 +8,9 @@ The whole site runs as three containers from `docker-compose.yml`: Caddy
 
 - Ubuntu 22.04/24.04 or Debian 12, 2+ vCPU.
 - **Memory: 4 GB or more, plus 2–4 GB of swap.** The site, Caddy and the idle
-  API use about 250 MB, and an open evaluation 35–100 MB. The exception is the
-  ⁷Be extrapolations: computing them takes one worker to about 3.6 GB until the
+  API use about 250 MB, and an open evaluation 35–100 MB (with its plot
+  curves ready for an edit, up to ~0.4 GB for ⁷Be). The exception is the ⁷Be
+  extrapolations: once shown they keep one worker at about 1.6 GB until the
   visitor closes the tab. With less memory the kernel kills that worker and the
   page says the session expired; the rest of the site keeps running.
 - **Disk: 5 GB free** for the images (about 650 MB) and the build cache.
@@ -93,14 +94,16 @@ AZURE2) and needs about 2 GB of RAM at `BUILD_JOBS=4`. Then:
 Then fill the results cache, once:
 
 ```sh
-make warm                # about 8 minutes; prints one line per evaluation
+make warm                # about 10 minutes; prints one line per evaluation
 ```
 
 Each evaluation's data and extrapolation curves at its published parameters,
-and the model on a fine energy grid that the plots draw, are stored next to the model (`server/evaluations/<id>/precomputed.json`) and
-served from there until a visitor edits a level. Without it the first visitor
-to open the ⁷Be extrapolations waits about 2.5 minutes; with it, about 2
-seconds. The cache fills itself anyway as visitors use the site, and it
+and the model on the extended energy grid that the plots draw, are stored next
+to the model (`server/evaluations/<id>/precomputed.json`) and served from there
+until a visitor edits a level; the external-capture integrals of the derived
+grids are computed on the way and kept. Without it the first visitor to open
+the ⁷Be extrapolations waits several minutes; with it, about 2 seconds, and an
+edit then recalculates them in about 10. The cache fills itself anyway as visitors use the site, and it
 invalidates itself when an evaluation's `.azr` or data files change.
 
 ## 5. Updating

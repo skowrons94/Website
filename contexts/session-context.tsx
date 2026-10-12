@@ -19,12 +19,14 @@ import {
   getExtrapolations,
   getFine,
   openEvaluation,
+  prepareSession,
   resetParameters,
   setParameters,
   type DataSegment,
   type Evaluation,
   type ExtrapSegment,
   type FineCurve,
+  type FineResponse,
   type Scheme,
 } from "@/lib/api"
 import { useEvalDict } from "@/components/eval-dict"
@@ -44,6 +46,12 @@ interface SessionState {
   /** The model on a fine grid, by data-segment index; null until loaded. */
   fine: Record<number, FineCurve> | null
   fineStatus: "idle" | "loading" | "ready" | "failed"
+  /**
+   * The fine curves shown were calculated for the parameters before the last
+   * edit (the new ones are on their way): drawn faded rather than replaced by
+   * the line through the points.
+   */
+  fineStale: boolean
   /** The data and fine curves at the evaluation's own parameters (the "original fit"). */
   initialData: DataSegment[] | null
   initialFine: Record<number, FineCurve> | null
@@ -65,6 +73,8 @@ interface SessionState {
   loadData: () => Promise<void>
   loadExtrapolations: () => Promise<void>
   loadFine: () => Promise<void>
+  /** Build derived models ahead of need, in the background (server build only). */
+  prepare: (steps: ("data" | "fine" | "extrap")[]) => void
   updateParameters: (updates: Record<number, number>) => Promise<void>
   reset: () => Promise<void>
   undo: () => Promise<void>
@@ -112,7 +122,27 @@ function totalChi2(data: DataSegment[] | null): number | null {
   return any ? sum : null
 }
 
-const byIndex = (list: FineCurve[]) => Object.fromEntries(list.map((c) => [c.index, c]))
+/** Segment index → its curve (one object, shared by the segments that measure it). */
+function byIndex(response: FineResponse): Record<number, FineCurve> {
+  // An older API sent a list of per-segment curves, each with its index.
+  if (Array.isArray(response))
+    return Object.fromEntries((response as (FineCurve & { index: number })[]).map((c, i) => [c.index, { ...c, id: c.id ?? i }]))
+  const curves = new Map(response.curves.map((c) => [c.id, c]))
+  const out: Record<number, FineCurve> = {}
+  for (const { index, curve, shift } of response.segments) {
+    const c = curves.get(curve)
+    if (!c) continue
+    out[index] = shift
+      ? {
+          ...c,
+          shift,
+          energies: c.energies.map((x) => x - shift),
+          sfactor_energies: c.sfactor_energies.map((x) => x - shift),
+        }
+      : c
+  }
+  return out
+}
 
 export function SessionProvider({ children }: { children: ReactNode }) {
   const unexpected = useEvalDict().workspace.unexpected
@@ -125,6 +155,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [extrapolations, setExtrapolations] = useState<ExtrapSegment[] | null>(null)
   const [fine, setFineState] = useState<Record<number, FineCurve> | null>(null)
   const [fineStatus, setFineStatus] = useState<"idle" | "loading" | "ready" | "failed">("idle")
+  const [fineStale, setFineStale] = useState(false)
   const [past, setPast] = useState<Edit[]>([])
   const [deltaChi2, setDeltaChi2] = useState<Record<number, number>>({})
   const dataRef = useRef<DataSegment[] | null>(null)
@@ -143,14 +174,18 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setDataState(list)
     if (list && pristine.current) setInitialData((current) => current ?? list)
   }, [])
-  const setFine = useCallback((list: FineCurve[] | null | undefined) => {
-    if (!list) {
-      setFineState(null)
+  const setFine = useCallback((response: FineResponse | null | undefined, keep = false) => {
+    if (!response) {
+      // After an edit the curves already drawn stay up, faded, until the new
+      // ones arrive; on a new session there is nothing to keep.
+      if (!keep) setFineState(null)
+      setFineStale(keep)
       setFineStatus("idle")
       return
     }
-    const map = byIndex(list)
+    const map = byIndex(response)
     setFineState(map)
+    setFineStale(false)
     setFineStatus("ready")
     if (pristine.current) setInitialFine((current) => current ?? map)
   }, [])
@@ -248,8 +283,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     const asked = version.current
     setFineStatus("loading")
     try {
-      const list = await getFine(id)
-      if (asked === version.current) setFine(list)
+      const response = await getFine(id)
+      if (asked === version.current) setFine(response)
     } catch {
       if (asked === version.current) setFineStatus("failed")
     }
@@ -281,7 +316,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         pristine.current = !result.scheme.modified
         setScheme(result.scheme)
         setData(result.data)
-        setFine(result.fine)
+        setFine(result.fine, true)
         // Extrapolations were computed from the old parameters; drop them so the
         // extrapolation tab refetches rather than showing a stale curve.
         setExtrapolations(null)
@@ -343,7 +378,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       setDeltaChi2({})
       setScheme(result.scheme)
       setData(result.data)
-      setFine(result.fine)
+      setFine(result.fine, true)
       setExtrapolations(null)
       setError(null)
       if (Object.keys(before).length > 0) {
@@ -360,6 +395,25 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       setCalculating(false)
     }
   }, [handle, setData, setError, setFine])
+
+  // Have the server build what a later edit will need while the reader looks
+  // at the cached curves: the split data model and the plots' extended grid
+  // once the plot is shown (where the sliders are), the extrapolations' model
+  // once they are (it is large, so not for every visitor). The server lets
+  // any other request of this session go first, so nothing on the page waits
+  // for it. Not in the browser build: there one worker answers every request
+  // in turn, and a preparation under way would hold up the first edit.
+  const prepared = useRef(new Set<string>())
+  const prepare = useCallback((steps: ("data" | "fine" | "extrap")[]) => {
+    const id = sessionRef.current
+    if (!id || IN_BROWSER) return
+    const key = `${id}:${steps.join(",")}`
+    if (prepared.current.has(key)) return
+    prepared.current.add(key)
+    prepareSession(id, steps).catch(() => {
+      /* best effort: an edit builds what it needs anyway */
+    })
+  }, [])
 
   // Release the server's AZURE2 process when the tab goes away. The reaper
   // would eventually collect it, but returning the slot immediately keeps the
@@ -392,6 +446,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         extrapolations,
         fine,
         fineStatus,
+        fineStale,
         initialData,
         initialFine,
         loading,
@@ -406,6 +461,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         loadData,
         loadExtrapolations,
         loadFine,
+        prepare,
         updateParameters,
         reset,
         undo,

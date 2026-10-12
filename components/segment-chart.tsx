@@ -34,6 +34,10 @@ export interface ChartSeries {
   curve: { x: number; y: number }[]
   /** The model before the current edit, drawn faint behind. */
   original?: { x: number; y: number }[]
+  /** The model beyond the data (below and above, a NaN between): dashed, lighter. */
+  extension?: { x: number; y: number }[]
+  /** Drawn faded: a curve about to be replaced (its parameters have changed). */
+  faded?: boolean
   /** Dash pattern of the curve ("" solid); by default by series order. */
   dash?: string
 }
@@ -74,10 +78,22 @@ interface Props {
   xName?: string
   /** Model curves in their series colour (curve-only charts). */
   colouredCurves?: boolean
+  /**
+   * Fit the vertical scale to the measurements, the model lines widening it
+   * only by a decade (a log axis) or half the span: a narrow resonance runs
+   * off the top rather than flattening the data.
+   */
+  clampCurves?: boolean
   svgRef?: RefObject<SVGSVGElement | null>
 }
 
 const DASHES = ["", "7 4", "2 3"]
+
+/** How the model beyond the data is drawn: dashed where the model is solid, its own dash otherwise, and lighter. */
+export const EXTENSION_OPACITY = 0.6
+export function extensionDash(dash: string): string {
+  return dash || "5 4"
+}
 
 function fittedAxis(lo: number, hi: number, log: boolean, target: number): Axis {
   if (!(hi > lo)) {
@@ -204,6 +220,7 @@ export function SegmentChart({
   yUnit = "",
   xName = "E",
   colouredCurves = false,
+  clampCurves = false,
   svgRef,
 }: Props) {
   const lang = useLang()
@@ -247,7 +264,7 @@ export function SegmentChart({
     const anyPoints = series.some((s) => s.points.length > 0)
     for (const s of series) {
       for (const p of s.points) if (okX(p.x) && okY(p.y)) take(p.x)
-      if (!anyPoints) for (const p of s.curve) if (okX(p.x) && okY(p.y)) take(p.x)
+      if (!anyPoints) for (const p of [...s.curve, ...(s.extension ?? [])]) if (okX(p.x) && okY(p.y)) take(p.x)
     }
     if (!Number.isFinite(lo)) return null
     return fittedAxis(lo, hi, logX, 6)
@@ -275,8 +292,15 @@ export function SegmentChart({
           if (!logY || p.y - p.error > 0) take(p.y - p.error)
         }
       }
-      for (const p of s.curve) if (inside(p.x)) take(p.y)
     }
+    // The model lines widen the scale; with clampCurves, where there are
+    // measurements, only so far (see the prop).
+    const known = clampCurves && Number.isFinite(lo)
+    const reachLo = logY ? lo / 10 : lo - 0.5 * (hi - lo)
+    const reachHi = logY ? hi * 10 : hi + 0.5 * (hi - lo)
+    for (const s of series)
+      for (const p of [...s.curve, ...(s.extension ?? [])])
+        if (inside(p.x) && okY(p.y)) take(known ? Math.min(Math.max(p.y, reachLo), reachHi) : p.y)
     if (!Number.isFinite(lo)) return null
     if (zeroLine && !logY) {
       const m = Math.max(1, Math.abs(lo), Math.abs(hi))
@@ -284,7 +308,7 @@ export function SegmentChart({
       hi = m
     }
     return fittedAxis(lo, hi, logY, compact ? 3 : 5)
-  }, [series, xAxis, logY, zeroLine, yDomain, compact])
+  }, [series, xAxis, logY, zeroLine, yDomain, compact, clampCurves])
 
   const sx = useMemo(() => {
     if (!xAxis) return (x: number) => x
@@ -312,8 +336,19 @@ export function SegmentChart({
       series.map((s) => ({
         model: pathOf(decimate(s.curve, sx, W), sx, sy, logX, logY),
         original: s.original ? pathOf(decimate(s.original, sx, W), sx, sy, logX, logY) : "",
+        extension: s.extension?.length ? pathOf(decimate(s.extension, sx, W), sx, sy, logX, logY) : "",
       })),
     [series, sx, sy, W, logX, logY],
+  )
+  // What the tooltip reads off a curve: the model and its extension, as one sorted line.
+  const readable = useMemo(
+    () =>
+      series.map((s) =>
+        s.extension?.length
+          ? [...s.curve, ...s.extension].filter((p) => Number.isFinite(p.x) && Number.isFinite(p.y)).sort((a, b) => a.x - b.x)
+          : s.curve,
+      ),
+    [series],
   )
 
   if (!xAxis || !yAxis) {
@@ -369,16 +404,17 @@ export function SegmentChart({
     const x = invX(px)
     const values: { label: string; y: number; slot: number }[] = []
     series.forEach((s, i) => {
-      if (s.curve.length < 2 || s.points.length > 0) return
+      const curve = readable[i]
+      if (curve.length < 2 || s.points.length > 0) return
       let lo = 0
-      let hi = s.curve.length - 1
+      let hi = curve.length - 1
       while (hi - lo > 1) {
         const mid = (lo + hi) >> 1
-        if (s.curve[mid].x <= x) lo = mid
+        if (curve[mid].x <= x) lo = mid
         else hi = mid
       }
-      const a = s.curve[lo]
-      const b = s.curve[hi]
+      const a = curve[lo]
+      const b = curve[hi]
       if (x < a.x || x > b.x) return
       const y = b.x === a.x ? a.y : a.y + ((x - a.x) / (b.x - a.x)) * (b.y - a.y)
       if (Number.isFinite(y)) values.push({ label: s.label, y, slot: s.slot ?? i })
@@ -560,15 +596,27 @@ export function SegmentChart({
               {curves.map((c, i) => {
                 const s = series[i]
                 const ink = colouredCurves ? `var(--viz-series-${(s.slot ?? i) + 1})` : "var(--viz-text)"
+                const dash = s.dash ?? (colouredCurves ? "" : DASHES[i % DASHES.length])
                 return (
-                  <g key={`c${i}`}>
+                  <g key={`c${i}`} opacity={s.faded ? 0.35 : 1} className="transition-opacity duration-300">
+                    {c.extension && (
+                      <path
+                        d={c.extension}
+                        fill="none"
+                        stroke={ink}
+                        strokeWidth={colouredCurves ? 1.75 : 1.4}
+                        strokeDasharray={extensionDash(dash)}
+                        strokeLinejoin="round"
+                        opacity={EXTENSION_OPACITY}
+                      />
+                    )}
                     <path d={c.model} fill="none" stroke="var(--viz-surface)" strokeWidth={4.5} strokeLinejoin="round" opacity={0.8} />
                     <path
                       d={c.model}
                       fill="none"
                       stroke={ink}
                       strokeWidth={colouredCurves ? 2 : 1.6}
-                      strokeDasharray={(s.dash ?? (colouredCurves ? "" : DASHES[i % DASHES.length])) || undefined}
+                      strokeDasharray={dash || undefined}
                       strokeLinejoin="round"
                     />
                   </g>

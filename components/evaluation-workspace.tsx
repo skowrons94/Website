@@ -123,6 +123,7 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
     extrapolations,
     fine,
     fineStatus,
+    fineStale,
     initialData,
     initialFine,
     loading,
@@ -137,6 +138,7 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
     loadData,
     loadExtrapolations,
     loadFine,
+    prepare,
     updateParameters,
     reset,
     undo,
@@ -212,6 +214,14 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
     // server sends them along when they are cheap; otherwise ask again).
     if (tab === "plot" && data !== null && !calculating && fineStatus === "idle" && !restoring) loadFine()
   }, [tab, sessionId, data, extrapolations, loadData, loadExtrapolations, loadFine, fineStatus, calculating])
+
+  // Ahead of the first edit: what the plot's sliders will need once the plot
+  // is up, and the extrapolations' model once they have been looked at.
+  useEffect(() => {
+    if (!sessionId || calculating) return
+    if (tab === "plot" && data !== null && fineStatus !== "loading") prepare(["data", "fine"])
+    if (extrapolations !== null) prepare(["extrap"])
+  }, [tab, sessionId, data, extrapolations, fineStatus, calculating, prepare])
 
   // The plot opens on the headline reaction, unless the link chose.
   useEffect(() => {
@@ -394,6 +404,7 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
                 data={data}
                 fine={fine}
                 fineStatus={fineStatus}
+                fineStale={fineStale}
                 initialData={initialData}
                 initialFine={initialFine}
                 scheme={scheme!}
