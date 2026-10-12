@@ -5,6 +5,8 @@
 #
 #   temperatures: where the process runs, in GK (T9); the site computes the
 #                 Gamow window of every charged-particle reaction at each one.
+#                 An optional `reactions: [ids]` limits a temperature to those
+#                 reactions of the network (the ¹³C pocket for ¹³C(α,n) only).
 #
 # Italian (/it/atlas): `name_it` and `summary_it` beside `name` and `summary`,
 # `label_it` beside a temperature's `label`. Missing ones fall back to English.

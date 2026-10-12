@@ -141,6 +141,12 @@ Measurement energies may carry an Italian version, `energy_it`, for the words
 in them ("risonanza a 259 keV"); numbers alone need none, since the Italian
 page writes the decimal comma itself.
 
+Italian articles before a nuclide follow the reading of its mass number:
+"il ¹⁴⁸Sm", "l'⁸⁵Kr", "dell'⁸⁶Kr" (ottantasei), "la ¹²C(p,γ)" but
+"l'¹¹B(p,α)". The site applies this to every `_it` field when it loads them
+(`elideItalian` in `lib/localize.mjs`), so a slip in a file is corrected on
+the page; write it right in the file all the same.
+
 ## Checks on translations
 
 `npm run check:atlas` treats the `_it` fields as optional. It stops the build
