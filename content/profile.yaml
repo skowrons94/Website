@@ -14,6 +14,13 @@ location_it: Padova, Italia
 email: jakub.skowronski@unipd.it
 orcid: 0000-0001-7292-6353
 
+# The site's own DOI, from Zenodo: the "concept DOI", which always resolves to
+# the latest release (RELEASING.md says how to get it). Written as 10.5281/…
+# with no https://doi.org/. While it is empty, no DOI is shown anywhere; once
+# set, it appears in "How to cite this site" on /about and in the atlas' and
+# the evaluations' citation boxes.
+site_doi: ""
+
 tagline: Nuclear astrophysics, measured under 1.4 km of rock.
 tagline_it: Astrofisica nucleare, misurata sotto 1,4 km di roccia.
 

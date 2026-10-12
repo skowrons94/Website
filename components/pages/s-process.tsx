@@ -8,6 +8,8 @@ import { LunaBadge, StatusBadge } from "@/components/atlas/status-badge"
 import { Term } from "@/components/atlas/term"
 import { Sci } from "@/components/sci"
 import { SiteUrl } from "@/components/atlas/site-url"
+import { ReportLinks } from "@/components/report-links"
+import { SiteDoiLine } from "@/components/site-doi"
 import { getAtlas, getSProcessPath, pageDate, type Reaction } from "@/lib/atlas"
 import { formatDate } from "@/lib/atlas-format"
 import { dict, localePath, type Lang } from "@/lib/i18n"
@@ -342,6 +344,7 @@ export function SProcessPage({ lang }: { lang: Lang }) {
               {updated && `, ${updated}`}, <SiteUrl path="/atlas/s-process" lang={lang} />.
             </p>
             <p className="mt-2 text-xs text-muted-foreground">{t.citeNote}</p>
+            <SiteDoiLine lang={lang} />
             {meta.licence && (
               <p className="mt-3 text-pretty text-sm leading-relaxed text-muted-foreground">
                 {t.licence(meta.licence)}{" "}
@@ -358,6 +361,15 @@ export function SProcessPage({ lang }: { lang: Lang }) {
             <h2 className="mb-4 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">{t.references}</h2>
             <ReferenceList keys={ORDER} references={atlas.references} lang={lang} />
           </section>
+
+          {/* --- r11 site --- */}
+          <ReportLinks
+            path={localePath(lang, "/atlas/s-process")}
+            section={t.title}
+            strings={dict(lang).report}
+            suggest
+            className="mt-12 text-sm text-muted-foreground"
+          />
         </article>
 
         {/* -- contents, on a wide screen ----------------------------------- */}

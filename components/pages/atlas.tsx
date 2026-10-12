@@ -8,6 +8,7 @@ import { NetworkMap } from "@/components/atlas/network-map"
 import { SiteUrl } from "@/components/atlas/site-url"
 import { LunaBadge } from "@/components/atlas/status-badge"
 import { Sci } from "@/components/sci"
+import { SiteDoiLine } from "@/components/site-doi"
 import { getAtlas, getMapData } from "@/lib/atlas"
 import { dict, localePath, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
@@ -255,6 +256,7 @@ export function AtlasPage({ lang }: { lang: Lang }) {
           {meta.version && `, ${t.citeVersion} ${meta.version}`}, <SiteUrl path="/atlas" lang={lang} fixed={meta.url} />.
         </p>
         <p className="mt-2 text-xs text-muted-foreground">{t.citeAccessed}</p>
+        <SiteDoiLine lang={lang} />
         {meta.licence && (
           <p className="mt-4 text-pretty text-sm leading-relaxed text-muted-foreground">
             {t.licence(meta.licence)}{" "}
