@@ -1,9 +1,7 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { Loader2 } from "lucide-react"
-import { InlineMath } from "react-katex"
-import "katex/dist/katex.min.css"
 
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -20,19 +18,33 @@ import {
 import { LevelControls } from "@/components/level-controls"
 import { SegmentChart, type ChartSeries } from "@/components/segment-chart"
 import type { DataSegment, Scheme } from "@/lib/api"
-import { OVERLAY_LIMIT, observableLabel, quantityLabel } from "@/lib/viz"
+import {
+  axisLabel,
+  datasetName,
+  defaultSegment,
+  isScattering,
+  qualifier,
+  quantityFor,
+  segmentTitle,
+  type Quantity,
+} from "@/lib/eval-plot"
+import { OVERLAY_LIMIT, observableLabel } from "@/lib/viz"
 import { useDict, useLang } from "@/components/lang-provider"
+import { decimal } from "@/lib/i18n"
 
 /**
  * The interactive tab: measured data with the model overlaid, beside sliders
  * for the free parameters.
  *
- * Above OVERLAY_LIMIT selected datasets the layout switches from one shared
- * pair of axes to small multiples. That is a color constraint, not a
- * preference — only three categorical hues clear the all-pairs colorblind floor
- * (see lib/viz.ts), so a fourth overlaid dataset could not be told apart. In
- * facet mode each panel carries a single dataset and takes its identity from
- * the panel title.
+ * Layout: on a wide screen the plot and the level sliders sit side by side,
+ * the sliders scrolling in their own column so the plot never leaves view; on
+ * a phone the plot is pinned under the site header while the sliders scroll
+ * beneath it. Either way, moving a level and watching the curve answer is one
+ * gesture, not a scroll back up.
+ *
+ * Above OVERLAY_LIMIT selected datasets -- or when the selection mixes
+ * quantities with different units -- the plot switches from one shared pair of
+ * axes to small multiples. The limit is a color constraint (see lib/viz.ts).
  */
 
 interface Props {
@@ -42,8 +54,6 @@ interface Props {
   onParameterChange: (updates: Record<number, number>) => void
   onReset: () => void
 }
-
-type Quantity = "sfactor" | "cross_section"
 
 export function DataPlot({
   data,
@@ -58,205 +68,239 @@ export function DataPlot({
   const [quantity, setQuantity] = useState<Quantity>("sfactor")
   const [logX, setLogX] = useState(false)
   const [logY, setLogY] = useState(true)
+  const [listOpen, setListOpen] = useState(false)
 
-  // Start with the first dataset so the tab is never an empty frame.
+  // Open on a capture (or reaction) segment, the thing an S-factor plot is
+  // for, so the tab is never an empty frame nor a scattering cross section
+  // drawn as an "S-factor".
   useEffect(() => {
     setSelected((current) => {
       if (current.length > 0) return current
-      return data.length > 0 ? [data[0].index] : []
+      const first = defaultSegment(data)
+      return first ? [first.index] : []
     })
   }, [data])
+
+  // The dataset list starts open where there is room for it.
+  useEffect(() => {
+    setListOpen(window.matchMedia("(min-width: 1024px)").matches)
+  }, [])
 
   const chosen = useMemo(
     () => data.filter((segment) => selected.includes(segment.index)),
     [data, selected],
   )
 
-  const faceted = chosen.length > OVERLAY_LIMIT
+  const labels = new Set(chosen.map((s) => axisLabel(s, quantity, lang)))
+  const mixed = labels.size > 1
+  const faceted = chosen.length > OVERLAY_LIMIT || mixed
+  const anyScattering = chosen.some(isScattering)
 
   const toSeries = (segment: DataSegment): ChartSeries => {
     const energies = segment.energies ?? []
-    const observed =
-      quantity === "sfactor" ? segment.sfactor : segment.cross_sections
-    const errors =
-      quantity === "sfactor"
-        ? segment.sfactor_errors
-        : segment.cross_sections_errors
-    const model =
-      quantity === "sfactor" ? segment.calculated_sfactor : segment.calculated
+    const q = quantityFor(segment, quantity)
+    const observed = q === "sfactor" ? segment.sfactor : segment.cross_sections
+    const errors = q === "sfactor" ? segment.sfactor_errors : segment.cross_sections_errors
+    const model = q === "sfactor" ? segment.calculated_sfactor : segment.calculated
 
     return {
-      label: segment.name,
+      label: segmentTitle(segment),
       points: energies.map((x, i) => ({
         x,
         y: observed?.[i] ?? NaN,
-        error: errors?.[i],
+        error: errors?.[i] ?? undefined,
       })),
       curve: energies.map((x, i) => ({ x, y: model?.[i] ?? NaN })),
     }
   }
 
-  const observable = chosen[0]?.observable ?? "angle-integrated"
-  const yLabel = quantityLabel(quantity, observable, lang)
+  const yLabel = chosen[0] ? axisLabel(chosen[0], quantity, lang) : ""
 
-  return (
-    <div className="space-y-4">
-      {/* The toolbar sits outside the grid so the row below contains only the
-          plot and the dataset list -- that way grid stretch alone makes the two
-          exactly the same height, with no hard-coded chart dimension. */}
-      <div className="flex flex-wrap items-end gap-4">
-          <div className="space-y-1.5">
-            <Label className="text-xs">{t.quantity}</Label>
-            <Select
-              value={quantity}
-              onValueChange={(value: Quantity) => setQuantity(value)}
-            >
-              <SelectTrigger className="w-44">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sfactor">{t.sfactor}</SelectItem>
-                <SelectItem value="cross_section">{t.crossSection}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center gap-2">
-            <Switch id="logx" checked={logX} onCheckedChange={setLogX} />
-            <Label htmlFor="logx" className="text-sm">
-              {t.logEnergy}
-            </Label>
-          </div>
-          <div className="flex items-center gap-2">
-            <Switch id="logy" checked={logY} onCheckedChange={setLogY} />
-            <Label htmlFor="logy" className="text-sm">
-              {quantity === "sfactor" ? t.logSfactor : t.logCrossSection}
-            </Label>
-          </div>
-          {calculating && (
-            <span className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              {t.recalculating}
-            </span>
-          )}
-      </div>
+  // Announce the fit quality once a recalculation lands, for screen readers
+  // (the plot itself is one image to them).
+  const meanChi2 = useMemo(() => {
+    const values = chosen.map((s) => s.chi2).filter((v): v is number => v !== null)
+    return values.length ? values.reduce((a, b) => a + b, 0) / values.length : null
+  }, [chosen])
+  const [announcement, setAnnouncement] = useState("")
+  const wasCalculating = useRef(false)
+  useEffect(() => {
+    if (wasCalculating.current && !calculating && meanChi2 !== null) {
+      setAnnouncement(t.chi2Status(decimal(meanChi2.toFixed(2), lang)))
+    }
+    wasCalculating.current = calculating
+  }, [calculating, meanChi2, t, lang])
 
-      {faceted && (
-        <p className="text-xs text-muted-foreground">
-          {t.facets(chosen.length, OVERLAY_LIMIT, "datasets")}
-        </p>
-      )}
+  const toggle = (index: number, checked: boolean) =>
+    setSelected((current) =>
+      checked ? [...current, index] : current.filter((i) => i !== index),
+    )
 
-      <div className="grid items-stretch gap-6 lg:grid-cols-[1fr_18rem]">
-        {chosen.length === 0 ? (
-          <Card>
-            <CardContent className="py-16 text-center text-sm text-muted-foreground">
-              {t.selectDataset}
-            </CardContent>
-          </Card>
-        ) : faceted ? (
-          <div className="grid content-start gap-4 xl:grid-cols-2">
-              {chosen.map((segment) => (
-                <Card key={segment.index}>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="flex items-baseline justify-between text-sm">
-                      <span className="truncate">{segment.name}</span>
-                      <span className="shrink-0 text-xs font-normal text-muted-foreground">
-                        <InlineMath math={segment.entrance} />
-                        {" → "}
-                        <InlineMath math={segment.exit} />
-                      </span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <SegmentChart
-                      series={[toSeries(segment)]}
-                      xLabel={t.energyAxis}
-                      yLabel={quantityLabel(quantity, segment.observable, lang)}
-                      logX={logX}
-                      logY={logY}
-                      height={240}
-                      showLegend={false}
-                    />
-                  </CardContent>
-                </Card>
-            ))}
-          </div>
-        ) : (
-          <Card className="flex flex-col">
-            <CardContent className="flex-1 pt-6">
+  const plot =
+    chosen.length === 0 ? (
+      <Card>
+        <CardContent className="flex h-[15rem] items-center justify-center text-center text-sm text-muted-foreground sm:h-[18rem] lg:h-[26rem]">
+          {t.selectDataset}
+        </CardContent>
+      </Card>
+    ) : faceted ? (
+      <div className="grid content-start gap-4 xl:grid-cols-2">
+        {chosen.map((segment) => (
+          <Card key={segment.index}>
+            <CardHeader className="pb-2">
+              <CardTitle role="heading" aria-level={3} className="flex items-baseline justify-between gap-2 text-sm">
+                <span className="truncate">{datasetName(segment)}</span>
+                <span className="shrink-0 text-xs font-normal text-muted-foreground">
+                  {qualifier(segment)}
+                </span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
               <SegmentChart
-                series={chosen.map(toSeries)}
+                series={[toSeries(segment)]}
                 xLabel={t.energyAxis}
-                yLabel={yLabel}
+                yLabel={axisLabel(segment, quantity, lang)}
                 logX={logX}
                 logY={logY}
+                height={240}
+                showLegend={false}
+                ariaLabel={t.plotAria(axisLabel(segment, quantity, lang), segmentTitle(segment))}
               />
             </CardContent>
           </Card>
-        )}
-
-        {/* Matches the plot's height exactly: absolute positioning takes the
-            row height without *contributing* to it, so a long list (7Be has 93
-            datasets) scrolls instead of stretching the row past the plot. Below
-            lg the card is static and flows normally. */}
-        <div className="relative">
-          <Card className="flex min-h-0 flex-col lg:absolute lg:inset-0">
-            <CardHeader className="shrink-0 pb-3">
-              <CardTitle className="text-base">{t.datasets}</CardTitle>
-            </CardHeader>
-            <CardContent className="min-h-0 flex-1 overflow-y-auto">
-              <div className="space-y-2 pr-1">
-              {data.map((segment) => (
-                <div key={segment.index} className="flex items-start gap-2">
-                  <Checkbox
-                    id={`seg-${segment.index}`}
-                    checked={selected.includes(segment.index)}
-                    onCheckedChange={(checked) =>
-                      setSelected((current) =>
-                        checked
-                          ? [...current, segment.index]
-                          : current.filter((i) => i !== segment.index),
-                      )
-                    }
-                  />
-                  <Label
-                    htmlFor={`seg-${segment.index}`}
-                    className="flex-1 cursor-pointer text-xs font-normal leading-tight"
-                  >
-                    <span className="block truncate font-medium">
-                      {segment.name}
-                    </span>
-                    <span className="text-muted-foreground">
-                      {observableLabel(segment.observable, lang)}
-                      {segment.chi2 !== null &&
-                        ` · χ²/N ${segment.chi2.toFixed(1)}`}
-                    </span>
-                  </Label>
-                  {!segment.active && (
-                    <Badge variant="outline" className="text-[10px]">
-                      {t.off}
-                    </Badge>
-                  )}
-                </div>
-              ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        ))}
       </div>
-
-      {/* Full width along the bottom: the sliders get room to lay out in a
-          grid, and dragging one keeps the plot above it in view. */}
+    ) : (
       <Card>
-        <CardContent className="pt-6">
-          <LevelControls
-            scheme={scheme}
-            onChange={onParameterChange}
-            onReset={onReset}
-            disabled={calculating}
+        <CardContent className="h-[15rem] p-2 sm:h-[18rem] sm:p-4 lg:h-[26rem]">
+          <SegmentChart
+            series={chosen.map(toSeries)}
+            xLabel={t.energyAxis}
+            yLabel={yLabel}
+            logX={logX}
+            logY={logY}
+            ariaLabel={t.plotAria(yLabel, chosen.map(segmentTitle).join("; "))}
           />
         </CardContent>
       </Card>
+    )
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-end gap-x-4 gap-y-3">
+        <div className="space-y-1.5">
+          <Label htmlFor="plot-quantity" className="text-xs">
+            {t.quantity}
+          </Label>
+          <Select value={quantity} onValueChange={(value: Quantity) => setQuantity(value)}>
+            <SelectTrigger id="plot-quantity" className="w-44">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="sfactor">{t.sfactor}</SelectItem>
+              <SelectItem value="cross_section">{t.crossSection}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex min-h-10 items-center gap-2">
+          <Switch id="logx" checked={logX} onCheckedChange={setLogX} />
+          <Label htmlFor="logx" className="text-sm">
+            {t.logEnergy}
+          </Label>
+        </div>
+        <div className="flex min-h-10 items-center gap-2">
+          <Switch id="logy" checked={logY} onCheckedChange={setLogY} />
+          <Label htmlFor="logy" className="text-sm">
+            {t.logValue}
+          </Label>
+        </div>
+        <span className="flex min-h-10 items-center gap-2 text-sm text-muted-foreground" aria-hidden={!calculating}>
+          {calculating && (
+            <>
+              <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
+              {t.recalculating}
+            </>
+          )}
+        </span>
+      </div>
+
+      {(anyScattering && quantity === "sfactor") || faceted ? (
+        <p className="text-xs text-muted-foreground">
+          {anyScattering && quantity === "sfactor" && t.elasticNote}{" "}
+          {faceted && (mixed ? t.mixedNote : t.facets(chosen.length, OVERLAY_LIMIT, "datasets"))}
+        </p>
+      ) : null}
+
+      <p className="sr-only" role="status" aria-live="polite">
+        {announcement}
+      </p>
+
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,24rem)] lg:gap-6">
+        {/* Pinned below lg, under the site header, so the curve stays in
+            view while the sliders below it are moved (on a wide screen the
+            sliders scroll in their own column instead). Not when faceted --
+            a stack of panels is taller than the screen. */}
+        <div
+          className={`min-w-0 lg:col-start-1 lg:row-start-1 ${
+            faceted ? "" : "sticky top-16 z-20 -mx-1 self-start bg-background px-1 pb-2 pt-1 lg:static lg:mx-0 lg:p-0"
+          }`}
+        >
+          {plot}
+        </div>
+
+        <details
+          open={listOpen}
+          onToggle={(event) => setListOpen((event.target as HTMLDetailsElement).open)}
+          className="min-w-0 rounded-lg border bg-card lg:col-start-1 lg:row-start-2"
+        >
+          <summary className="flex min-h-11 cursor-pointer select-none items-center px-4 text-sm font-semibold">
+            {t.showDatasets(chosen.length)}
+          </summary>
+          <div className="grid max-h-80 gap-x-6 gap-y-2 overflow-y-auto border-t px-4 py-3 sm:grid-cols-2">
+            {data.map((segment) => (
+              <div key={segment.index} className="flex items-start gap-2">
+                <Checkbox
+                  id={`seg-${segment.index}`}
+                  checked={selected.includes(segment.index)}
+                  onCheckedChange={(checked) => toggle(segment.index, Boolean(checked))}
+                  className="mt-0.5"
+                />
+                <Label
+                  htmlFor={`seg-${segment.index}`}
+                  className="min-w-0 flex-1 cursor-pointer text-xs font-normal leading-tight"
+                >
+                  <span className="block truncate font-medium">
+                    {datasetName(segment)}
+                    {qualifier(segment) && (
+                      <span className="font-normal text-muted-foreground"> · {qualifier(segment)}</span>
+                    )}
+                  </span>
+                  <span className="text-muted-foreground">
+                    {observableLabel(segment.observable, lang)}
+                    {segment.chi2 !== null && ` · χ²/N ${decimal(segment.chi2.toFixed(1), lang)}`}
+                  </span>
+                </Label>
+                {!segment.active && (
+                  <Badge variant="outline" className="text-[10px]">
+                    {t.off}
+                  </Badge>
+                )}
+              </div>
+            ))}
+          </div>
+        </details>
+
+        <Card className="min-w-0 lg:sticky lg:top-20 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:max-h-[calc(100vh-6rem)] lg:self-start lg:overflow-y-auto">
+          <CardContent className="p-4 sm:p-5">
+            <LevelControls
+              scheme={scheme}
+              onChange={onParameterChange}
+              onReset={onReset}
+              disabled={calculating}
+            />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }

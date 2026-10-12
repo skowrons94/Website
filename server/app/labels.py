@@ -64,7 +64,13 @@ def _particle_symbol(Z: int, M: float) -> str:
 class ChannelLabel:
     """A pair's derived identity: what it is, and how to render it."""
 
-    number: int              # 1-based pair number (matches Parameter.pair)
+    # The pair's key as written in the .azr file (column ``ir`` of <levels>,
+    # and what <segmentsData> calls the entrance/exit pair).  This is *not*
+    # the running engine's pair number: AZURE2 renumbers its pairs with the
+    # entrance pair first, so a model whose data enter through pair 2 (24Mg)
+    # has engine pair 1 == file key 2.  Map engine pairs back through
+    # ``Pair.key`` (see :func:`label_for_engine_pair`).
+    number: int
     label: str               # LaTeX, e.g. 'p' or '\\gamma_{1}'
     is_photon: bool
     excitation: float        # residual excitation energy (MeV)
@@ -135,16 +141,124 @@ def labels_from_file(azr_path: str) -> List[ChannelLabel]:
     return _build(list(seen.values()))
 
 
-def compound_nucleus(records) -> Optional[str]:
+def compound_nucleus(records, entrance_key: Optional[int] = None) -> Optional[str]:
     """LaTeX for the compound nucleus, from the entrance pair.
 
     ``records`` is any iterable of :class:`ChannelLabel`.  The entrance channel's
     two constituents fuse into the compound system that names the evaluation
-    (``p + ^{12}\\text{C}`` -> ``^{13}\\text{N}``).  Pair 1 is the entrance pair
-    in every AZURE2 model, and a photon pair's "constituents" already sum to the
-    compound system, so both cases fall out of the same arithmetic.
+    (``p + ^{12}\\text{C}`` -> ``^{13}\\text{N}``).  Every pair of a model sums
+    to the same compound system (a photon pair's "constituents" already do), so
+    any pair would give the same answer; the entrance pair is preferred only
+    because it is the one a reader expects.  It is *not* assumed to be key 1:
+    pass the key the data enter through (:func:`entrance_key`).
     """
-    entrance = next((c for c in records if c.number == 1), None)
+    records = list(records)
+    entrance = next((c for c in records if c.number == entrance_key), None)
+    if entrance is None:
+        entrance = records[0] if records else None
     if entrance is None:
         return None
     return nuclide(entrance.Z1 + entrance.Z2, entrance.A1 + entrance.A2)
+
+
+def entrance_key(segments, labels) -> Optional[int]:
+    """The pair key the measured data enter through.
+
+    An ``.azr`` file does not flag an entrance pair; the data segments say it.
+    The most common entrance key among the active segments wins (7Be enters
+    through both ``^{3}He + alpha`` and ``^{6}Li + p``), ties going to the lower
+    key.  A model with no data segments falls back to its first particle pair.
+    """
+    counts = {}
+    for segment in segments:
+        if getattr(segment, "active", True):
+            counts[segment.entrance_key] = counts.get(segment.entrance_key, 0) + 1
+    if counts:
+        return min(counts, key=lambda k: (-counts[k], k))
+    particle = [c.number for c in labels if not c.is_photon]
+    return min(particle) if particle else None
+
+
+def label_for_engine_pair(pair, labels) -> Optional["ChannelLabel"]:
+    """The label of a running engine's :class:`pyazr.Pair`, matched by key."""
+    key = getattr(pair, "key", None)
+    for label in labels:
+        if label.number == key:
+            return label
+    return None
+
+
+# -- reaction notation --------------------------------------------------------
+
+_SUPERSCRIPT = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
+
+# Light particles as they appear inside the parentheses of A(a,b)B.
+_LIGHT_PLAIN = {
+    (0, 1): "n", (1, 1): "p", (1, 2): "d", (1, 3): "t",
+    (2, 3): "³He", (2, 4): "α",
+}
+
+
+def nuclide_plain(Z: int, A: int) -> str:
+    """Unicode nuclide, e.g. ``'¹³N'`` -- what the site's <Sci> renders."""
+    return f"{str(A).translate(_SUPERSCRIPT)}{element(Z)}"
+
+
+def _light_plain(Z: int, A: int) -> str:
+    return _LIGHT_PLAIN.get((Z, A)) or nuclide_plain(Z, A)
+
+
+def _split(label: "ChannelLabel"):
+    """``(light, heavy)`` constituents of a particle pair, as ``(Z, A)``.
+
+    The lighter one is the projectile (or ejectile), except that an alpha
+    particle stays the projectile against anything lighter -- the usual
+    ``³He(α,γ)⁷Be`` and ``⁶Li(p,α)³He`` rather than ``⁴He(³He,γ)⁷Be``.
+    """
+    one, two = (label.Z1, label.A1), (label.Z2, label.A2)
+    if two == (2, 4) and one[1] < 4:
+        return two, one
+    if one == (2, 4) and two[1] < 4:
+        return one, two
+    return (one, two) if (one[1], one[0]) <= (two[1], two[0]) else (two, one)
+
+
+def reaction_plain(entrance: "ChannelLabel", exit: Optional["ChannelLabel"],
+                   total: bool = False) -> str:
+    """Unicode reaction notation for one entrance/exit pair, e.g.
+    ``'¹²C(p,γ)¹³N'``, ``'²³Na(p,α)²⁰Ne'``, ``'⁶Li(p,³He)⁴He'``.
+
+    ``total`` (or a photon exit) is radiative capture into the compound
+    nucleus; an exit equal to the entrance species is elastic scattering.
+    """
+    (zp, ap), (zt, at) = _split(entrance)
+    target, projectile = nuclide_plain(zt, at), _light_plain(zp, ap)
+    if total or exit is None or exit.is_photon:
+        return f"{target}({projectile},γ){nuclide_plain(zp + zt, ap + at)}"
+    (zl, al), (zr, ar) = _split(exit)
+    return f"{target}({projectile},{_light_plain(zl, al)}){nuclide_plain(zr, ar)}"
+
+
+def reactions(segments, labels) -> List[str]:
+    """Every distinct reaction the active data segments measure.
+
+    Capture first, then other reactions, then elastic scattering -- the order
+    a title reads in -- and file order within each.
+    """
+    by_key = {c.number: c for c in labels}
+    out = []
+    for segment in segments:
+        if not getattr(segment, "active", True):
+            continue
+        entrance = by_key.get(segment.entrance_key)
+        if entrance is None or entrance.is_photon:
+            continue
+        exit = by_key.get(segment.exit_key)
+        text = reaction_plain(entrance, exit, total=segment.exit_key == -1)
+        if text not in out:
+            out.append(text)
+
+    def rank(text):
+        inside = text[text.index("(") + 1:text.index(")")].split(",")
+        return 0 if inside[1] == "γ" else (2 if inside[0] == inside[1] else 1)
+    return sorted(out, key=rank)

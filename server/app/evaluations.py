@@ -13,6 +13,16 @@ what to cite.  Those live in an optional ``info.json``::
 ``title`` and ``channels`` may also be set there to override the derived values,
 but need not be -- an evaluation with no ``info.json`` still works, it just has
 no citation to show.
+
+Optional fields read by the web page (all pass through untouched):
+
+* ``reactions`` -- Unicode reaction notation, e.g. ``["¹²C(p,γ)¹³N"]``; derived
+  from the data segments when absent.
+* ``citation`` -- the full "how to cite" text; ``summary`` / ``summary_it`` --
+  one paragraph on what was fitted.
+* ``datasets`` -- readable names for data files, keyed by the file's stem
+  (``{"kettner_0": "Kettner"}``).  Unlisted files are named by
+  :func:`dataset_label`.
 """
 
 import json
@@ -20,7 +30,10 @@ import os
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
 
-from app.labels import ChannelLabel, compound_nucleus, labels_from_file
+import re
+
+from app.labels import (ChannelLabel, compound_nucleus, entrance_key,
+                        labels_from_file, reactions)
 
 
 @dataclass
@@ -35,21 +48,107 @@ class Evaluation:
     author: Optional[str] = None
     reference: Optional[str] = None
     labels: List[ChannelLabel] = field(default_factory=list)
+    entrance_key: Optional[int] = None
+    reactions: List[str] = field(default_factory=list)
+    info: Dict = field(default_factory=dict)
+
+    @property
+    def doi(self) -> Optional[str]:
+        """The reference, when it is a DOI (``10.xxxx/...``)."""
+        ref = (self.reference or "").strip()
+        ref = re.sub(r"^(https?://(dx\.)?doi\.org/|doi:)", "", ref, flags=re.I)
+        return ref if re.match(r"^10\.\d{4,9}/\S+$", ref) else None
+
+    def dataset_label(self, data_file: str) -> str:
+        """Readable name for a data file, from ``info.json`` or the file name."""
+        stem = os.path.splitext(os.path.basename(data_file or ""))[0]
+        names = self.info.get("datasets")
+        if isinstance(names, dict) and isinstance(names.get(stem), str):
+            return names[stem]
+        return dataset_label(stem)
+
+    @property
+    def entrance_label(self) -> Optional[ChannelLabel]:
+        return next((c for c in self.labels if c.number == self.entrance_key),
+                    None)
 
     @property
     def azr_filename(self) -> str:
         return os.path.basename(self.azr_path)
 
     def to_dict(self) -> Dict:
+        entrance = self.entrance_label
+        info = self.info
         return {
             "id": self.id,
             "title": self.title,
             "channels": self.channels,
             "author": self.author,
             "reference": self.reference,
+            "doi": self.doi,
             "filename": self.azr_filename,
-            "entrance": self.labels[0].reaction if self.labels else None,
+            "entrance": entrance.reaction if entrance else None,
+            "reactions": self.reactions,
+            "status": _text(info.get("status")),
+            "citation": _text(info.get("citation")),
+            "summary": _text(info.get("summary")),
+            "summary_it": _text(info.get("summary_it")),
         }
+
+
+def _text(value) -> Optional[str]:
+    return value if isinstance(value, str) and value.strip() else None
+
+
+# EXFOR entry + subentry, as data files exported from EXFOR are often named:
+# ``Elwyn-F0012002`` is entry F0012, subentry 002.
+_EXFOR = re.compile(r"^([A-Z0-9]\d{4})(\d{3})$")
+# Words in file names that are acronyms or abbreviations, not surnames.
+_WORDS = {"luna": "LUNA", "tunl": "TUNL", "bgo": "BGO", "hpge": "HPGe",
+          "fels": "Felsenkeller", "gs": "g.s.", "fes": "1st exc.",
+          "pp": "(p,p)", "total": "total"}
+
+
+def exfor_code(stem: str) -> Optional[str]:
+    """``'F0012.002'`` for a stem ending in an EXFOR entry number, else None."""
+    for token in re.split(r"[-_]", stem):
+        match = _EXFOR.match(token)
+        if match:
+            return f"{match.group(1)}.{match.group(2)}"
+    return None
+
+
+def dataset_label(stem: str) -> str:
+    """A readable name derived from a data file's stem.
+
+    ``kettner_0`` -> ``Kettner``; ``Elwyn-F0012002`` -> ``Elwyn (EXFOR
+    F0012.002)``; ``ferraro2018`` -> ``Ferraro (2018)``.  Bare numbers are
+    dropped: in these models they encode an angle or a final state, which the
+    segment itself already reports.  Anything else is kept, so two files never
+    collapse to the same name.
+    """
+    tokens = [t for t in re.split(r"[-_]", stem) if t]
+    if not tokens:
+        return stem
+    head, rest = tokens[0], tokens[1:]
+    year = None
+    match = re.match(r"^([A-Za-z]+?)((?:19|20)\d{2})$", head)
+    if match:
+        head, year = match.group(1), match.group(2)
+    name = _WORDS.get(head.lower()) or (head[:1].upper() + head[1:]
+                                         if head.islower() else head)
+    extras = []
+    if year:
+        extras.append(year)
+    for token in rest:
+        if _EXFOR.match(token):
+            extras.append(f"EXFOR {_EXFOR.match(token).group(1)}."
+                          f"{_EXFOR.match(token).group(2)}")
+        elif token.isdigit():
+            continue
+        else:
+            extras.append(_WORDS.get(token.lower(), token))
+    return f"{name} ({', '.join(extras)})" if extras else name
 
 
 def _find_azr(directory: str) -> Optional[str]:
@@ -69,7 +168,7 @@ def _read_info(directory: str) -> Dict:
     if not os.path.isfile(path):
         return {}
     try:
-        with open(path) as f:
+        with open(path, encoding="utf-8") as f:
             return json.load(f)
     except (json.JSONDecodeError, OSError):
         return {}
@@ -88,8 +187,17 @@ def load(directory: str) -> Optional[Evaluation]:
         return None
 
     info = _read_info(directory)
-    derived_title = compound_nucleus(labels) or os.path.basename(directory)
+    try:
+        from pyazr.datasets import SegmentSet
+        segments = SegmentSet.from_file(azr_path)
+    except (ValueError, OSError):
+        segments = []
+    entrance = entrance_key(segments, labels)
+    derived_title = (compound_nucleus(labels, entrance)
+                     or os.path.basename(directory))
+    derived_reactions = reactions(segments, labels)
     labels = _apply_label_overrides(labels, info.get("channels"))
+    listed = info.get("reactions")
 
     return Evaluation(
         id=os.path.basename(directory.rstrip(os.sep)),
@@ -100,6 +208,10 @@ def load(directory: str) -> Optional[Evaluation]:
         author=info.get("author"),
         reference=info.get("reference"),
         labels=labels,
+        entrance_key=entrance,
+        reactions=(listed if isinstance(listed, list) and listed
+                   else derived_reactions),
+        info=info,
     )
 
 
@@ -107,8 +219,8 @@ def _apply_label_overrides(labels: List[ChannelLabel],
                            channels) -> List[ChannelLabel]:
     """Overlay an ``info.json`` ``channels`` list onto the derived labels.
 
-    The list is positional -- entry ``i`` names pair ``i + 1`` -- so it is
-    applied per pair rather than wholesale.  Overriding is opt-in per position:
+    The list is positional -- entry ``i`` names the pair with key ``i + 1`` in
+    the .azr file -- so it is applied per pair rather than wholesale.  Overriding is opt-in per position:
     a shorter list leaves the remaining pairs derived, and entries beyond the
     model's pair count are ignored, since an evaluation's metadata can outlive
     the channel it described.

@@ -1,7 +1,25 @@
 {
   "id": "7Be",
   "title": "^{7}\\text{Be}",
-  "reference": "Unpublished",
+  "reference": null,
+  "status": "unpublished",
   "author": "R. J. deBoer & J. Skowronski",
-  "channels": ["^{3}\\text{He} + \\alpha", "^{6}\\text{Li} + p_{0}", "^{6}\\text{Li} + p_{1}"]
+  "channels": [
+    "^{3}\\text{He} + \\alpha",
+    "^{6}\\text{Li} + p_{0}",
+    "^{6}\\text{Li} + p_{1}"
+  ],
+  "reactions": [
+    "³He(α,γ)⁷Be",
+    "⁶Li(p,γ)⁷Be",
+    "⁶Li(p,α)³He",
+    "³He(α,p)⁶Li",
+    "⁶Li(p,p)⁶Li",
+    "³He(α,α)³He"
+  ],
+  "datasets": {
+    "Mccray-A1410002": "McCray (EXFOR A1410.002)",
+    "Mccray-A1410003": "McCray (EXFOR A1410.003)",
+    "DiLeva-C1729001": "Di Leva (EXFOR C1729.001)"
+  }
 }

@@ -218,7 +218,7 @@ const en = {
     eyebrow: "Running on AZURE2",
     title: "R-matrix evaluations",
     introBefore:
-      "Each of these is a published multi-level, multi-channel fit. Open one to see its level scheme and the data it was fitted to, then move a level energy or a reduced width and watch the cross section and the χ² respond — the calculation is the real AZURE2 code, not an approximation. Every evaluation can also be downloaded as an ",
+      "Each of these is a multi-level, multi-channel R-matrix fit. Open one to see its level scheme and the data it was fitted to, then move a level energy or a reduced width and watch the cross section and the χ² respond — the calculation is the real AZURE2 code, not an approximation. Every evaluation can also be downloaded as an ",
     introAfter: " project and run locally.",
     loading: "Loading evaluations…",
     loadFailed: "Failed to load evaluations",
@@ -238,6 +238,51 @@ const en = {
       `An interactive AZURE2 R-matrix evaluation of the ${nuclide} system: level scheme, fitted data and the extrapolation to stellar energies.`,
     inAtlas: "In the reaction atlas",
     inAtlasText: "What this reaction does in stars, how it has been measured and what is still uncertain:",
+    // --- evaluations ---
+    specialistBefore:
+      "A research tool for nuclear physicists, built to be used rather than read. For what these reactions do in stars and how they are measured, the ",
+    specialistLink: "reaction atlas",
+    specialistAfter: " is the place to start.",
+    openAria: (name: string) => `Open the ${name} evaluation`,
+    reactionsFitted: "Reactions fitted",
+    channelsLabel: "Channels",
+    paper: "Paper",
+    unpublished: "Unpublished",
+    noReference: "Not yet published",
+    allEvaluations: "All evaluations",
+    headerEyebrow: "R-matrix evaluation · AZURE2",
+    authors: "Authors",
+    energies: "Energies",
+    energiesText:
+      "Centre-of-mass energies E_c.m. in MeV throughout; AZURE2 converts the laboratory beam energies of the data files. Level energies are excitation energies of the compound nucleus.",
+    engine: "Engine",
+    engineText: "AZURE2, commit",
+    fitted: "What was fitted",
+    fittedText: (active: number, files: number, parts: string) =>
+      `${active} data segment${active === 1 ? "" : "s"} from ${files} data file${files === 1 ? "" : "s"}: ${parts}. The Data tab lists every segment with its normalisation and χ²; the Plot tab overlays the model on the measurements and lets you move any free level.`,
+    observableCount: (n: number, code: string) => {
+      const names: Record<string, [string, string]> = {
+        "angle-integrated": ["angle-integrated cross section", "angle-integrated cross sections"],
+        differential: ["differential cross section", "differential cross sections"],
+        "differential-cm": ["differential cross section (c.m. angle)", "differential cross sections (c.m. angles)"],
+        "total-capture": ["total-capture cross section", "total-capture cross sections"],
+        "phase-shift": ["phase shift", "phase shifts"],
+        "angle-integrated-E1": ["E1 cross section", "E1 cross sections"],
+        "angle-integrated-E2": ["E2 cross section", "E2 cross sections"],
+        "analyzing-power": ["analysing power", "analysing powers"],
+      }
+      const [one, many] = names[code] ?? [code, code]
+      return `${n} ${n === 1 ? one : many}`
+    },
+    howToCite: "How to cite",
+    citeWithPaper: "Please cite the paper this evaluation belongs to:",
+    citeNoPaper:
+      "This evaluation has no publication yet. Please cite this page with the date you used it, and the authors listed above.",
+    citeAzure: "and the AZURE2 code:",
+    azureReference: "R. E. Azuma et al., Phys. Rev. C 81, 045805 (2010)",
+    notFoundTitle: "No such evaluation",
+    notFoundText: (id: string) =>
+      `There is no evaluation called “${id}”. It may have been renamed or removed; the list of evaluations has every one this site serves.`,
   },
 
   /* -- the evaluation workspace ------------------------------------------- */
@@ -247,14 +292,14 @@ const en = {
     inBrowser: "AZURE2 runs in your browser; the first evaluation takes a few seconds to load.",
     progress: {} as Record<string, string>,
     unexpected: "Unexpected error",
-    retry: "Retry",
+    retry: "Try again",
     back: "Back",
     evaluations: "Evaluations",
     expired: "This session expired on the server.",
     reopen: "Reopen",
     tabs: { scheme: "Level scheme", data: "Data", plot: "Plot", extrap: "Extrapolations" },
     calculatingData: "Calculating data segments…",
-    calculatingExtrap: "Calculating extrapolations…",
+    calculatingExtrap: "Calculating extrapolations… a model with external capture can take a minute.",
     // level scheme
     levelScheme: "Level scheme",
     schemeSummary: (levels: number, pairs: number, free: number) =>
@@ -319,7 +364,7 @@ const en = {
       `Showing ${n} ${what} as small multiples — beyond ${limit} overlaid series the colors are no longer reliably distinguishable.`,
     selectDataset: "Select a dataset to plot.",
     selectExtrap: "Select an extrapolation to plot.",
-    energyAxis: "Energy (MeV)",
+    energyAxis: "Energy, c.m. (MeV)",
     datasets: "Datasets",
     off: "off",
     downloadCsv: "Download CSV",
@@ -343,6 +388,35 @@ const en = {
     inactive: "inactive",
     normFree: "normalization is a fit parameter",
     noMatch: (filter: string) => `No datasets match “${filter}”.`,
+    // --- evaluations ---
+    tryAgain: "Try again",
+    serverDown: "The evaluation server is not available right now",
+    serverDownText:
+      "This evaluation runs on the server that hosts AZURE2, and it did not answer. Try again in a moment; the reaction atlas explains the physics in the meantime.",
+    atlas: "Reaction atlas",
+    elasticAxis: "dσ/dΩ (b/sr)",
+    elasticNote:
+      "Elastic-scattering segments are always shown as dσ/dΩ: an astrophysical S-factor is not defined for scattering.",
+    mixedNote: "The selected segments measure different quantities, so each has its own panel.",
+    plotAria: (quantity: string, names: string) => `Plot of ${quantity} against centre-of-mass energy: ${names}. Points are measurements, lines the R-matrix model.`,
+    chi2Status: (v: string) => `Recalculated: mean χ²/N of the shown datasets is now ${v}.`,
+    sliderValue: (value: string, unit: string) => `${value} ${unit}`,
+    levelGroupAria: (jpi: string, energy: string) => `Level ${jpi} at ${energy} MeV`,
+    showDatasets: (n: number) => `Datasets (${n} shown)`,
+    chi2Total: (chi2: string, points: number, perPoint: string) =>
+      `Total χ² = ${chi2} for ${points} points (χ²/N = ${perPoint}).`,
+    chi2Explain:
+      "χ² is the data term at the shipped parameters and normalisations, computed exactly as AZURE2 does (the normalisation scales data and error together). Large values are reported as they are.",
+    penaltyText: (v: string) => ` AZURE2's normalisation prior adds ${v}.`,
+    normSummary: (free: number, constrained: number, fixed: number) =>
+      `Normalisations: ${free} free in the fit (${constrained} with a stated systematic uncertainty, ${free - constrained} unconstrained), ${fixed} fixed.`,
+    normFixed: "fixed",
+    normFreeSigma: (sigma: string) => `free, σ = ${sigma}%`,
+    normFreeNone: "free, no prior",
+    file: "File",
+    previewHint: "The plot stays pinned while you scroll the levels.",
+    nothingToPlot: "Nothing to plot: a log axis hides non-positive values.",
+    model: "model",
   },
 
   /* -- atlas -------------------------------------------------------------- */
@@ -749,7 +823,7 @@ const it: Dictionary = {
     eyebrow: "Calcolate con AZURE2",
     title: "Valutazioni R-matrix",
     introBefore:
-      "Ognuna di queste è un fit pubblicato a più livelli e più canali. Aprine una per vedere il suo schema dei livelli e i dati del fit, poi sposta l'energia di un livello o una larghezza ridotta e osserva come rispondono la sezione d'urto e il χ²: il calcolo è il vero codice AZURE2, non un'approssimazione. Ogni valutazione si può anche scaricare come progetto ",
+      "Ognuna di queste è un fit R-matrix a più livelli e più canali. Aprine una per vedere il suo schema dei livelli e i dati del fit, poi sposta l'energia di un livello o una larghezza ridotta e osserva come rispondono la sezione d'urto e il χ²: il calcolo è il vero codice AZURE2, non un'approssimazione. Ogni valutazione si può anche scaricare come progetto ",
     introAfter: " ed eseguire in locale.",
     loading: "Caricamento delle valutazioni…",
     loadFailed: "Impossibile caricare le valutazioni",
@@ -769,6 +843,51 @@ const it: Dictionary = {
       `Una valutazione R-matrix interattiva del sistema ${nuclide} con AZURE2: schema dei livelli, dati del fit ed estrapolazione alle energie stellari.`,
     inAtlas: "Nell'atlante delle reazioni",
     inAtlasText: "Che cosa fa questa reazione nelle stelle, come è stata misurata e che cosa è ancora incerto:",
+    // --- evaluations ---
+    specialistBefore:
+      "Uno strumento di ricerca per fisici nucleari, pensato per essere usato più che letto. Per sapere che cosa fanno queste reazioni nelle stelle e come si misurano, il punto di partenza è l'",
+    specialistLink: "atlante delle reazioni",
+    specialistAfter: ".",
+    openAria: (name: string) => `Apri la valutazione del ${name}`,
+    reactionsFitted: "Reazioni nel fit",
+    channelsLabel: "Canali",
+    paper: "Articolo",
+    unpublished: "Non pubblicata",
+    noReference: "Non ancora pubblicata",
+    allEvaluations: "Tutte le valutazioni",
+    headerEyebrow: "Valutazione R-matrix · AZURE2",
+    authors: "Autori",
+    energies: "Energie",
+    energiesText:
+      "Energie nel centro di massa, E_c.m., in MeV ovunque; AZURE2 converte le energie del fascio nel laboratorio riportate nei file di dati. Le energie dei livelli sono energie di eccitazione del nucleo composto.",
+    engine: "Codice",
+    engineText: "AZURE2, commit",
+    fitted: "Che cosa contiene il fit",
+    fittedText: (active: number, files: number, parts: string) =>
+      `${active} segment${active === 1 ? "o" : "i"} di dati da ${files} file: ${parts}. La scheda Dati elenca ogni segmento con la sua normalizzazione e il χ²; la scheda Grafico sovrappone il modello alle misure e permette di spostare qualunque livello libero.`,
+    observableCount: (n: number, code: string) => {
+      const names: Record<string, [string, string]> = {
+        "angle-integrated": ["sezione d'urto integrata sugli angoli", "sezioni d'urto integrate sugli angoli"],
+        differential: ["sezione d'urto differenziale", "sezioni d'urto differenziali"],
+        "differential-cm": ["sezione d'urto differenziale (angolo nel c.m.)", "sezioni d'urto differenziali (angoli nel c.m.)"],
+        "total-capture": ["sezione d'urto di cattura totale", "sezioni d'urto di cattura totale"],
+        "phase-shift": ["sfasamento", "sfasamenti"],
+        "angle-integrated-E1": ["sezione d'urto E1", "sezioni d'urto E1"],
+        "angle-integrated-E2": ["sezione d'urto E2", "sezioni d'urto E2"],
+        "analyzing-power": ["potere di analisi", "poteri di analisi"],
+      }
+      const [one, many] = names[code] ?? [code, code]
+      return `${n} ${n === 1 ? one : many}`
+    },
+    howToCite: "Come citare",
+    citeWithPaper: "Cita l'articolo a cui appartiene questa valutazione:",
+    citeNoPaper:
+      "Questa valutazione non è ancora pubblicata. Cita questa pagina, con la data in cui l'hai consultata, e gli autori indicati sopra.",
+    citeAzure: "e il codice AZURE2:",
+    azureReference: "R. E. Azuma et al., Phys. Rev. C 81, 045805 (2010)",
+    notFoundTitle: "Valutazione inesistente",
+    notFoundText: (id: string) =>
+      `Non esiste una valutazione chiamata “${id}”. Potrebbe essere stata rinominata o rimossa; l'elenco delle valutazioni le riporta tutte.`,
   },
 
   /* -- the evaluation workspace ------------------------------------------- */
@@ -791,7 +910,7 @@ const it: Dictionary = {
     reopen: "Riapri",
     tabs: { scheme: "Schema dei livelli", data: "Dati", plot: "Grafico", extrap: "Estrapolazioni" },
     calculatingData: "Calcolo dei segmenti di dati…",
-    calculatingExtrap: "Calcolo delle estrapolazioni…",
+    calculatingExtrap: "Calcolo delle estrapolazioni… con la cattura esterna può servire un minuto.",
     levelScheme: "Schema dei livelli",
     schemeSummary: (levels: number, pairs: number, free: number) =>
       `${levels} livelli su ${pairs} coppie di particelle · ${free} parametri R-matrix liberi`,
@@ -853,7 +972,7 @@ const it: Dictionary = {
       `${n} ${what === "datasets" ? "insiemi di dati" : "serie"} in grafici separati: oltre ${limit} serie sovrapposte i colori non sono più distinguibili con sicurezza.`,
     selectDataset: "Seleziona un insieme di dati da mostrare.",
     selectExtrap: "Seleziona un'estrapolazione da mostrare.",
-    energyAxis: "Energia (MeV)",
+    energyAxis: "Energia nel c.m. (MeV)",
     datasets: "Insiemi di dati",
     off: "escluso",
     downloadCsv: "Scarica CSV",
@@ -876,6 +995,35 @@ const it: Dictionary = {
     inactive: "inattivo",
     normFree: "la normalizzazione è un parametro del fit",
     noMatch: (filter: string) => `Nessun insieme di dati corrisponde a “${filter}”.`,
+    // --- evaluations ---
+    tryAgain: "Riprova",
+    serverDown: "Il server delle valutazioni al momento non è disponibile",
+    serverDownText:
+      "Questa valutazione gira sul server che ospita AZURE2, e non ha risposto. Riprova tra poco; nel frattempo l'atlante delle reazioni spiega la fisica.",
+    atlas: "Atlante delle reazioni",
+    elasticAxis: "dσ/dΩ (b/sr)",
+    elasticNote:
+      "I segmenti di diffusione elastica sono sempre mostrati come dσ/dΩ: per la diffusione il fattore S astrofisico non è definito.",
+    mixedNote: "I segmenti scelti misurano grandezze diverse, quindi ognuno ha il suo grafico.",
+    plotAria: (quantity: string, names: string) => `Grafico di ${quantity} in funzione dell'energia nel centro di massa: ${names}. I punti sono le misure, le linee il modello R-matrix.`,
+    chi2Status: (v: string) => `Ricalcolato: il χ²/N medio degli insiemi di dati mostrati ora è ${v}.`,
+    sliderValue: (value: string, unit: string) => `${value} ${unit}`,
+    levelGroupAria: (jpi: string, energy: string) => `Livello ${jpi} a ${energy} MeV`,
+    showDatasets: (n: number) => `Insiemi di dati (${n} mostrati)`,
+    chi2Total: (chi2: string, points: number, perPoint: string) =>
+      `χ² totale = ${chi2} su ${points} punti (χ²/N = ${perPoint}).`,
+    chi2Explain:
+      "Il χ² è il termine dei dati ai parametri e alle normalizzazioni del modello pubblicato, calcolato come in AZURE2 (la normalizzazione scala insieme dati ed errori). I valori grandi sono riportati così come sono.",
+    penaltyText: (v: string) => ` Il vincolo di AZURE2 sulle normalizzazioni aggiunge ${v}.`,
+    normSummary: (free: number, constrained: number, fixed: number) =>
+      `Normalizzazioni: ${free} libere nel fit (${constrained} con un'incertezza sistematica dichiarata, ${free - constrained} senza vincolo), ${fixed} fisse.`,
+    normFixed: "fissa",
+    normFreeSigma: (sigma: string) => `libera, σ = ${sigma}%`,
+    normFreeNone: "libera, senza vincolo",
+    file: "File",
+    previewHint: "Il grafico resta in vista mentre scorri i livelli.",
+    nothingToPlot: "Niente da mostrare: una scala logaritmica nasconde i valori non positivi.",
+    model: "modello",
   },
 
   /* -- atlas -------------------------------------------------------------- */

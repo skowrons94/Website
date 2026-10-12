@@ -8,7 +8,6 @@ import { LangProvider } from "@/components/lang-provider"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { ThemeProvider } from "@/components/theme-provider"
-import { SessionProvider } from "@/contexts/session-context"
 import { getProfile } from "@/lib/content"
 import { mono, sans, serif } from "@/lib/fonts"
 import { dict, type Lang } from "@/lib/i18n"
@@ -37,8 +36,7 @@ export function RootShell({ lang, children }: { lang: Lang; children: React.Reac
         >
           <LangProvider lang={lang}>
             <Alternates />
-            <SessionProvider>
-              {/* First stop for a keyboard: past the header links to the page. */}
+            {/* First stop for a keyboard: past the header links to the page. */}
               <a
                 href="#content"
                 className="sr-only print:hidden focus:not-sr-only focus:fixed focus:left-4 focus:top-3 focus:z-50 focus:rounded-md focus:bg-background focus:px-4 focus:py-2.5 focus:text-sm focus:font-medium focus:shadow-md focus:ring-2 focus:ring-ring"
@@ -52,7 +50,6 @@ export function RootShell({ lang, children }: { lang: Lang; children: React.Reac
                 </main>
                 <SiteFooter profile={profile} lang={lang} />
               </div>
-            </SessionProvider>
           </LangProvider>
         </ThemeProvider>
       </body>

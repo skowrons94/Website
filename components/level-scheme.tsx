@@ -10,8 +10,7 @@ import {
   Unlock,
   X,
 } from "lucide-react"
-import { InlineMath } from "react-katex"
-import "katex/dist/katex.min.css"
+import { Tex, Unit } from "@/components/tex"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -36,7 +35,7 @@ import {
 } from "@/lib/api"
 import {
   formatEnergy,
-  formatQuantityText,
+  formatQuantity,
   quantityName,
   quantitySymbol,
 } from "@/lib/viz"
@@ -165,7 +164,7 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
       <Card>
         <CardContent className="space-y-3 pt-5">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="mr-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <span className="mr-1 text-xs font-medium text-muted-foreground">
               J<sup>π</sup>
             </span>
             {allJpi.map((jpi) => {
@@ -182,7 +181,7 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
                       : "hover:bg-muted"
                   }`}
                 >
-                  <InlineMath math={jpiLatex(jpi)} />
+                  <Tex math={jpiLatex(jpi)} />
                   <span className="ml-1.5 opacity-60">{count}</span>
                 </button>
               )
@@ -248,16 +247,18 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
 
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">{t.levels}</CardTitle>
+          <CardTitle role="heading" aria-level={3} className="text-base">{t.levels}</CardTitle>
           <CardDescription>{t.selectRow}</CardDescription>
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[40rem] text-sm">
               <thead>
-                <tr className="border-b text-left text-xs uppercase tracking-wide text-muted-foreground">
+                <tr className="border-b text-left text-xs font-medium text-muted-foreground">
                   <th className="w-8 px-2 py-2" />
-                  <th className="px-2 py-2 font-medium">J^π</th>
+                  <th className="px-2 py-2 font-medium normal-case">
+                    J<sup>π</sup>
+                  </th>
                   <th className="px-2 py-2 text-right font-medium">
                     {t.energyMeV}
                   </th>
@@ -283,15 +284,26 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
                         onClick={() => toggleExpanded(key)}
                         className="cursor-pointer border-b hover:bg-muted/40"
                       >
-                        <td className="px-2 py-2 text-muted-foreground">
-                          {open ? (
-                            <ChevronDown className="h-4 w-4" />
-                          ) : (
-                            <ChevronRight className="h-4 w-4" />
-                          )}
+                        <td className="px-1 py-1 text-muted-foreground">
+                          <button
+                            type="button"
+                            aria-expanded={open}
+                            aria-label={`${level.jpi} ${formatEnergy(level.energy)} MeV`}
+                            onClick={(event) => {
+                              event.stopPropagation()
+                              toggleExpanded(key)
+                            }}
+                            className="flex h-8 w-8 items-center justify-center rounded hover:bg-muted"
+                          >
+                            {open ? (
+                              <ChevronDown className="h-4 w-4" aria-hidden />
+                            ) : (
+                              <ChevronRight className="h-4 w-4" aria-hidden />
+                            )}
+                          </button>
                         </td>
                         <td className="px-2 py-2">
-                          <InlineMath math={jpiLatex(level.jpi)} />
+                          <Tex math={jpiLatex(level.jpi)} />
                         </td>
                         <td className="px-2 py-2 text-right tabular-nums">
                           {formatEnergy(level.energy)}
@@ -340,7 +352,7 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
                                     className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1"
                                   >
                                     <span className="flex items-baseline gap-2">
-                                      <InlineMath
+                                      <Tex
                                         math={quantitySymbol(
                                           channel.quantity,
                                           channel.label,
@@ -359,10 +371,8 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
                                       </span>
                                     </span>
                                     <span className="flex items-baseline gap-2 tabular-nums">
-                                      {formatQuantityText(
-                                        channel.width,
-                                        channel.unit,
-                                      )}
+                                      {formatQuantity(channel.width, channel.unit).text.replace("-", "\u2212")}{" "}
+                                      <Unit unit={formatQuantity(channel.width, channel.unit).unit} />
                                       {channel.fixed ? (
                                         <Lock className="h-3 w-3 text-muted-foreground" />
                                       ) : (
@@ -393,13 +403,13 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
 
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">{t.pairs}</CardTitle>
+          <CardTitle role="heading" aria-level={3} className="text-base">{t.pairs}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[36rem] text-sm">
               <thead>
-                <tr className="border-b text-left text-xs uppercase tracking-wide text-muted-foreground">
+                <tr className="border-b text-left text-xs font-medium text-muted-foreground">
                   <th className="px-2 py-2 font-medium">{t.pair}</th>
                   <th className="px-2 py-2 font-medium">{t.channel}</th>
                   <th className="px-2 py-2 font-medium">{t.type}</th>
@@ -421,7 +431,7 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
                       {pair.number}
                     </td>
                     <td className="px-2 py-2">
-                      <InlineMath math={pair.label} />
+                      <Tex math={pair.label} />
                       {pair.is_entrance && (
                         <Badge variant="secondary" className="ml-2 text-xs">
                           {t.entrance}
@@ -432,7 +442,7 @@ export function LevelScheme({ scheme, evaluation, sessionId }: Props) {
                       {pair.is_photon ? t.photon : t.particle}
                     </td>
                     <td className="px-2 py-2 text-right tabular-nums">
-                      {formatEnergy(pair.separation_energy)}
+                      {pair.is_photon ? "—" : formatEnergy(pair.separation_energy)}
                     </td>
                     <td className="px-2 py-2 text-right tabular-nums">
                       {formatEnergy(pair.excitation)}
