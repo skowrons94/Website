@@ -381,7 +381,8 @@ export async function renderMarkdown(markdown: string): Promise<string> {
       behavior: "append",
       properties: { className: ["heading-anchor"], ariaHidden: true, tabIndex: -1 },
       content: { type: "text", value: "#" },
-    })
+      // The plugin's types lag its own hast types; the options are as documented.
+    } as never)
     // `strict: false` keeps one unsupported macro from blanking a whole note;
     // `throwOnError: false` renders the offending source in red instead of
     // failing the build.

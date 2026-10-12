@@ -341,7 +341,8 @@ export function NetworkMap({ data }: { data: MapData }) {
     return () => cancelAnimationFrame(frame)
   }, [target])
 
-  const scale = size.w / view.w // px per cell unit
+  // px per cell unit; guarded for the first render, before the frame is measured
+  const scale = size.w > 0 && view.w > 0 ? size.w / view.w : 1
   const px = (n: number) => n / scale
   // Every cell is labelled when the cells are large enough; on a phone, with a
   // wide process on show, only the nuclides of the process are.
