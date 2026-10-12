@@ -1,8 +1,10 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { ArrowRight, Download } from "lucide-react"
+import { ArrowRight, ChevronRight, Download } from "lucide-react"
 
+import { ChartDiagram } from "@/components/atlas/chart-diagram"
 import { NetworkMap } from "@/components/atlas/network-map"
+import { SiteUrl } from "@/components/atlas/site-url"
 import { LunaBadge } from "@/components/atlas/status-badge"
 import { Sci } from "@/components/sci"
 import { getAtlas, getMapData } from "@/lib/atlas"
@@ -27,11 +29,12 @@ export function AtlasPage({ lang }: { lang: Lang }) {
   const to = (path: string) => localePath(lang, path)
   const luna = atlas.reactions.filter((r) => r.luna)
   const written = atlas.reactions.filter((r) => r.hasFile).length
+  const meta = atlas.meta
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 xl:max-w-7xl">
-      {/* -- introduction -------------------------------------------------- */}
-      <header className="border-b border-border/70 pb-10 lg:grid lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
+      {/* -- title, and where a newcomer should start ------------------------- */}
+      <header className="border-b border-border/70 pb-8 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:items-end lg:gap-16">
         <div>
           <p className="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
             {t.name}
@@ -39,24 +42,83 @@ export function AtlasPage({ lang }: { lang: Lang }) {
           <h1 className="text-balance font-serif text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
             {t.title}
           </h1>
-          <nav className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm">
-            <Link href={to("/atlas/timeline")} className="text-link underline-offset-4 hover:underline">
-              {t.history}
-            </Link>
-            <Link href={to("/atlas/methods")} className="text-link underline-offset-4 hover:underline">
+          <p className="mt-4 max-w-2xl text-pretty text-[1.0625rem] leading-relaxed text-muted-foreground">
+            {t.description}
+          </p>
+          <nav className="mt-5 flex flex-wrap gap-x-6 gap-y-1 text-sm">
+            <Link href={to("/atlas/methods")} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
               {t.methodsLink}
             </Link>
+            <Link href={to("/glossary")} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
+              {t.glossaryLink}
+            </Link>
+            <a href="#cite" className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
+              {t.citeTitle}
+            </a>
           </nav>
         </div>
-
-        <div className="mt-8 space-y-4 text-pretty text-[1.0625rem] leading-relaxed text-muted-foreground lg:mt-0">
-          {lang === "it" ? <IntroIt /> : <IntroEn />}
-        </div>
+        <Link
+          href={to("/atlas/timeline")}
+          className="group mt-6 block rounded-lg border border-border bg-card p-5 transition-colors hover:border-foreground/30 lg:mt-0"
+        >
+          <p className="text-xs font-medium uppercase tracking-[0.14em] text-link">{t.startHere}</p>
+          <p className="mt-1.5 font-serif text-lg font-semibold leading-snug tracking-tight group-hover:text-link">
+            {t.startHereTitle}
+          </p>
+          <p className="mt-1.5 text-pretty text-sm leading-relaxed text-muted-foreground">{t.startHereText}</p>
+          <ArrowRight className="mt-3 h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden />
+        </Link>
       </header>
 
+      {/* -- how to read the map, folded ------------------------------------- */}
+      <details className="group mt-6 rounded-lg border border-border/80">
+        <summary className="flex min-h-12 cursor-pointer list-none items-center gap-2 rounded-lg px-4 py-3 font-medium transition-colors hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+          <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-90" aria-hidden />
+          {t.howToRead}
+        </summary>
+        <div className="grid gap-8 px-4 pb-6 pt-2 md:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] md:gap-10">
+          <ChartDiagram lang={lang} />
+          <div className="space-y-5 text-[0.975rem] leading-relaxed">
+            <ul className="space-y-2.5">
+              {t.readSteps.map((step, i) => (
+                <li key={i} className="flex gap-3 text-pretty">
+                  <span className="tabular w-4 shrink-0 text-sm text-muted-foreground">{i + 1}.</span>
+                  <span>
+                    <Sci>{step}</Sci>
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <div className="rounded-md bg-secondary/60 px-4 py-3">
+              <p className="text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">{t.notationTitle}</p>
+              <p className="mt-1.5 text-pretty">
+                <span className="font-serif font-semibold">
+                  <Sci>¹⁴N(p,γ)¹⁵O</Sci>
+                </span>{" "}
+                {t.notation[0]}{" "}
+                <span className="whitespace-nowrap font-serif font-semibold">{t.notation[1]}</span>.{" "}
+                <Link href={to("/glossary#notation")} className="text-link underline-offset-4 hover:underline">
+                  {t.moreInGlossary}
+                </Link>
+              </p>
+            </div>
+          </div>
+        </div>
+      </details>
+
       {/* -- the map ------------------------------------------------------- */}
-      <section className="pt-10" aria-label={t.mapLabel}>
+      <section className="pt-8" aria-label={t.mapLabel}>
         <NetworkMap data={map} />
+      </section>
+
+      {/* -- the primer: why, and why underground ---------------------------- */}
+      <section className="mt-16 border-t border-border/70 pt-10" aria-labelledby="primer-heading">
+        <h2 id="primer-heading" className="max-w-3xl text-balance font-serif text-2xl font-semibold tracking-tight">
+          {t.primerTitle}
+        </h2>
+        <div className="mt-5 max-w-3xl space-y-4 text-pretty text-[1.0625rem] leading-relaxed text-muted-foreground">
+          {lang === "it" ? <IntroIt /> : <IntroEn />}
+        </div>
       </section>
 
       {/* -- LUNA ---------------------------------------------------------- */}
@@ -67,10 +129,10 @@ export function AtlasPage({ lang }: { lang: Lang }) {
               {t.lunaTitle}
             </h2>
             <span className="flex flex-wrap gap-x-5 gap-y-1 text-sm">
-              <Link href={to("/atlas/timeline?only=luna")} className="text-link underline-offset-4 hover:underline">
+              <Link href={to("/atlas/timeline?only=luna")} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
                 {t.lunaOnTimeline}
               </Link>
-              <Link href={to("/research#luna")} className="text-link underline-offset-4 hover:underline">
+              <Link href={to("/research#luna")} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
                 {t.myLuna}
               </Link>
             </span>
@@ -126,7 +188,29 @@ export function AtlasPage({ lang }: { lang: Lang }) {
         </a>
       </section>
 
-      <p className="mt-10 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+      {/* -- how to cite ------------------------------------------------------ */}
+      <section id="cite" className="mt-10 scroll-mt-24 rounded-lg border border-border p-6" aria-labelledby="cite-heading">
+        <h2 id="cite-heading" className="font-serif text-lg font-semibold tracking-tight">
+          {t.citeTitle}
+        </h2>
+        <p className="mt-3 break-words rounded-md bg-secondary/60 px-4 py-3 font-mono text-[0.8125rem] leading-relaxed">
+          {meta.author}, <i>{meta.title}</i>
+          {meta.version && `, ${t.citeVersion} ${meta.version}`}, <SiteUrl path="/atlas" lang={lang} fixed={meta.url} />.
+        </p>
+        <p className="mt-2 text-xs text-muted-foreground">{t.citeAccessed}</p>
+        {meta.licence && (
+          <p className="mt-4 text-pretty text-sm leading-relaxed text-muted-foreground">
+            {t.licence(meta.licence)}{" "}
+            {meta.licenceUrl && (
+              <a href={meta.licenceUrl} target="_blank" rel="license noreferrer" className="text-link underline-offset-4 hover:underline">
+                {t.licenceLink}: {meta.licence}
+              </a>
+            )}
+          </p>
+        )}
+      </section>
+
+      <p className="mt-8 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
         <LunaBadge /> {t.lunaMarks}
       </p>
     </div>
@@ -195,10 +279,10 @@ function IntroIt() {
       <p>
         Anche un fascio intenso produce allora solo una manciata di reazioni, e sulla superficie della Terra
         i raggi cosmici lasciano in qualunque rivelatore di raggi γ molti più conteggi di queste. All'inizio
-        degli anni Novanta la collaborazione LUNA ha quindi portato il suo acceleratore sotto il Gran Sasso,
-        ai Laboratori Nazionali del Gran Sasso, dove 1400 m di roccia riducono i muoni cosmici di circa un
-        milione di volte. Da allora diverse reazioni delle catene protone-protone e dei cicli CNO sono state
-        misurate in questo laboratorio sotterraneo alle energie a cui le usa il Sole, o molto vicino.
+        degli anni Novanta la collaborazione LUNA ha quindi portato il suo acceleratore nei Laboratori
+        Nazionali del Gran Sasso, dove 1400 m di roccia riducono i muoni cosmici di circa un milione di
+        volte. Da allora diverse reazioni delle catene protone-protone e dei cicli CNO sono state misurate in
+        questo laboratorio sotterraneo alle energie a cui avvengono nel Sole, o molto vicino.
       </p>
       <p>
         Ogni reazione trasforma un nucleo in un altro, e in una stella le reazioni si collegano in catene e

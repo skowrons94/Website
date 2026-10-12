@@ -36,6 +36,16 @@ export function TimelineView({ events }: { events: TimelineItem[] }) {
   const t = useDict().atlas
   const label = (category: string) => t.categories[category] ?? category
   const [only, setOnly] = useState<string | null>(null)
+  // On a phone each entry opens folded to its title and the first lines of
+  // its text; on a wider screen everything is shown.
+  const [open, setOpen] = useState<Set<string>>(() => new Set())
+  const toggle = (id: string) =>
+    setOpen((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
 
   // /atlas/timeline?only=luna, linked from the atlas page. Read on the client,
   // so the page itself stays static.
@@ -90,9 +100,9 @@ export function TimelineView({ events }: { events: TimelineItem[] }) {
             </Chip>
           ))}
         </div>
-        <nav aria-label={t.decades} className="mt-2.5 flex gap-x-3.5 gap-y-1 overflow-x-auto whitespace-nowrap pb-0.5 text-xs text-muted-foreground [scrollbar-width:none]">
+        <nav aria-label={t.decades} className="mt-1.5 flex gap-x-3.5 overflow-x-auto whitespace-nowrap pb-0.5 text-xs text-muted-foreground [scrollbar-width:none]">
           {decades.map((d) => (
-            <a key={d.decade} href={`#d${d.decade}`} className="tabular underline-offset-2 hover:text-foreground hover:underline">
+            <a key={d.decade} href={`#d${d.decade}`} className="tabular inline-block py-1.5 underline-offset-2 hover:text-foreground hover:underline">
               {d.decade ? t.decade(d.decade) : t.undated}
             </a>
           ))}
@@ -139,10 +149,28 @@ export function TimelineView({ events }: { events: TimelineItem[] }) {
                     {e.luna && <LunaBadge className="normal-case" />}
                   </p>
                   {e.text && (
-                    <p className="mt-2.5 max-w-2xl text-pretty text-[0.975rem] leading-relaxed text-foreground/90">
+                    <p
+                      id={`${e.id}-text`}
+                      className={cn(
+                        "mt-2.5 max-w-2xl text-pretty text-[0.975rem] leading-relaxed text-foreground/90 sm:line-clamp-none",
+                        !open.has(e.id) && "line-clamp-2",
+                      )}
+                    >
                       <Sci>{e.text}</Sci>
                     </p>
                   )}
+                  {(e.text || e.reactions.length > 0 || e.refs.length > 0 || e.url) && (
+                    <button
+                      type="button"
+                      aria-expanded={open.has(e.id)}
+                      aria-controls={`${e.id}-more`}
+                      onClick={() => toggle(e.id)}
+                      className="mt-1 inline-flex min-h-8 items-center text-sm text-link underline-offset-4 hover:underline sm:hidden"
+                    >
+                      {open.has(e.id) ? t.readLess : t.readMore}
+                    </button>
+                  )}
+                  <div id={`${e.id}-more`} className={cn("sm:block", !open.has(e.id) && "hidden")}>
                   {e.reactions.length > 0 && (
                     <ul className="mt-3 flex flex-wrap gap-1.5">
                       {e.reactions.map((r) => (
@@ -158,7 +186,7 @@ export function TimelineView({ events }: { events: TimelineItem[] }) {
                     </ul>
                   )}
                   {(e.refs.length > 0 || e.url) && (
-                    <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                    <p className="mt-3 flex flex-wrap gap-x-4 text-xs text-muted-foreground">
                       {e.refs.map((ref) =>
                         ref.href ? (
                           <a
@@ -166,7 +194,7 @@ export function TimelineView({ events }: { events: TimelineItem[] }) {
                             href={ref.href}
                             target="_blank"
                             rel="noreferrer"
-                            className="underline-offset-2 hover:text-link hover:underline"
+                            className="inline-flex min-h-6 items-center underline-offset-2 hover:text-link hover:underline"
                           >
                             <Sci>{ref.label}</Sci>
                           </a>
@@ -188,6 +216,7 @@ export function TimelineView({ events }: { events: TimelineItem[] }) {
                       )}
                     </p>
                   )}
+                  </div>
                 </li>
               ))}
             </ol>
