@@ -500,6 +500,14 @@ const en = {
     selected: "selected",
     clearSelection: "Clear selection",
     edited: "edited",
+    // sliders
+    flipSign: (name: string, negative: boolean) =>
+      `${name}: sign ${negative ? "negative" : "positive"}; press to make it ${negative ? "positive" : "negative"}`,
+    valueInput: (name: string, unit: string) => `${name}, exact value in ${unit}`,
+    logSlider: "log scale",
+    deltaChi2: (v: string) => `Δχ² ${v}`,
+    notANumber: "Enter a number, e.g. 34.5 or 1.2e-3",
+    levelInDiagram: "Selected in the diagram",
   },
 
   /* -- atlas -------------------------------------------------------------- */
@@ -1237,6 +1245,14 @@ const it: Dictionary = {
     selected: "selezionato",
     clearSelection: "Deseleziona",
     edited: "modificato",
+    // sliders
+    flipSign: (name: string, negative: boolean) =>
+      `${name}: segno ${negative ? "negativo" : "positivo"}; premi per renderlo ${negative ? "positivo" : "negativo"}`,
+    valueInput: (name: string, unit: string) => `${name}, valore esatto in ${unit}`,
+    logSlider: "scala log",
+    deltaChi2: (v: string) => `Δχ² ${v}`,
+    notANumber: "Inserisci un numero, ad es. 34,5 o 1,2e-3",
+    levelInDiagram: "Selezionato nel diagramma",
   },
 
   /* -- atlas -------------------------------------------------------------- */
