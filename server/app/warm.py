@@ -1,53 +1,166 @@
-"""Fill the results cache for every evaluation (see ``app.cache``).
+"""Fill the results cache for every evaluation (see ``app.cache``), write its
+``initial.json`` (``app.initial``) and measure its typical timings.
 
     python -m app.warm            # from server/, or in the container:
     make warm                     # docker compose exec azure2 python3 -m app.warm
+    python -m app.warm --force 7Be   # measure again (only 7Be)
 
 Run it after a deploy or after editing an evaluation, so that even the first
-visitor gets the data and extrapolation curves, and the model on a fine grid
-(``app.fine``), at once.  Evaluations whose cache
-is already valid are skipped.  One model is open at a time, so the memory needed
-is that of the largest evaluation alone.
+visitor gets the data and extrapolation curves, the model on a fine grid
+(``app.fine``) and the level scheme at once -- the scheme before the session
+has even started.  Evaluations whose cache and initial payload are already
+valid are skipped.  One model is open at a time, so the memory needed is that
+of the largest evaluation alone.
+
+The timings (``initial.json`` → ``timings``) are measured in a second,
+fresh session once the cache is full, as a visitor meets them: open, the
+background preparation of each derived model, an edit once prepared, the
+extrapolations after it (and an energy × angle grid, where there is one).
+They depend on the machine and on what else runs; run this when the server
+is quiet.
 """
 
+import argparse
+import datetime
 import logging
 import os
 import sys
 import time
 
-import numpy as np
-
 from app import cache
 from app import evaluations as evaluations_module
-from app.engine import Engine
+from app import initial as initial_module
+from app.engine import PREPARE_STEPS
+from app.session import Session
 from config import Config
 
+KEYS = ("data", "fine", "extrap", "grid")
+METHODS = {"data": "calculate_data", "fine": "calculate_fine",
+           "extrap": "calculate_extrapolations", "grid": "calculate_grid"}
 
-def warm(root, out=sys.stdout):
+
+def _session(evaluation):
+    return Session("warm", evaluation,
+                   omp_threads=Config.OMP_THREADS,
+                   prepare_threads=Config.PREPARE_THREADS,
+                   timeout=Config.CALL_TIMEOUT)
+
+
+def _edit_index(session):
+    """A free parameter to edit for the timing: the first particle width."""
+    for level in session.scheme.levels:
+        for channel in level.channels:
+            if channel.free_index is not None and not channel.is_photon and channel.width:
+                return channel.free_index
+    return 0
+
+
+def has_grid(azr_path):
+    """Does the evaluation have an energy × angle extrapolation grid?"""
+    from app import fine
+    try:
+        with open(azr_path) as f:
+            tests = fine._active_tests(f.read()) or []
+    except OSError:
+        return False
+    return any(fine.is_grid(t) for t in tests)
+
+
+def fill(evaluation, out):
+    """Every cache entry at the shipped parameters."""
+    session = _session(evaluation)
+    try:
+        params = list(session.initial_params)
+        grid = has_grid(evaluation.azr_path)
+        for key in KEYS:
+            if key == "grid" and not grid:
+                continue
+            if cache.read(evaluation.path, params, key, unedited=True) is not None:
+                print(f"{evaluation.id:6s} {key:6s} cached", file=out, flush=True)
+                continue
+            t = time.time()
+            getattr(session, METHODS[key])(params)
+            print(f"{evaluation.id:6s} {key:6s} {time.time() - t:6.1f} s", file=out, flush=True)
+    finally:
+        session.close()
+
+
+def measure(evaluation, out):
+    """Typical timings, in a fresh session (seconds, 2 significant digits)."""
+    timings = {"prepare": {}}
+    t = time.time()
+    session = _session(evaluation)
+    timings["open"] = time.time() - t
+    try:
+        for step in PREPARE_STEPS:
+            t = time.time()
+            session.prepare(step)
+            timings["prepare"][step] = time.time() - t
+        index = _edit_index(session)
+        session.set_parameters({index: session.params[index] * 1.01})
+        params = session.snapshot()
+        t = time.time()
+        session.calculate_data(params)
+        session.calculate_fine(params)
+        timings["edit"] = time.time() - t
+        t = time.time()
+        session.calculate_extrapolations(params)
+        timings["extrap"] = time.time() - t
+        if has_grid(evaluation.azr_path):
+            t = time.time()
+            session.calculate_grid(params)
+            timings["grid"] = time.time() - t
+    finally:
+        session.close()
+
+    def r(v):
+        return float(f"{v:.2g}") if isinstance(v, float) else {k: r(x) for k, x in v.items()}
+    timings = {k: r(v) for k, v in timings.items()}
+    timings.update({
+        "source": "server",
+        "omp_threads": Config.OMP_THREADS,
+        "prepare_threads": Config.PREPARE_THREADS,
+        "cpus": os.cpu_count(),
+        "measured": datetime.date.today().isoformat(),
+    })
+    print(f"{evaluation.id:6s} timings {timings}", file=out, flush=True)
+    return timings
+
+
+def write_initial(evaluation, timings, out):
+    session = _session(evaluation)
+    try:
+        payload = initial_module.build(session, evaluation.labels, timings)
+    finally:
+        session.close()
+    initial_module.write(evaluation.path, payload)
+    print(f"{evaluation.id:6s} initial.json "
+          f"({', '.join(p for p in initial_module.PARTS if p in payload)})", file=out, flush=True)
+
+
+def warm(root, out=sys.stdout, only=None, force=False, timings=True):
     for evaluation in evaluations_module.discover(root):
-        engine = None
+        if only and evaluation.id not in only:
+            continue
         try:
-            engine = Engine(evaluation.azr_path, evaluation.path,
-                            # Offline, so it may use every core.
-                            omp_threads=os.cpu_count(),
-                            timeout=Config.CALL_TIMEOUT)
-            params = np.asarray(engine.info.params, dtype=np.float64)
-            for key, method in (("data", engine.calculate_data),
-                                ("extrap", engine.calculate_extrapolations),
-                                ("fine", engine.calculate_fine)):
-                if cache.read(evaluation.path, params, key) is not None:
-                    print(f"{evaluation.id:6s} {key:6s} cached", file=out, flush=True)
-                    continue
-                t = time.time()
-                cache.write(evaluation.path, params, key, method(params))
-                print(f"{evaluation.id:6s} {key:6s} {time.time() - t:6.1f} s", file=out, flush=True)
+            fill(evaluation, out)
+            stored = initial_module.read(evaluation.path)
+            if not force and stored is not None and all(p in stored for p in initial_module.PARTS) \
+                    and (stored.get("timings") or not timings):
+                print(f"{evaluation.id:6s} initial.json valid", file=out, flush=True)
+                continue
+            measured = measure(evaluation, out) if timings else (stored or {}).get("timings")
+            write_initial(evaluation, measured, out)
         except Exception as err:            # one bad model must not stop the rest
-            print(f"{evaluation.id:6s} failed: {err}", file=out, flush=True)
-        finally:
-            if engine is not None:
-                engine.close()
+            print(f"{evaluation.id:6s} failed: {type(err).__name__}: {err}", file=out, flush=True)
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.WARNING)
-    warm(Config.EVALUATIONS_DIR)
+    parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    parser.add_argument("only", nargs="*", help="evaluation ids (default: all)")
+    parser.add_argument("--force", action="store_true", help="measure the timings again")
+    parser.add_argument("--no-timings", action="store_true", help="skip the timing session")
+    parser.add_argument("--root", default=Config.EVALUATIONS_DIR)
+    a = parser.parse_args()
+    warm(a.root, only=set(a.only), force=a.force, timings=not a.no_timings)

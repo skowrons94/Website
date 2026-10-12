@@ -68,9 +68,14 @@ services:
       # An open evaluation owns an AZURE2 worker process; these bound memory
       # use and how hard the box is worked.
       AZURE2_MAX_SESSIONS: ${AZURE2_MAX_SESSIONS:-8}
-      AZURE2_SESSION_TTL: ${AZURE2_SESSION_TTL:-1800}
+      AZURE2_SESSION_TTL: ${AZURE2_SESSION_TTL:-600}
+      AZURE2_HEARTBEAT_TTL: ${AZURE2_HEARTBEAT_TTL:-120}
       AZURE2_THREADS: ${AZURE2_THREADS:-10}
       AZURE2_OMP_THREADS: ${AZURE2_OMP_THREADS:-1}
+      # Model builds (preparation) may use more cores than edits; empty = all.
+      AZURE2_PREPARE_THREADS: ${AZURE2_PREPARE_THREADS:-}
+      # Spare prepared sessions for the slow evaluations ("auto", "0", "7Be:1").
+      AZURE2_SPARES: ${AZURE2_SPARES:-auto}
     volumes:
       # The evaluations are baked into the image, but bind-mounting them over
       # the top means adding or correcting one is a file copy and a

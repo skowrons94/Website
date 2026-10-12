@@ -27,7 +27,17 @@ def create_app(config=Config):
         reaper_interval=app.config["REAPER_INTERVAL"],
         omp_threads=app.config["OMP_THREADS"],
         timeout=app.config["CALL_TIMEOUT"],
+        heartbeat_ttl=app.config["HEARTBEAT_TTL"],
+        idle_ttl=app.config["IDLE_TTL"],
+        role_ttl=app.config["ROLE_TTL"],
+        prepare_threads=app.config["PREPARE_THREADS"],
+        prepare_concurrency=app.config["PREPARE_CONCURRENCY"],
+        auto_prepare=app.config["AUTO_PREPARE"],
+        retry_after=app.config["RETRY_AFTER"],
+        spare_delay=app.config.get("SPARE_DELAY", 20),
     )
+    if app.config.get("GZIP"):
+        install_gzip(app, app.config.get("GZIP_LEVEL", 5))
 
     manager.start_reaper()
     app.extensions["sessions"] = manager
@@ -80,6 +90,12 @@ def create_app(config=Config):
     log = logging.getLogger(__name__)
     log.info("serving evaluations from %s", root)
 
+    try:
+        start_spares(manager, root, app.config.get("SPARES", ""),
+                     app.config.get("SPARE_THRESHOLD", 6))
+    except Exception:
+        log.exception("could not start the spare sessions")
+
     # A worker runs with the evaluation's directory as its working directory and
     # caches the external-capture integrals there. Read-only, that fails deep
     # inside AZURE2 with nothing pointing at the cause, so it is checked once
@@ -92,3 +108,92 @@ def create_app(config=Config):
             ".env).", root, os.getuid())
 
     return app
+
+
+COMPRESSIBLE = ("application/json", "text/csv", "text/plain")
+
+
+def install_gzip(app, level=5, minimum=1024):
+    """gzip the API's responses for a client that accepts it (``Accept-
+    Encoding: gzip``).  ⁷Be's smooth curves go from 2.0 MB to ~0.3 MB.
+    Caddy compresses too (``encode zstd gzip``) and passes an encoded
+    response through as it is, so both paths work."""
+    import gzip as gzip_module
+
+    @app.after_request
+    def _gzip(response):
+        try:
+            accepted = request_accepts_gzip()
+        except RuntimeError:
+            return response
+        if (not accepted or response.direct_passthrough
+                or response.status_code < 200 or response.status_code >= 300
+                or "Content-Encoding" in response.headers
+                or response.mimetype not in COMPRESSIBLE):
+            return response
+        body = response.get_data()
+        if len(body) < minimum:
+            return response
+        response.set_data(gzip_module.compress(body, compresslevel=level))
+        response.headers["Content-Encoding"] = "gzip"
+        response.headers["Content-Length"] = str(len(response.get_data()))
+        vary = response.headers.get("Vary")
+        response.headers["Vary"] = f"{vary}, Accept-Encoding" if vary else "Accept-Encoding"
+        return response
+
+    return _gzip
+
+
+def request_accepts_gzip() -> bool:
+    from flask import request
+    header = request.headers.get("Accept-Encoding", "")
+    for part in header.split(","):
+        token, _, q = part.strip().partition(";")
+        if token.strip().lower() in ("gzip", "*"):
+            q = q.strip()
+            if q.startswith("q="):
+                try:
+                    return float(q[2:]) > 0
+                except ValueError:
+                    return True
+            return True
+    return False
+
+
+def spare_counts(evaluations, setting, threshold=6):
+    """``{evaluation id: count}`` from ``AZURE2_SPARES`` (see config.py)."""
+    from app import initial
+    setting = (setting or "").strip()
+    if setting in ("", "0", "none", "off"):
+        return {}
+    if setting == "auto":
+        out = {}
+        for evaluation in evaluations:
+            timings = (initial.read(evaluation.path) or {}).get("timings") or {}
+            prepare = timings.get("prepare") or {}
+            slow = (timings.get("open") or 0) + (prepare.get("data") or 0) + (prepare.get("fine") or 0)
+            if slow >= threshold:
+                out[evaluation.id] = 1
+        return out
+    out = {}
+    for part in setting.split(","):
+        name, _, count = part.strip().partition(":")
+        if name:
+            try:
+                out[name] = int(count or 1)
+            except ValueError:
+                continue
+    return out
+
+
+def start_spares(manager, root, setting, threshold=6):
+    from app import evaluations as evaluations_module
+    if not os.path.isdir(root):
+        return
+    found = evaluations_module.discover(root)
+    manager.spares = spare_counts(found, setting, threshold)
+    manager.spare_policy = lambda evaluation: spare_counts(
+        [evaluation], setting, threshold).get(evaluation.id, 0)
+    if manager.spares:
+        logging.getLogger(__name__).info("keeping spare sessions: %s", manager.spares)
+        manager.start_spares(found)
