@@ -5,12 +5,13 @@ import { ArrowUpDown } from "lucide-react"
 import { Tex } from "@/components/tex"
 
 import { Badge } from "@/components/ui/badge"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Sci } from "@/components/sci"
 import type { DataSegment } from "@/lib/api"
-import { angleText, datasetName, qualifier } from "@/lib/eval-plot"
+import { angleText, datasetName } from "@/lib/eval-plot"
 import { formatEnergy, observableLabel } from "@/lib/viz"
 import { useDict, useLang } from "@/components/lang-provider"
 import { decimal } from "@/lib/i18n"
@@ -26,9 +27,12 @@ type SortKey = "key" | "name" | "observable" | "n_points" | "chi2" | "norm"
 
 interface Props {
   data: DataSegment[]
+  /** Segments shown in the plot; with `onToggle`, each row gets a checkbox. */
+  selected?: number[]
+  onToggle?: (index: number, checked: boolean) => void
 }
 
-export function DataTable({ data }: Props) {
+export function DataTable({ data, selected, onToggle }: Props) {
   const lang = useLang()
   const t = useDict().workspace
   const [filter, setFilter] = useState("")
@@ -131,7 +135,7 @@ export function DataTable({ data }: Props) {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-semibold tracking-tight">{t.data}</h2>
+          <h3 className="text-lg font-semibold tracking-tight">{t.data}</h3>
           <p className="mt-1 text-sm text-muted-foreground">
             {t.dataSummary(data.length, totals.active, totals.points)}
           </p>
@@ -166,6 +170,7 @@ export function DataTable({ data }: Props) {
             <table className="w-full min-w-[60rem] text-sm">
               <thead>
                 <tr className="border-b text-left text-xs font-medium text-muted-foreground">
+                  {onToggle && <th className="w-8 px-2 py-2"><span className="sr-only">{t.plotColumn}</span></th>}
                   {header("key", "#")}
                   {header("name", t.dataset)}
                   <th className="px-2 py-2 font-medium">{t.reaction}</th>
@@ -185,13 +190,22 @@ export function DataTable({ data }: Props) {
                     key={segment.index}
                     className="border-b last:border-0 hover:bg-muted/40"
                   >
+                    {onToggle && (
+                      <td className="px-2 py-2">
+                        <Checkbox
+                          checked={selected?.includes(segment.index) ?? false}
+                          onCheckedChange={(checked) => onToggle(segment.index, Boolean(checked))}
+                          aria-label={t.plotThis(datasetName(segment))}
+                        />
+                      </td>
+                    )}
                     <td className="px-2 py-2 tabular-nums text-muted-foreground">
                       {segment.key}
                     </td>
                     <td className="px-2 py-2">
                       <span className="font-medium">{datasetName(segment)}</span>
-                      {qualifier(segment) && (
-                        <span className="text-muted-foreground"> · {qualifier(segment)}</span>
+                      {angleText(segment) && (
+                        <span className="text-muted-foreground"> · {angleText(segment)}</span>
                       )}
                       {segment.source?.ref && (
                         <span className="block text-[11px] text-muted-foreground">

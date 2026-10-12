@@ -64,14 +64,35 @@ export function formatNumber(value: number, digits = 3): string {
   return value.toFixed(0)
 }
 
-/** Energies read best at a fixed precision rather than a shifting one. */
-export function formatEnergy(value: number): string {
+/**
+ * Energies read best at a fixed precision rather than a shifting one. Pass
+ * `decimals` (see `energyDecimals`) to give every energy of one scheme or list
+ * the same number of decimals, so 8.739 does not stand next to 10.25.
+ */
+export function formatEnergy(value: number, decimals?: number): string {
   if (!Number.isFinite(value)) return ""
-  if (value === 0) return "0"
+  if (value === 0) return decimals !== undefined ? (0).toFixed(decimals) : "0"
   const magnitude = Math.abs(value)
+  if (decimals !== undefined) return value.toFixed(decimals)
   if (magnitude < 1e-3) return value.toExponential(2)
   if (magnitude < 10) return value.toFixed(4)
   return value.toFixed(2)
+}
+
+/**
+ * The decimals a set of energies (MeV) needs to show each as given, capped at
+ * 4 (0.1 keV): one number for a whole level scheme or list.
+ */
+export function energyDecimals(values: number[], max = 4): number {
+  let decimals = 0
+  for (const v of values) {
+    if (!Number.isFinite(v)) continue
+    for (let d = decimals; d <= max; d++) {
+      decimals = d
+      if (Math.abs(Number(v.toFixed(d)) - v) < 5e-7) break
+    }
+  }
+  return Math.max(1, Math.min(decimals, max))
 }
 
 /**
@@ -183,18 +204,17 @@ const OBSERVABLES: Record<Lang, Record<string, string>> = {
   },
 }
 
-/** Y-axis title for a quantity, given what the segment measures. */
+/** Y-axis title for a quantity, given what the segment measures, in `unit`. */
 export function quantityLabel(
   quantity: "sfactor" | "cross_section",
   observable: string,
   lang: Lang = "en",
+  unit?: string,
 ): string {
-  if (quantity === "sfactor") return lang === "it" ? "Fattore S (MeV b)" : "S-factor (MeV b)"
+  if (quantity === "sfactor") return `${lang === "it" ? "Fattore S" : "S-factor"} (${unit ?? "MeV b"})`
   return observable.startsWith("differential")
-    ? "dσ/dΩ (b/sr)"
-    : lang === "it"
-      ? "Sezione d'urto (b)"
-      : "Cross section (b)"
+    ? `dσ/dΩ (${unit ?? "b/sr"})`
+    : `${lang === "it" ? "Sezione d'urto" : "Cross section"} (${unit ?? "b"})`
 }
 
 /**

@@ -56,7 +56,7 @@ export interface Evaluation {
 export type ChannelQuantity =
   | "width" // partial width, eV
   | "anc" // bound state, fm^(-1/2)
-  | "moment_m1" // magnetic dipole moment, nm
+  | "moment_m1" // magnetic dipole moment, μ_N (nuclear magnetons)
   | "moment_e2" // electric quadrupole moment, b
   | "beta" // dimensionless
 
@@ -102,6 +102,16 @@ export interface SchemePair {
   M2: number
   separation_energy: number
   excitation: number
+  /** Unicode pair, light constituent first: "p + ¹²C". */
+  label_plain?: string | null
+  /** Compound-nucleus excitation energy at which the pair opens (S + E_x of the residual); null for photons. */
+  threshold?: number | null
+  /** Excitation-energy range of the active data entering through this pair (null if none). */
+  data_ex_min?: number | null
+  data_ex_max?: number | null
+  /** The same range in c.m. energy. */
+  data_ecm_min?: number | null
+  data_ecm_max?: number | null
   channel_radius: number
 }
 
@@ -162,6 +172,12 @@ export interface DataSegment {
  */
 export interface FineCurve {
   index: number
+  /** What the grid runs along: energy (an excitation function) or c.m. angle (an angular distribution). */
+  axis?: "energy" | "angle"
+  /** The c.m. angles of an angular-distribution curve (axis "angle"). */
+  angles?: number[]
+  /** The c.m. energy of an angular distribution. */
+  energy?: number | null
   energies: number[]
   calculated: (number | null)[]
   sfactor_energies: number[]
@@ -178,9 +194,13 @@ export interface ExtrapSegment {
   entrance_key: number
   exit_key: number
   observable: string
+  /** Frame of energy_min/max/step: "cm" from this API on (older ones gave lab). */
+  energy_frame?: "cm" | "lab"
   energy_min: number
   energy_max: number
   energy_step: number
+  energy_min_lab?: number
+  energy_max_lab?: number
   angle_min: number
   angle_max: number
   angle_step: number
