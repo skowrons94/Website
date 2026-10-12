@@ -585,7 +585,7 @@ export function SProcessExplorer({
             {t.sensLead} {sp.sensNuclei}.
           </p>
           {sensOpen && (
-            <div className="mt-4">
+            <div id="sprocess-sens-map" className="mt-4">
               {custom && <p className="mb-2 text-xs text-muted-foreground">{t.sensCustom}</p>}
               {sensTable ? (
                 <SensitivityMap network={network} table={sensTable} lang={lang} columns={sensCols} onTry={tryRate} />
@@ -604,7 +604,8 @@ export function SProcessExplorer({
           href="#sprocess-results"
           lang={lang}
           active={changed || altered}
-          watch="sprocess-changes"
+          watch="sprocess-changes sprocess-sens-map"
+          rev={sensOpen && sens !== null}
         />
       </Figure>
 

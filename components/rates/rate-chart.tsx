@@ -380,9 +380,17 @@ export const RateChart = memo(function RateChart({
 
         {ends.map(({ s, py, px }) => {
           const k = slot(s.r.id)
-          const lx = narrow ? px + 2 : width - m.r + 8
+          // a label's width, roughly (superscripts are narrow)
+          const w = 12 + s.r.label.length * 5.6
+          let lx = narrow ? px + 2 : width - m.r + 8
+          // on a narrow chart, keep clear of the handle's line
+          if (narrow && current && cx > lx - 8 && cx < lx + w + 8)
+            lx = cx + 6 + w < width - m.r ? cx + 6 : Math.max(m.l, cx - w - 10)
           return (
             <g key={s.r.id}>
+              {narrow && (
+                <rect x={lx} y={py - 9} width={w + 4} height={18} rx={3} fill={C.surface} opacity={0.85} />
+              )}
               <Shape slot={k} x={lx + 4} y={py} r={3.5} fill={SERIES[k]} stroke={C.surface} strokeWidth={1} />
               <text
                 x={lx + 12}

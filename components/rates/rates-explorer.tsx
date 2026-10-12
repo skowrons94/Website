@@ -221,6 +221,20 @@ export function RatesExplorer({
   const dataRef = useRef(data)
   dataRef.current = data
 
+  // on a phone the tabs scroll sideways: keep the chosen one in view (only
+  // the strip scrolls, not the page)
+  const tabsRef = useRef<HTMLElement>(null)
+  useEffect(() => {
+    const nav = tabsRef.current
+    const a = nav?.querySelector<HTMLElement>('[aria-current="page"]')
+    if (!nav || !a || nav.scrollWidth <= nav.clientWidth) return
+    const left = a.getBoundingClientRect().left - nav.getBoundingClientRect().left + nav.scrollLeft
+    const pad = 48 // clear of the fade at the right edge
+    if (left < nav.scrollLeft) nav.scrollTo({ left: Math.max(0, left - 12) })
+    else if (left + a.offsetWidth > nav.scrollLeft + nav.clientWidth - pad)
+      nav.scrollTo({ left: left + a.offsetWidth - nav.clientWidth + pad })
+  }, [netId, data])
+
   // the network in the address: /atlas/rates#cno (and a shared setting)
   useEffect(() => {
     const fromHash = (e?: Event) => {
@@ -579,6 +593,7 @@ export function RatesExplorer({
 
   const tabBar = (
     <nav
+      ref={tabsRef}
       aria-label={t.networks}
       className="relative -mx-3 overflow-x-auto px-3 [mask-image:linear-gradient(to_right,#000_85%,transparent)] [scrollbar-width:none] sm:mx-0 sm:px-0 sm:[mask-image:none]"
     >
@@ -1027,7 +1042,7 @@ export function RatesExplorer({
           </div>
           <p className="mt-1 max-w-[46rem] text-pretty text-sm text-muted-foreground">{t.sensLead}</p>
           {sensOpen && (
-            <div className="mt-4">
+            <div id="sens-map" className="mt-4">
               {custom && <p className="mb-2 text-xs text-muted-foreground">{t.sensCustom}</p>}
               {sensTable ? (
                 <SensitivityMap network={network} table={sensTable} lang={lang} onTry={tryRate} />
@@ -1046,7 +1061,8 @@ export function RatesExplorer({
           href="#what-if-results"
           lang={lang}
           active={changed}
-          watch="what-changes"
+          watch="what-changes sens-map"
+          rev={sensOpen && sens !== null}
         />
       </Figure>
 
