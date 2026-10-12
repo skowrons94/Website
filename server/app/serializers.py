@@ -15,7 +15,7 @@ import os
 from typing import Dict, List, Optional
 
 from app.evaluations import exfor_code
-from app.labels import reaction_plain
+from app.labels import pair_plain, reaction_plain
 
 
 def _floats(values) -> Optional[List[float]]:
@@ -94,7 +94,7 @@ def channel_quantity(level, channel, pair):
             and abs(level.J - pair.J2) < 1e-6
             and level.parity == pair.parity2):
         if channel.radiation_type == "M" and channel.L == 1:
-            return "moment_m1", "nm"
+            return "moment_m1", "μ_N"
         if channel.radiation_type == "E" and channel.L == 2:
             return "moment_e2", "b"
 
@@ -160,20 +160,41 @@ def scheme_to_dict(session, labels) -> Dict:
             "channels": channels,
         })
 
-    pairs = [{
-        # The .azr file's key: what the file, the AZURE2 GUI and the data
-        # segments call this pair.  The engine's own number is kept apart.
-        "number": keys[pair.number],
-        "engine_number": pair.number,
-        "label": _label_for(keys[pair.number], labels),
-        "is_photon": pair.is_photon,
-        "is_entrance": pair.is_entrance,
-        "Z1": pair.Z1, "M1": pair.M1,
-        "Z2": pair.Z2, "M2": pair.M2,
-        "separation_energy": pair.sep_energy,
-        "excitation": pair.excitation,
-        "channel_radius": pair.channel_radius,
-    } for pair in sorted(session.pairs, key=lambda p: keys[p.number])]
+    ranges = data_ranges(session)
+    by_key = {label.number: label for label in labels}
+    pairs = []
+    for pair in sorted(session.pairs, key=lambda p: keys[p.number]):
+        key = keys[pair.number]
+        threshold = (None if pair.is_photon
+                     else float(pair.sep_energy) + float(pair.excitation))
+        fitted = ranges.get(key)
+        label = by_key.get(key)
+        pairs.append({
+            # The .azr file's key: what the file, the AZURE2 GUI and the data
+            # segments call this pair.  The engine's own number is kept apart.
+            "number": key,
+            "engine_number": pair.number,
+            "label": _label_for(key, labels),
+            # Both constituents in Unicode, e.g. "p + ¹²C" (a threshold label).
+            "label_plain": pair_plain(label) if label is not None else None,
+            "is_photon": pair.is_photon,
+            "is_entrance": pair.is_entrance,
+            "Z1": pair.Z1, "M1": pair.M1,
+            "Z2": pair.Z2, "M2": pair.M2,
+            "separation_energy": pair.sep_energy,
+            "excitation": pair.excitation,
+            # Excitation energy of the compound nucleus at which this pair
+            # opens: S + E_x(residual).  None for a photon pair.
+            "threshold": threshold,
+            # The compound-nucleus excitation range covered by the active
+            # data entering through this pair (E_x = E_cm + threshold), or
+            # None when no data enter through it.
+            "data_ex_min": (fitted[0] + threshold) if fitted and threshold is not None else None,
+            "data_ex_max": (fitted[1] + threshold) if fitted and threshold is not None else None,
+            "data_ecm_min": fitted[0] if fitted else None,
+            "data_ecm_max": fitted[1] if fitted else None,
+            "channel_radius": pair.channel_radius,
+        })
 
     return {
         "pairs": pairs,
@@ -181,6 +202,50 @@ def scheme_to_dict(session, labels) -> Dict:
         "n_free": len(session.params),
         "modified": session.is_modified,
     }
+
+
+def data_ranges(session) -> Dict[int, tuple]:
+    """Per entrance-pair key, the (min, max) c.m. energy of the active data.
+
+    The measured energies are the engine's (centre of mass), read when the
+    model opened, so this costs no calculation.
+    """
+    out = {}
+    datasets = getattr(session, "datasets", None) or []
+    measured = getattr(getattr(session, "measured", None), "energies", None)
+    energies = _aligned(datasets, measured)
+    for segment, values in zip(datasets, energies):
+        if not segment.active or values is None:
+            continue
+        finite = [v for v in _floats(values) or [] if v is not None]
+        if not finite:
+            continue
+        lo, hi = min(finite), max(finite)
+        if segment.entrance_key in out:
+            a, b = out[segment.entrance_key]
+            lo, hi = min(lo, a), max(hi, b)
+        out[segment.entrance_key] = (lo, hi)
+    return out
+
+
+def _aligned(segments, arrays) -> list:
+    """``arrays`` indexed like ``segments``.
+
+    AZURE2 reports only the *active* segments; when some are inactive the
+    arrays are fewer than the segments and belong, in order, to the active
+    ones.  Inactive segments then get ``None``.
+    """
+    arrays = list(arrays) if arrays is not None else []
+    if len(arrays) >= len(segments):
+        return arrays[:len(segments)]
+    out, k = [], 0
+    for segment in segments:
+        if getattr(segment, "active", True) and k < len(arrays):
+            out.append(arrays[k])
+            k += 1
+        else:
+            out.append(None)
+    return out
 
 
 def scheme_to_text(session) -> str:
@@ -251,11 +316,20 @@ def data_to_dict(session, labels, mu, mu_sfactor) -> List[Dict]:
     evaluation = session.evaluation
     by_key = {label.number: label for label in labels}
     segments = []
+    datasets = session.datasets
+    m_energies = _aligned(datasets, measured.energies)
+    m_angles = _aligned(datasets, measured.angles)
+    m_cross = _aligned(datasets, measured.cross)
+    m_cross_err = _aligned(datasets, measured.cross_err)
+    m_sfactor = _aligned(datasets, measured.sfactor)
+    m_sfactor_err = _aligned(datasets, measured.sfactor_err)
+    mu = _aligned(datasets, mu)
+    mu_sfactor = _aligned(datasets, mu_sfactor)
 
-    for i, segment in enumerate(session.datasets):
+    for i, segment in enumerate(datasets):
         norm = segment.norm or 1.0
-        observed = _floats(measured.cross[i])
-        errors = _floats(measured.cross_err[i])
+        observed = _floats(m_cross[i])
+        errors = _floats(m_cross_err[i])
         calculated = _floats(mu[i])
         chi2, counted = chi2_sum(observed, errors, calculated, norm)
         entrance = by_key.get(segment.entrance_key)
@@ -301,12 +375,12 @@ def data_to_dict(session, labels, mu, mu_sfactor) -> List[Dict]:
             "chi2": None if chi2 is None else chi2 / counted,
             "chi2_sum": chi2,
             "chi2_points": counted,
-            "energies": _floats(measured.energies[i]),
-            "angles": _floats(measured.angles[i]),
+            "energies": _floats(m_energies[i]),
+            "angles": _floats(m_angles[i]),
             "cross_sections": observed,
             "cross_sections_errors": errors,
-            "sfactor": _floats(measured.sfactor[i]),
-            "sfactor_errors": _floats(measured.sfactor_err[i]),
+            "sfactor": _floats(m_sfactor[i]),
+            "sfactor_errors": _floats(m_sfactor_err[i]),
             "calculated": calculated,
             "calculated_sfactor": _floats(mu_sfactor[i]),
         })
@@ -317,38 +391,62 @@ def data_to_dict(session, labels, mu, mu_sfactor) -> List[Dict]:
 # -- the model on a fine grid ---------------------------------------------------
 
 def fine_to_dict(session, fine_result, mu, mu_sfactor) -> List[Dict]:
-    """Per data segment, the model on a fine energy grid for drawing.
+    """Per data segment, the model on a fine grid for drawing.
+
+    ``axis`` says what the grid runs along: ``"energy"`` for an excitation
+    function, ``"angle"`` (c.m. degrees) for an angular distribution at one
+    energy, whose curve is then in ``angles``/``calculated``.
 
     Only segments whose fine curve reproduces the data-mode model at the
-    measured energies are included (see :mod:`app.fine`); the values at the
-    measured energies are merged in, so the curve passes through exactly what
+    measured points are included (see :mod:`app.fine`); the values at the
+    measured points are merged in, so the curve passes through exactly what
     the χ² is computed from.  A segment left out is drawn through its data
     points, as before.
     """
     from app import fine
 
-    index, energies, fine_mu, fine_sfactor = fine_result
+    if len(fine_result) < 6:
+        return []           # an older cache entry
+    index, energies, fine_mu, fine_sfactor, fine_angles, axes = fine_result[:6]
+    datasets = session.datasets
+    m_energies = _aligned(datasets, session.measured.energies)
+    m_angles = _aligned(datasets, session.measured.angles)
+    mu = _aligned(datasets, mu)
+    mu_sfactor = _aligned(datasets, mu_sfactor)
     out = []
-    for i, segment in enumerate(session.datasets):
+    for i, segment in enumerate(datasets):
         j = index[i] if i < len(index) else None
-        if j is None or j >= len(fine_mu):
+        if j is None or j >= len(fine_mu) or mu[i] is None:
             continue
-        at_x = _floats(session.measured.energies[i]) or []
-        grid_x = _floats(energies[j]) or []
+        axis = axes[j]
+        if axis == "angle":
+            at_x = _floats(m_angles[i]) or []
+            grid_x = _floats(fine_angles[j]) or []
+        else:
+            at_x = _floats(m_energies[i]) or []
+            grid_x = _floats(energies[j]) or []
         grid_y = _floats(fine_mu[j]) or []
         at_y = _floats(mu[i]) or []
+        # Sorted by the grid variable (an angle grid comes out ascending, but
+        # do not rely on it).
+        order = sorted(range(len(grid_x)), key=lambda k: grid_x[k] if grid_x[k] is not None else 0)
+        grid_x = [grid_x[k] for k in order]
+        grid_y = [grid_y[k] for k in order]
+        grid_s = [(_floats(fine_sfactor[j]) or [None] * len(order))[k] for k in order]
         if not fine.agrees(grid_x, grid_y, at_x, at_y):
             continue
         xs, ys = fine.merge(grid_x, grid_y, at_x, at_y)
-        sx, sys_ = fine.merge(grid_x, _floats(fine_sfactor[j]) or [],
-                              at_x, _floats(mu_sfactor[i]) or [])
-        out.append({
-            "index": i,
-            "energies": xs,
-            "calculated": ys,
-            "sfactor_energies": sx,
-            "calculated_sfactor": sys_,
-        })
+        sx, sys_ = fine.merge(grid_x, grid_s, at_x, _floats(mu_sfactor[i]) or [])
+        entry = {"index": i, "axis": axis}
+        if axis == "angle":
+            entry.update({"angles": xs, "calculated": ys,
+                          "energy": (at_x and _floats(m_energies[i])[0]) or None,
+                          "energies": [], "sfactor_energies": [],
+                          "calculated_sfactor": []})
+        else:
+            entry.update({"energies": xs, "calculated": ys,
+                          "sfactor_energies": sx, "calculated_sfactor": sys_})
+        out.append(entry)
     return out
 
 
@@ -362,8 +460,18 @@ def extrapolations_to_dict(session, labels, energies, angles, mu,
     parsed metadata and the calculated arrays line up by index.
     """
     segments = []
+    tests = session.extrapolations
+    energies = _aligned(tests, energies)
+    angles = _aligned(tests, angles)
+    mu = _aligned(tests, mu)
+    mu_sfactor = _aligned(tests, mu_sfactor)
+    pairs = {getattr(p, "key", p.number): p for p in session.pairs}
 
-    for i, segment in enumerate(session.extrapolations):
+    for i, segment in enumerate(tests):
+        # The file gives the grid in the laboratory frame of the entrance
+        # pair; every energy the page shows is centre-of-mass, so the limits
+        # are converted (AZURE2's own calculated energies already are).
+        lab_to_cm = _lab_to_cm(pairs.get(segment.entrance_key))
         segments.append({
             "index": i,
             "key": segment.key,
@@ -374,21 +482,34 @@ def extrapolations_to_dict(session, labels, energies, angles, mu,
             "entrance_key": segment.entrance_key,
             "exit_key": segment.exit_key,
             "observable": segment.observable,
-            "energy_min": segment.energy_min,
-            "energy_max": segment.energy_max,
-            "energy_step": segment.energy_step,
+            "energy_frame": "cm",
+            "energy_min": segment.energy_min * lab_to_cm,
+            "energy_max": segment.energy_max * lab_to_cm,
+            "energy_step": segment.energy_step * lab_to_cm,
+            "energy_min_lab": segment.energy_min,
+            "energy_max_lab": segment.energy_max,
             "angle_min": segment.angle_min,
             "angle_max": segment.angle_max,
             "angle_step": segment.angle_step,
             "is_angle_integrated": segment.is_angle_integrated,
-            "energies": _floats(energies[i]) if i < len(energies) else None,
-            "angles": _floats(angles[i]) if i < len(angles) else None,
-            "calculated": _floats(mu[i]) if i < len(mu) else None,
-            "calculated_sfactor": (_floats(mu_sfactor[i])
-                                   if i < len(mu_sfactor) else None),
+            "energies": _floats(energies[i]),
+            "angles": _floats(angles[i]),
+            "calculated": _floats(mu[i]),
+            "calculated_sfactor": _floats(mu_sfactor[i]),
         })
 
     return segments
+
+
+def _lab_to_cm(pair) -> float:
+    """E_cm / E_lab for a projectile on a target at rest (M2 the target)."""
+    try:
+        m1, m2 = float(pair.M1), float(pair.M2)
+        if m1 > 0 and m2 > 0 and not getattr(pair, "is_photon", False):
+            return m2 / (m1 + m2)
+    except (AttributeError, TypeError, ValueError):
+        pass
+    return 1.0
 
 
 def extrapolations_to_csv(segments, selected=None) -> str:
@@ -411,7 +532,7 @@ def extrapolations_to_csv(segments, selected=None) -> str:
         if not segment["is_angle_integrated"]:
             lines.append(f"# angle: {segment['angle_min']}-"
                          f"{segment['angle_max']} deg")
-        lines.append("energy_MeV,cross_section,s_factor")
+        lines.append("energy_cm_MeV,cross_section_b,s_factor_MeV_b")
         for j, energy in enumerate(energies):
             c = cross[j] if j < len(cross) else None
             s = sfactor[j] if j < len(sfactor) else None

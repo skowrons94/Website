@@ -42,3 +42,6 @@ server/evaluations/*/.precomputed-*
 
 # The derived fine-grid model and its integrals (server/app/fine.py)
 server/evaluations/*/fine/
+# The split data model and the extrapolation model (server/app/engine.py)
+server/evaluations/*/datamodel/
+server/evaluations/*/extrap/

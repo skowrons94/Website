@@ -166,6 +166,15 @@ export function texPlain(math: string | null | undefined): string {
  * exponent set as a real superscript and a proper minus sign.
  */
 export function Unit({ unit }: { unit: string }) {
+  // A subscript, as in the nuclear magneton "μ_N".
+  const sub = /^([^_^]+)_([A-Za-z0-9]+)$/.exec(unit)
+  if (sub)
+    return (
+      <span className="whitespace-nowrap">
+        {sub[1]}
+        <sub>{sub[2]}</sub>
+      </span>
+    )
   const m = /^(.*?)\^\(?([^)]*)\)?$/.exec(unit)
   if (!m) return <>{unit}</>
   return (
@@ -181,5 +190,7 @@ export function Unit({ unit }: { unit: string }) {
  * caret is read out literally by screen readers; a minus sign is not).
  */
 export function unitPlain(unit: string): string {
-  return unit.replace(/\^\(?([^)]*)\)?/, (_, exp: string) => exp.replace(/-/g, "−"))
+  return unit
+    .replace(/_([A-Za-z0-9]+)$/, "$1")
+    .replace(/\^\(?([^)]*)\)?/, (_, exp: string) => exp.replace(/-/g, "−"))
 }

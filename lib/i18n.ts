@@ -272,7 +272,7 @@ const en = {
     engineText: "AZURE2, commit",
     fitted: "What was fitted",
     fittedText: (active: number, files: number, parts: string) =>
-      `${active} data segment${active === 1 ? "" : "s"} from ${files} data file${files === 1 ? "" : "s"}: ${parts}. The Data tab lists every segment with its normalisation and χ²; the Plot tab overlays the model on the measurements and lets you move any free level.`,
+      `${active} data segment${active === 1 ? "" : "s"} from ${files} data file${files === 1 ? "" : "s"}: ${parts}. The Plot & data tab overlays the model on the measurements, lets you move any free level, and lists every segment with its normalisation and χ² in its table.`,
     observableCount: (n: number, code: string) => {
       const names: Record<string, [string, string]> = {
         "angle-integrated": ["angle-integrated cross section", "angle-integrated cross sections"],
@@ -301,7 +301,7 @@ const en = {
     compound: (nuclide: string) => `Compound nucleus ${nuclide}`,
     citeVersion: "version",
     citeWhat:
-      "Cite the paper for the evaluation, AZURE2 for the code, and this page (with its version) if you use the interactive calculation or its numbers. The measured data belong to their authors: cite the original papers listed in the Data tab.",
+      "Cite the paper for the evaluation, AZURE2 for the code, and this page (with its version) if you use the interactive calculation or its numbers. The measured data belong to their authors: cite the original papers listed in the table of the Plot & data tab.",
     licence: (name: string) => `This page and the model file are shared under ${name}.`,
   },
 
@@ -317,7 +317,7 @@ const en = {
     evaluations: "Evaluations",
     expired: "This session expired on the server.",
     reopen: "Reopen",
-    tabs: { scheme: "Level scheme", data: "Data", plot: "Plot", extrap: "Extrapolations" },
+    tabs: { scheme: "Level scheme", data: "Data", plot: "Plot & data", extrap: "Extrapolations", extrapShort: "Extrap." },
     calculatingData: "Calculating data segments…",
     calculatingExtrap: "Calculating extrapolations… a model with external capture can take a minute.",
     // level scheme
@@ -392,7 +392,7 @@ const en = {
     extrapolations: "Extrapolations",
     addMeasured: "Add measured data",
     addMeasuredText: "Overlay measured datasets from this evaluation onto the extrapolation curves.",
-    openDataFirst: "Open the Data tab first to load the measured segments.",
+    openDataFirst: "Loading the measured data…",
     // data table
     data: "Data",
     dataSummary: (segments: number, active: number, points: number) =>
@@ -422,7 +422,7 @@ const en = {
     chi2Status: (v: string) => `Recalculated: mean χ²/N of the shown datasets is now ${v}.`,
     sliderValue: (value: string, unit: string) => `${value} ${unit}`,
     levelGroupAria: (jpi: string, energy: string) => `Level ${jpi} at ${energy} MeV`,
-    showDatasets: (n: number) => `Datasets (${n} shown)`,
+    showDatasets: (n: number, total: number) => `Datasets (${n} of ${total} shown)`,
     chi2Total: (chi2: string, points: number, perPoint: string) =>
       `Total χ² = ${chi2} for ${points} points (χ²/N = ${perPoint}).`,
     chi2Explain:
@@ -453,12 +453,43 @@ const en = {
       `Model shown at the measured energies only, joined by straight lines: ${names}. For these segments a calculation on an energy grid of their own does not reproduce AZURE2's values at the data (or they have no single angle or energy range), so no smooth curve is drawn.`,
     sZero: (energy: string) => `S at ${energy}`,
     sZeroNote:
-      "The model's S-factor at the lowest energy of each selected extrapolation (centre of mass), read from the curve itself; it is S(0) only if that energy is close enough to zero.",
+      "S(E_min): the model's S-factor at the lowest energy of each selected extrapolation (centre of mass), read from the curve itself and marked on it; it is S(0) only if that energy is close enough to zero.",
     rateNote:
       "Reaction rates (N_A⟨σv⟩) are not calculated here: the engine interface used by this site does not expose AZURE2's rate integration, and a rate integrated from these curves would miss narrow resonances between grid points.",
     source: "Source",
     backgroundPoles: (energy: string, n: number) =>
       `${n} background poles at ${energy} MeV (fixed, one per spin-parity; axis broken)`,
+    // --- evaluations (round 3) ---
+    tipData: "data × n",
+    keyLabel: "Key",
+    keyText: "Points: measured data × their normalisation n, with ±1σ error bars. Black line: the R-matrix model.",
+    keyOriginal: "Dashed grey line: the fit as published, before your changes.",
+    zoomHint: "Drag across the plot to zoom in; double-click to reset.",
+    resetZoom: "Reset zoom",
+    save: "Save",
+    chi2ShownShort: "for the datasets shown",
+    chi2AllShort: "for all active data",
+    chi2Gloss:
+      "χ²/N near 1: the model passes through the data within their uncertainties; larger values mean a worse fit.",
+    chi2Same: "unchanged",
+    better: "better",
+    worse: "worse",
+    undo: "Undo",
+    redo: "Redo",
+    angleAxis: "Angle θ, c.m. (°)",
+    tableDrawer: (n: number) => `Table of all ${n} datasets: references, normalisations, χ²`,
+    plotColumn: "Plot",
+    plotThis: (name: string) => `Plot ${name}`,
+    copyLink: "Copy link",
+    copied: "Link copied",
+    loadingView: "Loading the view…",
+    gamowTemperature: "Gamow window",
+    gamowOff: "none",
+    gamowBand: (T9: string) => `Gamow window, T₉ = ${T9}`,
+    gamowNote: (T9: string, E0: string, width: string, pair: string) =>
+      `Shaded: the Gamow window of ${pair} at T₉ = ${T9} (${T9} billion kelvin), centred at E₀ = ${E0} with width Δ = ${width} — the energies at which this reaction mostly happens in a star at that temperature.`,
+    glossaryLink: "More in the glossary",
+    editLevel: "Adjust its parameters →",
   },
 
   // --- levels (round 3) ---
@@ -1020,7 +1051,7 @@ const it: Dictionary = {
     engineText: "AZURE2, commit",
     fitted: "Che cosa contiene il fit",
     fittedText: (active: number, files: number, parts: string) =>
-      `${active} segment${active === 1 ? "o" : "i"} di dati da ${files} file: ${parts}. La scheda Dati elenca ogni segmento con la sua normalizzazione e il χ²; la scheda Grafico sovrappone il modello alle misure e permette di spostare qualunque livello libero.`,
+      `${active} segment${active === 1 ? "o" : "i"} di dati da ${files} file: ${parts}. La scheda Grafico e dati sovrappone il modello alle misure, permette di spostare qualunque livello libero ed elenca nella sua tabella ogni segmento con la sua normalizzazione e il χ².`,
     observableCount: (n: number, code: string) => {
       const names: Record<string, [string, string]> = {
         "angle-integrated": ["sezione d'urto integrata sugli angoli", "sezioni d'urto integrate sugli angoli"],
@@ -1049,7 +1080,7 @@ const it: Dictionary = {
     compound: (nuclide: string) => `Nucleo composto ${nuclide}`,
     citeVersion: "versione",
     citeWhat:
-      "Cita l'articolo per la valutazione, AZURE2 per il codice e questa pagina (con la sua versione) se usi il calcolo interattivo o i suoi numeri. I dati misurati appartengono ai loro autori: cita gli articoli originali elencati nella scheda Dati.",
+      "Cita l'articolo per la valutazione, AZURE2 per il codice e questa pagina (con la sua versione) se usi il calcolo interattivo o i suoi numeri. I dati misurati appartengono ai loro autori: cita gli articoli originali elencati nella tabella della scheda Grafico e dati.",
     licence: (name: string) => `Questa pagina e il file del modello sono distribuiti con licenza ${name}.`,
   },
 
@@ -1071,7 +1102,7 @@ const it: Dictionary = {
     evaluations: "Valutazioni",
     expired: "Questa sessione è scaduta sul server.",
     reopen: "Riapri",
-    tabs: { scheme: "Schema dei livelli", data: "Dati", plot: "Grafico", extrap: "Estrapolazioni" },
+    tabs: { scheme: "Schema dei livelli", data: "Dati", plot: "Grafico e dati", extrap: "Estrapolazioni", extrapShort: "Estrap." },
     calculatingData: "Calcolo dei segmenti di dati…",
     calculatingExtrap: "Calcolo delle estrapolazioni… con la cattura esterna può servire un minuto.",
     levelScheme: "Schema dei livelli",
@@ -1143,7 +1174,7 @@ const it: Dictionary = {
     extrapolations: "Estrapolazioni",
     addMeasured: "Aggiungi dati misurati",
     addMeasuredText: "Sovrapponi alle curve estrapolate gli insiemi di dati misurati di questa valutazione.",
-    openDataFirst: "Apri prima la scheda Dati per caricare i segmenti misurati.",
+    openDataFirst: "Caricamento dei dati misurati…",
     data: "Dati",
     dataSummary: (segments: number, active: number, points: number) =>
       `${segments} segmenti · ${active} attivi · ${points} punti`,
@@ -1172,7 +1203,7 @@ const it: Dictionary = {
     chi2Status: (v: string) => `Ricalcolato: il χ²/N medio degli insiemi di dati mostrati ora è ${v}.`,
     sliderValue: (value: string, unit: string) => `${value} ${unit}`,
     levelGroupAria: (jpi: string, energy: string) => `Livello ${jpi} a ${energy} MeV`,
-    showDatasets: (n: number) => `Insiemi di dati (${n} mostrati)`,
+    showDatasets: (n: number, total: number) => `Insiemi di dati (${n} su ${total} mostrati)`,
     chi2Total: (chi2: string, points: number, perPoint: string) =>
       `χ² totale = ${chi2} su ${points} punti (χ²/N = ${perPoint}).`,
     chi2Explain:
@@ -1188,8 +1219,8 @@ const it: Dictionary = {
     nothingToPlot: "Niente da mostrare: una scala logaritmica nasconde i valori non positivi.",
     model: "modello",
     // --- evaluations (round 2) ---
-    chi2Shown: "χ²/N dei dataset mostrati",
-    chi2None: "Nessun χ² per i dataset mostrati (mancano le incertezze)",
+    chi2Shown: "χ²/N degli insiemi di dati mostrati",
+    chi2None: "Nessun χ² per gli insiemi di dati mostrati (mancano le incertezze)",
     chi2All: "tutti gli attivi",
     residuals: "Residui",
     residualAxis: "(d − m)/σ",
@@ -1203,12 +1234,43 @@ const it: Dictionary = {
       `Modello mostrato solo alle energie misurate, con i punti uniti da segmenti: ${names}. Per questi segmenti un calcolo su una griglia di energie propria non riproduce i valori di AZURE2 nei punti misurati (oppure non hanno un unico angolo o un intervallo di energie), quindi non viene tracciata una curva continua.`,
     sZero: (energy: string) => `S a ${energy}`,
     sZeroNote:
-      "Il fattore S del modello all'energia più bassa di ciascuna estrapolazione selezionata (centro di massa), letto dalla curva stessa; è S(0) solo se quell'energia è abbastanza vicina a zero.",
+      "S(E_min): il fattore S del modello all'energia più bassa di ciascuna estrapolazione selezionata (centro di massa), letto dalla curva stessa e segnato su di essa; è S(0) solo se quell'energia è abbastanza vicina a zero.",
     rateNote:
       "I tassi di reazione (N_A⟨σv⟩) non sono calcolati qui: l'interfaccia del codice usata da questo sito non espone l'integrazione dei tassi di AZURE2, e un tasso integrato da queste curve perderebbe le risonanze strette tra un punto e l'altro della griglia.",
     source: "Fonte",
     backgroundPoles: (energy: string, n: number) =>
       `${n} poli di fondo a ${energy} MeV (fissi, uno per spin-parità; asse interrotto)`,
+    // --- evaluations (round 3) ---
+    tipData: "dati × n",
+    keyLabel: "Legenda",
+    keyText: "Punti: dati misurati × la loro normalizzazione n, con barre d'errore di ±1σ. Linea nera: il modello R-matrix.",
+    keyOriginal: "Linea grigia tratteggiata: il fit pubblicato, prima delle tue modifiche.",
+    zoomHint: "Trascina sul grafico per ingrandire; doppio clic per tornare indietro.",
+    resetZoom: "Annulla lo zoom",
+    save: "Salva",
+    chi2ShownShort: "per gli insiemi di dati mostrati",
+    chi2AllShort: "per tutti i dati attivi",
+    chi2Gloss:
+      "χ²/N vicino a 1: il modello passa per i dati entro le loro incertezze; valori più grandi indicano un fit peggiore.",
+    chi2Same: "invariato",
+    better: "meglio",
+    worse: "peggio",
+    undo: "Annulla",
+    redo: "Ripeti",
+    angleAxis: "Angolo θ, c.m. (°)",
+    tableDrawer: (n: number) => `Tabella di tutti i ${n} insiemi di dati: riferimenti, normalizzazioni, χ²`,
+    plotColumn: "Grafico",
+    plotThis: (name: string) => `Mostra ${name} nel grafico`,
+    copyLink: "Copia il link",
+    copied: "Link copiato",
+    loadingView: "Caricamento della vista…",
+    gamowTemperature: "Finestra di Gamow",
+    gamowOff: "nessuna",
+    gamowBand: (T9: string) => `Finestra di Gamow, T₉ = ${T9}`,
+    gamowNote: (T9: string, E0: string, width: string, pair: string) =>
+      `In grigio: la finestra di Gamow di ${pair} a T₉ = ${T9} (${T9} miliardi di kelvin), centrata in E₀ = ${E0} e larga Δ = ${width}: le energie a cui questa reazione avviene per lo più in una stella a quella temperatura.`,
+    glossaryLink: "Approfondisci nel glossario",
+    editLevel: "Regola i suoi parametri →",
   },
 
   // --- levels (round 3) ---

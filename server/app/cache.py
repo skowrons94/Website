@@ -27,6 +27,13 @@ log = logging.getLogger(__name__)
 
 CACHE_FILE = "precomputed.json"
 
+# Bumped whenever what the engine side computes changes shape or meaning, so
+# entries written by an older server are recalculated rather than trusted.
+# 2: total capture over several capture pairs calculated with fresh external-
+#    capture integrals (app.fine.summed); the fine grid carries angles and
+#    axes; extrapolations come from their own model.
+REVISION = "2"
+
 
 # -- engine output to and from JSON --------------------------------------------
 
@@ -54,6 +61,10 @@ def decode(value):
 def fingerprint(directory):
     """A hash of the model: its .azr file(s) and everything under data/."""
     h = hashlib.sha256()
+    h.update(f"revision {REVISION}".encode())
+    # Toggling the split total-capture calculation changes every result.
+    from app.fine import split_enabled
+    h.update(f"split {split_enabled(directory)}".encode())
     paths = [os.path.join(directory, f) for f in sorted(os.listdir(directory))
              if f.endswith(".azr")]
     data = os.path.join(directory, "data")

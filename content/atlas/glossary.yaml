@@ -828,6 +828,54 @@ terms:
       aggiungono a parte.
     see: [r-matrix]
 
+  - id: spin-parity
+    term: Spin and parity
+    term_it: Spin e parità
+    also: Jπ
+    also_it: Jπ
+    text: >-
+      Two labels every nuclear level carries, written together as Jπ, for
+      example 3/2⁻. J is the level's spin, its total angular momentum in units
+      of ħ; the parity π, + or −, says whether its wave function keeps or
+      changes sign when mirrored through the centre. Both are conserved in a
+      reaction, so they decide which levels two colliding nuclei can form, and
+      with how much orbital angular momentum they must come together.
+    text_it: >-
+      Due etichette che ogni livello nucleare porta, scritte insieme come Jπ,
+      per esempio 3/2⁻. J è lo spin del livello, il suo momento angolare
+      totale in unità di ħ; la parità π, + o −, dice se la sua funzione d'onda
+      resta uguale o cambia segno quando la si specchia attraverso il centro.
+      Entrambi si conservano in una reazione, quindi decidono quali livelli
+      possono formare due nuclei che si scontrano, e con quanto momento
+      angolare orbitale devono avvicinarsi.
+    see: [excited-state, resonance]
+
+  - id: reduced-width
+    term: Partial and reduced width
+    term_it: Larghezza parziale e ridotta
+    also: Γ, γ²
+    also_it: Γ, γ²
+    text: >-
+      How readily a level decays through one channel, for example by
+      emitting a proton or a γ ray. The partial width Γ is an energy (eV,
+      keV): the larger it is, the faster that decay and the broader the
+      resonance; the widths of all channels add up to the level's total
+      width. The reduced width γ² is the same quantity with the
+      penetrability of the Coulomb and centrifugal barriers divided out, so it
+      measures the nuclear structure alone. An R-matrix fit adjusts these
+      widths, together with the level energies, to the data.
+    text_it: >-
+      Quanto facilmente un livello decade attraverso un canale, per esempio
+      emettendo un protone o un raggio γ. La larghezza parziale Γ è
+      un'energia (eV, keV): più è grande, più rapido è quel decadimento e più
+      larga la risonanza; le larghezze di tutti i canali si sommano nella
+      larghezza totale del livello. La larghezza ridotta γ² è la stessa
+      grandezza da cui si è tolta la penetrabilità delle barriere coulombiana
+      e centrifuga, e misura quindi la sola struttura nucleare. Un fit
+      R-matrix regola queste larghezze, insieme alle energie dei livelli, sui
+      dati.
+    see: [r-matrix, resonance, anc]
+
   - id: coincidence
     term: Particle–γ coincidence
     term_it: Coincidenza particella–γ

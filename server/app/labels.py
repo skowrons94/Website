@@ -223,6 +223,15 @@ def _split(label: "ChannelLabel"):
     return (one, two) if (one[1], one[0]) <= (two[1], two[0]) else (two, one)
 
 
+def pair_plain(label: "ChannelLabel") -> str:
+    """Unicode pair, light constituent first: ``'p + ¹²C'``, ``'α + ³He'``,
+    ``'γ + ¹³N'``."""
+    if label.is_photon:
+        return f"γ + {nuclide_plain(label.Z2, label.A2)}"
+    (zl, al), (zh, ah) = _split(label)
+    return f"{_light_plain(zl, al)} + {nuclide_plain(zh, ah)}"
+
+
 def reaction_plain(entrance: "ChannelLabel", exit: Optional["ChannelLabel"],
                    total: bool = False) -> str:
     """Unicode reaction notation for one entrance/exit pair, e.g.
