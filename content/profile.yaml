@@ -8,14 +8,14 @@ name: Jakub Skowronski
 role: Postdoctoral Researcher, Experimental Nuclear Astrophysics
 role_it: Ricercatore postdoc in astrofisica nucleare sperimentale
 affiliation: Università degli Studi di Padova
-department: Dipartimento di Fisica e Astronomia "G. Galilei"
+department: Dipartimento di Fisica e Astronomia “G. Galilei”
 location: Padova, Italy
 location_it: Padova, Italia
 email: jakub.skowronski@unipd.it
 orcid: 0000-0001-7292-6353
 
-tagline: Nuclear astrophysics, measured a kilometre underground.
-tagline_it: Astrofisica nucleare, misurata a un chilometro sotto terra.
+tagline: Nuclear astrophysics, measured under 1.4 km of rock.
+tagline_it: Astrofisica nucleare, misurata sotto 1,4 km di roccia.
 
 # The landing page's first paragraph: plain words, for any reader. A link is
 # written [text](/path); /path is an English path and is localized on /it.
@@ -23,7 +23,7 @@ lead: >-
   Stars shine because atomic nuclei fuse in their cores. I measure those nuclear
   reactions in the laboratory, at the low energies at which they happen inside
   stars. There they are so rare that the experiments must be shielded from
-  cosmic rays, under 1400 metres of rock at
+  cosmic rays, under 1.4 km of rock at
   [LUNA](/atlas/methods#direct-underground), the underground accelerator
   beneath the Gran Sasso mountain in Italy. I also develop the software that
   turns the measurements into the reaction rates astrophysicists use.
@@ -31,56 +31,50 @@ lead_it: >-
   Le stelle brillano perché nel loro cuore i nuclei atomici si fondono tra loro.
   Io misuro queste reazioni nucleari in laboratorio, alle basse energie a cui
   avvengono dentro le stelle. A quelle energie sono così rare che gli
-  esperimenti vanno protetti dai raggi cosmici, sotto 1400 metri di roccia: a
+  esperimenti vanno protetti dai raggi cosmici, sotto 1,4 km di roccia: a
   [LUNA](/atlas/methods#direct-underground), l'acceleratore sotterraneo sotto il
   Gran Sasso. Sviluppo anche il software che trasforma le misure nei tassi di
   reazione usati dagli astrofisici.
 
-# "Selected work" on the landing page, in this order. Each entry points at
+# "Selected papers" on the landing page, in this order. Each entry points at
 # something already on the site, so nothing is restated here: `publication` is
-# a DOI from publications.yaml, `research` an id from research.yaml. An entry
-# that matches nothing is skipped.
+# a DOI from publications.yaml, `research` an id from research.yaml (the
+# research threads have their own section on the landing page, so listing one
+# here repeats it). An entry that matches nothing is skipped.
 selected:
   - publication: 10.1103/PhysRevLett.131.162701
   - publication: 10.1103/PhysRevC.111.035802
-  - research: azure2
-  - research: agata
 
-# The longer introduction, further down the landing page, for specialists.
+# The longer introduction, beside the research threads on the landing page,
+# for specialists. The lead above already says where and why; this is the rest.
 intro:
   - >-
-    I measure the nuclear reactions that power stars, at the energies at which
-    stars actually run them. Most of that work happens at LUNA, under 1400 m of
-    Gran Sasso rock, where the cosmic-ray background is six orders of magnitude
-    lower than at the surface and cross sections of picobarns become reachable.
+    At LUNA the rock above the laboratory reduces the flux of cosmic-ray muons
+    by a factor of about a million, and cross sections of picobarns become
+    measurable. A measurement, though, is only ever a handful of points in a
+    narrow window of energy. Turning those points into the quantity astrophysics
+    needs — a rate at stellar temperatures, often far below anything
+    measurable — is R-matrix theory's job.
   - >-
-    A measurement, though, is only ever a handful of points in a narrow window of
-    energy. Turning those points into the quantity astrophysics needs — a rate at
-    stellar temperatures, often far below anything measurable — is R-matrix
-    theory's job. Since 2025 I have been the maintainer and lead developer of
-    AZURE2, the reference R-matrix code for the field, and I sit on the IAEA
-    INDEN-LE committee that evaluates light-element cross sections.
-  - >-
-    This site collects both halves: notes on the theory, and evaluations you can
-    open and run yourself in the browser.
+    Since 2025 I have been the maintainer and lead developer of AZURE2, the
+    reference R-matrix code for the field, and I sit on the IAEA INDEN-LE
+    committee that evaluates light-element cross sections. This site collects
+    both halves: notes on the theory, and evaluations you can open and run
+    yourself in the browser.
 
 intro_it:
   - >-
-    Misuro le reazioni nucleari che alimentano le stelle, alle energie a cui
-    avvengono davvero nelle stelle. Gran parte di questo lavoro si svolge a LUNA,
-    sotto 1400 m di roccia del Gran Sasso, dove il fondo dovuto ai raggi cosmici
-    è sei ordini di grandezza più basso che in superficie e diventano misurabili
-    sezioni d'urto dell'ordine del picobarn.
+    A LUNA la roccia sopra il laboratorio riduce il flusso dei muoni cosmici di
+    circa un milione di volte, e diventano misurabili sezioni d'urto
+    dell'ordine del picobarn. Una misura, però, è sempre solo una manciata di
+    punti in una stretta finestra di energia. Trasformare quei punti nella
+    grandezza che serve all'astrofisica, un tasso di reazione alle temperature
+    stellari, spesso molto al di sotto di qualunque energia misurabile, è il
+    compito della teoria R-matrix.
   - >-
-    Una misura, però, è sempre solo una manciata di punti in una stretta
-    finestra di energia. Trasformare quei punti nella grandezza che serve
-    all'astrofisica, un tasso di reazione alle temperature stellari, spesso
-    molto al di sotto di qualunque energia misurabile, è il compito della teoria
-    R-matrix. Dal 2025 sono il responsabile e lo sviluppatore principale di
-    AZURE2, il codice R-matrix di riferimento nel settore, e faccio parte del
-    comitato INDEN-LE della IAEA, che valuta le sezioni d'urto degli elementi
-    leggeri.
-  - >-
+    Dal 2025 sono il responsabile e lo sviluppatore principale di AZURE2, il
+    codice R-matrix di riferimento nel settore, e faccio parte del comitato
+    INDEN-LE della IAEA, che valuta le sezioni d'urto degli elementi leggeri.
     Questo sito raccoglie entrambe le metà: note sulla teoria e valutazioni che
     puoi aprire ed eseguire da te nel browser.
 

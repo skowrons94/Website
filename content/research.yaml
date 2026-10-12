@@ -22,7 +22,7 @@ threads:
         The reactions that burn hydrogen in the CNO cycle have cross sections
         that fall exponentially towards stellar energies — at the Gamow window
         they can reach the picobarn scale, which at the surface of the Earth is
-        indistinguishable from cosmic-ray background. LUNA's answer is 1400 m of
+        indistinguishable from cosmic-ray background. LUNA's answer is 1.4 km of
         dolomite overburden, which suppresses the muon flux by six orders of
         magnitude and makes the measurement possible.
       - >-
@@ -35,14 +35,14 @@ threads:
         In parallel I am the collaboration's DAQ Coordinator: the acquisition and
         slow-control infrastructure of every campaign, and of the MV facility, is
         designed and operated by me. It is what lets shifts be taken remotely,
-        which for an experiment a kilometre underground is not a small thing.
+        which for an experiment under 1.4 km of rock is not a small thing.
     body_it:
       - >-
         Le reazioni che bruciano idrogeno nel ciclo CNO hanno sezioni d'urto che
         calano esponenzialmente verso le energie stellari: nella finestra di Gamow
         possono arrivare alla scala del picobarn, che sulla superficie della Terra
         è indistinguibile dal fondo dei raggi cosmici. La risposta di LUNA sono
-        1400 m di dolomia sopra l'esperimento, che riducono il flusso di muoni di
+        1,4 km di dolomia sopra l'esperimento, che riducono il flusso di muoni di
         sei ordini di grandezza e rendono possibile la misura.
       - >-
         Ho guidato la misura e l'analisi della cattura radiativa ¹²C + p e
@@ -55,8 +55,8 @@ threads:
         In parallelo sono il coordinatore DAQ della collaborazione: ho progettato
         e gestisco l'infrastruttura di acquisizione e di slow control di ogni
         campagna di misura e dell'acceleratore da 3,5 MV. È ciò che permette di
-        fare i turni da remoto, il che per un esperimento a un chilometro sotto
-        terra non è poco.
+        fare i turni da remoto, il che per un esperimento sotto 1,4 km di roccia
+        non è poco.
     highlights:
       - ¹²C(p,γ)¹³N and ¹³C(p,γ)¹⁴N cross sections and their impact on the ¹²C/¹³C ratio
       - Working Group Leader for ¹⁹F + p at the Bellotti Ion Beam Facility
@@ -176,7 +176,7 @@ threads:
 
   - id: cryring
     title: CRYRING — electron screening in inverse kinematics
-    title_it: CRYRING — schermo elettronico in cinematica inversa
+    title_it: CRYRING — schermaggio elettronico in cinematica inversa
     venue: GSI Helmholtzzentrum für Schwerionenforschung, Darmstadt
     period: 2024 — present
     period_it: 2024 — oggi
@@ -205,7 +205,7 @@ threads:
         Ogni misura di laboratorio di una sezione d'urto a bassa energia si fa
         con atomi, non con nuclei nudi, e la nube elettronica scherma la barriera
         coulombiana. L'aumento che ne risulta cresce al diminuire dell'energia,
-        proprio dove all'astrofisica serve il valore, e i potenziali di schermo
+        proprio dove all'astrofisica serve il valore, e i potenziali di schermaggio
         misurati sono risultati costantemente più grandi di quanto la teoria
         consenta.
       - >-

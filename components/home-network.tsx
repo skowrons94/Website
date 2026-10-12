@@ -95,8 +95,16 @@ export function HomeNetwork({ lang }: { lang: Lang }) {
     const end = { x: tip.x - ux * head * 0.6, y: tip.y - uy * head * 0.6 }
     const f = (p: { x: number; y: number }) => `${p.x.toFixed(3)},${p.y.toFixed(3)}`
     const c2end = c2 === tip ? end : c2
+    // Three kinds of step, told apart twice (line style and hue) so the
+    // picture reads in greyscale too: proton captures solid in the first
+    // series hue, β⁺ decays dashed, and the (p,α) that closes the cycle in
+    // the second hue.
+    const style: "capture" | "decay" | "close" =
+      r.kind === "decay" ? "decay" : Math.abs(r.to.N - r.from.N) > 1 ? "close" : "capture"
     return {
       r,
+      style,
+      color: style === "close" ? "var(--viz-series-2)" : "var(--viz-series-1)",
       d: `M${f(start)} C${f(c1)} ${f(c2end)} ${f(end)}`,
       head: `M${tip.x.toFixed(3)},${tip.y.toFixed(3)} L${(bxh - uy * half).toFixed(3)},${(byh + ux * half).toFixed(3)} L${(bxh + uy * half).toFixed(3)},${(byh - ux * half).toFixed(3)} Z`,
       weight: WEIGHT[r.importance],
@@ -166,12 +174,46 @@ export function HomeNetwork({ lang }: { lang: Lang }) {
                 strokeWidth={a.weight + 0.06}
                 strokeLinecap="round"
               />
-              <path d={a.d} fill="none" stroke="var(--viz-series-1)" strokeWidth={a.weight} strokeLinecap="round" />
-              <path d={a.head} fill="var(--viz-series-1)" />
+              <path
+                d={a.d}
+                fill="none"
+                stroke={a.color}
+                strokeWidth={a.weight}
+                strokeLinecap={a.style === "decay" ? "butt" : "round"}
+                strokeDasharray={a.style === "decay" ? "0.09 0.065" : undefined}
+              />
+              <path d={a.head} fill={a.color} />
             </g>
           ))}
         </svg>
       </Link>
+      <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs text-muted-foreground">
+        {(
+          [
+            ["capture", t.legendCapture],
+            ["decay", t.legendDecay],
+            ["close", t.legendClose],
+          ] as const
+        )
+          .filter(([style]) => arrows.some((a) => a.style === style))
+          .map(([style, label]) => (
+            <li key={style} className="inline-flex items-center gap-1.5">
+              <svg width="26" height="8" viewBox="0 0 26 8" aria-hidden className="shrink-0">
+                <line
+                  x1="1"
+                  y1="4"
+                  x2="20"
+                  y2="4"
+                  stroke={style === "close" ? "var(--viz-series-2)" : "var(--viz-series-1)"}
+                  strokeWidth="1.8"
+                  strokeDasharray={style === "decay" ? "3.5 2.5" : undefined}
+                />
+                <path d="M25,4 L19,1 L19,7 Z" fill={style === "close" ? "var(--viz-series-2)" : "var(--viz-series-1)"} />
+              </svg>
+              {label}
+            </li>
+          ))}
+      </ul>
       <figcaption className="mt-3 text-pretty text-sm leading-relaxed text-muted-foreground">
         {t.figureCaption(network.name, network.summary)}{" "}
         <Link

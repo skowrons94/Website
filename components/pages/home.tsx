@@ -98,24 +98,26 @@ export function HomePage({ lang }: { lang: Lang }) {
   return (
     <div className="mx-auto max-w-6xl px-5 sm:px-8 xl:max-w-7xl">
       {/* -- hero ---------------------------------------------------------- */}
-      {/* One plain paragraph and the two ways in, for any reader; the picture
-          beside it from lg (below it on a phone, so the buttons stay near the
-          top of the first screen). The specialist detail is further down. */}
-      <section className="py-14 sm:py-20 lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-center lg:gap-16 lg:py-24 xl:gap-24">
+      {/* Who, one plain paragraph and the two ways in, for any reader; the
+          picture beside it from lg (below it on a phone, so the buttons stay
+          on the first screen even of a 640-px-tall phone). The specialist
+          detail is further down. */}
+      <section className="pb-12 pt-6 sm:py-20 lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-center lg:gap-16 lg:py-24 xl:gap-24">
         <div>
-          <p className="mb-5 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-            {profile.role}
+          <p className="mb-3 text-sm leading-snug sm:mb-5">
+            <span className="font-semibold text-foreground">{profile.name}</span>
+            <span className="text-muted-foreground"> · {profile.role}</span>
           </p>
-          <h1 className="text-balance font-serif text-4xl font-semibold leading-[1.12] tracking-tight sm:text-5xl xl:text-[3.4rem]">
+          <h1 className="text-balance font-serif text-[2rem] font-semibold leading-[1.12] tracking-tight sm:text-5xl xl:text-[3.4rem]">
             <Sci>{profile.tagline}</Sci>
           </h1>
           {profile.lead && (
-            <p className="mt-7 max-w-2xl text-pretty text-[1.0625rem] leading-relaxed text-muted-foreground sm:text-lg sm:leading-relaxed">
+            <p className="mt-4 max-w-2xl text-pretty text-[0.975rem] leading-[1.55] text-muted-foreground sm:mt-7 sm:text-lg sm:leading-relaxed">
               <Linked text={profile.lead} lang={lang} />
             </p>
           )}
 
-          <div className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-3 text-sm">
+          <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-3 text-sm sm:mt-8">
             <Link
               href={to("/atlas")}
               className="group inline-flex min-h-11 items-center gap-2 rounded-md bg-primary px-4 py-2.5 font-medium text-primary-foreground transition-opacity hover:opacity-90"
@@ -137,12 +139,64 @@ export function HomePage({ lang }: { lang: Lang }) {
         </div>
       </section>
 
-      {/* -- selected work ------------------------------------------------- */}
+      {/* -- research: the longer version, and the four threads ----------- */}
+      {/* One section rather than three (an "about", the threads, and the
+          threads again among the selected work): the intro carries what the
+          hero does not say, and each thread appears once. */}
+      <section className="border-t border-border/70 py-14 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-16 xl:gap-24">
+        <div>
+          <h2 className="font-serif text-2xl font-semibold tracking-tight">{t.research}</h2>
+          <div className="mt-5 max-w-3xl space-y-4 text-pretty text-[0.95rem] leading-relaxed text-muted-foreground">
+            {profile.intro.map((paragraph, i) => (
+              <p key={i}>
+                <Sci>{paragraph}</Sci>
+              </p>
+            ))}
+          </div>
+          <p className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-sm">
+            <Link href={to("/research")} className="inline-flex min-h-10 items-center text-link underline-offset-4 hover:underline">
+              {t.allResearch}
+            </Link>
+            <Link href={to("/cv")} className="inline-flex min-h-10 items-center gap-1.5 text-link underline-offset-4 hover:underline">
+              <FileText className="h-3.5 w-3.5" />
+              {t.cv}
+            </Link>
+            <Link href={to("/software")} className="inline-flex min-h-10 items-center text-link underline-offset-4 hover:underline">
+              {t.software}
+            </Link>
+          </p>
+        </div>
+
+        <div className="mt-10 grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:mt-1">
+          {research.map((thread) => (
+            <Link
+              key={thread.id}
+              href={to(`/research#${thread.id}`)}
+              className="group block"
+            >
+              <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
+                {thread.period}
+              </p>
+              <h3 className="mt-2 font-serif text-lg font-semibold tracking-tight group-hover:text-link">
+                <Sci>{thread.title}</Sci>
+              </h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                <Sci>{thread.role}</Sci>
+              </p>
+              <p className="mt-2 text-pretty text-[0.95rem] leading-relaxed text-muted-foreground">
+                <Sci>{thread.summary}</Sci>
+              </p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* -- selected papers ----------------------------------------------- */}
       {selected.length > 0 && (
-        <section className="border-t border-border/70 py-14 print:break-inside-avoid" aria-labelledby="selected-heading">
+        <section className="border-t border-border/70 py-14" aria-labelledby="selected-heading">
           <div className="mb-8 flex break-after-avoid items-baseline justify-between gap-4">
             <h2 id="selected-heading" className="font-serif text-2xl font-semibold tracking-tight">
-              {t.selected}
+              {selected.every((s) => s.external) ? t.selectedPapers : t.selected}
             </h2>
             <Link
               href={to("/publications")}
@@ -151,7 +205,7 @@ export function HomePage({ lang }: { lang: Lang }) {
               {t.publications}
             </Link>
           </div>
-          <ul className="grid gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+          <ul className={`grid gap-x-10 gap-y-8 sm:grid-cols-2 ${selected.length > 2 ? "lg:grid-cols-4" : ""}`}>
             {selected.map((item) => (
               <li key={item.key} className="border-t-2 border-foreground/15 pt-4">
                 <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
@@ -185,70 +239,11 @@ export function HomePage({ lang }: { lang: Lang }) {
         </section>
       )}
 
-      {/* -- the longer version, for specialists -------------------------- */}
-      <section className="border-t border-border/70 py-14 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-16 xl:gap-24">
-        <h2 className="font-serif text-2xl font-semibold tracking-tight">{t.about}</h2>
-        <div className="mt-6 max-w-3xl space-y-5 text-pretty leading-relaxed text-muted-foreground lg:mt-0">
-          {profile.intro.map((paragraph, i) => (
-            <p key={i}>
-              <Sci>{paragraph}</Sci>
-            </p>
-          ))}
-          <p className="flex flex-wrap gap-x-6 gap-y-1 pt-1 text-sm">
-            <Link href={to("/cv")} className="inline-flex min-h-10 items-center gap-1.5 text-link underline-offset-4 hover:underline">
-              <FileText className="h-3.5 w-3.5" />
-              {t.cv}
-            </Link>
-            <Link href={to("/software")} className="inline-flex min-h-10 items-center text-link underline-offset-4 hover:underline">
-              {t.software}
-            </Link>
-          </p>
-        </div>
-      </section>
-
-      {/* -- research threads ---------------------------------------------- */}
-      <section className="border-t border-border/70 py-16">
-        <div className="mb-10 flex break-after-avoid items-baseline justify-between gap-4">
-          <h2 className="font-serif text-2xl font-semibold tracking-tight">
-            {t.research}
-          </h2>
-          <Link
-            href={to("/research")}
-            className="text-sm text-link underline-offset-4 hover:underline"
-          >
-            {t.allResearch}
-          </Link>
-        </div>
-
-        <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
-          {research.map((thread) => (
-            <Link
-              key={thread.id}
-              href={to(`/research#${thread.id}`)}
-              className="group block"
-            >
-              <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
-                {thread.period}
-              </p>
-              <h3 className="mt-2 font-serif text-lg font-semibold tracking-tight group-hover:text-link">
-                <Sci>{thread.title}</Sci>
-              </h3>
-              <p className="mt-1 text-sm text-muted-foreground">
-                <Sci>{thread.role}</Sci>
-              </p>
-              <p className="mt-3 text-pretty text-[0.95rem] leading-relaxed text-muted-foreground">
-                <Sci>{thread.summary}</Sci>
-              </p>
-            </Link>
-          ))}
-        </div>
-      </section>
-
       {/* -- the two things to open: the atlas and the evaluations ------- */}
       {/* Side by side from lg, so neither sits at the very bottom of the page
           and the outreach half of the site is as close to the top as the
           specialist half. */}
-      <section className="grid gap-6 border-t border-border/70 py-16 lg:grid-cols-2">
+      <section className="grid gap-6 border-t border-border/70 py-14 lg:grid-cols-2">
         <div className="flex flex-col rounded-lg border border-border bg-card p-6 sm:p-8 lg:p-10">
           <h2 className="font-serif text-2xl font-semibold tracking-tight">
             {t.atlasTitle}
@@ -282,7 +277,7 @@ export function HomePage({ lang }: { lang: Lang }) {
       </section>
 
       {/* -- notes --------------------------------------------------------- */}
-      <section className="border-t border-border/70 py-16">
+      <section className="border-t border-border/70 py-14">
         <div className="mb-10 flex break-after-avoid items-baseline justify-between gap-4">
           <h2 className="font-serif text-2xl font-semibold tracking-tight">
             {t.notes}

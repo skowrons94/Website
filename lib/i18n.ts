@@ -96,7 +96,7 @@ const en = {
     allResearch: "All research threads",
     atlasTitle: "A reaction atlas",
     atlasText:
-      "The reactions of the pp chains, the CNO cycles, helium burning and the Big Bang, drawn on the chart of nuclides. For each one: what it does in a star, how well its rate is known, and who measured it, where and how, with the references.",
+      "The reactions of the pp chains, the CNO, NeNa and MgAl cycles, helium and carbon burning and the Big Bang, drawn on the chart of nuclides. For each one: what it does in a star, how well its rate is known, and who measured it, where and how, with the references.",
     openAtlas: "Open the atlas",
     evaluationsTitle: "R-matrix evaluations, live",
     evaluationsText:
@@ -116,6 +116,11 @@ const en = {
     selected: "Selected work",
     firstAuthor: "First author",
     about: "In more detail",
+    // --- site (round 2) ---
+    legendCapture: "proton capture",
+    legendDecay: "β⁺ decay",
+    legendClose: "(p,α): back to carbon",
+    selectedPapers: "Selected papers",
   },
 
   /* -- research ----------------------------------------------------------- */
@@ -160,6 +165,11 @@ const en = {
     firstAuthor: "First author",
     underReview: "Under review",
     underReviewNote: "Submitted and not yet published, so not counted among the peer-reviewed articles above.",
+    // --- site (round 2) ---
+    luna: "LUNA",
+    year: "Year",
+    allYears: "All years",
+    shown: (n: number) => (n === 1 ? "1 publication shown" : `${n} publications shown`),
   },
 
   /* -- CV ----------------------------------------------------------------- */
@@ -700,7 +710,7 @@ const it: Dictionary = {
     allResearch: "Tutti i temi di ricerca",
     atlasTitle: "Un atlante delle reazioni",
     atlasText:
-      "Le reazioni delle catene protone-protone, dei cicli CNO, della combustione dell'elio e del Big Bang, disegnate sulla carta dei nuclidi. Per ciascuna: che cosa fa in una stella, quanto bene se ne conosce il tasso, e chi l'ha misurata, dove e come, con la bibliografia.",
+      "Le reazioni delle catene protone-protone, dei cicli CNO, NeNa e MgAl, della combustione dell'elio e del carbonio e del Big Bang, disegnate sulla carta dei nuclidi. Per ciascuna: che cosa fa in una stella, quanto bene se ne conosce il tasso, e chi l'ha misurata, dove e come, con la bibliografia.",
     openAtlas: "Apri l'atlante",
     evaluationsTitle: "Valutazioni R-matrix, dal vivo",
     evaluationsText:
@@ -720,13 +730,18 @@ const it: Dictionary = {
     selected: "Lavori scelti",
     firstAuthor: "Primo autore",
     about: "Più nel dettaglio",
+    // --- site (round 2) ---
+    legendCapture: "cattura protonica",
+    legendDecay: "decadimento β⁺",
+    legendClose: "(p,α): di nuovo carbonio",
+    selectedPapers: "Articoli scelti",
   },
 
   /* -- research ----------------------------------------------------------- */
   research: {
     title: "Ricerca",
     description:
-      "Misure di sezioni d'urto in laboratorio sotterraneo, valutazioni R-matrix, tracciamento dei raggi γ e schermo elettronico.",
+      "Misure di sezioni d'urto in laboratorio sotterraneo, valutazioni R-matrix, tracciamento dei raggi γ e schermaggio elettronico.",
     lead: "Quattro programmi, tutti rivolti allo stesso problema: conoscere una sezione d'urto nucleare alle energie a cui la usano le stelle, e non solo dove arriva un fascio.",
     more: "Altro sul mio lavoro",
     publications: "Pubblicazioni",
@@ -764,6 +779,11 @@ const it: Dictionary = {
     firstAuthor: "Primo autore",
     underReview: "In revisione",
     underReviewNote: "Inviati alle riviste e non ancora pubblicati, quindi non contati tra gli articoli con revisione paritaria qui sopra.",
+    // --- site (round 2) ---
+    luna: "LUNA",
+    year: "Anno",
+    allYears: "Tutti gli anni",
+    shown: (n: number) => (n === 1 ? "1 pubblicazione mostrata" : `${n} pubblicazioni mostrate`),
   },
 
   /* -- CV ----------------------------------------------------------------- */
