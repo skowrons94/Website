@@ -2,7 +2,8 @@
   "id": "8Be",
   "title": "^{8}\\text{Be}",
   "reference": null,
-  "author": null,
+  "status": "unpublished",
+  "analysis": "J. Skowronski",
   "reactions": [
     "⁴He(α,α)⁴He"
   ],

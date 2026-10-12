@@ -2,7 +2,8 @@
   "id": "17F",
   "title": "^{17}\\text{F}",
   "reference": null,
-  "author": null,
+  "status": "unpublished",
+  "analysis": "R. J. deBoer",
   "reactions": [
     "¹⁶O(p,γ)¹⁷F"
   ],

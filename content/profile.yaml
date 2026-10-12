@@ -52,6 +52,7 @@ selected:
 # its date and its link come from there, so nothing here can say more than
 # the CV does. `label` and `what` are the short wording for the strip.
 #
+#   period: optional, when the role started later than its record's period
 #   source: research/<id>             a thread in research.yaml (→ /research#<id>)
 #           cv/<section>/<text>       the entry of experience.yaml's <section>
 #                                     whose English title contains <text> (→ /cv#<section>)
@@ -65,11 +66,15 @@ recognition:
   - source: research/luna
     label: Working Group Leader
     label_it: Coordinatore di gruppo di lavoro
+    period: 2024 — present
+    period_it: 2024 — oggi
     what: ¹⁹F + p at LUNA
     what_it: ¹⁹F + p a LUNA
   - source: research/luna
     label: DAQ Coordinator
     label_it: Coordinatore DAQ
+    period: 2024 — present
+    period_it: 2024 — oggi
     what: LUNA collaboration
     what_it: Collaborazione LUNA
   - source: cv/research/AZURE2

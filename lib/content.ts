@@ -93,7 +93,7 @@ export interface Profile {
   /** "Selected work" on the landing page: DOIs and research-thread ids. */
   selected?: ({ publication: string } | { research: string })[]
   /** "Roles and recognition": each points at its record (see getRecognition). */
-  recognition?: { source: string; label: string; what?: string }[]
+  recognition?: { source: string; label: string; what?: string; period?: string }[]
   intro: string[]
   links: { label: string; href: string }[]
   cv: { label: string; file: string }
@@ -294,6 +294,9 @@ export function getRecognition(lang: Lang = "en"): RecognitionItem[] {
       date = i >= 0 ? talks[section]?.[i]?.date : undefined
       href = `/cv#${section}`
     }
+    // A role can start later than the record it points at (a working-group
+    // lead within the LUNA years): its own `period` then wins.
+    if (item.period && date !== undefined) date = item.period
     if (date === undefined || !text && kind !== "research") continue
     out.push({ label: item.label, what: item.what ?? "", date: String(date), href })
   }

@@ -19,8 +19,8 @@ education:
     period_it: ott 2020 — dic 2023
     title: Ph.D. in Physics
     title_it: Dottorato di ricerca in Fisica
-    detail: "Università degli Studi di Padova — Advisor: Prof. Antonio Caciolli"
-    detail_it: "Università degli Studi di Padova — Supervisore: Prof. Antonio Caciolli"
+    detail: "Università degli Studi di Padova — Advisor: Prof. Antonio Caciolli · Defended 13 December 2023"
+    detail_it: "Università degli Studi di Padova — Supervisore: Prof. Antonio Caciolli · Discussa il 13 dicembre 2023"
   - period: Sep 2018 — Sep 2020
     period_it: set 2018 — set 2020
     title: M.Sc. in Physics
@@ -40,14 +40,14 @@ research:
     detail: Laboratori Nazionali del Gran Sasso, INFN, Italy
     detail_it: Laboratori Nazionali del Gran Sasso, INFN, Italia
     bullets:
-      - Working Group Leader for the ¹⁹F + p measurement; analysis of the ¹²C + p and ¹³C + p experiments
-      - DAQ Coordinator — design, deployment and operation of the data acquisition and slow-control systems across all LUNA campaigns and the new Bellotti IBF facility
+      - Working Group Leader for the ¹⁹F + p measurement (since 2024); analysis of the ¹²C + p and ¹³C + p experiments
+      - DAQ Coordinator (since 2024) — design, deployment and operation of the data acquisition and slow-control systems across all LUNA campaigns and the new Bellotti IBF facility
       - Calibration of the 3.5 MV Singletron accelerator of the Bellotti Ion Beam Facility
       - Fine-tuning of the Geant4 simulation for BGO and HPGe setups
       - R-matrix evaluation for ¹²C + p, ¹³C + p, ²⁰Ne + p and ²²Ne + p reactions
     bullets_it:
-      - Coordinatore del gruppo di lavoro per la misura ¹⁹F + p; analisi degli esperimenti ¹²C + p e ¹³C + p
-      - Coordinatore DAQ — progettazione, installazione e gestione dei sistemi di acquisizione dati e di slow control in tutte le campagne di LUNA e nel nuovo Bellotti IBF
+      - Coordinatore del gruppo di lavoro per la misura ¹⁹F + p (dal 2024); analisi degli esperimenti ¹²C + p e ¹³C + p
+      - Coordinatore DAQ (dal 2024) — progettazione, installazione e gestione dei sistemi di acquisizione dati e di slow control in tutte le campagne di LUNA e nel nuovo Bellotti IBF
       - Calibrazione dell'acceleratore Singletron da 3,5 MV del Bellotti Ion Beam Facility
       - Messa a punto della simulazione Geant4 per gli apparati BGO e HPGe
       - Valutazione R-matrix delle reazioni ¹²C + p, ¹³C + p, ²⁰Ne + p e ²²Ne + p

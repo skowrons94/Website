@@ -2,7 +2,8 @@
   "id": "24Mg",
   "title": "^{24}\\text{Mg}",
   "reference": null,
-  "author": null,
+  "status": "unpublished",
+  "analysis": "J. Skowronski (work in progress)",
   "reactions": [
     "²³Na(p,p)²³Na"
   ]
