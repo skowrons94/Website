@@ -20,7 +20,7 @@ Two things differ from the server:
 """
 
 from app import session as session_module
-from app.engine import EngineError, _dispatch, model_info
+from app.engine import EngineError, _dispatch, fine_curves, model_info
 from app.session import SessionManager
 
 # Results at the shipped parameters come from the server's own cache
@@ -40,6 +40,8 @@ class InProcessEngine:
             raise EngineError(f"{type(err).__name__}: {err}") from err
         self.info = model_info(self._azr)
         self._closed = False
+        self._azr_path, self._cwd = azr_path, cwd
+        self._fine = {}
 
     def _run(self, command, params):
         try:
@@ -53,16 +55,27 @@ class InProcessEngine:
     def calculate_extrapolations(self, params):
         return self._run("extrap", params)
 
+    def calculate_fine(self, params):
+        try:
+            return fine_curves(self._fine, self._azr_path, self._cwd, params)
+        except Exception as err:
+            raise EngineError(f"{type(err).__name__}: {err}") from err
+
+    def fine_ready(self):
+        return "model" in self._fine
+
     def is_alive(self):
         return not self._closed
 
     def close(self):
         if not self._closed:
             self._closed = True
-            try:
-                self._azr.close()
-            except Exception:
-                pass
+            for model in (self._azr, self._fine.get("model")):
+                try:
+                    if model is not None:
+                        model.close()
+                except Exception:
+                    pass
 
     pid = None
 

@@ -47,6 +47,9 @@ export interface Evaluation {
   citation?: string | null
   summary?: string | null
   summary_it?: string | null
+  /** Who did the R-matrix analysis; `author` carries the same for older clients. */
+  analysis?: string | null
+  paper?: { authors: string; title?: string | null; journal?: string | null; year?: number | null } | null
 }
 
 /** What a channel parameter physically is; the unit travels with the value. */
@@ -116,6 +119,8 @@ export interface DataSegment {
   /** Readable dataset name ("Kettner", "Elwyn (EXFOR F0012.002)"). */
   label?: string
   exfor?: string | null
+  /** Where the measurement was published, when the evaluation's info.json says. */
+  source?: { ref: string | null; doi: string | null }
   active: boolean
   entrance: string
   exit: string
@@ -148,6 +153,19 @@ export interface DataSegment {
   sfactor_errors: number[] | null
   calculated: number[] | null
   calculated_sfactor: number[] | null
+}
+
+/**
+ * The model on a fine energy grid for one data segment (server/app/fine.py),
+ * with the values at the measured energies merged in. Segments the server
+ * could not match on a grid are absent and are drawn through their points.
+ */
+export interface FineCurve {
+  index: number
+  energies: number[]
+  calculated: (number | null)[]
+  sfactor_energies: number[]
+  calculated_sfactor: (number | null)[]
 }
 
 export interface ExtrapSegment {
@@ -184,6 +202,8 @@ export interface OpenedSession {
 export interface SchemeAndData {
   scheme: Scheme
   data: DataSegment[]
+  /** Present when the server could calculate it without building its model. */
+  fine?: FineCurve[]
 }
 
 /** Thrown for any non-2xx response, carrying the server's message and status. */
@@ -300,6 +320,10 @@ export function getScheme(sessionId: string): Promise<Scheme> {
 
 export function getData(sessionId: string): Promise<DataSegment[]> {
   return request<DataSegment[]>(`/api/sessions/${sessionId}/data`)
+}
+
+export function getFine(sessionId: string): Promise<FineCurve[]> {
+  return request<FineCurve[]>(`/api/sessions/${sessionId}/fine`)
 }
 
 export function getExtrapolations(sessionId: string): Promise<ExtrapSegment[]> {

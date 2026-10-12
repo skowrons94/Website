@@ -265,19 +265,32 @@ Drop a directory containing a `.azr` file into `server/evaluations/`, with its
   "id": "13N",
   "title": "^{13}\\text{N}",
   "reference": "10.1103/PhysRevC.111.035802",
-  "author": "J. Skowronski",
-  "channels": ["p", "\\gamma", "\\gamma_{1}"]
+  "paper": {"authors": "J. Skowronski et al.", "title": "…",
+            "journal": "Phys. Rev. C 111, 035802", "year": 2025},
+  "analysis": "J. Skowronski",
+  "channels": ["p", "\\gamma", "\\gamma_{1}"],
+  "datasets": {"kettner_0": {"label": "Kettner 2023",
+                             "ref": "Phys. Rev. C 108, 035805 (2023)",
+                             "doi": "10.1103/PhysRevC.108.035805"}}
 }
 ```
+
+`paper.authors` is the paper as cited (first author et al.); `analysis` is who
+did the R-matrix analysis — they need not be the same person. `datasets` names
+data files (by stem), as a plain string or with their source.
 
 `title` and `channels` are rendered as LaTeX, and both are optional: with no
 `info.json` at all the compound nucleus and the channel labels are derived from
 the model's own particle pairs. The directory is bind-mounted into the API
-container, so `make evaluations` is enough — no rebuild.
+container, so `make evaluations` serves it at once; its page, though, is
+generated when the site is built (an id the build has not seen is a 404), so
+run `make update` too.
 
 Only the inputs are committed. `output/` and `checks/` are regenerated, with one
 exception: `output/intEC.dat` and `output/intEC.extrap` hold the external-capture
-integrals, which take minutes to recompute, so those two are kept.
+integrals, which take minutes to recompute, so those two are kept. `fine/` is
+written by the server (the model on a fine grid for the plots,
+`server/app/fine.py`) and is not committed.
 
 ## Development
 

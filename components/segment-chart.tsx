@@ -7,6 +7,7 @@ import {
   ErrorBar,
   Legend,
   Line,
+  ReferenceLine,
   ResponsiveContainer,
   Scatter,
   Tooltip,
@@ -47,6 +48,10 @@ interface Props {
   showLegend?: boolean
   /** What the chart shows, for screen readers (the SVG is one image). */
   ariaLabel?: string
+  /** A line at y = 0 (residuals). */
+  zeroLine?: boolean
+  /** A short strip under another chart: no x-axis title, tighter margins. */
+  compact?: boolean
 }
 
 interface Row {
@@ -75,6 +80,8 @@ export function SegmentChart({
   height,
   showLegend = true,
   ariaLabel,
+  zeroLine = false,
+  compact = false,
 }: Props) {
   const lang = useLang()
   const t = useDict().workspace
@@ -129,8 +136,13 @@ export function SegmentChart({
         }
       }
     }
+    // Residuals: symmetric about zero, so above and below read alike.
+    if (zeroLine && !logY && ys.length) {
+      const m = Math.max(1, ...ys.map(Math.abs))
+      ys.push(m, -m)
+    }
     return { xAxis: axisFor(xs, logX), yAxis: axisFor(ys, logY) }
-  }, [rows, logX, logY])
+  }, [rows, logX, logY, zeroLine])
 
   const frame = height ? { height } : undefined
 
@@ -148,7 +160,7 @@ export function SegmentChart({
   return (
     <div role="img" aria-label={ariaLabel ?? `${yLabel} / ${xLabel}`} className="h-full w-full overflow-hidden" style={frame}>
       <ResponsiveContainer width="100%" height="100%">
-        <ComposedChart data={rows} margin={{ top: 8, right: 16, bottom: 28, left: 8 }}>
+        <ComposedChart data={rows} margin={{ top: 8, right: 16, bottom: compact ? 4 : 28, left: 8 }}>
           <CartesianGrid stroke="var(--viz-grid)" strokeDasharray="3 3" />
           <XAxis
             dataKey="x"
@@ -160,13 +172,17 @@ export function SegmentChart({
             tickFormatter={axisFormatter(xAxis, logX, lang)}
             stroke="var(--viz-axis)"
             tick={{ fill: "var(--viz-text-muted)", fontSize: 11 }}
-            label={{
-              value: xLabel,
-              position: "insideBottom",
-              offset: -16,
-              fill: "var(--viz-text)",
-              fontSize: 12,
-            }}
+            label={
+              compact
+                ? undefined
+                : {
+                    value: xLabel,
+                    position: "insideBottom",
+                    offset: -16,
+                    fill: "var(--viz-text)",
+                    fontSize: 12,
+                  }
+            }
           />
           <YAxis
             type="number"
@@ -197,6 +213,7 @@ export function SegmentChart({
             labelFormatter={(value) => `${xLabel}: ${formatNumber(Number(value))}`}
             formatter={(value: number, name: string) => [formatNumber(value), name]}
           />
+          {zeroLine && <ReferenceLine y={0} stroke="var(--viz-axis)" strokeWidth={1} />}
           {showLegend && series.length > 1 && (
             <Legend
               verticalAlign="top"

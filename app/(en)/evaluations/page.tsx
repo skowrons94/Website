@@ -10,7 +10,8 @@ export default function Page() {
     return {
       id,
       reactions: m.reactions,
-      author: m.author,
+      analysis: m.analysis,
+      paper: m.paper,
       doi: m.doi,
       reference: m.reference,
       status: m.status,

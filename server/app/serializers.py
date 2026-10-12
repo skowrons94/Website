@@ -270,6 +270,8 @@ def data_to_dict(session, labels, mu, mu_sfactor) -> List[Dict]:
             # F0012.002)"); ``name`` stays the raw identifier.
             "label": evaluation.dataset_label(segment.data_file),
             "exfor": exfor_code(stem),
+            # Where the measurement was published, when info.json says.
+            "source": evaluation.dataset_source(segment.data_file),
             "active": segment.active,
             "entrance": _label_for(segment.entrance_key, labels),
             "exit": _exit_label(segment.exit_key, labels),
@@ -310,6 +312,44 @@ def data_to_dict(session, labels, mu, mu_sfactor) -> List[Dict]:
         })
 
     return segments
+
+
+# -- the model on a fine grid ---------------------------------------------------
+
+def fine_to_dict(session, fine_result, mu, mu_sfactor) -> List[Dict]:
+    """Per data segment, the model on a fine energy grid for drawing.
+
+    Only segments whose fine curve reproduces the data-mode model at the
+    measured energies are included (see :mod:`app.fine`); the values at the
+    measured energies are merged in, so the curve passes through exactly what
+    the χ² is computed from.  A segment left out is drawn through its data
+    points, as before.
+    """
+    from app import fine
+
+    index, energies, fine_mu, fine_sfactor = fine_result
+    out = []
+    for i, segment in enumerate(session.datasets):
+        j = index[i] if i < len(index) else None
+        if j is None or j >= len(fine_mu):
+            continue
+        at_x = _floats(session.measured.energies[i]) or []
+        grid_x = _floats(energies[j]) or []
+        grid_y = _floats(fine_mu[j]) or []
+        at_y = _floats(mu[i]) or []
+        if not fine.agrees(grid_x, grid_y, at_x, at_y):
+            continue
+        xs, ys = fine.merge(grid_x, grid_y, at_x, at_y)
+        sx, sys_ = fine.merge(grid_x, _floats(fine_sfactor[j]) or [],
+                              at_x, _floats(mu_sfactor[i]) or [])
+        out.append({
+            "index": i,
+            "energies": xs,
+            "calculated": ys,
+            "sfactor_energies": sx,
+            "calculated_sfactor": sys_,
+        })
+    return out
 
 
 # -- extrapolations -----------------------------------------------------------

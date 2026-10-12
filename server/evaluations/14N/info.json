@@ -2,7 +2,13 @@
   "id": "14N",
   "title": "^{14}\\text{N}",
   "reference": "10.1103/h1yt-5myk",
-  "author": "J. Skowronski",
+  "paper": {
+    "authors": "J. Skowronski et al.",
+    "title": "Improved S factor of the ¹³C(p,γ)¹⁴N reaction at Eₚ = 330–740 keV and parameters of resonances at 448 keV and 551 keV",
+    "journal": "Phys. Rev. C 111, 064611",
+    "year": 2025
+  },
+  "analysis": "J. Skowronski",
   "channels": [
     "p",
     "\\gamma_{0}",
@@ -18,7 +24,71 @@
     "¹³C(p,p)¹³C"
   ],
   "datasets": {
-    "c13_bgo": "BGO, total capture",
-    "zeps_no_narrow": "Zeps"
+    "c13_bgo": {
+      "label": "Skowronski 2023, LUNA (BGO, total capture)",
+      "ref": "Phys. Rev. Lett. 131, 162701 (2023)",
+      "doi": "10.1103/PhysRevLett.131.162701"
+    },
+    "zeps_no_narrow": "Zeps",
+    "king_0": {
+      "label": "King 1994",
+      "ref": "Nucl. Phys. A 567, 354 (1994)",
+      "doi": "10.1016/0375-9474(94)90154-6"
+    },
+    "king_2312": {
+      "label": "King 1994",
+      "ref": "Nucl. Phys. A 567, 354 (1994)",
+      "doi": "10.1016/0375-9474(94)90154-6"
+    },
+    "king_3948": {
+      "label": "King 1994",
+      "ref": "Nucl. Phys. A 567, 354 (1994)",
+      "doi": "10.1016/0375-9474(94)90154-6"
+    },
+    "king_4915": {
+      "label": "King 1994",
+      "ref": "Nucl. Phys. A 567, 354 (1994)",
+      "doi": "10.1016/0375-9474(94)90154-6"
+    },
+    "king_5105": {
+      "label": "King 1994",
+      "ref": "Nucl. Phys. A 567, 354 (1994)",
+      "doi": "10.1016/0375-9474(94)90154-6"
+    },
+    "king_5691": {
+      "label": "King 1994",
+      "ref": "Nucl. Phys. A 567, 354 (1994)",
+      "doi": "10.1016/0375-9474(94)90154-6"
+    },
+    "fels_0": {
+      "label": "Skowronski 2025, Felsenkeller",
+      "ref": "Phys. Rev. C 111, 064611 (2025)",
+      "doi": "10.1103/h1yt-5myk"
+    },
+    "fels_2312": {
+      "label": "Skowronski 2025, Felsenkeller",
+      "ref": "Phys. Rev. C 111, 064611 (2025)",
+      "doi": "10.1103/h1yt-5myk"
+    },
+    "fels_3948": {
+      "label": "Skowronski 2025, Felsenkeller",
+      "ref": "Phys. Rev. C 111, 064611 (2025)",
+      "doi": "10.1103/h1yt-5myk"
+    },
+    "fels_4915": {
+      "label": "Skowronski 2025, Felsenkeller",
+      "ref": "Phys. Rev. C 111, 064611 (2025)",
+      "doi": "10.1103/h1yt-5myk"
+    },
+    "fels_5105": {
+      "label": "Skowronski 2025, Felsenkeller",
+      "ref": "Phys. Rev. C 111, 064611 (2025)",
+      "doi": "10.1103/h1yt-5myk"
+    },
+    "fels_5691": {
+      "label": "Skowronski 2025, Felsenkeller",
+      "ref": "Phys. Rev. C 111, 064611 (2025)",
+      "doi": "10.1103/h1yt-5myk"
+    }
   }
 }

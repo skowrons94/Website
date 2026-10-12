@@ -39,3 +39,6 @@ public/atlas/data.json
 # Results cache written next to each evaluation (server/app/cache.py)
 server/evaluations/*/precomputed.json
 server/evaluations/*/.precomputed-*
+
+# The derived fine-grid model and its integrals (server/app/fine.py)
+server/evaluations/*/fine/

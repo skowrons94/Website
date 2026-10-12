@@ -165,6 +165,25 @@ class Session:
         extrapolation segment.  Returns ``(energies, angles, mu, mu_sfactor)``."""
         return self._cached("extrap", self.engine.calculate_extrapolations)
 
+    def calculate_fine(self):
+        """The model on a fine grid per data segment, at the current
+        parameters: ``(index, energies, mu, mu_sfactor)``."""
+        return self._cached("fine", self.engine.calculate_fine)
+
+    def fine_ready(self) -> bool:
+        """Can the fine grid be calculated without first building its model?
+
+        True at the shipped parameters when the cache holds it, or once the
+        worker has built the derived model; used to decide whether an edit's
+        response may include the fine curves without a long wait.
+        """
+        if not self.is_modified and cache.read(self.evaluation.path, self.params, "fine") is not None:
+            return True
+        try:
+            return self.engine.fine_ready()
+        except EngineError:
+            return False
+
     def _cached(self, key, method):
         """At the evaluation's own parameters, answer from ``app.cache`` when
         it can and fill it when it cannot; after an edit, always calculate."""

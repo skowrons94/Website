@@ -2,7 +2,13 @@
   "id": "23Na",
   "title": "^{23}\\text{Na}",
   "reference": "10.1103/PhysRevC.109.064627",
-  "author": "J. Skowronski",
+  "paper": {
+    "authors": "M. P. Takács et al.",
+    "title": "Direct capture cross section and resonances in the ²²Ne(p,γ)²³Na reaction at low energy",
+    "journal": "Phys. Rev. C 109, 064627",
+    "year": 2024
+  },
+  "analysis": "J. Skowronski",
   "channels": [
     "p",
     "\\gamma_{0}",
@@ -15,5 +21,47 @@
   ],
   "reactions": [
     "²²Ne(p,γ)²³Na"
-  ]
+  ],
+  "datasets": {
+    "tunl2017_0": {
+      "label": "Kelly 2017, TUNL",
+      "ref": "Phys. Rev. C 95, 015806 (2017)",
+      "doi": "10.1103/PhysRevC.95.015806"
+    },
+    "tunl2017_440": {
+      "label": "Kelly 2017, TUNL",
+      "ref": "Phys. Rev. C 95, 015806 (2017)",
+      "doi": "10.1103/PhysRevC.95.015806"
+    },
+    "tunl2017_2391": {
+      "label": "Kelly 2017, TUNL",
+      "ref": "Phys. Rev. C 95, 015806 (2017)",
+      "doi": "10.1103/PhysRevC.95.015806"
+    },
+    "tunl2017_2982": {
+      "label": "Kelly 2017, TUNL",
+      "ref": "Phys. Rev. C 95, 015806 (2017)",
+      "doi": "10.1103/PhysRevC.95.015806"
+    },
+    "tunl2017_6308": {
+      "label": "Kelly 2017, TUNL",
+      "ref": "Phys. Rev. C 95, 015806 (2017)",
+      "doi": "10.1103/PhysRevC.95.015806"
+    },
+    "tunl2017_6921": {
+      "label": "Kelly 2017, TUNL",
+      "ref": "Phys. Rev. C 95, 015806 (2017)",
+      "doi": "10.1103/PhysRevC.95.015806"
+    },
+    "williams2020": {
+      "label": "Williams 2020",
+      "ref": "Phys. Rev. C 102, 035801 (2020)",
+      "doi": "10.1103/PhysRevC.102.035801"
+    },
+    "ferraro2018": {
+      "label": "Ferraro 2018, LUNA",
+      "ref": "Phys. Rev. Lett. 121, 172701 (2018)",
+      "doi": "10.1103/PhysRevLett.121.172701"
+    }
+  }
 }

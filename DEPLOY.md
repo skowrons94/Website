@@ -93,11 +93,11 @@ AZURE2) and needs about 2 GB of RAM at `BUILD_JOBS=4`. Then:
 Then fill the results cache, once:
 
 ```sh
-make warm                # about 2 minutes; prints one line per evaluation
+make warm                # about 8 minutes; prints one line per evaluation
 ```
 
-Each evaluation's data and extrapolation curves at its published parameters
-are stored next to the model (`server/evaluations/<id>/precomputed.json`) and
+Each evaluation's data and extrapolation curves at its published parameters,
+and the model on a fine energy grid that the plots draw, are stored next to the model (`server/evaluations/<id>/precomputed.json`) and
 served from there until a visitor edits a level. Without it the first visitor
 to open the ⁷Be extrapolations waits about 2.5 minutes; with it, about 2
 seconds. The cache fills itself anyway as visitors use the site, and it

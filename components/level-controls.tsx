@@ -289,12 +289,12 @@ export function LevelControls({ scheme, onChange, onReset, disabled }: Props) {
                           valueText={
                             control.unit === "MeV"
                               ? t.sliderValue(significant(value, 4), "MeV")
-                              : t.sliderValue(shown.text, unitPlain(shown.unit))
+                              : t.sliderValue(shown.text.replace("-", "\u2212"), unitPlain(shown.unit))
                           }
                         />
                         {changed && (
                           <p className="text-[11px] text-muted-foreground">
-                            {t.wasValue(`${initial.text} ${unitPlain(initial.unit)}`)}
+                            {t.wasValue(initial.text.replace("-", "\u2212"))} <Unit unit={initial.unit} />
                           </p>
                         )}
                       </div>

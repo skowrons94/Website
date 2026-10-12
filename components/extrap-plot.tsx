@@ -31,6 +31,7 @@ import {
   type ExtrapSegment,
 } from "@/lib/api"
 import { OVERLAY_LIMIT, formatEnergy, observableLabel, quantityLabel } from "@/lib/viz"
+import { decimal } from "@/lib/i18n"
 import { axisLabel, quantityFor, segmentTitle } from "@/lib/eval-plot"
 import { useDict, useLang } from "@/components/lang-provider"
 
@@ -132,6 +133,20 @@ export function ExtrapPlot({
   const mixed = labels.size > 1
   const overLimit = series.length > OVERLAY_LIMIT || mixed
   const yLabel = chosen[0] ? curveLabel(chosen[0]) : chosenData[0] ? axisLabel(chosenData[0], quantity, lang) : ""
+
+  // The number an astrophysicist wants out: the S-factor at the lowest energy
+  // of each selected capture/reaction extrapolation, read off the curve and
+  // labelled with that energy (it is S(0) only as far as that energy is ~0).
+  const lowest = chosen
+    .filter((s) => !scattering(s) && s.is_angle_integrated)
+    .map((s) => {
+      const energies = s.energies ?? []
+      const values = s.calculated_sfactor ?? []
+      let i = 0
+      while (i < energies.length && !(Number.isFinite(values[i] ?? NaN) && (values[i] ?? 0) > 0)) i++
+      return i < energies.length ? { segment: s, energy: energies[i], value: values[i] as number } : null
+    })
+    .filter((v): v is { segment: ExtrapSegment; energy: number; value: number } => v !== null)
 
   return (
     <div className="space-y-4">
@@ -311,6 +326,28 @@ export function ExtrapPlot({
           </Card>
         </div>
       </div>
+
+      {lowest.length > 0 && (
+        <Card>
+          <CardContent className="space-y-2 p-4 text-sm sm:p-5">
+            <ul className="space-y-1">
+              {lowest.map(({ segment, energy, value }) => (
+                <li key={segment.index} className="flex flex-wrap items-baseline gap-x-2">
+                  <span className="text-muted-foreground">
+                    <Tex math={segment.entrance} /> → <Tex math={segment.exit} />:
+                  </span>
+                  <span className="tabular-nums">
+                    {t.sZero(`${decimal(String(Number((energy * 1000).toPrecision(3))), lang)} keV`)} ={" "}
+                    <span className="font-semibold">{decimal(String(Number((value * 1000).toPrecision(3))), lang)} keV b</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <p className="text-xs text-muted-foreground">{t.sZeroNote}</p>
+            <p className="text-xs text-muted-foreground">{t.rateNote}</p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Full width along the bottom: measured datasets are an optional
           comparison layer, so they get room to browse without crowding the

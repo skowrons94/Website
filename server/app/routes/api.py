@@ -8,6 +8,7 @@ Shape of a client's interaction:
     POST /api/sessions/<sid>/parameters       edit levels, get new curves back
     POST /api/sessions/<sid>/reset            back to the model's own values
     GET  /api/sessions/<sid>/extrapolations   extrapolation curves
+    GET  /api/sessions/<sid>/fine             the model on a fine grid per data segment
 
 Opening an evaluation starts an AZURE2 process, so a client should close its
 session when done; idle ones are reaped anyway.
@@ -176,6 +177,36 @@ def get_data(session_id):
         return jsonify(serializers.data_to_dict(session, labels, mu, mu_sfactor))
 
 
+@bp.route("/sessions/<session_id>/fine", methods=["GET"])
+def get_fine(session_id):
+    """The model on a fine energy grid for every data segment that allows one.
+
+    The first call builds a second, derived model (its external-capture
+    integrals can take a minute); later calls, and the shipped parameters once
+    cached, are quick.  Segments missing from the answer are drawn through
+    their data points.
+    """
+    session, _ = _session_and_labels(session_id)
+    with session.use():
+        mu, mu_sfactor = session.calculate_data()
+        result = session.calculate_fine()
+        return jsonify(serializers.fine_to_dict(session, result, mu, mu_sfactor))
+
+
+def _with_fine(session, labels, mu, mu_sfactor):
+    """The answer to an edit: scheme and data, plus the fine curves when they
+    cost no model build (``fine`` is absent otherwise; the client keeps
+    asking ``/fine``)."""
+    payload = {
+        "scheme": serializers.scheme_to_dict(session, labels),
+        "data": serializers.data_to_dict(session, labels, mu, mu_sfactor),
+    }
+    if session.fine_ready():
+        payload["fine"] = serializers.fine_to_dict(
+            session, session.calculate_fine(), mu, mu_sfactor)
+    return payload
+
+
 # -- interactive parameters ---------------------------------------------------
 
 @bp.route("/sessions/<session_id>/parameters", methods=["POST"])
@@ -196,10 +227,7 @@ def set_parameters(session_id):
     with session.use():
         session.set_parameters(updates)
         mu, mu_sfactor = session.calculate_data()
-        return jsonify({
-            "scheme": serializers.scheme_to_dict(session, labels),
-            "data": serializers.data_to_dict(session, labels, mu, mu_sfactor),
-        })
+        return jsonify(_with_fine(session, labels, mu, mu_sfactor))
 
 
 @bp.route("/sessions/<session_id>/reset", methods=["POST"])
@@ -209,10 +237,7 @@ def reset_parameters(session_id):
     with session.use():
         session.reset_parameters()
         mu, mu_sfactor = session.calculate_data()
-        return jsonify({
-            "scheme": serializers.scheme_to_dict(session, labels),
-            "data": serializers.data_to_dict(session, labels, mu, mu_sfactor),
-        })
+        return jsonify(_with_fine(session, labels, mu, mu_sfactor))
 
 
 # -- extrapolations -----------------------------------------------------------

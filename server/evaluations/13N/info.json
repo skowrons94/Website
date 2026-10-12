@@ -2,7 +2,13 @@
   "id": "13N",
   "title": "^{13}\\text{N}",
   "reference": "10.1103/PhysRevC.111.035802",
-  "author": "J. Skowronski",
+  "paper": {
+    "authors": "J. Skowronski et al.",
+    "title": "A comparative analysis of R-matrix fitting: ¹²C(p,γ)¹³N as test case",
+    "journal": "Phys. Rev. C 111, 035802",
+    "year": 2025
+  },
+  "analysis": "J. Skowronski",
   "channels": [
     "p",
     "\\gamma"
@@ -12,9 +18,45 @@
     "¹²C(p,p)¹²C"
   ],
   "datasets": {
-    "skowronski_luna_hpge": "Skowronski, LUNA (HPGe)",
-    "skowronski_luna_bgo": "Skowronski, LUNA (BGO)",
-    "skowronski_fels": "Skowronski, Felsenkeller",
-    "gyurky": "Gyürky"
+    "skowronski_luna_hpge": {
+      "label": "Skowronski 2023, LUNA (HPGe)",
+      "ref": "Phys. Rev. Lett. 131, 162701 (2023)",
+      "doi": "10.1103/PhysRevLett.131.162701"
+    },
+    "skowronski_luna_bgo": {
+      "label": "Skowronski 2023, LUNA (BGO)",
+      "ref": "Phys. Rev. Lett. 131, 162701 (2023)",
+      "doi": "10.1103/PhysRevLett.131.162701"
+    },
+    "skowronski_fels": {
+      "label": "Skowronski 2023, Felsenkeller",
+      "ref": "Phys. Rev. C 107, L062801 (2023)",
+      "doi": "10.1103/PhysRevC.107.L062801"
+    },
+    "gyurky": {
+      "label": "Gyürky 2023",
+      "ref": "Eur. Phys. J. A 59, 59 (2023)",
+      "doi": "10.1140/epja/s10050-023-00974-0"
+    },
+    "kettner_0": {
+      "label": "Kettner 2023",
+      "ref": "Phys. Rev. C 108, 035805 (2023)",
+      "doi": "10.1103/PhysRevC.108.035805"
+    },
+    "kettner_55": {
+      "label": "Kettner 2023",
+      "ref": "Phys. Rev. C 108, 035805 (2023)",
+      "doi": "10.1103/PhysRevC.108.035805"
+    },
+    "rolfs_0": {
+      "label": "Rolfs 1974",
+      "ref": "Nucl. Phys. A 227, 291 (1974)",
+      "doi": "10.1016/0375-9474(74)90798-2"
+    },
+    "rolfs_90": {
+      "label": "Rolfs 1974",
+      "ref": "Nucl. Phys. A 227, 291 (1974)",
+      "doi": "10.1016/0375-9474(74)90798-2"
+    }
   }
 }

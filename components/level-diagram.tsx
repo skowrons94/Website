@@ -31,6 +31,12 @@ const HEIGHT = 460
 const PAD = { top: 32, right: 24, bottom: 44, left: 68 }
 const PLOT_W = WIDTH - PAD.left - PAD.right
 const PLOT_H = HEIGHT - PAD.top - PAD.bottom
+/** Height of the background-pole band at the top of the frame. */
+const BAND = 34
+/** Least vertical distance between two energy labels in a column. */
+const LABEL_GAP = 11
+/** Furthest a label may be moved from its level before it is dropped. */
+const MAX_SHIFT = 16
 
 interface Props {
   levels: SchemeLevel[]
@@ -41,7 +47,7 @@ export function LevelDiagram({ levels }: Props) {
   const lang = useLang()
   const svgRef = useRef<SVGSVGElement>(null)
 
-  const { columns, scale, ticks } = useMemo(() => {
+  const { columns, scale, ticks, background } = useMemo(() => {
     const groups = new Map<string, SchemeLevel[]>()
     for (const level of levels) {
       const list = groups.get(level.jpi) ?? []
@@ -53,22 +59,63 @@ export function LevelDiagram({ levels }: Props) {
       (a, b) => (a[1][0]?.jgroup ?? 0) - (b[1][0]?.jgroup ?? 0),
     )
 
-    const energies = levels.map((l) => l.energy)
+    // Background poles: the usual R-matrix device of one fixed, distant level
+    // per J^pi, all at the same energy (20 MeV in most of these models), far
+    // above the resonances. Drawn to scale they squash every real level into
+    // the bottom of the frame and pile identical labels on top of each other,
+    // so they get one band above an axis break and one label.
+    const top = Math.max(...levels.map((l) => l.energy))
+    const atTop = levels.filter((l) => Math.abs(l.energy - top) < 1e-6)
+    const rest = levels.filter((l) => Math.abs(l.energy - top) >= 1e-6)
+    const restMax = rest.length ? Math.max(...rest.map((l) => l.energy)) : -Infinity
+    const isBand =
+      atTop.length >= 2 && atTop.every((l) => l.energy_fixed) && rest.length > 0 && top > restMax + 1
+    const background = isBand ? { energy: top, count: atTop.length } : null
+    const shown = isBand ? rest : levels
+
+    const energies = shown.map((l) => l.energy)
     const min = Math.min(...energies, 0)
-    const max = Math.max(...energies, 1)
-    // Round ticks (0, 5, 10 MeV), with the frame on the outermost ones; pad
-    // first so the topmost level isn't drawn on the frame.
+    const max = Math.max(...energies, min + 1)
+    // Round ticks fitted to the levels drawn, with a margin so the topmost
+    // level isn't on the frame.
     const span = max - min || 1
-    const axis = linearTicks(min - span * 0.03, max + span * 0.03, 6)
+    const axis = linearTicks(min - span * 0.03, max + span * 0.05, 6)
     const [lo, hi] = axis.domain
 
+    const bottom = PAD.top + PLOT_H
+    const roof = PAD.top + (isBand ? BAND : 0)
     const y = (energy: number) =>
-      PAD.top + PLOT_H - ((energy - lo) / (hi - lo)) * PLOT_H
+      isBand && Math.abs(energy - top) < 1e-6
+        ? PAD.top + BAND / 2
+        : bottom - ((energy - lo) / (hi - lo)) * (bottom - roof)
 
-    const tickValues = axis.ticks
-
-    return { columns: ordered, scale: y, ticks: tickValues }
+    return { columns: ordered, scale: y, ticks: axis.ticks, background }
   }, [levels])
+
+  /**
+   * Label positions in one column: at their levels where there is room,
+   * pushed apart (and tied back with a short leader) where levels are closer
+   * than a line of text.
+   */
+  const labelPositions = (group: SchemeLevel[]) => {
+    const items = group
+      .filter((l) => !(background && Math.abs(l.energy - background.energy) < 1e-6))
+      .map((l) => ({ key: `${l.jgroup}-${l.level}`, y: scale(l.energy) }))
+      .sort((a, b) => b.y - a.y)
+    const placed = new Map<string, number>()
+    const floor = PAD.top + (background ? BAND + 8 : 6)
+    let last = Infinity
+    for (const item of items) {
+      const y = Math.min(item.y, last - LABEL_GAP)
+      // A label that would sit far from its level, or above the frame, is
+      // left out rather than stacked into a column of numbers: in a crowded
+      // model (24Mg) the table below has every energy.
+      if (item.y - y > MAX_SHIFT || y < floor) continue
+      placed.set(item.key, y)
+      last = y
+    }
+    return placed
+  }
 
   const columnWidth = columns.length > 0 ? PLOT_W / columns.length : PLOT_W
 
@@ -169,15 +216,66 @@ export function LevelDiagram({ levels }: Props) {
               {t.excitationAxis}
             </text>
 
+            {background && (
+              <g>
+                <rect
+                  x={PAD.left}
+                  y={PAD.top}
+                  width={PLOT_W}
+                  height={BAND}
+                  fill="var(--viz-grid)"
+                  opacity={0.35}
+                />
+                <line
+                  x1={PAD.left}
+                  x2={WIDTH - PAD.right}
+                  y1={PAD.top + BAND}
+                  y2={PAD.top + BAND}
+                  stroke="var(--viz-axis)"
+                  strokeWidth={1}
+                  strokeDasharray="2 3"
+                />
+                {/* axis break */}
+                <path
+                  d={`M ${PAD.left - 6} ${PAD.top + BAND + 3} l 12 -6 M ${PAD.left - 6} ${PAD.top + BAND + 8} l 12 -6`}
+                  stroke="var(--viz-axis)"
+                  strokeWidth={1}
+                  fill="none"
+                />
+                <text
+                  x={PAD.left - 10}
+                  y={PAD.top + BAND / 2 + 4}
+                  textAnchor="end"
+                  fontSize={11}
+                  fill="var(--viz-text-muted)"
+                >
+                  {tickLabel(background.energy, false, lang)}
+                </text>
+                <text
+                  x={WIDTH - PAD.right}
+                  y={PAD.top - 10}
+                  textAnchor="end"
+                  fontSize={10}
+                  fill="var(--viz-text-muted)"
+                >
+                  {t.backgroundPoles(formatEnergy(background.energy), background.count)}
+                </text>
+              </g>
+            )}
+
             {columns.map(([jpi, group], columnIndex) => {
               const x0 = PAD.left + columnIndex * columnWidth
-              const lineStart = x0 + columnWidth * 0.18
-              const lineEnd = x0 + columnWidth * 0.82
+              // Room on the right for a label ("12.96" plus its leader) before
+              // the next column's lines begin.
+              const lineStart = x0 + Math.min(columnWidth * 0.18, 16)
+              const lineEnd = Math.max(lineStart + 24, x0 + columnWidth - 44)
+              const labels = labelPositions(group)
+              const centre = x0 + columnWidth / 2
 
               return (
                 <g key={jpi}>
                   <text
-                    x={(lineStart + lineEnd) / 2}
+                    x={centre}
                     y={HEIGHT - 14}
                     textAnchor="middle"
                     fontSize={12}
@@ -192,8 +290,10 @@ export function LevelDiagram({ levels }: Props) {
                   {group.map((level) => {
                     const y = scale(level.energy)
                     const free = !level.energy_fixed
+                    const key = `${level.jgroup}-${level.level}`
+                    const labelY = labels.get(key)
                     return (
-                      <g key={`${level.jgroup}-${level.level}`}>
+                      <g key={key}>
                         <line
                           x1={lineStart}
                           x2={lineEnd}
@@ -206,14 +306,28 @@ export function LevelDiagram({ levels }: Props) {
                           strokeDasharray={free ? undefined : "5 3"}
                           strokeLinecap="round"
                         />
-                        <text
-                          x={lineEnd + 5}
-                          y={y + 3.5}
-                          fontSize={10}
-                          fill="var(--viz-text-muted)"
-                        >
-                          {formatEnergy(level.energy)}
-                        </text>
+                        {labelY !== undefined && (
+                          <>
+                            {Math.abs(labelY - y) > 1 && (
+                              <line
+                                x1={lineEnd + 1}
+                                x2={lineEnd + 5}
+                                y1={y}
+                                y2={labelY}
+                                stroke="var(--viz-text-muted)"
+                                strokeWidth={0.75}
+                              />
+                            )}
+                            <text
+                              x={lineEnd + 6}
+                              y={labelY + 3.5}
+                              fontSize={10}
+                              fill="var(--viz-text-muted)"
+                            >
+                              {formatEnergy(level.energy)}
+                            </text>
+                          </>
+                        )}
                       </g>
                     )
                   })}
