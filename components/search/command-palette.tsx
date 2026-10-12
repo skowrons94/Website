@@ -7,7 +7,7 @@ import { ArrowUpRight, CornerDownLeft, Search, X } from "lucide-react"
 import { Sci } from "@/components/sci"
 import type { ChromeStrings } from "@/lib/chrome-strings"
 import type { Lang } from "@/lib/locale"
-import { prepare, search, type Group, type PreparedIndex, type SearchEntry } from "@/lib/search"
+import { matchRanges, prepare, search, type PreparedIndex, type SearchEntry } from "@/lib/search"
 
 /*
  * The search dialog. Loaded on demand by components/search/search-button.tsx,
@@ -16,8 +16,13 @@ import { prepare, search, type Group, type PreparedIndex, type SearchEntry } fro
  * A modal <dialog> (which makes the page behind it inert and closes on
  * Escape) holding an ARIA 1.2 combobox: the text field owns a listbox of
  * results grouped by type, the active option is announced through
- * aria-activedescendant, the arrow keys move it, Enter opens it. On a phone
- * the dialog is a full-screen sheet.
+ * aria-activedescendant, the arrow keys move it, Enter opens it, and Escape
+ * closes the dialog whatever is typed (the field's own "Escape clears" is
+ * turned off). On a phone the dialog is a full-screen sheet.
+ *
+ * Before anything is typed it offers a few queries to try, what was opened
+ * from here recently (kept in this browser only), a fixed list of good
+ * starting points, and the site's pages.
  */
 
 const indexes = new Map<Lang, Promise<PreparedIndex>>()
@@ -36,6 +41,56 @@ export function loadIndex(lang: Lang): Promise<PreparedIndex> {
     indexes.set(lang, p)
   }
   return p
+}
+
+/** Good starting points, by English address; shown before anything is typed. */
+const SUGGESTED = ["/atlas/14N-pg-15O", "/atlas/12C-ag-16O", "/atlas#cno", "/glossary#gamow-window", "/evaluations/13N"]
+
+const RECENT_KEY = (lang: Lang) => `search-recent-${lang}`
+const RECENT_MAX = 5
+
+/** What was opened from search lately, newest first. Storage may be off: then nothing. */
+function readRecent(lang: Lang): SearchEntry[] {
+  try {
+    const raw = window.localStorage.getItem(RECENT_KEY(lang))
+    const list = raw ? (JSON.parse(raw) as SearchEntry[]) : []
+    return Array.isArray(list) ? list.filter((e) => e && typeof e.h === "string" && typeof e.l === "string").slice(0, RECENT_MAX) : []
+  } catch {
+    return []
+  }
+}
+
+function remember(lang: Lang, entry: SearchEntry) {
+  try {
+    const { t, l, s, h, x } = entry
+    const next = [{ t, l, s, h, ...(x ? { x } : {}) }, ...readRecent(lang).filter((e) => e.h !== h)].slice(0, RECENT_MAX)
+    window.localStorage.setItem(RECENT_KEY(lang), JSON.stringify(next))
+  } catch {
+    // Private window or storage blocked: search works the same, without a history.
+  }
+}
+
+const localHref = (lang: Lang, href: string) => (lang === "en" ? href : `/it${href}`)
+
+type Shown = { id: string; title: string; entries: SearchEntry[] }
+
+/** `text` with the parts the query matched marked. */
+function Highlighted({ text, query }: { text: string; query: string }) {
+  const ranges = query.trim() ? matchRanges(text, query) : []
+  if (!ranges.length) return <Sci>{text}</Sci>
+  const out: React.ReactNode[] = []
+  let last = 0
+  for (const [a, b] of ranges) {
+    if (a > last) out.push(<Sci key={`t${last}`}>{text.slice(last, a)}</Sci>)
+    out.push(
+      <mark key={`m${a}`} className="rounded-[2px] bg-[hsl(var(--link)/0.16)] text-inherit">
+        <Sci>{text.slice(a, b)}</Sci>
+      </mark>,
+    )
+    last = b
+  }
+  if (last < text.length) out.push(<Sci key={`t${last}`}>{text.slice(last)}</Sci>)
+  return <>{out}</>
 }
 
 const fill = (template: string, values: Record<string, string | number>) =>
@@ -60,11 +115,13 @@ export default function CommandPalette({
   const [query, setQuery] = useState("")
   const [active, setActive] = useState(0)
   const [announce, setAnnounce] = useState("")
+  const [recent, setRecent] = useState<SearchEntry[]>([])
 
   useEffect(() => {
     const el = dialog.current
     if (el && !el.open) el.showModal()
     input.current?.focus()
+    setRecent(readRecent(lang))
     let live = true
     loadIndex(lang).then(
       (i) => live && setIndex(i),
@@ -75,12 +132,24 @@ export default function CommandPalette({
     }
   }, [lang])
 
-  // Results, or with nothing typed yet, the site's pages as suggestions.
-  const groups: Group[] = useMemo(() => {
+  // Results; or with nothing typed yet, recent, suggested and the pages.
+  const groups: Shown[] = useMemo(() => {
     if (!index) return []
-    if (!query.trim()) return [{ type: "page", entries: index.items.filter((i) => i.entry.t === "page").map((i) => i.entry) }]
-    return search(index, query)
-  }, [index, query])
+    if (!query.trim()) {
+      const byHref = new Map(index.items.map((i) => [i.entry.h, i.entry]))
+      // A recent entry is shown as the index has it now, if it still exists.
+      const recentNow = recent.map((e) => (e.x ? e : byHref.get(e.h))).filter((e): e is SearchEntry => Boolean(e))
+      const seen = new Set(recentNow.map((e) => e.h))
+      const suggested = SUGGESTED.map((h) => byHref.get(localHref(lang, h))).filter((e): e is SearchEntry => Boolean(e) && !seen.has(e!.h))
+      const pages = index.items.filter((i) => i.entry.t === "page").map((i) => i.entry)
+      return [
+        { id: "recent", title: strings.recent, entries: recentNow },
+        { id: "suggested", title: strings.popular, entries: suggested },
+        { id: "pages", title: strings.pages, entries: pages },
+      ].filter((g) => g.entries.length > 0)
+    }
+    return search(index, query).map((g) => ({ id: g.type, title: strings.groups[g.type] ?? g.type, entries: g.entries }))
+  }, [index, query, recent, lang, strings])
   const flat = useMemo(() => groups.flatMap((g) => g.entries), [groups])
   const optionId = (i: number) => `${uid}-opt-${i}`
 
@@ -109,6 +178,7 @@ export default function CommandPalette({
 
   const go = (entry: SearchEntry | undefined) => {
     if (!entry) return
+    remember(lang, entry)
     if (entry.x) window.open(entry.h, "_blank", "noopener,noreferrer")
     else router.push(entry.h)
     close()
@@ -116,7 +186,12 @@ export default function CommandPalette({
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.nativeEvent.isComposing) return
-    if (e.key === "ArrowDown") {
+    if (e.key === "Escape") {
+      // One Escape closes, typed text or not: a search field would clear
+      // itself first and need a second.
+      e.preventDefault()
+      close()
+    } else if (e.key === "ArrowDown") {
       e.preventDefault()
       setActive((a) => (flat.length ? (a + 1) % flat.length : 0))
     } else if (e.key === "ArrowUp") {
@@ -184,7 +259,7 @@ export default function CommandPalette({
           <button
             type="button"
             onClick={close}
-            className="inline-flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-md px-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            className="-mr-1 inline-flex h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-md px-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           >
             <X aria-hidden className="h-4 w-4 sm:hidden" />
             <span className="sr-only sm:not-sr-only">
@@ -200,17 +275,36 @@ export default function CommandPalette({
           {!index && !failed && <p className="px-3 py-6 text-sm text-muted-foreground">{strings.loading}</p>}
           {failed && <p className="px-3 py-6 text-sm text-muted-foreground">{strings.error}</p>}
           {index && query.trim() && flat.length === 0 && (
-            <p className="px-3 py-6 text-sm text-muted-foreground">{fill(strings.none, { q: query.trim() })}</p>
+            <p className="px-3 pb-2 pt-6 text-sm text-muted-foreground">{fill(strings.none, { q: query.trim() })}</p>
+          )}
+          {/* Somewhere to start, with nothing typed or nothing found. */}
+          {index && (!query.trim() || flat.length === 0) && (
+            <p className="flex flex-wrap items-center gap-x-1.5 gap-y-1 px-3 pb-2 pt-2 text-sm text-muted-foreground">
+              <span>{strings.tryLabel}</span>
+              {strings.tryQueries.map((q) => (
+                <button
+                  key={q}
+                  type="button"
+                  onClick={() => {
+                    setQuery(q)
+                    input.current?.focus()
+                  }}
+                  className="inline-flex min-h-9 items-center rounded-full border border-border px-3 text-foreground transition-colors hover:bg-accent"
+                >
+                  {q}
+                </button>
+              ))}
+            </p>
           )}
           <div id={`${uid}-list`} role="listbox" aria-label={strings.title} hidden={!expanded}>
             {groups.map((group) => (
-              <div key={group.type} role="group" aria-labelledby={`${uid}-g-${group.type}`} className="pb-2">
+              <div key={group.id} role="group" aria-labelledby={`${uid}-g-${group.id}`} className="pb-2">
                 <div
-                  id={`${uid}-g-${group.type}`}
+                  id={`${uid}-g-${group.id}`}
                   role="presentation"
                   className="px-3 pb-1 pt-2 text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground"
                 >
-                  {query.trim() ? (strings.groups[group.type] ?? group.type) : strings.suggestions}
+                  {group.title}
                 </div>
                 {group.entries.map((entry) => {
                   n++
@@ -233,7 +327,7 @@ export default function CommandPalette({
                           lang={lang !== "en" && /^(note|section|publication)$/.test(entry.t) ? "en" : undefined}
                           className="truncate text-[0.9375rem] font-medium text-foreground"
                         >
-                          <Sci>{entry.l}</Sci>
+                          <Highlighted text={entry.l} query={query} />
                           {entry.x && (
                             <>
                               <ArrowUpRight aria-hidden className="ml-1 inline h-3.5 w-3.5 align-[-0.1em] text-muted-foreground" />
@@ -247,6 +341,10 @@ export default function CommandPalette({
                           </div>
                         )}
                       </div>
+                      {/* What kind of thing it is, in a word. */}
+                      <span className="hidden shrink-0 text-xs text-muted-foreground [@media(min-width:22.5em)]:inline">
+                        {strings.types[entry.t] ?? entry.t}
+                      </span>
                       <CornerDownLeft aria-hidden className={`h-4 w-4 shrink-0 text-muted-foreground ${on ? "opacity-100" : "opacity-0"}`} />
                     </div>
                   )

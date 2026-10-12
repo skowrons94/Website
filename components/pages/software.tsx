@@ -51,7 +51,9 @@ function Entry({ entry, lang }: { entry: SoftwareEntry; lang: Lang }) {
                 {entry.uses.map((use, i) => (
                   <li key={i} className="flex gap-2.5">
                     <span className="select-none text-muted-foreground/50">—</span>
-                    <span className="text-pretty">
+                    {/* min-w-0: a long word ("contemporaneamente" at 200% text)
+                        breaks rather than widening the page. */}
+                    <span className="min-w-0 hyphens-auto text-pretty">
                       <Sci>{use}</Sci>
                     </span>
                   </li>

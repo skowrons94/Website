@@ -8,10 +8,20 @@
  *
  *   node scripts/search-index.mjs [--out public/search]
  *
- * Each entry is { t: type, l: label, s: subtitle, h: href, k: keys, x?: 1 }:
- * `href` is site-relative without the base path (the client adds it), `keys`
- * is extra text that should find the entry but is not shown (aliases, the
- * other language's names, a note's headings), and `x` marks an external link.
+ * Each entry is { t: type, l: label, s: subtitle, h: href, k: keys,
+ * a?: aliases, n?: names, b?: body, w?: weight, x?: 1 }:
+ *   h  site-relative, without the base path (the client adds it);
+ *   k  hidden text that also finds it: spellings, the other language's names,
+ *      a note's headings;
+ *   a  what people type for it that the site does not call it ("underground",
+ *      "gold", "Hoyle state": SYNONYMS below), and any `aliases:` or
+ *      `keywords:` its YAML gives it; worth nearly as much as the label;
+ *   n  a reaction's target and product written out ("14N · N14 ·
+ *      nitrogen-14 · azoto … | 15O · …", target first), worth as much as the
+ *      label, the target more than the product;
+ *   b  the distinct words of its own text (a reaction's summary, role and
+ *      details; a definition), worth least;
+ *   x  an external link.
  * Labels keep their Unicode (¹⁴N(p,γ)¹⁵O); the client folds both sides of a
  * comparison to plain ASCII, so "14N(p,g)", "N14" or "nitrogen-14" all match.
  */
@@ -42,6 +52,118 @@ const short = (text, max = 140) => {
   return first.length > max ? `${first.slice(0, max - 1).replace(/\s+\S*$/, "")}…` : first
 }
 
+// Words too common to find anything with; left out of an entry's body.
+const STOP = new Set(
+  (
+    "the and for are was were that this with from into its it's has have had not but can than then them they their there which what when where who how why also only more most such these those will would been being each other over under about after before between both very much many some any all one two three per via upon "
+    + "il lo la gli le un una uno del della dello dei degli delle nel nella nei nelle nello sul sulla sui sulle con per tra fra che non come anche più meno sono era erano essere stato stata questo questa questi queste quello quella quelli quelle cui dove quando perché solo ogni altro altri altre poi già così molto molti molte due tre"
+  ).split(" "),
+)
+
+/**
+ * The distinct words of `texts`, for the hidden `body` field: what finds an
+ * entry by what it says rather than by its name ("Hoyle state", "kilonova").
+ * Markdown links and emphasis are dropped; case is kept as first seen, since
+ * the client folds both sides anyway.
+ */
+function bodyWords(...texts) {
+  const seen = new Set()
+  const out = []
+  for (const text of texts.flat(Infinity)) {
+    const plain = clean(text).replace(/\[([^\]]+)\]\([^)]*\)/g, "$1").replace(/[*_`$\\{}]/g, " ")
+    for (const raw of plain.split(/[\s.,;:!?()"“”«»'’\[\]/=]+|[-‐–—](?![\d])/)) {
+      const w = raw.replace(/^[^\p{L}\p{N}⁰¹²³⁴⁵⁶⁷⁸⁹]+|[^\p{L}\p{N}⁰¹²³⁴⁵⁶⁷⁸⁹ᵐ]+$/gu, "")
+      if (w.length < 3 && !/\d/.test(w)) continue
+      // Bare numbers and ranges find nothing anyone types.
+      if (!/[\p{L}]/u.test(w)) continue
+      const key = w.toLowerCase()
+      if (STOP.has(key) || seen.has(key)) continue
+      seen.add(key)
+      out.push(w)
+    }
+  }
+  return out.join(" ")
+}
+
+/** A YAML value that may be a string, a list, or absent, as a list. */
+const list = (v) => (Array.isArray(v) ? v : v == null || v === "" ? [] : [v]).map(String)
+
+/**
+ * Optional `aliases:` / `keywords:` on a content entry (in either language:
+ * `aliases_it` too), read straight from the YAML so that the search finds an
+ * entry by them whether or not the atlas passes them through.
+ */
+const extraKeys = (data) =>
+  data && typeof data === "object"
+    ? Object.keys(data)
+        .filter((k) => /^(aliases|keywords)(_[a-z]{2})?$/.test(k))
+        .flatMap((k) => list(data[k]))
+    : []
+
+/* -- synonyms ----------------------------------------------------------------- */
+
+// What people type when they do not know the site's own word for a thing, by
+// the (English, unlocalized) address of the entry it should find. Both
+// languages in every line: a reader on the Italian site may type English and
+// the other way round.
+const UNDERGROUND = "underground · deep underground · why underground · sottoterra · sotto terra · sotterraneo · sotterranea · perché sottoterra · Gran Sasso · LNGS · cosmic rays · raggi cosmici · muons · muoni"
+const SUN = "Sun · solar · the Sun · Sole · solare · il Sole · solar neutrinos · neutrini solari · how the Sun shines · come brilla il Sole"
+const GOLD = "gold · oro · Au · heavy elements · elementi pesanti"
+const CARBON_FUSION = "12C+12C · ¹²C+¹²C · 12C12C · C+C · carbon fusion · carbon–carbon fusion · fusione del carbonio · fusione carbonio-carbonio · carbon burning · combustione del carbonio"
+const S_PROCESS = "isomer · isomers · isomeric state · isomero · isomeri · stato isomerico · branch point · branching · punto di diramazione · s-only · solo s · bound-state beta decay · bound-state β decay · decadimento beta in stato legato · stellar half-life · temperature-dependent half-life · tempo di dimezzamento stellare · thermometer · termometro · neutron capture · cattura di neutroni · AGB · slow neutron capture"
+const SYNONYMS = {
+  "/atlas/methods#direct-underground": UNDERGROUND,
+  "/glossary#luna": UNDERGROUND,
+  "/research#luna": UNDERGROUND,
+  "/atlas/methods#luna-400": UNDERGROUND,
+  "/atlas/methods#luna-50": UNDERGROUND,
+  "/atlas/methods#bellotti-ibf": UNDERGROUND,
+  "/atlas/methods": "laboratories · laboratori · how reactions are measured · come si misurano le reazioni",
+  "/atlas#pp": SUN + " · hydrogen burning · combustione dell'idrogeno",
+  "/atlas#cno": "Sun · solar · Sole · solare · CNO neutrinos · neutrini CNO · Bethe",
+  "/atlas/14N-pg-15O": "CNO neutrinos · neutrini CNO · slowest step · passo più lento",
+  "/atlas/7Be-pg-8B": "solar neutrinos · neutrini solari · boron-8 neutrinos · neutrini del boro-8",
+  "/atlas/1H-pp-2H": "first step · primo passo",
+  "/atlas/s-process": `${GOLD} · ${S_PROCESS}`,
+  "/atlas/197Au-ng-198Au": GOLD,
+  "/glossary#s-process": "gold · oro · heavy elements · elementi pesanti · slow neutron capture",
+  "/glossary#branch-point": "isomer · isomero · bound-state beta decay · decadimento beta in stato legato · stellar half-life · thermometer · termometro",
+  "/glossary#half-life": "bound-state beta decay · bound-state β decay · decadimento beta in stato legato · stellar half-life · tempo di dimezzamento stellare · ionised atoms · atomi ionizzati",
+  "/glossary#s-only": "s-only · s only · solo s · r-only · solo r · shielded · schermati",
+  "/glossary#r-process": "kilonova · kilonovae · neutron star merger · fusione di stelle di neutroni · GW170817 · rapid neutron capture · cattura rapida di neutroni · supernova",
+  "/atlas#carbon": `${CARBON_FUSION} · supernova · type Ia supernova · supernova di tipo Ia · superburst`,
+  "/atlas/12C-12Ca-20Ne": CARBON_FUSION,
+  "/atlas/12C-12Cp-23Na": CARBON_FUSION,
+  "/atlas/12C-12Cn-23Mg": CARBON_FUSION,
+  "/atlas/12C-ag-16O": "carbon to oxygen ratio · rapporto carbonio ossigeno",
+  "/atlas/4He-aa-12C": "Hoyle state · Hoyle · stato di Hoyle · triple alpha · triple-α · tre alfa · 3α · carbon production · produzione del carbonio",
+  "/atlas#he": "Hoyle state · stato di Hoyle · triple alpha · tre alfa · red giant · gigante rossa",
+  "/glossary#gamow-window": "Gamow peak · picco di Gamow · Gamow energy · energia di Gamow",
+  "/glossary#electron-screening": "screening · schermaggio · CRYRING",
+  "/research#agata": "lifetime · vita media · DSAM · Doppler · gamma-ray tracking · tracciamento",
+}
+const synonyms = (href) => SYNONYMS[href] ?? ""
+
+/**
+ * The nuclides the s-process page discusses (¹⁷⁶Lu, ¹⁵¹Sm, ⁸⁵Kr…), read off
+ * the page's own text so that a reader looking for one finds the page.
+ */
+function sProcessNuclides() {
+  const file = path.join(ROOT, "components", "pages", "s-process.tsx")
+  if (!fs.existsSync(file)) return []
+  const text = fs.readFileSync(file, "utf8")
+  const out = new Set()
+  for (const m of text.matchAll(/([⁰¹²³⁴⁵⁶⁷⁸⁹]{1,3})([A-Z][a-z]?)(ᵐ)?/g)) {
+    const digits = [...m[1]].map((c) => Object.keys(SUP).find((k) => SUP[k] === c)).join("")
+    // The heavy ones only: ¹⁴N or ⁷Be in passing should not find this page.
+    if ((parseParticle(`${digits}${m[2]}`)?.Z ?? 0) < 26) continue
+    out.add(`${m[1]}${m[2]}`)
+    out.add(`${digits}${m[2]}`)
+    out.add(`${m[2]}${digits}`)
+  }
+  return [...out]
+}
+
 /* -- pages ----------------------------------------------------------------- */
 
 // Titles and one-line descriptions, as in the header menu (lib/i18n.ts,
@@ -52,7 +174,7 @@ const PAGES = [
   { href: "/", en: ["Home", "Who I am and what I work on"], it: ["Home", "Chi sono e di cosa mi occupo"], k: "start landing index" },
   { href: "/research", en: ["Research", "Underground measurements, R-matrix theory, γ-ray tracking"], it: ["Ricerca", "Misure sotterranee, teoria R-matrix, tracciamento dei raggi γ"], k: "research ricerca luna agata" },
   { href: "/atlas", en: ["Reaction atlas", "The reactions that power stars, on the chart of nuclides"], it: ["Atlante delle reazioni", "Le reazioni che alimentano le stelle, sulla carta dei nuclidi"], k: "atlas atlante map mappa chart carta nuclides nuclidi network rete" },
-  { href: "/evaluations", en: ["Evaluations", "Live R-matrix fits you can adjust"], it: ["Valutazioni", "Fit R-matrix dal vivo, da modificare"], k: "evaluations valutazioni azure2 r-matrix fit live" },
+  { href: "/evaluations", en: ["Evaluations", "Live R-matrix fits you can adjust"], it: ["Valutazioni", "Modelli R-matrix da esplorare dal vivo"], k: "evaluations valutazioni azure2 r-matrix fit live" },
   { href: "/publications", en: ["Publications", "Articles and conference proceedings"], it: ["Pubblicazioni", "Articoli e atti di congressi"], k: "publications pubblicazioni papers articoli bibliography" },
   { href: "/cv", en: ["CV", "Employment, education, talks and teaching"], it: ["CV", "Impieghi, formazione, seminari e didattica"], k: "cv curriculum vitae resume" },
   { href: "/software", en: ["Software", "AZURE2, LunaSRIM and other code"], it: ["Software", "AZURE2, LunaSRIM e altro codice"], k: "software code codice azure2 lunasrim srim github" },
@@ -102,17 +224,16 @@ const KIND_WORDS = {
   decay: ["decay", "decadimento", "beta decay", "decadimento beta", "radioactive", "radioattivo"],
 }
 
-function reactionEntries(atlas, other, lang) {
+function reactionEntries(atlas, other, lang, raw) {
   return atlas.reactions.map((r) => {
     const o = other.reactions.find((x) => x.id === r.id)
+    const data = raw.reactions?.find((x) => x.data?.id === r.id)?.data
     const label = r.label
     const ascii = label.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+/g, (s) => [...s].map((c) => Object.keys(SUP).find((k) => SUP[k] === c)).join(""))
     const keys = [
       r.id,
       r.id.replace(/-/g, " "),
       ascii,
-      ...nuclideAliases(r.target),
-      ...nuclideAliases(r.product),
       ...channelAliases(label),
       r.plain,
       o?.plain,
@@ -122,12 +243,17 @@ function reactionEntries(atlas, other, lang) {
       r.luna ? "LUNA" : "",
       ...(KIND_WORDS[r.kind] ?? []),
     ]
+    // Target first, then product: "N14" finds ¹⁴N(p,γ)¹⁵O before ¹³C(p,γ)¹⁴N.
+    const names = [nuclideAliases(r.target), nuclideAliases(r.product)].map((a) => [...new Set(a)].join(" · "))
     return {
       t: "reaction",
       l: label,
       s: short(r.summary || r.role || r.plain, 110),
       h: loc(lang, `/atlas/${r.id}`),
       k: clean([...new Set(keys.filter(Boolean))].join(" · ")),
+      n: names.join(" | "),
+      a: clean(extraKeys(data).join(" · ")),
+      b: bodyWords(r.summary, r.role, r.details, r.statusPlain, r.statusNote),
       ...(r.importance === "key" ? { w: 2 } : r.importance === "major" ? { w: 1 } : {}),
     }
   })
@@ -156,7 +282,9 @@ function evaluationEntries(lang) {
     out.push({
       t: "evaluation",
       l: `${display}: ${reactions.join(", ")}`,
-      s: short(summary || [paper.authors, paper.journal].filter(Boolean).join(", "), 110),
+      // The summary's first sentence; else the paper, whole ("Phys. Rev. C"
+      // is not the end of a sentence).
+      s: summary ? short(summary, 110) : clean([paper.authors, paper.journal, paper.year].filter(Boolean).join(", ")),
       h: loc(lang, `/evaluations/${id}`),
       k: clean(
         [
@@ -220,7 +348,8 @@ function build(lang) {
 
   for (const p of PAGES) {
     const [label, sub] = p[lang]
-    entries.push({ t: "page", l: label, s: sub, h: loc(lang, p.href), k: clean(`${p[other][0]} · ${p.k}`) })
+    const extra = p.href === "/atlas/s-process" ? sProcessNuclides().join(" · ") : ""
+    entries.push({ t: "page", l: label, s: sub, h: loc(lang, p.href), k: clean([p[other][0], p.k, extra].filter(Boolean).join(" · ")) })
   }
 
   // The processes (CNO cycles, helium burning…): the map opened on them, or
@@ -236,10 +365,11 @@ function build(lang) {
       s: short(f.summary, 110),
       h: loc(lang, f.page || `/atlas#${f.id}`),
       k: clean([f.id, o?.name, ...networks.map((n) => n.name), ...atlasOther.networks.filter((n) => n.family === f.id).map((n) => n.name)].filter(Boolean).join(" · ")),
+      b: bodyWords(f.summary, networks.map((n) => n.summary)),
     })
   }
 
-  entries.push(...reactionEntries(atlas, atlasOther, lang))
+  entries.push(...reactionEntries(atlas, atlasOther, lang, raw))
   entries.push(...evaluationEntries(lang))
 
   for (const term of atlas.glossary ?? []) {
@@ -249,7 +379,13 @@ function build(lang) {
       l: clean(term.term),
       s: short(term.text, 120),
       h: loc(lang, `/glossary#${term.id}`),
-      k: clean([term.also, o?.term, o?.also, term.id.replace(/-/g, " ")].filter(Boolean).join(" · ")),
+      k: clean(
+        [term.also, o?.term, o?.also, term.id.replace(/-/g, " ")]
+          .filter(Boolean)
+          .join(" · "),
+      ),
+      a: clean(extraKeys(raw.glossary?.terms?.find((x) => x.id === term.id)).join(" · ")),
+      b: bodyWords(term.text),
     })
   }
 
@@ -257,7 +393,14 @@ function build(lang) {
 
   for (const m of atlas.methods ?? []) {
     const o = atlasOther.methods?.find((x) => x.id === m.id)
-    entries.push({ t: "method", l: clean(m.name), s: short(m.summary, 110), h: loc(lang, `/atlas/methods#${m.id}`), k: clean([o?.name, m.id.replace(/-/g, " ")].join(" · ")) })
+    entries.push({
+      t: "method",
+      l: clean(m.name),
+      s: short(m.summary, 110),
+      h: loc(lang, `/atlas/methods#${m.id}`),
+      k: clean([o?.name, m.id.replace(/-/g, " ")].filter(Boolean).join(" · ")),
+      b: bodyWords(m.summary, m.details, m.strengths, m.limits),
+    })
   }
   for (const f of atlas.facilities ?? []) {
     entries.push({
@@ -265,7 +408,7 @@ function build(lang) {
       l: clean(f.name),
       s: short([f.lab, f.location, f.country].filter(Boolean).join(", "), 110),
       h: loc(lang, `/atlas/methods#${f.id}`),
-      k: clean([f.id.replace(/-/g, " "), f.accelerator, f.underground ? "underground sotterraneo" : "", f.luna ? "LUNA" : ""].join(" · ")),
+      k: clean([f.id.replace(/-/g, " "), f.accelerator, f.underground ? "underground sotterraneo sottoterra" : "", f.luna ? "LUNA" : ""].join(" · ")),
     })
   }
 
@@ -279,6 +422,21 @@ function build(lang) {
       s: short(thread.summary, 120),
       h: loc(lang, `/research#${thread.id}`),
       k: clean([thread.role, thread.venue, o?.title].filter(Boolean).join(" · ")),
+      b: bodyWords(thread.summary, thread.body, thread.highlights ?? []),
+    })
+  }
+
+  // "What comes next", the research outlook at the end of /research.
+  const outlook = readYaml("research.yaml", lang).outlook
+  if (outlook?.title) {
+    const o = readYaml("research.yaml", other).outlook
+    entries.push({
+      t: "research",
+      l: clean(outlook.title),
+      s: short(outlook.line || outlook.intro, 120),
+      h: loc(lang, "/research#outlook"),
+      k: clean([o?.title, "outlook research statement future plans prospettive programma futuro"].filter(Boolean).join(" · ")),
+      b: bodyWords(outlook.intro, (outlook.items ?? []).map((i) => [i.lead, i.text])),
     })
   }
 
@@ -300,7 +458,14 @@ function build(lang) {
 
 fs.mkdirSync(OUT, { recursive: true })
 for (const lang of LANGS) {
-  const entries = build(lang)
+  const entries = build(lang).map((e) => {
+    // The synonyms, by the entry's English address; with any `aliases:` the
+    // content gave it, in `a`.
+    const base = e.x ? e.h : e.h === "/it" ? "/" : e.h.replace(/^\/it(?=\/)/, "")
+    const a = clean([e.a, synonyms(base)].filter(Boolean).join(" · "))
+    const { a: _, ...rest } = e
+    return a ? { ...rest, a } : rest
+  })
   const json = JSON.stringify({ v: 1, entries })
   fs.writeFileSync(path.join(OUT, `${lang}.json`), json)
   console.log(`search index: ${entries.length} entries → ${path.relative(ROOT, path.join(OUT, `${lang}.json`))} (${(json.length / 1024).toFixed(0)} kB)`)

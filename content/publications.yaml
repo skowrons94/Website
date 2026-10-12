@@ -2,18 +2,35 @@
 # file order is kept, so put a new same-year paper where you want it to appear.
 #
 #   kind:      article | proceedings   (anything else becomes its own section)
-#   highlight: true                    marks it as a first-author / key paper
+#   corresponding: true                I am the corresponding author
+#   role:      my part in it, when that is more than an author's and the author
+#              list does not show it (role_it in Italian); shown under the authors
 #   status:    shown instead of the journal, for anything not yet out
 #   status_it: the same, in Italian, for /it/publications (titles stay as published)
 #   tags:      [luna] for a paper of the LUNA collaboration (measured at, or about,
 #              the LUNA accelerators); drives the "LUNA" filter. Tag only what is
 #              certain: LUNA in the title, the atlas' LUNA flag, or the paper itself.
+#
+# The papers marked on /publications (a rule at the left) are not chosen by
+# hand: those with "J. Skowronski" first, second or third in `authors` (fourth or
+# fifth when the full author list is given, without "et al."), those marked
+# `corresponding: true`, and those with a `role` (lib/content.ts, isKeyPaper).
 
 publications:
   - kind: article
-    highlight: true
+    authors: J. Skowronski, R. J. deBoer, T. Szücs
+    title: Complete ⁷Be evaluation
+    status: submitted to Physical Review C
+    status_it: inviato a Physical Review C
+    year: 2026
+
+  - kind: article
     authors: E. Pilotto, J. Skowronski, et al.
     title: The CNO Cycle in the Sun Constrained by a Novel Lifetime Measurement with AGATA
+    # experience.yaml (AGATA) and research.yaml (agata): spokesperson of the
+    # measurement, and led the full analysis.
+    role: Spokesperson of the measurement and analysis lead
+    role_it: Spokesperson della misura e responsabile dell'analisi
     status: under review at Nature Physics
     status_it: in revisione presso Nature Physics
     year: 2026
@@ -32,14 +49,6 @@ publications:
     doi: 10.1016/j.nima.2026.171767
     year: 2026
     tags: [luna]
-
-  - kind: article
-    highlight: true
-    authors: J. Cruz, D. Neves, J. Skowronski, et al.
-    title: Experimental determination of the ²³Na(p,p)²³Na excitation function from 2.1 to 4.1 MeV
-    journal: Eur. Phys. J. A 62, 75
-    doi: 10.1140/epja/s10050-026-01847-y
-    year: 2026
 
   - kind: article
     authors: R. J. deBoer, et al.
@@ -65,7 +74,6 @@ publications:
     tags: [luna]
 
   - kind: article
-    highlight: true
     authors: K. Linkowski, R. S. Sidhu, J. Skowronski, et al.
     title: Energy calibration of the 2.5 MV Pelletron at the Dalton Cumbrian Facility
     journal: Eur. Phys. J. A 61, 155
@@ -83,7 +91,6 @@ publications:
     tags: [luna]
 
   - kind: article
-    highlight: true
     authors: E. Pilotto, F. J. Ferrer, J. Skowronski, et al.
     title: Comparing He content in magnetron sputtered and implanted targets for nuclear studies
     journal: Eur. Phys. J. A 61, 117
@@ -91,7 +98,6 @@ publications:
     year: 2025
 
   - kind: article
-    highlight: true
     authors: J. Skowronski, D. Piatti, A. Caciolli, S. Turkat, et al.
     title: >-
       Improved S factor of the ¹³C(p,γ)¹⁴N reaction at Eₚ = 330–740 keV and
@@ -101,7 +107,6 @@ publications:
     year: 2025
 
   - kind: article
-    highlight: true
     authors: J. Skowronski, et al.
     title: "A comparative analysis of R-matrix fitting: ¹²C(p,γ)¹³N as test case"
     journal: Phys. Rev. C 111, 035802
@@ -173,7 +178,6 @@ publications:
     year: 2024
 
   - kind: article
-    highlight: true
     authors: J. Skowronski, et al.
     title: Proton-capture rates on carbon isotopes and their impact on the astrophysical ¹²C/¹³C ratio
     journal: Phys. Rev. Lett. 131, 162701
@@ -182,7 +186,6 @@ publications:
     tags: [luna]
 
   - kind: article
-    highlight: true
     authors: J. Skowronski, et al.
     title: Advances in radiative capture studies at LUNA with a segmented BGO detector
     journal: J. Phys. G, Nucl. Part. Phys. 50, 045201
@@ -191,7 +194,6 @@ publications:
     tags: [luna]
 
   - kind: article
-    highlight: true
     authors: J. Skowronski, et al.
     title: Improved S-factor of the ¹²C(p,γ)¹³N reaction at E = 320–620 keV and the 422 keV resonance
     journal: Phys. Rev. C 107, L062801
@@ -199,7 +201,6 @@ publications:
     year: 2023
 
   - kind: article
-    highlight: true
     authors: E. Masha, L. Barbieri, J. Skowronski, et al.
     title: >-
       First measurement of the low-energy direct capture in ²⁰Ne(p,γ)²¹Na and improved
@@ -247,7 +248,6 @@ publications:
     year: 2021
 
   - kind: proceedings
-    highlight: true
     authors: J. Skowronski, et al.
     title: Low-energy cross section measurements of ¹²C(p,γ) deep underground at LUNA
     journal: EPJ Web Conf. 279, 03002
@@ -256,7 +256,6 @@ publications:
     tags: [luna]
 
   - kind: proceedings
-    highlight: true
     authors: D. Rapagnani, J. Skowronski, et al.
     title: Study of proton capture on carbon-13 isotope at LUNA
     journal: J. Phys. Conf. Ser. 2586, 012103
@@ -265,7 +264,6 @@ publications:
     tags: [luna]
 
   - kind: proceedings
-    highlight: true
     authors: J. Skowronski, et al.
     title: Measurement and analysis techniques for a study of ¹²C(p,γ) and ¹³C(p,γ) deep underground
     journal: EPJ Web Conf. 260, 11008

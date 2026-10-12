@@ -120,6 +120,29 @@ const en = {
       facility: "Laboratories",
       publication: "Publications",
     } as Record<string, string>,
+    // --- site (round 4) ---
+    // One word per result, beside it: what kind of thing it is.
+    types: {
+      page: "Page",
+      process: "Process",
+      reaction: "Reaction",
+      evaluation: "Evaluation",
+      glossary: "Glossary",
+      note: "Note",
+      section: "Note",
+      research: "Research",
+      method: "Method",
+      facility: "Laboratory",
+      publication: "Paper",
+    } as Record<string, string>,
+    // Before anything is typed.
+    tryLabel: "Try:",
+    // Each is typed into the field when chosen.
+    tryQueries: ["LUNA", "Sun", "s-process"],
+    recent: "Recent",
+    // A fixed list of good starting points (not counted from searches).
+    popular: "Suggested",
+    pages: "Pages",
   },
   notFound: {
     title: "Page not found",
@@ -167,6 +190,33 @@ const en = {
     legendDecay: "β⁺ decay: a proton turns into a neutron",
     legendClose: "proton in, helium out: back to carbon",
     selectedPapers: "Selected papers",
+    // --- site (round 4) ---
+    rolesTitle: "Roles and recognition",
+    rolesMore: "All of it in the CV",
+    resourcesTitle: "Resources for the community",
+    resourcesLead: "Open, dated and citable: what this site offers anyone working on these reactions.",
+    resourceAtlas: "Reaction atlas",
+    resourceAtlasText: (n: number) => `${n} reactions of stellar burning and the Big Bang on the chart of nuclides: what each does, how well its rate is known, who measured it and how.`,
+    resourceSProcess: "The s-process",
+    resourceSProcessText: "How stars make half the elements heavier than iron, on the chart from iron to bismuth.",
+    resourceSProcessMeta: "Part of the atlas, cited as the atlas",
+    resourceEvaluations: "R-matrix evaluations",
+    resourceEvaluationsText: (n: number) => `${n} published R-matrix evaluations running AZURE2 in the browser, with their input files to download and run locally.`,
+    resourceEvaluationsMeta: "How to cite: on each evaluation's page",
+    resourceNotes: "Notes",
+    resourceNotesText: (n: number) => `${n} notes on R-matrix theory, each with a worked example on a real reaction (in English).`,
+    resourceGlossary: "Glossary",
+    resourceGlossaryText: (n: number) => `${n} terms of nuclear astrophysics in plain language, in English and Italian.`,
+    licence: (l: string) => `${l} licence`,
+    version: (v: string) => `version ${v}`,
+    howToCite: "How to cite",
+    // The broader-impact line, with the outreach in experience.yaml.
+    impactBefore: "The atlas, the glossary and the evaluations are also in ",
+    impactLink: "Italian",
+    impactAfter:
+      ", for students and the public as well as specialists. Outreach so far includes Stelle sulla Terra, nuclear astrophysics for children with disabilities (2024), and courses on nuclear astrophysics for high-school students (PCTO, 2021–2022): ",
+    impactCv: "outreach in the CV",
+    outlookMore: "What comes next →",
   },
 
   /* -- research ----------------------------------------------------------- */
@@ -202,7 +252,7 @@ const en = {
     description:
       "Peer-reviewed articles and conference proceedings by Jakub Skowronski in experimental nuclear astrophysics.",
     lead: (articles: number, proceedings: number, review: number) =>
-      `${articles} peer-reviewed articles and ${proceedings} conference proceedings${review ? `, and ${review} more under review` : ""}. Entries marked with a rule are those I authored or co-authored in a leading role.`,
+      `${articles} peer-reviewed articles and ${proceedings} conference proceedings${review ? `, and ${review} more under review` : ""}. A rule marks my key papers: those on which I am among the first authors or the corresponding author, and those where my role is given beside the authors.`,
     sections: { article: "Research articles", proceedings: "Conference proceedings" } as Record<string, string>,
     // --- site ---
     profiles: "Complete and current lists, with citations:",
@@ -884,17 +934,17 @@ const it: Dictionary = {
     switchTo: "Leggi questa pagina in italiano",
     // --- site (round 3) ---
     home: "Home",
-    learn: "Approfondire",
+    learn: "Approfondimenti",
     glossary: "Glossario",
     methods: "Metodi e laboratori",
     methodsShort: "Metodi",
     timeline: "Cronologia",
     sProcess: "Il processo s",
-    groups: { work: "Lavoro", explore: "Esplorare", learn: "Approfondire" },
+    groups: { work: "Lavoro", explore: "Esplorare", learn: "Approfondimenti" },
     descriptions: {
       research: "Misure sotterranee, teoria R-matrix, tracciamento dei raggi γ",
       atlas: "Le reazioni che alimentano le stelle, sulla carta dei nuclidi",
-      evaluations: "Fit R-matrix dal vivo, da modificare",
+      evaluations: "Modelli R-matrix da esplorare dal vivo",
       publications: "Articoli e atti di congressi",
       cv: "Impieghi, formazione, seminari e didattica",
       software: "AZURE2, LunaSRIM e altro codice",
@@ -945,11 +995,30 @@ const it: Dictionary = {
       glossary: "Glossario",
       note: "Note",
       section: "Sezioni delle note",
-      research: "Ricerca",
+      research: "Attività di ricerca",
       method: "Metodi",
       facility: "Laboratori",
       publication: "Pubblicazioni",
     } as Record<string, string>,
+    // --- site (round 4) ---
+    types: {
+      page: "Pagina",
+      process: "Processo",
+      reaction: "Reazione",
+      evaluation: "Valutazione",
+      glossary: "Glossario",
+      note: "Nota",
+      section: "Nota",
+      research: "Ricerca",
+      method: "Metodo",
+      facility: "Laboratorio",
+      publication: "Articolo",
+    } as Record<string, string>,
+    tryLabel: "Prova:",
+    tryQueries: ["LUNA", "Sole", "processo s"],
+    recent: "Recenti",
+    popular: "Suggeriti",
+    pages: "Pagine",
   },
   notFound: {
     title: "Pagina non trovata",
@@ -1001,6 +1070,32 @@ const it: Dictionary = {
     legendDecay: "decadimento β⁺: un protone diventa un neutrone",
     legendClose: "entra un protone, esce un elio: di nuovo carbonio",
     selectedPapers: "Articoli scelti",
+    // --- site (round 4) ---
+    rolesTitle: "Ruoli e riconoscimenti",
+    rolesMore: "Tutto nel CV",
+    resourcesTitle: "Risorse per la comunità",
+    resourcesLead: "Aperte, datate e citabili: ciò che questo sito offre a chi lavora su queste reazioni.",
+    resourceAtlas: "Atlante delle reazioni",
+    resourceAtlasText: (n: number) => `${n} reazioni della combustione stellare e del Big Bang sulla carta dei nuclidi: che cosa fa ciascuna, quanto bene se ne conosce il tasso, chi l'ha misurata e come.`,
+    resourceSProcess: "Il processo s",
+    resourceSProcessText: "Come le stelle producono metà degli elementi più pesanti del ferro, sulla carta dal ferro al bismuto.",
+    resourceSProcessMeta: "Parte dell'atlante, si cita come l'atlante",
+    resourceEvaluations: "Valutazioni R-matrix",
+    resourceEvaluationsText: (n: number) => `${n} valutazioni R-matrix pubblicate, calcolate con AZURE2 nel browser, con i file di input da scaricare ed eseguire in locale.`,
+    resourceEvaluationsMeta: "Come citarle: nella pagina di ciascuna valutazione",
+    resourceNotes: "Note",
+    resourceNotesText: (n: number) => `${n} note sulla teoria R-matrix, ciascuna con un esempio svolto su una reazione reale (in inglese).`,
+    resourceGlossary: "Glossario",
+    resourceGlossaryText: (n: number) => `${n} termini dell'astrofisica nucleare in linguaggio semplice, in italiano e in inglese.`,
+    licence: (l: string) => `licenza ${l}`,
+    version: (v: string) => `versione ${v}`,
+    howToCite: "Come citarlo",
+    impactBefore: "L'atlante, il glossario e le valutazioni sono in ",
+    impactLink: "italiano",
+    impactAfter:
+      " oltre che in inglese, per arrivare a studenti e pubblico e non solo agli specialisti. Tra le attività di divulgazione: Stelle sulla Terra, astrofisica nucleare per bambini con disabilità (2024), e percorsi di astrofisica nucleare per le scuole superiori (PCTO, 2021–2022): ",
+    impactCv: "la divulgazione nel CV",
+    outlookMore: "Prospettive →",
   },
 
   /* -- research ----------------------------------------------------------- */
@@ -1036,7 +1131,7 @@ const it: Dictionary = {
     description:
       "Articoli su riviste con revisione paritaria e atti di conferenze di Jakub Skowronski in astrofisica nucleare sperimentale.",
     lead: (articles: number, proceedings: number, review: number) =>
-      `${articles} articoli su riviste con revisione paritaria e ${proceedings} contributi ad atti di conferenze${review ? `, più ${review} in revisione` : ""}. Le voci segnate da una linea sono quelle di cui sono autore o coautore con un ruolo di primo piano. I titoli sono riportati come pubblicati.`,
+      `${articles} articoli su riviste con revisione paritaria e ${proceedings} contributi ad atti di conferenze${review ? `, più ${review} in revisione` : ""}. Una linea segna i miei articoli principali: quelli in cui sono tra i primi autori o autore corrispondente, e quelli in cui il mio ruolo è indicato accanto agli autori. I titoli sono riportati come pubblicati.`,
     sections: { article: "Articoli di ricerca", proceedings: "Atti di conferenze" },
     // --- site ---
     profiles: "Elenchi completi e aggiornati, con le citazioni:",

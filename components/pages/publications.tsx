@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 
 import { Container, PageHeader } from "@/components/page-header"
 import { PublicationFilter } from "@/components/publication-filter"
-import { getProfile, getPublications, type Publication } from "@/lib/content"
+import { getProfile, getPublications, isFirstAuthor, type Publication } from "@/lib/content"
 import { Sci } from "@/components/sci"
 import { dict, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
@@ -11,9 +11,6 @@ export const publicationsMetadata = (lang: Lang): Metadata =>
   pageMetadata(dict(lang).publications.title, dict(lang).publications.description, lang)
 
 const SECTIONS = ["article", "proceedings"]
-
-/** Jakub first in the author list. */
-const isFirstAuthor = (p: Publication) => /^J\. Skowronski\b/.test(p.authors.trim())
 
 /** Submitted but not out yet: shown apart, and not counted as peer reviewed. */
 const isUnderReview = (p: Publication) => Boolean(p.status) && !p.journal
@@ -40,6 +37,14 @@ function Entry({ publication, lang }: { publication: Publication; lang: Lang }) 
     >
       <p className="text-sm text-muted-foreground">
         <Sci>{publication.authors}</Sci>
+        {publication.role && (
+          <>
+            {" · "}
+            <span className="text-foreground/80">
+              <Sci>{publication.role}</Sci>
+            </span>
+          </>
+        )}
       </p>
       {/* Titles stay as published, in English. */}
       <h3

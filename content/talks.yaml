@@ -66,13 +66,6 @@ organisation:
     place: East Lansing, Michigan, USA
     role: Member of Organizing Committee
     role_it: Membro del comitato organizzatore
-  - date: Jun 2022
-    date_it: giu 2022
-    event: ChETEC-INFRA 2nd General Assembly
-    place: Padova, Italy
-    place_it: Padova, Italia
-    title: "Talk: ¹²C(p,γ)¹³N cross section measurement at Felsenkeller"
-    title_it: "Relazione: ¹²C(p,γ)¹³N cross section measurement at Felsenkeller"
 
 participation:
   - date: May 2025
@@ -103,6 +96,13 @@ participation:
     place_it: Varenna, Italia
     title: "Talk: Proton capture on carbon isotopes"
     title_it: "Relazione: Proton capture on carbon isotopes"
+  - date: Jun 2022
+    date_it: giu 2022
+    event: ChETEC-INFRA 2nd General Assembly
+    place: Padova, Italy
+    place_it: Padova, Italia
+    title: "Talk: ¹²C(p,γ)¹³N cross section measurement at Felsenkeller"
+    title_it: "Relazione: ¹²C(p,γ)¹³N cross section measurement at Felsenkeller"
   - date: May 2022
     date_it: mag 2022
     event: JINA-CEE Frontiers in Nuclear Astrophysics

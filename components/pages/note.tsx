@@ -108,10 +108,10 @@ export async function NotePage({ slug, lang }: { slug: string; lang: Lang }) {
           )}
 
           {/* -- where to go from a note: the theory put to use --------------- */}
-          <section className="mt-16 grid gap-4 border-t border-border/70 pt-8 sm:grid-cols-2">
+          <section className="mt-16 grid grid-cols-[minmax(0,1fr)] gap-4 border-t border-border/70 pt-8 sm:grid-cols-2">
             <Link
               href={to("/evaluations")}
-              className="group block rounded-lg border border-border bg-card p-5 transition-colors hover:border-foreground/30"
+              className="group block min-w-0 hyphens-auto rounded-lg border border-border bg-card p-4 transition-colors hover:border-foreground/30 sm:p-5"
             >
               <span className="flex items-center gap-2 font-serif text-lg font-semibold tracking-tight group-hover:text-link">
                 {t.tryTitle}
@@ -123,7 +123,7 @@ export async function NotePage({ slug, lang }: { slug: string; lang: Lang }) {
             </Link>
             <Link
               href={to("/atlas")}
-              className="group block rounded-lg border border-border bg-card p-5 transition-colors hover:border-foreground/30"
+              className="group block min-w-0 hyphens-auto rounded-lg border border-border bg-card p-4 transition-colors hover:border-foreground/30 sm:p-5"
             >
               <span className="flex items-center gap-2 font-serif text-lg font-semibold tracking-tight group-hover:text-link">
                 {t.reactionsTitle}

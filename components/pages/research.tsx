@@ -3,7 +3,7 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 
 import { Container, PageHeader } from "@/components/page-header"
-import { getResearch } from "@/lib/content"
+import { getOutlook, getResearch } from "@/lib/content"
 import { Sci } from "@/components/sci"
 import { dict, localePath, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
@@ -13,6 +13,7 @@ export const researchMetadata = (lang: Lang): Metadata =>
 
 export function ResearchPage({ lang }: { lang: Lang }) {
   const threads = getResearch(lang)
+  const outlook = getOutlook(lang)
   const t = dict(lang).research
   const to = (path: string) => localePath(lang, path)
 
@@ -33,6 +34,14 @@ export function ResearchPage({ lang }: { lang: Lang }) {
             <Sci>{thread.title.split(" — ")[0]}</Sci>
           </a>
         ))}
+        {outlook && (
+          <a
+            href="#outlook"
+            className="text-muted-foreground underline-offset-4 transition-colors hover:text-link hover:underline"
+          >
+            {outlook.title}
+          </a>
+        )}
       </nav>
 
       <div className="space-y-20">
@@ -80,6 +89,30 @@ export function ResearchPage({ lang }: { lang: Lang }) {
             )}
           </article>
         ))}
+
+        {/* -- what comes next ------------------------------------------- */}
+        {outlook && outlook.items.length > 0 && (
+          <section id="outlook" aria-labelledby="outlook-heading" className="scroll-mt-24">
+            <h2 id="outlook-heading" className="border-b border-border/70 pb-5 font-serif text-2xl font-semibold tracking-tight">
+              {outlook.title}
+            </h2>
+            {outlook.intro && (
+              <p className="mt-6 max-w-[68ch] text-pretty text-[1.0625rem] leading-relaxed text-muted-foreground">
+                <Sci>{outlook.intro}</Sci>
+              </p>
+            )}
+            <ul className="mt-7 max-w-[68ch] space-y-5 text-[1.0625rem] leading-relaxed text-muted-foreground">
+              {outlook.items.map((item, i) => (
+                <li key={i} className="text-pretty">
+                  <strong className="font-semibold text-foreground">
+                    <Sci>{item.lead}</Sci>
+                  </strong>{" "}
+                  <Sci>{item.text}</Sci>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
       </div>
 
       <nav

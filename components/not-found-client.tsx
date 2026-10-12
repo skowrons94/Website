@@ -2,20 +2,18 @@
 
 import { useEffect, useState } from "react"
 
-import { LangProvider } from "@/components/lang-provider"
-import { NotFoundBody } from "@/components/not-found-body"
-import { SiteFooter } from "@/components/site-footer"
-import { SiteHeader } from "@/components/site-header"
-import { chromeStrings } from "@/lib/chrome-strings"
-import type { Profile } from "@/lib/content"
-import { langOf, type Lang } from "@/lib/i18n"
+import { langOf, type Lang } from "@/lib/locale"
 
 /**
  * The 404 for an address no route matches. One file serves every such address
  * (the static export has a single 404.html), so the language is read from the
  * address itself once the page is in the browser: /it/… gets the Italian page.
+ *
+ * Both languages' pages are rendered on the server (app/global-not-found.tsx)
+ * and handed in as `pages`; this only chooses one, so no dictionary is sent to
+ * the browser.
  */
-export function NotFoundClient({ profiles }: { profiles: Record<Lang, Profile> }) {
+export function NotFoundClient({ pages }: { pages: Record<Lang, React.ReactNode> }) {
   const [lang, setLang] = useState<Lang>("en")
 
   useEffect(() => {
@@ -24,17 +22,7 @@ export function NotFoundClient({ profiles }: { profiles: Record<Lang, Profile> }
     const detected = langOf(path.replace(/\/$/, "") || "/")
     setLang(detected)
     document.documentElement.lang = detected
-  }, [profiles])
+  }, [])
 
-  return (
-    <LangProvider lang={lang}>
-      <div className="flex min-h-screen flex-col">
-        <SiteHeader name={profiles[lang].name} lang={lang} strings={chromeStrings(lang)} />
-        <main id="content" tabIndex={-1} className="flex-1 focus:outline-none">
-          <NotFoundBody lang={lang} />
-        </main>
-        <SiteFooter profile={profiles[lang]} lang={lang} />
-      </div>
-    </LangProvider>
-  )
+  return <>{pages[lang]}</>
 }
