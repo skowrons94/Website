@@ -60,7 +60,7 @@ export const RateChart = memo(function RateChart({
   /** dragging on the chart sets the temperature */
   onTemperature?: (T9: number) => void
 }) {
-  const [box, width] = useWidth<HTMLDivElement>()
+  const [box, width, k] = useWidth<HTMLDivElement>()
   const narrow = width < 560
   const height = narrow ? 300 : 360
   const m = { l: narrow ? 46 : 58, r: narrow ? 10 : 132, t: 34, b: 44 }
@@ -110,8 +110,8 @@ export const RateChart = memo(function RateChart({
   const xt = decades(T9range[0], T9range[1], 6)
   const xMinor: number[] = []
   for (let e = Math.floor(Math.log10(T9range[0])); e <= Math.ceil(Math.log10(T9range[1])); e++)
-    for (const k of [2, 5]) {
-      const v = k * 10 ** e
+    for (const f of [2, 5]) {
+      const v = f * 10 ** e
       if (v > T9range[0] && v < T9range[1]) xMinor.push(v)
     }
   const yt = decades(y.lo, y.hi, narrow ? 6 : 9)
@@ -202,6 +202,21 @@ export const RateChart = memo(function RateChart({
   const hx = hoverT !== null ? x.px(hoverT) : 0
   const current = markers.find((mk) => mk.current)
   const cx = current ? x.px(current.T9) : 0
+  const crowded = new Set<Marker>()
+  {
+    let last = -Infinity
+    for (const mk of markers.filter((q) => !q.current).sort((a, b) => a.T9 - b.T9)) {
+      const px = x.px(mk.T9)
+      if (px - last < (narrow ? 64 : 48)) crowded.add(mk)
+      else last = px
+    }
+  }
+  // a site under the handle is named in the handle's label instead of its own
+  const near = current
+    ? markers.find(
+        (mk) => !mk.current && Math.abs(x.px(mk.T9) - cx) < 30 && mk.T9 >= T9range[0] && mk.T9 <= T9range[1],
+      )
+    : undefined
 
   return (
     <div ref={box} className="relative">
@@ -209,9 +224,9 @@ export const RateChart = memo(function RateChart({
         ref={svgRef}
         role="img"
         aria-label={label}
-        tabIndex={0}
-        width={width}
-        height={height}
+        tabIndex={-1}
+        width={width * k}
+        height={height * k}
         viewBox={`0 0 ${width} ${height}`}
         className={`block touch-pan-y select-none rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${onTemperature ? "cursor-ew-resize" : ""}`}
         onPointerDown={onDown}
@@ -270,13 +285,13 @@ export const RateChart = memo(function RateChart({
           <SvgSci>{mode === "relative" ? ratioLabel : axisLabelY}</SvgSci>
         </text>
 
-        {fasterLabel && mode === "absolute" && (
+        {fasterLabel && mode === "absolute" && !(current && cx < m.l + 90) && (
           <text x={4} y={m.t - 19} fontSize={11} fill={C.muted}>
             {fasterLabel}
           </text>
         )}
 
-        {/* where the sites burn */}
+        {/* where the sites burn (a label too close to the one before it is left out) */}
         {markers.map((mk, i) =>
           !mk.current && mk.T9 >= T9range[0] && mk.T9 <= T9range[1] ? (
             <g key={`mk${i}`}>
@@ -288,18 +303,20 @@ export const RateChart = memo(function RateChart({
                 stroke={C.base}
                 strokeDasharray="3 3"
               />
-              <text
-                x={Math.min(Math.max(x.px(mk.T9), m.l + 24), width - (narrow ? 26 : m.r - 20))}
-                y={m.t + 10}
-                textAnchor="middle"
-                fontSize={10.5}
-                fill={C.muted}
-                stroke={C.surface}
-                strokeWidth={3}
-                paintOrder="stroke"
-              >
-                <SvgSci>{mk.label}</SvgSci>
-              </text>
+              {mk !== near && !crowded.has(mk) && (
+                <text
+                  x={Math.min(Math.max(x.px(mk.T9), m.l + 24), width - (narrow ? 26 : m.r - 20))}
+                  y={m.t + 10}
+                  textAnchor="middle"
+                  fontSize={10.5}
+                  fill={C.muted}
+                  stroke={C.surface}
+                  strokeWidth={3}
+                  paintOrder="stroke"
+                >
+                  <SvgSci>{mk.label}</SvgSci>
+                </text>
+              )}
             </g>
           ) : null,
         )}
@@ -326,28 +343,6 @@ export const RateChart = memo(function RateChart({
             />
           </g>
         ))}
-        {ends.map(({ s, py, px }) => {
-          const k = slot(s.r.id)
-          const lx = narrow ? px + 2 : width - m.r + 8
-          return (
-            <g key={s.r.id}>
-              <Shape slot={k} x={lx + 4} y={py} r={3.5} fill={SERIES[k]} stroke={C.surface} strokeWidth={1} />
-              <text
-                x={lx + 12}
-                y={py}
-                dy="0.32em"
-                fontSize={11.5}
-                fill={C.ink}
-                stroke={narrow ? C.surface : undefined}
-                strokeWidth={narrow ? 3 : undefined}
-                paintOrder="stroke"
-              >
-                <SvgSci>{s.r.label}</SvgSci>
-              </text>
-            </g>
-          )
-        })}
-
         {/* the current temperature: a handle */}
         {current && current.T9 >= T9range[0] && current.T9 <= T9range[1] && (
           <g pointerEvents="none">
@@ -361,7 +356,7 @@ export const RateChart = memo(function RateChart({
               fontWeight={600}
               fill={C.ink}
             >
-              {tShort(current.T9, lang)}
+              <SvgSci>{near ? `${tShort(current.T9, lang)} · ${near.label}` : tShort(current.T9, lang)}</SvgSci>
             </text>
             {colored.map((s) => {
               const v = value(s.r, current.T9)
@@ -383,6 +378,28 @@ export const RateChart = memo(function RateChart({
           </g>
         )}
 
+        {ends.map(({ s, py, px }) => {
+          const k = slot(s.r.id)
+          const lx = narrow ? px + 2 : width - m.r + 8
+          return (
+            <g key={s.r.id}>
+              <Shape slot={k} x={lx + 4} y={py} r={3.5} fill={SERIES[k]} stroke={C.surface} strokeWidth={1} />
+              <text
+                x={lx + 12}
+                y={py}
+                dy="0.32em"
+                fontSize={11.5}
+                fill={C.ink}
+                stroke={C.surface}
+                strokeWidth={3}
+                paintOrder="stroke"
+              >
+                <SvgSci>{s.r.label}</SvgSci>
+              </text>
+            </g>
+          )
+        })}
+
         {/* hover crosshair */}
         {hoverT !== null && (
           <line
@@ -400,8 +417,7 @@ export const RateChart = memo(function RateChart({
       {hoverT !== null && readout.length > 0 && (
         <div
           className="pointer-events-none absolute top-8 z-10 max-w-[16rem] rounded-md border border-border bg-popover px-3 py-2 text-xs shadow-md"
-          style={hx > width / 2 ? { right: width - hx + 12 } : { left: hx + 12 }}
-          aria-live="polite"
+          style={hx > width / 2 ? { right: (width - hx) * k + 12 } : { left: hx * k + 12 }}
         >
           <p className="font-medium">{temperature(hoverT, lang)}</p>
           <ul className="mt-1 space-y-0.5">

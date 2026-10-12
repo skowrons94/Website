@@ -43,7 +43,7 @@ export const EvolutionChart = memo(function EvolutionChart({
   /** the word for the unchanged burn in the readout */
   baseWord?: string
 }) {
-  const [box, width] = useWidth<HTMLDivElement>()
+  const [box, width, k] = useWidth<HTMLDivElement>()
   const narrow = width < 520
   const height = narrow ? 260 : 320
   // The nuclide names are drawn at the right end of their lines on every
@@ -116,8 +116,8 @@ export const EvolutionChart = memo(function EvolutionChart({
         role="img"
         aria-label={label}
         tabIndex={0}
-        width={width}
-        height={height}
+        width={width * k}
+        height={height * k}
         viewBox={`0 0 ${width} ${height}`}
         className="block touch-pan-y select-none rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         onPointerMove={(e) => {
@@ -204,7 +204,7 @@ export const EvolutionChart = memo(function EvolutionChart({
       {hover !== null && (
         <div
           className="pointer-events-none absolute top-4 z-10 rounded-md border border-border bg-popover px-3 py-2 text-xs shadow-md"
-          style={x.px(hover) > width / 2 ? { right: width - x.px(hover) + 12 } : { left: x.px(hover) + 12 }}
+          style={x.px(hover) > width / 2 ? { right: (width - x.px(hover)) * k + 12 } : { left: x.px(hover) * k + 12 }}
         >
           <p className="font-medium">{shortTime(hover, lang)}</p>
           <ul className="mt-1 space-y-0.5">

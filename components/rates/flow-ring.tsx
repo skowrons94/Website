@@ -15,9 +15,10 @@ const channel = (label: string) => label.match(/\([^)]*\)/)?.[0] ?? label
  * the reaction that carries the flow on, its width the matter that went
  * through it during the burn (∫ flux dt, from the network's own burn, on a
  * square-root scale so small flows stay visible). Side arrows are the
- * largest leak out of each nucleus. With a rate changed, the arrows take the
- * "changed" colour over a grey outline of the unchanged flow. The slowest
- * step is drawn in ink and named.
+ * largest leak out of each nucleus. With a rate changed, the arrows whose
+ * flow changed by more than 2% take the "changed" colour over a grey outline
+ * of the unchanged flow, with the factor beside them ("×1.3"); the others
+ * stay as they were. The slowest step is drawn in ink and named.
  */
 export const FlowRing = memo(function FlowRing({
   network,
@@ -41,7 +42,7 @@ export const FlowRing = memo(function FlowRing({
   label: string
   slowestWord: string
 }) {
-  const [box, width] = useWidth<HTMLDivElement>(360)
+  const [box, width, k] = useWidth<HTMLDivElement>(360)
   if (path.length < 2 || !flows) return <div ref={box} />
   const nuc = (i: number) => network.nuclei[i]
   const nodes = path.map((p) => p.nucleus)
@@ -140,23 +141,30 @@ export const FlowRing = memo(function FlowRing({
     )
   }
 
-  const changed = Boolean(flowsBase)
+  // how much each step's flow changed, when a rate is changed
+  const factor = (r: number) => {
+    if (!flowsBase || !(flowsBase[r] > 0)) return null
+    const f = flows[r] / flowsBase[r]
+    return Math.abs(Math.log(f)) > Math.log(1.02) ? f : null
+  }
+  const times = (f: number) => (f >= 10 || f < 0.1 ? `×${f.toPrecision(1)}` : `×${f.toPrecision(2)}`)
   return (
     <div ref={box} className="flex justify-center">
       <svg
         role="img"
         aria-label={label}
-        width={W}
-        height={H}
+        width={W * k}
+        height={H * k}
         viewBox={`0 0 ${W} ${H}`}
         className="block overflow-visible"
       >
         {edges.map(({ p, a, b }) => {
           const isSlow = p.reaction === slowest
-          const col = isSlow ? C.ink : changed ? C.changed : C.muted
+          const f = factor(p.reaction)
+          const col = f !== null ? C.changed : isSlow ? C.ink : C.muted
           return (
             <g key={p.reaction}>
-              {flowsBase && arrow(a.x, a.y, b.x, b.y, w(flowsBase[p.reaction]) + 3, C.base, `b${p.reaction}`, 0.55)}
+              {f !== null && flowsBase && arrow(a.x, a.y, b.x, b.y, w(flowsBase[p.reaction]) + 3, C.base, `b${p.reaction}`, 0.55)}
               {arrow(a.x, a.y, b.x, b.y, w(flows[p.reaction]), col, `f${p.reaction}`)}
             </g>
           )
@@ -198,6 +206,12 @@ export const FlowRing = memo(function FlowRing({
           const r = network.reactions[p.reaction]
           const lx = mx + ox * (closed ? -24 : 18)
           const ly = my + oy * (closed ? -24 : 18)
+          const f = factor(p.reaction)
+          // the second line ("slowest", "×1.3") goes further from the arrow:
+          // inwards on a ring, above the label on a chain
+          const sx = closed ? mx - ox * 38 : lx
+          const sy = closed ? my - oy * 38 : ly - 13
+          const second = [isSlow ? slowestWord : "", f !== null ? times(f) : ""].filter(Boolean).join(" · ")
           return (
             <g key={`t${p.reaction}`}>
               <text
@@ -211,9 +225,20 @@ export const FlowRing = memo(function FlowRing({
               >
                 <SvgSci>{channel(r.label)}</SvgSci>
               </text>
-              {isSlow && (
-                <text x={lx} y={ly + 13} dy="0.32em" textAnchor="middle" fontSize={10} fill={C.ink}>
-                  {slowestWord}
+              {second && (
+                <text
+                  x={sx}
+                  y={sy}
+                  dy="0.32em"
+                  textAnchor="middle"
+                  fontSize={10}
+                  fill={f !== null ? C.changed : C.ink}
+                  fontWeight={f !== null ? 600 : 400}
+                  stroke={C.surface}
+                  strokeWidth={3}
+                  paintOrder="stroke"
+                >
+                  {second}
                 </text>
               )}
             </g>

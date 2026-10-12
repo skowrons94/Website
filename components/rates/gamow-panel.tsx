@@ -48,7 +48,7 @@ export function GamowPanel({
   lang: Lang
 }) {
   const t = ratesDict(lang)
-  const [box, width] = useWidth<HTMLDivElement>(300)
+  const [box, width, k] = useWidth<HTMLDivElement>(300)
   const EG = reaction ? gamowEnergy(network, reaction) : null
   if (!reaction || EG === null)
     return (
@@ -84,8 +84,8 @@ export function GamowPanel({
       <svg
         role="img"
         aria-label={t.gamowLabel(reaction.label, tShort(T9, lang))}
-        width={width}
-        height={height}
+        width={width * k}
+        height={height * k}
         viewBox={`0 0 ${width} ${height}`}
         className="mt-2 block"
       >
@@ -96,6 +96,18 @@ export function GamowPanel({
           height={height - m.t - m.b}
           fill={C.grid}
         />
+        <text
+          x={px(E0)}
+          y={m.t + 11}
+          textAnchor="middle"
+          fontSize={10}
+          fill={C.muted}
+          stroke={C.surface}
+          strokeWidth={3}
+          paintOrder="stroke"
+        >
+          {t.gamowWindow}
+        </text>
         <path d={path(norm(mb))} fill="none" stroke={C.base} strokeWidth={1.5} />
         <path d={path(norm(tun))} fill="none" stroke={C.base} strokeWidth={1.5} strokeDasharray="4 3" />
         <path

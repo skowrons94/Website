@@ -92,22 +92,28 @@ export function duration(s: number, lang: Lang): string {
   return it ? `${sci(y, lang)} anni` : `${sci(y, lang)} years`
 }
 
-/** A short axis label for a time: 1 s, 1 min, 1 h, 1 d, 1 yr, 1 kyr, 1 Myr, 1 Gyr. */
+/**
+ * A short axis label for a time, in words a reader knows: 1 s, 1 min, 1 h,
+ * 1 day, 1 yr, 1,000 yr, 1 Myr, 1 Gyr (Italian: 1 giorno, 1000 anni,
+ * 1 milione di anni).
+ */
 export function shortTime(s: number, lang: Lang): string {
   const it = lang === "it"
-  const yr = it ? "a" : "yr"
   const fmt = (v: number) => sig2(v, lang)
+  const one = (v: number) => Number(v.toPrecision(2)) === 1
   if (s < 1) return `${sci(s, lang, 1)}${NB}s`
   if (s < 60) return `${fmt(s)}${NB}s`
   if (s < 3600) return `${fmt(s / 60)}${NB}min`
   if (s < 86400) return `${fmt(s / 3600)}${NB}h`
-  if (s < YEAR) return `${fmt(s / 86400)}${NB}${it ? "g" : "d"}`
+  if (s < YEAR) {
+    const d = s / 86400
+    return `${fmt(d)}${NB}${it ? (one(d) ? "giorno" : "giorni") : one(d) ? "day" : "days"}`
+  }
   const y = s / YEAR
-  if (y < 1e3) return `${fmt(y)}${NB}${yr}`
-  if (y < 1e6) return `${fmt(y / 1e3)}${NB}k${yr}`
-  if (y < 1e9) return `${fmt(y / 1e6)}${NB}M${yr}`
-  if (y < 1e12) return `${fmt(y / 1e9)}${NB}G${yr}`
-  return `${sci(y, lang, 1)}${NB}${yr}`
+  if (y < 1e6) return `${fmt(y)}${NB}${it ? (one(y) ? "anno" : "anni") : "yr"}`
+  if (y < 1e9) return it ? `${fmt(y / 1e6)}${NB}${one(y / 1e6) ? "milione" : "milioni"} di anni` : `${fmt(y / 1e6)}${NB}Myr`
+  if (y < 1e12) return it ? `${fmt(y / 1e9)}${NB}${one(y / 1e9) ? "miliardo" : "miliardi"} di anni` : `${fmt(y / 1e9)}${NB}Gyr`
+  return `${sci(y, lang, 1)}${NB}${it ? "anni" : "yr"}`
 }
 
 /** T9 as the reader likes it: 16 million K, 0.25 GK. */

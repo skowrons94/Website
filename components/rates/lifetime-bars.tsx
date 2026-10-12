@@ -230,7 +230,7 @@ export const LifetimeBars = memo(function LifetimeBars({
                       )}
                     </svg>
                     <span
-                      className={`tabular absolute top-1/2 -translate-y-1/2 whitespace-nowrap text-xs leading-tight ${r.bottleneck ? "font-semibold text-foreground" : "text-muted-foreground"}`}
+                      className={`tabular absolute top-1/2 z-[1] -translate-y-1/2 whitespace-nowrap rounded-sm bg-background px-1 text-xs leading-tight ${r.bottleneck ? "font-semibold text-foreground" : "text-muted-foreground"}`}
                       style={
                         right
                           ? { left: `calc(${(edge * 100).toFixed(2)}% + 12px)` }

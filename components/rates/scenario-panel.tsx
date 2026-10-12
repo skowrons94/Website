@@ -150,7 +150,7 @@ export function ScenarioPanel({
                     <Sci>{shortName(s, lang)}</Sci>
                   </span>
                   <span className={`tabular text-xs ${on ? "text-background/75" : "text-muted-foreground"}`}>
-                    {tShort(s.T9, lang)}
+                    {temperature(s.T9, lang)}
                   </span>
                   <span className="sr-only">
                     <Sci>{sName(s)}</Sci>
@@ -241,7 +241,7 @@ export function ScenarioPanel({
               min={tRange[0]}
               max={tRange[1]}
               onChange={(v) => setCond({ ...cond, T9: Number(v.toPrecision(3)) })}
-              valueText={`${temperature(cond.T9, lang)} (T₉${NB}=${NB}${sig2(cond.T9, lang)})`}
+              valueText={temperature(cond.T9, lang)}
             />
             <LogSlider
               label={t.density}
