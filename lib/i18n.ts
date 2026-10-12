@@ -461,6 +461,47 @@ const en = {
       `${n} background poles at ${energy} MeV (fixed, one per spin-parity; axis broken)`,
   },
 
+  // --- levels (round 3) ---
+  levels: {
+    title: "Level diagram",
+    description:
+      "Levels by excitation energy, one column per spin-parity. Dashed lines are particle thresholds; the right-hand axis gives the centre-of-mass energy in the entrance channel.",
+    descriptionList:
+      "Levels by excitation energy, with their spin-parity and total width Γ. Dashed entries are particle thresholds.",
+    excitation: "Excitation energy",
+    cm: (pair: string) => `in ${pair}`,
+    aria: (n: number) => `Energy-level diagram with ${n} levels. Use the arrow keys to move between levels and Enter to select one.`,
+    status: { free: "energy fitted", partial: "widths fitted", fixed: "fixed" } as Record<"free" | "partial" | "fixed", string>,
+    levelAria: (jpi: string, energy: string, status: string, widths: string) =>
+      `${jpi} level at ${energy} MeV, ${status}${widths ? `, ${widths}` : ""}`,
+    thresholdAria: (pair: string, energy: string) => `${pair} threshold at ${energy} MeV`,
+    background: (n: number, energy: string) => `${n} background pole${n === 1 ? "" : "s"} at ${energy} MeV`,
+    backgroundShort: (n: number, energy: string) => `${n} background poles · ${energy} MeV`,
+    legendEnergyFree: "energy fitted",
+    legendWidthsFree: "widths/ANCs fitted",
+    legendFixed: "fixed",
+    legendAnc: "ANC (below threshold)",
+    legendThreshold: "particle threshold",
+    legendWidth: "±Γ/2",
+    legendData: "fitted data",
+    legendChannels: "Γ_c/Γ:",
+    zoomHint: "Drag along the energy axis to zoom.",
+    zoomHintTouch: "Drag along the energy axis to zoom.",
+    zoomData: "Zoom to data",
+    zoomReset: "Whole scheme",
+    zoomed: (lo: string, hi: string) => `Showing ${lo}–${hi} MeV`,
+    moreAbove: (n: number) => `${n} more above`,
+    moreBelow: (n: number) => `${n} more below`,
+    crowded: "Crowded: drag along the axis to zoom in.",
+    prompt: "Select a level to see its widths and channels.",
+    width: "Γ",
+    noWidth: "no partial widths (bound in every particle channel)",
+    anc: "ANC",
+    selected: "selected",
+    clearSelection: "Clear selection",
+    edited: "edited",
+  },
+
   /* -- atlas -------------------------------------------------------------- */
   atlas: {
     name: "Reaction atlas",
@@ -1155,6 +1196,47 @@ const it: Dictionary = {
     source: "Fonte",
     backgroundPoles: (energy: string, n: number) =>
       `${n} poli di fondo a ${energy} MeV (fissi, uno per spin-parità; asse interrotto)`,
+  },
+
+  // --- levels (round 3) ---
+  levels: {
+    title: "Diagramma dei livelli",
+    description:
+      "Livelli per energia di eccitazione, una colonna per spin-parità. Le linee tratteggiate sono le soglie di particella; l'asse a destra dà l'energia nel centro di massa del canale d'ingresso.",
+    descriptionList:
+      "Livelli per energia di eccitazione, con spin-parità e larghezza totale Γ. Le voci tratteggiate sono le soglie di particella.",
+    excitation: "Energia di eccitazione",
+    cm: (pair: string) => `in ${pair}`,
+    aria: (n: number) => `Diagramma dei livelli con ${n} livelli. Usa le frecce per passare da un livello all'altro e Invio per selezionarlo.`,
+    status: { free: "energia adattata", partial: "larghezze adattate", fixed: "fisso" } as Record<"free" | "partial" | "fixed", string>,
+    levelAria: (jpi: string, energy: string, status: string, widths: string) =>
+      `livello ${jpi} a ${energy} MeV, ${status}${widths ? `, ${widths}` : ""}`,
+    thresholdAria: (pair: string, energy: string) => `soglia ${pair} a ${energy} MeV`,
+    background: (n: number, energy: string) => `${n} pol${n === 1 ? "o" : "i"} di fondo a ${energy} MeV`,
+    backgroundShort: (n: number, energy: string) => `${n} poli di fondo · ${energy} MeV`,
+    legendEnergyFree: "energia adattata",
+    legendWidthsFree: "larghezze/ANC adattate",
+    legendFixed: "fisso",
+    legendAnc: "ANC (sotto soglia)",
+    legendThreshold: "soglia di particella",
+    legendWidth: "±Γ/2",
+    legendData: "dati adattati",
+    legendChannels: "Γ_c/Γ:",
+    zoomHint: "Trascina lungo l'asse delle energie per ingrandire.",
+    zoomHintTouch: "Trascina lungo l'asse delle energie per ingrandire.",
+    zoomData: "Zoom sui dati",
+    zoomReset: "Schema intero",
+    zoomed: (lo: string, hi: string) => `Intervallo ${lo}–${hi} MeV`,
+    moreAbove: (n: number) => `altri ${n} sopra`,
+    moreBelow: (n: number) => `altri ${n} sotto`,
+    crowded: "Zona affollata: trascina lungo l'asse per ingrandire.",
+    prompt: "Seleziona un livello per vederne larghezze e canali.",
+    width: "Γ",
+    noWidth: "nessuna larghezza parziale (legato in tutti i canali di particella)",
+    anc: "ANC",
+    selected: "selezionato",
+    clearSelection: "Deseleziona",
+    edited: "modificato",
   },
 
   /* -- atlas -------------------------------------------------------------- */
