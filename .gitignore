@@ -42,3 +42,6 @@ server/evaluations/*/.precomputed-*
 
 # The derived fine-grid model and its integrals (server/app/fine.py)
 server/evaluations/*/fine/
+
+# Written by scripts/search-index.mjs before every build.
+public/search/

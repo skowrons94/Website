@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "predev": "node scripts/atlas-export.mjs",
+    "predev": "node scripts/atlas-export.mjs && node scripts/search-index.mjs",
     "dev": "next dev",
-    "prebuild": "node scripts/atlas-check.mjs && node scripts/atlas-export.mjs",
+    "prebuild": "node scripts/atlas-check.mjs && node scripts/atlas-export.mjs && node scripts/search-index.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

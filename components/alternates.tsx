@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation"
 
-import { englishPath, localePath } from "@/lib/i18n"
+import { englishPath, localePath } from "@/lib/locale"
 
 /**
  * `<link rel="alternate" hreflang>` for the page in each language, and

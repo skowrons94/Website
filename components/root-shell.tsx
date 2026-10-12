@@ -4,10 +4,11 @@ import "katex/dist/katex.min.css"
 import "@/app/globals.css"
 
 import { Alternates } from "@/components/alternates"
-import { LangProvider } from "@/components/lang-provider"
+import { LangProvider } from "@/components/lang-context"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { ThemeProvider } from "@/components/theme-provider"
+import { chromeStrings } from "@/lib/chrome-strings"
 import { getProfile } from "@/lib/content"
 import { mono, sans, serif } from "@/lib/fonts"
 import { dict, type Lang } from "@/lib/i18n"
@@ -44,7 +45,7 @@ export function RootShell({ lang, children }: { lang: Lang; children: React.Reac
                 {t.skip}
               </a>
               <div className="flex min-h-screen flex-col">
-                <SiteHeader name={profile.name} lang={lang} />
+                <SiteHeader name={profile.name} lang={lang} strings={chromeStrings(lang)} />
                 <main id="content" tabIndex={-1} className="flex-1 focus:outline-none">
                   {children}
                 </main>
