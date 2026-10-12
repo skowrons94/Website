@@ -12,7 +12,7 @@
  "nena-agb-sodium.en": "If ²²Ne(p,γ)²³Na were twice as fast, this model of an AGB star's hot envelope would end up with about a fifth more sodium (+21%).",
  "nena-agb-sodium.it": "Se la ²²Ne(p,γ)²³Na fosse due volte più veloce, questo modello dell'inviluppo caldo di una stella AGB finirebbe con circa un quinto di sodio in più (+21%).",
  "nena-agb-sodium-cycle.en": "If ²³Na(p,α)²⁰Ne were twice as fast, this model of an AGB star's hot envelope would end up with about half as much sodium (−46%).",
- "nena-agb-sodium-cycle.it": "Se la ²³Na(p,α)²⁰Ne fosse due volte più veloce, questo modello dell'inviluppo caldo di una stella AGB finirebbe con circa la metà di sodio in meno (−46%).",
+ "nena-agb-sodium-cycle.it": "Se la ²³Na(p,α)²⁰Ne fosse due volte più veloce, questo modello dell'inviluppo caldo di una stella AGB finirebbe con circa metà del sodio (−46%).",
  "mgal-agb-aluminium-26.en": "If ²⁵Mg(p,γ)²⁶Al were twice as fast, this model of an AGB star's hot envelope would end up with about two fifths more aluminium‑26 (+38%).",
  "mgal-agb-aluminium-26.it": "Se la ²⁵Mg(p,γ)²⁶Al fosse due volte più veloce, questo modello dell'inviluppo caldo di una stella AGB finirebbe con circa due quinti di alluminio‑26 in più (+38%).",
  "mgal-massive-aluminium-26.en": "If ²⁵Mg(p,γ)²⁶Al were twice as fast, this model of a 25 M☉ star's core would end up with slightly less aluminium‑26 (−4%).",
@@ -28,7 +28,7 @@
  "s-core-neon-22-rival.en": "If ²²Ne(α,γ)²⁶Mg were twice as fast, this model of a massive star's helium core would end up with about two fifths less strontium‑88 (−42%).",
  "s-core-neon-22-rival.it": "Se la ²²Ne(α,γ)²⁶Mg fosse due volte più veloce, questo modello del nucleo di elio di una stella massiccia finirebbe con circa due quinti di stronzio‑88 in meno (−42%).",
  "s-core-magnesium-poison.en": "If ²⁵Mg(n,γ)²⁶Mg were twice as fast, this model of a massive star's helium core would end up with about a third as much strontium‑88 (−69%).",
- "s-core-magnesium-poison.it": "Se la ²⁵Mg(n,γ)²⁶Mg fosse due volte più veloce, questo modello del nucleo di elio di una stella massiccia finirebbe con circa un terzo di stronzio‑88 (−69%).",
+ "s-core-magnesium-poison.it": "Se la ²⁵Mg(n,γ)²⁶Mg fosse due volte più veloce, questo modello del nucleo di elio di una stella massiccia finirebbe con solo circa un terzo dello stronzio‑88 (−69%).",
  "s-pocket-iron-seeds.en": "If ⁵⁶Fe(n,γ)⁵⁷Fe were twice as fast, this model of an AGB star's ¹³C pocket would end up with about half as much barium‑138 (−53%).",
- "s-pocket-iron-seeds.it": "Se la ⁵⁶Fe(n,γ)⁵⁷Fe fosse due volte più veloce, questo modello della tasca di ¹³C di una stella AGB finirebbe con circa la metà di bario‑138 in meno (−53%)."
+ "s-pocket-iron-seeds.it": "Se la ⁵⁶Fe(n,γ)⁵⁷Fe fosse due volte più veloce, questo modello della tasca di ¹³C di una stella AGB finirebbe con circa metà del bario‑138 (−53%)."
 }

@@ -43,6 +43,8 @@ export interface CuriositySpec {
   where: Words
   /** why it matters, at most 15 words, no numbers of the model */
   hook: Words
+  /** a limit of the model for this one result, after the caveat */
+  note?: Words
 }
 
 /** "this model of …", per scenario, so each is written once. */
@@ -83,7 +85,7 @@ export const CURIOSITIES: CuriositySpec[] = [
     name: nm("beryllium‑7", "berillio‑7"),
     where: W.sun,
     hook: {
-      en: "Beryllium‑7 gives off the Sun's ⁷Be neutrinos, which Borexino counts on Earth.",
+      en: "Beryllium‑7 gives off the Sun's ⁷Be neutrinos, which Borexino counted on Earth.",
       it: "Il berillio‑7 emette i neutrini del ⁷Be del Sole, che Borexino conta sulla Terra.",
     },
   },
@@ -165,8 +167,12 @@ export const CURIOSITIES: CuriositySpec[] = [
     name: nm("aluminium‑26", "alluminio‑26"),
     where: W.hbb,
     hook: {
-      en: "Aluminium‑26's 1.809 MeV glow maps the Milky Way. Here an upper limit.",
-      it: "La luce a 1,809 MeV dell'alluminio‑26 disegna la Via Lattea. Qui è un limite superiore.",
+      en: "Aluminium‑26's 1.809 MeV glow maps the Milky Way.",
+      it: "La luce a 1,809 MeV dell'alluminio‑26 disegna la Via Lattea.",
+    },
+    note: {
+      en: "This model counts all the aluminium‑26 made, including a short-lived form that never glows, so here it is an upper limit.",
+      it: "Il modello conta tutto l'alluminio‑26 prodotto, anche una forma di vita breve che non emette questa luce: qui è quindi un limite superiore.",
     },
   },
   {
@@ -330,6 +336,9 @@ const FRACTIONS: [number, string, string][] = [
 ]
 const nearest = (f: number, max = 1) =>
   FRACTIONS.filter(([v]) => v <= max + 1e-9).reduce((a, b) => (Math.abs(Math.log(b[0] / f)) < Math.abs(Math.log(a[0] / f)) ? b : a))
+/** "del sodio", "dello stronzio‑88", "dell'alluminio‑26" (the element names are masculine). */
+const delIt = (name: string) =>
+  /^[aeiou]/i.test(name) ? `dell'${name}` : /^(s[^aeiou]|z|gn|ps|x)/i.test(name) ? `dello ${name}` : `del ${name}`
 const TIMES: Record<number, [string, string]> = { 2: ["twice", "il doppio"], 3: ["three times", "il triplo"] }
 
 /**
@@ -356,11 +365,11 @@ export function amountWords(r: number, name: string, lang: CLang): string {
   // less
   if (r >= 0.45 && r <= 0.55) {
     const exact = Math.abs(r - 0.5) <= 0.025
-    return it ? `${about(exact)}la metà di ${name} in meno` : `${about(exact)}half as much ${name}`
+    return it ? `${about(exact)}metà ${delIt(name)}` : `${about(exact)}half as much ${name}`
   }
   if (r < 0.45) {
     const [, en, itw] = nearest(r, 2 / 5)
-    return it ? `circa ${itw} di ${name}` : `about ${en} as much ${name}`
+    return it ? `solo circa ${itw} ${delIt(name)}` : `about ${en} as much ${name}`
   }
   const [, en, itw] = nearest(1 - r, 2 / 5)
   return it ? `circa ${itw} di ${name} in meno` : `about ${en} less ${name}`
@@ -411,14 +420,24 @@ export function temperatureWords(T9: number, lang: CLang): string {
   return lang === "it" ? `${group(mk, lang)} milioni di K` : `${group(mk, lang)} million K`
 }
 
+/** A site's own limit, on every card of that site (from its note in scenarios.yaml). */
+const SITE_NOTES: Record<string, Words> = {
+  "massive-he-core": {
+    en: "For this site the sizes are an upper end: read the direction.",
+    it: "Per questo sito l'entità delle variazioni è un limite superiore: conta soprattutto la direzione.",
+  },
+}
+
 export interface CuriosityText {
   /** the sentence in pieces, the bold ones marked */
   parts: { text: string; bold?: boolean }[]
   /** the same, plain: alt text, citation, screen readers */
   sentence: string
   hook: string
-  /** "One-zone model at 16 million K, 1 billion years. Real stars adjust." */
+  /** "One-zone model at 16 million K, 1 billion years. Real stars adjust.", then the site's and the card's own limits */
   caveat: string
+  /** the caveat without those limits (one line on the social card) */
+  shortCaveat: string
   amount: string
   percent: string
 }
@@ -439,10 +458,12 @@ export function curiosityText(
   const parts = [{ text: lead, bold: true }, { text: mid }, { text: amount, bold: true }, { text: ` (${percent}).` }]
   const T = temperatureWords(ctx.T9, lang)
   const d = durationWords(ctx.tFinal, lang)
-  const caveat = it
+  const extra = [SITE_NOTES[spec.site]?.[lang], spec.note?.[lang]].filter(Boolean).map((x) => ` ${x}`).join("")
+  const shortCaveat = it
     ? `Modello a una zona${ctx.cooling ? ` che si raffredda da ${T}` : `, ${T}`}, ${d}. Le stelle vere si adattano.`
     : `One-zone model ${ctx.cooling ? `cooling from ${T}` : `at ${T}`}, ${d}. Real stars adjust.`
-  return { parts, sentence: parts.map((p) => p.text).join(""), hook: spec.hook[lang], caveat, amount, percent }
+  const caveat = shortCaveat + extra
+  return { parts, sentence: parts.map((p) => p.text).join(""), hook: spec.hook[lang], caveat, shortCaveat, amount, percent }
 }
 
 /** The explorer's address that applies the change: `{ path, hash }`. */

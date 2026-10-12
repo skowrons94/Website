@@ -44,6 +44,9 @@ const CASES = [
   { lang: "en", q: "about this site", first: "/about" },
   { lang: "it", q: "come citare", top: ["/about"], n: 5 },
   { lang: "en", q: "Claude", top: ["/about"], n: 3 },
+  // --- r13 final ---
+  { lang: "en", q: "curiosities", first: "/atlas/rates/curiosities" },
+  { lang: "it", q: "curiosità", first: "/atlas/rates/curiosities" },
   { lang: "it", q: "schermatura elettronica", top: ["/glossary#electron-screening"], n: 3 },
   { lang: "en", q: "gold", top: ["/atlas/s-process", "/atlas/197Au-ng-198Au"], n: 2 },
   { lang: "it", q: "oro", top: ["/atlas/s-process", "/atlas/197Au-ng-198Au"], n: 2, none: [/19F|18O-pg-19F|fluor/i] },

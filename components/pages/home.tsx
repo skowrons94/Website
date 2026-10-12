@@ -18,6 +18,7 @@ import {
 import { Sci } from "@/components/sci"
 import { dict, localePath, type Lang } from "@/lib/i18n"
 import { LUNA_RATES_PUBLIC } from "@/lib/rates/features"
+import { CURIOSITIES } from "@/lib/rates/curiosities"
 
 /**
  * A paragraph with `[text](/path)` links, the only markup the profile's lead
@@ -141,6 +142,7 @@ function resources(lang: Lang): Resource[] {
         ...(meta.licence ? [{ text: t.licence(meta.licence) }] : []),
         { text: "JINA REACLIB · pynucastro" },
         { text: t.resourceRatesSources, href: "/atlas/rates#credits" },
+        { text: t.resourceRatesCuriosities(CURIOSITIES.length), href: "/atlas/rates/curiosities" },
       ],
     },
     {

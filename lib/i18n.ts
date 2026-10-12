@@ -80,6 +80,9 @@ const en = {
     // --- r11 site ---
     about: "About this site",
     aboutDescription: "How it was made and checked, its data, how to cite it",
+    // --- r13 final ---
+    curiosities: "Rate curiosities",
+    curiositiesDescription: "What a reaction twice as fast would change, in sixteen sentences",
   },
   footer: {
     work: "Work",
@@ -250,6 +253,8 @@ const en = {
     resourceRatesText:
       "The pp chains, CNO, NeNa, MgAl and the s-process. Find the slowest step at a stellar site, change a rate and watch the abundances respond, computed in your browser from JINA REACLIB.",
     resourceRatesSources: "Sources",
+    // --- r13 final ---
+    resourceRatesCuriosities: (n: number) => `${n} curiosities`,
     resourceRatesLink: "See where a rate ends up: the rate explorer",
     // --- r7 site ---
     resourceEvaluationsSplit: (n: number, published: number) =>
@@ -706,6 +711,9 @@ const it: Dictionary = {
     // --- r11 site ---
     about: "Informazioni sul sito",
     aboutDescription: "Come è stato fatto e verificato, i dati, come citarlo",
+    // --- r13 final ---
+    curiosities: "Curiosità sui tassi",
+    curiositiesDescription: "Che cosa cambierebbe una reazione due volte più veloce, in sedici frasi",
   },
   footer: {
     work: "Lavoro",
@@ -870,6 +878,8 @@ const it: Dictionary = {
     resourceRatesText:
       "Le catene pp, i cicli CNO, NeNa e MgAl e il processo s. Trova il passo più lento in un ambiente stellare, cambia un tasso e guarda come rispondono le abbondanze, calcolate nel tuo browser da JINA REACLIB.",
     resourceRatesSources: "Fonti",
+    // --- r13 final ---
+    resourceRatesCuriosities: (n: number) => `${n} curiosità`,
     resourceRatesLink: "Dove va a finire un tasso: l'esploratore dei tassi",
     // --- r7 site ---
     resourceEvaluationsSplit: (n: number, published: number) =>

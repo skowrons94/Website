@@ -291,7 +291,7 @@ const en = {
     model: "Model",
     indexTitle: "Rate curiosities",
     indexLead:
-      "What a reaction twice as fast would change, in sixteen sentences. Each one comes from a one-zone burn of the rates explorer, says what it leaves out, and opens the exact calculation with “Try it”.",
+      "What a reaction twice as fast would change, in sixteen sentences. Each one comes from a one-zone burn of the rates explorer (a simplified model: one parcel of gas at a set temperature and density, with no mixing), says what it leaves out, and opens the exact calculation with “Try it”.",
     indexHow:
       "The numbers are read from the explorer's precomputed tables (every rate ×2 at each site's own conditions) and checked against a fresh run of the same solver. They are rounded to two significant figures. ×2 is a what-if: how well each rate is really known is given beside it, from the reaction atlas.",
     back: "Reaction rates",
@@ -630,7 +630,7 @@ const it: RatesDict = {
     model: "Modello",
     indexTitle: "Curiosità sui tassi",
     indexLead:
-      "Che cosa cambierebbe una reazione due volte più veloce, in sedici frasi. Ognuna viene da una combustione a una zona dell'esploratore dei tassi, dice che cosa lascia fuori e con «Provalo» apre esattamente quel calcolo.",
+      "Che cosa cambierebbe una reazione due volte più veloce, in sedici frasi. Ognuna viene da una combustione a una zona dell'esploratore dei tassi (un modello semplificato: una sola porzione di gas a temperatura e densità date, senza rimescolamento), dice che cosa lascia fuori e con «Provalo» apre esattamente quel calcolo.",
     indexHow:
       "I numeri sono letti dalle tabelle precalcolate dell'esploratore (ogni tasso ×2 alle condizioni di ciascun ambiente) e verificati con un nuovo calcolo dello stesso risolutore. Sono arrotondati a due cifre significative. ×2 è un'ipotesi: accanto è indicato quanto è noto davvero ogni tasso, dall'atlante delle reazioni.",
     back: "Tassi di reazione",
