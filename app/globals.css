@@ -387,6 +387,13 @@ sub {
     color: hsl(var(--foreground));
   }
 
+  /* Keep the fills that carry meaning (a dark button with light text, the
+     chart's cells); everything else is already light on white. */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
   /* Sticky and fixed things print once, where they are, or not at all. */
   .sticky,
   .fixed {
@@ -410,7 +417,9 @@ sub {
     page-break-after: avoid;
   }
 
-  li,
+  /* A list entry stays whole unless it holds a list of its own (a CV entry
+     with bullets), which may run on rather than leave half a page empty. */
+  li:not(:has(ul, ol)),
   figure,
   pre,
   blockquote,

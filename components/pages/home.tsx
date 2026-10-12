@@ -139,8 +139,8 @@ export function HomePage({ lang }: { lang: Lang }) {
 
       {/* -- selected work ------------------------------------------------- */}
       {selected.length > 0 && (
-        <section className="border-t border-border/70 py-14" aria-labelledby="selected-heading">
-          <div className="mb-8 flex items-baseline justify-between gap-4">
+        <section className="border-t border-border/70 py-14 print:break-inside-avoid" aria-labelledby="selected-heading">
+          <div className="mb-8 flex break-after-avoid items-baseline justify-between gap-4">
             <h2 id="selected-heading" className="font-serif text-2xl font-semibold tracking-tight">
               {t.selected}
             </h2>
@@ -208,7 +208,7 @@ export function HomePage({ lang }: { lang: Lang }) {
 
       {/* -- research threads ---------------------------------------------- */}
       <section className="border-t border-border/70 py-16">
-        <div className="mb-10 flex items-baseline justify-between gap-4">
+        <div className="mb-10 flex break-after-avoid items-baseline justify-between gap-4">
           <h2 className="font-serif text-2xl font-semibold tracking-tight">
             {t.research}
           </h2>
@@ -283,7 +283,7 @@ export function HomePage({ lang }: { lang: Lang }) {
 
       {/* -- notes --------------------------------------------------------- */}
       <section className="border-t border-border/70 py-16">
-        <div className="mb-10 flex items-baseline justify-between gap-4">
+        <div className="mb-10 flex break-after-avoid items-baseline justify-between gap-4">
           <h2 className="font-serif text-2xl font-semibold tracking-tight">
             {t.notes}
           </h2>
