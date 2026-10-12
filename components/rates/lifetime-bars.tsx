@@ -1,6 +1,6 @@
 "use client"
 
-import { memo, useLayoutEffect, useRef } from "react"
+import { memo, useEffect, useRef } from "react"
 
 import Link from "next/link"
 
@@ -97,9 +97,15 @@ export const LifetimeBars = memo(function LifetimeBars({
   // a value label set to the right of its dot that would run past the end of
   // its track (large text, a narrow column) goes to the left of it instead
   const root = useRef<HTMLDivElement>(null)
-  useLayoutEffect(() => {
+  useEffect(() => {
     const el = root.current
     if (!el) return
+    let id = 0
+    // measured when the page is idle: never a forced layout during hydration
+    const later = () => {
+      cancelAnimationFrame(id)
+      id = requestAnimationFrame(fit)
+    }
     const fit = () => {
       el.querySelectorAll<HTMLElement>("[data-side]").forEach((span) => {
         const track = span.parentElement!
@@ -113,10 +119,14 @@ export const LifetimeBars = memo(function LifetimeBars({
         }
       })
     }
-    fit()
-    const ro = new ResizeObserver(fit)
+    const idle = "requestIdleCallback" in window ? window.requestIdleCallback(later, { timeout: 1500 }) : 0
+    const ro = new ResizeObserver(later)
     ro.observe(el)
-    return () => ro.disconnect()
+    return () => {
+      ro.disconnect()
+      cancelAnimationFrame(id)
+      if (idle) window.cancelIdleCallback(idle)
+    }
   })
 
   return (

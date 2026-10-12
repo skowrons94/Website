@@ -63,7 +63,8 @@ function TryIt({ c, lang }: { c: CuriosityCardData; lang: Lang }) {
   const t = ratesDict(lang).cur
   const here = usePathname()
   const cls = `${BTN} bg-foreground text-background hover:bg-foreground/85`
-  if (here === c.tryPath) {
+  // (the static export's addresses end in a slash)
+  if (here?.replace(/\/$/, "") === c.tryPath) {
     return (
       <a
         href={c.tryHash}
@@ -211,7 +212,7 @@ export function CuriosityStrip({
   if (!order.length) return null
   const shown = Array.from({ length: Math.min(3, order.length) }, (_, i) => order[(offset + i) % order.length])
   return (
-    <section aria-labelledby="curiosities-title" className="scroll-mt-24">
+    <section aria-labelledby="curiosities-title" className="scroll-mt-24 [contain-intrinsic-size:auto_720px] [content-visibility:auto]">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <h2 id="curiosities-title" className="text-balance font-serif text-xl font-semibold tracking-tight sm:text-2xl">
           <Sci>{t.title}</Sci>
