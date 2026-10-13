@@ -670,24 +670,8 @@ def newer_note(rj: dict, meta: dict) -> dict | None:
             "it": f"REACLIB: {sets}. Più recenti: {'; '.join(parts_it)}."}
 
 
-EVALUATED = Path(__file__).resolve().parent / "evaluated"
-
-
-def evaluated_rate(reaction_id: str) -> dict | None:
-    """A rate computed from one of the site's AZURE2 evaluations
-    (scripts/rates/evaluated_rates.py), as an alternative to REACLIB's."""
-    path = EVALUATED / f"{reaction_id}.json"
-    if not path.exists():
-        return None
-    d = json.loads(path.read_text(encoding="utf-8"))
-    return {
-        "id": "luna",
-        "evaluation": d["evaluation"],
-        "rate": {"kind": "table", "T9": d["T9"], "log10": d["log10"], "validity_T9": [d["T9"][0], d["T9"][-1]]},
-        "paper": d["paper"],
-        "fit": d["fit"],
-        "method": d["method"],
-    }
+# the evaluated rates and whether they ship: scripts/rates/rate_alternatives.py
+from rate_alternatives import evaluated_rate  # noqa: E402,F401
 
 
 def screening_constants() -> dict:
@@ -715,6 +699,7 @@ def scenario_json(s: dict, nucs) -> dict:
         "X": {n.raw: _sig(X.get(comp_key(n), 0.0)) for n in nucs},
         "source": s["source"], "source_it": s["source_it"],
         "note": s.get("note"), "note_it": s.get("note_it"),
+        "power": s["power"],
     }
     if "history" in s:
         out["profile"] = history_profile(s["history"], time)

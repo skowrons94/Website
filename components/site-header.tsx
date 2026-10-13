@@ -11,6 +11,7 @@ import { SearchButton } from "@/components/search/search-button"
 import { ThemeToggle } from "@/components/theme-toggle"
 import type { ChromeStrings } from "@/lib/chrome-strings"
 import { localePath, type Lang } from "@/lib/locale"
+import { prefetchFor } from "@/lib/prefetch"
 
 /*
  * The header.
@@ -303,6 +304,7 @@ export function SiteHeader({
                     <li key={entry.href}>
                       <Link
                         href={entry.href}
+                        prefetch={prefetchFor(entry.href)}
                         aria-current={isActive(entry.href) ? "page" : undefined}
                         onClick={() => setOpen(false)}
                         className={`-ml-3 block border-l-2 py-2 pl-[calc(0.75rem-2px)] pr-2 ${
@@ -348,7 +350,7 @@ const BAR_OFF = "text-muted-foreground after:bg-transparent hover:after:bg-borde
 
 function BarLink({ item, active }: { item: Item; active: boolean }) {
   return (
-    <Link href={item.href} aria-current={active ? "page" : undefined} className={`${BAR} ${active ? BAR_ON : BAR_OFF}`}>
+    <Link href={item.href} prefetch={prefetchFor(item.href)} aria-current={active ? "page" : undefined} className={`${BAR} ${active ? BAR_ON : BAR_OFF}`}>
       {item.label}
     </Link>
   )
@@ -448,6 +450,7 @@ function NavMenu({
               <Link
                 data-learn-link=""
                 href={entry.href}
+                prefetch={prefetchFor(entry.href)}
                 aria-current={isActive(entry.href) ? "page" : undefined}
                 onClick={() => setOpen(false)}
                 className={`block rounded-md px-3 py-2 transition-colors hover:bg-accent focus-visible:bg-accent ${

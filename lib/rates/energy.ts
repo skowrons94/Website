@@ -24,7 +24,7 @@
  * temperature to keep its luminosity, so ε is not the star's luminosity.
  */
 
-import type { Network, Reaction } from "./schema.ts"
+import type { Network, Reaction, Scenario } from "./schema.ts"
 
 /** 1 MeV in erg (exact, SI 2019). */
 export const MEV_TO_ERG = 1.602176634e-6
@@ -88,6 +88,29 @@ export const NEUTRINO_GROUPS: Record<string, { id: string; reactions: string[] }
 
 /** Networks whose reactions make the burn's energy (in NeNa and MgAl the CNO cycle does, outside them). */
 export const ENERGY_NETS = ["pp", "cno", "sprocess"]
+
+/** The burnings that power the sites (Scenario.power). */
+export type Power = NonNullable<Scenario["power"]>
+
+/** A reaction that a network running each burning has: p + p, ¹⁴N(p,γ), 3α. */
+export const POWER_MARK: Record<Power, string> = {
+  pp: "p_p_to_d_beta_pos_reaclib",
+  cno: "N14_p_to_O15_reaclib",
+  he: "He4_He4_He4_to_C12_reaclib",
+}
+
+/**
+ * The burning that makes most of the scenario's energy when the network
+ * leaves it out, else null: CNO alone at the Sun's centre (the pp chain makes
+ * the power there), the pp chain alone in a 15 M☉ core (the CNO cycle does),
+ * NeNa and MgAl anywhere. The energy shown is then only this network's, and
+ * the time to burn the fuel means nothing: the missing burning sets it.
+ */
+export function missingPower(network: Pick<Network, "reactions">, scenario: Pick<Scenario, "power"> | null | undefined): Power | null {
+  const p = scenario?.power
+  if (!p) return null
+  return network.reactions.some((r) => r.id === POWER_MARK[p]) ? null : p
+}
 
 /** The burn's fuel: what it stops on, else the network's fuel, else helium. */
 export function fuelOf(network: Network, until: { nucleus: string } | null | undefined): string | null {

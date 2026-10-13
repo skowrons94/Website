@@ -11,7 +11,9 @@ committed, so `npm run build` needs no Python. After a change here, rerun
 `node scripts/rates/baseline.mjs` (the precomputed first view) and
 `python scripts/rates/reference.py` (pynucastro's own integration, which
 `npm run test:rates` compares the browser solver against). The work itself
-is in pyna_export.py.
+is in pyna_export.py. The reactions' `alternatives` (the LUNA/AZURE2 tables)
+are written only while LUNA_RATES_PUBLIC is true (rate_alternatives.py, which
+also applies the flag to the committed files without pynucastro).
 """
 
 from __future__ import annotations
@@ -26,6 +28,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 import pyna_export as px  # noqa: E402
+import rate_alternatives  # noqa: E402
 
 ROOT = HERE.parents[1]
 OUT = ROOT / "public" / "rates"
@@ -75,9 +78,11 @@ def load_specs() -> tuple[list[dict], dict[str, dict]]:
 
 
 def write(data: dict) -> None:
+    # the evaluated rates ship only once the LUNA switch is public (lib/rates/features.ts)
+    data = rate_alternatives.apply(data)
     OUT.mkdir(parents=True, exist_ok=True)
     path = OUT / f"{data['id']}.json"
-    path.write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    path.write_text(rate_alternatives.dumps(data), encoding="utf-8")
     print(f"{path.relative_to(ROOT)}: {len(data['nuclei'])} nuclei, {len(data['reactions'])} reactions, "
           f"{path.stat().st_size / 1024:.0f} kB")
 

@@ -4,7 +4,7 @@ import { memo } from "react"
 
 import { Sci } from "@/components/sci"
 import type { Lang } from "@/lib/locale"
-import { ENERGY_NETS, energyChange, meanPower } from "@/lib/rates/energy"
+import { energyChange, meanPower, type Power } from "@/lib/rates/energy"
 import { ratesDict } from "@/lib/rates/i18n"
 import type { RunResult } from "@/lib/rates/run"
 import { EvolutionChart } from "./evolution-chart"
@@ -15,18 +15,21 @@ import { changeText, dec, duration, sci } from "./format"
  * power, the time its fuel takes to run down and the neutrinos a detector
  * would name, each as changed ÷ unchanged once a rate is changed, with the
  * unchanged value beside it. Always with what ε is not: the star's luminosity.
+ * When the network leaves out the burning that powers the site (`missing`,
+ * lib/rates/energy.ts: missingPower), it says that only this network's
+ * reactions count and leaves out the fuel time, which that burning sets.
  */
 export function EnergyLines({
   base,
   mod,
   changed,
-  net,
+  missing,
   lang,
 }: {
   base: RunResult | null
   mod: RunResult | null
   changed: boolean
-  net: string
+  missing: Power | null
   lang: Lang
 }) {
   const t = ratesDict(lang)
@@ -35,7 +38,7 @@ export function EnergyLines({
   const b = base.energy
   const m = mod.energy
   const ch = changed ? energyChange(base, mod) : null
-  const fuel = b.fuel ? e.fuelName[b.fuel] : null
+  const fuel = b.fuel && !missing ? e.fuelName[b.fuel] : null
   const fuelLabel = fuel ? (base.stopped === "until" || b.mark < 0.5 ? e.fuelUntil(fuel[0], b.mark) : e.fuelFirst(fuel[1])) : null
   const colour = (r: number) => (Math.abs(r - 1) < 0.005 ? undefined : r > 1 ? "var(--rates-up)" : "var(--rates-down)")
   const value = (r: number) => (
@@ -101,7 +104,7 @@ export function EnergyLines({
       </ul>
       <p className="mt-2 text-pretty text-xs leading-relaxed text-muted-foreground">
         {e.note}
-        {!ENERGY_NETS.includes(net) && ` ${e.noteNet}`}
+        {missing && ` ${e.noteNet(e.chain[missing])}`}
       </p>
     </div>
   )

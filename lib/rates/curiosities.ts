@@ -21,7 +21,8 @@
  *
  * A card can say more than its main nucleus (the owner's request, r11): a
  * second line with the most striking knock-on effect (a nucleus other than
- * the reaction's own reactants and products, moved by 5% or more), and an
+ * the reaction's own reactants and products and what they decay to in one
+ * step, moved by 5% or more), and an
  * energy line (the burn's mean power and how soon its fuel runs out), both
  * read from the same tables (`energy`, `fuel`, `nu` beside the nuclei). A
  * curiosity can also be about the energy itself (`kind: "energy"`) or about
@@ -66,7 +67,10 @@ export interface CuriositySpec {
   note?: Words
   /**
    * What the energy line covers, when the network is not all of the site's
-   * burning (CNO alone in the Sun's centre): it leads the line.
+   * burning (CNO alone in the Sun's centre): it leads the line, and the line
+   * then leaves out the fuel time, which only the whole burning sets (CNO
+   * alone takes 710 million years over the first 1% of the Sun's hydrogen,
+   * the pp chain 43 million).
    */
   energyScope?: Words
 }
@@ -85,6 +89,12 @@ const W = {
 } satisfies Record<string, Words>
 
 const nm = (en: string, it: string): Words => ({ en, it })
+
+/** The limit of every card that names krypton‑86 (the explorer's s-process notes say the same). */
+const KR85: Words = {
+  en: "Krypton‑86 comes through the branch at krypton‑85, modelled without its short-lived isomer, so this model makes too much of it.",
+  it: "Il kripton‑86 nasce dalla diramazione al kripton‑85, qui senza il suo isomero di vita breve: il modello ne produce quindi troppo.",
+}
 
 export const CURIOSITIES: CuriositySpec[] = [
   {
@@ -130,8 +140,8 @@ export const CURIOSITIES: CuriositySpec[] = [
       it: "C, N e O partono come combustibile fresco alla temperatura e alla densità di oggi, non come il cuore già trasformato del Sole.",
     },
     energyScope: {
-      en: "CNO reactions only (about 1% of the Sun's power)",
-      it: "Solo le reazioni CNO (circa l'1% della potenza del Sole)",
+      en: "CNO reactions only, about 1% of the Sun's power (a few per cent at its centre)",
+      it: "Solo le reazioni CNO, circa l'1% della potenza del Sole (qualche per cento al centro)",
     },
   },
   {
@@ -174,7 +184,7 @@ export const CURIOSITIES: CuriositySpec[] = [
     where: W.hbb,
     hook: {
       en: "Sodium varies from star to star in globular clusters; LUNA measured this rate in 2018.",
-      it: "Il sodio varia tra le stelle degli ammassi globulari; LUNA l'ha misurata nel 2018.",
+      it: "Il sodio varia tra le stelle degli ammassi globulari; LUNA misurò il tasso nel 2018.",
     },
   },
   {
@@ -258,6 +268,7 @@ export const CURIOSITIES: CuriositySpec[] = [
       en: "All the carbon‑13 burns anyway: how much there is matters, not how fast it burns.",
       it: "Il carbonio‑13 brucia tutto comunque: conta quanto ce n'è, non quanto in fretta brucia.",
     },
+    note: KR85,
   },
   {
     id: "s-pulse-neon-22",
@@ -271,6 +282,7 @@ export const CURIOSITIES: CuriositySpec[] = [
       en: "In the short hot pulse, neon‑22 burns only partly: its rate sets the neutrons.",
       it: "Nel breve impulso il neon‑22 brucia solo in parte: il tasso decide quanti neutroni libera.",
     },
+    note: KR85,
   },
   {
     id: "s-core-neon-22-rival",
@@ -307,8 +319,8 @@ export const CURIOSITIES: CuriositySpec[] = [
     name: nm("barium‑138", "bario‑138"),
     where: W.pocket,
     hook: {
-      en: "More seeds share the same neutrons, so each one climbs less far towards barium.",
-      it: "Più semi si dividono gli stessi neutroni, così ognuno sale meno verso il bario.",
+      en: "Iron grabs more of the neutrons, so each nucleus climbs less far towards barium.",
+      it: "Il ferro cattura più neutroni, così ogni nucleo sale meno verso il bario.",
     },
   },
   // -- r11: the energy, the neutrinos and the knock-on effects --------------------
@@ -323,7 +335,7 @@ export const CURIOSITIES: CuriositySpec[] = [
     where: W.m15,
     hook: {
       en: "The CNO cycle's slowest step sets the temperature at which a massive star burns hydrogen.",
-      it: "Il passo più lento del ciclo CNO fissa a che temperatura brucia una stella massiccia.",
+      it: "Nelle stelle massicce l'idrogeno brucia alla temperatura fissata dal passo più lento del ciclo CNO.",
     },
   },
   {
@@ -471,7 +483,8 @@ export interface KnockOn {
  * The most striking knock-on effect of a curiosity's change: the nucleus,
  * other than the reaction's own reactants and products and the card's own
  * nuclei, whose final abundance moves most, by 5% or more. `own` lists the
- * reaction's reactants and products by name; `weight(name)` is the
+ * reaction's reactants and products by name, with their one-step decay
+ * daughters (ownNuclei); `weight(name)` is the
  * nucleus's final mass fraction, 0 when it is too rare to matter. Nuclei
  * that move alike (a cycle in balance moves all its members by the same
  * factor: within 0.03 in s) are a tie, and the most abundant one is named.
@@ -711,6 +724,10 @@ export function temperatureWords(T9: number, lang: CLang): string {
 
 /** A site's own limit, on every card of that site (from its note in scenarios.yaml). */
 const SITE_NOTES: Record<string, Words> = {
+  "agb-thermal-pulse": {
+    en: "This pulse gives the nuclei several times the neutron exposure of a real one: read the size of the change with care.",
+    it: "In questo modello l'esposizione ai neutroni è parecchie volte quella di un impulso vero: l'entità della variazione va letta con cautela.",
+  },
   "massive-he-core": {
     en: "For this site the sizes are upper limits: read the direction of the change.",
     it: "Per questo ambiente stellare le variazioni indicate sono un limite superiore: conta soprattutto il segno.",
@@ -832,7 +849,13 @@ export function curiosityText(spec: CuriositySpec, r: number, lang: CLang, ctx: 
     : null
   const e = ctx.energy
   const scope = spec.energyScope?.[lang]
-  const energyLine = e
+  // a burn that stops when its fuel runs out releases the same energy whatever the rate: only how fast changes
+  const same = Boolean(!scope && e && ctx.until && e.fuel !== null && Math.abs(e.power * e.fuel - 1) < EXTRA_MIN)
+  const energyLine = same
+    ? it
+      ? `La stessa energia, liberata ${soonerWords(e!.fuel!, lang)}: potenza ${percentText(e!.power, lang)}.`
+      : `The same energy, released ${soonerWords(e!.fuel!, lang)}: power ${percentText(e!.power, lang)}.`
+    : e
     ? (scope
         ? it
           ? `${scope}: energia prodotta ${percentText(e.power, lang)}`
@@ -840,7 +863,7 @@ export function curiosityText(spec: CuriositySpec, r: number, lang: CLang, ctx: 
         : it
           ? `Energia prodotta ${percentText(e.power, lang)}`
           : `Energy output ${percentText(e.power, lang)}`) +
-      (e.fuel !== null && ctx.fuel && Math.abs(e.fuel - 1) >= 0.01 ? `; ${fuelClause(e.fuel, ctx.fuel, Boolean(ctx.until), lang)}` : "") +
+      (!scope && e.fuel !== null && ctx.fuel && Math.abs(e.fuel - 1) >= 0.01 ? `; ${fuelClause(e.fuel, ctx.fuel, Boolean(ctx.until), lang)}` : "") +
       "."
     : null
   const hasEnergy = spec.kind === "energy" || spec.kind === "neutrino" || energyLine !== null
@@ -900,7 +923,7 @@ export const curiosityPath = (id: string) => `/atlas/rates/curiosities/${id}`
 export interface NetworkLike {
   id: string
   nuclei: { name: string; label: string; Z: number }[]
-  reactions: { id: string; label: string; reactants: number[]; products: number[] }[]
+  reactions: { id: string; label: string; reactants: number[]; products: number[]; weakType?: string | null }[]
   scenarios: { id: string; T9: number; profile?: unknown; until: unknown }[]
 }
 export interface BaselineLike {
@@ -909,6 +932,20 @@ export interface BaselineLike {
 
 /** A knock-on line names only a nucleus with a final mass fraction of at least this. */
 export const KNOCK_FLOOR = 1e-10
+
+/**
+ * A reaction's own nuclei, by name: its reactants and products and what
+ * each of them decays to in one step (¹⁸F(p,α)¹⁵O owns ¹⁸O, ²⁰Ne(p,γ)²¹Na
+ * owns ²¹Ne), since a nucleus one decay away moves with them by
+ * construction and is no knock-on effect.
+ */
+export function ownNuclei(network: NetworkLike, reaction: NetworkLike["reactions"][number]): string[] {
+  const direct = new Set([...reaction.reactants, ...reaction.products])
+  const own = new Set(direct)
+  for (const d of network.reactions)
+    if (d.weakType && d.reactants.length === 1 && direct.has(d.reactants[0])) for (const i of d.products) own.add(i)
+  return [...own].map((i) => network.nuclei[i].name)
+}
 
 /** Everything curiosityText needs besides the ratio, read from the shipped files. */
 export function curiosityContext(
@@ -921,7 +958,7 @@ export function curiosityContext(
   const r = network.reactions.find((x) => x.id === spec.reaction)
   const run = baseline.runs[spec.site]
   if (!s || !r || !run) throw new Error(`curiosity ${spec.id}: no scenario, reaction or baseline`)
-  const own = [...r.reactants, ...r.products].map((i) => network.nuclei[i].name)
+  const own = ownNuclei(network, r)
   const index = new Map(network.nuclei.map((n, i) => [n.name, i]))
   // in the s-process the iron-group seeds (Z ≤ 28) only follow the neutrons: the knock-on is a product
   const knock = curiosityKnock(spec, sens, own, (name) => {

@@ -125,13 +125,22 @@ const en = {
     "At these conditions, how long a nucleus waits, on average, before each reaction turns it into something else. Each dot is one reaction, on a logarithmic time axis.",
   lifeFine:
     "Waiting times at the start of the burn (for a nova, at its peak), with the scenario's initial composition: as the partners of a reaction are used up or built up, the waits change.",
-  lifeFineNet: {
-    pp: "Here ³He starts at its protosolar value, so its waits are shorter than in the Sun today.",
-    mgal: "At 25 M☉ the ²⁶Al left at the end is what survives its own decay once ²⁵Mg has run out; in a real star the winds carry part of it away before.",
+  /** a note on the waiting times of one network at one site, by "network/site" */
+  lifeFineSite: {
+    "pp/sun-core": "Here ³He starts at its protosolar value, so its waits are shorter than in the Sun today.",
+    "mgal/massive-25": "At 25 M☉ the ²⁶Al left at the end is what survives its own decay once ²⁵Mg has run out; in a real star the winds carry part of it away before.",
   } as Record<string, string>,
   pathEnd: (path: string, end: string) => `The flow goes ${path}, and ends as ${end}.`,
   pathStall: (path: string, end: string) => `The flow goes ${path} → ${end}, and piles up at ${end} within the burn.`,
-  pathPp: "Most ³He fuses with another ³He (ppI); a share captures ⁴He and goes on through ⁷Be (ppII and ppIII).",
+  /** how the ³He is used up over the burn: the shares through ³He + ³He (ppI) and ³He + ⁴He (ppII, ppIII) */
+  pathPp: (f33: number, f34: number) => {
+    const pc = (f: number) => `${Math.round(100 * f)}%`
+    if (f33 >= 0.4 && f33 <= 0.6)
+      return `About half the ³He (${pc(f33)}) fuses with another ³He (ppI); the other half (${pc(f34)}) captures ⁴He and goes on through ⁷Be (ppII and ppIII).`
+    return f33 > 0.6
+      ? `Most ³He (${pc(f33)}) fuses with another ³He (ppI); the rest captures ⁴He and goes on through ⁷Be (ppII and ppIII).`
+      : `Most ³He (${pc(f34)}) captures ⁴He and goes on through ⁷Be (ppII and ppIII); the rest fuses with another ³He (ppI).`
+  },
   bottleneck: "bottleneck",
   waits: (nucleus: string) => `${nucleus} nuclei wait`,
   lifeAxis: "Mean waiting time",
@@ -250,7 +259,9 @@ const en = {
     mean: (eps: string) => `${eps} erg g⁻¹ s⁻¹`,
     share: (share: string) => `neutrinos carry away ${share} of the energy released`,
     note: "The power of one gram of gas at the burn's temperature, neutrinos excluded: not the star's luminosity. A real star would adjust its temperature to keep its luminosity.",
-    noteNet: "Only the reactions of this network count here: in a star most of the energy comes from the pp chain or the CNO cycle.",
+    noteNet: (chain: string) =>
+      `Only the reactions of this network count here: at this site most of the energy comes from ${chain}, which the network leaves out, so the time to burn the fuel is not shown.`,
+    chain: { pp: "the pp chain", cno: "the CNO cycle", he: "helium burning" } as Record<string, string>,
     chartTitle: "Energy during the burn",
     chartLead: "Energy generation rate ε (neutrinos excluded) against time.",
     chartLabel: "Line chart of the energy generation rate against time, both on logarithmic scales.",
@@ -315,25 +326,6 @@ const en = {
   gamowResonances:
     "The window is where a smooth (non-resonant) cross section reacts most. A narrow resonance inside it dominates instead (²⁴Mg(p,γ) at 300 million kelvin through its 214 keV resonance, ²⁵Mg(p,γ) at 80 million kelvin): the rate then follows the resonance's energy, not the window.",
   nowFactor: (f: string) => `now ${f}`,
-  luna: {
-    title: "Rates from LUNA measurements",
-    toggle: "Use the LUNA/AZURE2 rates",
-    toggleHint: "for ¹²C(p,γ)¹³N and ¹³C(p,γ)¹⁴N",
-    lead: "LUNA measured the two proton captures on carbon deep underground, down to 60 keV (Skowronski et al. 2023). Switched on, the burn uses rates computed from the R-matrix evaluations of those data on this site, instead of REACLIB's.",
-    ratio: (T: string) => `¹²C/¹³C in CN equilibrium at ${T}`,
-    ratioHint: "number ratio, = rate of ¹³C(p,γ) ÷ rate of ¹²C(p,γ): what hydrogen burning leaves, the ratio astronomers measure in red giants",
-    reaclib: "REACLIB",
-    lunaWord: "LUNA/AZURE2",
-    burn: "at the end of this burn",
-    versus: (label: string, f: string) => `${label}: ${f} × REACLIB's rate here`,
-    evaluations: "The evaluations",
-    method:
-      "N_A⟨σv⟩ integrated numerically (Maxwell–Boltzmann) from each evaluation's cross section at its published parameters, from 1 keV to 4 MeV, narrow resonances resolved.",
-    on: "on",
-    off: "off",
-  },
-  builtBy:
-    "Built by J. Skowronski; rates from his AZURE2 evaluations can be dropped in for REACLIB's, as ¹²C(p,γ) and ¹³C(p,γ) are here (What if ▸ LUNA/AZURE2 rates).",
   builtByPlain: "Built by J. Skowronski; the explorer can take rates from his AZURE2 evaluations in place of REACLIB's.",
   lunaChip: "LUNA",
   lunaChipTitle: (refs: string) => `Measured underground at LUNA: ${refs}`,
@@ -529,13 +521,20 @@ const it: RatesDict = {
     "In queste condizioni, quanto aspetta in media un nucleo prima che ciascuna reazione lo trasformi in qualcos'altro. Ogni punto è una reazione, su un asse dei tempi logaritmico.",
   lifeFine:
     "Tempi di attesa all'inizio della combustione (per una nova, al picco), con la composizione iniziale dello scenario: mentre i partner di una reazione si consumano o si accumulano, le attese cambiano.",
-  lifeFineNet: {
-    pp: "Qui il ³He parte dal valore protosolare, quindi le sue attese sono più brevi che nel Sole di oggi.",
-    mgal: "A 25 M☉ il ²⁶Al rimasto alla fine è quello che sopravvive al proprio decadimento dopo che il ²⁵Mg si è esaurito; in una stella vera i venti ne portano via una parte prima.",
+  lifeFineSite: {
+    "pp/sun-core": "Qui il ³He parte dal valore protosolare, quindi le sue attese sono più brevi che nel Sole di oggi.",
+    "mgal/massive-25": "A 25 M☉ il ²⁶Al rimasto alla fine è quello che sopravvive al proprio decadimento dopo che il ²⁵Mg si è esaurito; in una stella vera i venti ne portano via una parte prima.",
   },
   pathEnd: (path: string, end: string) => `Il flusso va ${path} e finisce in ${end}.`,
   pathStall: (path: string, end: string) => elideItalian(`Il flusso va ${path} → ${end} e, nel tempo della combustione, si accumula nel ${end}.`),
-  pathPp: "Quasi tutto il ³He si fonde con un altro ³He (ppI); una parte cattura ⁴He e prosegue attraverso il ⁷Be (ppII e ppIII).",
+  pathPp: (f33: number, f34: number) => {
+    const pc = (f: number) => `${Math.round(100 * f)}%`
+    if (f33 >= 0.4 && f33 <= 0.6)
+      return `Circa metà del ³He (${pc(f33)}) si fonde con un altro ³He (ppI); l'altra metà (${pc(f34)}) cattura ⁴He e prosegue attraverso il ⁷Be (ppII e ppIII).`
+    return f33 > 0.6
+      ? `La maggior parte del ³He (${pc(f33)}) si fonde con un altro ³He (ppI); il resto cattura ⁴He e prosegue attraverso il ⁷Be (ppII e ppIII).`
+      : `La maggior parte del ³He (${pc(f34)}) cattura ⁴He e prosegue attraverso il ⁷Be (ppII e ppIII); il resto si fonde con un altro ³He (ppI).`
+  },
   bottleneck: "collo di bottiglia",
   waits: (nucleus: string) => `i nuclei di ${nucleus} aspettano`,
   lifeAxis: "Tempo medio di attesa",
@@ -652,7 +651,9 @@ const it: RatesDict = {
     mean: (eps: string) => `${eps} erg g⁻¹ s⁻¹`,
     share: (share: string) => `i neutrini portano via ${ilPercent(share)} dell'energia liberata`,
     note: "La potenza di un grammo di gas alla temperatura della combustione, neutrini esclusi: non è la luminosità della stella. Una stella vera regolerebbe la temperatura per mantenere la sua luminosità.",
-    noteNet: "Qui contano solo le reazioni di questa rete: in una stella quasi tutta l'energia viene dalla catena pp o dal ciclo CNO.",
+    noteNet: (chain: string) =>
+      `Qui contano solo le reazioni di questa rete: in questo ambiente stellare la maggior parte dell'energia viene ${chain}, che la rete non contiene, quindi il tempo per bruciare il combustibile non è indicato.`,
+    chain: { pp: "dalla catena pp", cno: "dal ciclo CNO", he: "dalla combustione dell'elio" } as Record<string, string>,
     chartTitle: "L'energia durante la combustione",
     chartLead: "Tasso di produzione di energia ε (neutrini esclusi) in funzione del tempo.",
     chartLabel: "Grafico a linee del tasso di produzione di energia in funzione del tempo, entrambi in scala logaritmica.",
@@ -715,25 +716,6 @@ const it: RatesDict = {
   gamowResonances:
     "La finestra indica dove avviene la maggior parte delle reazioni se la sezione d'urto è liscia (non risonante). Se al suo interno c'è una risonanza stretta, è lei a dominare (la ²⁴Mg(p,γ) a 300 milioni di K con la sua risonanza a 214 keV, la ²⁵Mg(p,γ) a 80 milioni di K): il tasso segue allora l'energia della risonanza, non la finestra.",
   nowFactor: (f: string) => `ora ${f}`,
-  luna: {
-    title: "Tassi dalle misure di LUNA",
-    toggle: "Usa i tassi LUNA/AZURE2",
-    toggleHint: "per la ¹²C(p,γ)¹³N e la ¹³C(p,γ)¹⁴N",
-    lead: "LUNA ha misurato sotto terra le due catture protoniche sul carbonio, fino a 60 keV (Skowronski et al. 2023). Attivando questa opzione, la combustione usa i tassi calcolati dalle valutazioni R-matrix di quei dati su questo sito, al posto di quelli di REACLIB.",
-    ratio: (T: string) => `¹²C/¹³C all'equilibrio del ciclo CN a ${T}`,
-    ratioHint: "rapporto tra numeri di nuclei, = tasso della ¹³C(p,γ) ÷ tasso della ¹²C(p,γ): ciò che lascia la combustione dell'idrogeno, il rapporto che gli astronomi misurano nelle giganti rosse",
-    reaclib: "REACLIB",
-    lunaWord: "LUNA/AZURE2",
-    burn: "alla fine di questa combustione",
-    versus: (label: string, f: string) => `${label}: ${f} × il tasso di REACLIB, qui`,
-    evaluations: "Le valutazioni",
-    method:
-      "N_A⟨σv⟩ integrato numericamente (Maxwell–Boltzmann) dalla sezione d'urto di ciascuna valutazione ai parametri pubblicati, da 1 keV a 4 MeV, con le risonanze strette risolte.",
-    on: "attivi",
-    off: "spenti",
-  },
-  builtBy:
-    "Realizzato da J. Skowronski; i tassi delle sue valutazioni AZURE2 possono prendere il posto di quelli di REACLIB, come qui per la ¹²C(p,γ) e la ¹³C(p,γ) (E se ▸ tassi LUNA/AZURE2).",
   builtByPlain: "Realizzato da J. Skowronski; l'esploratore può usare i tassi delle sue valutazioni AZURE2 al posto di quelli di REACLIB.",
   lunaChip: "LUNA",
   lunaChipTitle: (refs: string) => `Misurata sotto terra a LUNA: ${refs}`,

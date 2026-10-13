@@ -2,6 +2,7 @@ import Link from "next/link"
 
 import type { Profile } from "@/lib/content"
 import { dict, localePath, type Lang } from "@/lib/i18n"
+import { prefetchFor } from "@/lib/prefetch"
 import { REPO } from "@/lib/repo"
 
 /*
@@ -82,7 +83,7 @@ export function SiteFooter({ profile, lang }: { profile: Profile; lang: Lang }) 
             <ul>
               {group.links.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className={LINK}>
+                  <Link href={link.href} prefetch={prefetchFor(link.href)} className={LINK}>
                     {link.label}
                   </Link>
                 </li>

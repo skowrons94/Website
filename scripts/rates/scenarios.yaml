@@ -13,6 +13,10 @@
 #   T9        temperature in GK
 #   rho       density in g/cm³
 #   time      burn time in seconds
+#   power     the burning that makes most of the site's energy: pp (the pp chain), cno (the
+#             CNO cycle) or he (helium burning). A network without it counts only part of
+#             the energy there: the explorer says so and leaves out the fuel times
+#             (lib/rates/energy.ts: missingPower)
 #   until     optional: stop when nucleus (network name: p, he4) falls below `fraction` of its
 #             initial abundance (the burn time is then an upper limit)
 #   composition:
@@ -49,6 +53,7 @@ scenarios:
     source_it: "Bahcall, Pinsonneault e Basu 2001, ApJ 555, 990 (BP2000): T = 15,7 MK, ρ ≈ 150 g/cm³, X(H) = 0,340; metalli: Lodders 2021"
     note: "Burn time 1 Gyr: long enough for ³He, ⁷Be and the CN nuclei to reach their equilibrium values, short against the Sun's 10 Gyr. The C, N and O start from the surface mixture, as fresh fuel at today's temperature and density: in the real core ¹²C has already turned into ¹⁴N, and the burn first redoes that."
     note_it: "Tempo di combustione 1 miliardo di anni: abbastanza perché ³He, ⁷Be e i nuclei CN raggiungano l'equilibrio, breve rispetto ai 10 miliardi di anni del Sole. C, N e O partono dalla miscela della superficie, come combustibile fresco alla temperatura e alla densità di oggi: nel cuore vero il ¹²C è già diventato ¹⁴N, e la combustione ripete prima quel passaggio."
+    power: pp
 
   # Woosley, Heger & Weaver (2002), Rev. Mod. Phys. 74, 1015, Table I,
   # hydrogen burning in a 15 M☉ star: T = 0.035 GK, ρ = 5.8 g/cm³,
@@ -67,6 +72,7 @@ scenarios:
     source_it: "Woosley, Heger e Weaver 2002, Rev. Mod. Phys. 74, 1015, tabella I (15 M☉, combustione di H): T = 0,035 GK, ρ = 5,8 g/cm³, 1,1 × 10⁷ anni; composizione: Lodders 2021"
     note: "The burn stops at the model's duration, or earlier when hydrogen falls to 1% of its initial value."
     note_it: "La combustione si ferma alla durata del modello, o prima se l'idrogeno scende all'1% del valore iniziale."
+    power: cno
 
   # Same table, 25 M☉: T = 0.038 GK, ρ = 3.81 g/cm³, 6.7 × 10⁶ yr. The core
   # hydrogen burning of massive stars makes the ²⁶Al later blown out by
@@ -85,6 +91,7 @@ scenarios:
     source_it: "Woosley, Heger e Weaver 2002, Rev. Mod. Phys. 74, 1015, tabella I (25 M☉, combustione di H): T = 0,038 GK, ρ = 3,81 g/cm³, 6,7 × 10⁶ anni; composizione: Lodders 2021"
     note: "The burn stops at the model's duration, or earlier when hydrogen falls to 1% of its initial value."
     note_it: "La combustione si ferma alla durata del modello, o prima se l'idrogeno scende all'1% del valore iniziale."
+    power: cno
 
   # Hot-bottom burning at the base of the convective envelope of a massive
   # AGB star: T ≈ 80 MK (networks.yaml; Karakas & Lattanzio 2014, PASA 31,
@@ -104,6 +111,7 @@ scenarios:
     source_it: "T ≈ 80 MK alla base dell'inviluppo delle stelle AGB massicce (Karakas e Lattanzio 2014, PASA 31, e030); composizione: Lodders 2021"
     note: "ρ = 3 g/cm³ is an order of magnitude only, and the 10-year burn is a choice, long enough to show the NeNa and MgAl cycles at work and short of burning the magnesium away: in the star the envelope passes through the thin hot layer again and again, spending only a fraction of its time there. At fixed temperature only ρ × t matters for proton captures."
     note_it: "ρ = 3 g/cm³ è solo un ordine di grandezza, e i 10 anni di combustione sono una scelta, abbastanza per vedere all'opera i cicli NeNa e MgAl senza bruciare tutto il magnesio: nella stella l'inviluppo attraversa più e più volte il sottile strato caldo, passandovi solo una parte del suo tempo. A temperatura fissa per le catture protoniche conta solo ρ × t."
+    power: cno
 
   # Classical nova: hydrodynamic models reach 0.2–0.35 GK at the base of
   # the envelope (José & Hernanz 1998, ApJ 494, 680; Iliadis et al. 2002,
@@ -138,6 +146,7 @@ scenarios:
     source_it: "Picco 0,2–0,35 GK, le novae CO sono le più fredde (José e Hernanz 1998, ApJ 494, 680; Iliadis et al. 2002, ApJS 142, 105); raffreddamento T ∝ e^(−t/100 s), ρ ∝ T³; 50% solare (Lodders 2021) + 50% materia della nana bianca CO"
     note: "The burn starts at the peak (the temperature and density you set) and cools as the envelope expands: T falls by e every 100 s, ρ with T³. The 100 s and ρ = 10³ g/cm³ at the peak are orders of magnitude, not a fit to a model: one hot zone stands for an envelope that is cooler on average, so read the yields as trends. Waiting times and the bottleneck are at the peak."
     note_it: "La combustione parte dal picco (la temperatura e la densità che imposti) e si raffredda mentre l'inviluppo si espande: T cala di un fattore e ogni 100 s, ρ come T³. I 100 s e ρ = 10³ g/cm³ al picco sono ordini di grandezza, non l'adattamento a un modello: una sola zona calda sta per un inviluppo in media più freddo, quindi le abbondanze finali vanno lette come tendenze. Tempi di attesa e collo di bottiglia sono quelli del picco."
+    power: cno
 
   # The same nova on an oxygen–neon white dwarf, where the NeNa and MgAl
   # cycles start from the white dwarf's own neon, sodium and magnesium.
@@ -169,6 +178,7 @@ scenarios:
     source_it: "Picco 0,2–0,35 GK (José e Hernanz 1998, ApJ 494, 680; Iliadis et al. 2002, ApJS 142, 105); raffreddamento T ∝ e^(−t/100 s), ρ ∝ T³; 50% solare (Lodders 2021) + 50% materia della nana bianca ONe (Ritossa, García-Berro e Iben 1996, ApJ 460, 489, come in José e Hernanz 1998)"
     note: "The white dwarf's main nuclei are rounded and its ~2% of minor nuclei counted as ²⁰Ne. The burn starts at the peak (the temperature and density you set) and cools as the envelope expands: T falls by e every 100 s, ρ with T³. The 100 s and ρ = 10³ g/cm³ at the peak are orders of magnitude: read the yields as trends. Waiting times and the bottleneck are at the peak. ²⁴Mg burns out here; in hydrodynamic models part of it survives, because convection carries matter through the hot base only briefly (José & Hernanz 1998)."
     note_it: "I nuclei principali della nana bianca sono arrotondati e il suo ~2% di nuclei minori è contato come ²⁰Ne. La combustione parte dal picco (la temperatura e la densità che imposti) e si raffredda mentre l'inviluppo si espande: T cala di un fattore e ogni 100 s, ρ come T³. I 100 s e ρ = 10³ g/cm³ al picco sono ordini di grandezza: le abbondanze finali vanno lette come tendenze. Tempi di attesa e collo di bottiglia sono quelli del picco. Qui il ²⁴Mg brucia tutto; nei modelli idrodinamici una parte sopravvive, perché la convezione porta la materia attraverso la base calda solo per poco (José e Hernanz 1998)."
+    power: cno
 
   # -- the s-process ----------------------------------------------------------
   # Temperatures from the atlas (content/atlas/networks.yaml): the ¹³C pocket
@@ -204,6 +214,7 @@ scenarios:
     source_it: "T = 0,09 GK (kT ≈ 8 keV; Straniero et al. 2006; Käppeler et al. 2011); intershell ⁴He, ¹²C, ²²Ne, ¹⁶O da Karakas e Lattanzio 2014; semi: Lodders 2021"
     note: "X(¹³C) = 0.005 and X(¹⁴N) = 0.0005 are illustrative: how much ¹³C the pocket holds is the main free parameter of AGB models, so both can be scaled. The burn runs until 99.9% of the ¹³C is gone; ρ only sets how fast (it is chosen so that the neutron density comes out near 10⁷ cm⁻³)."
     note_it: "X(¹³C) = 0,005 e X(¹⁴N) = 0,0005 sono illustrativi: quanto ¹³C contenga la tasca è il principale parametro libero dei modelli AGB, perciò si possono scalare entrambi. La combustione continua finché il 99,9% del ¹³C non è consumato; ρ ne fissa solo la rapidità (è scelta perché la densità di neutroni risulti vicina a 10⁷ cm⁻³)."
+    power: he
 
   - id: agb-thermal-pulse
     short: "thermal pulse"
@@ -219,8 +230,9 @@ scenarios:
       balance: he4
     source: "T = 0.27 GK (kT ≈ 23 keV; Straniero et al. 2006; Käppeler et al. 2011); intershell after Karakas & Lattanzio 2014; seeds: Lodders 2021"
     source_it: "T = 0,27 GK (kT ≈ 23 keV; Straniero et al. 2006; Käppeler et al. 2011); intershell da Karakas e Lattanzio 2014; semi: Lodders 2021"
-    note: "The ²²Ne source burns only briefly at the peak of a pulse; ρ is chosen so that the neutron density comes out near 10¹⁰ cm⁻³ (Straniero et al. 2006). At this density helium burning is too fast: in five years ⁴He falls from 0.74 to 0.24, far more than in a real pulse, so read the light nuclei with care. The seeds start solar here; in a star they are what the pocket made."
-    note_it: "La sorgente di ²²Ne brucia solo brevemente al picco di un impulso; ρ è scelta perché la densità di neutroni risulti vicina a 10¹⁰ cm⁻³ (Straniero et al. 2006). A questa densità l'elio brucia troppo in fretta: in cinque anni il ⁴He scende da 0,74 a 0,24, molto più che in un impulso vero, quindi i nuclei leggeri vanno letti con cautela. Qui i semi partono solari; in una stella sono ciò che ha prodotto la tasca."
+    note: "The ²²Ne source burns only briefly at the peak of a pulse; ρ is chosen so that the neutron density comes out near 10¹⁰ cm⁻³ (Straniero et al. 2006). At this density helium burning is too fast: in five years ⁴He falls from 0.74 to 0.24, far more than in a real pulse, so read the light nuclei with care. The neutron exposure is also several times a real pulse's, so the same caution applies to the heavy nuclei. The seeds start solar here; in a star they are what the pocket made."
+    note_it: "La sorgente di ²²Ne brucia solo brevemente al picco di un impulso; ρ è scelta perché la densità di neutroni risulti vicina a 10¹⁰ cm⁻³ (Straniero et al. 2006). A questa densità l'elio brucia troppo in fretta: in cinque anni il ⁴He scende da 0,74 a 0,24, molto più che in un impulso vero, quindi i nuclei leggeri vanno letti con cautela. Anche l'esposizione ai neutroni è parecchie volte quella di un impulso vero: la stessa cautela vale per i nuclei pesanti. Qui i semi partono solari; in una stella sono ciò che ha prodotto la tasca."
+    power: he
 
   - id: massive-he-core
     short: "He core"
@@ -239,3 +251,4 @@ scenarios:
     source_it: "T = 0,25 GK (kT ≈ 22 keV), alla fine della combustione centrale dell'elio, quando la ²²Ne(α,n) comincia a liberare neutroni (Pignatari et al. 2010, ApJ 710, 1557); ρ = 500 g/cm³, dell'ordine della densità centrale in quella fase (Woosley, Heger e Weaver 2002, tabella I), scelta perché la densità di neutroni al picco risulti vicina a 10⁷ cm⁻³, entro i 10⁶–10⁷ cm⁻³ della combustione centrale dell'elio (Käppeler et al. 2011, Rev. Mod. Phys. 83, 157; Pignatari et al. 2010); X(²²Ne) = 0,0147: tutto il C, N e O di Lodders trasformato in ¹⁴N dalla combustione dell'idrogeno, poi in ²²Ne; semi: Lodders 2021"
     note: "Schematic: the last tenth of the helium (X = 0.1, with ¹²C 0.3 and ¹⁶O the rest) burnt at constant T and ρ until 1% is left. In the star the core heats up as the helium runs out, and most of the weak s-process happens then. Here about 70% of the ²²Ne burns; in a real star more of it survives into carbon-shell burning, where the rest of the weak s-process happens. The result is strong for the same reason: the neutron exposure, and with it the depletion of iron, are larger here than at the end of core helium burning in stellar models (Pignatari et al. 2010, ApJ 710, 1557), so read the sizes as an upper end and the directions as the message."
     note_it: "Schematico: l'ultimo decimo dell'elio (X = 0,1, con ¹²C 0,3 e ¹⁶O il resto) bruciato a T e ρ costanti finché ne resta l'1%. Nella stella il nucleo si scalda mentre l'elio si esaurisce, ed è allora che avviene gran parte del processo s debole. Qui brucia circa il 70% del ²²Ne; in una stella vera ne sopravvive di più fino alla combustione del carbonio in shell, dove avviene il resto del processo s debole. Per lo stesso motivo il risultato è forte: l'esposizione ai neutroni, e con essa la distruzione del ferro, sono maggiori che alla fine della combustione centrale dell'elio nei modelli stellari (Pignatari et al. 2010, ApJ 710, 1557): le dimensioni degli effetti vanno lette come un limite alto, le direzioni come il messaggio."
+    power: he
