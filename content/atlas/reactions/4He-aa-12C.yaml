@@ -186,5 +186,15 @@ open_questions:
 open_questions_it:
   - "Il rapporto di diramazione del decadimento γ dello stato di Hoyle è ormai convergente (Rana 2024, Dell'Aquila 2024, Paulsen 2025 e la nuova analisi dei dati del 2020 concordano su circa 4,1×10⁻⁴); Γ_rad dipende ancora dalle grandezze del decadimento in coppie, Γ_π/Γ e Γ_π, che lo moltiplicano."
   - "Il tasso a T₉ ≳ 1, che dipende da stati larghi a energia più alta e dalla larghezza radiativa dello stato 3⁻₁, nota solo entro circa un fattore due."
+facts:
+  - text: >-
+      Only about 4 in every 10 000 Hoyle states settle into carbon-12; the
+      rest break up again into three helium nuclei. All the carbon in the
+      Universe comes through that small fraction.
+    text_it: >-
+      Solo circa 4 stati di Hoyle su 10 000 si stabilizzano in carbonio-12;
+      gli altri si spezzano di nuovo in tre nuclei di elio. Tutto il carbonio
+      dell'Universo passa per quella piccola frazione.
+    refs: [paulsen2025, rana2024]
 related: [12C-ag-16O]
 rmatrix: [8Be]

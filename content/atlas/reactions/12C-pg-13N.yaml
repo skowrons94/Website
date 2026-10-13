@@ -114,6 +114,17 @@ open_questions:
 open_questions_it:
   - "La differenza di normalizzazione del 25% tra le misure dal 2023 in poi e gli insiemi di dati più vecchi."
   - "La larghezza radiativa della risonanza a 422 keV, che domina il tasso alle temperature più alte."
+facts:
+  - text: >-
+      However long hydrogen burns in a giant star, carbon-12 cannot fall
+      below about 3.6 times carbon-13: this floor, 3.6 ± 0.4, follows from the
+      ratio of the two carbon proton-capture rates measured underground.
+    text_it: >-
+      Per quanto a lungo bruci l'idrogeno in una stella gigante, il
+      carbonio-12 non può scendere sotto circa 3,6 volte il carbonio-13: questo
+      minimo, 3,6 ± 0,4, discende dal rapporto tra i tassi delle due catture
+      protoniche sul carbonio misurati sotto terra.
+    refs: [skowronski2023]
 related: [13N-bp-13C, 13C-pg-14N, 14N-pg-15O]
 rmatrix: [13N]
 details_it: >-

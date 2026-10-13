@@ -69,4 +69,17 @@ measurements:
       260(90) mb at kT ≈ 30 keV, with semi-empirical calculations.
     refs: [casanovashoste2024]
 evaluations: [bao2000, dillmann2008]
+facts:
+  - text: >-
+      Thallium-205 is stable on Earth, but stripped of all its electrons it
+      decays to lead-205, with a half-life of 291 days measured in the GSI
+      storage ring. In stars this turns a stable nucleus into a source of a
+      radioactive clock of the early Solar System.
+    text_it: >-
+      Il tallio-205 è stabile sulla Terra, ma privato di tutti i suoi
+      elettroni decade in piombo-205, con un tempo di dimezzamento di 291
+      giorni misurato nell'anello di accumulazione del GSI. Nelle stelle un
+      nucleo stabile diventa così la sorgente di un orologio radioattivo dei
+      primi tempi del Sistema Solare.
+    refs: [leckenby2024]
 related: [209Bi-ng-210Bi, 171Tm-ng-172Tm, 197Au-ng-198Au]
