@@ -217,8 +217,9 @@ export function guidedPath(id: PathId, lang: Lang): GuidedPathData {
           ...(data ? [{ href: reactionDataPath(data), label: v.steps[1].link }] : []),
           { href: `/atlas/${rid}`, label: dataPublicDict(lang).stories.atlas },
         ],
-        // no gap row here: EXFOR's lowest point for this reaction (Ciani 2021,
-        // its energies read as laboratory) disagrees with the atlas's 230 keV
+        // no gap row here: the text gives the atlas's 230 keV (Ciani 2021);
+        // EXFOR's lowest point, 233 keV c.m. since the frame correction of
+        // O2548.002 (scripts/data/corrections.yaml), agrees with it
       },
       { ...v.steps[2], links: [{ href: `/atlas/${rid}#evaluations`, label: v.steps[2].link }] },
       {

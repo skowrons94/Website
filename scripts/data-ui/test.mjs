@@ -218,7 +218,7 @@ const base = { id: "X0001.002", q: "sigma", qs: "", e0: 0.05, e1: 1, k0: null, k
 const weak = { ...base, m1: 0.05, m2: 0.08 }
 check(L.measuredMin(weak, 2) === 0.08 && L.measuredMin(weak, 1) === 0.05, "m2 at 2σ, m1 at 1σ")
 check(L.lowestMeasured([weak], 2).E === 80 && L.lowestMeasured([weak], 1).E === 50, "the rule's σ picks the column")
-check(L.RULE.sigma === 2, "default: 2σ above zero")
+check(L.RULE.sigma === 1, "the owner's choice: 1σ above zero")
 // per-point limits: a dataset with limits still counts by its other points (m2 set by the pipeline)
 check(L.countsAsMeasured({ ...base, f: L.flagBit("upper-limits"), m1: 0.1, m2: 0.1 }), "a dataset with some limits still counts")
 check(!L.countsAsMeasured({ ...base, f: L.flagBit("upper-limits"), m1: null, m2: null }), "a dataset of limits only does not")
@@ -277,6 +277,7 @@ const expect = {
   "3He(3He,2p)": [16.99, "A0379.002"], // Bonetti 1999 counts (one row is a limit)
   "22Ne(p,g)": [149, "D4330.002"], // credited to the earliest
   "14N(p,g)": [70.08, "O1458.002.A"],
+  "22Ne(a,n)": [693, "O0967.002"], // E_lab 819 keV, the 830 keV resonance: below it only upper limits (corrections.yaml)
 }
 for (const [key, [E, id]] of Object.entries(expect)) {
   const s = Object.values(summary.reactions).find((x) => x.key === key)
