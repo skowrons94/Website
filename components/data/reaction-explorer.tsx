@@ -11,7 +11,7 @@ import { kev } from "@/lib/data/format"
 import { fill } from "@/lib/data/fill"
 import { reactionLabel, keyFromLabel } from "@/lib/data/nuclide"
 import { FLAG_BITS, GROUPS, GROUP_SYMBOL, flagExplain, flagLabel, type Flag, type Group } from "@/lib/data/quantity"
-import { tableRows, type EvalLink, type TableRow } from "@/lib/data/shard-rows"
+import { defaultSelection, tableRows, viewOf, type EvalLink, type PlotView, type TableRow } from "@/lib/data/shard-rows"
 import type { Points, Shard } from "@/lib/data/types"
 import type { DataExpertStrings } from "@/lib/i18n"
 import { localePath, type Lang } from "@/lib/locale"
@@ -89,11 +89,8 @@ export function ReactionExplorer({
   }, [shard])
 
   /* -- selection, filters, sort -------------------------------------------------- */
-  // by default: every counted σ/S measurement, partials included, but not relative data
-  const defaults = useMemo(
-    () => new Set(rows.filter((r) => r.counted && r.plottable && !(r.flagBits & (1 << FLAG_BITS.indexOf("relative")))).map((r) => r.id)),
-    [rows],
-  )
+  // by default: the counted angle-integrated totals, one per EXFOR subentry; partials and dσ/dΩ are opt-in
+  const defaults = useMemo(() => defaultSelection(rows), [rows])
   const [selected, setSelected] = useState<Set<string> | null>(null)
   const sel = selected ?? defaults
   const [group, setGroup] = useState<Group | "all">("all")
@@ -107,7 +104,9 @@ export function ReactionExplorer({
   const wide = useWide()
 
   // filtering re-renders up to a few hundred rows: deferred, so typing never blocks
-  const f = useDeferredValue({ group, text, hideFlagged, onlySelected, sort })
+  // one object per change of the filters (not per render), so the deferred value and the reset below are stable
+  const filters = useMemo(() => ({ group, text, hideFlagged, onlySelected, sort }), [group, text, hideFlagged, onlySelected, sort])
+  const f = useDeferredValue(filters)
   const shown = useMemo(() => {
     const { group, text, hideFlagged, onlySelected, sort } = f
     const q = text.trim().toLowerCase()
@@ -156,6 +155,16 @@ export function ReactionExplorer({
   /* -- plot ------------------------------------------------------------------------- */
   const neutral = !channel || channel.z1 === 0 || channel.z2 === 0
   const [quantity, setQuantity] = useState<"S" | "sigma">(neutral ? "sigma" : "S")
+  // what the plot shows: the total, the partials or the angular distributions, never two on one axis
+  const [view, setView] = useState<PlotView>("total")
+  const ofView = useMemo(() => {
+    const n: Record<PlotView, TableRow[]> = { total: [], partial: [], dsigma: [] }
+    for (const r of rows) {
+      const v = r.plottable ? viewOf(r) : null
+      if (v) n[v].push(r)
+    }
+    return n
+  }, [rows])
   const [logX, setLogX] = useState(true)
   const [logY, setLogY] = useState(true)
   useEffect(() => {
@@ -167,47 +176,70 @@ export function ReactionExplorer({
     const out: PlotSeries[] = []
     const muMeV = channel ? channel.mu * AMU : 0
     for (const r of rows) {
-      if (!sel.has(r.id) || !r.plottable) continue
+      if (!sel.has(r.id) || !r.plottable || viewOf(r) !== view) continue
       const ds = shard.datasets[r.index]
       const p = pagePoints.get(r.id) ?? ds.points
       if (!p?.value) continue
-      const E: number[] = []
-      const y: number[] = []
-      const dy: (number | null)[] = []
       const isS = r.qclass === "S"
+      const who = `${r.author}${r.authors.length > 1 ? " et al." : ""} ${r.year ?? ""}`
+      // one series per final level (partials) or per angle (dσ/dΩ, up to eight angles)
+      const parts = new Map<string, { label: string; E: number[]; y: number[]; dy: (number | null)[] }>()
+      const angles = view === "dsigma" ? new Set((p.ang ?? []).map((a) => (a === null ? null : Math.round(a)))) : null
+      const byAngle = Boolean(angles && angles.size > 1 && angles.size <= 8)
       for (let i = 0; i < p.value.length; i++) {
         const e = p.E_cm[i]
         const v = p.value[i]
         if (e === null || v === null || !(e > 0)) continue
         if (p.limit && p.limit[i]) continue
-        let err =
+        const err =
           p.d_tot?.[i] ??
           (p.d_stat?.[i] !== undefined || p.d_sys?.[i] !== undefined ? Math.hypot(p.d_stat?.[i] ?? 0, p.d_sys?.[i] ?? 0) || null : null)
         let f = 1
-        if (quantity === "S" && !isS) {
-          if (!channel || neutral) continue
-          f = e * Math.exp(twoPiEta(channel.z1, channel.z2, muMeV, e))
-        } else if (quantity === "sigma" && isS) {
-          if (!channel || neutral) continue
-          f = Math.exp(-twoPiEta(channel.z1, channel.z2, muMeV, e)) / e
+        if (view !== "dsigma") {
+          if (quantity === "S" && !isS) {
+            if (!channel || neutral) continue
+            f = e * Math.exp(twoPiEta(channel.z1, channel.z2, muMeV, e))
+          } else if (quantity === "sigma" && isS) {
+            if (!channel || neutral) continue
+            f = Math.exp(-twoPiEta(channel.z1, channel.z2, muMeV, e)) / e
+          }
         }
-        E.push(e)
-        y.push(v * f)
-        dy.push(err === null || err === undefined ? null : err * f)
-        err = null
+        let key = ""
+        let sub = ""
+        if (view === "partial") {
+          const lv = p.E_level?.[i] ?? (ds.meta.final_levels.length === 1 ? ds.meta.final_levels[0] : null)
+          key = lv === null ? "" : String(lv)
+          sub = lv === null ? "" : fill(strings.plot.level, { E: lv.toLocaleString(lang === "it" ? "it-IT" : "en-GB", { maximumFractionDigits: 3 }) })
+        } else if (byAngle) {
+          const a = p.ang?.[i]
+          key = a === null || a === undefined ? "" : String(Math.round(a))
+          sub = key ? fill(strings.plot.angle, { a: key }) : ""
+        }
+        let part = parts.get(key)
+        if (!part) {
+          part = { label: sub, E: [], y: [], dy: [] }
+          parts.set(key, part)
+        }
+        part.E.push(e)
+        part.y.push(v * f)
+        part.dy.push(err === null || err === undefined ? null : err * f)
       }
-      if (E.length)
+      for (const [key, part] of [...parts.entries()].sort((a, b) => Number(a[0]) - Number(b[0]))) {
+        if (!part.E.length) continue
         out.push({
           id: r.id,
-          label: `${r.author}${r.authors.length > 1 ? " et al." : ""} ${r.year ?? ""} · ${r.id}`,
-          partial: r.group === "partial",
-          E,
-          y,
-          dy,
+          label: `${who} · ${r.id}${part.label ? ` · ${part.label}` : ""}`,
+          partial: false,
+          key: `${r.id}#${key}`,
+          E: part.E,
+          y: part.y,
+          dy: part.dy,
         })
+      }
     }
     return out
-  }, [shard, rows, sel, pagePoints, quantity, channel, neutral])
+  }, [shard, rows, sel, pagePoints, quantity, channel, neutral, view, strings.plot, lang])
+  const notInView = view !== "total" && !series.length ? ofView[view].filter((r) => r.counted) : []
 
   /* -- evaluation curves -------------------------------------------------------------------- */
   const [curves, setCurves] = useState<PlotCurve[]>([])
@@ -300,7 +332,22 @@ export function ReactionExplorer({
             {strings.plot.title}
           </h2>
           <div className="flex flex-wrap items-center gap-2 text-sm">
-            {!neutral && (
+            {(ofView.partial.length > 0 || ofView.dsigma.length > 0) && (
+              <Segmented
+                label={strings.plot.view}
+                value={view}
+                options={(
+                  [
+                    ["total", strings.plot.viewTotal],
+                    ["partial", strings.plot.viewPartial],
+                    ["dsigma", strings.plot.viewDsigma],
+                  ] as [PlotView, string][]
+                ).filter(([v]) => v === "total" || ofView[v].length > 0)}
+                onChange={(v) => setView(v as PlotView)}
+                prefix="v"
+              />
+            )}
+            {!neutral && view !== "dsigma" && (
               <Segmented
                 label={strings.plot.show}
                 value={quantity}
@@ -336,9 +383,9 @@ export function ReactionExplorer({
         <div className="mt-4 rounded-lg border border-border bg-[var(--viz-surface)] p-2 sm:p-4">
           <ExforPlot
             series={series}
-            curves={curves}
+            curves={view === "total" ? curves : []}
             window={w}
-            quantity={quantity}
+            quantity={view === "dsigma" ? "dsigma" : quantity}
             logX={logX}
             logY={logY}
             highlight={highlight}
@@ -348,12 +395,21 @@ export function ReactionExplorer({
             svgRef={svgRef}
           />
         </div>
+        {notInView.length > 0 && (
+          <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
+            {strings.plot.noneOfView}
+            <button type="button" className={btnLink} onClick={() => setSelected(new Set([...sel, ...notInView.map((r) => r.id)]))}>
+              {fill(strings.plot.addView, { n: notInView.length })}
+            </button>
+          </p>
+        )}
         <div className="mt-3 flex flex-wrap items-start justify-between gap-3">
           <ul className="max-w-prose space-y-1 text-xs leading-snug text-muted-foreground">
+            <li>{strings.plot.viewNote[view]}</li>
             <li>
-              {fill(strings.plot.caption, { reaction: label, n: nPoints, d: series.length })}. {strings.plot.hover}
+              {fill(strings.plot.caption, { reaction: label, n: nPoints, d: new Set(series.map((x) => x.id)).size })}. {strings.plot.hover}
             </li>
-            {curves.length > 0 && (
+            {view === "total" && curves.length > 0 && (
               <li className="flex items-center gap-2">
                 <svg aria-hidden width="18" height="6">
                   <line x1="0" x2="18" y1="3" y2="3" stroke="var(--viz-series-2)" strokeWidth="2" />
@@ -362,7 +418,7 @@ export function ReactionExplorer({
               </li>
             )}
             <li>
-              {strings.plot.extrapolatedNever} {strings.plot.partial} {!neutral && strings.plot.converted}
+              {strings.plot.extrapolatedNever} {!neutral && view !== "dsigma" && strings.plot.converted}
             </li>
           </ul>
           <div className="flex gap-2">
@@ -382,7 +438,7 @@ export function ReactionExplorer({
           {t.title}
         </h2>
         <div className="mt-4 flex flex-wrap items-end gap-x-4 gap-y-3">
-          <label className="flex min-w-[14rem] flex-1 flex-col gap-1 text-xs font-medium text-muted-foreground sm:max-w-xs">
+          <label className="flex w-full min-w-0 flex-1 flex-col gap-1 text-xs font-medium text-muted-foreground sm:min-w-[14rem] sm:max-w-xs">
             {t.filter}
             <input
               type="search"
@@ -392,12 +448,12 @@ export function ReactionExplorer({
               className="h-10 rounded-md border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
           </label>
-          <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
+          <label className="flex min-w-0 max-w-full flex-col gap-1 text-xs font-medium text-muted-foreground">
             {t.quantity}
             <select
               value={group}
               onChange={(e) => setGroup(e.target.value as Group | "all")}
-              className="h-10 rounded-md border border-input bg-background px-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="h-10 w-full max-w-full truncate rounded-md border border-input bg-background px-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <option value="all">{t.all}</option>
               {GROUPS.filter((g) => rows.some((r) => r.group === g)).map((g) => (
@@ -491,7 +547,7 @@ export function ReactionExplorer({
             className="mt-3 max-h-[70vh] overflow-auto rounded-lg border border-border"
             tabIndex={0}
             role="region"
-            aria-labelledby="table-title"
+            aria-label={fill(t.caption, { reaction: label })}
           >
             <table className="w-full min-w-[64rem] border-collapse text-sm">
               <caption className="sr-only">{fill(t.caption, { reaction: label })}</caption>
@@ -612,11 +668,11 @@ export function ReactionExplorer({
                         "–"
                       )}
                     </td>
-                    <td className="whitespace-nowrap px-3 py-2 font-mono text-xs">
+                    <th scope="row" className="whitespace-nowrap px-3 py-2 text-left font-mono text-xs font-normal">
                       <a href={r.exfor} className="text-link underline-offset-2 hover:underline">
                         {r.id}
                       </a>
-                    </td>
+                    </th>
                     <td className="max-w-[12rem] px-3 py-2 text-xs">
                       {r.doi ? (
                         <a href={`https://doi.org/${r.doi}`} className="break-all text-link underline-offset-2 hover:underline">
@@ -896,12 +952,12 @@ function Select({
   options: [string, string][]
 }) {
   return (
-    <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
+    <label className="flex min-w-0 max-w-full flex-col gap-1 text-xs font-medium text-muted-foreground">
       {label}
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="h-10 rounded-md border border-input bg-background px-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="h-10 w-full max-w-full truncate rounded-md border border-input bg-background px-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         {options.map(([v, l]) => (
           <option key={v} value={v}>

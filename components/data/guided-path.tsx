@@ -96,8 +96,8 @@ export function GuidedPath({
   return (
     <div ref={top} className="scroll-mt-[calc(var(--header-h,0px)+1rem)]">
       {/* progress */}
-      <nav aria-label={t.progress} className="flex items-center gap-3">
-        <ol className="flex items-center gap-1">
+      <nav aria-label={t.progress} className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
+        <ol className="flex min-w-0 flex-wrap items-center gap-1">
           {steps.map((s, k) => (
             <li key={k}>
               <button

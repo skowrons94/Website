@@ -14,6 +14,8 @@ export interface PlotSeries {
   id: string
   label: string
   partial: boolean
+  /** unique per drawn series when a dataset is split (by final level or angle); `id` is the dataset */
+  key?: string
   E: number[]
   y: number[]
   dy: (number | null)[]
@@ -48,7 +50,7 @@ export function ExforPlot({
   series: PlotSeries[]
   curves: PlotCurve[]
   window: { lo: number; hi: number; E0: number; label: string } | null
-  quantity: "S" | "sigma"
+  quantity: "S" | "sigma" | "dsigma"
   logX: boolean
   logY: boolean
   highlight: string | null
@@ -144,8 +146,11 @@ export function ExforPlot({
     return { d, bars }
   }
 
-  const drawn = series.map((s) => ({ s, ...pathFor(s, s.id === highlight ? 3 : 2) }))
-  const hl = drawn.find((x) => x.s.id === highlight)
+  // smaller marks where many points share a narrow plot, so a phone shows points, not a blot
+  const nPts = series.reduce((a, s) => a + s.E.length, 0)
+  const r0 = width < 480 ? (nPts > 150 ? 1.3 : 1.7) : nPts > 600 ? 1.6 : 2
+  const drawn = series.map((s) => ({ s, ...pathFor(s, s.id === highlight ? r0 + 1 : r0) }))
+  const hl = drawn.filter((x) => x.s.id === highlight)
 
   const onMove = (ev: React.PointerEvent<SVGSVGElement>) => {
     const box = ev.currentTarget.getBoundingClientRect()
@@ -175,7 +180,7 @@ export function ExforPlot({
           else if (svgRef && typeof svgRef === "object") (svgRef as React.MutableRefObject<SVGSVGElement | null>).current = el
         }}
         role="img"
-        aria-label={fill(t.caption, { reaction: "", n: series.reduce((a, s) => a + s.E.length, 0), d: series.length })}
+        aria-label={fill(t.caption, { reaction: "", n: series.reduce((a, s) => a + s.E.length, 0), d: new Set(series.map((s) => s.id)).size })}
         width={width * k}
         height={height * k}
         viewBox={`0 0 ${width} ${height}`}
@@ -222,7 +227,7 @@ export function ExforPlot({
           {t.eAxis}
         </text>
         <text transform={`translate(13 ${m.t + ph / 2}) rotate(-90)`} textAnchor="middle" fontSize={12} fill="var(--viz-text)">
-          {quantity === "S" ? t.sAxis : t.sigmaAxis}
+          {quantity === "S" ? t.sAxis : quantity === "dsigma" ? t.dsigmaAxis : t.sigmaAxis}
         </text>
         <g clipPath="url(#exfor-plot-clip)">
           <clipPath id="exfor-plot-clip">
@@ -230,7 +235,7 @@ export function ExforPlot({
           </clipPath>
           {drawn.map(({ s, d, bars }) =>
             s.id === highlight ? null : (
-              <g key={s.id}>
+              <g key={s.key ?? s.id}>
                 <path d={bars} stroke="var(--viz-text-muted)" strokeOpacity={0.45} strokeWidth={1} fill="none" />
                 <path
                   d={d}
@@ -251,17 +256,17 @@ export function ExforPlot({
             }
             return <path key={j} d={d} fill="none" stroke="var(--viz-series-2)" strokeWidth={2} />
           })}
-          {hl && (
-            <g>
-              <path d={hl.bars} stroke="var(--viz-series-1)" strokeWidth={1.4} fill="none" />
+          {hl.map((h) => (
+            <g key={h.s.key ?? h.s.id}>
+              <path d={h.bars} stroke="var(--viz-series-1)" strokeWidth={1.4} fill="none" />
               <path
-                d={hl.d}
-                fill={hl.s.partial ? "var(--viz-surface)" : "var(--viz-series-1)"}
+                d={h.d}
+                fill={h.s.partial ? "var(--viz-surface)" : "var(--viz-series-1)"}
                 stroke="var(--viz-series-1)"
-                strokeWidth={hl.s.partial ? 1.4 : 0}
+                strokeWidth={h.s.partial ? 1.4 : 0}
               />
             </g>
-          )}
+          ))}
         </g>
       </svg>
       {tip && (
@@ -273,7 +278,7 @@ export function ExforPlot({
           <p className="font-medium">{tip.s.label}</p>
           <p className="tabular text-muted-foreground">
             E = {energy(tip.s.E[tip.i] * 1000, lang, 4)} · {sig(tip.s.y[tip.i], 3)}
-            {tip.s.dy[tip.i] ? ` ± ${sig(tip.s.dy[tip.i] as number, 2)}` : ""} {quantity === "S" ? "MeV b" : "b"}
+            {tip.s.dy[tip.i] ? ` ± ${sig(tip.s.dy[tip.i] as number, 2)}` : ""} {quantity === "S" ? "MeV b" : quantity === "dsigma" ? "b/sr" : "b"}
           </p>
         </div>
       )}

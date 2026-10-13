@@ -122,7 +122,7 @@ export function NucleusView({
         </p>
         <div className="mt-5 flex flex-wrap items-end gap-x-6 gap-y-3">
           {entrances.length > 1 && (
-            <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
+            <label className="flex min-w-0 max-w-full flex-col gap-1 text-xs font-medium text-muted-foreground">
               {t.entranceChannel}
               <select
                 value={ei}
@@ -130,7 +130,7 @@ export function NucleusView({
                   setEi(Number(e.target.value))
                   setWi(0)
                 }}
-                className="h-10 rounded-md border border-input bg-background px-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="h-10 w-full max-w-full truncate rounded-md border border-input bg-background px-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {entrances.map((e, i) => (
                   <option key={e.atlas} value={i}>
@@ -141,12 +141,12 @@ export function NucleusView({
             </label>
           )}
           {ent && ent.windows.length > 0 && (
-            <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
+            <label className="flex min-w-0 max-w-full flex-col gap-1 text-xs font-medium text-muted-foreground">
               {strings.panel.temperature}
               <select
                 value={wi}
                 onChange={(e) => setWi(Number(e.target.value))}
-                className="h-10 rounded-md border border-input bg-background px-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="h-10 w-full max-w-full truncate rounded-md border border-input bg-background px-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {ent.windows.map((w, i) => (
                   <option key={i} value={i}>
@@ -227,7 +227,7 @@ export function NucleusView({
               {t.loadingStrengths}
             </p>
           )}
-          <div className="mt-4 overflow-x-auto rounded-lg border border-border" tabIndex={0} role="region" aria-labelledby="resonances">
+          <div className="mt-4 overflow-x-auto rounded-lg border border-border" tabIndex={0} role="region" aria-label={`${t.resonances}: ${cn}`}>
             <table className="w-full border-collapse text-sm">
               <caption className="sr-only">{t.resonances}</caption>
               <thead className="bg-card text-left text-xs text-muted-foreground">
@@ -342,11 +342,10 @@ export function NucleusView({
                   <td className={`px-3 py-1.5 ${l.firm === false ? "italic text-muted-foreground" : ""}`}>{l.J ?? "–"}</td>
                   <td className="px-3 py-1.5 text-xs">{lifetime(l, lang) || "–"}</td>
                   <td className="px-3 py-1.5 text-xs tabular">
-                    {(l.gammas ?? [])
-                      .filter((g) => g.E_final_keV !== undefined)
+                    {gammaBranches(l.gammas ?? [])
                       .map(
                         (g) =>
-                          `${fill(t.gammaTo, { E: kev(g.E_final_keV as number, lang, 5) })}${g.BR !== undefined ? ` (${dec(sig(g.BR, 2), lang)} %)` : ""}`,
+                          `${g.to !== null ? fill(t.gammaTo, { E: kev(g.to, lang, 5) }) : fill(t.gammaE, { E: kev(g.E, lang, 5) })}${g.BR !== null ? ` (${dec(sig(g.BR, 2), lang)} %)` : ""}`,
                       )
                       .join(", ") || "–"}
                   </td>
@@ -393,7 +392,9 @@ function LevelScheme({
   const hi = zoom === "all" ? hiData : Math.min(hiData, Math.max(S + 0.5, (w?.hi ?? S) + 0.25, Number.isFinite(above) ? above + 0.05 : 0))
   const shown = levels.filter((l) => l.E_keV / 1000 >= lo && l.E_keV / 1000 <= hi)
   const LABEL = 13
-  const height = Math.max(380, Math.min(1400, shown.length * LABEL + 60))
+  // tall enough for one label per level: dense nuclei (²⁰Ne, ²⁶Mg, ²⁷Al) scroll in their box rather than
+  // pushing labels off their lines or out of the picture
+  const height = Math.max(380, shown.length * LABEL + 60)
   const m = { t: 18, b: 18 }
   const ph = height - m.t - m.b
   const y = (E: number) => m.t + ph - ((E - lo) / (hi - lo)) * ph
@@ -405,7 +406,9 @@ function LevelScheme({
   const lab = [...ys]
   for (let i = lab.length - 2; i >= 0; i--) if (lab[i] - lab[i + 1] < LABEL) lab[i] = lab[i + 1] + LABEL
   for (let i = 1; i < lab.length; i++) if (lab[i - 1] - lab[i] < LABEL) lab[i] = lab[i - 1] - LABEL
-  const summary = `${cn}: ${shown.length} ${strings.nucleus.level}; ${thresholds.map((t) => `S(${t.x}) = ${dec(t.S.toFixed(3), lang)} MeV`).join(", ")}${w ? `; ${w.label}` : ""}`
+  // and kept inside the picture
+  for (let i = 0; i < lab.length; i++) lab[i] = Math.min(height - 4, Math.max(m.t, lab[i]))
+  const summary = `${cn}: ${fill(shown.length === 1 ? strings.nucleus.levelsOne : strings.nucleus.levelsMany, { n: shown.length })}; ${thresholds.map((t) => `S(${t.x}) = ${dec(t.S.toFixed(3), lang)} MeV`).join(", ")}${w ? `; ${w.label}` : ""}`
 
   return (
     <div ref={ref} className="w-full">
@@ -427,19 +430,6 @@ function LevelScheme({
               fill="var(--viz-series-2)"
               fillOpacity={0.16}
             />
-            <text
-              x={(x0 + x1) / 2}
-              y={y(Math.min(w.hi, hi)) - 4}
-              textAnchor="middle"
-              fontSize={11}
-              fontWeight={600}
-              fill="var(--viz-text)"
-              paintOrder="stroke"
-              stroke="var(--viz-surface)"
-              strokeWidth={3}
-            >
-              {w.label}
-            </text>
           </g>
         )}
         {thresholds.map((t) =>
@@ -454,18 +444,6 @@ function LevelScheme({
                 strokeDasharray="6 4"
                 strokeWidth={entrance && t.x === entrance.x ? 1.6 : 1}
               />
-              <text
-                x={x0 + 4}
-                y={y(t.S) + 13}
-                fontSize={11}
-                fontWeight={entrance && t.x === entrance.x ? 700 : 500}
-                fill="var(--viz-text)"
-                paintOrder="stroke"
-                stroke="var(--viz-surface)"
-                strokeWidth={3}
-              >
-                {fill(strings.nucleus.thresholdLabel, { x: t.x, S: dec(t.S.toFixed(3), lang) })}
-              </text>
             </g>
           ) : null,
         )}
@@ -484,13 +462,12 @@ function LevelScheme({
                 stroke={inWin ? (has ? "var(--viz-series-1)" : "var(--viz-series-2)") : "var(--viz-text-muted)"}
                 strokeWidth={inWin ? 2 : 1}
               />
-              <path d={`M${x0} ${yy}L${x0 - 8} ${lab[i]}H${x0 - 12}`} fill="none" stroke="var(--viz-grid)" />
+              <path d={`M${x0} ${yy}L${x0 - 8} ${lab[i]}H${x0 - 12}`} fill="none" stroke="var(--viz-axis)" />
               <text x={x0 - 14} y={lab[i] + 4} textAnchor="end" fontSize={10.5} fill="var(--viz-text)" className="tabular-nums">
                 {dec(E.toFixed(E < 10 ? 3 : 2), lang)}
               </text>
-              <path d={`M${x1} ${yy}L${x1 + 8} ${lab[i]}`} fill="none" stroke="var(--viz-grid)" />
-              {!narrow || i % 1 === 0 ? (
-                <text
+              <path d={`M${x1} ${yy}L${x1 + 8} ${lab[i]}`} fill="none" stroke="var(--viz-axis)" />
+              <text
                   x={x1 + 10}
                   y={lab[i] + 4}
                   fontSize={10.5}
@@ -500,14 +477,66 @@ function LevelScheme({
                 >
                   {l.J ?? ""}
                 </text>
-              ) : null}
             </g>
           )
         })}
+        {/* labels of the window and the thresholds last, over the level lines */}
+        {w && w.hi > lo && (
+          <text
+            x={(x0 + x1) / 2}
+            y={y(Math.min(w.hi, hi)) - 4}
+            textAnchor="middle"
+            fontSize={11}
+            fontWeight={600}
+            fill="var(--viz-text)"
+            paintOrder="stroke"
+            stroke="var(--viz-surface)"
+            strokeWidth={4}
+          >
+            {w.label}
+          </text>
+        )}
+        {thresholds.map((t) =>
+          t.S >= lo && t.S <= hi ? (
+            <text
+              key={t.x}
+              x={x0 + 4}
+              y={y(t.S) + 13}
+              fontSize={11}
+              fontWeight={entrance && t.x === entrance.x ? 700 : 500}
+              fill="var(--viz-text)"
+              paintOrder="stroke"
+              stroke="var(--viz-surface)"
+              strokeWidth={4}
+            >
+              {fill(strings.nucleus.thresholdLabel, { x: t.x, S: dec(t.S.toFixed(3), lang) })}
+            </text>
+          ) : null,
+        )}
         <text x={4} y={12} fontSize={11} fill="var(--viz-text-muted)">
           E (MeV)
         </text>
       </svg>
     </div>
   )
+}
+
+/**
+ * The γ branches of a level, one per final level (two γ lines to the same
+ * level are one branch, their intensities summed); a line that ENSDF places
+ * on no known level is given by its own energy.
+ */
+function gammaBranches(gammas: { E_keV?: number; E_final_keV?: number | null; BR?: number }[]): { to: number | null; E: number; BR: number | null }[] {
+  const out: { to: number | null; E: number; BR: number | null }[] = []
+  for (const g of gammas) {
+    const to = typeof g.E_final_keV === "number" ? g.E_final_keV : null
+    const same = to !== null ? out.find((x) => x.to === to) : undefined
+    if (same) {
+      same.BR = same.BR !== null && g.BR !== undefined ? same.BR + g.BR : same.BR ?? g.BR ?? null
+      continue
+    }
+    if (to === null && typeof g.E_keV !== "number") continue
+    out.push({ to, E: g.E_keV ?? 0, BR: g.BR ?? null })
+  }
+  return out
 }
