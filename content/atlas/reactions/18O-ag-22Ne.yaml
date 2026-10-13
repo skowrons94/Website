@@ -34,14 +34,19 @@ details: >-
   strengths for the first time at the CASPAR underground accelerator, with
   the γ-summing detector HECTOR: 0.26 ± 0.05 µeV and 0.63 ± 0.30 µeV for the
   resonances at 472 and 569 keV, with new strengths for those at 662.1, 749.9
-  and 767.6 keV.
+  and 767.6 keV. At the JUNA underground laboratory, Wang et al. (2023) fixed
+  the energy of the lower of the two at E_α = 474.0 ± 1.1 keV and its spin
+  and parity as 1⁻; a review of the work (Kajino 2023) quotes a strength of
+  0.25 ± 0.03 µeV.
 status: improving
 status_note: >-
   The two resonances that dominate the rate have now been measured directly,
-  the higher one with a 50% uncertainty.
+  the lower one in two underground laboratories, the higher one with a 50%
+  uncertainty.
 status_note_it: >-
   Le due risonanze che dominano il tasso sono ora state misurate direttamente,
-  la più alta con un'incertezza del 50%.
+  la più bassa in due laboratori sotterranei, la più alta con un'incertezza
+  del 50%.
 methods: [direct-surface, direct-underground]
 measurements:
   - year: 2003
@@ -63,11 +68,35 @@ measurements:
       0.26 ± 0.05 µeV and 0.63 ± 0.30 µeV, measured with the HECTOR γ-summing
       detector; new strengths for the resonances at 662.1, 749.9 and 767.6 keV.
     refs: [dombos2022]
+  - year: 2023
+    facility: juna
+    method: direct-underground
+    energy: "E(α,lab) = 470–787 keV"
+    note: >-
+      Energy of the key resonance E_α = 474.0 ± 1.1 keV, the first
+      measurement this precise; the primary γ branchings fix Jπ = 1⁻, which
+      removes the discrepancies between earlier strengths. The rate is up to
+      about ten times more precise at 0.1–0.3 GK. A review of the result
+      (Kajino 2023) quotes ωγ = 0.25 ± 0.03 µeV, a value not given in the
+      abstract of the Letter.
+    refs: [wang2023, kajino2023]
 evaluations: [angulo1999, iliadis2010]
 open_questions:
   - The strength of the 569 keV resonance, known to 50%, and the agreement between the partial and total strengths of the 472 keV resonance.
 open_questions_it:
   - "L'intensità della risonanza a 569 keV, nota al 50%, e l'accordo tra le intensità parziali e quella totale della risonanza a 472 keV."
+facts:
+  - text: >-
+      Two underground laboratories, one in a former gold mine in South Dakota
+      and one under a Chinese mountain, have measured the key resonance. The
+      South Dakota strength, 0.26 ± 0.05 µeV, matches the 0.25 ± 0.03 µeV that
+      a review quotes for the Chinese measurement.
+    text_it: >-
+      Due laboratori sotterranei, uno in un'ex miniera d'oro del South Dakota
+      e uno sotto una montagna cinese, hanno misurato la risonanza chiave.
+      L'intensità del South Dakota, 0,26 ± 0,05 µeV, coincide con gli
+      0,25 ± 0,03 µeV che una rassegna riporta per la misura cinese.
+    refs: [dombos2022, kajino2023]
 related: [14N-ag-18F, 18F-bp-18O, 22Ne-an-25Mg, 22Ne-ag-26Mg]
 details_it: >-
   Alle temperature della combustione dell'elio il tasso è dominato da due
@@ -77,4 +106,7 @@ details_it: >-
   misurarono per la prima volta le intensità totali all'acceleratore
   sotterraneo CASPAR, con il rivelatore a somma γ HECTOR: 0,26 ± 0,05 µeV e
   0,63 ± 0,30 µeV per le risonanze a 472 e 569 keV, con nuove intensità per
-  quelle a 662,1, 749,9 e 767,6 keV.
+  quelle a 662,1, 749,9 e 767,6 keV. Al laboratorio sotterraneo JUNA, Wang
+  et al. (2023) fissarono l'energia della più bassa delle due a
+  E_α = 474,0 ± 1,1 keV, con spin e parità 1⁻; una rassegna del lavoro
+  (Kajino 2023) ne riporta un'intensità di 0,25 ± 0,03 µeV.

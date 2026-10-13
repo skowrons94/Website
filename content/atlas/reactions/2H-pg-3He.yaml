@@ -123,6 +123,16 @@ measurements:
       measured in situ and by elastic recoil detection; the data favour an
       S-factor higher than earlier fits in this range.
     refs: [turkat2021]
+  - year: 2024
+    facility: luna-400
+    method: direct-underground
+    energy: "energies from 30 to 280 keV"
+    energy_it: "energie da 30 a 280 keV"
+    note: >-
+      Angular distribution of the capture γ-rays inferred from the shape of
+      the γ spectrum of a single HPGe detector facing an extended D₂ gas
+      target, and compared with ab initio predictions.
+    refs: [stockel2024]
 evaluations: [adelberger2011, acharya2025, descouvemont2004, pisanti2021, fields2020]
 open_questions:
   - The residual tension between the measured S-factor and ab initio calculations at a level of a few percent.

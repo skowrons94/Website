@@ -125,6 +125,18 @@ facts:
       minimo, 3,6 ± 0,4, discende dal rapporto tra i tassi delle due catture
       protoniche sul carbonio misurati sotto terra.
     refs: [skowronski2023]
+  - text: >-
+      The same data can give different error bars: a 2025 study fitted this
+      reaction with several frequentist and Bayesian R-matrix methods and
+      found that how systematic uncertainties and their correlations are
+      handled decides how reliable the final uncertainty is.
+    text_it: >-
+      Gli stessi dati possono dare barre d'errore diverse: uno studio del 2025
+      ha eseguito il fit di questa reazione con diversi metodi R-matrix,
+      frequentisti e bayesiani, e ha trovato che il modo di trattare le
+      incertezze sistematiche e le loro correlazioni decide quanto sia
+      affidabile l'incertezza finale.
+    refs: [skowronski2025b]
 related: [13N-bp-13C, 13C-pg-14N, 14N-pg-15O]
 rmatrix: [13N]
 details_it: >-

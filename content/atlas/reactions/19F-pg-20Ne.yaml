@@ -41,7 +41,13 @@ details: >-
   limit for the resonance near 213 keV. The JUNA experiment, deep under the
   JinPing mountain, reached E = 186 keV and identified a key resonance at
   225 keV; near 0.1 GK its rate is up to 7.4 times the previous
-  recommendation.
+  recommendation. Before the JUNA result, an R-matrix analysis fitted the
+  (p,γ), (p,α) and (p,p) data together (deBoer et al. 2021). It found the
+  rate uncertainty considerably larger than previously reported. The causes
+  are unresolved interferences, possible threshold and subthreshold states
+  and direct capture. A Gamow shell model calculation gives, near 0.1 GK, a
+  rate close to the JUNA one (Dong et al. 2024, preprint). A ¹⁹F + p
+  measurement is under way at the LUNA 400 kV accelerator.
 status: uncertain
 status_note: >-
   Underground data now reach 186 keV; below that the rate depends on weak
@@ -81,6 +87,7 @@ measurements:
       iron-poor stars.
     refs: [zhang2022]
 evaluations: [acharya2025]
+refs: [deboer2021, dong2024]
 open_questions:
   - The strength of the lowest-energy resonances and the non-resonant contribution.
   - The leakage ratio (p,γ)/(p,α) at the temperatures of hot hydrogen burning.
