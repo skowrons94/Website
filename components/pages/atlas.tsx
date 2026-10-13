@@ -13,6 +13,7 @@ import { AtlasStoriesAndPaths } from "@/components/atlas/stories-paths"
 import { getAtlas, getMapData } from "@/lib/atlas"
 import { dict, localePath, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
+import { prefetchFor } from "@/lib/prefetch"
 import { PageLd } from "@/components/json-ld"
 import { atlasDatasetLd } from "@/lib/structured-data"
 
@@ -42,6 +43,7 @@ export function AtlasPage({ lang }: { lang: Lang }) {
   const startHere = (className: string) => (
     <Link
       href={to(highlights > 0 ? "/atlas/timeline?only=highlights" : "/atlas/timeline")}
+      prefetch={prefetchFor(to(highlights > 0 ? "/atlas/timeline?only=highlights" : "/atlas/timeline"))}
       className={`group block rounded-lg border border-border bg-card p-5 transition-colors hover:border-foreground/30 ${className}`}
     >
       <p className="text-xs font-medium uppercase tracking-[0.14em] text-link">{t.startHere}</p>
@@ -62,20 +64,20 @@ export function AtlasPage({ lang }: { lang: Lang }) {
       <a href="#stories" className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
         {dict(lang).nav.stories}
       </a>
-      <Link href={to("/atlas/s-process")} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
+      <Link href={to("/atlas/s-process")} prefetch={prefetchFor(to("/atlas/s-process"))} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
         {t.sProcessLink}
       </Link>
-      <Link href={to("/atlas/rates")} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
+      <Link href={to("/atlas/rates")} prefetch={prefetchFor(to("/atlas/rates"))} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
         {t.ratesLink}
       </Link>
-      <Link href={to("/atlas/methods")} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
+      <Link href={to("/atlas/methods")} prefetch={prefetchFor(to("/atlas/methods"))} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
         {t.methodsLink}
       </Link>
       {/* --- lit --- */}
-      <Link href={to("/atlas/open-questions")} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
+      <Link href={to("/atlas/open-questions")} prefetch={prefetchFor(to("/atlas/open-questions"))} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
         {dict(lang).openQuestions.link}
       </Link>
-      <Link href={to("/glossary")} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
+      <Link href={to("/glossary")} prefetch={prefetchFor(to("/glossary"))} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
         {t.glossaryLink}
       </Link>
       <a href="#cite" className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
@@ -111,7 +113,7 @@ export function AtlasPage({ lang }: { lang: Lang }) {
                 </span>{" "}
                 {t.notation[0]}{" "}
                 <span className="font-serif font-semibold sm:whitespace-nowrap">{t.notation[1]}</span>.{" "}
-                <Link href={to("/glossary#notation")} className="text-link underline-offset-4 hover:underline">
+                <Link href={to("/glossary#notation")} prefetch={prefetchFor(to("/glossary#notation"))} className="text-link underline-offset-4 hover:underline">
                   {t.moreInGlossary}
                 </Link>
               </p>
@@ -192,10 +194,10 @@ export function AtlasPage({ lang }: { lang: Lang }) {
               {t.lunaTitle}
             </h2>
             <span className="flex flex-wrap gap-x-5 gap-y-1 text-sm">
-              <Link href={to("/atlas/timeline?only=luna")} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
+              <Link href={to("/atlas/timeline?only=luna")} prefetch={prefetchFor(to("/atlas/timeline?only=luna"))} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
                 {t.lunaOnTimeline}
               </Link>
-              <Link href={to("/research#luna")} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
+              <Link href={to("/research#luna")} prefetch={prefetchFor(to("/research#luna"))} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
                 {t.myLuna}
               </Link>
             </span>
@@ -208,6 +210,7 @@ export function AtlasPage({ lang }: { lang: Lang }) {
               <li key={r.id}>
                 <Link
                   href={to(`/atlas/${r.id}`)}
+                  prefetch={prefetchFor(to(`/atlas/${r.id}`))}
                   className="group inline-flex items-baseline gap-2 rounded-md border border-border bg-card px-3 py-2 transition-colors hover:border-foreground/30"
                 >
                   <span className="font-serif text-[0.95rem] font-semibold group-hover:text-link">
@@ -225,22 +228,22 @@ export function AtlasPage({ lang }: { lang: Lang }) {
 
       {/* -- further ------------------------------------------------------- */}
       <section className="mt-16 grid gap-6 border-t border-border/70 pt-10 sm:grid-cols-2 lg:grid-cols-3">
-        <Link href={to("/atlas/timeline")} className="group block rounded-lg border border-border bg-card p-6">
+        <Link href={to("/atlas/timeline")} prefetch={prefetchFor(to("/atlas/timeline"))} className="group block rounded-lg border border-border bg-card p-6">
           <h2 className="font-serif text-lg font-semibold tracking-tight group-hover:text-link">{t.timelineCard}</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t.timelineCardText}</p>
           <ArrowRight className="mt-4 h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
         </Link>
-        <Link href={to("/atlas/s-process")} className="group block rounded-lg border border-border bg-card p-6">
+        <Link href={to("/atlas/s-process")} prefetch={prefetchFor(to("/atlas/s-process"))} className="group block rounded-lg border border-border bg-card p-6">
           <h2 className="font-serif text-lg font-semibold tracking-tight group-hover:text-link">{t.sProcessCard}</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t.sProcessCardText}</p>
           <ArrowRight className="mt-4 h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
         </Link>
-        <Link href={to("/atlas/rates")} className="group block rounded-lg border border-border bg-card p-6">
+        <Link href={to("/atlas/rates")} prefetch={prefetchFor(to("/atlas/rates"))} className="group block rounded-lg border border-border bg-card p-6">
           <h2 className="font-serif text-lg font-semibold tracking-tight group-hover:text-link">{t.ratesCard}</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t.ratesCardText}</p>
           <ArrowRight className="mt-4 h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
         </Link>
-        <Link href={to("/atlas/methods")} className="group block rounded-lg border border-border bg-card p-6">
+        <Link href={to("/atlas/methods")} prefetch={prefetchFor(to("/atlas/methods"))} className="group block rounded-lg border border-border bg-card p-6">
           <h2 className="font-serif text-lg font-semibold tracking-tight group-hover:text-link">
             {t.methodsCard}
           </h2>
@@ -248,7 +251,7 @@ export function AtlasPage({ lang }: { lang: Lang }) {
           <ArrowRight className="mt-4 h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
         </Link>
         {/* --- lit --- */}
-        <Link href={to("/atlas/open-questions")} className="group block rounded-lg border border-border bg-card p-6">
+        <Link href={to("/atlas/open-questions")} prefetch={prefetchFor(to("/atlas/open-questions"))} className="group block rounded-lg border border-border bg-card p-6">
           <h2 className="font-serif text-lg font-semibold tracking-tight group-hover:text-link">{dict(lang).openQuestions.card}</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{dict(lang).openQuestions.cardText}</p>
           <ArrowRight className="mt-4 h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />

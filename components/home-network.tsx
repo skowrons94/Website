@@ -2,6 +2,7 @@ import Link from "next/link"
 
 import { getMapData } from "@/lib/atlas"
 import { dict, localePath, type Lang } from "@/lib/i18n"
+import { prefetchFor } from "@/lib/prefetch"
 
 /*
  * The landing page's picture: one process of the atlas, drawn on its own patch
@@ -115,6 +116,7 @@ export function HomeNetwork({ lang }: { lang: Lang }) {
     <figure className="m-0">
       <Link
         href={localePath(lang, `/atlas#${FAMILY}`)}
+        prefetch={prefetchFor("/atlas")}
         className="group block rounded-lg border border-border bg-[var(--viz-surface)] p-3 transition-colors hover:border-[var(--viz-axis)] sm:p-4"
       >
         <svg
@@ -218,6 +220,7 @@ export function HomeNetwork({ lang }: { lang: Lang }) {
         {t.figureCaption(network.name, network.summary)}{" "}
         <Link
           href={localePath(lang, `/atlas#${FAMILY}`)}
+          prefetch={prefetchFor("/atlas")}
           className="whitespace-nowrap text-link underline-offset-4 hover:underline"
         >
           {t.figureLink}

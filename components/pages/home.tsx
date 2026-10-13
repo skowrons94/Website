@@ -18,6 +18,7 @@ import {
 import { Sci } from "@/components/sci"
 import { getSummary, group } from "@/lib/data/public"
 import { dict, localePath, type Lang } from "@/lib/i18n"
+import { prefetchFor } from "@/lib/prefetch"
 import { LUNA_RATES_PUBLIC } from "@/lib/rates/features"
 import { CURIOSITIES } from "@/lib/rates/curiosities"
 // --- find ---
@@ -38,7 +39,7 @@ function Linked({ text, lang }: { text: string; lang: Lang }) {
     const [, label, href] = m
     parts.push(
       href.startsWith("/") ? (
-        <Link key={`l${start}`} href={localePath(lang, href)} className="text-link underline underline-offset-4 decoration-link/40 hover:decoration-link">
+        <Link key={`l${start}`} href={localePath(lang, href)} prefetch={prefetchFor(href)} className="text-link underline underline-offset-4 decoration-link/40 hover:decoration-link">
           {label}
         </Link>
       ) : (
@@ -253,6 +254,7 @@ export function HomePage({ lang }: { lang: Lang }) {
           <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-3 text-sm sm:mt-8">
             <Link
               href={to("/atlas")}
+              prefetch={prefetchFor("/atlas")}
               className="group inline-flex min-h-11 items-center gap-2 rounded-md bg-primary px-4 py-2.5 font-medium text-primary-foreground transition-opacity hover:opacity-90"
             >
               {t.exploreAtlas}
