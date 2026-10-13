@@ -1,40 +1,29 @@
 """Discovery of the evaluations served by this instance.
 
 An evaluation is just a directory containing one ``.azr`` file, alongside the
-``data/``, ``output/`` and ``checks/`` directories AZURE2 itself uses.  Adding
-one means dropping the folder in -- there is no registry to update.
+``data/``, ``output/`` and ``checks/`` directories AZURE2 itself uses, and an
+``info.json`` with what a file cannot know: who produced it, what to cite, a
+readable name for each data file, the one-line purpose shown on its card.
+There is no registry to update.
 
-Everything shown about an evaluation is derived from the model itself (see
-:mod:`app.labels`) except the things a file cannot know: who produced it and
-what to cite.  Those live in an optional ``info.json``::
-
-    {"reference": "10.1103/PhysRevC.108.L052801",
-     "paper": {"authors": "E. Masha et al.", "title": "...",
-               "journal": "Phys. Rev. C 108, L052801", "year": 2023},
-     "analysis": "J. Skowronski"}
+``make add-evaluation`` creates such a directory from an ``.azr`` file; the
+fields of ``info.json`` are defined in ``app/info.schema.json`` and explained
+in docs/ADDING-AN-EVALUATION.md, and ``python -m app.check`` (or ``npm run
+check:evaluations``) checks them.  Here the file is read leniently -- an
+evaluation with a broken or missing ``info.json`` is still served, without its
+citation -- so that one mistake never takes the model offline; the check, the
+server's start-up log and the build report it instead.
 
 ``paper.authors`` are the paper's authors as cited (first author et al.);
 ``analysis`` is who did the R-matrix analysis, which need not be the same
 person.  The older single ``author`` field is still read, as ``analysis``.
-
-``title`` and ``channels`` may also be set there to override the derived values,
-but need not be -- an evaluation with no ``info.json`` still works, it just has
-no citation to show.
-
-Optional fields read by the web page (all pass through untouched):
-
-* ``reactions`` -- Unicode reaction notation, e.g. ``["¹²C(p,γ)¹³N"]``; derived
-  from the data segments when absent.
-* ``citation`` -- the full "how to cite" text; ``summary`` / ``summary_it`` --
-  one paragraph on what was fitted.
-* ``datasets`` -- readable names for data files, keyed by the file's stem:
-  either a string (``{"kettner_0": "Kettner"}``) or an object with the source,
-  ``{"label": "Lyons 2018", "ref": "Phys. Rev. C 97, 065802 (2018)",
-  "doi": "10.1103/PhysRevC.97.065802"}``.  Unlisted files are named by
-  :func:`dataset_label`.
+``title``, ``channels`` and ``reactions`` override the values derived from the
+model.  ``datasets`` names data files by stem, either as a string or as
+``{"label", "ref", "doi"}``; unlisted files are named by :func:`dataset_label`.
 """
 
 import json
+import logging
 import os
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
@@ -43,6 +32,8 @@ import re
 
 from app.labels import (ChannelLabel, compound_nucleus, entrance_key,
                         labels_from_file, reactions)
+
+log = logging.getLogger(__name__)
 
 
 @dataclass
@@ -64,9 +55,7 @@ class Evaluation:
     @property
     def doi(self) -> Optional[str]:
         """The reference, when it is a DOI (``10.xxxx/...``)."""
-        ref = (self.reference or "").strip()
-        ref = re.sub(r"^(https?://(dx\.)?doi\.org/|doi:)", "", ref, flags=re.I)
-        return ref if re.match(r"^10\.\d{4,9}/\S+$", ref) else None
+        return _bare_doi(self.reference)
 
     def _dataset_entry(self, data_file: str):
         stem = os.path.splitext(os.path.basename(data_file or ""))[0]
@@ -88,7 +77,7 @@ class Evaluation:
         _, entry = self._dataset_entry(data_file)
         if not isinstance(entry, dict):
             return {"ref": None, "doi": None}
-        return {"ref": _text(entry.get("ref")), "doi": _text(entry.get("doi"))}
+        return {"ref": _text(entry.get("ref")), "doi": _bare_doi(entry.get("doi"))}
 
     @property
     def entrance_label(self) -> Optional[ChannelLabel]:
@@ -118,11 +107,21 @@ class Evaluation:
             "citation": _text(info.get("citation")),
             "summary": _text(info.get("summary")),
             "summary_it": _text(info.get("summary_it")),
+            "purpose": _text(info.get("purpose")),
+            "purpose_it": _text(info.get("purpose_it")),
         }
 
 
 def _text(value) -> Optional[str]:
     return value if isinstance(value, str) and value.strip() else None
+
+
+def _bare_doi(value) -> Optional[str]:
+    """``10.xxxx/...`` from a DOI written bare, as ``doi:...`` or as a doi.org
+    link; None when it is not a DOI (so no broken link is drawn)."""
+    ref = (value or "").strip() if isinstance(value, str) else ""
+    ref = re.sub(r"^(https?://(dx\.)?doi\.org/|doi:\s*)", "", ref, flags=re.I)
+    return ref if re.match(r"^10\.\d{4,9}/\S+$", ref) else None
 
 
 # EXFOR entry + subentry, as data files exported from EXFOR are often named:
@@ -197,9 +196,12 @@ def _read_info(directory: str) -> Dict:
         return {}
     try:
         with open(path, encoding="utf-8") as f:
-            return json.load(f)
-    except (json.JSONDecodeError, OSError):
+            info = json.load(f)
+    except (json.JSONDecodeError, OSError) as err:
+        log.error("%s: ignored, it is not valid JSON (%s); "
+                  "python -m app.check says how to fix it", path, err)
         return {}
+    return info if isinstance(info, dict) else {}
 
 
 def load(directory: str) -> Optional[Evaluation]:

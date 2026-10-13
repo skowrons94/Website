@@ -78,6 +78,11 @@ def create_app(config=Config):
     from app.routes import bp
     app.register_blueprint(bp)
 
+    # Report broken evaluations (info.json, .azr paths, data files) in the
+    # log at start-up, with what to fix: python -m app.check prints the same.
+    from app import check
+    check.log_problems(app.config["EVALUATIONS_DIR"])
+
     # The blueprint's handlers only see errors raised inside its views; an
     # unknown path or a wrong method fails in routing, before any view, and
     # would otherwise come back as Flask's HTML page to a JSON client.

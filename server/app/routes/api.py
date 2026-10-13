@@ -37,7 +37,7 @@ from app import evaluations as evaluations_module
 from app import initial as initial_module
 from app import serializers
 from app.engine import PREPARE_STEPS, ROLES, Delegated, EngineError
-from app.session import CapacityError, SessionError
+from app.session import CapacityError, ModelError, SessionError
 
 log = logging.getLogger(__name__)
 
@@ -79,6 +79,14 @@ def _delegated(err):
     # The in-browser build only (browser/bridge.py): this calculation runs
     # in another Web Worker, which the page asks and then retries.
     return jsonify({"error": str(err), "code": "delegate", "role": err.role}), 500
+
+
+@bp.errorhandler(ModelError)
+def _model_broken(err):
+    # The model itself cannot be started: not the visitor's fault, and
+    # reopening will not help, so not "expired".
+    log.error("%s", err)
+    return jsonify({"error": str(err), "code": "model"}), 500
 
 
 @bp.errorhandler(SessionError)
