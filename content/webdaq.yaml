@@ -227,17 +227,18 @@ capabilities:
       name_it: Regolazione in linea
       text: >-
         Change thresholds, gates and the trapezoid filter while the run is
-        going, and watch the trace and the spectrum react: a fit on the spectrum
-        since the last change gives the resolution of each setting. Only what is
+        going, and see the trace and the spectrum change: a live fit of the
+        spectrum taken since the last change gives the resolution of each
+        setting. Only what is
         safe to move during a run is sent to the board, and during a production
         run only once you confirm; the rest waits for the next run.
       text_it: >-
         Cambia soglie, finestre e filtro trapezoidale mentre il run è in corso,
-        e guarda la traccia e lo spettro reagire: un fit sullo spettro
-        dall'ultima modifica dà la risoluzione di ogni impostazione. Alla scheda
-        arriva solo ciò che si può toccare durante un run, e durante un run di
-        produzione solo dopo una tua conferma; il resto aspetta il run
-        successivo.
+        e osserva come cambiano la traccia e lo spettro: un fit in tempo reale
+        dello spettro raccolto dall'ultima modifica dà la risoluzione di ogni
+        impostazione. Alla scheda arriva solo ciò che si può toccare durante
+        l'acquisizione, e in un run di produzione solo dopo una tua conferma;
+        il resto aspetta il run successivo.
       shot: >-
         The tuner: a pulse, its trapezoid and the spectrum, with the filter
         settings beside them.

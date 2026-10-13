@@ -145,5 +145,6 @@ body:has(.wd-banner) header.sticky.top-0 { top: var(--wd-banner-h); }
   .wd-tour .wd-btn { min-height: 44px; }
   /* WebDAQ's wide rows (the dashboard's tab bar, tables) would widen the layout
      viewport on a phone and shrink the frame with it; they are clipped instead. */
-  html, body { overflow-x: clip; }
+  /* hidden first for Safari < 16, which ignores clip */
+  html, body { overflow-x: hidden; overflow-x: clip; }
 }
