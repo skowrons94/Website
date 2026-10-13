@@ -2,7 +2,9 @@
 
 A release is a git tag `vX.Y.Z` on `main`. The site reads it: "How to cite
 this site" on /about shows the latest tag's version and the date of its commit
-(`lib/site-release.ts`; without a tag it shows `version` from package.json).
+(`lib/site-release.ts`; without a tag it shows `version` from package.json and
+`date-released` from CITATION.cff, so the two agree). Tag on the day you set
+as `date-released`.
 
 ## Every release
 

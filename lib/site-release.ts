@@ -10,8 +10,10 @@ import { getProfile } from "@/lib/content"
  *
  *   version  the latest git tag vX.Y.Z when the history has one, else the
  *            `version` of package.json (RELEASING.md says how to tag)
- *   date     the date of that tag's commit, else of the last commit, else the
- *            day of the build (a Docker build copies no .git)
+ *   date     the date of that tag's commit; without a tag, CITATION.cff's
+ *            `date-released` (so the two always agree), else the date of the
+ *            last commit, else the day of the build (a Docker build copies no
+ *            .git)
  *   doi      profile.yaml's `site_doi:` (the Zenodo concept DOI, which always
  *            resolves to the latest version), or null while it is empty
  *
@@ -43,9 +45,26 @@ export function siteRelease(): SiteRelease {
   const isDate = (s: string | null): s is string => Boolean(s && /^\d{4}-\d{2}-\d{2}$/.test(s))
   const tagDate = tag ? git(["log", "-1", "--format=%cs", tag]) : null
   const lastDate = git(["log", "-1", "--format=%cs"])
-  const date = isDate(tagDate) ? tagDate : isDate(lastDate) ? lastDate : new Date().toISOString().slice(0, 10)
+  const cffDate = tag ? null : citationDate()
+  const date = isDate(tagDate)
+    ? tagDate
+    : isDate(cffDate)
+      ? cffDate
+      : isDate(lastDate)
+        ? lastDate
+        : new Date().toISOString().slice(0, 10)
   cached = { version, date, tag, doi: siteDoi() }
   return cached
+}
+
+/** CITATION.cff's `date-released:` (YYYY-MM-DD), or null. */
+function citationDate(): string | null {
+  try {
+    const cff = fs.readFileSync(path.join(process.cwd(), "CITATION.cff"), "utf8")
+    return cff.match(/^date-released:\s*["']?(\d{4}-\d{2}-\d{2})["']?\s*$/m)?.[1] ?? null
+  } catch {
+    return null
+  }
 }
 
 /** profile.yaml's `site_doi:`, bare (no https://doi.org/), or null while it is empty. */
