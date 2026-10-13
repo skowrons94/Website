@@ -47,6 +47,9 @@ export interface Evaluation {
   citation?: string | null
   summary?: string | null
   summary_it?: string | null
+  /** One plain sentence on what the reaction is for (info.json `purpose`, `purpose_it`). */
+  purpose?: string | null
+  purpose_it?: string | null
   /** Who did the R-matrix analysis; `author` carries the same for older clients. */
   analysis?: string | null
   paper?: { authors: string; title?: string | null; journal?: string | null; year?: number | null } | null

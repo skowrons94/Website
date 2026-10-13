@@ -2,6 +2,7 @@
   "id": "13N",
   "title": "^{13}\\text{N}",
   "reference": "10.1103/PhysRevC.111.035802",
+  "status": "published",
   "paper": {
     "authors": "J. Skowronski et al.",
     "title": "A comparative analysis of R-matrix fitting: ¹²C(p,γ)¹³N as test case",
@@ -9,6 +10,8 @@
     "year": 2025
   },
   "analysis": "J. Skowronski",
+  "purpose": "The first step of the CN cycle, which burns hydrogen in stars; with the next proton capture it sets the carbon-12 to carbon-13 ratio seen in red giants.",
+  "purpose_it": "Il primo passo del ciclo CN, che brucia idrogeno nelle stelle; con la cattura protonica successiva fissa il rapporto tra carbonio-12 e carbonio-13 osservato nelle giganti rosse.",
   "channels": [
     "p",
     "\\gamma"
@@ -57,6 +60,16 @@
       "label": "Rolfs 1974",
       "ref": "Nucl. Phys. A 227, 291 (1974)",
       "doi": "10.1016/0375-9474(74)90798-2"
-    }
-  }
+    },
+    "meyer_84": "Meyer",
+    "meyer_114": "Meyer",
+    "meyer_144": "Meyer",
+    "burtebaev": "Burtebaev",
+    "lamb": "Lamb",
+    "bailey": "Bailey",
+    "vogl": "Vogl"
+  },
+  "atlas": [
+    "12C-pg-13N"
+  ]
 }

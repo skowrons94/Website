@@ -9,6 +9,8 @@
     "year": 2026
   },
   "analysis": "J. Skowronski, R. J. deBoer",
+  "purpose": "Opens the branches of the pp chain that emit the ⁷Be and ⁸B solar neutrinos, and made most of the lithium after the Big Bang.",
+  "purpose_it": "Apre i rami della catena pp che emettono i neutrini solari del ⁷Be e dell'⁸B, e dopo il Big Bang produsse la maggior parte del litio.",
   "channels": [
     "^{3}\\text{He} + \\alpha",
     "^{6}\\text{Li} + p_{0}",
@@ -29,7 +31,30 @@
       "label": "Di Leva 2009 (EXFOR C1729.001)",
       "ref": "Phys. Rev. Lett. 102, 232502 (2009)",
       "doi": "10.1103/PhysRevLett.102.232502"
-    }
+    },
+    "Abramovich-A0244002": "Abramovich (EXFOR A0244.002)",
+    "Elwyn-F0012002": "Elwyn (EXFOR F0012.002)",
+    "Elwyn-F0012003": "Elwyn (EXFOR F0012.003)",
+    "Elwyn-F0012005": "Elwyn (EXFOR F0012.005)",
+    "Fasoli-D0135002": "Fasoli (EXFOR D0135.002)",
+    "Harrison-C1003002": "Harrison (EXFOR C1003.002)",
+    "Ivanovich-A1014010": "Ivanovich (EXFOR A1014.010)",
+    "Paneru": "Paneru",
+    "Schenk-F0049002": "Schenk (EXFOR F0049.002)",
+    "Spiger-A1094004": "Spiger (EXFOR A1094.004)",
+    "Spiger-A1094007": "Spiger (EXFOR A1094.007)",
+    "Tumino-O1221002": "Tumino (EXFOR O1221.002)",
+    "Parker-A1088001": "Parker (EXFOR A1088.001)",
+    "Costantini-O1709001": "Costantini (EXFOR O1709.001)",
+    "Osborne-C0737001": "Osborne (EXFOR C0737.001)",
+    "Switkowski-F0032001": "Switkowski (EXFOR F0032.001)",
+    "Piatti-O2521001": "Piatti (EXFOR O2521.001)",
+    "He-S0083001": "He (EXFOR S0083.001)",
+    "Szucs-D4400001": "Szucs (EXFOR D4400.001)",
+    "Toth-D4430001": "Toth (EXFOR D4430.001)"
   },
-  "split_total_capture": true
+  "split_total_capture": true,
+  "atlas": [
+    "3He-ag-7Be"
+  ]
 }

@@ -4,7 +4,17 @@
   "reference": null,
   "status": "unpublished",
   "analysis": "J. Skowronski (work in progress)",
+  "purpose": "Proton scattering on sodium-23: the magnesium-24 levels through which ²³Na(p,α) and ²³Na(p,γ) destroy sodium in stars.",
+  "purpose_it": "Diffusione di protoni sul sodio-23: i livelli del magnesio-24 attraverso cui ²³Na(p,α) e ²³Na(p,γ) distruggono il sodio nelle stelle.",
   "reactions": [
     "²³Na(p,p)²³Na"
+  ],
+  "datasets": {
+    "Vanhoy_F0918002": "Vanhoy (EXFOR F0918.002)",
+    "Cruz": "Cruz",
+    "Caciolli_D0458001": "Caciolli (EXFOR D0458.001)"
+  },
+  "atlas": [
+    "23Na-pg-24Mg"
   ]
 }

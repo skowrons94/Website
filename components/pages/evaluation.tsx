@@ -64,7 +64,7 @@ export function EvaluationPage({ id, lang }: { id: string; lang: Lang }) {
     <>
       <EvaluationHeader meta={meta} lang={lang} azure2Ref={azure2Ref()} licence={licence} />
       <EvaluationIntro reaction={headline} compound={id} lang={lang} scattering={scatteringOnly} meta={meta} />
-      <EvaluationWorkspace id={id} known={meta.known} scatteringOnly={scatteringOnly} temperatures={temperatures} />
+      <EvaluationWorkspace id={id} known={meta.known} scatteringOnly={scatteringOnly} temperatures={temperatures} typical={meta.timings} />
       <EvaluationHeader part="about" meta={meta} lang={lang} azure2Ref={azure2Ref()} licence={licence} />
       {reactions.length > 0 && (
         <aside className="mt-16 border-t border-border/70 pt-8 text-sm">

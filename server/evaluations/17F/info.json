@@ -4,6 +4,8 @@
   "reference": null,
   "status": "unpublished",
   "analysis": "R. J. deBoer",
+  "purpose": "The slowest step of the second CNO cycle.",
+  "purpose_it": "Il passo più lento del secondo ciclo CNO.",
   "reactions": [
     "¹⁶O(p,γ)¹⁷F"
   ],
@@ -17,7 +19,14 @@
       "label": "Morlock 1997 (1st exc.)",
       "ref": "Phys. Rev. Lett. 79, 3837 (1997)",
       "doi": "10.1103/PhysRevLett.79.3837"
-    }
+    },
+    "Hester_total": "Hester (total)",
+    "Chow_GS": "Chow (g.s.)",
+    "Chow_FES": "Chow (1st exc.)",
+    "Becker_FES": "Becker (1st exc.)"
   },
-  "split_total_capture": true
+  "split_total_capture": true,
+  "atlas": [
+    "16O-pg-17F"
+  ]
 }

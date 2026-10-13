@@ -4,6 +4,8 @@
   "reference": null,
   "status": "unpublished",
   "analysis": "J. Skowronski",
+  "purpose": "Alpha–alpha scattering: the beryllium-8 states behind the first step of the triple-alpha process, which makes the carbon in stars.",
+  "purpose_it": "Diffusione alfa–alfa: gli stati del berillio-8 alla base del primo passo del processo tre alfa, che produce il carbonio nelle stelle.",
   "reactions": [
     "⁴He(α,α)⁴He"
   ],
@@ -13,5 +15,8 @@
     "tombrello_aa_ang3": "Tombrello",
     "tombrello_aa_ang4": "Tombrello",
     "tombrello_aa_ang5": "Tombrello"
-  }
+  },
+  "atlas": [
+    "4He-aa-12C"
+  ]
 }

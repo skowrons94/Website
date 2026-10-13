@@ -449,9 +449,10 @@ function print(list, label, colour) {
 
 const counts = `${reactionFiles.size} reaction files, ${listedReactions.size} reactions in ${networkIds.size} networks, ${Object.keys(references).length} references, ${facilityIds.size} facilities, ${methodIds.size} methods`
 console.log(`${bold("atlas")} ${dim(path.relative(process.cwd(), dir) || dir)}: ${counts}`)
-print(errors, errors.length === 1 ? "error" : "errors", red)
+// Warnings first and errors last, so the errors are what is on screen at the end.
 if (!quiet) print(warnings, warnings.length === 1 ? "warning" : "warnings", yellow)
 else if (warnings.length) console.log(yellow(`${warnings.length} warnings (run without --quiet to list them)`))
+print(errors, errors.length === 1 ? "error" : "errors", red)
 
 if (errors.length) {
   console.log(`\n${red("atlas check failed.")} Fix the errors above; warnings alone do not stop the build.\n`)

@@ -440,16 +440,6 @@ const en = {
     showMore: (n: number) => `Show ${n} more`,
     showFewer: "Show fewer",
     opensIn: (s: string) => `opens in about ${s} s`,
-    purposes: {
-      "13N": "The first step of the CN cycle, which burns hydrogen in stars; with the next proton capture it sets the carbon-12 to carbon-13 ratio seen in red giants.",
-      "14N": "The step of the CN cycle that destroys carbon-13 and makes nitrogen-14.",
-      "17F": "The slowest step of the second CNO cycle.",
-      "21Na": "The first and slowest step of the NeNa cycle.",
-      "23Na": "The main way stars make sodium-23, the only stable sodium isotope, while they burn hydrogen.",
-      "24Mg": "Proton scattering on sodium-23: the magnesium-24 levels through which ²³Na(p,α) and ²³Na(p,γ) destroy sodium in stars.",
-      "7Be": "Opens the branches of the pp chain that emit the ⁷Be and ⁸B solar neutrinos, and made most of the lithium after the Big Bang.",
-      "8Be": "Alpha–alpha scattering: the beryllium-8 states behind the first step of the triple-alpha process, which makes the carbon in stars.",
-    } as Record<string, string>,
   },
 
   // --- r9 eval ---
@@ -912,16 +902,6 @@ const it: EvalDictionary = {
     showMore: (n: number) => `Mostra altri ${n}`,
     showFewer: "Mostra meno",
     opensIn: (s: string) => `si apre in circa ${s} s`,
-    purposes: {
-      "13N": "Il primo passo del ciclo CN, che brucia idrogeno nelle stelle; con la cattura protonica successiva fissa il rapporto tra carbonio-12 e carbonio-13 osservato nelle giganti rosse.",
-      "14N": "Il passo del ciclo CN che distrugge il carbonio-13 e produce azoto-14.",
-      "17F": "Il passo più lento del secondo ciclo CNO.",
-      "21Na": "Il primo e più lento passo del ciclo NeNa.",
-      "23Na": "Il modo principale in cui le stelle producono il sodio-23, l'unico isotopo stabile del sodio, mentre bruciano idrogeno.",
-      "24Mg": "Diffusione di protoni sul sodio-23: i livelli del magnesio-24 attraverso cui ²³Na(p,α) e ²³Na(p,γ) distruggono il sodio nelle stelle.",
-      "7Be": "Apre i rami della catena pp che emettono i neutrini solari del ⁷Be e dell'⁸B, e dopo il Big Bang produsse la maggior parte del litio.",
-      "8Be": "Diffusione alfa–alfa: gli stati del berillio-8 alla base del primo passo del processo tre alfa, che produce il carbonio nelle stelle.",
-    },
   },
 
   // --- r9 eval ---

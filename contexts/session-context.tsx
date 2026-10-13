@@ -40,7 +40,7 @@ import {
   type Timings,
   type SessionStatus,
 } from "@/lib/api"
-import { typicalTimings } from "@/lib/eval-timings"
+import { typicalTimings, type TypicalTimings } from "@/lib/eval-timings"
 import { rolePreparation } from "@/lib/browser-engine"
 import { useEvalDict } from "@/components/eval-dict"
 
@@ -214,11 +214,14 @@ const HIDDEN_CLOSE_MS = 5 * 60_000
 /** Heartbeat while the page is visible, unless the server asks for another interval. */
 const PING_MS = 30_000
 
-export function SessionProvider({ children }: { children: ReactNode }) {
+export function SessionProvider({ children, typical: shipped = null }: { children: ReactNode; typical?: TypicalTimings | null }) {
   const evalDict = useEvalDict()
   const unexpected = evalDict.workspace.unexpected
   const r9 = evalDict.r9
   const r11 = evalDict.r11
+  // The page's evaluation's timings.json, read at build time (lib/evaluation-meta.ts).
+  const shippedRef = useRef(shipped)
+  shippedRef.current = shipped
   // False once the provider has gone: a session that opens after that is closed at once.
   const mounted = useRef(true)
   useEffect(() => {
@@ -609,7 +612,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       setExpired(false)
       // The shipped typical timings, so the clock has an estimate at once.
       if (first) {
-        typical.current = typicalTimings(id, IN_BROWSER)
+        typical.current = typicalTimings(shippedRef.current, IN_BROWSER)
         measured.current = {}
         setPublishedExtrap(null)
       }
