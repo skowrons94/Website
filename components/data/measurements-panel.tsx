@@ -30,6 +30,8 @@ export interface PanelProps {
   macs: { n: number; lo: number; hi: number } | null
   threshold: number | null
   neutron: boolean
+  /** an atlas measurement below EXFOR's lowest point, not yet in EXFOR (lib/data/newer.ts) */
+  newer?: { text: string } | null
   /** the first window shown */
   initial?: number
   /** heading level and id, for the atlas page or the data page */
@@ -102,7 +104,9 @@ export function MeasurementsPanel(p: PanelProps) {
         <Tile
           label={t.lowest}
           value={lowest ? energy(lowest.E, lang) : t.noLowest}
-          sub={lowest ? lowestCredit(lowest, t.lowestSub) : t.noLowestSub}
+          sub={
+            (lowest ? lowestCredit(lowest, t.lowestSub) : t.noLowestSub) + (p.newer ? ` ${fill(t.newer, { text: p.newer.text })}` : "")
+          }
         />
         {!neutron ? (
           <Tile

@@ -108,6 +108,7 @@ const en = {
     gapEdge: (low: string, site: string, e0: string) =>
       `Data down to ${low}: only the upper edge of the window (about ${e0}, ${site}); below it, extrapolation.`,
     gapEdgeOnly: "Upper edge only",
+    gapNewer: (text: string) => `A lower measurement is not yet in EXFOR: ${text}.`,
     gapNone: "No direct data",
     gapBy: (who: string) => `Lowest: ${who}`,
     gapUnderground: "underground (LUNA)",
@@ -292,7 +293,7 @@ const en = {
         ],
         unknownTitle: "What we still don't know",
         unknown: [
-          `The second neutron source, neon-22 + helium-4, has been seen directly only down to its resonance at 830 keV (α energy in the laboratory); below it there are only upper limits, and a thermal pulse needs about ${c.ne22e0}.`,
+          `The second neutron source, neon-22 + helium-4, has been seen directly only down to its resonance at 830 keV (E_α,lab; E_cm ≈ 702 keV); below it there are only upper limits, and a thermal pulse needs about ${c.ne22e0}.`,
           "How much carbon-13 a star's pocket holds is set by mixing inside the star, which models cannot yet predict.",
           "At some branch points of the path the nucleus is radioactive, and its neutron capture is hard or impossible to measure.",
         ],
@@ -381,6 +382,7 @@ const it: typeof en = {
     gapEdge: (low: string, site: string, e0: string) =>
       `Dati fino a ${low}: solo il bordo superiore della finestra (circa ${e0}, ${site}); più in basso, estrapolazione.`,
     gapEdgeOnly: "Solo il bordo superiore",
+    gapNewer: (text: string) => `Una misura più bassa non è ancora in EXFOR: ${text}.`,
     gapNone: "Nessun dato diretto",
     gapBy: (who: string) => `La più bassa: ${who}`,
     gapUnderground: "sotto terra (LUNA)",
@@ -559,7 +561,7 @@ const it: typeof en = {
         ],
         unknownTitle: "Che cosa ancora non sappiamo",
         unknown: [
-          `La seconda sorgente di neutroni, neon-22 + elio-4, è stata osservata direttamente solo fino alla risonanza a 830 keV (energia dell'α nel laboratorio); più in basso ci sono solo limiti superiori, e un impulso termico richiede circa ${c.ne22e0}.`,
+          `La seconda sorgente di neutroni, neon-22 + elio-4, è stata osservata direttamente solo fino alla risonanza a 830 keV (E_α,lab; E_cm ≈ 702 keV); più in basso ci sono solo limiti superiori, e un impulso termico richiede circa ${c.ne22e0}.`,
           "Quanto carbonio-13 contenga la tasca di una stella dipende dal rimescolamento al suo interno, che i modelli non sanno ancora prevedere.",
           "In alcuni punti di diramazione del percorso il nucleo è radioattivo, e la sua cattura di neutroni è difficile o impossibile da misurare.",
         ],

@@ -134,6 +134,7 @@ measurements:
       width, 34 ± 7 ± 3 neV, agrees with the LUNA result from the (p,α)
       channel.
     refs: [gesue2024]
+    lowest_keV: 64.5  # centre of mass; not yet in EXFOR (lowest there: 160 keV)
 evaluations: [acharya2025]
 open_questions:
   - The direct-capture S-factor between the low-energy resonances.

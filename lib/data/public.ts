@@ -25,6 +25,7 @@ import type { Network } from "@/lib/rates/schema"
 import { lifetimes } from "@/lib/rates/solver"
 import { duration } from "@/components/rates/format"
 import { windowReach } from "@/lib/data/gap"
+import { newerThanExfor, type Newer } from "@/lib/data/newer"
 
 /* -- the summary ------------------------------------------------------------ */
 
@@ -213,6 +214,8 @@ export interface GapRow {
   /** lowest / E0, for "above" */
   factor: number
   datasets: number
+  /** an atlas measurement below EXFOR's lowest point, not yet in EXFOR */
+  newer: Newer | null
 }
 
 /** keV range of a window: E0 ± width/2, or the threshold-limited range. */
@@ -221,7 +224,7 @@ export function windowRange(w: GamowWindow): [number, number] {
   return [Math.max(w.E0 - w.width / 2, 0.01), w.E0 + w.width / 2]
 }
 
-function gapRow(r: Reaction, summary: PublicSummary): GapRow | null {
+function gapRow(r: Reaction, summary: PublicSummary, lang: Lang): GapRow | null {
   const w = r.gamow[0]
   if (!w || r.kind === "decay") return null
   const s = summary.reactions[r.id]
@@ -242,6 +245,7 @@ function gapRow(r: Reaction, summary: PublicSummary): GapRow | null {
     kind,
     factor: low ? low.keV / w.E0 : Infinity,
     datasets: s?.datasets ?? 0,
+    newer: newerThanExfor(r.id, low?.keV ?? null, lang),
   }
 }
 
@@ -250,14 +254,14 @@ export function gapRows(lang: Lang): GapRow[] {
   const summary = getSummary()
   const order = { never: 0, above: 1, edge: 2, inside: 3 }
   return getAtlas(lang)
-    .reactions.map((r) => gapRow(r, summary))
+    .reactions.map((r) => gapRow(r, summary, lang))
     .filter((x): x is GapRow => x !== null)
     .sort((a, b) => order[a.kind] - order[b.kind] || b.factor - a.factor || a.E0 - b.E0)
 }
 
 export function gapRowOf(id: string, lang: Lang): GapRow | null {
   const r = getAtlas(lang).reactions.find((x) => x.id === id)
-  return r ? gapRow(r, getSummary()) : null
+  return r ? gapRow(r, getSummary(), lang) : null
 }
 
 /* -- waiting times, from the rates explorer's networks ------------------------ */

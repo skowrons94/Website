@@ -79,6 +79,7 @@ measurements:
       the multichannel R-matrix rate is more precise than earlier evaluations
       between 0.01 and 1 GK.
     refs: [bruno2019]
+    lowest_keV: 55  # centre of mass; not yet in EXFOR (lowest there: 143 keV)
 evaluations: [acharya2025]
 open_questions:
   - The strength of the 20 keV resonance, known only from Trojan-Horse data.

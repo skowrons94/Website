@@ -20,6 +20,7 @@ import { fill } from "@/lib/data/fill"
 import { years } from "@/lib/data/format"
 import { lowestMeasured, rowGroup, type GapRow, type Lowest } from "@/lib/data/gap"
 import { mapRows } from "@/lib/data/map-rows"
+import { newerThanExfor, type Newer } from "@/lib/data/newer"
 export { mapRows }
 import { dict, type Lang } from "@/lib/i18n"
 
@@ -36,6 +37,8 @@ export interface PanelData {
   neutron: boolean
   entries: string[]
   channel: Channel | null
+  /** an atlas measurement below EXFOR's lowest point, not yet in EXFOR */
+  newer: Newer | null
 }
 
 function toPanel(w: WindowMetrics): PanelWindow {
@@ -54,7 +57,14 @@ function toPanel(w: WindowMetrics): PanelWindow {
   }
 }
 
-function summarise(rows: GapRow[], windows: WindowMetrics[], channel: Channel | null, lang: Lang, slugs: PanelData["slugs"]): PanelData {
+function summarise(
+  rows: GapRow[],
+  windows: WindowMetrics[],
+  channel: Channel | null,
+  lang: Lang,
+  slugs: PanelData["slugs"],
+  atlasId: string | null,
+): PanelData {
   const t = dict(lang).dataExpert.panel
   const drawn = mapRows(rows)
   const entries = [...new Set(rows.map((r) => entryOf(r.id)))]
@@ -81,6 +91,7 @@ function summarise(rows: GapRow[], windows: WindowMetrics[], channel: Channel | 
     neutron,
     entries,
     channel,
+    newer: atlasId ? newerThanExfor(atlasId, lowest?.E ?? null, lang) : null,
   }
 }
 
@@ -96,7 +107,7 @@ export function atlasPanel(atlasId: string, lang: Lang): PanelData | null {
   const main = rs.sort((a, b) => idx.reactions.n[b] - idx.reactions.n[a])
   const slugs = main.map((k) => ({ slug: idx.reactions.slug[k], key: idx.reactions.key[k], n: idx.reactions.n[k] }))
   const channel = channelOf(idx.reactions.key[main[0]])
-  return summarise(rows, atlasWindows(r, rows, channel), channel, lang, slugs)
+  return summarise(rows, atlasWindows(r, rows, channel), channel, lang, slugs, atlasId)
 }
 
 /** Temperatures offered for a reaction outside the atlas. */
@@ -131,5 +142,5 @@ export function slugPanel(slug: string, lang: Lang): PanelData | null {
     const neutron = channel.z1 === 0 || channel.z2 === 0
     windows = genericWindows(channel, rows, neutron ? GENERIC_TEMPS_N : GENERIC_TEMPS)
   }
-  return summarise(rows, windows, channel, lang, slugs)
+  return summarise(rows, windows, channel, lang, slugs, reaction ? atlas : null)
 }

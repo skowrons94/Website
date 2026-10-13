@@ -126,6 +126,7 @@ export function GapRowView({ row, lang, compact = false }: { row: GapRow; lang: 
             {t.gapBy(credit(row.low, lang))}.
           </>
         )}
+        {row.newer && <> {t.gapNewer(row.newer.text)}</>}
       </p>
       <GapBar row={row} className="mt-1.5" />
       {!compact && (

@@ -79,6 +79,12 @@ export interface Measurement {
   refs: string[]
   /** Any of its references is a LUNA paper. */
   luna: boolean
+  /**
+   * `lowest_keV`: the lowest centre-of-mass energy it reached, in keV, given
+   * when it is below what EXFOR holds; the data pages then say a lower
+   * measurement is not yet in EXFOR (lib/data/newer.ts).
+   */
+  lowestKeV: number | null
 }
 
 export interface QValue {

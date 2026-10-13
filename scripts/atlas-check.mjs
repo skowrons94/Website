@@ -365,6 +365,8 @@ for (const [id, { file, data: r }] of reactionFiles) {
     if (m.refs !== undefined && refs.length === 0) error(file, `${where}a measurement needs at least one reference`)
     checkRefs(file, refs, where)
     if (!isText(m.energy)) warn(file, `${where}no \`energy\` range`)
+    if (m.lowest_keV !== undefined && !(typeof m.lowest_keV === "number" && m.lowest_keV > 0))
+      error(file, `${where}\`lowest_keV\` must be a positive number (centre-of-mass keV)`)
     if (!isText(m.note)) warn(file, `${where}no \`note\``)
     checkTranslations(file, m, [], where)
   })

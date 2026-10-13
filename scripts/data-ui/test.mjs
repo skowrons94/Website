@@ -309,6 +309,15 @@ check(windowReach(201, 100, 200) === "above", "reach: above")
   check(reach("12C-12Ca-20Ne") === "inside", `12C(12C,a): ${reach("12C-12Ca-20Ne")}, expected inside`)
   check(reach("18O-ag-22Ne") === "inside", `18O(a,g): ${reach("18O-ag-22Ne")}, expected inside`)
 }
+{
+  // atlas measurements below EXFOR's lowest point (lowest_keV; lib/data/newer.ts): the "not yet in EXFOR" notes
+  const atlas = buildAtlas()
+  const newer = atlas.reactions
+    .filter((r) => r.measurements.some((m) => m.lowestKeV !== null && m.lowestKeV < (summary.reactions[r.id]?.lowest?.keV ?? Infinity) * 0.98))
+    .map((r) => r.id)
+    .sort()
+  same(newer.join(" "), "17O-pg-18F 18O-pa-15N 19F-pg-20Ne 23Na-pg-24Mg", "reactions with a lower measurement not yet in EXFOR")
+}
 
 console.log(`test:data-ui: ${checks - failures}/${checks} checks passed`)
 if (failures) process.exit(1)
