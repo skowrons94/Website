@@ -29,11 +29,11 @@ tagline_it: Astrofisica nucleare, misurata sotto 1,4 km di roccia.
 lead: >-
   Stars shine because atomic nuclei fuse in their cores. I measure those nuclear
   reactions in the laboratory, at the low energies at which they happen inside
-  stars. There they are so rare that the experiments must be shielded from
-  cosmic rays, under 1.4 km of rock at
+  stars. At those energies the reactions are so rare that the experiments must
+  be shielded from cosmic rays, under 1.4 km of rock at
   [LUNA](/atlas/methods#direct-underground), the underground accelerator
   beneath the Gran Sasso mountain in Italy. I also develop the software that
-  turns the measurements into the reaction rates astrophysicists use.
+  turns such measurements into the reaction rates astrophysicists use.
 lead_it: >-
   Le stelle brillano perché nel loro cuore i nuclei atomici si fondono tra loro.
   Io misuro queste reazioni nucleari in laboratorio, alle basse energie a cui
@@ -74,19 +74,19 @@ recognition:
   - source: research/luna
     label: Working Group Leader
     label_it: Coordinatore di gruppo di lavoro
-    period: 2024 — present
+    period: 2024–present
     period_it: 2024 — oggi
     what: ¹⁹F + p at LUNA
     what_it: ¹⁹F + p a LUNA
   - source: research/luna
     label: DAQ Coordinator
     label_it: Coordinatore DAQ
-    period: 2024 — present
+    period: 2024–present
     period_it: 2024 — oggi
     what: LUNA collaboration
     what_it: Collaborazione LUNA
   - source: cv/research/AZURE2
-    label: Maintainer and lead developer
+    label: Maintainer and Lead Developer
     label_it: Responsabile e sviluppatore principale
     what: AZURE2, the R-matrix code
     what_it: AZURE2, il codice R-matrix
@@ -98,7 +98,7 @@ recognition:
   - source: cv/awards/Villi Prize
     label: Villi Prize
     label_it: Premio Villi
-    what: INFN, best Ph.D. thesis
+    what: INFN, best PhD thesis
     what_it: INFN, migliore tesi di dottorato
   - source: cv/awards/Honorary Fellow
     label: Honorary Fellow
@@ -122,18 +122,17 @@ recognition:
 # for specialists. The lead above already says where and why; this is the rest.
 intro:
   - >-
-    At LUNA the rock above the laboratory reduces the flux of cosmic-ray muons
-    by a factor of about a million, and cross sections of picobarns become
-    measurable. A measurement, though, is only ever a handful of points in a
+    Underground, the cosmic-ray background drops a millionfold and cross
+    sections of picobarns become measurable. A measurement, though, is only ever a handful of points in a
     narrow window of energy. Turning those points into the quantity astrophysics
     needs — a rate at stellar temperatures, often far below anything
     measurable — is R-matrix theory's job.
   - >-
     Since June 2025 I have been the maintainer and lead developer of AZURE2, the
-    reference R-matrix code for the field, and I sit on the IAEA INDEN-LE
-    committee that evaluates light-element cross sections. This site collects
-    both halves: notes on the theory, and evaluations you can open and run
-    yourself in the browser.
+    R-matrix code used across the field, and I sit on the IAEA INDEN-LE
+    committee that evaluates light-element cross sections. This site puts both
+    to work: notes on the theory, and evaluations you can open, change and rerun
+    in your browser.
 
 intro_it:
   - >-
