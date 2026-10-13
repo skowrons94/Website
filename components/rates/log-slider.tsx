@@ -48,7 +48,7 @@ export function LogSlider({
   const changed = centred && Math.abs(v) > 1e-9
   return (
     <div className={className}>
-      <div className={`flex items-baseline justify-between gap-3 ${hideLabel ? "sr-only" : ""}`}>
+      <div className={`flex flex-wrap items-baseline justify-between gap-x-3 ${hideLabel ? "sr-only" : ""}`}>
         <label htmlFor={id} className="text-sm font-medium">
           {label}
         </label>

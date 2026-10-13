@@ -252,6 +252,7 @@ export function StatusLine({
  */
 export function ResultStrip({
   rows,
+  self = [],
   busy,
   href,
   lang,
@@ -259,7 +260,10 @@ export function ResultStrip({
   watch,
   rev,
 }: {
+  /** the knock-on effects of 1% or more, biggest first (the bars) */
   rows: ChangeRow[]
+  /** the changed reactions' own targets that moved by 1% or more: shown when nothing else did */
+  self?: ChangeRow[]
   busy: boolean
   href: string
   lang: Lang
@@ -299,23 +303,24 @@ export function ResultStrip({
   if (!active || covered) return null
   return (
     <div className="sticky bottom-0 z-20 -mx-5 mt-6 border-t border-border bg-background/95 px-5 py-2.5 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:-mx-8 sm:px-8 lg:hidden">
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <span className="shrink-0 text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
           {t.stripTitle}
         </span>
-        <div className="min-w-0 flex-1 text-sm">
+        <div className="min-w-[10rem] flex-1 text-sm">
           {busy ? (
             <span className="inline-flex items-center gap-1.5 text-muted-foreground">
               <Loader2 className="h-3.5 w-3.5 animate-spin motion-reduce:animate-none" aria-hidden />
               {t.calculatingFor(s >= 0.2 ? `${dec(s.toFixed(1), lang)} s` : "")}
             </span>
-          ) : rows.length ? (
+          ) : rows.length || self.length ? (
             <ul className="flex flex-wrap gap-x-3 gap-y-0.5">
-              {rows.slice(0, 3).map((r) => (
+              {(rows.length ? rows : self).slice(0, 3).map((r) => (
                 <li key={r.name} className="tabular whitespace-nowrap">
                   <span className="font-serif font-semibold">
                     <Sci>{r.label}</Sci>
-                  </span>{" "}
+                  </span>
+                  {!rows.length && <span className="text-muted-foreground"> {t.stripSelf}</span>}{" "}
                   <span
                     style={{ color: r.ratio >= 1 ? "var(--rates-up)" : "var(--rates-down)" }}
                     className="font-medium"
@@ -324,9 +329,10 @@ export function ResultStrip({
                   </span>
                 </li>
               ))}
+              {!rows.length && <li className="whitespace-nowrap text-muted-foreground">{t.stripOthers}</li>}
             </ul>
           ) : (
-            <span className="text-muted-foreground">{t.stripNone}</span>
+            <span className="text-muted-foreground">{t.stripQuiet}</span>
           )}
         </div>
         <a href={href} className="shrink-0 text-xs text-link underline-offset-4 hover:underline">
@@ -361,4 +367,68 @@ export function SourceCell({ sources, lang }: { sources: RateSource[]; lang: Lan
       })}
     </>
   )
+}
+
+/**
+ * On a phone the results sit below the controls: the first time a change of
+ * the reader's own (by finger or mouse) has a result, scroll gently to it
+ * (`id`), once the finger is lifted, unless it is already on screen. Once
+ * per visit; never for a change that came with the address, or from the
+ * keyboard (the focus stays where it is, and so does the page).
+ */
+export function useRevealFirstResult(ready: boolean, id: string) {
+  const done = useRef(false)
+  const byPointer = useRef(false)
+  const down = useRef(false)
+  useEffect(() => {
+    const d = () => {
+      down.current = true
+      byPointer.current = true
+    }
+    const u = () => {
+      down.current = false
+    }
+    const k = () => {
+      byPointer.current = false
+    }
+    window.addEventListener("pointerdown", d, true)
+    window.addEventListener("pointerup", u, true)
+    window.addEventListener("pointercancel", u, true)
+    window.addEventListener("keydown", k, true)
+    return () => {
+      window.removeEventListener("pointerdown", d, true)
+      window.removeEventListener("pointerup", u, true)
+      window.removeEventListener("pointercancel", u, true)
+      window.removeEventListener("keydown", k, true)
+    }
+  }, [])
+  useEffect(() => {
+    if (!ready || done.current || !byPointer.current) return
+    if (!window.matchMedia("(max-width: 1023.98px)").matches) return
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const go = () => {
+      timer = setTimeout(() => {
+        if (done.current) return
+        done.current = true
+        const el = document.getElementById(id)
+        if (!el) return
+        const r = el.getBoundingClientRect()
+        if (r.top >= 0 && r.top < window.innerHeight * 0.6) return
+        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" })
+      }, 350)
+    }
+    if (!down.current) {
+      go()
+      return () => clearTimeout(timer)
+    }
+    const up = () => go()
+    window.addEventListener("pointerup", up, { once: true })
+    window.addEventListener("pointercancel", up, { once: true })
+    return () => {
+      window.removeEventListener("pointerup", up)
+      window.removeEventListener("pointercancel", up)
+      clearTimeout(timer)
+    }
+  }, [ready, id])
 }

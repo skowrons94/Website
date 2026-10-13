@@ -6,6 +6,7 @@
  * a precomputed one is answered from the baseline without waking the worker.
  */
 
+import type { Reach } from "./changes.ts"
 import { requestKey, type RunRequest, type RunResult } from "./run.ts"
 import { checkNetwork, type Network } from "./schema.ts"
 
@@ -60,6 +61,8 @@ function cancelStale(network: Network) {
 export interface Baseline {
   network: string
   runs: Record<string, RunResult & { key: string }>
+  /** each scenario's reactions ranked by knock-on reach (lib/rates/changes.ts rankReactions) */
+  suggest?: Record<string, Reach[]>
 }
 
 const files = new Map<string, Promise<{ network: Network; baseline: Baseline | null }>>()

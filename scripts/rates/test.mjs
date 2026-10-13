@@ -166,6 +166,73 @@ for (const id of ["pp", "cno", "nena", "mgal", "sprocess"]) {
   console.log(`sensitivity ${id}: ${Object.keys(stored.scenarios).length} scenarios checked`)
 }
 
+// 3c. "What if" opens on a reaction whose change shows something: for every
+// network and site, the default reaction (ranked by knock-on reach in the
+// shipped sensitivity table) moves at least one nucleus other than its own
+// target by 1% or more, in a fresh burn at ×2, ÷2 and ×5; where a change
+// moves only its target the explorer has a reaction to suggest instead.
+{
+  const RX = await import("../../lib/rates/changes.ts")
+  const { decayMap, decayed } = await import("../../lib/rates/analysis.ts")
+  const { RATES_DICT } = await import("../../lib/rates/i18n.ts")
+  for (const id of ["pp", "cno", "nena", "mgal", "sprocess"]) {
+    if (only.length && !only.includes(id)) continue
+    const network = checkNetwork(JSON.parse(fs.readFileSync(path.join(DATA, `${id}.json`), "utf8")))
+    const base = JSON.parse(fs.readFileSync(path.join(DATA, `${id}.baseline.json`), "utf8"))
+    const sens = JSON.parse(fs.readFileSync(path.join(DATA, `${id}.sensitivity.json`), "utf8"))
+    if (JSON.stringify(RX.rankReactions(network, sens)) !== JSON.stringify(base.suggest))
+      fail(`${id}: the baseline's suggestions are stale (npm run rates:baseline)`)
+    const heavy = id === "sprocess"
+    const candidates = heavy ? network.ui.groups.flatMap((g) => g.reactions) : (network.ui.key ?? [])
+    const c = compiled(network)
+    const dmap = heavy ? decayMap(network, networkProvider(network)) : null
+    const sites = heavy ? network.scenarios.slice(0, 1) : network.scenarios
+    const factors = heavy ? [2] : [2, 0.5, 5]
+    const picks = []
+    for (const s of sites) {
+      const pick = RX.defaultReaction(candidates, base.suggest?.[s.id])
+      picks.push(`${s.id}: ${network.reactions.find((r) => r.id === pick)?.label}`)
+      const req = scenarioRequest(network, s)
+      const b = base.runs[s.id].final
+      for (const f of factors) {
+        const scale = { [pick]: f }
+        const m = run(c, { ...req, scale }).final
+        const rows = heavy
+          ? RX.sprocessChangeRows(network, decayed(network, b, dmap), decayed(network, m, dmap), dmap, true)
+          : RX.lightChangeRows(network, b, m)
+        const split = RX.splitChanges(rows, RX.changedTargets(network, scale))
+        if (split.state !== "knock") {
+          const why = RX.suggestReaction(base.suggest?.[s.id], [pick])
+          if (s.id === network.scenarios[0].id || !why)
+            fail(`${id} ${s.id}: ${pick} ×${f} moves no other nucleus by 1% (${split.state})`)
+        }
+      }
+    }
+    console.log(`what if ${id}: opens on ${picks.join("; ")}`)
+  }
+  // the owner's case: ¹²C(p,γ) ×5 in the massive star moves only ¹²C; the
+  // explorer says why, in both languages, and offers ¹⁴N(p,γ)
+  const network = checkNetwork(JSON.parse(fs.readFileSync(path.join(DATA, "cno.json"), "utf8")))
+  const base = JSON.parse(fs.readFileSync(path.join(DATA, "cno.baseline.json"), "utf8"))
+  const s = network.scenarios.find((x) => x.id === "massive-15")
+  const scale = { C12_p_to_N13_reaclib: 5 }
+  const m = run(compiled(network), { ...scenarioRequest(network, s), scale }).final
+  const split = RX.splitChanges(RX.lightChangeRows(network, base.runs[s.id].final, m), RX.changedTargets(network, scale))
+  const c12 = split.self.find((r) => r.name === "c12")
+  if (split.state !== "self" || !c12 || Math.abs(1 / c12.ratio - 5) > 1) fail(`cno massive-15 ¹²C(p,γ) ×5: ${split.state}, ¹²C ${c12?.ratio}`)
+  if (!split.small.length) fail("cno massive-15 ¹²C(p,γ) ×5: the changes under 1% are not listed")
+  const sug = RX.suggestReaction(base.suggest[s.id], Object.keys(scale), "N14_p_to_O15_reaclib")
+  if (sug?.id !== "N14_p_to_O15_reaclib" || sug.why !== "slowest") fail(`cno massive-15: suggests ${JSON.stringify(sug)}`)
+  if (RX.suggestReaction(base.suggest[s.id], Object.keys(scale))?.id !== "N14_p_to_O15_reaclib") fail("cno massive-15: ¹⁴N(p,γ) is not the best-reaching reaction")
+  for (const lang of ["en", "it"]) {
+    const t = RATES_DICT[lang]
+    const text = t.quietSelf("¹²C", t.cycleOf.cno) + t.trySuggest("slowest", "cycle").join("¹⁴N(p,γ)")
+    if (!/CN/.test(text) || !text.includes("¹²C") || !text.includes("¹⁴N(p,γ)")) fail(`what if (${lang}): ${text}`)
+    for (const net of ["pp", "cno", "nena", "mgal"]) if (!t.cycleOf[net]) fail(`what if (${lang}): no name for ${net}`)
+  }
+  console.log(`what if: cno ¹²C(p,γ) ×5 moves ¹²C ÷${(1 / c12.ratio).toFixed(1)} and ${split.small.length} nuclei by under 1%; the explorer explains and suggests ¹⁴N(p,γ)`)
+}
+
 // 4. physics
 const YR = 3.15576e7
 const nubase = new Map()
