@@ -563,6 +563,108 @@ const dataExpertIt: typeof dataExpertEn = {
 export type DataExpertStrings = typeof dataExpertEn
 // --- end data expert ---
 
+// --- webdaq ---
+// The WebDAQ companion page (/software/webdaq). The prose lives in
+// content/webdaq.yaml; these are its headings and labels.
+const webdaqEn = {
+  title: "WebDAQ",
+  metaTitle: "WebDAQ: data acquisition in a browser",
+  description:
+    "WebDAQ runs the LUNA data acquisition from a browser: architecture, capabilities, a shift step by step, what it records for FAIR data, and a demo with simulated detectors.",
+  tagline: "Data acquisition for the LUNA experiment, in a browser",
+  tryDemo: "Try the demo",
+  readDocs: "Read the documentation",
+  onThisPage: "On this page",
+  linksTitle: "Links, licence and citation",
+  links: "Links",
+  licence: "Licence",
+  cite: "How to cite",
+  diagram: {
+    browser: "Browser",
+    browserSub: "any PC on the network",
+    server: "WebDAQ server",
+    serverSub: "Python · Flask",
+    caendaq: "CaenDAQ",
+    caendaqSub: "C++ · same process",
+    digitizers: "CAEN digitizers",
+    digitizersShort: ["CAEN", "digitizers"],
+    digitizersSub: "USB · optical · VME",
+    runDir: "data/run<N>/",
+    runDirSub: ".caendat · metadata.json",
+    rureader: "RUReader",
+    rureaderSub: "→ ROOT, offline",
+    graphite: "Graphite → Grafana",
+    graphiteShort: ["Graphite", "Grafana"],
+    picoammeter: "Picoammeter",
+    elog: "ELOG",
+    alerts: "Telegram · Zulip",
+    alertsShort: ["Telegram", "Zulip"],
+    http: "HTTP",
+    rates: "rates",
+    oneProcess: "one process",
+    legendData: "data path",
+    legendControl: "control and monitoring",
+    note: "Schematic. The numbers refer to the list below.",
+  },
+  screenshot: "Screenshot from the demo, with simulated detectors.",
+  fairNow: "What WebDAQ does today (in its code)",
+  fairLater: "Next steps",
+  fairTry: "Try it: take a run in the demo, open Run files and read its metadata.json. It has the same keys, plus a Demo block that says the run was simulated.",
+  example: "Example",
+  demoOpen: "Open the demo",
+  outlookLink: "What comes next, on the research page",
+}
+
+const webdaqIt: typeof webdaqEn = {
+  title: "WebDAQ",
+  metaTitle: "WebDAQ: acquisizione dati nel browser",
+  description:
+    "WebDAQ gestisce l'acquisizione dati di LUNA da un browser: architettura, funzioni, un turno passo per passo, cosa registra per avere dati FAIR, e una demo con rivelatori simulati.",
+  tagline: "L'acquisizione dati dell'esperimento LUNA, nel browser",
+  tryDemo: "Prova la demo",
+  readDocs: "Leggi la documentazione",
+  onThisPage: "In questa pagina",
+  linksTitle: "Link, licenza e citazione",
+  links: "Link",
+  licence: "Licenza",
+  cite: "Come citarlo",
+  diagram: {
+    browser: "Browser",
+    browserSub: "qualunque PC in rete",
+    server: "Server WebDAQ",
+    serverSub: "Python · Flask",
+    caendaq: "CaenDAQ",
+    caendaqSub: "C++ · stesso processo",
+    digitizers: "Digitizzatori CAEN",
+    digitizersShort: ["Digitizzatori", "CAEN"],
+    digitizersSub: "USB · fibra · VME",
+    runDir: "data/run<N>/",
+    runDirSub: ".caendat · metadata.json",
+    rureader: "RUReader",
+    rureaderSub: "→ ROOT, offline",
+    graphite: "Graphite → Grafana",
+    graphiteShort: ["Graphite", "Grafana"],
+    picoammeter: "Picoamperometro",
+    elog: "ELOG",
+    alerts: "Telegram · Zulip",
+    alertsShort: ["Telegram", "Zulip"],
+    http: "HTTP",
+    rates: "rate",
+    oneProcess: "un solo processo",
+    legendData: "percorso dei dati",
+    legendControl: "controllo e monitoraggio",
+    note: "Schema. I numeri rimandano all'elenco qui sotto.",
+  },
+  screenshot: "Schermata dalla demo, con rivelatori simulati.",
+  fairNow: "Cosa fa WebDAQ oggi (nel suo codice)",
+  fairLater: "Prossimi passi",
+  fairTry: "Provalo: fai un run nella demo, apri Run files e leggi il suo metadata.json. Ha le stesse chiavi, più un blocco Demo che dice che il run è simulato.",
+  example: "Esempio",
+  demoOpen: "Apri la demo",
+  outlookLink: "Le prospettive, nella pagina della ricerca",
+}
+// --- end webdaq ---
+
 const en = {
   /* -- site chrome -------------------------------------------------------- */
   langName: "English",
@@ -864,8 +966,8 @@ const en = {
   software: {
     title: "Software",
     description:
-      "AZURE2, the R-matrix code for nuclear astrophysics; LunaSRIM, SRIM-2013 in pure Python; and LUNA Skills, agent skills for experimental nuclear astrophysics.",
-    lead: "Code I maintain or have written for analysing low-energy nuclear reactions, all of it open source.",
+      "AZURE2, the R-matrix code for nuclear astrophysics; WebDAQ, the LUNA data acquisition in a browser; LunaSRIM, SRIM-2013 in pure Python; and LUNA Skills, agent skills for experimental nuclear astrophysics.",
+    lead: "Code I maintain or wrote for measuring and analysing low-energy nuclear reactions. All of it is open source.",
     version: (v: string) => `version ${v}`,
     licence: (l: string) => `${l} licence`,
     uses: "What it is for",
@@ -1248,6 +1350,8 @@ const en = {
     noLiveEvaluation: "No live evaluation yet",
   },  // --- data expert ---
   dataExpert: dataExpertEn,
+  // --- webdaq ---
+  webdaq: webdaqEn,
 }
 
 export type Dictionary = typeof en
@@ -1545,8 +1649,8 @@ const it: Dictionary = {
   software: {
     title: "Software",
     description:
-      "AZURE2, il codice R-matrix per l'astrofisica nucleare; LunaSRIM, SRIM-2013 in puro Python; e LUNA Skills, skill per agenti dedicate all'astrofisica nucleare sperimentale.",
-    lead: "Codice che mantengo o che ho scritto per l'analisi delle reazioni nucleari a bassa energia. È tutto open source.",
+      "AZURE2, il codice R-matrix per l'astrofisica nucleare; WebDAQ, l'acquisizione dati di LUNA nel browser; LunaSRIM, SRIM-2013 in puro Python; e LUNA Skills, skill per agenti dedicate all'astrofisica nucleare sperimentale.",
+    lead: "Codice che mantengo o che ho scritto per misurare e analizzare le reazioni nucleari a bassa energia. È tutto open source.",
     version: (v: string) => `versione ${v}`,
     licence: (l: string) => `licenza ${l}`,
     uses: "A cosa serve",
@@ -1929,6 +2033,8 @@ const it: Dictionary = {
     noLiveEvaluation: "Nessuna valutazione interattiva per ora",
   },  // --- data expert ---
   dataExpert: dataExpertIt,
+  // --- webdaq ---
+  webdaq: webdaqIt,
 }
 
 export const DICTIONARIES: Record<Lang, Dictionary> = { en, it }

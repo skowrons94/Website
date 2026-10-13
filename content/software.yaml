@@ -67,6 +67,55 @@ software:
       pubblicate e su lavori non ancora pubblicati (ogni pagina indica quale);
       i file di input si possono scaricare ed eseguire in locale.
 
+  - id: webdaq
+    name: WebDAQ
+    tagline: Data acquisition for the LUNA experiment, in a browser
+    tagline_it: L'acquisizione dati dell'esperimento LUNA, nel browser
+    role: Author; DAQ Coordinator since 2024
+    role_it: Autore; coordinatore DAQ dal 2024
+    license: MIT
+    summary:
+      - >-
+        WebDAQ is run control for CAEN digitizers from a web browser: it
+        configures the boards, tunes their filters against a live spectrum,
+        takes the runs, watches the rates and the beam current, and writes the
+        shift's logbook entry. The acquisition itself runs in process, through
+        the C++ library CaenDAQ, so closing the browser never stops a run.
+      - >-
+        It is the data acquisition of the LUNA experiment, and what lets its
+        shifts be taken remotely. Every run leaves its data beside a
+        FAIR-ready metadata.json, the board configuration, the beam current and
+        the monitored values. I wrote it with A. Compagnucci and R. Gesue.
+    summary_it:
+      - >-
+        WebDAQ è il controllo dei run per i digitizzatori CAEN da un browser:
+        configura le schede, ne regola i filtri guardando uno spettro in tempo
+        reale, avvia i run, sorveglia i rate e la corrente del fascio e scrive
+        la voce del logbook del turno. L'acquisizione gira nello stesso
+        processo del server, tramite la libreria C++ CaenDAQ, quindi chiudere
+        il browser non ferma mai un run.
+      - >-
+        È l'acquisizione dati dell'esperimento LUNA, ed è ciò che permette di
+        fare i turni da remoto. Ogni run lascia i suoi dati accanto a un
+        metadata.json pronto per il FAIR, alla configurazione delle schede,
+        alla corrente del fascio e ai valori monitorati. L'ho scritto con
+        A. Compagnucci e R. Gesue.
+    uses:
+      - Configuring CAEN digitizers (DPP-PHA and DPP-PSD) and keeping their full register configuration with every run
+      - Tuning thresholds, gates and trapezoid filters while a run is going
+      - Taking runs remotely, with spectra, rates, beam current and charge
+      - Run metadata, logbook, ELOG entries and alerts to Telegram or Zulip
+    uses_it:
+      - Configurazione dei digitizzatori CAEN (DPP-PHA e DPP-PSD), con l'intera configurazione dei registri conservata in ogni run
+      - Regolazione di soglie, finestre e filtri trapezoidali mentre il run è in corso
+      - Run comandati da remoto, con spettri, rate, corrente del fascio e carica
+      - Metadati dei run, registro, voci ELOG e allarmi su Telegram o Zulip
+    links:
+      - { label: About WebDAQ, label_it: Cos'è WebDAQ, href: /software/webdaq }
+      - { label: Try the demo, label_it: Prova la demo, href: /webdaq-demo/ }
+      - { label: Documentation, label_it: Documentazione, href: "https://skowrons94.github.io/WebDAQ/" }
+      - { label: Source on GitHub, label_it: Codice sorgente su GitHub, href: "https://github.com/skowrons94/WebDAQ" }
+
   - id: lunasrim
     name: LunaSRIM
     tagline: SRIM-2013 in pure Python, identical to the original

@@ -142,9 +142,20 @@ function Entry({ entry, lang }: { entry: SoftwareEntry; lang: Lang }) {
             <ul className="space-y-0.5 text-sm">
               {entry.links.map((link) => {
                 const internal = link.href.startsWith("/")
+                // --- webdaq ---
+                // The demo is a separate static app, not a Next route: a plain
+                // link with the base path, and the language as a query.
+                const demo = link.href.startsWith("/webdaq-demo/")
                 return (
                   <li key={link.href}>
-                    {internal ? (
+                    {demo ? (
+                      <a
+                        href={`${process.env.BASE_PATH ?? ""}${link.href}${lang === "it" ? "?lang=it" : ""}`}
+                        className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline"
+                      >
+                        {link.label}
+                      </a>
+                    ) : internal ? (
                       <Link href={localePath(lang, link.href)} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
                         {link.label}
                       </Link>
