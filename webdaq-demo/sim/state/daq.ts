@@ -753,6 +753,8 @@ export class Daq {
     }
     Object.assign(rec, carry ?? {})
     if (notes) rec.notes = notes
+    // The browser starts the current log (GET /current/start/<run>) before start_run.
+    if (this.current.recording && this.current.recordingRun === this.runNumber) rec.demo.current = true
     rec.board_info = this.boards.map(b => this.boardInfo(b))
     rec.software_versions = this.softwareVersions()
     rec.sync_mode = this.syncMode()

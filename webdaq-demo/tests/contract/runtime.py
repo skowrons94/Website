@@ -62,6 +62,7 @@ def main():
 
         def visit(route, label):
             seen['errors'].clear()
+            seen['notfound'].clear()
             t0 = time.time()
             page.goto(origin + base + route + ('&' if '?' in route else '?') + 'seed=1234')
             page.wait_for_timeout(int(a.wait * 1000))
@@ -72,7 +73,7 @@ def main():
             elif misses:
                 failures.append(f'{label} {route}: unmocked {misses}')
             if seen['errors']:
-                failures.append(f'{label} {route}: {seen["errors"][:3]}')
+                failures.append(f'{label} {route}: {seen["errors"][:3]} {seen["notfound"][:3]}')
             report[f'{label} {route}'] = 'ok' if ok else 'FAIL'
             return time.time() - t0
 
