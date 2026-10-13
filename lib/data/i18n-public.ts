@@ -49,7 +49,7 @@ const en = {
     words: [
       {
         term: "EXFOR",
-        text: "The world's logbook of nuclear experiments: every published measurement, with who, where, when.",
+        text: "The world's logbook of nuclear experiments: every published measurement, with who, where and when.",
       },
       {
         term: "ENSDF",
@@ -116,7 +116,7 @@ const en = {
       pp: {
         title: "The slowest reaction in the Sun",
         text: (tau: string) =>
-          `Two protons fuse only if one of them turns into a neutron in the instant they touch. In the rates explorer's model of the Sun's centre, a proton waits about ${tau} for that to happen. That is why the Sun is still shining. It is far too rare to measure in any laboratory: the rate comes from theory.`,
+          `Two protons fuse only if one of them turns into a neutron in the instant they touch. In the rate explorer's model of the Sun's centre, a proton waits about ${tau} for that to happen. That is why the Sun is still shining. It is far too rare to measure in any laboratory: the rate comes from theory.`,
       },
       cno: {
         title: "The step that sets the CNO pace",
@@ -126,10 +126,10 @@ const en = {
       underground: {
         title: "Why underground",
         text: (datasets: string, reactions: string, lowest: string) =>
-          `At the energies stars use, a target may see a few reactions a day, fewer than the counts that cosmic rays leave in a detector at the surface. Under 1400 m of rock at Gran Sasso, LUNA counts in near silence. In EXFOR, ${datasets} datasets on ${reactions} reactions of the atlas come from there, and for ${lowest} of them they are still the lowest energies ever measured.`,
+          `At the energies stars use, a target may see a few reactions a day, fewer than the counts that cosmic rays leave in a detector at the surface. Under 1.4 km of rock at Gran Sasso, LUNA counts in near silence. In EXFOR, ${datasets} datasets on ${reactions} reactions of the atlas come from there, and for ${lowest} of them they are still the lowest energies ever measured.`,
       },
       atlas: "In the atlas",
-      rates: "In the rates explorer",
+      rates: "In the rate explorer",
       data: "The measurements",
       luna: "LUNA in the atlas",
       curiosity: "If it were twice as fast",
@@ -210,8 +210,8 @@ const en = {
           },
           {
             title: `A proton waits ${c.tau}`,
-            text: `In the rates explorer's model of the Sun's centre (${c.T} million kelvin, ${c.rho} g/cm³), a proton waits on average ${c.tau} before it fuses with another.${c.bottleneck ? ` It is the slowest step on the way to helium: the next-slowest waits ${c.next}.` : ""} Slow fuel, long life.`,
-            link: "Open the rates explorer",
+            text: `In the rate explorer's model of the Sun's centre (${c.T} million kelvin, ${c.rho} g/cm³), a proton waits on average ${c.tau} before it fuses with another.${c.bottleneck ? ` It is the slowest step on the way to helium: the next-slowest waits ${c.next}.` : ""} Slow fuel, long life.`,
+            link: "Open the rate explorer",
           },
           {
             title: "And if it were twice as fast?",
@@ -266,7 +266,7 @@ const en = {
         steps: [
           {
             title: "One neutron at a time",
-            text: "About half of the elements heavier than iron are made by slow neutron captures in red giants: a nucleus captures a neutron, waits, often decays, and captures again, step by step from iron to lead.",
+            text: "About half of the nuclei heavier than iron are made by slow neutron captures in red giants: a nucleus captures a neutron, waits, often decays, and captures again, step by step from iron to lead.",
             link: "The s-process in the atlas",
           },
           {
@@ -294,7 +294,7 @@ const en = {
         share: c.curiositySentence,
       }),
     },
-    curiosityCaveatNote: "From the rates explorer:",
+    curiosityCaveatNote: "From the rate explorer:",
     evaluationLink: (system: string) => `The R-matrix evaluation of ${system}`,
   },
 }
