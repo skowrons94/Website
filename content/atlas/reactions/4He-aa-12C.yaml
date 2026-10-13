@@ -73,7 +73,7 @@ status_note_it: >-
   Il tasso dipende da quanto spesso lo stato di Hoyle del carbonio-12 si
   stabilizza in carbonio invece di spezzarsi di nuovo in tre nuclei di elio.
   Questa probabilità è minuscola, e le misure dal 2020 in poi non concordano
-  sul suo valore, con differenze di circa il 30 %.
+  sul suo valore, con differenze di circa il 30%.
 methods: [direct-surface, inverse-kinematics, theory]
 measurements:
   - year: 1953
@@ -162,7 +162,7 @@ open_questions:
   - The γ-decay branching ratio of the Hoyle state, where the 2020, 2024 and 2025 determinations must be reconciled before the rate can be quoted to better than about 10%.
   - The rate at T₉ ≳ 1, which depends on broad higher-lying states and on the 3⁻₁ radiative width, known only to about a factor of two.
 open_questions_it:
-  - "Il rapporto di diramazione del decadimento γ dello stato di Hoyle, per il quale le determinazioni del 2020, del 2024 e del 2025 vanno riconciliate prima che il tasso possa essere dato con un'incertezza migliore di circa il 10 %."
+  - "Il rapporto di diramazione del decadimento γ dello stato di Hoyle, per il quale le determinazioni del 2020, del 2024 e del 2025 vanno riconciliate prima che il tasso possa essere dato con un'incertezza migliore di circa il 10%."
   - "Il tasso a T₉ ≳ 1, che dipende da stati larghi a energia più alta e dalla larghezza radiativa dello stato 3⁻₁, nota solo entro circa un fattore due."
 related: [12C-ag-16O]
 rmatrix: [8Be]

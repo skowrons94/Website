@@ -42,8 +42,8 @@ status_note: >-
   uncertainties of about 5%.
 status_note_it: >-
   Le principali risonanze a bassa energia sono state rimisurate sotto terra nel
-  2025; due di esse sono risultate più forti di oltre il 50 % rispetto alla
-  letteratura precedente, con incertezze di circa il 5 %.
+  2025; due di esse sono risultate più forti di oltre il 50% rispetto alla
+  letteratura precedente, con incertezze di circa il 5%.
 methods: [direct-underground, direct-surface]
 measurements:
   - year: 2025

@@ -42,14 +42,14 @@ status_note: >-
   surface data.
 status_note_it: >-
   Una reazione di cattura diretta non risonante il cui andamento in energia è
-  fissato dalla teoria; il tasso è noto a circa il 7 %, limitato dalla
+  fissato dalla teoria; il tasso è noto a circa il 7%, limitato dalla
   normalizzazione dei dati in superficie.
 status_plain: >-
   Known to about 7%: how the cross section changes with energy is well
   understood from theory, and the remaining uncertainty is in the overall
   scale of the measurements.
 status_plain_it: >-
-  Nota a circa il 7 %: come la sezione d'urto varia con l'energia è ben
+  Nota a circa il 7%: come la sezione d'urto varia con l'energia è ben
   compreso dalla teoria, e l'incertezza residua riguarda la scala
   complessiva delle misure.
 methods: [direct-surface, theory]

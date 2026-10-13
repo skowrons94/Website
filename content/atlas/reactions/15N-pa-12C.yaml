@@ -47,7 +47,7 @@ status_note: >-
   uncertainty does not limit models of the CN cycle.
 status_note_it: >-
   Le misure dirette e il metodo indiretto del cavallo di Troia concordano, con
-  incertezze del 7 % e del 19 %. La reazione è veloce, e la sua incertezza
+  incertezze del 7% e del 19%. La reazione è veloce, e la sua incertezza
   residua non limita i modelli del ciclo CN.
 methods: [direct-surface, thm]
 measurements:

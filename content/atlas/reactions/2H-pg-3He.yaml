@@ -61,7 +61,7 @@ status_note: >-
   calculations and with the data at higher energies.
 status_note_it: >-
   Dalla misura di LUNA del 2020 il tasso alle energie della nucleosintesi
-  primordiale è noto a circa il 3 %. Restano piccole differenze con i calcoli
+  primordiale è noto a circa il 3%. Restano piccole differenze con i calcoli
   teorici e con i dati a energie più alte.
 methods: [direct-underground, direct-surface, theory]
 measurements:

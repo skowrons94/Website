@@ -41,7 +41,7 @@ status_note: >-
   the higher one with a 50% uncertainty.
 status_note_it: >-
   Le due risonanze che dominano il tasso sono ora state misurate direttamente,
-  la più alta con un'incertezza del 50 %.
+  la più alta con un'incertezza del 50%.
 methods: [direct-surface, direct-underground]
 measurements:
   - year: 2003
@@ -67,7 +67,7 @@ evaluations: [angulo1999, iliadis2010]
 open_questions:
   - The strength of the 569 keV resonance, known to 50%, and the agreement between the partial and total strengths of the 472 keV resonance.
 open_questions_it:
-  - "L'intensità della risonanza a 569 keV, nota al 50 %, e l'accordo tra le intensità parziali e quella totale della risonanza a 472 keV."
+  - "L'intensità della risonanza a 569 keV, nota al 50%, e l'accordo tra le intensità parziali e quella totale della risonanza a 472 keV."
 related: [14N-ag-18F, 18F-bp-18O, 22Ne-an-25Mg, 22Ne-ag-26Mg]
 details_it: >-
   Alle temperature della combustione dell'elio il tasso è dominato da due

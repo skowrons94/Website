@@ -762,7 +762,7 @@ events:
     text_it: >-
       Borexino misurò lo spettro dei neutrini della fusione protone-protone, la
       prima reazione della catena principale del Sole. La collaborazione stimò
-      che questa catena produce circa il 99 % della potenza del Sole.
+      che questa catena produce circa il 99% della potenza del Sole.
     refs: [borexino2014]
     reactions: [1H-pp-2H]
 
@@ -882,7 +882,7 @@ events:
     text_it: >-
       LUNA misurò con alta precisione d(p,γ)³He alle energie della nucleosintesi
       primordiale. Con questo tasso, la quantità osservata di deuterio
-      primordiale dà la densità della materia ordinaria nell'Universo all'1,6 %,
+      primordiale dà la densità della materia ordinaria nell'Universo all'1,6%,
       in accordo con la radiazione cosmica di fondo.
     refs: [mossa2020]
     reactions: [2H-pg-3He]
@@ -900,7 +900,7 @@ events:
     text_it: >-
       Borexino riportò la prima osservazione sperimentale dei neutrini del ciclo CNO
       nel Sole. Mostra direttamente che il ciclo è attivo nelle stelle. Nel Sole
-      fornisce circa l'uno per cento dell'energia.
+      fornisce circa l'1% dell'energia.
     refs: [borexino2020]
     reactions: [14N-pg-15O, 15O-bp-15N, 13N-bp-13C]
 
