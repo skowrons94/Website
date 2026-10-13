@@ -43,17 +43,21 @@ details: >-
   S(0) between about 18.5 and 22 eV b; the Seattle group quotes a model
   uncertainty of the extrapolation as large as its experimental one. The
   S-factor has also been inferred from Coulomb dissociation of ⁸B beams on
-  heavy targets, at RIKEN and at GSI. The Solar Fusion evaluations base the
-  recommended value on the direct measurements.
+  heavy targets, at RIKEN and at GSI. Solar Fusion II based its recommended
+  value on the direct data alone. Solar Fusion III
+  recommends S(0) = 20.5 ± 0.7 eV b, from a halo effective field theory
+  analysis that includes the Coulomb-dissociation data as well as the direct
+  captures.
 status: improving
 status_note: >-
-  The best experiments, all with radioactive ⁷Be targets, differ by up to
-  about 15%, and extending their data to solar energies adds an uncertainty
-  of similar size.
+  The best direct experiments, all with radioactive ⁷Be targets, differ by up
+  to about 15%; Solar Fusion III, combining them with Coulomb-dissociation data
+  in one theoretical framework, recommends S(0) = 20.5 ± 0.7 eV b (3.4%).
 status_note_it: >-
-  I migliori esperimenti, tutti con bersagli radioattivi di ⁷Be, differiscono
-  fino a circa il 15%, e il prolungamento dei loro dati alle energie solari
-  aggiunge un'incertezza di entità simile.
+  I migliori esperimenti diretti, tutti con bersagli radioattivi di ⁷Be,
+  differiscono fino a circa il 15%; Solar Fusion III, che li combina con i dati
+  di dissociazione coulombiana in un unico quadro teorico, raccomanda
+  S(0) = 20,5 ± 0,7 eV b (3,4%).
 methods: [direct-surface, coulomb-dissociation]
 measurements:
   - year: 1983
