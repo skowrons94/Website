@@ -1608,9 +1608,9 @@ const it: Dictionary = {
     ],
     halfLifeOf: "Tempo di dimezzamento del",
     halfLifeLabCapture:
-      "In laboratorio. In una stella gli stati eccitati dalla temperatura e la ionizzazione possono cambiarlo; decide quanto spesso questo nucleo decade prima di catturare un neutrone.",
+      "Valore di laboratorio. In una stella possono cambiarlo gli stati eccitati termicamente e la ionizzazione; è questo tempo a decidere quanto spesso il nucleo decade prima di catturare un neutrone.",
     halfLifeLab:
-      "In laboratorio, come atomo neutro. In una stella la densità di elettroni, e quindi il tasso, è diversa.",
+      "In laboratorio, come atomo neutro. In una stella la densità di elettroni è diversa, e con essa il tasso.",
     gamow: "Finestra di Gamow",
     gamowNote: [
       "Energia del picco E",
@@ -1630,7 +1630,7 @@ const it: Dictionary = {
     labNotGiven: "Laboratorio non indicato",
     tryTitle: "Provala: una valutazione R-matrix",
     tryText:
-      "Su questo sito gira un modello AZURE2 di questo sistema. Cambia le energie e le larghezze dei livelli e osserva come seguono il fit ai dati e l'estrapolazione alle energie stellari.",
+      "Su questo sito gira un modello AZURE2 di questo sistema. Cambia le energie e le larghezze dei livelli e osserva come cambiano il fit ai dati e l'estrapolazione alle energie stellari.",
     openEvaluation: ["Apri la valutazione del ", " →"],
     details: "Dettagli",
     evaluationsTitle: "Valutazioni",
@@ -1712,7 +1712,7 @@ const it: Dictionary = {
     legendOther: "Altri processi",
     legendStable: "Stabile, radioattivo",
     mapHelp:
-      "Passa con il mouse su una freccia per vederne il nome e fai clic per i dettagli, oppure fai clic su una casella per le reazioni di quel nucleo. Da tastiera, Tab porta alla mappa e i tasti freccia si spostano tra le reazioni del processo mostrato.",
+      "Passa con il mouse su una freccia per vederne il nome e fai clic per i dettagli, oppure fai clic su una casella per le reazioni di quel nucleo. Da tastiera, Tab porta alla mappa e con i tasti freccia ti sposti tra le reazioni del processo mostrato.",
     closeDetails: "Chiudi i dettagli",
     close: "Chiudi",
     selectArrow:
@@ -1731,7 +1731,7 @@ const it: Dictionary = {
     soFar: "Quello che c'è finora",
     // --- atlas ---
     mapHelpTouch:
-      "Tocca una freccia per vedere che cosa fa la reazione, o una casella per l'elenco delle reazioni di quel nucleo; i pulsanti sopra la mappa scelgono il processo a colori.",
+      "Tocca una freccia per vedere che cosa fa la reazione, o una casella per l'elenco delle reazioni di quel nucleo; con i pulsanti sopra la mappa scegli il processo da colorare.",
     startHere: "Inizia da qui",
     startHereTitle: (n: number) => `Un secolo di fusione stellare in ${n} momenti`,
     startHereText: (total: number) =>
@@ -1741,7 +1741,7 @@ const it: Dictionary = {
       "Ogni casella è un nucleo atomico. Un passo verso l'alto aggiunge un protone e dà l'elemento successivo; un passo verso destra aggiunge un neutrone.",
       "Ogni freccia è una reazione o un decadimento. Dritta in alto: viene catturato un protone. Due passi in alto e due a destra: viene catturato un nucleo di elio. Uno in basso e uno a destra: un decadimento β⁺, in cui un protone si trasforma in un neutrone.",
       "Le caselle piene, in grigio, sono nuclei stabili; quelle solo contornate sono radioattive.",
-      "Il colore di una freccia indica il processo a cui appartiene; i pulsanti sopra la mappa scelgono il processo. Le linee più spesse sono le reazioni più importanti.",
+      "Il colore di una freccia indica il processo a cui appartiene; con i pulsanti sopra la mappa scegli il processo. Le linee più spesse sono le reazioni più importanti.",
       "Alcune frecce fanno salti lunghi. Quando si fondono due nuclei più pesanti dell'elio, come nella combustione del carbonio, formano un nucleo molto eccitato che si spezza subito: ¹²C + ¹²C dà ²⁴Mg*, che si divide in ²⁰Ne e una particella alfa oppure in ²³Na e un protone. La freccia va direttamente dal ¹²C al prodotto finale.",
     ],
     diagram: {

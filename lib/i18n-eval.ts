@@ -590,7 +590,7 @@ const it: EvalDictionary = {
     calculatingExtrap: "Le curve oltre i dati richiedono più tempo del grafico: per alcuni modelli fino a un minuto.",
     levelScheme: "Schema dei livelli",
     schemeSummary: (levels: number, pairs: number, free: number) =>
-      `${levels} livelli su ${pairs} coppie di particelle · ${free} parametri R-matrix liberi`,
+      `${levels} livelli, ${pairs} coppie di particelle · ${free} parametri R-matrix liberi`,
     exportScheme: "Esporta lo schema",
     downloadFile: (file: string) => `Scarica ${file}`,
     energyMin: "Energia min (MeV)",
@@ -690,7 +690,7 @@ const it: EvalDictionary = {
     chi2Total: (chi2: string, points: number, perPoint: string) =>
       `χ² totale = ${chi2} su ${points} punti (χ²/N = ${perPoint}).`,
     chi2Explain:
-      "Il χ² è il termine dei dati ai parametri e alle normalizzazioni del modello pubblicato, calcolato come in AZURE2 (la normalizzazione scala insieme dati ed errori). I valori grandi sono riportati così come sono.",
+      "Il χ² è il contributo dei dati, calcolato con i parametri e le normalizzazioni del modello pubblicato come fa AZURE2 (la normalizzazione scala insieme dati ed errori). I valori grandi sono riportati così come sono.",
     penaltyText: (v: string) => ` Il vincolo di AZURE2 sulle normalizzazioni aggiunge ${v}.`,
     normSummary: (free: number, constrained: number, fixed: number) =>
       `Normalizzazioni: ${free} libere nel fit (${constrained} con un'incertezza sistematica dichiarata, ${free - constrained} senza vincolo), ${fixed} fisse.`,
@@ -760,7 +760,7 @@ const it: EvalDictionary = {
     angularCurve: (energy: string, from: string, to: string) => `E = ${energy} MeV · θ ${from}–${to}°`,
     atAngle: (angle: string) => `θ = ${angle}°`,
     sMinLabel: "S all'energia più bassa",
-    noGamowScattering: "Nessuna finestra di Gamow: la diffusione elastica non è una reazione che bruci qualcosa in una stella.",
+    noGamowScattering: "Nessuna finestra di Gamow: la diffusione elastica non trasforma nulla in una stella, non è una reazione di combustione.",
     editLevel: "Regola i suoi parametri →",
     // --- evaluations (round 4) ---
     modelLine: "modello R-matrix",
@@ -796,13 +796,13 @@ const it: EvalDictionary = {
     excitation: "Energia di eccitazione",
     cm: (pair: string) => `in ${pair}`,
     aria: (n: number) => `Diagramma dei livelli con ${n} livelli. Usa le frecce per passare da un livello all'altro e Invio per selezionarlo.`,
-    status: { free: "energia libera nel fit", partial: "solo larghezze libere", fixed: "fisso" } as Record<"free" | "partial" | "fixed", string>,
+    status: { free: "energia variabile nel fit", partial: "solo larghezze variabili", fixed: "fisso" } as Record<"free" | "partial" | "fixed", string>,
     levelAria: (jpi: string, energy: string, status: string, widths: string) =>
       `livello ${jpi} a ${energy} MeV, ${status}${widths ? `, ${widths}` : ""}`,
     thresholdAria: (pair: string, energy: string) => `soglia ${pair} a ${energy} MeV`,
     background: (n: number, energy: string) => `${n} pol${n === 1 ? "o" : "i"} di fondo a ${energy} MeV`,
     backgroundShort: (n: number, energy: string) => `${n} poli di fondo · ${energy} MeV`,
-    legendEnergyFree: "energia libera nel fit",
+    legendEnergyFree: "energia variabile nel fit",
     legendWidthsFree: "larghezze/ANC libere nel fit",
     legendFixed: "fisso",
     legendAnc: "ANC (sotto soglia)",
@@ -831,11 +831,11 @@ const it: EvalDictionary = {
     levelInDiagram: "Selezionato nel diagramma",
     // --- evaluations (round 4) ---
     groundState: "stato fondamentale",
-    keyEnergyFree: "energia libera nel fit",
-    keyWidthsFree: "solo larghezze libere, energia fissa",
+    keyEnergyFree: "energia variabile nel fit",
+    keyWidthsFree: "solo larghezze variabili, energia fissa",
     keyFixed: "fisso",
     plainThreshold: "linea tratteggiata: una soglia di particella — sopra di essa il nucleo può spezzarsi in quella coppia",
-    plainWidth: "banda ombreggiata: la larghezza Γ del livello (quanto vive poco), ±Γ/2",
+    plainWidth: "banda ombreggiata: la larghezza Γ del livello (più è larga, meno vive il livello), ±Γ/2",
     plainWideWidth: (w: string) => `freccia, e “Γ ${w}” accanto all'energia: una larghezza troppo grande da ombreggiare`,
     plainData: "barra blu sull'asse di destra: le energie coperte dai dati del fit",
     plainAnc: "cerchio vuoto: uno stato legato, libero nel fit tramite il suo ANC",
@@ -856,7 +856,7 @@ const it: EvalDictionary = {
     backgroundRow: (n: number, energy: string) => `${n} poli di fondo a ${energy} MeV (fissi, molto sopra i dati)`,
     columnWidth: "Γ (keV)",
     above: (pair: string, energy: string) => `soglia ${pair} · ${energy} MeV`,
-    listLegend: "● energia libera nel fit · ○ solo larghezze libere · grigio: fisso",
+    listLegend: "● energia variabile nel fit · ○ solo larghezze variabili · grigio: fisso",
   },
 
   // --- r7 evalui ---
@@ -876,8 +876,8 @@ const it: EvalDictionary = {
     left: (t: string) => `ancora circa ${t}`,
     longer: "più del solito",
     busy: (n: string) => `Il server è occupato. Nuovo tentativo tra ${n} s…`,
-    extrapStale: "Nel frattempo, sbiadite: le estrapolazioni prima della tua modifica.",
-    previewNote: "Mentre il calcolo si avvia è mostrato il fit pubblicato; una modifica fatta ora parte appena è pronto.",
+    extrapStale: "Nel frattempo sono mostrate, sbiadite, le estrapolazioni precedenti alla tua modifica.",
+    previewNote: "Mentre il calcolo si avvia è mostrato il fit pubblicato; una modifica fatta ora verrà applicata appena il calcolo sarà pronto.",
     skipToLevels: "Vai ai livelli",
     skipToPlot: "Torna al grafico",
     nFreeParams: (n: number) => (n === 1 ? "1 parametro libero" : `${n} parametri liberi`),
@@ -911,14 +911,14 @@ const it: EvalDictionary = {
     worse: "molto peggio",
     better: "molto meglio",
     sharing: "il server sta preparando anche altri modelli",
-    noSpare: "Prima modifica su questo modello: lo stiamo ancora preparando per te. Le modifiche successive sono molto più rapide.",
+    noSpare: "Prima modifica su questo modello: il server lo sta ancora preparando. Le modifiche successive sono molto più rapide.",
     publishedShown: "Sono mostrate, sbiadite, le curve pubblicate; le tue compaiono appena pronte.",
     gridSummaryOne: (ne: number, e0: string, e1: string, a: string) => `${ne} energie (${e0}–${e1} MeV) a ${a}°`,
   },
 
   // --- r11 eval ---
   r11: {
-    stillWorking: "sto ancora lavorando",
+    stillWorking: "calcolo ancora in corso",
     serverBusy: "Server occupato: si stanno preparando anche altri modelli",
     coldOpen: "Nessuna copia di questo modello era pronta in anticipo: avviarne una richiede un po' più di tempo.",
     firstCurve: "Prima curva continua su questo modello: è ancora in preparazione. Le successive sono molto più rapide.",
