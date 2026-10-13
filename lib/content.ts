@@ -317,23 +317,40 @@ export function getEvaluationCount(): number {
  * whose info.json gives the paper's DOI as `reference`. A submitted paper, or
  * no paper yet, does not count.
  */
-export function getEvaluationCounts(): { total: number; published: number } {
+export interface EvaluationCounts {
+  total: number
+  /** A published analysis whose model reproduces the published fit. */
+  published: number
+  /** A published analysis shown with a preliminary model (info.json `preliminary`). */
+  preliminary: number
+  /** Not yet published (unpublished or submitted). */
+  unpublished: number
+  /** info.json `status: "in-progress"`. */
+  inProgress: number
+}
+
+/** The evaluations counted from their info.json, by how far they are from a published fit. */
+export function getEvaluationCounts(): EvaluationCounts {
+  const counts: EvaluationCounts = { total: 0, published: 0, preliminary: 0, unpublished: 0, inProgress: 0 }
   const dir = path.join(process.cwd(), "server", "evaluations")
-  if (!fs.existsSync(dir)) return { total: 0, published: 0 }
-  let total = 0
-  let published = 0
+  if (!fs.existsSync(dir)) return counts
   for (const id of fs.readdirSync(dir)) {
     const file = path.join(dir, id, "info.json")
     if (!fs.existsSync(file)) continue
-    total++
+    counts.total++
+    let info: { reference?: unknown; status?: unknown; preliminary?: unknown } = {}
     try {
-      const info = JSON.parse(fs.readFileSync(file, "utf8")) as { reference?: unknown }
-      if (typeof info.reference === "string" && info.reference.trim()) published++
+      info = JSON.parse(fs.readFileSync(file, "utf8"))
     } catch {
       // A malformed info.json still counts as an evaluation, not as published.
     }
+    if (typeof info.reference === "string" && info.reference.trim()) {
+      if (info.preliminary === true) counts.preliminary++
+      else counts.published++
+    } else if (info.status === "in-progress") counts.inProgress++
+    else counts.unpublished++
   }
-  return { total, published }
+  return counts
 }
 
 /* -- notes ----------------------------------------------------------------- */

@@ -991,8 +991,17 @@ const en = {
     resourceDataText: (datasets: string, reactions: number) =>
       `What has been measured, and where the measurements stop: ${datasets} datasets of the world's nuclear-reaction logbook (EXFOR) and the levels of each nucleus (ENSDF), linked to the ${reactions} reactions of the atlas.`,
     resourceDataMeta: "Levels: ENSDF (NNDC)",
-    resourceEvaluationsSplit: (n: number, published: number) =>
-      `${n} R-matrix evaluations running AZURE2 in the browser: ${published} from published papers, ${n - published} not yet published. Each comes with its input files, to download and run locally.`,
+    // Counted from info.json (getEvaluationCounts): parts that are zero are left out.
+    resourceEvaluationsSplit: (c: { total: number; published: number; preliminary: number; unpublished: number; inProgress: number }) => {
+      const parts = [
+        c.published && `${c.published} ${c.published === 1 ? "reproduces a published fit" : "reproduce published fits"}`,
+        c.preliminary && `${c.preliminary} ${c.preliminary === 1 ? "is a preliminary model of a published analysis" : "are preliminary models of published analyses"}`,
+        c.unpublished && `${c.unpublished} ${c.unpublished === 1 ? "is" : "are"} not yet published`,
+        c.inProgress && `${c.inProgress} ${c.inProgress === 1 ? "is" : "are"} in progress`,
+      ].filter((p): p is string => Boolean(p))
+      const list = parts.length > 1 ? `${parts.slice(0, -1).join(", ")} and ${parts[parts.length - 1]}` : (parts[0] ?? "")
+      return `${c.total} R-matrix evaluations running AZURE2 in the browser: ${list}. Each comes with its input files, to download and run locally.`
+    },
   },
 
   /* -- research ----------------------------------------------------------- */
@@ -1676,8 +1685,16 @@ const it: Dictionary = {
     resourceDataText: (datasets: string, reactions: number) =>
       `Che cosa è stato misurato, e dove si fermano le misure: ${datasets} serie di dati del registro mondiale delle reazioni nucleari (EXFOR) e i livelli di ogni nucleo (ENSDF), collegati alle ${reactions} reazioni dell'atlante.`,
     resourceDataMeta: "Livelli: ENSDF (NNDC)",
-    resourceEvaluationsSplit: (n: number, published: number) =>
-      `${n} valutazioni R-matrix calcolate con AZURE2 nel browser: ${published} da articoli pubblicati, ${n - published} non ancora pubblicate. Ognuna ha i suoi file di input, da scaricare ed eseguire in locale.`,
+    resourceEvaluationsSplit: (c: { total: number; published: number; preliminary: number; unpublished: number; inProgress: number }) => {
+      const parts = [
+        c.published && `${c.published} ${c.published === 1 ? "riproduce un fit pubblicato" : "riproducono fit pubblicati"}`,
+        c.preliminary && `${c.preliminary} ${c.preliminary === 1 ? "è un modello preliminare di un'analisi pubblicata" : "sono modelli preliminari di analisi pubblicate"}`,
+        c.unpublished && `${c.unpublished} ${c.unpublished === 1 ? "non è ancora pubblicata" : "non sono ancora pubblicate"}`,
+        c.inProgress && `${c.inProgress} ${c.inProgress === 1 ? "è in corso" : "sono in corso"}`,
+      ].filter((p): p is string => Boolean(p))
+      const list = parts.length > 1 ? `${parts.slice(0, -1).join(", ")} e ${parts[parts.length - 1]}` : (parts[0] ?? "")
+      return `${c.total} valutazioni R-matrix calcolate con AZURE2 nel browser: ${list}. Ognuna ha i suoi file di input, da scaricare ed eseguire in locale.`
+    },
   },
 
   /* -- research ----------------------------------------------------------- */

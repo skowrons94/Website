@@ -24,6 +24,8 @@ export interface CardMeta {
   reference: string | null
   status: string | null
   filename: string | null
+  /** info.json `preliminary`: the model is a preliminary version of a published analysis. */
+  preliminary?: boolean
   /** What the reaction is for, in one plain sentence, in this page's language (info.json `purpose`). */
   purpose?: string | null
   /** timings.json (python -m app.warm), for "opens in about N s". */
@@ -104,6 +106,7 @@ export function EvaluationsIndex({ initial = [] }: { initial?: CardMeta[] }) {
       paper: known?.paper ?? (api?.paper ? { authors: api.paper.authors, journal: api.paper.journal ?? null, year: api.paper.year ?? null } : null),
       doi: known?.doi ?? api?.doi ?? null,
       status: known?.status ?? api?.status ?? null,
+      preliminary: known?.preliminary ?? false,
       filename: api?.filename ?? known?.filename ?? `${id}.azr`,
       channels: api?.channels ?? null,
       purpose: known?.purpose ?? (lang === "it" ? (api?.purpose_it ?? api?.purpose) : api?.purpose) ?? null,
@@ -156,8 +159,15 @@ export function EvaluationsIndex({ initial = [] }: { initial?: CardMeta[] }) {
             // compound nucleus, which names the evaluation, comes second.
             const [lead, ...others] = card.reactions
             const name = lead ?? nucleus
-            const paper = card.paper
+            const cited = card.paper
               ? `${card.paper.authors}${card.paper.journal ? `, ${card.paper.journal}` : ""}${card.paper.year ? ` (${card.paper.year})` : ""}`
+              : null
+            // A preliminary model of a published analysis says so on its card,
+            // as its page does, rather than passing for the published fit.
+            const paper = cited
+              ? card.preliminary
+                ? t.preliminaryCard(cited)
+                : cited
               : card.doi
                 ? `doi:${card.doi}`
                 : card.status === "in-progress"

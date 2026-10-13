@@ -107,6 +107,7 @@ const en = {
       "Cite AZURE2 for the code, and this page (with its version) if you use the interactive calculation or its numbers. The measured data belong to their authors: cite the original papers listed in the table of the Plot & data tab.",
     // --- r18: disclosure ---
     inProgress: "Work in progress",
+    preliminaryCard: (paper: string) => `Preliminary model; published results: ${paper}`,
     notesTitle: "Notes on this model",
     /** Around the paper's citation, which the page inserts twice. */
     preliminary: [
@@ -590,6 +591,7 @@ const it: EvalDictionary = {
       "Cita AZURE2 per il codice e questa pagina (con la sua versione) se usi il calcolo interattivo o i suoi numeri. I dati misurati appartengono ai loro autori: cita gli articoli originali elencati nella tabella della scheda Grafico e dati.",
     // --- r18: disclosure ---
     inProgress: "Lavoro in corso",
+    preliminaryCard: (paper: string) => `Modello preliminare; risultati pubblicati: ${paper}`,
     notesTitle: "Note su questo modello",
     preliminary: [
       "Il file del modello mostrato qui è una versione preliminare del modello R-matrix alla base di ",

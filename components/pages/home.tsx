@@ -123,7 +123,8 @@ function resources(lang: Lang): Resource[] {
   const meta = atlas.meta as { licence?: string; version?: string | null }
   const lunasrim = getSoftware(lang).find((s) => s.id === "lunasrim")
   const pypi = lunasrim?.links?.find((l) => /pypi/i.test(l.href))
-  const { total: evaluations, published: publishedEvaluations } = getEvaluationCounts()
+  const evaluationCounts = getEvaluationCounts()
+  const evaluations = evaluationCounts.total
   const notes = getAllNotes().length
   const dataSummary = getSummary()
   const out: Resource[] = [
@@ -179,7 +180,7 @@ function resources(lang: Lang): Resource[] {
     out.push({
       key: "evaluations",
       title: t.resourceEvaluations,
-      text: t.resourceEvaluationsSplit(evaluations, publishedEvaluations),
+      text: t.resourceEvaluationsSplit(evaluationCounts),
       href: "/evaluations",
       meta: [{ text: t.resourceEvaluationsMeta }, { text: t.resourceRatesLink, href: LUNA_RATES_PUBLIC ? "/atlas/rates#cno&luna=1" : "/atlas/rates#cno" }],
     })

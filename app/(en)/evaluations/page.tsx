@@ -16,6 +16,7 @@ export default function Page() {
       doi: m.doi,
       reference: m.reference,
       status: m.status,
+      preliminary: m.preliminary,
       filename: m.filename,
       purpose: m.purpose,
       timings: m.timings,
