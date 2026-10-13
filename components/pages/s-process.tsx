@@ -125,6 +125,7 @@ const ORDER = [
   "hampel2016",
   "raut2013",
   "lugaro2011",
+  "tessler2021",
   "abbondanno2004",
   "wisshak2006",
   "reifarth2003",
@@ -141,6 +142,7 @@ const ORDER = [
   "massimi2014",
   "weigand2015",
   "lederer2013",
+  "lerendegui2023",
   "ratynski1988",
   "lederer2011",
   "carlson2018",
@@ -148,6 +150,7 @@ const ORDER = [
   "tessler2015",
   "dillmann2008",
   "dillmann2014",
+  "vescovi2023",
 ]
 
 export const sProcessMetadata = (lang: Lang): Metadata =>
@@ -631,11 +634,16 @@ function BodyEn({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
           <Sci>
             ⁸⁵Kr (10.7 yr in the laboratory) either decays to ⁸⁵Rb or captures to ⁸⁶Kr; ⁸⁷Kr then decays to ⁸⁷Rb, with the magic
             N = 50. The more neutrons, the more ⁸⁶Kr and ⁸⁷Rb are made, so the branching gauges the neutron density, higher in
-            the ²²Ne bursts than in the ¹³C pocket. Only part of the flow reaches the 10.7 yr ground state: about half of the
-            captures on ⁸⁴Kr make the 4.5 h isomer ⁸⁵Krᵐ, which mostly decays straight to ⁸⁵Rb. ⁸⁵Kr(n,γ) has never been measured directly; it was constrained through the
-            photodisintegration of ⁸⁶Kr, and krypton in stardust grains from AGB stars tests it
+            the ²²Ne bursts than in the ¹³C pocket. Only part of the flow reaches the 10.7 yr ground state: 40–60% of the
+            captures on ⁸⁴Kr make the 4.5 h isomer ⁸⁵Krᵐ, which mostly decays straight to ⁸⁵Rb, the higher values coming
+            from the newer activation measurements
           </Sci>{" "}
-          {c("raut2013", "lugaro2011", "kaeppeler2011")}.
+          {c("lugaro2011", "tessler2021")}
+          <Sci>
+            . ⁸⁵Kr(n,γ) has never been measured directly; it was constrained through the photodisintegration of ⁸⁶Kr, and
+            krypton in stardust grains from AGB stars tests it
+          </Sci>{" "}
+          {c("raut2013", "kaeppeler2011")}.
         </InsetFigure>
 
         <InsetFigure inset={sm} lang={lang}>
@@ -703,7 +711,9 @@ function BodyEn({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
             {c("massimi2014")}; and {f("lansce-dance", "DANCE at LANSCE")} in Los Alamos, a ball of 160 barium fluoride
             crystals that can measure samples of a milligram, radioactive ones included {c("weigand2015")}. Such
             samples made it possible to measure branch points: {r("63Ni-ng-64Ni")} and {r("151Sm-ng-152Sm")}{" "}
-            {c("lederer2013", "abbondanno2004")}.
+            {c("lederer2013", "abbondanno2004")}. Another, <Sci>⁷⁹Se(n,γ)</Sci>, which sets the balance of the s-only{" "}
+            <Sci>⁸⁰Kr</Sci> and <Sci>⁸²Kr</Sci>, was measured for the first time at n_TOF on 3 mg of <Sci>⁷⁹Se</Sci>, with
+            a new Compton-imaging detector; the results are not yet published {c("lerendegui2023")}.
           </P>
           <P>
             In {term("activation", "activation")} measurements a sample is irradiated with neutrons whose spectrum already
@@ -720,7 +730,9 @@ function BodyEn({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
           </P>
           <P>
             The measured values are collected in KADoNiS, the Karlsruhe Astrophysical Database of Nucleosynthesis in
-            Stars, which continues the compilation of Bao and colleagues {c("dillmann2008", "dillmann2014")}. The neutron sources and
+            Stars, which continues the compilation of Bao and colleagues {c("dillmann2008", "dillmann2014")}. Its version
+            1.0 was never released; its successor, ASTRAL, stores the raw data of each measurement and recalculates the
+            cross sections with current half-lives, γ intensities and gold standard {c("vescovi2023")}. The neutron sources and
             poisons, and the captures with entries of their own, are listed below.
           </P>
           </div>
@@ -912,12 +924,16 @@ function BodyIt({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
             L&apos;⁸⁵Kr (10,7 anni in laboratorio) decade in ⁸⁵Rb oppure cattura e diventa ⁸⁶Kr; l&apos;⁸⁷Kr decade poi in ⁸⁷Rb, con
             il numero magico N = 50. Più neutroni ci sono, più ⁸⁶Kr e ⁸⁷Rb si producono, quindi la diramazione misura la
             densità di neutroni, più alta nei lampi del ²²Ne che nella tasca di ¹³C. Solo una parte del flusso raggiunge lo
-            stato fondamentale da 10,7 anni: circa metà delle catture sull&apos;⁸⁴Kr produce l&apos;isomero ⁸⁵Krᵐ, che vive 4,5 ore
-            e decade per lo più direttamente in ⁸⁵Rb. L&apos;⁸⁵Kr(n,γ) non è mai stata misurata direttamente; è stata vincolata
-            attraverso la fotodisintegrazione dell&apos;⁸⁶Kr, e il kripton nei grani di polvere stellare delle stelle AGB la
-            mette alla prova
+            stato fondamentale da 10,7 anni: dal 40 al 60% delle catture sull&apos;⁸⁴Kr produce l&apos;isomero ⁸⁵Krᵐ, che vive
+            4,5 ore e decade per lo più direttamente in ⁸⁵Rb; i valori più alti vengono dalle misure per attivazione più
+            recenti
           </Sci>{" "}
-          {c("raut2013", "lugaro2011", "kaeppeler2011")}.
+          {c("lugaro2011", "tessler2021")}
+          <Sci>
+            . L&apos;⁸⁵Kr(n,γ) non è mai stata misurata direttamente; è stata vincolata attraverso la fotodisintegrazione
+            dell&apos;⁸⁶Kr, e il kripton nei grani di polvere stellare delle stelle AGB la mette alla prova
+          </Sci>{" "}
+          {c("raut2013", "kaeppeler2011")}.
         </InsetFigure>
 
         <InsetFigure inset={sm} lang={lang}>
@@ -987,7 +1003,10 @@ function BodyIt({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
             basi di volo da 10 a 400 m {c("massimi2014")}; e {f("lansce-dance", "DANCE a LANSCE")} a Los Alamos, una sfera
             di 160 cristalli di fluoruro di bario che può misurare campioni di un milligrammo, anche radioattivi{" "}
             {c("weigand2015")}. Campioni simili hanno permesso di misurare i punti di diramazione:{" "}
-            {r("63Ni-ng-64Ni")} e {r("151Sm-ng-152Sm")} {c("lederer2013", "abbondanno2004")}.
+            {r("63Ni-ng-64Ni")} e {r("151Sm-ng-152Sm")} {c("lederer2013", "abbondanno2004")}. Un altro, la{" "}
+            <Sci>⁷⁹Se(n,γ)</Sci>, che fissa l&apos;equilibrio tra i nuclei solo s <Sci>⁸⁰Kr</Sci> e <Sci>⁸²Kr</Sci>, è stato
+            misurato per la prima volta a n_TOF su 3 mg di <Sci>⁷⁹Se</Sci>, con un nuovo rivelatore a immagine Compton; i
+            risultati non sono ancora pubblicati {c("lerendegui2023")}.
           </P>
           <P>
             Nelle misure per {term("activation", "attivazione")} un campione viene irraggiato con neutroni il cui spettro
@@ -1004,7 +1023,9 @@ function BodyIt({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
           </P>
           <P>
             I valori misurati sono raccolti in KADoNiS, il Karlsruhe Astrophysical Database of Nucleosynthesis in Stars,
-            che prosegue la compilazione di Bao e colleghi {c("dillmann2008", "dillmann2014")}. Le sorgenti e i veleni neutronici, e le
+            che prosegue la compilazione di Bao e colleghi {c("dillmann2008", "dillmann2014")}. La sua versione 1.0 non è
+            mai uscita; la sostituisce ASTRAL, che conserva i dati grezzi di ogni misura e ricalcola le sezioni d&apos;urto
+            con tempi di dimezzamento, intensità γ e campione d&apos;oro aggiornati {c("vescovi2023")}. Le sorgenti e i veleni neutronici, e le
             catture che hanno una scheda propria, sono elencati qui sotto.
           </P>
           </div>
