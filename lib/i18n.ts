@@ -85,6 +85,8 @@ const en = {
     curiositiesDescription: "What a reaction twice as fast would change, in sixteen sentences",
     // --- find ---
     news: "News",
+    exercises: "Exercises",
+    exercisesDescription: "Three problems to solve with the atlas, the rates and an evaluation",
   },
   footer: {
     work: "Work",
@@ -107,6 +109,7 @@ const en = {
     code: "Source code",
     // --- find ---
     news: "News",
+    exercises: "Exercises",
   },
   // --- r11 site ---
   // "Report an error · Suggest a reaction" (components/report-links.tsx): a new
@@ -720,6 +723,8 @@ const it: Dictionary = {
     curiositiesDescription: "Che cosa cambierebbe una reazione due volte più veloce, in sedici frasi",
     // --- find ---
     news: "Novità",
+    exercises: "Esercizi",
+    exercisesDescription: "Tre problemi da risolvere con l'atlante, i tassi e una valutazione",
   },
   footer: {
     work: "Lavoro",
@@ -742,6 +747,7 @@ const it: Dictionary = {
     code: "Codice sorgente",
     // --- find ---
     news: "Novità",
+    exercises: "Esercizi",
   },
   // --- r11 site ---
   report: {

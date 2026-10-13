@@ -190,6 +190,9 @@ const PAGES = [
   // --- r13 final ---
   { href: "/atlas/rates/curiosities", en: ["Rate curiosities", "What a reaction twice as fast would change, in sixteen sentences"], it: ["Curiosità sui tassi", "Che cosa cambierebbe una reazione due volte più veloce, in sedici frasi"], k: "curiosities curiosity curiosità what if e se twice as fast due volte più veloce ×2 neutrinos neutrini" },
   { href: "/atlas/rates", en: ["Reaction rates", "How fast each reaction runs, and what if it were different"], it: ["Tassi di reazione", "Quanto è veloce ogni reazione, e se fosse diversa"], k: "reaction rates tassi di reazione rate tasso reaclib pynucastro what if sensitivity sensibilità bottleneck collo di bottiglia waiting time tempo di attesa lifetime network rete pp CNO NeNa MgAl" },
+  // --- find ---
+  { href: "/learn/exercises", en: ["Exercises", "Three problems to solve with the atlas, the rates and an evaluation"], it: ["Esercizi", "Tre problemi da risolvere con l'atlante, i tassi e una valutazione"], k: "exercises esercizi problems problemi homework compiti students studenti teaching didattica solution soluzione Gamow peak picco di Gamow underground sotterraneo LUNA background fondo muons muoni R-matrix level livello 13N 14N" },
+  { href: "/news", en: ["News", "What is new on the site, with an Atom feed"], it: ["Novità", "Le novità del sito, con un feed Atom"], k: "news novità changelog what's new updates aggiornamenti feed rss atom" },
 ]
 
 /* -- reactions: every way of writing one --------------------------------- */

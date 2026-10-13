@@ -15,6 +15,7 @@ import { statusHint } from "@/lib/atlas-format"
 import { dict, localePath, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
 import { PageLd } from "@/components/json-ld"
+import { ExercisesPointer } from "@/components/pages/exercises"
 
 export const glossaryMetadata = (lang: Lang): Metadata =>
   pageMetadata(dict(lang).atlas.glossaryMeta, dict(lang).atlas.glossaryDescription, lang)
@@ -37,6 +38,8 @@ export function GlossaryPage({ lang }: { lang: Lang }) {
         {t.name}
       </Link>
       <PageHeader eyebrow={t.name} title={t.glossaryTitle} lead={t.glossaryLead} />
+      {/* --- find --- */}
+      <ExercisesPointer lang={lang} />
 
       {/* -- the terms, as an index ------------------------------------------ */}
       <nav aria-label={t.glossaryTitle} className="mb-14">
