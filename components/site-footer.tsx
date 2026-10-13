@@ -115,6 +115,10 @@ export function SiteFooter({ profile, lang }: { profile: Profile; lang: Lang }) 
           <Link href={localePath(lang, "/news")} className={LINK}>
             {t.news}
           </Link>
+          {/* --- r11 sec --- */}
+          <Link href={localePath(lang, "/privacy")} className={LINK}>
+            {t.privacy}
+          </Link>
         </p>
       </div>
     </footer>

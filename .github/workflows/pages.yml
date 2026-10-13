@@ -8,14 +8,21 @@ name: GitHub Pages
 
 # Every push builds (so a branch is checked before it is merged); only main
 # deploys.
+#
+# Supply chain (DEPLOY.md, "Security"): the build job, which runs npm, pip,
+# emsdk and every downloaded tool, holds a read-only token and nothing else;
+# only the small deploy job can write to Pages (pages, id-token). Every action
+# is pinned to a commit (the tag in the comment; Dependabot proposes updates),
+# emsdk to the tag's commit, and every download is checked against a recorded
+# SHA-256. Caches are written by main alone and restored without fallback
+# keys, so a branch build can read main's caches but never plant one that
+# main, and so the deployed site, would use.
 on:
   push:
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: pages-${{ github.ref }}
@@ -23,19 +30,34 @@ concurrency:
 
 env:
   PYODIDE: "0.28.3"
+  PYODIDE_CORE_SHA256: "46fd28bfacd5b78333d73f171412cc992a2cab2332b067e4d2181fd255cca730"
   EMSCRIPTEN: "4.0.9"   # the version that Pyodide release was built with
+  # emsdk's tag 4.0.9, and the two archives `emsdk install 4.0.9` fetches
+  # (emsdk itself checks no checksum): the LLVM/Binaryen/Emscripten build
+  # cb2a69bc... and Node 20.18.0 (the latter equal to nodejs.org's SHASUMS256).
+  # To move to another version: see DEPLOY.md, "Security".
+  EMSDK_COMMIT: "3bcf1dcd01f040f370e10fe673a092d9ed79ebb5"
+  EMSDK_RELEASE: "cb2a69bce627bd2247624c71fc12907cb8785d2f"
+  EMSDK_RELEASE_SHA256: "c6fd245138e6bbdd8349963cb4045c557d657e4be0ea44155375633c689c8be9"
+  EMSDK_NODE: "node-v20.18.0-linux-x64.tar.xz"
+  EMSDK_NODE_SHA256: "4543670b589593f8fa5f106111fd5139081da42bb165a9239f05195e405f240a"
 
 jobs:
   build:
     runs-on: ubuntu-24.04
     timeout-minutes: 90
+    permissions:
+      contents: read
+      pages: read           # configure-pages reads the site's base path
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       # Fails until Pages is enabled (Settings > Pages > Source: GitHub
       # Actions); the build still runs, for the repository's own path.
       - id: pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
         continue-on-error: true
 
       # SITE_URL: the origin the site is served from, for the canonical
@@ -50,12 +72,14 @@ jobs:
             echo "SITE_URL=https://${{ github.repository_owner }}.github.io" >> "$GITHUB_ENV"
           fi
 
-      - uses: actions/setup-node@v4
+      # npm's cache holds tarballs that npm ci checks against the lockfile's
+      # integrity hashes, so it cannot smuggle anything in.
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 20
           cache: npm
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
 
@@ -91,8 +115,9 @@ jobs:
         run: python browser/precompute.py --timings server/evaluations build/azure2/evaluations
 
       # -- WebAssembly engine -------------------------------------------------
-      - name: Cache the WebAssembly build
-        uses: actions/cache@v4
+      - name: Restore the WebAssembly build
+        id: wasm-cache
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: |
             build/wasm/obj
@@ -102,7 +127,21 @@ jobs:
 
       - name: Emscripten
         run: |
-          git clone --quiet --depth 1 https://github.com/emscripten-core/emsdk.git /tmp/emsdk
+          git clone --quiet https://github.com/emscripten-core/emsdk.git /tmp/emsdk
+          git -C /tmp/emsdk checkout --quiet --detach "$EMSDK_COMMIT"
+          test "$(git -C /tmp/emsdk rev-parse HEAD)" = "$EMSDK_COMMIT"
+          # Fetch emsdk's two archives ourselves, check them, and let emsdk
+          # use them as already downloaded (EMSDK_KEEP_DOWNLOADS).
+          mkdir -p /tmp/emsdk/downloads
+          base=https://storage.googleapis.com/webassembly/emscripten-releases-builds
+          curl -sSfL -o "/tmp/emsdk/downloads/$EMSDK_RELEASE-wasm-binaries.tar.xz" \
+            "$base/linux/$EMSDK_RELEASE/wasm-binaries.tar.xz"
+          curl -sSfL -o "/tmp/emsdk/downloads/$EMSDK_NODE" "$base/deps/$EMSDK_NODE"
+          ( cd /tmp/emsdk/downloads && sha256sum -c - ) <<SUMS
+          $EMSDK_RELEASE_SHA256  $EMSDK_RELEASE-wasm-binaries.tar.xz
+          $EMSDK_NODE_SHA256  $EMSDK_NODE
+          SUMS
+          export EMSDK_KEEP_DOWNLOADS=1
           /tmp/emsdk/emsdk install "$EMSCRIPTEN" > /dev/null
           /tmp/emsdk/emsdk activate "$EMSCRIPTEN" > /dev/null
 
@@ -111,13 +150,28 @@ jobs:
           source /tmp/emsdk/emsdk_env.sh > /dev/null 2>&1
           browser/azure2/build.sh build/wasm
 
+      - name: Save the WebAssembly build (main only)
+        if: github.ref == 'refs/heads/main' && steps.wasm-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: |
+            build/wasm/obj
+            build/wasm/gsl-prefix
+            build/wasm/xbuildenv
+          key: ${{ steps.wasm-cache.outputs.cache-primary-key }}
+
       - name: Pyodide
         run: |
           mkdir -p build/pyodide
-          curl -sSL "https://github.com/pyodide/pyodide/releases/download/$PYODIDE/pyodide-core-$PYODIDE.tar.bz2" \
-            | tar -xj -C build/pyodide --strip-components=1
-          numpy=$(python -c "import json; p=json.load(open('build/pyodide/pyodide-lock.json'))['packages']['numpy']; print(p['file_name'])")
-          curl -sSL -o "build/pyodide/$numpy" "https://cdn.jsdelivr.net/pyodide/v$PYODIDE/full/$numpy"
+          curl -sSfL -o /tmp/pyodide-core.tar.bz2 \
+            "https://github.com/pyodide/pyodide/releases/download/$PYODIDE/pyodide-core-$PYODIDE.tar.bz2"
+          echo "$PYODIDE_CORE_SHA256  /tmp/pyodide-core.tar.bz2" | sha256sum -c -
+          tar -xjf /tmp/pyodide-core.tar.bz2 -C build/pyodide --strip-components=1
+          # NumPy is checked against the SHA-256 Pyodide's own lock file
+          # records for it (the lock file came from the checked archive).
+          read -r numpy numpy_sha <<< "$(python -c "import json; p=json.load(open('build/pyodide/pyodide-lock.json'))['packages']['numpy']; print(p['file_name'], p['sha256'])")"
+          curl -sSfL -o "build/pyodide/$numpy" "https://cdn.jsdelivr.net/pyodide/v$PYODIDE/full/$numpy"
+          echo "$numpy_sha  build/pyodide/$numpy" | sha256sum -c -
           echo "NUMPY=build/pyodide/$numpy" >> "$GITHUB_ENV"
 
       - name: Assemble public/azure2
@@ -134,17 +188,23 @@ jobs:
       # scripts/data/sources.json. The inputs are cached by that file, the
       # output by it and the pipeline's code, so an unchanged pipeline costs
       # one cache restore.
-      - name: Cache the data explorer's inputs
-        uses: actions/cache@v4
+      #
+      # Integrity: EXFOR is fetched by its pinned commit (git checks every
+      # object's hash). ENSDF comes from the NNDC archive only when
+      # sources.json records its SHA-256s (fetch-ensdf then refuses a
+      # mismatch); until they are recorded, from the mirror pinned by commit.
+      - name: Restore the data explorer's inputs
+        id: dx-in
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: |
             build/dx/exfor_master.git
             build/dx/ensdf
           key: dx-inputs-${{ hashFiles('scripts/data/sources.json') }}
 
-      - name: Cache the data explorer's output
+      - name: Restore the data explorer's output
         id: dx
-        uses: actions/cache@v4
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: public/data
           key: dx-out-${{ hashFiles('scripts/data/sources.json', 'scripts/data/nucdata/**', 'scripts/data/vendor/**', 'content/atlas/reactions/**', 'content/atlas/nuclear-data/**') }}
@@ -155,8 +215,25 @@ jobs:
           pip install --quiet pyyaml
           python scripts/data/dx.py fetch-exfor
           python scripts/data/dx.py build-exfor --shards all
-          python scripts/data/dx.py fetch-ensdf
+          source=$(python -c "import json; s=json.load(open('scripts/data/sources.json'))['ensdf']; print('nndc' if len(s.get('nndc_sha256') or {}) == len(s['nndc_urls']) else 'mirror')")
+          python scripts/data/dx.py fetch-ensdf --source "$source"
           python scripts/data/dx.py build-ensdf --set scope
+
+      - name: Save the data explorer's inputs (main only)
+        if: github.ref == 'refs/heads/main' && steps.dx-in.outputs.cache-hit != 'true' && hashFiles('build/dx/exfor_master.git/HEAD') != ''
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: |
+            build/dx/exfor_master.git
+            build/dx/ensdf
+          key: ${{ steps.dx-in.outputs.cache-primary-key }}
+
+      - name: Save the data explorer's output (main only)
+        if: github.ref == 'refs/heads/main' && steps.dx.outputs.cache-hit != 'true'
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: public/data
+          key: ${{ steps.dx.outputs.cache-primary-key }}
 
       - name: Data explorer checks
         run: |
@@ -165,7 +242,9 @@ jobs:
           python -m pytest -q scripts/data/tests
 
       # -- the site -----------------------------------------------------------
-      - run: npm ci
+      # No install scripts: nothing the site depends on needs one, and none
+      # then runs with the job's environment (the Docker build does the same).
+      - run: npm ci --ignore-scripts
       - name: Static export
         env:
           STATIC_EXPORT: "1"
@@ -179,17 +258,22 @@ jobs:
           STATIC_EXPORT: "1"
         run: npm run test:seo
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
         with:
           path: out
 
+  # Only this job can publish: it checks out nothing and runs no code from
+  # the repository, it only hands the build's artifact to Pages.
   deploy:
     if: github.ref == 'refs/heads/main'
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5

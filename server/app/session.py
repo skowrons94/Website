@@ -62,6 +62,13 @@ class CapacityError(SessionError):
         self.retry_after = retry_after
 
 
+class LimitError(CapacityError):
+    """One address has as many sessions open as it may (``max_per_owner``),
+    or is opening them too fast (``app.limits``): HTTP 429 with
+    ``Retry-After``.  The page treats it like a 503 (it waits and retries),
+    so a visitor whose other tab closes gets in on the next try."""
+
+
 # Which worker each calculation runs on.
 ROLE_OF = {"data": "data", "fine": "fine", "extrap": "extrap", "grid": "grid"}
 
@@ -128,6 +135,9 @@ class Session:
         self.from_spare = False
         # The page that opened it (``?client=`` on /open), if it said.
         self.client = None
+        # Who opened it: the client's address (``app.limits.client_key``),
+        # for the per-address cap; None for spares and in-process callers.
+        self.owner = None
         # Called with (key, seconds) when a step is measured (prepare_<step>),
         # so the manager keeps the last duration of each step on this server.
         self.on_measured = None
@@ -669,9 +679,14 @@ class SessionManager:
                  idle_ttl=3600, role_ttl=300, prepare_threads=None,
                  prepare_concurrency=None, auto_prepare=False, retry_after=15,
                  spares=None, spare_delay=3, evict_after=None, spare_wait=20,
-                 spare_quiet=2.0):
+                 spare_quiet=2.0, max_per_owner=0):
         self.ttl = ttl
         self.max_sessions = max_sessions
+        # At most this many sessions per owner (client address); 0: no cap.
+        # A full server also evicts first from the owner holding the most
+        # (see _evict_candidate), so one client cannot keep everyone out.
+        self.max_per_owner = max_per_owner
+        self._owner_pending: Dict[str, int] = {}
         self.reaper_interval = reaper_interval
         self.omp_threads = omp_threads
         self.timeout = timeout
@@ -824,7 +839,7 @@ class SessionManager:
 
     # -- lifecycle ------------------------------------------------------------
 
-    def create(self, evaluation) -> Session:
+    def create(self, evaluation, owner=None) -> Session:
         """Open ``evaluation`` in a new session.
 
         The worker cap is what bounds memory use, so it is reserved *before* the
@@ -840,8 +855,61 @@ class SessionManager:
         session that no visitor is waiting on, is closed; if every session is
         genuinely busy the request is refused at once (:class:`CapacityError`,
         a 503) rather than starving the ones already running.
+
+        ``owner`` (the client's address) is held to ``max_per_owner``
+        sessions: past it, that owner's own session unseen for longest is
+        closed if it may be (as for any eviction), else :class:`LimitError`
+        (a 429).
         """
         self.reap()
+        if owner is not None and self.max_per_owner > 0:
+            own = self._reserve_owner(owner)
+            if own is not None:
+                log.info("closing %s (%s): its owner opened another past the "
+                         "cap of %d", own.id, own.evaluation.id, self.max_per_owner)
+                own.close()
+            try:
+                session = self._create(evaluation, owner)
+                session.owner = owner
+                return session
+            finally:
+                with self._lock:
+                    left = self._owner_pending.get(owner, 0) - 1
+                    if left > 0:
+                        self._owner_pending[owner] = left
+                    else:
+                        self._owner_pending.pop(owner, None)
+        return self._create(evaluation, owner)
+
+    def owned(self, owner) -> int:
+        """Sessions ``owner`` holds now (opening ones included)."""
+        with self._lock:
+            return self._owned(owner)
+
+    def _owned(self, owner) -> int:
+        return (sum(1 for s in self._sessions.values() if getattr(s, "owner", None) == owner)
+                + self._owner_pending.get(owner, 0))
+
+    def _reserve_owner(self, owner) -> Optional[Session]:
+        """Count one more session for ``owner``, or raise LimitError; may
+        return one of its own sessions to close (unseen long enough to be
+        evicted anyway).  Caller decrements ``_owner_pending`` after."""
+        with self._lock:
+            victim = None
+            if self._owned(owner) >= self.max_per_owner:
+                mine = [s for s in self._sessions.values()
+                        if getattr(s, "owner", None) == owner and self._evictable(s)]
+                if not mine:
+                    raise LimitError(
+                        f"Too many models are open from your address ({self.max_per_owner} "
+                        "at most). Close an evaluation open in another tab, or wait "
+                        "a moment and try again.", retry_after=self.retry_after)
+                victim = min(mine, key=lambda s: max(s.last_seen, s.last_used))
+                self._sessions.pop(victim.id, None)
+            self._owner_pending[owner] = self._owner_pending.get(owner, 0) + 1
+            return victim
+
+    def _create(self, evaluation, owner=None) -> Session:
         if self.spare_policy is not None:
             try:
                 self.spares[evaluation.id] = self.spare_policy(evaluation)
@@ -859,7 +927,7 @@ class SessionManager:
             self._replenish_later(evaluation)
             return spare
 
-        victim = self._reserve_slot()
+        victim = self._reserve_slot(owner)
         if victim is not None:
             log.info("evicting %s %s (%s) to make room",
                      "spare" if victim.id.startswith("spare-") else "LRU session",
@@ -1086,7 +1154,7 @@ class SessionManager:
                  ", ".join(sorted(spare.prepared)))
         return True
 
-    def _reserve_slot(self) -> Optional[Session]:
+    def _reserve_slot(self, owner=None) -> Optional[Session]:
         """Take one worker slot, evicting if needed.
 
         Returns a session the caller must close (a spare of another
@@ -1111,7 +1179,7 @@ class SessionManager:
                     self._pending += 1
                     return cancelled[0]
             if victim is None:
-                victim = self._evict_candidate()
+                victim = self._evict_candidate(owner)
                 if victim is None:
                     raise CapacityError(
                         f"all {self.max_sessions} model slots are busy; "
@@ -1135,23 +1203,53 @@ class SessionManager:
                 return (record["session"],)
         return None
 
-    def _evict_candidate(self) -> Optional[Session]:
-        """The session seen least recently, among those no visitor is
-        mid-request on (a background preparation does not count) and not
-        seen -- a request or a heartbeat -- for ``evict_after`` seconds: a
-        page that is open and visible is never closed under its reader.
-        Caller holds ``_lock``."""
+    def _evictable(self, s) -> bool:
+        """No visitor is mid-request on it (a background preparation does
+        not count) and it has not been seen -- a request or a heartbeat --
+        for ``evict_after`` seconds."""
         # A page that is open pings at once; a session that has never pinged
         # belongs to a page that went away before it could (or to a client
         # without heartbeats) and is protected only briefly.
-        def grace(s):
-            return self.evict_after if s.heartbeat else min(self.evict_after, 15.0)
-        free = [s for s in self._sessions.values()
-                if not s.busy() and s.unseen_for() >= grace(s)
-                and s.idle_for() >= grace(s)]
-        if not free:
+        grace = self.evict_after if s.heartbeat else min(self.evict_after, 15.0)
+        return not s.busy() and s.unseen_for() >= grace and s.idle_for() >= grace
+
+    def _evict_candidate(self, owner=None) -> Optional[Session]:
+        """The session to close for a newcomer (``owner``), or None.
+
+        First the session seen least recently among the evictable ones
+        (:meth:`_evictable`: a page that is open and visible is never closed
+        under its reader), taken from the owner holding the most sessions.
+        Failing that, fairness: when one owner holds at least two more
+        sessions than the newcomer, its session seen least recently goes,
+        open page or not (one not mid-request if it has one), so a single
+        client cannot keep every slot from everyone else.  Caller holds
+        ``_lock``."""
+        def owner_of(s):
+            return getattr(s, "owner", None)
+
+        counts: Dict[object, int] = {}
+        for s in self._sessions.values():
+            if owner_of(s) is not None:
+                counts[owner_of(s)] = counts.get(owner_of(s), 0) + 1
+
+        def lru(s):
+            return max(s.last_seen, s.last_used)
+
+        free = [s for s in self._sessions.values() if self._evictable(s)]
+        if free:
+            return min(free, key=lambda s: (-counts.get(owner_of(s), 0), lru(s)))
+        if owner is None or not counts:
             return None
-        return min(free, key=lambda s: max(s.last_seen, s.last_used))
+        heaviest = max(counts, key=lambda o: counts[o])
+        if counts[heaviest] < counts.get(owner, 0) + 2 or heaviest == owner:
+            return None
+        theirs = [s for s in self._sessions.values() if owner_of(s) == heaviest]
+        idle = [s for s in theirs if not s.busy()]
+        victim = min(idle or theirs, key=lru)
+        log.info("evicting %s (%s) of an address holding %d sessions, for a "
+                 "newcomer holding %d", victim.id, victim.evaluation.id,
+                 counts[heaviest], counts.get(owner, 0))
+        return victim
 
     def get(self, session_id) -> Session:
         with self._lock:
@@ -1170,6 +1268,7 @@ class SessionManager:
     # -- sessions by page (see routes.api.close_client) --------------------------
 
     _GONE_TTL = 600.0
+    _GONE_MAX = 10000
 
     def attach_client(self, token, session) -> bool:
         """Record that the page ``token`` opened ``session``; False if that
@@ -1192,7 +1291,15 @@ class SessionManager:
         with self._lock:
             clients = self.__dict__.setdefault("_clients", {})
             gone = self.__dict__.setdefault("_gone_clients", {})
-            gone[token] = time.time()
+            now = time.time()
+            for t in [t for t, at in gone.items() if now - at > self._GONE_TTL]:
+                del gone[t]
+            # A flood of made-up tokens must not grow it without bound: the
+            # oldest go first (dicts keep insertion order).
+            while len(gone) >= self._GONE_MAX:
+                del gone[next(iter(gone))]
+            gone.pop(token, None)
+            gone[token] = now
             ids = clients.pop(token, set())
         closed = 0
         for session_id in ids:

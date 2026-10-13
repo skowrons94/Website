@@ -16,5 +16,10 @@ from app import create_app
 from config import Config
 
 if __name__ == "__main__":
+    # max_request_body_size: waitress refuses a larger body itself (413)
+    # before buffering it, which the app's own MAX_CONTENT_LENGTH cannot do
+    # for a route that never reads its body.
     serve(create_app(), host=Config.HOST, port=Config.PORT,
-          threads=Config.THREADS)
+          threads=Config.THREADS,
+          max_request_body_size=Config.MAX_CONTENT_LENGTH,
+          ident="")

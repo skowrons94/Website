@@ -23,9 +23,13 @@ help:                       ## show this list
 
 env:                        ## create .env from the example, if absent
 	@test -f .env || { cp .env.example .env; \
+	  mem=$$(awk '/^MemTotal/ {m = int($$2 / 1024) - 1024; if (m < 1024) m = 1024; print m "m"}' /proc/meminfo); \
+	  cpus=$$(awk -v n=$$(nproc) 'BEGIN {c = n - 0.5; if (c < 1) c = 1; print c}'); \
 	  sed -i -e "s/^AZURE2_UID=.*/AZURE2_UID=$$(stat -c %u server/evaluations)/" \
-	         -e "s/^AZURE2_GID=.*/AZURE2_GID=$$(stat -c %g server/evaluations)/" .env; \
-	  echo "created .env (AZURE2_UID/GID set to the owner of server/evaluations)"; \
+	         -e "s/^AZURE2_GID=.*/AZURE2_GID=$$(stat -c %g server/evaluations)/" \
+	         -e "s/^AZURE2_MEM_LIMIT=.*/AZURE2_MEM_LIMIT=$$mem/" \
+	         -e "s/^AZURE2_CPUS=.*/AZURE2_CPUS=$$cpus/" .env; \
+	  echo "created .env (AZURE2_UID/GID: the owner of server/evaluations; AZURE2_MEM_LIMIT=$$mem, AZURE2_CPUS=$$cpus)"; \
 	  echo "-- set SITE_DOMAIN and ACME_EMAIL in it, then run: make deploy"; }
 	@test -f .env && grep -q '^SITE_DOMAIN=example.com' .env \
 	  && echo "WARNING: .env still says SITE_DOMAIN=example.com" || true
@@ -114,8 +118,12 @@ test-data:                  ## the pipeline's tests (pytest, jsonschema)
 
 AZURE2_SRC ?= ../AZURE2
 
+# The site on :3000 calls the API on :5001, another origin: CORS is allowed
+# for that one origin only (production is same-origin and sends none).
+DEV_ORIGINS ?= http://localhost:3000,http://127.0.0.1:3000
+
 dev-server:                 ## run the AZURE2 API locally on :5001
-	cd server && PYTHONPATH=$(AZURE2_SRC) python3 main.py
+	cd server && PYTHONPATH=$(AZURE2_SRC) AZURE2_CORS_ORIGINS=$(DEV_ORIGINS) python3 main.py
 
 dev-site:                   ## run the site locally on :3000, against that API
 	API_BASE=http://localhost:5001 npm run dev

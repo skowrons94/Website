@@ -37,7 +37,8 @@ from app import evaluations as evaluations_module
 from app import initial as initial_module
 from app import serializers
 from app.engine import PREPARE_STEPS, ROLES, Delegated, EngineError
-from app.session import CapacityError, ModelError, SessionError
+from app.limits import client_key, masked
+from app.session import CapacityError, LimitError, ModelError, SessionError
 
 log = logging.getLogger(__name__)
 
@@ -48,8 +49,11 @@ bp = Blueprint("api", __name__, url_prefix="/api")
 
 @bp.before_request
 def _log_request():
-    log.info("%s %s from %s at %s", request.method, request.path,
-             request.remote_addr, datetime.now().isoformat(timespec="seconds"))
+    # %r: the path is the client's, and a decoded %0a in it would otherwise
+    # start a forged line in the log.
+    # The address is cut (/24, /48) as in Caddy's access log.
+    log.info("%s %r from %s at %s", request.method, request.path,
+             masked(request.remote_addr), datetime.now().isoformat(timespec="seconds"))
 
 
 @bp.errorhandler(FileNotFoundError)
@@ -66,11 +70,21 @@ def _full(err):
     return response, 503
 
 
+@bp.errorhandler(LimitError)
+def _limited(err):
+    # 429 + Retry-After: this client has as many sessions as it may (the
+    # page waits and retries, as for a 503).
+    response = jsonify({"error": str(err), "code": "busy",
+                        "retry_after": err.retry_after})
+    response.headers["Retry-After"] = str(err.retry_after)
+    return response, 429
+
+
 @bp.errorhandler(EngineError)
 def _worker_failed(err):
     # One of the session's derived workers failed (it is started again on
     # the next request); the session itself is fine.
-    log.warning("worker error on %s: %s", request.path, err)
+    log.warning("worker error on %r: %s", request.path, err)
     return jsonify({"error": str(err), "code": "worker"}), 500
 
 
@@ -108,7 +122,7 @@ def _unexpected(err):
     if isinstance(err, HTTPException):
         # Raised by Flask itself (a malformed body, say): keep its status.
         return jsonify({"error": err.description}), err.code
-    log.exception("unhandled error on %s", request.path)
+    log.exception("unhandled error on %r", request.path)
     return jsonify({"error": "internal server error"}), 500
 
 
@@ -118,6 +132,24 @@ def _root():
 
 def _manager():
     return current_app.extensions["sessions"]
+
+
+def _body() -> dict:
+    """The JSON body as an object ({} when absent or not JSON); any other
+    JSON value is a 400, not a 500 further down."""
+    body = request.get_json(silent=True)
+    if body is None:
+        return {}
+    if not isinstance(body, dict):
+        raise ValueError("the request body must be a JSON object")
+    return body
+
+
+def _seq(body):
+    seq = body.get("seq")
+    if seq is not None and (isinstance(seq, bool) or not isinstance(seq, int)):
+        raise ValueError("'seq' must be an integer")
+    return seq
 
 
 def _session_and_labels(session_id):
@@ -242,7 +274,7 @@ def open_evaluation(evaluation_id):
     evaluation = evaluations_module.get(_root(), evaluation_id)
     client = _client_token()
     asked = time.time()
-    session = _manager().create(evaluation)
+    session = _manager().create(evaluation, owner=client_key(request.remote_addr))
     if session.from_spare and hasattr(_manager(), "record"):
         _manager().record(evaluation.id, "open_spare", time.time() - asked)
     if client and not _manager().attach_client(client, session):
@@ -434,7 +466,7 @@ def prepare_session(session_id):
     builds it, with auto-preparation off).  Returns ``{"prepared": [the
     steps this request built]}``.
     """
-    body = request.get_json(silent=True) or {}
+    body = _body()
     steps = body.get("steps") or list(PREPARE_STEPS)
     if not isinstance(steps, list) or any(step not in ROLES for step in steps):
         raise ValueError(f"'steps' must be a list drawn from {list(ROLES)}")
@@ -501,14 +533,12 @@ def set_parameters(session_id):
     in one round trip.  The updates are applied on arrival, in order; only
     the calculation of an edit overtaken by a newer one is skipped.
     """
-    body = request.get_json(silent=True) or {}
+    body = _body()
     updates = body.get("updates")
     if not isinstance(updates, dict):
         raise ValueError("body must contain an 'updates' object mapping "
                          "free-parameter index to value")
-    seq = body.get("seq")
-    if seq is not None and (isinstance(seq, bool) or not isinstance(seq, int)):
-        raise ValueError("'seq' must be an integer")
+    seq = _seq(body)
 
     session, labels = _session_and_labels(session_id)
     gen = session.begin_edit(updates, seq=seq)
@@ -518,9 +548,10 @@ def set_parameters(session_id):
 @bp.route("/sessions/<session_id>/reset", methods=["POST"])
 def reset_parameters(session_id):
     """Restore the parameters the evaluation was opened with."""
-    body = request.get_json(silent=True) or {}
+    body = _body()
+    seq = _seq(body)
     session, labels = _session_and_labels(session_id)
-    gen = session.begin_edit(reset=True, seq=body.get("seq"))
+    gen = session.begin_edit(reset=True, seq=seq)
     return _run_edit(session, labels, gen, body)
 
 

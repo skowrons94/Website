@@ -1,0 +1,13 @@
+# Keeps the SHA-pinned actions current: a pull request per new release, with
+# the tag in the comment updated alongside the pin (DEPLOY.md, "Security").
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 5

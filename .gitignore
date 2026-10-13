@@ -72,3 +72,6 @@ public/search/
 # The proposal written by npm run pubs:check (scripts/pubs/), for review.
 /pubs-proposal.md
 /pubs-proposal.json
+
+# Backups (DEPLOY.md, section 8): they hold the TLS key and access logs.
+*.tgz

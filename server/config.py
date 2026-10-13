@@ -95,7 +95,32 @@ class Config:
 
     HOST = os.environ.get("AZURE2_HOST", "0.0.0.0")
     PORT = _int("AZURE2_PORT", 5001)
-    THREADS = _int("AZURE2_THREADS", 10)
+    THREADS = _int("AZURE2_THREADS", 16)
+
+    # -- abuse limits (app/limits.py; DEPLOY.md, "Security") --------------
+    # Sessions one client address (an IPv6 /64) may hold at once; 0: no cap.
+    MAX_PER_IP = _int("AZURE2_MAX_PER_IP", 2)
+    # /open and edits per address, as N/SECONDS token buckets (burst: N,
+    # or the *_BURST value); "0" turns one off.
+    OPEN_RATE = os.environ.get("AZURE2_OPEN_RATE", "10/60")
+    OPEN_BURST = _int("AZURE2_OPEN_BURST", 0)
+    EDIT_RATE = os.environ.get("AZURE2_EDIT_RATE", "20/1")
+    EDIT_BURST = _int("AZURE2_EDIT_BURST", 60)
+    # Slow requests (calculations, opening, preparing) under way at once
+    # per address; keep it below THREADS so others always get a thread.
+    MAX_INFLIGHT_PER_IP = _int("AZURE2_MAX_INFLIGHT_PER_IP", 8)
+    # Proxies in front that set X-Forwarded-For (Caddy: 1).  0 trusts none:
+    # the address is the TCP peer's.  Only ever the number actually in front,
+    # or a client could pick its own address.
+    TRUSTED_PROXIES = _int("AZURE2_TRUSTED_PROXIES", 0)
+    # Request bodies are small JSON (an edit is a few hundred bytes).
+    MAX_CONTENT_LENGTH = _int("AZURE2_MAX_BODY", 64 * 1024)
+    # Cross-origin callers allowed (comma list), for development only, where
+    # the site (:3000) calls the API (:5001) directly.  Empty (the default,
+    # and right in production, where Caddy serves both on one origin): no
+    # CORS headers at all.
+    CORS_ORIGINS = [o.strip() for o in os.environ.get("AZURE2_CORS_ORIGINS", "").split(",")
+                    if o.strip()]
 
     LOG_FILE = os.environ.get("AZURE2_LOG_FILE",
                               os.path.join(_HERE, "access.log"))

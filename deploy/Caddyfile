@@ -19,6 +19,15 @@ www.{$SITE_DOMAIN} {
 	# already mounted at /api, so the path is passed through unchanged and the
 	# browser never makes a cross-origin request.
 	handle /api/* {
+		# The API's bodies are small JSON (an edit is a few hundred bytes):
+		# anything larger is refused here with 413, before it reaches Flask
+		# (which refuses it too, AZURE2_MAX_BODY).
+		request_body {
+			max_size 64KB
+		}
+		# Caddy replaces any X-Forwarded-For the client sent with the
+		# address it sees (no trusted_proxies here), which is what the API's
+		# per-address limits read (AZURE2_TRUSTED_PROXIES=1).
 		reverse_proxy azure2:5001 {
 			# A fit or an extrapolation can take a while; the default read
 			# timeout would cut a long calculation off mid-flight.
@@ -27,9 +36,17 @@ www.{$SITE_DOMAIN} {
 				read_timeout 300s
 			}
 		}
+		# JSON and CSV only: nothing here may run or be framed.
+		header Content-Security-Policy "default-src 'none'; frame-ancestors 'none'"
 	}
 
 	handle {
+		# The site's pages are GET; nothing it serves takes a body.
+		request_body {
+			max_size 64KB
+		}
+		# The site sets its own Content-Security-Policy, Permissions-Policy
+		# and Cross-Origin-Opener-Policy (next.config.mjs).
 		reverse_proxy web:3000
 	}
 
@@ -37,14 +54,32 @@ www.{$SITE_DOMAIN} {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
 		X-Content-Type-Options "nosniff"
 		Referrer-Policy "strict-origin-when-cross-origin"
-		X-Frame-Options "SAMEORIGIN"
+		X-Frame-Options "DENY"
 		-Server
 	}
 
+	# The access log, for security and troubleshooting only (the privacy
+	# note, /privacy, says so). Addresses are cut before they are written --
+	# IPv4 to its /24, IPv6 to its /48 -- so no full address is ever stored;
+	# cookies and credentials are dropped (the site sets none anyway). The
+	# file rolls daily (or at 20 MiB) and rolled files are deleted after 14
+	# days, so nothing older than about two weeks is kept (at most 15 files,
+	# 300 MiB). Each entry is one JSON line, so a client cannot forge a line.
+	# DEPLOY.md, "Security", says how to change the retention.
 	log {
 		output file /data/access.log {
+			roll_interval 24h
 			roll_size 20MiB
-			roll_keep 5
+			roll_keep 14
+			roll_keep_for 336h
+		}
+		format filter {
+			request>remote_ip ip_mask 24 48
+			request>client_ip ip_mask 24 48
+			request>headers>Cookie delete
+			request>headers>Authorization delete
+			request>headers>X-Forwarded-For delete
+			resp_headers>Set-Cookie delete
 		}
 	}
 }

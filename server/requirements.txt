@@ -2,7 +2,12 @@
 # installed from that source tree (see deploy/Dockerfile.azure2), because the
 # Python package and the compiled _azure2 engine module must come from the same
 # build or the ABI will not match.
-flask
-flask-cors
-waitress
-numpy
+#
+# Lower bounds at the versions pip-audit found clean (2026-10); `pip-audit -r
+# server/requirements.txt` before raising them. flask-cors is used only when
+# AZURE2_CORS_ORIGINS is set (development).
+flask>=3.1.3,<4
+werkzeug>=3.1.9,<4
+flask-cors>=6.0.5
+waitress>=3.0.2
+numpy<3

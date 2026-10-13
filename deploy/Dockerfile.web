@@ -18,6 +18,9 @@ ENV API_BASE=${API_BASE}
 # Optional absolute origin (https://example.com): hreflang and og:image.
 ARG SITE_URL=""
 ENV SITE_URL=${SITE_URL}
+# Content-Security-Policy: enforce, report-only or off (next.config.mjs).
+ARG CSP_MODE=enforce
+ENV CSP_MODE=${CSP_MODE}
 COPY . .
 RUN npm run build
 
@@ -32,9 +35,13 @@ RUN addgroup -g 1001 -S nodejs && adduser -u 1001 -S nextjs -G nodejs
 
 # `standalone` holds a minimal server plus only the modules Next traced; static
 # assets and public/ are not part of it and must be copied alongside.
-COPY --from=build --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=build --chown=nextjs:nodejs /app/.next/static ./.next/static
-COPY --from=build --chown=nextjs:nodejs /app/public ./public
+# Owned by root and only readable by the server's user, which cannot change
+# its own code; the one directory it writes, .next/cache, is created for it
+# (and is a tmpfs under docker-compose.yml's read-only root filesystem).
+COPY --from=build /app/.next/standalone ./
+COPY --from=build /app/.next/static ./.next/static
+COPY --from=build /app/public ./public
+RUN mkdir -p .next/cache && chown nextjs:nodejs .next/cache
 
 USER nextjs
 EXPOSE 3000

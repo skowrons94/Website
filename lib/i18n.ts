@@ -646,6 +646,8 @@ const en = {
     // --- find ---
     news: "News",
     exercises: "Exercises",
+    // --- r11 sec ---
+    privacy: "Privacy",
   },
   // --- r11 site ---
   // "Report an error · Suggest a reaction" (components/report-links.tsx): a new
@@ -1297,6 +1299,8 @@ const it: Dictionary = {
     // --- find ---
     news: "Novità",
     exercises: "Esercizi",
+    // --- r11 sec ---
+    privacy: "Privacy",
   },
   // --- r11 site ---
   report: {
