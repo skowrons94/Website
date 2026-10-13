@@ -298,7 +298,8 @@ const en = {
     title: "Curiosities: what if a rate were twice as fast?",
     titleShort: "Curiosities",
     eyebrow: "Curiosity",
-    lead: "One rate doubled, one burn, one nucleus. Every number comes from the explorer's own calculation.",
+    lead: "One rate doubled, one burn, one result: a nucleus, the energy or the neutrinos. Every number comes from the explorer's own calculation.",
+    extras: "More effects of the change",
     tryIt: "Try it",
     know: "How we know this rate",
     knowSource: "Where this rate comes from",
@@ -321,7 +322,7 @@ const en = {
     indexLead:
       "What a reaction twice as fast would change, one sentence at a time. Each one comes from a one-zone burn of the rate explorer (a simplified model: one parcel of gas at a set temperature and density, with no mixing), says what it leaves out, and opens the exact calculation with “Try it”.",
     indexHow:
-      "The numbers are read from the explorer's precomputed tables (every rate ×2 at each site's own conditions) and checked against a fresh run of the same solver. They are rounded to two significant figures. ×2 is a what-if: how well each rate is really known is given beside it, from the reaction atlas.",
+      "The numbers are read from the explorer's precomputed tables (every rate ×2 at each site's own conditions) and checked against a fresh run of the same solver. They are rounded to two significant figures. ×2 is a what-if: how well each rate is really known is given beside it, from the reaction atlas. Where a change reaches further, a card adds its biggest knock-on effect, on a nucleus the reaction neither burns nor makes, and what it does to the energy: the power of one gram of gas at the model's temperature, not the star's luminosity.",
     back: "Reaction rates",
     backAll: "All curiosities",
   },
@@ -663,7 +664,8 @@ const it: RatesDict = {
     title: "Curiosità: e se un tasso fosse due volte più veloce?",
     titleShort: "Curiosità",
     eyebrow: "Curiosità",
-    lead: "Un tasso raddoppiato, una combustione, un nucleo. Ogni numero viene dal calcolo dell'esploratore.",
+    lead: "Un tasso raddoppiato, una combustione, un risultato: un nucleo, l'energia o i neutrini. Ogni numero viene dal calcolo dell'esploratore.",
+    extras: "Altri effetti del cambiamento",
     tryIt: "Provalo",
     know: "Come conosciamo questo tasso",
     knowSource: "Da dove viene questo tasso",
@@ -684,9 +686,9 @@ const it: RatesDict = {
     model: "Modello",
     indexTitle: "Curiosità sui tassi",
     indexLead:
-      "Che cosa cambierebbe una reazione due volte più veloce, in sedici frasi. Ognuna viene da un calcolo a zona singola dell'esploratore dei tassi (un modello semplificato: una sola porzione di gas a temperatura e densità date, senza rimescolamento), dice che cosa lascia fuori e con «Provalo» apre esattamente quel calcolo.",
+      "Che cosa cambierebbe una reazione due volte più veloce, una frase alla volta. Ognuna viene da un calcolo a zona singola dell'esploratore dei tassi (un modello semplificato: una sola porzione di gas a temperatura e densità date, senza rimescolamento), dice che cosa lascia fuori e con «Provalo» apre esattamente quel calcolo.",
     indexHow:
-      "I numeri sono letti dalle tabelle precalcolate dell'esploratore (ogni tasso ×2 alle condizioni di ciascun ambiente) e verificati con un nuovo calcolo dello stesso risolutore. Sono arrotondati a due cifre significative. ×2 è un'ipotesi: accanto è indicato quanto è noto davvero ogni tasso, dall'atlante delle reazioni.",
+      "I numeri sono letti dalle tabelle precalcolate dell'esploratore (ogni tasso ×2 alle condizioni di ciascun ambiente) e verificati con un nuovo calcolo dello stesso risolutore. Sono arrotondati a due cifre significative. ×2 è un'ipotesi: accanto è indicato quanto è noto davvero ogni tasso, dall'atlante delle reazioni. Quando un cambiamento arriva più lontano, la scheda aggiunge l'effetto a catena più forte, su un nucleo che la reazione non brucia né produce, e che cosa succede all'energia: la potenza di un grammo di gas alla temperatura del modello, non la luminosità della stella.",
     back: "Tassi di reazione",
     backAll: "Tutte le curiosità",
   },

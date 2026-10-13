@@ -21,6 +21,8 @@ export interface Nucleus {
   code: string
   /** laboratory half-life, null when stable */
   halfLife_s: number | null
+  /** AME2020 atomic mass excess, MeV (pynucastro's Nucleus.dm): the Q values of the energy */
+  dm_MeV?: number
 }
 
 export interface ReaclibSet {
@@ -86,6 +88,8 @@ export interface Reaction {
     fit: { journal: string; doi: string }
     method: string
   }[]
+  /** a weak reaction's mean neutrino energy, MeV, and where it comes from (Network.energy.nu_sources) */
+  nu?: { MeV: number; src: string }
   /** underground measurements the atlas lists (LUNA and others), by build.py */
   measured?: { facility: string; name: string; luna: boolean; year: number; refs: { short: string; doi?: string | null }[] }[]
 }
@@ -151,6 +155,8 @@ export interface Network {
   /** Lodders (2021) mass fractions of these nuclei */
   solar: Record<string, number>
   screening: { method: string; co2: number; aaFactor: number; NA: number }
+  /** how the energy is counted (lib/rates/energy.ts): the masses, MeV in erg, the neutrino energies' sources */
+  energy?: { masses: string; MeV2erg: number; nu_sources: Record<string, { en: string; it: string }> }
   /** tolerances the explorer runs this network with, when not the defaults */
   solver?: { rtol?: number; atol?: number }
 }

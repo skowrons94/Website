@@ -19,6 +19,16 @@
  * mostly by the r-process in nature), fluorine-19, doubled laboratory decays
  * and the ONe-nova ²³Na(p,γ) "÷16" (an edge case of the model).
  *
+ * A card can say more than its main nucleus (the owner's request, r11): a
+ * second line with the most striking knock-on effect (a nucleus other than
+ * the reaction's own reactants and products, moved by 5% or more), and an
+ * energy line (the burn's mean power and how soon its fuel runs out), both
+ * read from the same tables (`energy`, `fuel`, `nu` beside the nuclei). A
+ * curiosity can also be about the energy itself (`kind: "energy"`) or about
+ * the neutrinos a detector counts (`kind: "neutrino"`). The energy is that of
+ * one gram of gas at the model's temperature, not the star's luminosity, and
+ * the caveat says so.
+ *
  * Pure and dependency-free, so the pages (at build time), the card script
  * (scripts/rates/curiosity-cards.mjs) and test:rates share it.
  */
@@ -33,10 +43,17 @@ export interface CuriositySpec {
   site: string
   /** the reaction doubled (an id of the network file) */
   reaction: string
-  /** the nucleus the sentence is about, and, for a ratio, the one below it */
+  /**
+   * what the sentence is about: a nucleus (the default), the burn's energy
+   * (its mean power and how soon its fuel runs out), or a neutrino source
+   * (`nu`, an id of lib/rates/energy.ts NEUTRINO_GROUPS)
+   */
+  kind?: "nucleus" | "energy" | "neutrino"
+  nu?: string
+  /** the nucleus the sentence is about, and, for a ratio, the one below it (for an energy or neutrino card, the one name "") */
   nucleus: string
   per?: string
-  /** names in words (a monoisotopic element by its element name) */
+  /** names in words (a monoisotopic element by its element name; the neutrinos, the fuel of an energy card) */
   name: Words
   perName?: Words
   /** the site, as the subject of the sentence: "this model of …" */
@@ -279,6 +296,79 @@ export const CURIOSITIES: CuriositySpec[] = [
       it: "Più semi si dividono gli stessi neutroni, così ognuno sale meno verso il bario.",
     },
   },
+  // -- r11: the energy, the neutrinos and the knock-on effects --------------------
+  {
+    id: "cno-massive-energy",
+    net: "cno",
+    site: "massive-15",
+    reaction: "N14_p_to_O15_reaclib",
+    kind: "energy",
+    nucleus: "",
+    name: nm("hydrogen", "l'idrogeno"),
+    where: W.m15,
+    hook: {
+      en: "The slowest step of the CNO cycle sets how fast a massive star burns.",
+      it: "Il passo più lento del ciclo CNO decide quanto in fretta brucia una stella massiccia.",
+    },
+  },
+  {
+    id: "pp-sun-boron-8-neutrinos",
+    net: "pp",
+    site: "sun-core",
+    reaction: "He3_He3_to_p_p_He4_reaclib",
+    kind: "neutrino",
+    nu: "b8",
+    nucleus: "",
+    name: nm("boron‑8 neutrinos", "neutrini del boro‑8"),
+    where: W.sun,
+    hook: {
+      en: "Two helium‑3 nuclei fusing directly skip beryllium‑7, so fewer boron‑8 neutrinos reach Earth.",
+      it: "Se due elio‑3 si fondono tra loro, il berillio‑7 viene saltato: meno neutrini del boro‑8.",
+    },
+  },
+  {
+    id: "cno-massive-oxygen-17",
+    net: "cno",
+    site: "massive-15",
+    reaction: "N15_p_to_O16_reaclib",
+    nucleus: "o17",
+    name: nm("oxygen‑17", "ossigeno‑17"),
+    where: W.m15,
+    hook: {
+      en: "A rare leak from the CN cycle feeds oxygen‑16, and oxygen‑16 makes oxygen‑17.",
+      it: "Una rara fuga dal ciclo CN alimenta l'ossigeno‑16, che a sua volta produce ossigeno‑17.",
+    },
+  },
+  {
+    id: "nena-massive-sodium",
+    net: "nena",
+    site: "massive-25",
+    reaction: "Ne20_p_to_Na21_reaclib",
+    nucleus: "na23",
+    name: nm("sodium", "sodio"),
+    where: W.m25,
+    hook: {
+      en: "Neon‑20 starts the NeNa cycle; sodium, three captures later, follows its pace.",
+      it: "Il neon‑20 apre il ciclo NeNa; il sodio, tre catture dopo, ne segue il ritmo.",
+    },
+  },
+  {
+    id: "mgal-agb-aluminium-26-knock-on",
+    net: "mgal",
+    site: "agb-hbb",
+    reaction: "Mg24_p_to_Al25_reaclib",
+    nucleus: "al26",
+    name: nm("aluminium‑26", "alluminio‑26"),
+    where: W.hbb,
+    hook: {
+      en: "Magnesium‑24 feeds magnesium‑25, which makes aluminium‑26: an effect two steps away.",
+      it: "Il magnesio‑24 alimenta il magnesio‑25, che produce l'alluminio‑26: un effetto a due passi.",
+    },
+    note: {
+      en: "This model counts all the aluminium‑26 made, including a short-lived form that never gives off the 1809 keV line, so here it is an upper limit.",
+      it: "Il modello conta tutto l'alluminio‑26 prodotto, anche una forma di vita breve che non emette la riga γ a 1809 keV: qui è quindi un limite superiore.",
+    },
+  },
 ]
 
 /** Nuclei no curiosity may headline (see above). */
@@ -287,7 +377,18 @@ export const NEVER_HEADLINE = ["au197", "eu151", "eu153", "f19", "tc99"]
 // -- the numbers ----------------------------------------------------------------
 
 export interface SensitivityLike {
-  scenarios: Record<string, { nuclei: string[]; reactions: string[]; s: number[][] }>
+  scenarios: Record<
+    string,
+    {
+      nuclei: string[]
+      reactions: string[]
+      s: number[][]
+      /** s of the mean power, of the fuel time (null: never reached) and of each neutrino source's rate */
+      energy?: number[]
+      fuel?: (number | null)[]
+      nu?: Record<string, (number | null)[]>
+    }
+  >
 }
 
 /** The response s of a nucleus to the reaction ×2 (log₂ of the ratio), or null. */
@@ -299,12 +400,103 @@ export function sensOf(sens: SensitivityLike, site: string, reaction: string, nu
   return r < 0 || n < 0 ? null : t.s[r][n]
 }
 
-/** changed ÷ unchanged at the end of the burn (of the ratio, for a ratio). */
+/** The energy columns of a table for a reaction: s of the power, of the fuel time, of a neutrino source. */
+export function energySens(
+  sens: SensitivityLike,
+  site: string,
+  reaction: string,
+): { power: number; fuel: number | null; nu: Record<string, number | null> } | null {
+  const t = sens.scenarios[site]
+  const r = t?.reactions.indexOf(reaction) ?? -1
+  if (!t || r < 0 || !t.energy) return null
+  return {
+    power: t.energy[r],
+    fuel: t.fuel?.[r] ?? null,
+    nu: Object.fromEntries(Object.entries(t.nu ?? {}).map(([g, v]) => [g, v[r]])),
+  }
+}
+
+/** changed ÷ unchanged at the end of the burn (of the ratio, for a ratio; of the power or the neutrinos for those cards). */
 export function curiosityRatio(spec: CuriositySpec, sens: SensitivityLike): number {
+  if (spec.kind === "energy" || spec.kind === "neutrino") {
+    const e = energySens(sens, spec.site, spec.reaction)
+    const v = spec.kind === "energy" ? e?.power : spec.nu ? e?.nu[spec.nu] : null
+    if (v === null || v === undefined) throw new Error(`curiosity ${spec.id}: no energy sensitivity for ${spec.reaction}`)
+    return 2 ** v
+  }
   const a = sensOf(sens, spec.site, spec.reaction, spec.nucleus)
   const b = spec.per ? sensOf(sens, spec.site, spec.reaction, spec.per) : 0
   if (a === null || b === null) throw new Error(`curiosity ${spec.id}: no sensitivity for ${spec.reaction} / ${spec.nucleus}`)
   return 2 ** (a - b)
+}
+
+/** Nuclei a knock-on line never names: the fuel and the free particles, besides the excluded headlines. */
+const NOT_KNOCK = ["p", "n", "he4"]
+/** Networks whose reactions make the burn's energy (in NeNa and MgAl the CNO cycle does, outside them). */
+export const ENERGY_NETS = ["pp", "cno", "sprocess"]
+/** The smallest change an extra line reports: 5%. */
+export const EXTRA_MIN = 0.05
+
+export interface KnockOn {
+  name: string
+  /** changed ÷ unchanged */
+  ratio: number
+}
+
+/**
+ * The most striking knock-on effect of a curiosity's change: the nucleus,
+ * other than the reaction's own reactants and products and the card's own
+ * nuclei, whose final abundance moves most, by 5% or more. `own` lists the
+ * reaction's reactants and products by name; `weight(name)` is the
+ * nucleus's final mass fraction, 0 when it is too rare to matter. Nuclei
+ * that move alike (a cycle in balance moves all its members by the same
+ * factor: within 0.03 in s) are a tie, and the most abundant one is named.
+ */
+export function curiosityKnock(
+  spec: CuriositySpec,
+  sens: SensitivityLike,
+  own: string[],
+  weight: (name: string) => number = () => 1,
+): KnockOn | null {
+  const t = sens.scenarios[spec.site]
+  const r = t?.reactions.indexOf(spec.reaction) ?? -1
+  if (!t || r < 0) return null
+  const skip = new Set([...own, spec.nucleus, spec.per ?? "", ...NOT_KNOCK, ...NEVER_HEADLINE])
+  const list = t.nuclei
+    .map((name, j) => ({ name, s: t.s[r][j], w: skip.has(name) ? 0 : weight(name) }))
+    .filter((x) => x.w > 0 && Math.abs(2 ** x.s - 1) >= EXTRA_MIN)
+  if (!list.length) return null
+  const top = Math.max(...list.map((x) => Math.abs(x.s)))
+  const best = list.filter((x) => Math.abs(x.s) >= top - 0.03).sort((a, b) => b.w - a.w || (a.name < b.name ? -1 : 1))[0]
+  return { name: best.name, ratio: 2 ** best.s }
+}
+
+export interface EnergyLine {
+  /** changed ÷ unchanged mean power over the burn */
+  power: number
+  /** changed ÷ unchanged time to burn the fuel down to the stop condition (or its first 1%); null when not reached */
+  fuel: number | null
+}
+
+/**
+ * The energy line of a card, when it says something: a network that makes
+ * the burn's energy, and the power or the fuel time moved by 5% or more.
+ * An energy card has its own sentence and no line.
+ */
+export function curiosityEnergy(spec: CuriositySpec, sens: SensitivityLike): EnergyLine | null {
+  if (spec.kind === "energy" || !ENERGY_NETS.includes(spec.net)) return null
+  const e = energySens(sens, spec.site, spec.reaction)
+  if (!e) return null
+  const power = 2 ** e.power
+  const fuel = e.fuel === null ? null : 2 ** e.fuel
+  if (Math.abs(power - 1) < EXTRA_MIN && (fuel === null || Math.abs(fuel - 1) < EXTRA_MIN)) return null
+  return { power, fuel }
+}
+
+/** For an energy card: the fuel time's change, from the same table. */
+export function curiosityFuel(spec: CuriositySpec, sens: SensitivityLike): number | null {
+  const e = energySens(sens, spec.site, spec.reaction)
+  return e?.fuel === null || e?.fuel === undefined ? null : 2 ** e.fuel
 }
 
 // -- the words ------------------------------------------------------------------
@@ -346,33 +538,98 @@ const TIMES: Record<number, [string, string]> = { 2: ["twice", "il doppio"], 3: 
  * "about a fifth more sodium", "twice as much oxygen‑15",
  * "circa un quinto di sodio in più", "il doppio di ossigeno‑15".
  */
-export function amountWords(r: number, name: string, lang: CLang): string {
+export function amountWords(r: number, name: string, lang: CLang, plural = false): string {
   const it = lang === "it"
   const about = (exact: boolean) => (exact ? "" : it ? "circa " : "about ")
-  if (Math.abs(r - 1) < 0.02) return it ? `quasi la stessa quantità di ${name}` : `almost the same amount of ${name}`
-  if (Math.abs(r - 1) < 0.08) return r > 1 ? (it ? `un po' più di ${name}` : `slightly more ${name}`) : it ? `un po' meno di ${name}` : `slightly less ${name}`
+  // countable things (neutrinos): many, fewer, the same number
+  const much = plural ? "many" : "much"
+  const less = plural ? "fewer" : "less"
+  const of = (n: string) => (plural ? `dei ${n}` : delIt(n))
+  if (Math.abs(r - 1) < 0.02)
+    return it
+      ? `quasi ${plural ? "lo stesso numero" : "la stessa quantità"} di ${name}`
+      : `almost the same ${plural ? "number" : "amount"} of ${name}`
+  if (Math.abs(r - 1) < 0.08) return r > 1 ? (it ? `un po' più di ${name}` : `slightly more ${name}`) : it ? `un po' meno di ${name}` : `slightly ${less} ${name}`
   if (r >= 1.75) {
     const n = Math.round(r)
     const exact = Math.abs(r / n - 1) <= 0.05
-    if (TIMES[n]) return it ? `${about(exact)}${TIMES[n][1]} di ${name}` : `${about(exact)}${TIMES[n][0]} as much ${name}`
-    return it ? `circa ${n} volte più ${name}` : `about ${n} times as much ${name}`
+    if (TIMES[n]) return it ? `${about(exact)}${TIMES[n][1]} di ${name}` : `${about(exact)}${TIMES[n][0]} as ${much} ${name}`
+    return it ? `circa ${n} volte più ${name}` : `about ${n} times as ${much} ${name}`
   }
   if (r > 1) {
     const [v, en, itw] = nearest(r - 1, 3 / 4)
-    if (v === 1 / 2 && !it) return `about one and a half times as much ${name}`
+    if (v === 1 / 2 && !it) return `about one and a half times as ${much} ${name}`
     return it ? `circa ${itw} di ${name} in più` : `about ${en} more ${name}`
   }
   // less
   if (r >= 0.45 && r <= 0.55) {
     const exact = Math.abs(r - 0.5) <= 0.025
-    return it ? `${about(exact)}metà ${delIt(name)}` : `${about(exact)}half as much ${name}`
+    return it ? `${about(exact)}metà ${of(name)}` : `${about(exact)}half as ${much} ${name}`
   }
   if (r < 0.45) {
     const [, en, itw] = nearest(r, 2 / 5)
-    return it ? `solo circa ${itw} ${delIt(name)}` : `about ${en} as much ${name}`
+    return it ? `solo circa ${itw} ${of(name)}` : `about ${en} as ${much} ${name}`
   }
   const [, en, itw] = nearest(1 - r, 2 / 5)
-  return it ? `circa ${itw} di ${name} in meno` : `about ${en} less ${name}`
+  return it ? `circa ${itw} di ${name} in meno` : `about ${en} ${less} ${name}`
+}
+
+/** The power in words: "twice the power", "about a quarter more power", "circa un quarto di potenza in più". */
+export function powerWords(r: number, lang: CLang): string {
+  const it = lang === "it"
+  if (Math.abs(r - 1) < 0.02) return it ? "quasi la stessa potenza" : "almost the same power"
+  if (Math.abs(r - 1) < 0.08) return r > 1 ? (it ? "un po' più di potenza" : "slightly more power") : it ? "un po' meno potenza" : "slightly less power"
+  if (r >= 1.75) {
+    const n = Math.round(r)
+    const a = Math.abs(r / n - 1) <= 0.025 ? "" : it ? "circa " : "about "
+    if (n === 2) return it ? `${a}il doppio della potenza` : `${a}twice the power`
+    if (n === 3) return it ? `${a}il triplo della potenza` : `${a}three times the power`
+    return it ? `circa ${n} volte la potenza` : `about ${n} times the power`
+  }
+  if (r > 1) {
+    const [, en, itw] = nearest(r - 1, 3 / 4)
+    return it ? `circa ${itw} di potenza in più` : `about ${en} more power`
+  }
+  if (r >= 0.45 && r <= 0.55) {
+    const a = Math.abs(r - 0.5) <= 0.025 ? "" : it ? "circa " : "about "
+    return it ? `${a}metà della potenza` : `${a}half the power`
+  }
+  if (r < 0.45) {
+    const [, en, itw] = nearest(r, 2 / 5)
+    return it ? `solo circa ${itw} della potenza` : `about ${en} of the power`
+  }
+  const [, en, itw] = nearest(1 - r, 2 / 5)
+  return it ? `circa ${itw} di potenza in meno` : `about ${en} less power`
+}
+
+/**
+ * How much sooner (or later) the fuel runs out, in words: "in about half the
+ * time", "about a fifth sooner", "about a third later"; Italian
+ * "in circa metà del tempo", "circa un quinto prima", "circa un terzo dopo".
+ */
+export function soonerWords(r: number, lang: CLang): string {
+  const it = lang === "it"
+  if (Math.abs(r - 1) < 0.02) return it ? "quasi nello stesso tempo" : "in almost the same time"
+  if (Math.abs(r - 1) < 0.08) return r < 1 ? (it ? "un po' prima" : "slightly sooner") : it ? "un po' dopo" : "slightly later"
+  if (r >= 1.75) {
+    const n = Math.round(r)
+    const a = Math.abs(r / n - 1) <= 0.05 ? "" : it ? "circa " : "about "
+    return it ? `in ${a}${n === 2 ? "il doppio" : n === 3 ? "il triplo" : `${n} volte il`} del tempo` : `in ${a}${n === 2 ? "twice" : n === 3 ? "three times" : `${n} times`} the time`
+  }
+  if (r > 1) {
+    const [, en, itw] = nearest(r - 1, 3 / 4)
+    return it ? `circa ${itw} dopo` : `about ${en} later`
+  }
+  if (r >= 0.45 && r <= 0.55) {
+    const a = Math.abs(r - 0.5) <= 0.025 ? "" : it ? "circa " : "about "
+    return it ? `in ${a}metà del tempo` : `in ${a}half the time`
+  }
+  if (r < 0.45) {
+    const [, en, itw] = nearest(r, 2 / 5)
+    return it ? `in circa ${itw} del tempo` : `in about ${en} of the time`
+  }
+  const [, en, itw] = nearest(1 - r, 2 / 5)
+  return it ? `circa ${itw} prima` : `about ${en} sooner`
 }
 
 /** A ratio in words: "a carbon‑12 to carbon‑13 ratio twice as high", "un rapporto … dimezzato". */
@@ -438,33 +695,155 @@ export interface CuriosityText {
   caveat: string
   /** the caveat without those limits (one line on the social card) */
   shortCaveat: string
+  /** for a card with energy in it: the energy's own caveat, short (a second line on the social card) */
+  shortEnergy: string | null
   amount: string
   percent: string
+  /** "Biggest knock-on effect: ²³Na (−21%)" */
+  knockLine: string | null
+  /** "Energy output +62%; the hydrogen lasts 46% less." */
+  energyLine: string | null
 }
 
-export function curiosityText(
-  spec: CuriositySpec,
-  r: number,
-  lang: CLang,
-  ctx: { reaction: string; T9: number; tFinal: number; cooling: boolean },
-): CuriosityText {
+/** The fuels of the burns, by name: in a sentence, and with its article (Italian). */
+const FUEL: Record<string, { en: string; it: string; itThe: string }> = {
+  p: { en: "hydrogen", it: "idrogeno", itThe: "l'idrogeno" },
+  he4: { en: "helium", it: "elio", itThe: "l'elio" },
+  c13: { en: "carbon‑13", it: "carbonio‑13", itThe: "il carbonio‑13" },
+}
+
+export interface CuriosityContext {
+  reaction: string
+  T9: number
+  tFinal: number
+  cooling: boolean
+  /** the most striking knock-on effect, its nucleus as a label (²³Na) */
+  knock?: { label: string; ratio: number } | null
+  /** the energy line's numbers (curiosityEnergy) */
+  energy?: EnergyLine | null
+  /** for an energy card: how the fuel time changed (curiosityFuel) */
+  fuelRatio?: number | null
+  /** the burn's fuel (lib/rates/energy.ts fuelOf) and whether the burn stops on it (else its first 1% is timed) */
+  fuel?: string | null
+  until?: boolean
+}
+
+/** "+62%", "the hydrogen lasts 46% less" etc.: a percentage without its sign, ≤ 2 significant figures. */
+const pctAbs = (r: number, lang: CLang) => percentText(r, lang).replace(/^[+−±]/, "")
+/** "il 46%", "l'8%", "l'11%": the Italian article before a percentage, as it is read (lib/rates/i18n.ts alPercent). */
+function ilPct(p: string): string {
+  const n = parseInt(p, 10)
+  return n === 1 || n === 8 || n === 11 || (n >= 80 && n <= 89) ? `l'${p}` : `il ${p}`
+}
+
+/** The fuel-time half of an energy line. */
+function fuelClause(r: number, fuel: string, until: boolean, lang: CLang): string {
+  const f = FUEL[fuel] ?? { en: fuel, it: fuel, itThe: fuel }
   const it = lang === "it"
-  const amount = spec.per
-    ? ratioWords(r, spec.name[lang], spec.perName![lang], lang)
-    : amountWords(r, spec.name[lang], lang)
+  const big = r >= 1.75
+  const p = pctAbs(r, lang)
+  if (until) {
+    if (it) return big ? `${f.itThe} dura ${p}` : `${f.itThe} dura ${ilPct(p)} ${r < 1 ? "in meno" : "in più"}`
+    return big ? `the ${f.en} lasts ${p} as long` : `the ${f.en} lasts ${p} ${r < 1 ? "less" : "longer"}`
+  }
+  const first = it ? `il primo 1% ${f.itThe.startsWith("l'") ? "dell'" + f.it : "del " + f.it}` : `the first 1% of the ${f.en}`
+  if (it) return big ? `${first} impiega ${p} il tempo` : `${first} brucia ${ilPct(p)} ${r < 1 ? "prima" : "dopo"}`
+  return big ? `${first} takes ${p} as long` : `${first} burns ${p} ${r < 1 ? "sooner" : "later"}`
+}
+
+export function curiosityText(spec: CuriositySpec, r: number, lang: CLang, ctx: CuriosityContext): CuriosityText {
+  const it = lang === "it"
   const percent = percentText(r, lang)
   const lead = it ? `Se la ${ctx.reaction} fosse due volte più veloce,` : `If ${ctx.reaction} were twice as fast,`
-  const mid = it ? ` ${spec.where.it} finirebbe con ` : ` ${spec.where.en} would end up with `
-  const parts = [{ text: lead, bold: true }, { text: mid }, { text: amount, bold: true }, { text: ` (${percent}).` }]
+  let amount: string
+  let parts: { text: string; bold?: boolean }[]
+  if (spec.kind === "energy") {
+    amount = powerWords(r, lang)
+    const f = ctx.fuel ? FUEL[ctx.fuel] : null
+    const fr = ctx.fuelRatio
+    parts = [
+      { text: lead, bold: true },
+      { text: it ? ` ${spec.where.it} produrrebbe ` : ` ${spec.where.en} would make ` },
+      { text: amount, bold: true },
+      { text: ` (${percent})` },
+    ]
+    if (f && fr !== null && fr !== undefined) {
+      const verb = ctx.until
+        ? it
+          ? ` ed esaurirebbe ${f.itThe} `
+          : ` and run out of ${f.en} `
+        : it
+          ? ` e brucerebbe il primo 1% ${f.itThe.startsWith("l'") ? "dell'" + f.it : "del " + f.it} `
+          : ` and burn its first 1% of ${f.en} `
+      parts.push({ text: verb }, { text: soonerWords(fr, lang), bold: true }, { text: ` (${percentText(fr, lang)}).` })
+    } else parts.push({ text: "." })
+  } else {
+    const plural = spec.kind === "neutrino"
+    amount = spec.per
+      ? ratioWords(r, spec.name[lang], spec.perName![lang], lang)
+      : amountWords(r, spec.name[lang], lang, plural)
+    const mid = plural
+      ? it
+        ? ` ${spec.where.it} emetterebbe `
+        : ` ${spec.where.en} would give off `
+      : it
+        ? ` ${spec.where.it} finirebbe con `
+        : ` ${spec.where.en} would end up with `
+    parts = [{ text: lead, bold: true }, { text: mid }, { text: amount, bold: true }, { text: ` (${percent}).` }]
+  }
   const T = temperatureWords(ctx.T9, lang)
   const d = durationWords(ctx.tFinal, lang)
-  const extra = [SITE_NOTES[spec.site]?.[lang], spec.note?.[lang]].filter(Boolean).map((x) => ` ${x}`).join("")
+  const knockLine = ctx.knock
+    ? it
+      ? `Effetto a catena più forte: ${ctx.knock.label} (${percentText(ctx.knock.ratio, lang)}).`
+      : `Biggest knock-on effect: ${ctx.knock.label} (${percentText(ctx.knock.ratio, lang)}).`
+    : null
+  const e = ctx.energy
+  const energyLine = e
+    ? (it ? `Energia prodotta ${percentText(e.power, lang)}` : `Energy output ${percentText(e.power, lang)}`) +
+      (e.fuel !== null && ctx.fuel && Math.abs(e.fuel - 1) >= 0.01 ? `; ${fuelClause(e.fuel, ctx.fuel, Boolean(ctx.until), lang)}` : "") +
+      "."
+    : null
+  const hasEnergy = spec.kind === "energy" || spec.kind === "neutrino" || energyLine !== null
+  const energyNote = hasEnergy
+    ? spec.kind === "neutrino"
+      ? it
+        ? "I neutrini sono quelli di questo gas alla temperatura del modello: una stella vera regolerebbe la temperatura per mantenere la sua luminosità."
+        : "The neutrinos are those of this gas at the model's temperature: a real star would adjust its temperature to keep its luminosity."
+      : it
+        ? "L'energia è quella di questo gas alla temperatura del modello, non la luminosità della stella: una stella vera regolerebbe la temperatura per mantenere la sua luminosità."
+        : "The energy is that of this gas at the model's temperature, not the star's luminosity: a real star would adjust its temperature to keep its luminosity."
+    : null
+  const shortEnergy = hasEnergy
+    ? spec.kind === "neutrino"
+      ? it
+        ? "Neutrini di questo gas: una stella vera regolerebbe la temperatura."
+        : "Neutrinos of this gas: a real star would adjust its temperature."
+      : it
+        ? "Energia del gas, non luminosità della stella: una stella vera regolerebbe la temperatura."
+        : "Energy of this gas, not the star's luminosity: a real star would adjust its temperature."
+    : null
+  const extra = [SITE_NOTES[spec.site]?.[lang], spec.note?.[lang], energyNote].filter(Boolean).map((x) => ` ${x}`).join("")
   const shortCaveat = it
     ? `Modello a zona singola${ctx.cooling ? ` che si raffredda da ${T}` : `, ${T}`}, ${d}. Una stella vera si riassesta.`
     : `One-zone model ${ctx.cooling ? `cooling from ${T}` : `at ${T}`} over ${d}. Real stars adjust.`
   const caveat = shortCaveat + extra
-  return { parts, sentence: parts.map((p) => p.text).join(""), hook: spec.hook[lang], caveat, shortCaveat, amount, percent }
+  return {
+    parts,
+    sentence: parts.map((p) => p.text).join(""),
+    hook: spec.hook[lang],
+    caveat,
+    shortCaveat,
+    shortEnergy,
+    amount,
+    percent,
+    knockLine,
+    energyLine,
+  }
 }
+
+/** Everything a card prints in words, for the social cards' manifest and its staleness test. */
+export const cardText = (c: CuriosityText) => [c.sentence, c.knockLine, c.energyLine].filter(Boolean).join("\n")
 
 /** The explorer's address that applies the change: `{ path, hash }`. */
 export function curiosityTry(spec: CuriositySpec): { path: string; hash: string } {
@@ -475,3 +854,51 @@ export function curiosityTry(spec: CuriositySpec): { path: string; hash: string 
 }
 
 export const curiosityPath = (id: string) => `/atlas/rates/curiosities/${id}`
+
+// -- one card's context, from the files ------------------------------------------
+
+/** What curiosityContext reads of a network file and its baseline (structural, so this file imports nothing). */
+export interface NetworkLike {
+  id: string
+  nuclei: { name: string; label: string; Z: number }[]
+  reactions: { id: string; label: string; reactants: number[]; products: number[] }[]
+  scenarios: { id: string; T9: number; profile?: unknown; until: unknown }[]
+}
+export interface BaselineLike {
+  runs: Record<string, { tFinal: number; final: number[]; energy?: { fuel: string | null } }>
+}
+
+/** A knock-on line names only a nucleus with a final mass fraction of at least this. */
+export const KNOCK_FLOOR = 1e-10
+
+/** Everything curiosityText needs besides the ratio, read from the shipped files. */
+export function curiosityContext(
+  spec: CuriositySpec,
+  sens: SensitivityLike,
+  network: NetworkLike,
+  baseline: BaselineLike,
+): CuriosityContext {
+  const s = network.scenarios.find((x) => x.id === spec.site)
+  const r = network.reactions.find((x) => x.id === spec.reaction)
+  const run = baseline.runs[spec.site]
+  if (!s || !r || !run) throw new Error(`curiosity ${spec.id}: no scenario, reaction or baseline`)
+  const own = [...r.reactants, ...r.products].map((i) => network.nuclei[i].name)
+  const index = new Map(network.nuclei.map((n, i) => [n.name, i]))
+  // in the s-process the iron-group seeds (Z ≤ 28) only follow the neutrons: the knock-on is a product
+  const knock = curiosityKnock(spec, sens, own, (name) => {
+    const i = index.get(name) ?? -1
+    const x = run.final[i] ?? 0
+    return x >= KNOCK_FLOOR && (network.id !== "sprocess" || network.nuclei[i].Z > 28) ? x : 0
+  })
+  return {
+    reaction: r.label,
+    T9: s.T9,
+    tFinal: run.tFinal,
+    cooling: Boolean(s.profile),
+    knock: knock ? { label: network.nuclei[index.get(knock.name)!].label, ratio: knock.ratio } : null,
+    energy: curiosityEnergy(spec, sens),
+    fuelRatio: spec.kind === "energy" ? curiosityFuel(spec, sens) : null,
+    fuel: run.energy?.fuel ?? null,
+    until: Boolean(s.until),
+  }
+}
