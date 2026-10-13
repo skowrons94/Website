@@ -14,6 +14,7 @@ import { getAtlas, getSProcessPath, pageDate, type Reaction } from "@/lib/atlas"
 import { formatDate } from "@/lib/atlas-format"
 import { dict, localePath, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
+import { PageLd } from "@/components/json-ld"
 
 /**
  * The s-process, iron to lead: a page of its own, because its nuclei lie far
@@ -212,6 +213,8 @@ export function SProcessPage({ lang }: { lang: Lang }) {
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-14 [overflow-wrap:anywhere] sm:px-8 xl:max-w-7xl">
+      {/* --- find --- */}
+      <PageLd lang={lang} trail={[{ name: dict(lang).nav.atlas, path: "/atlas" }, { name: dict(lang).nav.sProcess, path: "/atlas/s-process" }]} />
       <Link
         href={to("/atlas")}
         className="-my-2.5 inline-flex items-center gap-1.5 py-2.5 text-sm text-muted-foreground transition-colors hover:text-foreground"

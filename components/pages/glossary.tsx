@@ -14,6 +14,7 @@ import { getGlossary } from "@/lib/atlas"
 import { statusHint } from "@/lib/atlas-format"
 import { dict, localePath, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
+import { PageLd } from "@/components/json-ld"
 
 export const glossaryMetadata = (lang: Lang): Metadata =>
   pageMetadata(dict(lang).atlas.glossaryMeta, dict(lang).atlas.glossaryDescription, lang)
@@ -26,6 +27,8 @@ export function GlossaryPage({ lang }: { lang: Lang }) {
 
   return (
     <Container>
+      {/* --- find --- */}
+      <PageLd lang={lang} trail={[{ name: dict(lang).nav.glossary, path: "/glossary" }]} />
       <Link
         href={localePath(lang, "/atlas")}
         className="-mt-2.5 mb-[1.375rem] inline-flex items-center gap-1.5 py-2.5 text-sm text-muted-foreground transition-colors hover:text-foreground"

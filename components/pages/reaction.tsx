@@ -32,6 +32,7 @@ import {
 import { formatDate } from "@/lib/atlas-format"
 import { decimal, dict, localePath, withoutArticle, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
+import { PageLd } from "@/components/json-ld"
 
 export const reactionParams = () => getReactionIds().map((id) => ({ id }))
 
@@ -429,6 +430,8 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-14 [overflow-wrap:anywhere] sm:px-8 xl:max-w-7xl">
+      {/* --- find --- */}
+      <PageLd lang={lang} trail={[{ name: dict(lang).nav.atlas, path: "/atlas" }, { name: r.label, path: `/atlas/${r.id}` }]} />
       <Link
         href={to(family ? familyHref(family.id) : "/atlas")}
         className="-my-2.5 inline-flex py-2.5 items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"

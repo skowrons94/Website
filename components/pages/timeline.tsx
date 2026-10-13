@@ -8,6 +8,7 @@ import { getAtlas } from "@/lib/atlas"
 import { referenceHref, shortCitation } from "@/lib/atlas-format"
 import { dict, localePath, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
+import { PageLd } from "@/components/json-ld"
 
 export const timelineMetadata = (lang: Lang): Metadata =>
   pageMetadata(dict(lang).atlas.timelineMeta, dict(lang).atlas.timelineDescription, lang)
@@ -39,6 +40,8 @@ export function TimelinePage({ lang }: { lang: Lang }) {
 
   return (
     <Container wide>
+      {/* --- find --- */}
+      <PageLd lang={lang} trail={[{ name: dict(lang).nav.atlas, path: "/atlas" }, { name: dict(lang).nav.timeline, path: "/atlas/timeline" }]} />
       <Link
         href={localePath(lang, "/atlas")}
         className="-mt-2.5 mb-[1.375rem] inline-flex py-2.5 items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"

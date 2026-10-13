@@ -7,6 +7,8 @@ import { Sci } from "@/components/sci"
 import { getSoftware, type SoftwareEntry } from "@/lib/content"
 import { dict, localePath, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
+import { PageLd } from "@/components/json-ld"
+import { softwareListLd } from "@/lib/structured-data"
 
 export const softwareMetadata = (lang: Lang): Metadata =>
   pageMetadata(dict(lang).software.title, dict(lang).software.description, lang)
@@ -185,6 +187,8 @@ export function SoftwarePage({ lang }: { lang: Lang }) {
 
   return (
     <Container wide>
+      {/* --- find --- */}
+      <PageLd lang={lang} trail={[{ name: dict(lang).nav.software, path: "/software" }]} nodes={softwareListLd(lang)} />
       <PageHeader
         title={t.title}
         lead={t.lead}

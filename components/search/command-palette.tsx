@@ -100,10 +100,13 @@ export default function CommandPalette({
   lang,
   strings,
   onClose,
+  initialQuery = "",
 }: {
   lang: Lang
   strings: ChromeStrings["search"]
   onClose: () => void
+  /** Text to start with (a search engine's link to /?q=…). */
+  initialQuery?: string
 }) {
   const router = useRouter()
   const dialog = useRef<HTMLDialogElement>(null)
@@ -112,7 +115,7 @@ export default function CommandPalette({
   const uid = useId().replace(/:/g, "")
   const [index, setIndex] = useState<PreparedIndex | null>(null)
   const [failed, setFailed] = useState(false)
-  const [query, setQuery] = useState("")
+  const [query, setQuery] = useState(initialQuery)
   const [active, setActive] = useState(0)
   const [announce, setAnnounce] = useState("")
   const [recent, setRecent] = useState<SearchEntry[]>([])

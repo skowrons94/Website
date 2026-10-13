@@ -1,5 +1,6 @@
 import { EvaluationsIndex } from "@/components/pages/evaluations-index"
 import { evaluationIds, evaluationMeta } from "@/lib/evaluation-meta"
+import { RouteLd } from "@/components/route-ld"
 
 // The cards are rendered from the repository at build time, so they are in
 // the HTML; the client then asks the AZURE2 server (or, in the GitHub Pages
@@ -20,5 +21,11 @@ export default function Page() {
       timings: m.timings,
     }
   })
-  return <EvaluationsIndex initial={initial} />
+  return (
+    <>
+      <EvaluationsIndex initial={initial} />
+      {/* --- find --- */}
+      <RouteLd lang={"it"} page="evaluations" />
+    </>
+  )
 }
