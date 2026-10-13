@@ -144,7 +144,8 @@ def _worker(conn, azr_path, cwd, omp_threads, role="data", prepare_threads=None)
     try:
         import pyazr
         if role == "data":
-            with _threads(prepare_threads):
+            from app import integrals
+            with _threads(prepare_threads), integrals.guard(cwd, azr_path):
                 azr = pyazr.azure2(azr_path, cwd=cwd)
             opened(azr)
             conn.send(("ready", model_info(azr)))
@@ -291,8 +292,67 @@ def opened(model):
 
 
 def _open(path, cwd, data_mode=True):
+    """Build the model at ``path`` (the evaluation's own, in ``cwd``, or a
+    derived one), its frozen integrals guarded (:mod:`app.integrals`)."""
     import pyazr
-    return opened(pyazr.azure2(path, cwd=cwd, data_mode=data_mode))
+    from app import integrals
+    with integrals.guard(cwd, path):
+        model = pyazr.azure2(path, cwd=cwd, data_mode=data_mode)
+    return opened(model)
+
+
+def _switch(model, extrap):
+    """Initialize ``model`` again, in extrapolation or data mode, its frozen
+    integrals guarded (:mod:`app.integrals`)."""
+    from app import integrals
+    with integrals.guard(model.cwd, model.file):
+        if extrap:
+            model.extrap_mode()
+        else:
+            model.data_mode()
+
+
+def model_params(model, params):
+    """``params`` -- a session's free-parameter vector, read from the data
+    model -- as the free vector of ``model``, which may be in extrapolation
+    mode.
+
+    In extrapolation mode only the R-matrix parameters are free: the data
+    segments, and with them their normalisations and energy shifts, are not
+    part of the model.  AZURE2 lists the level parameters first and the
+    segments' after them, so an extrapolation model's free vector is the
+    leading part of the data model's.  AZURE2 at 7e533b7 read just that part
+    of a longer vector; since bc3bd57 it refuses any vector that is not
+    exactly its free one, so the cut is made here, once it is clear that what
+    is dropped is only what extrapolation mode has no use for: the model's
+    free parameters are all level energies and widths.  Both models read the
+    same ``<levels>`` block, so those are the data model's leading
+    ``n_rmatrix`` entries (a role worker holds only the vector, not the data
+    model, to compare names with).
+    """
+    params = np.asarray(params, dtype=np.float64)
+    n = len(model.sess.params_values())
+    if len(params) == n:
+        return params
+    if len(params) > n and model.mode == "extrap":
+        rmatrix = getattr(model, "_free_rmatrix", None)
+        if rmatrix is None:
+            # Every free parameter of the extrapolation model is a level's
+            # (an energy or a width), and there are as many as the engine has.
+            free = [p for p in model.parameters if not p.fixed]
+            rmatrix = (len(free) == n
+                       and all(p.kind in ("energy", "width") for p in free))
+            model._free_rmatrix = rmatrix
+        if rmatrix:
+            return params[:n]
+        raise ValueError(
+            f"{len(params)} parameters for an extrapolation-mode model with {n} free "
+            f"parameters, which are not only level energies and widths, so the "
+            f"data model's vector cannot be cut to them")
+    raise ValueError(
+        f"{len(params)} parameters for a model with {n} free parameters "
+        f"({model.mode} mode): not this model's free vector"
+        + (", nor a data-mode vector it could be cut from" if model.mode == "extrap" else ""))
 
 
 def evaluate(model, params, grid=True):
@@ -313,13 +373,10 @@ def evaluate(model, params, grid=True):
     # (_worker), so there this never happens.
     current = _CURRENT() if _CURRENT is not None else None
     if current is not None and current is not model:
-        if model.mode == "extrap":
-            model.extrap_mode()
-        else:
-            model.data_mode()
+        _switch(model, model.mode == "extrap")
     opened(model)
     s = model.sess
-    params = np.asarray(params, dtype=np.float64)
+    params = model_params(model, params)
     n = int(s.update_segments(params))
     mu = [np.asarray(s.calculated_segments(i), dtype=float) for i in range(n)]
     sfactor = [mu[i] * np.asarray(s.calculated_conv(i), dtype=float) for i in range(n)]
@@ -382,14 +439,8 @@ def _needs_split(azr) -> bool:
 
 def _output_dir(azr):
     """The model's output directory, as AZURE2 resolves it (cwd-relative)."""
-    import re
-    try:
-        with open(azr.file) as f:
-            config = re.search(r"<config>\n(.*?)</config>", f.read(), flags=re.S)
-        row = config.group(1).split("\n")[1].split("#")[0].strip()
-    except (OSError, AttributeError, IndexError):
-        return None
-    return row if os.path.isabs(row) else os.path.join(azr.cwd, row)
+    from app import integrals
+    return integrals.output_dir(azr.file, azr.cwd)
 
 
 def _fresh_data(azr):
@@ -398,13 +449,17 @@ def _fresh_data(azr):
     no split model can be written)."""
     if getattr(azr, "_fresh_ec", False):
         return
+    from app import integrals
+    if integrals.frozen(azr.cwd):
+        # Never for frozen integrals: they are the ones to calculate with.
+        return
     output = _output_dir(azr)
     if output:
         try:
             os.remove(os.path.join(output, "intEC.dat"))
         except OSError:
             pass
-    azr.data_mode()
+    _switch(azr, False)
     opened(azr)
     azr._fresh_ec = True
 
@@ -430,20 +485,19 @@ def fine_model(state, azr_path, cwd):
     return state
 
 
-def _settled(path, cwd, attempts=3):
+def _settled(path, cwd, attempts=2):
     """The model at ``path`` in extrapolation mode, built until AZURE2 reads
     its stored external-capture integrals back rather than writing them.
 
-    A total capture over several capture pairs calculated as AZURE2 does it
-    as shipped (an evaluation without ``split_total_capture``, ¹⁴N) gives
-    three different answers on three builds: right when the integrals are
-    first calculated, garbage on the next (the count check fails and they are
-    recalculated), then -- read back from the file -- the same numbers as the
-    data model, which is what the published fit shows and what the curve
-    must reproduce.  So a build that wrote the file is done again; a build
-    that only read it (every one after the first) is kept.
+    AZURE2 writes the integrals with six significant digits, so a build that
+    calculated them gives curves a few 1e-6 away from every later build, which
+    reads them back -- and the cached results (``app.cache``, the precompute)
+    would depend on which build a worker happened to make.  So a build that
+    wrote the file is done again, once: it then reads what it wrote (the
+    signature is the same for every build of the model, with
+    ``deploy/azure2-patches``).  (Up to AZURE2 7e533b7 the rebuild also
+    stepped past a total capture's components being read out of step.)
     """
-
     stored = os.path.join(os.path.dirname(path), "output", "intEC.extrap")
 
     def stamp():
@@ -621,10 +675,11 @@ def _dispatch(azr, command, params):
 
     if command == "data":
         if azr.mode != "data":
-            azr.data_mode()
+            _switch(azr, False)
         if _needs_split(azr):
-            # A total capture over several capture pairs: AZURE2's own
-            # calculation of it is unreliable (app.fine.summed).
+            # A total capture over several capture pairs, calculated split
+            # where the evaluation opts in (app.fine.summed: AZURE2's own
+            # calculation was unreliable up to 7e533b7).
             state = _state(azr, "_data_state")
             result = data_curves(state, azr.file, azr.cwd, params)
             if result is not None:

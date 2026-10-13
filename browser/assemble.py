@@ -82,6 +82,17 @@ SKIP_FILES = (".lock", ".probe")
 SKIP_PREFIXES = (".precomputed-", ".fine-", ".initial-")
 
 
+def _integrals():
+    """server/app/integrals.py, loaded on its own (the app package would
+    import Flask)."""
+    import importlib.util
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "server", "app", "integrals.py")
+    spec = importlib.util.spec_from_file_location("frozen_integrals", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def unused(source):
     """Files of an evaluation the page never reads: its own extrapolations'
     integrals when a derived model calculates them (``extrapolations/``),
@@ -91,6 +102,14 @@ def unused(source):
            os.path.join(source, "initial-extrapolations.json")}
     if os.path.exists(os.path.join(source, "extrapolations", "extrap.azr")):
         out.add(os.path.join(source, "output", "intEC.extrap"))
+    # A frozen seed (server/app/integrals.py) whose derived model already
+    # holds it: shipped once, as that model's own file.
+    integrals = _integrals()
+    listed = integrals.frozen(source)
+    for (role, name), path in integrals.seeds(source).items():
+        copy = os.path.join(source, role, "output", name)
+        if os.path.isfile(copy) and integrals.sha256(copy) == listed[path]:
+            out.add(os.path.join(source, path))
     return out
 
 

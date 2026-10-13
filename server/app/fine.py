@@ -104,9 +104,8 @@ def split_enabled(directory) -> bool:
     """Has the evaluation opted in (``"split_total_capture": true`` in its
     ``info.json``) to the split total-capture calculation?
 
-    Off by default: a published evaluation then looks exactly as AZURE2
-    calculates it as shipped, integral reuse included (see :func:`summed`),
-    until its author has checked the corrected numbers.
+    Off by default: the model is calculated as AZURE2 calculates it, which
+    at the pinned revision gives the same total (see :func:`summed`).
     """
     import json
     try:
@@ -120,15 +119,16 @@ def summed(segments, captures) -> bool:
     """Does AZURE2 build *component* segments for this set?
 
     A total-capture segment over more than one capture pair is calculated as
-    the first pair plus one component segment per further pair, and at the
-    pinned AZURE2 revision the external-capture integrals of those components
-    are mishandled whenever ``output/intEC.*`` already exists: read back as
-    zeros when the file holds only the regular segments' integrals (the
-    shipped files), or out of step -- garbage -- when it holds both.  ¹⁷F's
-    total capture then came out as the ground-state transition alone, ~15x
-    below the data, and ⁷Be's ³He(α,γ) 20% low.  A fresh calculation is
-    right.  See :mod:`app.engine` for how a model avoids the reuse -- only
-    when its ``info.json`` opts in (:func:`split_enabled`; README.md).
+    the first pair plus one component segment per further pair.  Up to
+    AZURE2 7e533b7 the external-capture integrals of those components were
+    mishandled whenever ``output/intEC.*`` already existed: read back as
+    zeros when the file held only the regular segments' integrals, or out of
+    step -- garbage -- when it held both.  ¹⁷F's total capture then came out
+    as the ground-state transition alone, ~15x below the data, and ⁷Be's
+    ³He(α,γ) 20% low.  The pinned revision (bc3bd57, fix 886cdf7) is right
+    either way; the split model (:mod:`app.engine`, for an evaluation whose
+    ``info.json`` opts in: :func:`split_enabled`; README.md) is the
+    workaround the site used before, and gives the same numbers.
     """
     if len(captures) < 2:
         return False
@@ -352,8 +352,8 @@ def plan(azr_path, cwd, segments, captures=None):
       at that energy -- it is plotted against the angle.
     * A total-capture segment is drawn as one angle-integrated line per
       capture pair, summed, rather than as AZURE2's own total capture (whose
-      integrals are unreliable, see :func:`summed`) -- where the evaluation
-      opts in (:func:`split_enabled`).
+      integrals were unreliable up to AZURE2 7e533b7, see :func:`summed`) --
+      where the evaluation opts in (:func:`split_enabled`).
     """
     if captures is None:
         captures = capture_keys(azr_path) if split_enabled(cwd) else []
@@ -788,7 +788,7 @@ def split_data_model(azr_path, workdir, captures):
     and no free parameter of the evaluation moves.  Summing the appended
     lines back onto their base (:func:`sum_slots`) gives AZURE2's total
     capture without its component segments, whose external-capture integrals
-    the engine cannot reuse (:func:`summed`); this model's integrals it can,
+    AZURE2 up to 7e533b7 could not reuse (:func:`summed`); this model's it can,
     so they are computed once per deploy.
 
     ``<targetInt>`` segment lists are rewritten as explicit keys so that a
@@ -936,7 +936,8 @@ def workdir_for(cwd, name="fine") -> str:
 
     Next to the evaluation when that directory is writable, so the
     external-capture integrals of the derived grid are computed once per
-    deploy; otherwise a private temporary directory.
+    deploy; otherwise a directory of the same name in a private temporary
+    one (the name is what ``app.integrals`` matches a frozen seed by).
     """
     preferred = os.path.join(cwd, name)
     try:
@@ -947,7 +948,9 @@ def workdir_for(cwd, name="fine") -> str:
         os.remove(probe)
         return preferred
     except OSError:
-        return tempfile.mkdtemp(prefix="azure2-fine-")
+        fallback = os.path.join(tempfile.mkdtemp(prefix="azure2-"), name)
+        os.makedirs(fallback)
+        return fallback
 
 
 # -- joining the fine curve onto the data segments -------------------------------

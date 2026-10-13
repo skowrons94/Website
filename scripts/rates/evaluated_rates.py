@@ -143,18 +143,17 @@ def calculate(spec: dict) -> dict:
         (work / "checks").mkdir()
         path = work / f"{spec['evaluation']}-rate.azr"
         path.write_text(derived)
-        # built until AZURE2 reads its external-capture integrals back rather than
-        # writing them, as the API does (server/app/engine.py, _settled): a total
-        # capture over several capture pairs (¹⁴N) comes out right only then
+        # built until AZURE2 reads its external-capture integrals back rather
+        # than writing them, as the API does (server/app/engine.py, _settled)
         stored = work / "output" / "intEC.extrap"
 
         def stamp():
             return (stored.stat().st_mtime_ns, stored.stat().st_size) if stored.exists() else None
 
-        for attempt in range(3):
+        for attempt in range(2):
             before = stamp()
             model = pyazr.azure2(str(path), cwd=str(work), data_mode=False)
-            if stamp() == before or attempt == 2:
+            if stamp() == before or attempt == 1:
                 break
             model.close()
         try:
@@ -213,6 +212,12 @@ def main() -> None:
     OUT.mkdir(exist_ok=True)
     for spec in SPECS:
         if len(sys.argv) > 1 and spec["evaluation"] not in sys.argv[1:]:
+            continue
+        if (EVALS / spec["evaluation"] / "output" / "FROZEN").is_file():
+            # Its integrals are frozen (server/app/integrals.py); this grid's
+            # would be calculated afresh, so its committed table is kept.
+            print(f"{spec['evaluation']}: frozen external-capture integrals, "
+                  f"keeping {spec['reaction']}.json")
             continue
         res = calculate(spec)
         E, sig, mu = res["E"], res["sigma_b"], res["mu"]

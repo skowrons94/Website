@@ -30,7 +30,13 @@ JOBS=${JOBS:-$(nproc)}
 
 cd "$WORK"
 [ -d AZURE2 ] || git clone --quiet https://github.com/rdeboer1/AZURE2.git
-git -C AZURE2 checkout --quiet --detach "$REF"
+git -C AZURE2 checkout --quiet --force --detach "$REF"
+# The patches every build of the pinned commit gets, as the server's
+# (deploy/azure2-patches/README.md).  checkout --force first, so a work
+# directory never carries them over to another commit.
+PATCHES=()
+for p in "$REPO"/deploy/azure2-patches/*.patch; do [ -f "$p" ] && PATCHES+=("$p"); done
+for p in "${PATCHES[@]}"; do git -C AZURE2 apply "$p"; done
 if [ ! -d gsl ]; then
   git init --quiet gsl
   git -C gsl fetch --quiet --depth 1 https://github.com/ampl/gsl.git "$GSL_COMMIT"
@@ -81,7 +87,13 @@ minuit=$(sed -n '/set(MINUIT2_SOURCES/,/)/p' "$A/external/minuit2/src/CMakeLists
   echo "$A/api/src/pybind_api.cpp"
 } > sources.txt
 
+# The objects are cached by source path, not content: built from another
+# AZURE2 commit or other patches (in the same work directory) they would be
+# linked in as they are, so they go when either changes.
+STAMP="$REF $(cat "${PATCHES[@]}" /dev/null | sha256sum | cut -c1-16)"
+if [ "$(cat obj/.ref 2>/dev/null)" != "$STAMP" ]; then rm -rf obj; fi
 mkdir -p obj
+echo "$STAMP" > obj/.ref
 export FLAGS
 xargs -P "$JOBS" -I{} sh -c 'o=obj/$(echo "{}" | md5sum | cut -c1-10)_$(basename "{}").o; [ -f "$o" ] || em++ $FLAGS -c "{}" -o "$o"' < sources.txt
 

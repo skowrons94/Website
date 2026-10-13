@@ -1,0 +1,5 @@
+# An evaluation's model, data and integrals are read byte for byte (hashes in
+# output/FROZEN, the results-cache fingerprint): never convert line endings.
+server/evaluations/*/*.azr -text
+server/evaluations/*/data/** -text
+server/evaluations/*/output/** -text

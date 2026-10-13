@@ -103,6 +103,7 @@ jobs:
           pip install --quiet --require-hashes -r .github/requirements-build.txt
           git clone --quiet https://github.com/rdeboer1/AZURE2.git /tmp/AZURE2
           git -C /tmp/AZURE2 checkout --quiet --detach ${{ steps.azure2.outputs.ref }}
+          for p in "$GITHUB_WORKSPACE"/deploy/azure2-patches/*.patch; do git -C /tmp/AZURE2 apply "$p"; done
           cmake -S /tmp/AZURE2 -B /tmp/AZURE2-build -DCMAKE_BUILD_TYPE=Release \
             -DUSE_API=ON -DBUILD_GUI=OFF -DUSE_QWT=OFF \
             -Dpybind11_DIR="$(python -m pybind11 --cmakedir)" > /dev/null
@@ -134,7 +135,7 @@ jobs:
             build/wasm/obj
             build/wasm/gsl-prefix
             build/wasm/xbuildenv
-          key: azure2-wasm-${{ steps.azure2.outputs.ref }}-${{ env.EMSCRIPTEN }}-${{ env.PYODIDE }}-${{ hashFiles('browser/azure2/*') }}
+          key: azure2-wasm-${{ steps.azure2.outputs.ref }}-${{ env.EMSCRIPTEN }}-${{ env.PYODIDE }}-${{ hashFiles('browser/azure2/*', 'deploy/azure2-patches/*.patch') }}
 
       - name: Emscripten
         run: |

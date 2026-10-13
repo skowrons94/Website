@@ -56,8 +56,11 @@ class InProcessEngine:
 
     def __init__(self, azr_path, cwd, omp_threads=None, timeout=None, **_):
         import pyazr
+        from app import integrals
         try:
-            self._azr = opened(pyazr.azure2(azr_path, cwd=cwd))
+            with integrals.guard(cwd, azr_path):
+                azr = pyazr.azure2(azr_path, cwd=cwd)
+            self._azr = opened(azr)
         except Exception as err:
             raise EngineError(f"{type(err).__name__}: {err}") from err
         self.info = model_info(self._azr)

@@ -1,0 +1,34 @@
+diff --git a/src/EData.cpp b/src/EData.cpp
+index 09f52a1..fe3de26 100644
+--- a/src/EData.cpp
++++ b/src/EData.cpp
+@@ -1752,7 +1752,7 @@ class ECSignatureHash {
+  */
+ template <class Segments>
+ long long WalkECAmplitudes(Segments &segments, CNuc *theCNuc, ECSignatureHash *hash,
+-                           std::set<int> *pairs) {
++                           std::set<int> *pairs, bool components = false) {
+   long long count = 0;
+   for (auto segment = segments.begin(); segment != segments.end(); segment++) {
+     int aa = theCNuc->GetPairNumFromKey(segment->GetEntranceKey());
+@@ -1772,7 +1772,10 @@ long long WalkECAmplitudes(Segments &segments, CNuc *theCNuc, ECSignatureHash *h
+           // the ANC does not -- it multiplies the amplitude later -- so it is
+           // deliberately left out and can be varied without invalidating.
+           hash->Add("segment");
+-          hash->Add(segment->GetSegmentKey());
++          // A component segment's key comes from a process-wide counter
++          // (CreateComponentSegment), so it differs between two builds of one
++          // model in one process; its place in the walk identifies it instead.
++          hash->Add(components ? 0 : segment->GetSegmentKey());
+           hash->Add(segment->GetEntranceKey());
+           hash->Add(segment->GetExitKey());
+           hash->Add(theCNuc->GetJGroup(j)->GetJ());
+@@ -1884,7 +1887,7 @@ std::string EData::ECSignature(CNuc *theCNuc, const Config &configure) {
+   hash.Add("data segments");
+   WalkECAmplitudes(GetSegments(), theCNuc, &hash, &pairs);
+   hash.Add("component segments");
+-  WalkECAmplitudes(componentSegments_, theCNuc, &hash, &pairs);
++  WalkECAmplitudes(componentSegments_, theCNuc, &hash, &pairs, true);
+ 
+   for (std::set<int>::const_iterator it = pairs.begin(); it != pairs.end(); ++it) {
+     PPair *pair = theCNuc->GetPair(*it);

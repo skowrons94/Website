@@ -261,9 +261,11 @@ def test_shipped_flags():
 
 
 def test_engine_paths_17F(tmp_path):
-    """The two calculations of 17F's total capture (Hester): flag off gives
-    AZURE2 as shipped (ground-state transition only, ~0.5 keV b), flag on
-    the sum over both capture pairs (~7.4 keV b, what the data show)."""
+    """The two calculations of 17F's total capture (Hester) agree: flag off
+    is AZURE2's own total, flag on the sum over the capture pairs of the
+    split model, both ~7.4 keV b (what the data show).  At AZURE2 7e533b7 the
+    first reused the stored integrals wrongly and gave the ground-state
+    transition alone, ~0.5 keV b; bc3bd57 (886cdf7) fixed that."""
     pytest.importorskip("pyazr")
     import shutil
     import numpy as np
@@ -284,5 +286,6 @@ def test_engine_paths_17F(tmp_path):
             for model in (getattr(azr, "_data_state", {}).get("model"), azr):
                 if model is not None:
                     model.close()
-    assert results[False] == pytest.approx(0.48, rel=0.05)
+    assert results[False] == pytest.approx(7.40, rel=0.02)
     assert results[True] == pytest.approx(7.40, rel=0.02)
+    assert results[False] == pytest.approx(results[True], rel=1e-6)

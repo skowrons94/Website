@@ -1,0 +1,20 @@
+diff --git a/src/AZURECalc.cpp b/src/AZURECalc.cpp
+index 2659ae9..9fb4732 100644
+--- a/src/AZURECalc.cpp
++++ b/src/AZURECalc.cpp
+@@ -35,6 +35,7 @@
+ 
+ #ifdef _OPENMP
+ #include <omp.h>
++#endif
+ 
+ // setenv/unsetenv are POSIX and missing from the Windows (MinGW) runtime.
+ // There, _putenv("NAME=value") sets a variable for getenv and "NAME=" removes it.
+@@ -58,7 +59,6 @@ void unsetEnvVar(const char *name) {
+ #endif
+ }
+ }  // namespace
+-#endif
+ 
+ namespace {
+ 

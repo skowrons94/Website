@@ -125,7 +125,7 @@ Required: `status`, `analysis`, `purpose`, `purpose_it`, `reactions`,
 | `citation` | optional: the full "how to cite" text, if the default is not right |
 | `title` | optional: a LaTeX title, e.g. `^{12}\\text{C}`; derived from the model if absent |
 | `channels` | optional: LaTeX names of the particle pairs, in pair order; derived if absent |
-| `split_total_capture` | `true` for a model with total-capture data over several capture pairs (see README, "Total capture") |
+| `split_total_capture` | optional, for a model with total-capture data over several capture pairs: the split calculation the site used before AZURE2 `bc3bd57` (see README, "Total capture") |
 
 The full definition is `server/app/info.schema.json`.
 
@@ -138,35 +138,28 @@ made the fit, and the check refuses the evaluation until you write it.
 exit channels, e.g. to the ground state and to an excited state) *and* a data
 segment of **total capture** over them (in AZURE2, exit pair `-1`). AZURE2
 calculates such a segment as the first pair plus one component segment per
-further pair, and at the pinned revision it reuses the external-capture
-integrals (`output/intEC.*`) wrongly for those components: the total comes
-out too low (¹⁷F's about 15 times, ⁷Be's ³He(α,γ) about 20%). Only a
-calculation with no stored integrals is right; the server reuses them, and so
-does AZURE2 on your machine from the second run on, so a fit may have been
-made against the wrong total too. The details are in the
-README ("Total capture and `split_total_capture`") and in `summed` in
-`server/app/fine.py`. With a single capture pair, or no total-capture data,
-leave the flag out: it changes nothing.
+further pair, and up to revision `7e533b7` it reused the external-capture
+integrals (`output/intEC.*`) wrongly for those components: the total came out
+too low (¹⁷F's about 15 times, ⁷Be's ³He(α,γ) about 20%) whenever stored
+integrals existed, which is from the second run on. The pinned revision
+(`bc3bd57`) calculates it right, but a fit made with an older AZURE2 may have
+been made against another total. The details are in the README ("Total
+capture and `split_total_capture`") and in `summed` in `server/app/fine.py`.
+With a single capture pair, or no total-capture data, none of this applies.
 
-**What it does.** With `"split_total_capture": true` the server calculates
-each total capture as one segment per capture pair and sums them, which does
-not depend on the reused integrals. The `.azr` and its parameters are not
-changed. Without the flag the model is calculated as AZURE2 does as shipped.
+**What the flag does.** With `"split_total_capture": true` the server
+calculates each total capture as one segment per capture pair and sums them,
+the workaround the site used before the fix. At the pinned revision it gives
+the same numbers as AZURE2's own total; ¹⁷F, ⁷Be and ²³Na keep it. A new
+evaluation does not need it. The `.azr` and its parameters are not changed
+either way.
 
-**Turn it on, then check it against the published fit:**
-
-1. Open the evaluation locally without the flag (`make dev-server`,
-   `make dev-site`, `/evaluations/<id>`) and note the χ²/N of the
-   total-capture data sets in the data table and how their curve sits.
-2. Add `"split_total_capture": true` to `info.json` and restart the API
-   (`make evaluations` on the server). The flag is part of the cache key, so
-   everything is calculated again.
-3. Compare with the paper: the total-capture curve should now go through the
-   total-capture data, with χ²/N close to the published value (or better),
-   and every other data set should be unchanged. Keep the flag.
-4. If the corrected total misses the data (¹⁴N: χ²/N 0.9 → 95), the fit
-   itself relied on the wrong numbers. Leave the flag off, say so on the page
-   with a `notes` entry (as ¹⁴N does), and have the fit checked.
+**Check the total against the published fit:** open the evaluation locally
+(`make dev-server`, `make dev-site`, `/evaluations/<id>`) and compare the χ²/N
+of the total-capture data sets in the data table, and how their curve sits,
+with the paper. If they differ, the published fit was made with other
+integrals: ship those (README, "Frozen integrals"), so the page shows the fit
+as published.
 
 ## 3. Check it
 
@@ -250,7 +243,7 @@ If the evaluation feeds the reaction rates (¹²C(p,γ), ¹³C(p,γ)), rerun
 
 - [ ] `make add-evaluation ID=<id> AZR=<file.azr>` ran without errors
 - [ ] `info.json`: no TODO left; `status`, `reference`, `paper`, `analysis` right
-- [ ] total capture over two or more capture pairs: `split_total_capture` checked against the published fit (section 2)
+- [ ] total capture over two or more capture pairs: the total checked against the published fit (section 2)
 - [ ] the model reproduces the published fit, or `preliminary` and `notes` say what it does not
 - [ ] `purpose` and `purpose_it` read well to a non-physicist
 - [ ] `reactions`: headline reaction first

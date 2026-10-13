@@ -421,6 +421,10 @@ def check_evaluation(directory: str, schema: Optional[Dict] = None,
                    for x in ("dat", "extrap")):
             warn("output", "there is no output/intEC.dat: copy it from your AZURE2 run if the "
                  "model has external capture, or the first visitor waits while AZURE2 recomputes it")
+        from app import integrals
+        for problem in integrals.problems(directory):
+            error("output/FROZEN", f"{problem}: these integrals are frozen; restore them "
+                  "from git rather than regenerating them")
 
     timings = os.path.join(directory, "timings.json")
     if not os.path.isfile(timings):
