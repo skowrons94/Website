@@ -127,19 +127,7 @@ export default function histograms(r: Router, d: Daq) {
     ok(d.integrate(d.histogram(p.board_id, p.channel, undefined, Number(p.rebin_factor) || 1), Number(p.roi_min), Number(p.roi_max))))
   r.get('/psd/<board_id>/<channel>', (_q, p) => ok(d.psd(p.board_id, p.channel)))
 
-  // ── traces ──
-  r.get('/waveforms/1/<board_id>/<channel>', (_q, p) => ok(d.waveform('wave1', p.board_id, p.channel)))
-  r.get('/waveforms/2/<board_id>/<channel>', (_q, p) => ok(d.waveform('wave2', p.board_id, p.channel)))
-  r.get('/waveforms/probe1/<board_id>/<channel>', (_q, p) => ok(d.waveform('probe1', p.board_id, p.channel)))
-  r.get('/waveforms/probe2/<board_id>/<channel>', (_q, p) => ok(d.waveform('probe2', p.board_id, p.channel)))
-  r.get('/waveforms/<waveform_type>/<board_id>/<channel>', (_q, p) => {
-    const t = p.waveform_type
-    if (!['wave1', 'wave2', 'probe1', 'probe2'].includes(t)) return fail(400, { error: 'Invalid waveform type. Use wave1 or wave2.' })
-    const h = d.waveform(t as 'wave1', p.board_id, p.channel)
-    if (t === 'probe1') h.fLineColor = 416   // kGreen
-    if (t === 'probe2') h.fLineColor = 632   // kRed
-    return ok(h)
-  })
+  // ── traces: handlers/traces.ts, a lazy family (the trace synthesis is a chunk of its own) ──
 
   // Waveform recording is bit 16 of Board Configuration (0x8000) in the board's file.
   const setWaves = (id: string, on: boolean) => {

@@ -131,7 +131,7 @@ const staticGraph = (file, seen = new Set()) => {
 const wFirst = worker ? staticGraph(worker) : new Set()
 check('worker first load (DAQ state + physics)', worker && fs.existsSync(worker) ? [...wFirst].reduce((n, f) => n + gz(f), 0) : null, 'worker')
 const lazyCode = wChunks.filter(([f, k]) => k === 'code' && !wFirst.has(path.join(OUT, 'demo', f)))
-if (lazyCode.length) rows.push(['worker, lazy chunks (Logbook + run files, ELOG/Grafana, notification settings)', kB(lazyCode.reduce((n, [f]) => n + gz(path.join(OUT, 'demo', f)), 0)).toFixed(1), '', '', 'loaded when a page needs them'])
+if (lazyCode.length) rows.push(['worker, lazy chunks (Logbook + run files, ELOG/Grafana, notification settings, traces)', kB(lazyCode.reduce((n, [f]) => n + gz(path.join(OUT, 'demo', f)), 0)).toFixed(1), '', '', 'loaded when a page needs them'])
 const jsDraw = info?.jsroot?.draw ?? []
 const jsTotal = walk(path.join(OUT, 'jsroot')).reduce((n, f) => n + gz(path.join(OUT, 'jsroot', f)), 0)
 check('JSROOT draw set (entry + TH1/TH2/TCanvas painters)', jsDraw.length ? jsDraw.reduce((n, f) => n + gz(path.join(OUT, 'jsroot', f)), 0) : null,

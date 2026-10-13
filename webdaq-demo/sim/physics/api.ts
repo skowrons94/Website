@@ -154,12 +154,14 @@ export interface PhysicsEngine {
    */
   psd(ch: number): Uint32Array | null
   /**
-   * A fresh trace for the probe selected in 0x8000[13:12], int16 samples, one
-   * per ADC sample, length = Record Length. Called on request only (one per
-   * tuner / waveform-dashboard refresh), while running with waveforms on.
-   * Null when the channel has nothing to show.
+   * Trace 1 of a fresh capture (the probe selected in 0x8000[13:12]), int16 samples,
+   * one per ADC sample, length = Record Length. Null when the channel has nothing to
+   * show, or until sim/physics/traces.ts (a lazy chunk, which also gives trace 2 and
+   * the digital probes) is loaded.
    */
   waveform(ch: number): Int16Array | null
+  /** What traces.ts needs to synthesise a channel's traces (see TraceContext there). */
+  traceContext?(ch: number): import('./traces').TraceContext | null
   /**
    * Beam-current readings at demo time t_s (seconds since the demo session
    * started, NOT since run start): [target, coll. 1, coll. 2, idle], µA.

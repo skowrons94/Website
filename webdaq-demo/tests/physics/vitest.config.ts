@@ -12,5 +12,7 @@ export default defineConfig({
     environment: 'node',
     testTimeout: 600_000,
     pool: 'forks',
+    // One file at a time: dpp.test.ts times a tick, and a busy neighbour would make that flaky.
+    fileParallelism: false,
   },
 })

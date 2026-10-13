@@ -172,4 +172,45 @@ describe('simulated DAQ', () => {
     const ev2 = (await call('GET', '/notifications/events')).data as any
     expect((Array.isArray(ev2) ? ev2 : ev2.events).some((e: any) => e.rule_type === 'stalled_buffers')).toBe(true)
   })
+
+  it('traces: trace 2 with Dual Trace, digital probes from the same event as the trace', async () => {
+    const { b, call, advance } = await withBoard()
+    await b.ensureFamilies()
+    await call('POST', '/waveforms/activate/0')
+    await call('POST', '/experiment/start_run')
+    advance(2); await call('GET', '/experiment/get_run_status')
+    const get = async (path: string) => (await call('GET', path)).data as any
+    expect((await get('/waveforms/2/0/0')).fTitle).toMatch(/Dual Trace/)
+    const cfg = ((await call('GET', '/digitizer/0/registers')).data as any).reg_8000.value_dec
+    const w = await call('POST', '/digitizer/0/setting/reg_8000', { value: (cfg | (1 << 11) | (3 << 12) | (1 << 14)) >>> 0, online: false })
+    expect(w.status).toBe(200)
+    await call('POST', '/experiment/stop_run'); await call('POST', '/experiment/start_run')
+    advance(2); await call('GET', '/experiment/get_run_status')
+    // as the Tuner asks: one trace, then both probes (one capture serves them)
+    const t2 = await get('/waveforms/2/0/0')
+    const t1 = await get('/waveforms/1/0/0'), p1 = await get('/waveforms/probe1/0/0'), p2 = await get('/waveforms/probe2/0/0')
+    expect(t1.fTitle).toMatch(/Trapezoid$/)
+    expect(t2.fTitle).toMatch(/Threshold$/)
+    expect(p1.fTitle).toMatch(/Peaking$/)
+    expect(p2.fTitle).toMatch(/Trigger$/)
+    expect(p1.fXaxis.fNbins).toBe(t1.fXaxis.fNbins)
+    const again = await get('/waveforms/probe2/0/0')
+    expect(again.fArray).toEqual(p2.fArray)   // the same capture until the next trace
+  })
+
+  it('EJ-309 at threshold 8 (inside the noise): the server keeps answering, and the stats say why', async () => {
+    const { call, advance } = await withBoard(7, { detectors: 'ej309', source: 'cf252' })
+    await call('POST', '/experiment/start_run')
+    await call('POST', '/digitizer/0/setting/reg_1060', { value: 8, online: true })
+    const t = performance.now()
+    advance(10)
+    await call('GET', '/experiment/get_run_status')
+    const ms = performance.now() - t
+    const st = (await call('GET', '/experiment/stats')).data as any
+    const ch0 = st[0].channels[0]
+    console.log(`10 s of demo time in ${ms.toFixed(0)} ms; ch0 ${JSON.stringify(ch0)}`)
+    expect(ms).toBeLessThan(3000)
+    expect(ch0.lost_rate + ch0.event_rate).toBeGreaterThan(1e5)
+  })
 })
+

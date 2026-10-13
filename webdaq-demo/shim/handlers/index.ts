@@ -28,4 +28,6 @@ export const LAZY_FAMILIES: { prefix: RegExp; load: () => Promise<{ default: Fam
   { prefix: /^\/data\//, load: () => import('./data') },
   { prefix: /^\/(elog|grafana)\//, load: () => import('./elog') },
   { prefix: /^\/(recovery\/|notifications\/(transports|rules|settings|status|watcher))/, load: () => import('./notify-settings') },
+  // traces: three path segments after /waveforms/ (the switches, /waveforms/activate/<id>, have two)
+  { prefix: /^\/waveforms\/[^/]+\/[^/]+\/[^/]+\/?$/, load: () => import('./traces') },
 ]

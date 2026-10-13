@@ -17,7 +17,7 @@ import {
   phaParams, phaTriggerHeight, protonLight, psdParams, sampleCharges, scintModel,
   type HpgeConst, type PhaParams, type PsdParams, type ScintModel,
 } from './detectors'
-import { lightShape, hpgePulse, rcCr2, toInt16, trapezoid } from './filters'
+import type { TraceCapture, TraceContext } from './traces'
 import { beamSample } from './beam'
 import { fitPeak } from './probe'
 import { Response, type ResponseJson, solidAngle } from './response'
@@ -81,6 +81,17 @@ export function physicsDataReady(kind: DetectorKind): boolean {
 
 const DPP_OF: Record<DetectorKind, 'DPP-PHA' | 'DPP-PSD'> = { hpge: 'DPP-PHA', bgo: 'DPP-PSD', ej309: 'DPP-PSD', he3: 'DPP-PSD' }
 
+/**
+ * Noise triggers per channel and tick above which they are no longer drawn one by
+ * one. At a threshold inside the noise (EJ-309 at 8 LSB: about 6 MHz of crossings on
+ * each of 16 channels) drawing every crossing took seconds per 50 ms tick and the
+ * worker fell further behind on every tick. Above it, only the crossings the trigger
+ * hold-off lets through are generated (a renewal process: hold-off plus an
+ * exponential wait), at most NOISE_SIMULATED of them; the rest are counted.
+ */
+export const NOISE_DIRECT = 500
+export const NOISE_SIMULATED = 500
+
 interface Pending {
   t: number
   E: number
@@ -117,6 +128,12 @@ function newChan(): ChanState {
 function scenarioKey(s: Scenario): string {
   return JSON.stringify([s.detectors, s.source, +s.distance_cm.toFixed(3), s.activity_Bq, s.background, s.yield_factor])
 }
+
+// ────────────────────────────────────────────────────────────── traces
+
+let traceSynth: ((x: TraceContext) => TraceCapture) | null = null
+/** traces.ts registers its synthesis here when it is loaded (it stays out of the first chunk). */
+export function setTraceSynth(f: ((x: TraceContext) => TraceCapture) | null) { traceSynth = f }
 
 // ────────────────────────────────────────────────────────────── engine
 
@@ -335,11 +352,28 @@ class Engine implements PhysicsEngine, PhysicsExtras {
     for (const s of this.emitters) s.e.emit(t0, dt, s.beam ? beam : 1, this.rSrc, sink)
     const isPha = this.dpp === 'DPP-PHA'
     // noise triggers (Rice)
+    const noiseCounted = new Float64Array(n)    // crossings counted, not simulated (offered)
+    const noiseAccepted = new Float64Array(n)   // of those, accepted by the trigger (dead time, readout)
     for (let c = 0; c < n; c++) {
       if (!en(c)) { this.chans[c].pending = null; continue }
-      const f = isPha ? this.pha[c].fNoise : this.psdp[c].fNoise
-      const k = this.rCh[c].poisson(f * dt)
-      for (let i = 0; i < k; i++) push(c, t0 + this.rCh[c].next() * dt, { E: -1, heavy: 0 })
+      const P = isPha ? this.pha[c] : this.psdp[c]
+      const f = P.fNoise, r = this.rCh[c]
+      const lam = f * dt
+      if (lam <= NOISE_DIRECT) {
+        const k = r.poisson(lam)
+        for (let i = 0; i < k; i++) push(c, t0 + r.next() * dt, { E: -1, heavy: 0 })
+        continue
+      }
+      const tho = P.tho_ns * 1e-9
+      const end = t0 + dt
+      let t = Math.max(t0, this.chans[c].lastAcc + tho) + r.exp() / f, k = 0
+      while (t < end && k < NOISE_SIMULATED) {
+        push(c, t, { E: -1, heavy: 0 })
+        k++
+        t += tho + r.exp() / f
+      }
+      if (t < end) noiseAccepted[c] = r.poisson((end - t) / (tho + 1 / f))
+      noiseCounted[c] = Math.max(0, r.poisson(lam) - k)
     }
     // per-channel DPP
     const commits: Pending[][] = []
@@ -409,13 +443,13 @@ class Engine implements PhysicsEngine, PhysicsExtras {
         s.lastAcc = t
         if (!noise) { s.lastE = E; s.lastHeavy = heavy }
       }
-      res[c].offered = offered
-      res[c].dead_s = Math.min(dt, dead)
+      res[c].offered = offered + noiseCounted[c]
+      res[c].dead_s = Math.min(dt, dead + noiseAccepted[c] * tho)
       // running estimates for the rate-dependent resolution term
       const a = Math.min(1, dt / 0.5)
       s.rate += a * (nE / dt - s.rate)
       if (nE > 0) s.e2 += a * (sumE2 / nE - s.e2)
-      bytes += list.length * (8 + (wave ? 2 * P.recordSamples : 0))
+      bytes += (list.length + noiseAccepted[c]) * (8 + (wave ? 2 * P.recordSamples : 0))
     }
     // readout budget: the surplus is lost
     const budget = LINK_BYTES_PER_S * dt
@@ -424,14 +458,44 @@ class Engine implements PhysicsEngine, PhysicsExtras {
     for (let c = 0; c < n; c++) {
       const r = this.rCh[c]
       const perEv = 8 + (wave ? 2 * (isPha ? this.pha[c] : this.psdp[c]).recordSamples : 0)
+      const noiseFills: number[] = []
       for (const ev of commits[c]) {
         if (lostFrac > 0 && r.next() < lostFrac) { res[c].lost++; lostTotal++; continue }
         res[c].events++
         written += perEv
         if (ev.pu) res[c].pileup++
         if (ev.satu) { res[c].saturated++; this.eventSink?.(c, ev.t, 0, 0, ev.pu, true); continue }
-        if (isPha) { const a = this.fillPha(c, ev); this.eventSink?.(c, ev.t, a, 0, ev.pu, false) }
-        else { const [a, b] = this.fillPsd(c, ev); this.eventSink?.(c, ev.t, a, b, ev.pu, false) }
+        let a: number, b = 0
+        if (isPha) { a = this.fillPha(c, ev); this.eventSink?.(c, ev.t, a, 0, ev.pu, false) }
+        else { [a, b] = this.fillPsd(c, ev); this.eventSink?.(c, ev.t, a, b, ev.pu, false) }
+        if (ev.noise && !ev.pu && noiseAccepted[c] > 0) noiseFills.push(a, b)
+      }
+      // Accepted noise triggers that were counted, not simulated: the readout keeps its
+      // share, and those fill the spectra like the simulated noise events of this tick.
+      const extra = noiseAccepted[c]
+      if (extra > 0) {
+        const lost = Math.min(extra, lostFrac > 0 ? r.poisson(extra * lostFrac) : 0)
+        const kept = extra - lost
+        res[c].lost += lost; lostTotal += lost
+        res[c].events += kept
+        written += kept * perEv
+        // In bulk: each simulated noise event stands for kept/m more (Poisson), so the
+        // cost is per simulated event, not per counted one.
+        const m = noiseFills.length / 2
+        if (m > 0) {
+          const per = kept / m
+          for (let q = 0; q < 2 * m; q += 2) {
+            const k = r.poisson(per)
+            if (k > 0) this.fillAgain(c, noiseFills[q], noiseFills[q + 1], k)
+          }
+          // a replay's data file gets a bounded sample of them
+          if (this.eventSink) {
+            for (let j = 0; j < Math.min(kept, NOISE_SIMULATED); j++) {
+              const q = 2 * Math.floor(r.next() * m)
+              this.eventSink(c, t0 + r.next() * dt, noiseFills[q], noiseFills[q + 1], false, false)
+            }
+          }
+        }
       }
     }
     const perAgg = Math.max(1, board.chReg(0x1034, 0) || 1)
@@ -439,6 +503,26 @@ class Engine implements PhysicsEngine, PhysicsExtras {
     const blocks = Math.floor(this.blocksFrac)
     this.blocksFrac -= blocks
     return { channels: res, bytes: written, blocksDropped: blocks }
+  }
+
+  /** Fill the histograms k more times as an event with these words did (fillPha/fillPsd's results). */
+  private fillAgain(c: number, a: number, b: number, k: number): void {
+    if (this.dpp === 'DPP-PHA') {
+      if (a > 0 && a < ENERGY_BINS) { this.spectra[c][a] += k; const pr = this.probe[c]; if (pr) pr[a] += k }
+      return
+    }
+    const qL = Math.min(QLONG_BINS - 1, Math.floor(b))
+    this.spectra[c][qL] += k
+    const pr = this.probe[c]
+    if (pr) pr[qL] += k
+    const psd = this.psds[c]
+    if (psd && qL > 0) {
+      const xb = Math.min(PSD_XBINS - 1, Math.floor((qL * PSD_XBINS) / QLONG_MAX))
+      let ratio = 1 - a / qL
+      ratio = ratio < 0 ? 0 : ratio > 1 ? 1 : ratio
+      const yb = Math.min(PSD_YBINS - 1, Math.floor(ratio * PSD_YBINS))
+      psd[yb * PSD_XBINS + xb] += k
+    }
   }
 
   private fillPha(c: number, ev: Pending): number {
@@ -452,6 +536,10 @@ class Engine implements PhysicsEngine, PhysicsExtras {
       const delta = ballisticDeficit(ev.tc, p.tr_us, p.tf_us)
       const f2 = hpgeFwhm2(E, p, this.hk!, s.rate * 1e-6, s.e2)
       Em = E * (1 - delta) + (Math.sqrt(f2) / 2.355) * r.normal()
+      // Peaking time (the energy-sampling delay) past the flat top: the energy is read on
+      // the falling edge, lower, and the trigger jitter now moves it along the slope.
+      const edge = p.tpk_us > p.tf_us ? Math.min(1, (p.tpk_us - p.tf_us) / p.tr_us) : 0
+      if (edge > 0) Em = Em * (1 - edge) + E * (p.sigmaT_us / p.tr_us) * r.normal()
     }
     const ch = Math.floor(Em * p.gain)
     if (ch > 0 && ch < ENERGY_BINS) { this.spectra[c][ch]++; const pr = this.probe[c]; if (pr) pr[ch]++; return ch }
@@ -549,63 +637,27 @@ class Engine implements PhysicsEngine, PhysicsExtras {
     return 2.355 * E * Math.sqrt(rel2)
   }
 
-  waveform(ch: number): Int16Array | null {
+  /**
+   * What the trace synthesis (traces.ts, a lazy chunk) needs about a channel: its
+   * parameters and the last pulse it accepted. Null when the channel shows nothing.
+   */
+  traceContext(ch: number): TraceContext | null {
     const b = this.board
-    if (!b || !b.channelEnabled(ch) || ch >= this.nCh) return null
+    if (!b || !this.kind || ch >= this.nCh || !b.channelEnabled(ch)) return null
     const isPha = this.dpp === 'DPP-PHA'
-    const P = isPha ? this.pha[ch] : this.psdp[ch]
-    const N = Math.min(P.recordSamples, 65536)
-    const Ts = b.nsPerSample
-    const t0 = P.preSamples * Ts
     const s = this.chans[ch]
-    const r = this.rWave
-    const E = ch < 2 ? s.lastE : 0
-    const probe = (b.reg(R.boardConfig) >>> 12) & 3
-    const pos = this.kind === 'hpge'
-    const A = E * P.adcPerKeV
-    let pulse: Float64Array
-    if (isPha) {
-      const tc = this.hk ? (this.hk.tc[0] + r.next() * (this.hk.tc[1] - this.hk.tc[0])) * 1000 : 200
-      pulse = hpgePulse(N, Ts, t0, A, (this.hk?.tauP_us ?? 50) * 1000, tc)
-    } else {
-      const m = this.scint!
-      const hf = E > 0 ? Math.min(1, s.lastHeavy / E) : 0
-      const w = m.wE.map((x, i) => x * (1 - hf) + m.wH[i] * hf)
-      let peak = 0
-      for (let t = 0; t < 5 * m.rise + 50; t += 0.5) peak = Math.max(peak, lightShape(t, m.taus, w, m.rise))
-      pulse = new Float64Array(N)
-      for (let i = 0; i < N; i++) pulse[i] = (A / peak) * lightShape(i * Ts - t0, m.taus, w, m.rise)
+    return {
+      dpp: this.dpp, kind: this.kind, ch, board: b, P: isPha ? this.pha[ch] : this.psdp[ch],
+      E: ch < 2 ? s.lastE : 0, heavy: ch < 2 ? s.lastHeavy : 0,
+      tauP_us: this.hk?.tauP_us ?? 50, tc_us: this.hk ? [this.hk.tc[0], this.hk.tc[1]] : [0.2, 0.2],
+      scint: this.scint, rng: this.rWave,
     }
-    // ADC view: baseline, raw polarity, white + slow noise, clipped to 14 bits
-    const raw = new Float64Array(N)
-    let slow = 0
-    for (let i = 0; i < N; i++) {
-      slow = 0.995 * slow + 0.1 * r.normal()
-      const v = P.baseline + (pos ? 1 : -1) * pulse[i] + 2.5 * r.normal() + slow
-      raw[i] = Math.max(0, Math.min(ADC_MAX, Math.round(v)))
-    }
-    if (probe === 0 || (!isPha && probe === 3)) return toInt16(raw)
-    // firmware view: baseline removed, inverted if asked
-    const sign = P.invert ? -1 : 1
-    const v = new Float64Array(N)
-    for (let i = 0; i < N; i++) v[i] = sign * (raw[i] - P.baseline)
-    if (isPha) {
-      const p = P as PhaParams
-      const k = Math.round(p.tin_ns / Ts)
-      const [d1, d2] = rcCr2(v, k, p.nSmooth, 1)
-      if (probe === 1) return toInt16(d1)
-      if (probe === 2) return toInt16(d2.map((x) => 4 * x))
-      const tr = trapezoid(v, (p.tr_us * 1000) / Ts, (p.tf_us * 1000) / Ts, (p.M_us * 1000) / Ts)
-      const g = (p.fineGain / 0x1000) * Math.pow(2, 4 - p.rescale)
-      return toInt16(tr.map((x) => x * g))
-    }
-    if (probe === 1) {
-      // CFD: fraction 25 %, delay 4 samples
-      const out = new Float64Array(N)
-      for (let i = 0; i < N; i++) out[i] = 0.25 * v[i] - (i >= 4 ? v[i - 4] : 0)
-      return toInt16(out)
-    }
-    return toInt16(new Float64Array(N).fill(P.baseline))
+  }
+
+  /** Trace 1 of a fresh capture (null until traces.ts is loaded, or when the channel shows nothing). */
+  waveform(ch: number): Int16Array | null {
+    const ctx = this.traceContext(ch)
+    return ctx && traceSynth ? traceSynth(ctx).wave1 : null
   }
 
   beamSample(t_s: number): [number, number, number, number] {

@@ -9,10 +9,11 @@
  * given sequence of actions at the same tick indices replay identically.
  */
 import {
-  createPhysics, DEFAULT_SCENARIO, dppFor, th1f, th2f, emptyTH1F, waveformTH1F,
+  createPhysics, DEFAULT_SCENARIO, dppFor, th1f, th2f, emptyTH1F,
   ENERGY_BINS, QLONG_BINS, PSD_XBINS, PSD_YBINS, QLONG_MAX, DISTANCE_MIN_CM, DISTANCE_MAX_CM,
 } from '../physics/api'
 import type { PhysicsEngine, Scenario, BoardView, Dpp, RootJson, TickResult } from '../physics/api'
+import type { TraceCapture } from '../physics/traces'
 import type { HistogramDashboardConfig, DashboardSettings, HistogramConfig, ROI } from '@webdaq/lib/histogram-config'
 import {
   defaultBoardConfig, regValue, setRegValue, hex4, START_MODE_NAMES,
@@ -25,6 +26,8 @@ export const DEMO_MAX_RUN = 30
 export const DEMO_NOTICE = 'Simulated data. Not a measurement.'
 const BEAM_DT = 0.1           // 10 Hz, as the mock current module
 const CATCH_UP_S = 10         // a gap longer than this is filled in one physics tick (§3.11)
+const ADVANCE_BUDGET_MS = 200  // wall time one advance() may spend ticking before it takes the rest in one step
+const perfNow = () => (typeof performance !== 'undefined' ? performance.now() : Date.now())
 const METRIC_KEEP = 3600      // points per metric (1 h at 1 s)
 const STATS_CSV_KEEP = 7200
 
@@ -170,6 +173,8 @@ export class Daq {
   private nextSecond = 1
   private nextAlertT = 2
   tickCount = 0
+  /** How often advance() ran out of its time budget and took a long step (tests, diagnostics). */
+  slowTicks = 0
 
   // ── daq_manager state (conf/settings.json) ──
   boards: BoardCfg[] = []
@@ -202,7 +207,11 @@ export class Daq {
   rates: { channels: { event_rate: number; pileup_rate: number; lost_rate: number; satu_rate: number; dead: number }[]; write_rate: number } | null = null
   runEvents: number[] = []
   runBytes = 0
-  private lastTraces: Record<string, Int16Array | null> = {}
+  /**
+   * The last trace capture per board:channel and when it was taken (demo time):
+   * trace 1, trace 2 and the digital probes of one event (handlers/traces.ts).
+   */
+  traceCache: Record<string, { t: number; cap: TraceCapture }> = {}
 
   // ── spy ──
   rebinFactor = 1
@@ -396,7 +405,7 @@ export class Daq {
     if (err) throw new Error(err)
     this.calib[this.boardKey(b)] = calibRows(Array.from({ length: b.chan }, (_, c) => this.physics.calibration(c)))
     this.runBoards = null
-    this.lastTraces = {}
+    this.traceCache = {}
   }
 
   private seedInBeam(b: BoardCfg, on: boolean) {
@@ -449,7 +458,18 @@ export class Daq {
       this.step(n * TICK_S)
       gap = target - this.simT
     }
+    // A time budget per call: if the ticks cost more than real time (a pathological
+    // setting), the rest of the gap is taken in one step, so the server keeps
+    // answering and the demo degrades instead of falling further behind.
+    const deadline = perfNow() + ADVANCE_BUDGET_MS
     while (gap >= TICK_S) {
+      if (perfNow() > deadline) {
+        const rest = Math.floor(gap / TICK_S) * TICK_S
+        this.step(rest)
+        this.slowTicks++
+        gap -= rest
+        break
+      }
       this.step(TICK_S)
       gap -= TICK_S
     }
@@ -788,7 +808,7 @@ export class Daq {
       else rec.demo.timeline.push([t, key, value ?? regs[key]?.value ?? ''])
     }
     if (b === this.boards[0]) this.reconfigure()
-    this.lastTraces = {}
+    this.traceCache = {}
   }
 
 
@@ -806,7 +826,7 @@ export class Daq {
     if (err) return { status: 500, data: { message: `Failed to configure acquisition (${err})` } }
     this.runBoards = this.boards.map(b => String(b.id))
     this.physics.clear()
-    this.lastTraces = {}
+    this.traceCache = {}
     this.running = true
     this.runSimStart = this.simT
     this.lastDataT = this.simT
@@ -896,7 +916,7 @@ export class Daq {
   resetAcquisition(): boolean {
     if (this.running) this.stopRun()
     this.runBoards = null
-    this.lastTraces = {}
+    this.traceCache = {}
     return true
   }
 
@@ -1032,24 +1052,6 @@ export class Daq {
       name: `psd_b${idx}_ch${ch}`, title: this.spectrumTitle('psd', b, ch),
       xmin: cal ? off : 0, xmax: cal ? off + slope * PSD_XBINS : QLONG_MAX, ymin: 0, ymax: 1, rebinX: 16,
     })
-  }
-
-  waveform(kind: 'wave1' | 'wave2' | 'probe1' | 'probe2', boardId: string, channel: string): RootJson {
-    const b = this.board(boardId)
-    const ch = parseInt(channel, 10)
-    if (!this.runBoards) return emptyTH1F('No data yet — start a run')
-    const idx = this.boardIndex(boardId)
-    if (idx === null || !b) return emptyTH1F('This board is not part of the current run')
-    if (kind === 'wave2') return emptyTH1F('Trace 2 is not available')
-    if (kind !== 'wave1') return emptyTH1F(`No counts yet on channel ${ch}`)
-    const key = `${boardId}:${ch}`
-    let trace = this.lastTraces[key] ?? null
-    if (this.running && this.waveformsOn(b) && Number.isFinite(ch)) {
-      trace = this.physics.waveform(ch)
-      this.lastTraces[key] = trace
-    }
-    if (!trace || !trace.length) return emptyTH1F('No waveform — switch waveforms on for this board')
-    return waveformTH1F(trace, { name: `wave1_b${idx}_ch${ch}`, title: this.spectrumTitle('wave1', b, ch) })
   }
 
   calibration(b: BoardCfg, ch: number): [number, number] {

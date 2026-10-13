@@ -2,6 +2,7 @@
  * Test helpers: a BoardView over WebDAQ's test-mode register defaults
  * (server/app/utils/board_defaults.py), and the engine with its data loaded from disk.
  */
+import '../../sim/physics/traces' // registers the trace synthesis (a lazy chunk in the demo)
 import { readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'

@@ -113,8 +113,12 @@ fetch('/api/server-control' | '/api/cache') → shim/fetch-shim.ts ────�
   written every 5 s and before any change is acknowledged.
 * The worker is an ES module, split by esbuild: the first chunk holds the router,
   the DAQ state machine, the handler families every page polls, and the physics.
-  The Logbook (`/data/…`) and ELOG/Grafana families, `lines.json` and each
-  detector's response table are chunks loaded when first needed.
+  The Logbook (`/data/…`), ELOG/Grafana, notification-settings and trace
+  (`/waveforms/<trace>/<board>/<ch>`) families, `lines.json` and each detector's
+  response table are chunks loaded when first needed.
+* `Daq.advance()` has a time budget (200 ms of wall time per call): if the ticks
+  cost more than real time, the rest of the gap is taken in one longer step, so the
+  server keeps answering and the simulation degrades instead of falling behind.
 * `window.__webdaqDemo` exposes `misses()`, `state()`, `control(cmd)`,
   `request(req)`, `onState(fn)`, `resetDemo()` and `log()` (the last 400
   changing requests and commands, which `tests/e2e/tour.py` prints when it
@@ -235,11 +239,49 @@ sizes) and the shell's `control({type:'files', run})` returns the bytes.
 First-load JS at WebDAQ 6929e28 (ui-refresh, "LUNADAQ"): start page 116.8 kB
 (budget 120), `/dashboard` 249.8 kB (budget 400; the refreshed dashboard loads its
 tabs lazily), other routes 117–267 kB; demo shell 8.0 kB (budget 25); worker first
-chunk 39.1 kB (budget 40), plus 12.4 kB of lazy chunks (Logbook and run files,
-ELOG and Grafana, notification settings); response table + line data 39 kB per
+chunk 39.7 kB (budget 40), plus 15.3 kB of lazy chunks (Logbook and run files,
+ELOG and Grafana, notification settings, traces); response table + line data 39 kB per
 detector; JSROOT needed to draw 297 kB (budget 360); zip 4.6 kB (budget 10);
 tour 11.2 kB (budget 20).
 `node scripts/size.mjs <export>` prints the table.
+
+## Traces and probes (sim/physics/traces.ts)
+
+One capture per request for trace 1 or 2: the pulse of the channel's last accepted
+event at the ADC, then what the firmware selected in Board Configuration (0x8000)
+shows, all from that one event; the probe requests that follow reuse it (up to 2 s
+of demo time), so the Tuner's overlay lines up.
+
+* DPP-PHA: trace 1 Input / RC-CR / RC-CR² / Trapezoid [13:12]; trace 2, with Dual
+  Trace [11], Input / Threshold (the trigger threshold on the RC-CR² scale) /
+  Trapezoid − Baseline / Baseline (the baseline-mean window, held from the pulse
+  until it has left the window) [15:14]; digital probe 1 [23:20]: Peaking (where the
+  energy is sampled, Peak Mean samples wide), Armed, Peak Run, Baseline Freeze, TRG
+  Hold-off, Zero Crossing Window; digital probe 2: Trigger.
+* DPP-PSD: trace 1 Input or CFD (fraction and delay from CFD Settings 0x1n3C), trace
+  2 with Dual Trace the baseline or the CFD [13:12]; the trigger is the leading edge
+  at the threshold, or the CFD zero crossing with Discrimination Mode (0x1n80[6]) on;
+  digital probes (with Enable Digital Probe [31]) Long Gate, Short Gate, Over
+  Threshold, Shaped TRG, TRG Hold-off, Baseline Freeze, PSD Cut High, Trigger.
+* Digital probes are 0/1 drawn on trace 1's scale (low at its baseline, high a
+  quarter of its span above; probe 2 a little lower), so they overlay it. What needs
+  coincidences, validation or a full memory stays low.
+* WebDAQ's server at the pin answers trace 2 and the probes with an empty histogram
+  (`utils/spy.py`: "Trace 2 is not available"); the demo is ahead of it, for the
+  Tuner redesign. The endpoints and response shapes are the server's.
+* The CFD shapes the CFD trace and the trigger time; it does not change the
+  simulated charges (an EJ-309 pulse rises in about 1 ns, so the gates hardly move).
+
+## Noise triggers inside the noise
+
+A threshold inside the noise (EJ-309 at 8 LSB: about 6 MHz of crossings per
+channel) is no longer drawn crossing by crossing. Above 500 per channel and tick,
+only the crossings the trigger hold-off lets through are generated (a renewal
+process), at most 500 of them; the rest are counted: offered rate, dead time,
+events the readout keeps or loses. The kept ones fill the spectra in bulk like the
+simulated noise events of that tick, so the counters and the spectra still agree.
+`tests/physics/tuner.test.ts` checks a tick stays cheap there, and that events,
+pile-up and saturation counts match what reaches the spectra.
 
 ## Known upstream behaviour the demo shows as it is
 
@@ -300,6 +342,8 @@ seed (no `Math.random`, no `Date.now`), no DOM, no imports from `shim/`.
   Both are declared illustrative in `lines.json`.
 * In-beam ¹⁴N(p,γ)¹⁵O: the thick-target yield times `yield_factor` (20 by
   default), declared in the Scenario panel and in `metadata.json → Demo`.
+* A Peaking Time past the flat top samples the energy on the falling edge: the peak
+  moves down and broadens with the trigger jitter.
 * The tour's live FWHM fits a copy of channels 0 and 1 that counts only events
   taken with the present settings (it restarts at every change of the filter
   parameters) and stays silent below 400 counts in the peak, so a spectrum
