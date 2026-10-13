@@ -1,0 +1,43 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "dx-meta",
+ "type": "object",
+ "required": [
+  "schema",
+  "schema_version",
+  "generated",
+  "schemas",
+  "exfor",
+  "masses",
+  "scope",
+  "counts",
+  "files",
+  "flags"
+ ],
+ "properties": {
+  "schema": {
+   "const": "dx-meta"
+  },
+  "exfor": {
+   "type": "object",
+   "required": [
+    "commit",
+    "snapshot_date",
+    "license",
+    "line",
+    "citation",
+    "entry_url",
+    "master_url"
+   ]
+  },
+  "ensdf": {
+   "type": "object",
+   "required": [
+    "archive_date",
+    "source",
+    "citation",
+    "xundl"
+   ]
+  }
+ }
+}

@@ -1,0 +1,91 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "dx-exfor-index",
+ "type": "object",
+ "required": [
+  "schema",
+  "schema_version",
+  "generated",
+  "snapshot",
+  "reactions",
+  "strings",
+  "columns",
+  "datasets"
+ ],
+ "properties": {
+  "schema": {
+   "const": "dx-exfor-index"
+  },
+  "schema_version": {
+   "const": 1
+  },
+  "snapshot": {
+   "type": "object",
+   "required": [
+    "commit",
+    "date"
+   ]
+  },
+  "reactions": {
+   "type": "object",
+   "required": [
+    "key",
+    "slug",
+    "n",
+    "atlas"
+   ]
+  },
+  "strings": {
+   "type": "object",
+   "required": [
+    "quantities",
+    "authors",
+    "institutes",
+    "facilities"
+   ]
+  },
+  "columns": {
+   "type": "array",
+   "items": {
+    "enum": [
+     "id",
+     "r",
+     "q",
+     "qs",
+     "fr",
+     "e0",
+     "e1",
+     "k0",
+     "k1",
+     "n",
+     "y",
+     "a",
+     "i",
+     "fa",
+     "f",
+     "er",
+     "lv",
+     "s",
+     "u"
+    ]
+   }
+  },
+  "datasets": {
+   "type": "object",
+   "required": [
+    "id",
+    "r",
+    "q",
+    "e0",
+    "e1",
+    "n",
+    "y",
+    "f",
+    "s"
+   ],
+   "additionalProperties": {
+    "type": "array"
+   }
+  }
+ }
+}
