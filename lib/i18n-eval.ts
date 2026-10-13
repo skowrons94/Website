@@ -26,10 +26,10 @@ const en = {
     eyebrow: "Running on AZURE2",
     title: "R-matrix evaluations",
     introBefore:
-      "Each of these is a multi-level, multi-channel R-matrix fit. Open one to see its level scheme and the data it was fitted to, then move a level energy or a reduced width and watch the cross section and the χ² respond — the calculation is the real AZURE2 code, not an approximation. Every evaluation can also be downloaded as an ",
+      "Each of these is a multi-level, multi-channel R-matrix fit. Open one to see its level scheme and the data it was fitted to, then move a level energy or a reduced width and see the cross section and the χ² change — the calculation is AZURE2 itself, not an approximation. Every evaluation can also be downloaded as an ",
     introAfter: " project and run locally.",
     loading: "Loading evaluations…",
-    loadFailed: "Failed to load evaluations",
+    loadFailed: "The evaluations could not be loaded.",
     serverDown: "The evaluation server is not available right now",
     serverDownText:
       "The list of evaluations comes from the server that runs AZURE2, and it did not answer. Try again in a moment; in the meantime the reaction atlas and the notes explain the physics behind these fits.",
@@ -67,7 +67,7 @@ const en = {
     engineText: "AZURE2, commit",
     fitted: "What was fitted",
     fittedText: (active: number, files: number, parts: string) =>
-      `${active} data segment${active === 1 ? "" : "s"} from ${files} data file${files === 1 ? "" : "s"}: ${parts}. The Plot & data tab overlays the model on the measurements, lets you move any free level, and lists every segment with its normalisation and χ² in its table.`,
+      `${active} data segment${active === 1 ? "" : "s"} from ${files} data file${files === 1 ? "" : "s"}: ${parts}. The Plot & data tab overlays the model on the measurements, lets you move any free level, and lists every segment with its normalization and χ² in its table.`,
     observableCount: (n: number, code: string) => {
       const names: Record<string, [string, string]> = {
         "angle-integrated": ["angle-integrated cross section", "angle-integrated cross sections"],
@@ -77,7 +77,7 @@ const en = {
         "phase-shift": ["phase shift", "phase shifts"],
         "angle-integrated-E1": ["E1 cross section", "E1 cross sections"],
         "angle-integrated-E2": ["E2 cross section", "E2 cross sections"],
-        "analyzing-power": ["analysing power", "analysing powers"],
+        "analyzing-power": ["analyzing power", "analyzing powers"],
       }
       const [one, many] = names[code] ?? [code, code]
       return `${n} ${n === 1 ? one : many}`
@@ -133,7 +133,7 @@ const en = {
     clear: "Clear",
     shownOf: (n: number, of: number) => `${n} of ${of} levels`,
     levels: "Levels",
-    selectRow: "Select a row to show its channels.",
+    selectRow: "Choose a row to show its channels.",
     energyMeV: "Energy (MeV)",
     energy: "Energy",
     channels: "Channels",
@@ -183,8 +183,8 @@ const en = {
     calculating: "calculating",
     facets: (n: number, limit: number, what: "datasets" | "series") =>
       `Showing ${n} ${what} as small multiples — beyond ${limit} overlaid series the colors are no longer reliably distinguishable.`,
-    selectDataset: "Select a dataset to plot.",
-    selectExtrap: "Select an extrapolation to plot.",
+    selectDataset: "Choose a dataset to plot.",
+    selectExtrap: "Choose an extrapolation to plot.",
     energyAxis: "Energy, c.m. (MeV)",
     datasets: "Datasets",
     off: "off",
@@ -227,10 +227,10 @@ const en = {
     chi2Total: (chi2: string, points: number, perPoint: string) =>
       `Total χ² = ${chi2} for ${points} points (χ²/N = ${perPoint}).`,
     chi2Explain:
-      "χ² is the data term at the shipped parameters and normalisations, computed exactly as AZURE2 does (the normalisation scales data and error together). Large values are reported as they are.",
-    penaltyText: (v: string) => ` AZURE2's normalisation prior adds ${v}.`,
+      "χ² is the data term at the shipped parameters and normalizations, computed exactly as AZURE2 does (the normalization scales data and error together). Large values are reported as they are.",
+    penaltyText: (v: string) => ` AZURE2's normalization prior adds ${v}.`,
     normSummary: (free: number, constrained: number, fixed: number) =>
-      `Normalisations: ${free} free in the fit (${constrained} with a stated systematic uncertainty, ${free - constrained} unconstrained), ${fixed} fixed.`,
+      `Normalizations: ${free} free in the fit (${constrained} with a stated systematic uncertainty, ${free - constrained} unconstrained), ${fixed} fixed.`,
     normFixed: "fixed",
     normFreeSigma: (sigma: string) => `free, σ = ${sigma}%`,
     normFreeNone: "free, no prior",
@@ -245,11 +245,11 @@ const en = {
     residuals: "Residuals",
     residualAxis: "(d − m)/σ",
     residualAria: (names: string) =>
-      `Residuals, (normalised data − model) / uncertainty, against centre-of-mass energy: ${names}.`,
+      `Residuals, (normalized data − model) / uncertainty, against centre-of-mass energy: ${names}.`,
     ratioRutherford: "σ / σ Rutherford",
     rutherfordNote:
       "Elastic dσ/dΩ divided by the Rutherford cross section (Mott for identical particles), in the centre of mass; other segments are shown as cross sections.",
-    fineLoading: "Calculating the model on a fine energy grid… the line through the points is shown meanwhile.",
+    fineLoading: "Calculating the model on a fine energy grid… until then, the line through the points is shown.",
     finePointwise: (names: string) =>
       `Model shown at the measured energies only, joined by straight lines: ${names}. For these segments a calculation on an energy grid of their own does not reproduce AZURE2's values at the data (or they have no single angle or energy range), so no smooth curve is drawn.`,
     sZero: (energy: string) => `S at ${energy}`,
@@ -263,7 +263,7 @@ const en = {
     // --- evaluations (round 3) ---
     tipData: "data × n",
     keyLabel: "Key",
-    keyText: "Points: measured data × their normalisation n, with ±1σ error bars. Solid line: the R-matrix model.",
+    keyText: "Points: measured data × their normalization n, with ±1σ error bars. Solid line: the R-matrix model.",
     keyOriginal: "Dashed grey line: the fit as published, before your changes.",
     zoomHint: "Drag across the plot to zoom in; double-click to reset.",
     resetZoom: "Reset zoom",
@@ -278,7 +278,7 @@ const en = {
     undo: "Undo",
     redo: "Redo",
     angleAxis: "Angle θ, c.m. (°)",
-    tableDrawer: (n: number) => `Table of all ${n} datasets: references, normalisations, χ²`,
+    tableDrawer: (n: number) => `Table of all ${n} datasets: references, normalizations, χ²`,
     plotColumn: "Plot",
     plotThis: (name: string) => `Plot ${name}`,
     copyLink: "Copy link",
@@ -306,14 +306,14 @@ const en = {
     extend: "Extend beyond data",
     extendHint: "Draw the model below and above the measured energies (dashed), and widen the energy axis to show it",
     keyBeyond: "Dashed: the same model beyond the energies of the shown data, where it is an extrapolation.",
-    fineUpdating: "Updating the smooth curve for your change… the previous one is shown faded meanwhile.",
+    fineUpdating: "Updating the smooth curve for your change… until then, the previous one is shown faded.",
     resetAll: "Reset all",
     resetAllHint: "Back to the evaluation's own parameters (every level)",
     view: "View",
     chi2Plain:
-      "χ²/N near 1 means the line passes through the points within their error bars; above 1 it misses some of them by more, often because of normalisations and systematic effects that the error bars leave out.",
+      "χ²/N near 1 means the line passes through the points within their error bars; above 1 it misses some of them by more, often because of normalizations and systematic effects that the error bars leave out.",
     chi2NormNote: (allOne: boolean) =>
-      `This page does not refit the normalisations: they stay at the values stored in the file${allOne ? " (n = 1 for every dataset)" : ""}, and the χ² shown counts only each point's own uncertainty, not a dataset's overall scale uncertainty.`,
+      `This page does not refit the normalizations: they stay at the values stored in the file${allOne ? " (n = 1 for every dataset)" : ""}, and the χ² shown counts only each point's own uncertainty, not a dataset's overall scale uncertainty.`,
     chi2AllSummary: "χ² for all the data in the fit",
     chi2AllText: (v: string) => `χ²/N = ${v} over every active dataset (per dataset in the table below).`,
     elapsed: (s: string) => `${s} s`,
@@ -352,7 +352,7 @@ const en = {
     moreAbove: (n: number) => `${n} more above`,
     moreBelow: (n: number) => `${n} more below`,
     crowded: "Crowded: drag along the axis to zoom in.",
-    prompt: "Select a level to see its widths and channels.",
+    prompt: "Choose a level to see its widths and channels.",
     width: "Γ",
     noWidth: "no partial widths (bound in every particle channel)",
     anc: "ANC",
@@ -406,14 +406,14 @@ const en = {
       extrap: "Calculating the extrapolations…",
     } as Record<"open" | "edit" | "data" | "fine" | "extrap", string>,
     stagePreparing: "Getting the model ready…",
-    firstChange: "First change on this model: the server is still preparing it. Later changes are much quicker.",
+    firstChange: "First change on this model: it is still being prepared. Later changes are much quicker.",
     seconds: (n: string) => `${n} s`,
     minutes: (n: string) => `${n} min`,
     elapsedLong: (t: string) => `${t} so far`,
     left: (t: string) => `about ${t} left`,
     longer: "taking longer than usual",
     busy: (n: string) => `The server is busy. Trying again in ${n} s…`,
-    extrapStale: "Shown meanwhile, faded: the extrapolations before your change.",
+    extrapStale: "Faded: the extrapolations from before your change, shown until the new ones are ready.",
     previewNote: "The published fit is shown while the calculation starts; a change you make now is sent as soon as it is ready.",
     skipToLevels: "Skip to the levels",
     skipToPlot: "Back to the plot",
@@ -448,7 +448,7 @@ const en = {
     worse: "much worse",
     better: "much better",
     sharing: "the server is preparing other models too",
-    noSpare: "First change on this model: it is still being prepared for you. Later changes are much quicker.",
+    noSpare: "First change on this model: it is still being prepared. Later changes are much quicker.",
     publishedShown: "Published curves shown, faded; yours appear when ready.",
     gridSummaryOne: (ne: number, e0: string, e1: string, a: string) => `${ne} energies (${e0}–${e1} MeV) at ${a}°`,
   },
@@ -460,8 +460,8 @@ const en = {
     coldOpen: "No copy of this model was ready in advance: starting one takes a little longer.",
     firstCurve: "First smooth curve on this model: it is still being prepared. Later ones are much quicker.",
     firstExtrap: "First extrapolations on this model: they are still being prepared. Later ones are much quicker.",
-    curveSoon: (s: string) => `Smooth curve ready in about ${s} s; the line through the points is shown meanwhile.`,
-    curveAlmost: "Smooth curve almost ready; the line through the points is shown meanwhile.",
+    curveSoon: (s: string) => `Smooth curve ready in about ${s} s; until then, the line through the points is shown.`,
+    curveAlmost: "Smooth curve almost ready; until then, the line through the points is shown.",
     chi2Settled: (v: string) => `χ²/N of the shown datasets: ${v}.`,
     chi2AllDiffers: "on all data:",
     chi2Published: "the published fit; see why it is above 1",
