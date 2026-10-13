@@ -173,7 +173,7 @@ function BodyIt({ email, name, to }: { email: string; name: string; to: (p: stri
           <p>
             Questa copia del sito è ospitata su GitHub Pages e calcola le valutazioni R-matrix nel tuo browser, quindi
             nessun mio server vede la tua visita. GitHub, come ogni servizio di hosting, riceve il tuo indirizzo IP e le
-            pagine richieste; si veda la{" "}
+            pagine richieste; vedi la{" "}
             <a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement" className={A} hrefLang="en">
               GitHub General Privacy Statement
             </a>
@@ -209,7 +209,7 @@ function BodyIt({ email, name, to }: { email: string; name: string; to: (p: stri
               interesse a gestire il sito in sicurezza (art. 6, par. 1, lett. f, GDPR).
             </p>
             <p>
-              Quando apri una valutazione, il server avvia un calcolo per te e lo tiene in memoria finché la pagina è
+              Quando apri una valutazione, il server avvia un calcolo riservato alla tua visita e lo tiene in memoria finché la pagina è
               aperta; viene chiuso, con i parametri che hai provato, poco dopo che te ne vai. Per evitare che un solo
               visitatore occupi tutta la capacità di calcolo, il server conta inoltre, solo in memoria, quanti calcoli ha
               aperti ciascun indirizzo; questi conteggi non vengono mai scritti e si perdono nel giro di minuti.
@@ -250,10 +250,10 @@ function BodyIt({ email, name, to }: { email: string; name: string; to: (p: stri
           <a href={`mailto:${email}`} className={A}>
             {email}
           </a>
-          ; puoi anche rivolgerti all&apos;autorità per la protezione dei dati del tuo paese (in Italia, il Garante). Come è stato fatto il sito è spiegato
+          ; puoi anche rivolgerti all&apos;autorità per la protezione dei dati del tuo paese (in Italia, il Garante). Come è stato realizzato il sito è spiegato
           nella pagina{" "}
           <Link href={to("/about")} className={A}>
-            informazioni sul sito
+            Informazioni sul sito
           </Link>
           .
         </p>
