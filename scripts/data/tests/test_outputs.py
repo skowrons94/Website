@@ -106,7 +106,8 @@ def test_attribution():
     meta = load("meta.json")
     ex = meta["exfor"]
     assert ex["license"] == "CC BY 4.0" and ex["commit"] == config.sources()["exfor_master"]["commit"]
-    assert ex["line"] == f"Data: EXFOR (IAEA/NRDC), snapshot {ex['snapshot_date']}, CC BY 4.0"
+    assert ex["line"] == "Data: EXFOR (IAEA/NRDC), snapshot of 28 September 2026, CC BY 4.0"
+    assert ex["line_it"] == "Dati: EXFOR (IAEA/NRDC), versione del 28 settembre 2026, CC BY 4.0"
     assert "Nucl. Data Sheets 120, 272 (2014)" in ex["citation"]
     assert ex["entry_url"].format(entry="O1195") == "https://nds.iaea.org/EXFOR/O1195"
     assert ex["master_url"].format(commit=ex["commit"], dir="O11", entry="O1195").endswith(

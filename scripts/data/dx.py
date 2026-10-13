@@ -8,6 +8,7 @@
     python scripts/data/dx.py export ID[,ID...] --format azure2|csv|json|bibtex --out DIR
     python scripts/data/dx.py dictionary LATEST_JSON   refresh the vendored EXFOR dictionary subset
     python scripts/data/dx.py check                    schema and size-budget checks of public/data
+    python scripts/data/dx.py nrdc-report              write scripts/data/nrdc-report.md from corrections.yaml
 """
 
 import os
@@ -43,6 +44,11 @@ def main(argv):
         subset = dictionary.build_subset(rest[0], commit)
         with open(config.DICTIONARY_SUBSET, "w") as f:
             json.dump(subset, f, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
+    elif cmd == "nrdc-report":
+        from nucdata import corrections
+        with open(corrections.REPORT, "w") as f:
+            f.write(corrections.report())
+        print(corrections.REPORT)
     elif cmd == "check":
         from nucdata import check
         return check.run(rest)

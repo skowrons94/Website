@@ -19,7 +19,7 @@ import re
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple
 
-from . import dictionary, masses
+from . import corrections, dictionary, masses, measured
 from .x4 import Entry, Item, Primitive, Subentry, Table, is_complex, number, primitives
 
 # -- particles -----------------------------------------------------------
@@ -387,6 +387,20 @@ def _flag_texts(items: List[Item]) -> Dict[float, str]:
     return out
 
 
+# -- indirect methods ------------------------------------------------------
+
+# ANALYSIS codes (EXFOR dictionary 23) of an indirect method.
+INDIRECT_CODES = {"TROJA", "ANC", "SURGT"}
+# Free text of METHOD and ANALYSIS naming one.
+INDIRECT_TEXT = re.compile(r"trojan|\bTHM\b|coulomb (dissociation|break-?up)|asymptotic normali[sz]ation|\bANCs?\b|surrogate",
+                           re.I)
+# Titles: only the unambiguous names. A title that mentions an ANC alone is
+# not enough (Burtebaev 2008, A0819, a direct 12C(p,g) measurement, derives
+# one from its data); an ANC analysis is coded (ANALYSIS ANC, SF9 DERIV).
+INDIRECT_TITLE = re.compile(r"trojan|\bTHM\b|coulomb (dissociation|break-?up)|\bindirect\b|(via|through|from) the asymptotic normali[sz]ation",
+                            re.I)
+
+
 # -- the dataset ----------------------------------------------------------
 
 @dataclass
@@ -442,6 +456,11 @@ def build(entry: Entry, sub: Subentry, item: Item, update: Optional[Tuple[str, i
 
     tables = [(first.common if first else None, True), (sub.common, True), (sub.data, False)]
     cols = _columns(tables, pointer)
+    sid = f"{entry.id}.{sub.number}" + (f".{pointer}" if pointer else "")
+    # Curated corrections (scripts/data/corrections.yaml), before anything reads a column.
+    corrected = corrections.apply(cols, corrections.for_dataset(sid))
+    if corrected:
+        flags.add("corrected")
     nrows = len(sub.data.rows) if sub.data else (1 if sub.common else 0)
 
     # -- kinematics ------------------------------------------------------
@@ -459,6 +478,9 @@ def build(entry: Entry, sub: Subentry, item: Item, update: Optional[Tuple[str, i
             vals, unit, fam = _scaled(cols[name])
             if fam == "E":
                 E, frame, e_unit_src = vals, fr, name
+                was = getattr(cols[name], "renamed_from", None)
+                if was:
+                    e_unit_src = f"{was} (read as {name}: scripts/data/corrections.yaml)"
                 break
     if frame is None:
         for lo, hi, fr in E_RANGE:
@@ -748,7 +770,25 @@ def build(entry: Entry, sub: Subentry, item: Item, update: Optional[Tuple[str, i
         cZ, cA = tgt[0] + proj[1], tgt[1] + proj[0]
         compound = nuclide_label(cZ, cA)
 
-    sid = f"{entry.id}.{sub.number}" + (f".{pointer}" if pointer else "")
+    # Indirect methods (Trojan horse, Coulomb dissociation, ANC, surrogate):
+    # EXFOR's ANALYSIS and METHOD codes, their free text, and the title.
+    # The entry's (subentry 001) and the subentry's own items both count: a
+    # subentry's ANALYSIS replaces the entry's in `bib`, but the method of the
+    # experiment stays (La Cognata 2022, O2580: TROJA in 001, an average in .004).
+    ind_items = (bib.get("METHOD", []) + bib.get("ANALYSIS", [])
+                 + ((first.items("METHOD") + first.items("ANALYSIS")) if first else []))
+    analysis = _codes(bib.get("ANALYSIS", []))
+    ind_codes = set(_codes([i for i in ind_items if i.code]))
+    method_text = " ".join(i.free for i in ind_items)
+    if (ind_codes & INDIRECT_CODES or INDIRECT_TEXT.search(method_text)
+            or INDIRECT_TITLE.search(title)):
+        flags.add("indirect")
+
+    # The per-point half of "lowest measured" (nucdata/measured.py).
+    charged = bool(tgt and proj and tgt[0] > 0 and proj[1] > 0)
+    threshold = measured.threshold_mev(tgt, proj, p.process)
+    m_low = measured.lowest_by_sigma(points, charged, threshold, signed=qclass != "legendre")
+
     meta = {
         "id": sid,
         "entry": entry.id,
@@ -788,6 +828,10 @@ def build(entry: Entry, sub: Subentry, item: Item, update: Optional[Tuple[str, i
         "err_columns": err_where,
         "monitor": monitor,
         "flags": sorted(flags),
+        "corrections": corrected,
+        "analysis": analysis,
+        "threshold_cm": _round(threshold, 6) if threshold else 0.0,
+        "measured_min_cm": {f"{k}sigma": _round(v, 6) for k, v in zip(measured.SIGMAS, m_low)},
         "flag_texts": {f"{k:g}": v for k, v in flag_text.items()},
         "status": own_status,
         "superseded_by": superseded_by,
