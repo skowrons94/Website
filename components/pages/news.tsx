@@ -16,7 +16,7 @@ export const NEWS_TEXT = {
   en: {
     title: "News",
     description: "What is new on the site: new pages, tools and data, newest first, with an Atom feed.",
-    lead: "What is new on the site, newest first. Each item links to the page it is about.",
+    lead: "What is new on the site, newest first. Each item links to the page it is about. For now the list holds updates to the site; research news will follow.",
     feed: "Atom feed",
     feedTitle: (name: string) => `${name} — news`,
     feedLead: "To follow it in a feed reader:",
@@ -28,7 +28,7 @@ export const NEWS_TEXT = {
   it: {
     title: "Novità",
     description: "Le novità del sito: nuove pagine, strumenti e dati, dalla più recente, con un feed Atom.",
-    lead: "Le novità del sito, dalla più recente. Ogni voce rimanda alla pagina di cui parla.",
+    lead: "Le novità del sito, dalla più recente. Ogni voce rimanda alla pagina di cui parla. Per ora l'elenco riporta gli aggiornamenti del sito; le notizie sulla ricerca arriveranno più avanti.",
     feed: "Feed Atom",
     feedTitle: (name: string) => `${name} — novità`,
     feedLead: "Per seguirle con un lettore di feed:",

@@ -952,7 +952,7 @@ const en = {
     resourcesTitle: "Resources for the community",
     resourcesLead: "Open, versioned and citable resources for anyone working on these reactions.",
     resourceAtlas: "Reaction atlas",
-    resourceAtlasText: (n: number) => `${n} reactions of stellar burning and the Big Bang, every measurement referenced, and the whole atlas downloadable as one JSON file.`,
+    resourceAtlasText: (n: number) => `${n} reactions of stellar burning and the Big Bang, the main measurements listed with their references, and the whole atlas downloadable as one JSON file.`,
     resourceSProcess: "The s-process",
     resourceSProcessText: "How stars make about half the nuclei heavier than iron, on the chart from iron to bismuth.",
     resourceSProcessMeta: "Part of the atlas, cited as the atlas",
