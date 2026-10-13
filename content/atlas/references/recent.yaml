@@ -305,7 +305,7 @@ deboer2025:
   year: 2025
   doi: 10.1103/frgb-j5c3
   arxiv: "2505.04995"
-  checked: APS abstract page, arXiv 2505.04995, TU Dresden record and RODARE data record 3977, by web search (published 20 August 2025; time-of-flight transmission at nELBE, HZDR; only one earlier high-sensitivity total cross section; good agreement with earlier data except at the lowest resonance, E_n = 433 keV; ¹⁴N(n,p) matters as an s-process neutron poison and for estimates of fission yields from atmospheric weapons tests), 2026-10-13
+  checked: APS abstract page, arXiv 2505.04995, TU Dresden record and RODARE data record 3977, by web search (published 20 August 2025; time-of-flight transmission at nELBE, HZDR; only one earlier high-sensitivity total cross section; good agreement with earlier data except at the lowest resonance, E_n = 433 keV; ¹⁴N(n,p) matters as an s-process neutron poison and for estimates of the "yields of atmospheric nuclear weapon testing", in the abstract's words; the abstract does not say fission, r16 fact-check), 2026-10-13
 
 wang2023:
   authors: L. H. Wang, J. Su et al. (JUNA Collaboration)
