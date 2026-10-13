@@ -24,6 +24,7 @@ import { compiled } from "@/lib/rates/run"
 import type { Network } from "@/lib/rates/schema"
 import { lifetimes } from "@/lib/rates/solver"
 import { duration } from "@/components/rates/format"
+import { compoundNuclei } from "@/lib/data/build"
 import { windowReach } from "@/lib/data/gap"
 import { newerThanExfor, type Newer } from "@/lib/data/newer"
 
@@ -451,7 +452,8 @@ export interface ElementEntry {
 export function elementIndex(lang: Lang): ElementEntry[] {
   const atlas = getAtlas(lang)
   const summary = getSummary()
-  const ensdf = ensdfNuclides()
+  // Only compound nuclei have a /data/nucleus page (dataNucleusParams).
+  const pages = compoundNuclei(lang)
   const isotopes = new Map<string, ElementIsotope & { Z: number; A: number }>()
   const iso = (n: { code: string; A: number; Z: number }) => {
     let e = isotopes.get(n.code)
@@ -462,7 +464,7 @@ export function elementIndex(lang: Lang): ElementEntry[] {
         A: n.A,
         label: nuclideLabel(n.A, n.Z),
         plain: particleName(n, lang) as string,
-        file: ensdf.has(n.code) ? nucleusPath(n.code) : null,
+        file: pages.has(n.code) ? nucleusPath(n.code) : null,
         reactions: [],
       }
       isotopes.set(n.code, e)

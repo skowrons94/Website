@@ -8,13 +8,13 @@ import { GapMap } from "@/components/data/gap-overview"
 import { NucleusTeaser } from "@/components/data/nucleus-teaser"
 import { StatusChart } from "@/components/data/status-chart"
 import { getAtlas } from "@/lib/atlas"
+import { compoundNuclei } from "@/lib/data/build"
 import { particleName } from "@/lib/atlas-core.mjs"
 import { formatDate } from "@/lib/atlas-format"
 import { dataPublicDict } from "@/lib/data/i18n-public"
 import {
   elementIndex,
   energy,
-  ensdfNuclides,
   gapRows,
   getSummary,
   group,
@@ -62,12 +62,13 @@ export function DataExplorerPage({ lang }: { lang: Lang }) {
   const snapshot = summary.snapshot.date ? formatDate(summary.snapshot.date, lang) : ""
   const ensdfDate = summary.ensdf.archive_date ? formatDate(summary.ensdf.archive_date, lang) : ""
 
-  // Nuclei worth opening: what the key reactions make, where ENSDF is here.
-  const ensdf = ensdfNuclides()
+  // Nuclei worth opening: what the key reactions make, where a nucleus page
+  // exists (compound nuclei with ENSDF levels, as dataNucleusParams builds).
+  const pages = compoundNuclei(lang)
   const nuclei = [
     ...new Map(
       atlas.reactions
-        .filter((r) => r.importance === "key" && r.kind !== "decay" && r.to && ensdf.has(r.to.code))
+        .filter((r) => r.importance === "key" && r.kind !== "decay" && r.to && pages.has(r.to.code))
         .map((r) => [r.to!.code, r.to!] as const),
     ).values(),
   ].sort((a, b) => a.Z - b.Z || a.A - b.A)
