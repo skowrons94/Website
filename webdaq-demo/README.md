@@ -40,6 +40,9 @@ python3 tests/e2e/tour.py ../public/webdaq-demo /webdaq-demo --start /   # the g
 python3 tests/contract/runtime.py ../public/webdaq-demo /webdaq-demo   # every route and tab in Chromium, and the
                                                      # scan → add → start → stop flow: no unmocked request,
                                                      # nothing outside the origin, no page error
+                                                     # (it waits for Next's RSC prefetches before each
+                                                     # page.goto; --rsc-delay 1.5 --no-settle reproduces
+                                                     # the aborted-prefetch race it guards against)
 npm run surface                                      # after a bump: rewrite api-surface.json, then copy its hash to pin.json
 ```
 

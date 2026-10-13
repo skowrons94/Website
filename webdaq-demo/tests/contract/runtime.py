@@ -10,6 +10,15 @@ Runtime contract check (design §2.4 iv) against an exported demo, in Chromium.
    is in the Logbook.
 3. The routes again, now with a board and a finished run.
 Prints a summary and exits 1 on any failure. Writes nothing.
+
+Next prefetches the RSC payload of every page the nav links to. A navigation the test
+makes (page.goto) while such prefetches are in flight aborts them, and Next logs
+"Failed to fetch RSC payload for … Falling back to browser navigation". So before
+every page.goto the test waits for the RSC requests in flight to finish; and if one is
+still aborted, that console error is accepted only for a payload whose request failed
+with net::ERR_ABORTED while the test's own navigation was under way. Any other RSC
+failure (a 404, a network error, a payload failing outside a navigation) fails.
+--rsc-delay holds every RSC response, to reproduce the race on demand.
 """
 import argparse
 import json
@@ -41,9 +50,11 @@ def main():
     ap.add_argument('--executable', default='/opt/pw-browsers/chromium')
     ap.add_argument('--wait', type=float, default=2.5)
     ap.add_argument('--screenshot', default='')
+    ap.add_argument('--rsc-delay', type=float, default=0.0, help='hold RSC payloads this long (reproduces in-flight prefetches)')
+    ap.add_argument('--no-settle', action='store_true', help='navigate without waiting for RSC prefetches (to check the abort handling)')
     a = ap.parse_args()
     base = a.base.rstrip('/')
-    srv = serve(a.out, base)
+    srv = serve(a.out, base, rsc_delay=a.rsc_delay)
     origin = f'http://127.0.0.1:{srv.server_address[1]}'
     failures = []
     report = {}
@@ -58,13 +69,15 @@ def main():
         all404 = []
         page.on('response', lambda r: (seen['notfound'].append(r.url), all404.append(r.url)) if r.status >= 400 and r.url.startswith(origin) else None)
         page.on('pageerror', lambda e: seen['errors'].append(f'pageerror: {e}') if not any(x in str(e) for x in ALLOWED_CONSOLE) else None)
-        page.on('console', lambda m: seen['errors'].append(f'console: {m.text}') if m.type == 'error' and not any(x in m.text for x in ALLOWED_CONSOLE) else None)
+        rsc = RscWatch(page, origin, report, settle=not a.no_settle)
+        page.on('console', lambda m: seen['errors'].append(f'console: {m.text}') if m.type == 'error' and not any(x in m.text for x in ALLOWED_CONSOLE) and not rsc.aborted_by_us(m.text) else None)
+        page.goto_settled = rsc.goto
 
         def visit(route, label):
             seen['errors'].clear()
             seen['notfound'].clear()
             t0 = time.time()
-            page.goto(origin + base + route + ('&' if '?' in route else '?') + 'seed=1234')
+            page.goto_settled(origin + base + route + ('&' if '?' in route else '?') + 'seed=1234')
             page.wait_for_timeout(int(a.wait * 1000))
             misses = page.evaluate('window.__webdaqDemo ? window.__webdaqDemo.misses() : null')
             ok = misses == [] and not seen['errors']
@@ -95,6 +108,8 @@ def main():
         for r in ROUTES[1:]:
             visit(r, 'with-run')
 
+        if rsc.genuine:
+            failures.append(f'RSC payloads failed (not aborted by the test): {rsc.genuine[:5]}')
         if seen['outside']:
             failures.append(f'requests left the origin: {sorted(set(seen["outside"]))[:5]}')
         bad = [u for u in seen['notfound'] if '/_next/' in u or '/jsroot/' in u or '/demo/' in u]
@@ -112,17 +127,73 @@ def main():
     print(f'\nruntime contract OK: {len(ROUTES)} routes empty + flow + {len(ROUTES) - 1} routes with a run, no unmocked request, nothing outside the origin')
 
 
+class RscWatch:
+    """RSC requests in flight, and those the test's own navigations aborted."""
+
+    def __init__(self, page, origin, report, settle=True):
+        self.page, self.origin, self.settle = page, origin, settle
+        self.inflight = set()
+        self.navigating = False
+        self.aborted = set()        # page paths whose payload our navigation aborted
+        self.genuine = []           # RSC requests that failed for any other reason
+        self.report = report
+        page.on('request', lambda r: self.inflight.add(r) if self.is_rsc(r) else None)
+        page.on('requestfinished', lambda r: self.inflight.discard(r))
+        page.on('response', lambda r: self.genuine.append(f'{r.status} {r.url}') if self.is_rsc(r.request) and r.status >= 400 else None)
+        page.on('requestfailed', self.failed)
+
+    @staticmethod
+    def is_rsc(r):
+        return '_rsc=' in r.url or r.headers.get('rsc') == '1'
+
+    def page_path(self, url):
+        """…/settings/index.txt?_rsc=x and …/settings/ (or …/settings) are the same page."""
+        p = url.split('?', 1)[0].split('#', 1)[0]
+        if p.startswith(self.origin):
+            p = p[len(self.origin):]
+        if p.endswith('index.txt'):
+            p = p[:-len('index.txt')]
+        return p.rstrip('/') + '/'
+
+    def failed(self, r):
+        self.inflight.discard(r)
+        if not self.is_rsc(r):
+            return
+        if self.navigating and r.failure == 'net::ERR_ABORTED':
+            self.aborted.add(self.page_path(r.url))
+        else:
+            self.genuine.append(f'{r.failure} {r.url}')
+
+    def aborted_by_us(self, text):
+        m = re.search(r'Failed to fetch RSC payload for (\S+?)\.? Falling back', text)
+        if not m or self.page_path(m.group(1)) not in self.aborted:
+            return False
+        self.report['RSC prefetches aborted by the test\'s navigation'] = self.report.get('RSC prefetches aborted by the test\'s navigation', 0) + 1
+        return True
+
+    def goto(self, url):
+        # let the prefetches of the current page finish first (they are why it races)
+        deadline = time.time() + 10
+        while self.settle and self.inflight and time.time() < deadline:
+            self.page.wait_for_timeout(50)
+        self.navigating = True
+        try:
+            return self.page.goto(url)
+        finally:
+            self.navigating = False
+
+
 def flow(page, origin, base, a, seen, report, failures):
     if True:
-        page.goto(origin + base + '/?seed=1234')
+        page.goto_settled(origin + base + '/?seed=1234')
         page.get_by_role('button', name='Open WebDAQ').click()
         page.wait_for_url('**/dashboard/**')
-        page.goto(origin + base + '/board/')
+        page.goto_settled(origin + base + '/board/')
         page.get_by_role('button', name='Scan for boards').click()
         page.get_by_role('button', name='Use these settings').first.click(timeout=15000)
         page.get_by_role('button', name='Add Board').click()
         page.wait_for_function('() => window.__webdaqDemo.state() && window.__webdaqDemo.state().boards.length === 1', timeout=10000)
-        page.goto(origin + base + '/dashboard/')
+        page.goto_settled(origin + base + '/dashboard/')
         page.wait_for_timeout(1500)
         page.get_by_role('button', name='Start Run').click()
         page.wait_for_function('() => window.__webdaqDemo.state() && window.__webdaqDemo.state().running === true', timeout=10000)
@@ -138,7 +209,7 @@ def flow(page, origin, base, a, seen, report, failures):
             failures.append(f'spectrum did not fill: {counts}')
         page.get_by_role('tab', name='Histograms').click()
         page.wait_for_timeout(4000)
-        page.goto(origin + base + '/dashboard/?tab=overview')
+        page.goto_settled(origin + base + '/dashboard/?tab=overview')
         page.wait_for_timeout(2000)
         # Stop Run asks first (WebDAQ's shared ConfirmAction). Cancel must leave
         # the run going; the dialog's own "Stop run N" button stops it.
@@ -162,7 +233,7 @@ def flow(page, origin, base, a, seen, report, failures):
             failures.append(f'flow: unmocked {flow_misses}')
         if seen['errors']:
             failures.append(f'flow: {seen["errors"][:3]} {seen["notfound"][:5]}')
-        page.goto(origin + base + '/logbook/1/')
+        page.goto_settled(origin + base + '/logbook/1/')
         page.wait_for_timeout(2500)
         text = page.inner_text('body')
         if 'Run 1' not in text and 'run 1' not in text.lower():

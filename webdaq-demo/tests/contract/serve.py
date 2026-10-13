@@ -1,8 +1,10 @@
 """Serve an exported demo under its base path (as GitHub Pages / Caddy would): python serve.py <out> <base> <port>."""
-import functools, http.server, os, sys, threading
+import functools, http.server, os, sys, threading, time
 
 
-def serve(out: str, base: str, port: int = 0):
+def serve(out: str, base: str, port: int = 0, rsc_delay: float = 0.0):
+    """rsc_delay: seconds to hold every RSC payload (?_rsc=) before answering, as a slow
+    or loaded machine would; tests use it to reproduce prefetches still in flight."""
     base = base.rstrip('/')
 
     class H(http.server.SimpleHTTPRequestHandler):
@@ -19,6 +21,8 @@ def serve(out: str, base: str, port: int = 0):
                 self.send_response(204)
                 self.end_headers()
                 return
+            if rsc_delay and '_rsc=' in self.path:
+                time.sleep(rsc_delay)
             return super().do_GET()
 
         def translate_path(self, path):
