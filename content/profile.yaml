@@ -70,7 +70,7 @@ recognition:
     label: Spokesperson
     label_it: Portavoce
     what: AGATA lifetime measurement in ¹⁵O
-    what_it: Misura di vita media nell'¹⁵O con AGATA
+    what_it: Misura di vita media nel ¹⁵O con AGATA
   - source: research/luna
     label: Working Group Leader
     label_it: Coordinatore di gruppo di lavoro

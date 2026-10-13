@@ -134,7 +134,7 @@ threads:
 
   - id: agata
     title: AGATA — a sub-femtosecond lifetime in ¹⁵O
-    title_it: AGATA — una vita media sotto il femtosecondo nell'¹⁵O
+    title_it: AGATA — una vita media sotto il femtosecondo nel ¹⁵O
     venue: Laboratori Nazionali di Legnaro, INFN
     period: 2023–present
     period_it: 2023 — oggi
@@ -163,7 +163,7 @@ threads:
         review at Nature Physics.
     body_it:
       - >-
-        Lo stato a 6,79 MeV dell'¹⁵O si trova circa 0,5 MeV sotto la soglia
+        Lo stato a 6,79 MeV del ¹⁵O si trova circa 0,5 MeV sotto la soglia
         protonica e domina il comportamento a bassa energia di ¹⁴N(p,γ)¹⁵O, il
         passo più lento del ciclo CNO e quindi la reazione che ne fissa il ritmo
         e il flusso di neutrini CNO. La sua vita media entra direttamente in
@@ -310,7 +310,7 @@ outlook:
         AGATA, in laboratorio sotterraneo, e misure di polarizzazione, che
         danno alla R-matrix un'informazione indipendente dalla sezione d'urto.
         I punti di partenza sono le misure che già guido: ¹⁹F + p all'acceleratore
-        LUNA da 400 kV e la vita media dello stato a 6,79 MeV dell'¹⁵O,
+        LUNA da 400 kV e la vita media dello stato a 6,79 MeV del ¹⁵O,
         misurata con AGATA, che vincola il ritmo del ciclo CNO e il suo flusso di neutrini.
     - lead: Working across the whole experiment.
       lead_it: Versatilità.
