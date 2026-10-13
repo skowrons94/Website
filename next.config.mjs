@@ -46,7 +46,8 @@ const DEV = process.env.NODE_ENV === "development"
 
 function apiOrigin() {
   try {
-    const base = process.env.API_BASE
+    // the same default as `env.API_BASE` below: unset means a local API
+    const base = process.env.API_BASE === undefined ? "http://localhost:5001" : process.env.API_BASE
     return base && /^https?:/.test(base) ? new URL(base).origin : ""
   } catch {
     return ""
