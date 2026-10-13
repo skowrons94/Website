@@ -9,7 +9,7 @@ threads:
     title: LUNA — proton capture, deep underground
     title_it: LUNA — catture protoniche, in profondità sotto terra
     venue: Laboratori Nazionali del Gran Sasso, INFN
-    period: 2020 — present
+    period: 2020–present
     period_it: 2020 — oggi
     role: Working Group Leader (¹⁹F + p, since 2024) · DAQ Coordinator (since 2024)
     role_it: Coordinatore del gruppo di lavoro ¹⁹F + p (dal 2024) · Coordinatore DAQ (dal 2024)
@@ -34,10 +34,11 @@ threads:
         now lead the ¹⁹F + p working group at LUNA's 400 kV accelerator,
         underground at Gran Sasso.
       - >-
-        In parallel I am the collaboration's DAQ Coordinator: I designed and run
-        the acquisition and slow-control infrastructure of every campaign, and of
-        the MV machine at the Bellotti Ion Beam Facility (BIBF). It is what lets shifts be taken remotely,
-        which for an experiment under 1.4 km of rock is not a small thing.
+        I am also the collaboration's DAQ Coordinator: I designed and run the
+        data-acquisition and slow-control infrastructure of every campaign and of
+        the 3.5 MV machine at the Bellotti Ion Beam Facility (BIBF). It lets
+        shifts be taken remotely, which is no small thing for an experiment under
+        1.4 km of rock.
     body_it:
       - >-
         Le reazioni che bruciano idrogeno nel ciclo CNO hanno sezioni d'urto che
@@ -79,7 +80,7 @@ threads:
     title_it: AZURE2 — il codice R-matrix
     venue: Open source · used worldwide
     venue_it: Open source · usato in tutto il mondo
-    period: Jun 2025 — present
+    period: Jun 2025 – present
     period_it: giu 2025 — oggi
     role: Maintainer and Lead Developer
     role_it: Responsabile e sviluppatore principale
@@ -94,7 +95,7 @@ threads:
         AZURE2 is where a set of measured points becomes a cross section: a
         multi-level, multi-channel R-matrix model fitted to data across every
         channel that shares a compound nucleus, then extrapolated to the energies
-        that stellar burning actually samples. It is used across academia,
+        at which stars burn. It is used across academia,
         national laboratories and the IAEA.
       - >-
         Since taking over as maintainer I have worked on the parts that decide
@@ -102,11 +103,11 @@ threads:
         residual Jacobian computed inside the forward model, so a fit or an MCMC
         no longer pays a factor of a few hundred for finite differences; a
         tabulate-once reaction-rate integrator; polarization observables;
-        identical-particle scattering. Alongside that, the GUI, the documentation,
-        and support and training for the user community.
+        identical-particle scattering. I also look after the graphical interface
+        and the documentation, and support and train the user community.
       - >-
-        The evaluations section of this site runs that same code on real
-        analyses, published and not yet published.
+        The evaluations on this site run the same code on real analyses,
+        published and unpublished.
     body_it:
       - >-
         AZURE2 è il punto in cui un insieme di punti misurati diventa una sezione
@@ -135,7 +136,7 @@ threads:
     title: AGATA — a sub-femtosecond lifetime in ¹⁵O
     title_it: AGATA — una vita media sotto il femtosecondo nell'¹⁵O
     venue: Laboratori Nazionali di Legnaro, INFN
-    period: 2023 — present
+    period: 2023–present
     period_it: 2023 — oggi
     role: Spokesperson
     role_it: Portavoce
@@ -151,12 +152,12 @@ threads:
         and dominates the low-energy behaviour of ¹⁴N(p,γ)¹⁵O — the slowest step
         of the CNO cycle, and therefore the reaction that sets the cycle's rate
         and the CNO neutrino flux. Its lifetime enters that extrapolation
-        directly. It is below a femtosecond, and the published values disagree;
-        the position resolution of a γ-ray tracking array is what makes a
-        Doppler-shift measurement of it precise.
+        directly. The lifetime is shorter than a femtosecond and the published
+        values disagree; a γ-ray tracking array has the position resolution to
+        measure it precisely from the Doppler shift.
       - >-
-        I am spokesperson of the measurement performed with AGATA at Legnaro, and
-        led the full analysis pipeline: Doppler correction, kinematic
+        I am the spokesperson for the measurement made with AGATA at Legnaro and
+        led the full analysis: Doppler correction, kinematic
         reconstruction, Geant4 simulation and the Bayesian extraction of the
         lifetime itself. The analysis is complete and the manuscript is under
         review at Nature Physics.
@@ -180,7 +181,7 @@ threads:
     title: CRYRING — electron screening in inverse kinematics
     title_it: CRYRING — schermaggio elettronico in cinematica inversa
     venue: GSI Helmholtzzentrum für Schwerionenforschung, Darmstadt
-    period: 2024 — present
+    period: 2024–present
     period_it: 2024 — oggi
     role: Participant
     role_it: Partecipante
@@ -194,13 +195,13 @@ threads:
       - >-
         Every laboratory measurement of a low-energy cross section is made with
         atoms, not bare nuclei, and the electron cloud screens the Coulomb
-        barrier. The enhancement it produces grows as the energy falls — exactly
-        where astrophysics wants the number — and measured screening potentials
+        barrier. The enhancement it produces grows as the energy falls, which is
+        where astrophysics needs the number, and measured screening potentials
         have persistently come out larger than theory allows.
       - >-
         At CRYRING the ¹⁵N + p reaction is studied in inverse kinematics with a
         stored, cooled beam, which changes the atomic configuration of the
-        collision and so attacks the discrepancy from a direction a normal target
+        collision and so tests the discrepancy in a way a conventional target
         experiment cannot.
     body_it:
       - >-
@@ -238,8 +239,8 @@ outlook:
     tracciamento γ alla polarizzazione.
   intro: >-
     A measurement is only as useful as the data, the code and the model that
-    survive it. The next years of my work are about making all three last, and
-    about giving the R-matrix new kinds of information.
+    survive it. My next years are about making all three last, and about
+    giving R-matrix analyses new kinds of information.
   intro_it: >-
     Una misura vale quanto i dati, il codice e il modello che le
     sopravvivono. I prossimi anni del mio lavoro servono a far durare tutti e
@@ -248,13 +249,13 @@ outlook:
     - lead: Open data that stays open.
       lead_it: Dati aperti che restano aperti.
       text: >-
-        Too many good measurements have been lost because nobody could keep the
-        data, or the software that read them, alive. Maintaining software is no
-        longer the burden it was, so keeping data alive is now within every
-        collaboration's reach. I want the data of
-        the experiments I take part in to be FAIR — findable, accessible,
-        interoperable, reusable — from the moment they are recorded, and I keep
-        developing the LUNA data acquisition with that aim.
+        Too many good measurements have been lost because nobody kept the data,
+        or the software that reads them, alive. With modern tools, maintaining
+        that software is no longer the burden it was, so preserving data is
+        within every collaboration's reach. I want the data of the experiments I
+        take part in to be FAIR (findable, accessible, interoperable and
+        reusable) from the moment they are recorded, and I am developing the
+        LUNA data acquisition to that end.
       text_it: >-
         Troppe buone misure sono andate perse perché nessuno riusciva a tenere
         in vita i dati, o il software che li leggeva. Mantenere il software non
@@ -267,17 +268,17 @@ outlook:
     - lead: A database of R-matrix evaluations.
       lead_it: Un database di valutazioni R-matrix.
       text: >-
-        R-matrix theory is where theory meets every experimental detail:
-        resolution, target effects, normalisations, angular distributions. That
-        is exactly why I love it. Yet most evaluations live in one person's
-        files. The field needs a shared, versioned database of evaluations that
-        anyone can rerun, refit and extend when new data arrive. It is the
-        direction of GENESIS (NSF, 2026–2031), on quantum-enhanced evaluation of
-        nuclear reaction cross sections in R-matrix theory, in which I take
-        part, and of my work on the IAEA INDEN-LE committee. AZURE2 and the
-        evaluations on this site, which anyone can open, change and rerun in the
-        browser, are a working prototype; the rates explorer is built to show
-        where such evaluations end up, in the reaction rates of stellar models.
+        R-matrix theory is where theory meets every detail of an experiment:
+        resolution, target effects, normalizations, angular distributions. That
+        is why I love it. Yet most evaluations live in one person's files. The
+        field needs a shared, versioned database of evaluations that anyone can
+        rerun, refit and extend when new data arrive. This is the aim of GENESIS
+        (NSF, 2026–2031), a project on quantum-enhanced R-matrix evaluation of
+        nuclear cross sections in which I take part, and of my work on the IAEA
+        INDEN-LE committee. AZURE2 and the evaluations on this site, which anyone
+        can open, change and rerun in the browser, are a working prototype; the
+        rate explorer shows where such evaluations end up: in the reaction rates
+        of stellar models.
       text_it: >-
         La teoria R-matrix è il punto in cui la teoria incontra ogni dettaglio
         sperimentale: risoluzione, effetti del bersaglio, normalizzazioni,
@@ -311,12 +312,12 @@ outlook:
         I punti di partenza sono le misure che già guido: ¹⁹F + p all'acceleratore
         LUNA da 400 kV e la vita media dello stato a 6,79 MeV dell'¹⁵O,
         misurata con AGATA, che vincola il ritmo del ciclo CNO e il suo flusso di neutrini.
-    - lead: Versatility.
+    - lead: Working across the whole experiment.
       lead_it: Versatilità.
       text: >-
-        Moving between the accelerator, the detectors, the simulations, the data
-        acquisition and the theory is what I enjoy most, and what I think an
-        experiment needs from its people.
+        I enjoy moving between the accelerator, the detectors, the simulations,
+        the data acquisition and the theory, and I think an experiment needs
+        people who can.
       text_it: >-
         Passare dall'acceleratore ai rivelatori, alle simulazioni,
         all'acquisizione dati e alla teoria è ciò che mi piace di più, ed è ciò
@@ -324,11 +325,10 @@ outlook:
     - lead: AI as a research tool.
       lead_it: L'IA come strumento di ricerca.
       text: >-
-        AI is quickly changing how research is done. Used with care it takes
-        over the maintenance and boilerplate that used to swallow
-        our time, leaves more of it for physics, and puts a much broader set of
-        tools within reach of a small group. LUNA Skills is how I put this into
-        practice, openly, so others can do the same.
+        Used with care, AI takes over the maintenance and boilerplate that used
+        to swallow our time, leaves more of it for physics, and puts a much
+        broader set of tools within reach of a small group. LUNA Skills is how I
+        put this into practice, openly, so that others can do the same.
       text_it: >-
         L'intelligenza artificiale sta cambiando rapidamente il modo di fare
         ricerca. Usata con attenzione si fa carico della manutenzione e del
