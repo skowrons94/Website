@@ -84,9 +84,30 @@ measurements:
       section 1.809 ± 0.045 b, consistent with ENDF/B-VIII.0 and JEFF-3.3;
       first two resonances resolved; MACS derived.
     refs: [torressanchez2023]
+  - year: 2025
+    facility: hzdr
+    method: neutron-beams
+    energy: "0.1–12 MeV (neutron energy), total cross section"
+    energy_it: "0,1–12 MeV (energia del neutrone), sezione d'urto totale"
+    note: >-
+      Transmission measurement at the nELBE time-of-flight facility, only the
+      second high-sensitivity total cross section of ¹⁴N + n, as a
+      constraint for R-matrix evaluations of the (n,p) channel. Good agreement
+      with earlier data except at the lowest resonance, E_n = 433 keV.
+    refs: [deboer2025]
 evaluations: [bao2000, dillmann2014, dillmann2008]
 open_questions:
   - The cross section between about 10 and 100 keV, where the measurements of different groups still differ.
+facts:
+  - text: >-
+      The same reaction that steals neutrons in giant stars also matters on
+      Earth: it enters the estimates of the fission yields of the atmospheric
+      nuclear-weapons tests.
+    text_it: >-
+      La stessa reazione che sottrae neutroni nelle stelle giganti conta anche
+      sulla Terra: entra nelle stime delle rese di fissione dei test nucleari
+      in atmosfera.
+    refs: [deboer2025]
 related: [13C-an-16O, 22Ne-ng-23Ne, 16O-ng-17O]
 open_questions_it:
   - La sezione d'urto tra circa 10 e 100 keV, dove le misure dei diversi gruppi ancora non concordano.

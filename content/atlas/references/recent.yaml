@@ -265,3 +265,167 @@ choplin2022:
   doi: 10.1051/0004-6361/202244360
   arxiv: "2209.10303"
   checked: arXiv 2209.10303 (proton ingestion events; "the astrophysical site of the i-process is still a matter of debate"; low-mass, low-metallicity AGB stars as candidates) and the A&A record (volume 667, A155, 22 November 2022, DOI), by web search, 2026-10-13
+
+# --- Literature pass 2 (2026-10-13): recent stories ---------------------------
+# Added after a second web-search review of LUNA, Trojan Horse, JUNA, Notre
+# Dame and other groups. `checked` records what the search results showed.
+
+rapagnani2025:
+  authors: D. Rapagnani et al. (LUNA Collaboration)
+  title: "Revision of the CNO cycle: rate of ¹⁷O destruction in stars"
+  journal: Phys. Rev. C 111, 025805 (2025)
+  year: 2025
+  doi: 10.1103/PhysRevC.111.025805
+  luna: true
+  checked: University of Edinburgh Research Explorer, Genova and Padova IRIS records, by web search (Phys. Rev. C 111, issue 2, 2025; R-matrix fits with Monte Carlo uncertainties for ¹⁷O(p,γ)¹⁸F and ¹⁷O(p,α)¹⁴N; below about 100 MK the median rates are up to a factor of 2 above the rate libraries used in stellar models; ¹⁷O is destroyed mainly by (p,α), whose rate is known within ±20% at 95% C.L.); first author, article number and DOI from content/publications.yaml, not shown by a search record, 2026-10-13
+
+skowronski2025b:
+  authors: J. Skowronski et al. (LUNA Collaboration)
+  title: "A comparative analysis of R-matrix fitting: ¹²C(p,γ)¹³N as test case"
+  journal: Phys. Rev. C 111, 035802 (2025)
+  year: 2025
+  doi: 10.1103/PhysRevC.111.035802
+  arxiv: "2502.14040"
+  luna: true
+  checked: arXiv 2502.14040 abstract and Padova, Naples and Genova IRIS records, by web search (frequentist and Bayesian R-matrix methods compared on the same ¹²C(p,γ) data; the treatment of systematic uncertainties and the estimate of the covariance matrix are what make the uncertainties reliable and reproducible), 2026-10-13
+
+stockel2024:
+  authors: K. Stöckel et al. (LUNA Collaboration)
+  title: "Novel approach to infer the ²H(p,γ)³He angular distribution: experimental results and comparison with theoretical calculations"
+  journal: Phys. Rev. C 110, L032801 (2024)
+  year: 2024
+  doi: 10.1103/PhysRevC.110.L032801
+  luna: true
+  checked: JINA Virtual Journal listing of 20 September 2024 (journal and DOI) and the Genova IRIS record, by web search (angular distribution inferred from the shape of the γ spectra of one HPGe detector facing an extended D₂ gas target at Gran Sasso, 30–280 keV, compared with ab initio predictions), 2026-10-13
+
+deboer2025:
+  authors: R. J. deBoer et al.
+  title: Total cross section of ¹⁴N + n from 0.1 to 12 MeV
+  journal: Phys. Rev. C 112, 025805 (2025)
+  year: 2025
+  doi: 10.1103/frgb-j5c3
+  arxiv: "2505.04995"
+  checked: APS abstract page, arXiv 2505.04995, TU Dresden record and RODARE data record 3977, by web search (published 20 August 2025; time-of-flight transmission at nELBE, HZDR; only one earlier high-sensitivity total cross section; good agreement with earlier data except at the lowest resonance, E_n = 433 keV; ¹⁴N(n,p) matters as an s-process neutron poison and for estimates of fission yields from atmospheric weapons tests), 2026-10-13
+
+wang2023:
+  authors: L. H. Wang, J. Su et al. (JUNA Collaboration)
+  title: Measurement of the ¹⁸O(α,γ)²²Ne reaction rate at JUNA and its impact on probing the origin of SiC grains
+  journal: Phys. Rev. Lett. 130, 092701 (2023)
+  year: 2023
+  doi: 10.1103/PhysRevLett.130.092701
+  checked: APS abstract page, JINA Virtual Journal listing and NSR entry 2023WA05, by web search (E_α = 470–787 keV; key resonance at E_α = 474.0 ± 1.1 keV, measured this precisely for the first time; J^π = 1⁻ from the primary γ branchings, removing the discrepancies between earlier strengths; rate up to about 10 times more precise at 0.1–0.3 GK), 2026-10-13
+
+kajino2023:
+  authors: T. Kajino
+  title: Underground laboratory JUNA shedding light on stellar nucleosynthesis
+  journal: Nucl. Sci. Tech. 34 (2023)
+  year: 2023
+  doi: 10.1007/s41365-023-01196-1
+  arxiv: "2306.00572"
+  checked: arXiv 2306.00572 and the JINA Virtual Journal listing of 2 June 2023, by web search (summarizes Wang et al. 2023, E_lab = 474.0 ± 1.1 keV, J^π = 1⁻ and ωγ = 0.25 ± 0.03 µeV for the resonance that dominates the rate); DOI from the Springer link in the same results; volume and article number not seen, 2026-10-13
+
+li2026:
+  authors: C. Li, H. Jia, Q. Wen, C. Lin et al.
+  title: S*(E) measurement of the ¹²C(¹²C,α)²⁰Ne reaction at astrophysical energies via the Trojan horse method with ¹⁶O quasi-free breakup
+  journal: Phys. Lett. B 879, 140675 (2026)
+  year: 2026
+  arxiv: "2609.08819"
+  checked: arXiv 2609.08819 (journal reference given there), by web search (HI-13 tandem, CIAE; ¹⁶O as the Trojan horse nucleus; spectator α detected near 0° for the first time in a THM experiment; DWBA analysis; resonances near 1.5 MeV in the α₀ and α₁ channels); DOI not seen, 2026-10-13
+
+li2026b:
+  authors: C. Li, H. Jia et al.
+  title: Indirect measurement of the S*(E) factor for ¹²C(¹²C,p)²³Na at Gamow energies via the Trojan horse method with near-0 degree spectator detection
+  journal: arXiv preprint (2026)
+  year: 2026
+  arxiv: "2609.08837"
+  checked: arXiv listing 2609.08837, submitted 8 September 2026, by web search (¹⁶O breakup at the HI-13 tandem; resonant structure near 1.5 MeV in the p₀ and p₁ channels and no hindrance in the measured range; trend qualitatively like Tumino et al. 2018, unlike the modified analysis of Mukhamedzhanov et al. 2019); no journal version seen, 2026-10-13
+
+mukhamedzhanov2026:
+  authors: A. M. Mukhamedzhanov
+  title: "Breakdown of the plane-wave Trojan horse analysis of the ¹²C+¹²C fusion reaction: critical role of Coulomb distortions"
+  journal: arXiv preprint (2026)
+  year: 2026
+  arxiv: "2609.04498"
+  checked: arXiv 2609.04498 abstract, by web search (an analysis of the THM data of Li et al. 2026; Coulomb distortions change the energy dependence of the THM amplitude, matching the spectator momentum distribution does not validate the plane-wave approximation, so the plane-wave S-factor may not be reliable); no journal version seen, 2026-10-13
+
+ledererwoods2021:
+  authors: C. Lederer-Woods et al. (n_TOF Collaboration)
+  title: "Destruction of the cosmic γ-ray emitter ²⁶Al in massive stars: study of the key ²⁶Al(n,p) reaction"
+  journal: Phys. Rev. C 104, L022803 (2021)
+  year: 2021
+  doi: 10.1103/PhysRevC.104.L022803
+  checked: KIT, INAF, Granada, Hertfordshire and IRB repository records, by web search (EAR2 at n_TOF; eleven resonance strengths, nine for the first time; significantly lower than the only previous values; data up to 150 keV, enough for rates up to 0.5 GK; open access, CC BY 4.0), 2026-10-13
+
+brandenburg2023:
+  authors: K. Brandenburg et al.
+  title: Measurements of the ¹³C(α,n)¹⁶O cross section up to E_α = 8 MeV
+  journal: Phys. Rev. C 108, L061601 (2023)
+  year: 2023
+  doi: 10.1103/PhysRevC.108.L061601
+  checked: APS abstract page, NSF PAR and JINA Virtual Journal records, by web search (published 20 December 2023; Edwards Accelerator Laboratory, Ohio University, ³He–BF₃ neutron barrel; E_α = 2.9–8.0 MeV; considerably lower than earlier direct data above 5 MeV, as Hauser–Feshbach corrections had suggested; thick-target yields above 6 MeV higher than those used for dark-matter and neutrino detector backgrounds), 2026-10-13
+
+balibreacorrea2026:
+  authors: J. Balibrea-Correa et al. (n_TOF Collaboration)
+  title: "First ⁹⁴Nb(n,γ) measurement: constraining the nucleosynthetic origin of ⁹⁴Mo in presolar grains"
+  journal: Phys. Rev. Lett. 137, 082701 (2026)
+  year: 2026
+  doi: 10.1103/538w-rhqb
+  arxiv: "2603.17646"
+  checked: APS abstract page, arXiv 2603.17646, the CERN and CERN EP newsletter news items and phys.org, by web search (published 18 August 2026; first measurement of the capture cross section of the radioactive branching point ⁹⁴Nb; (1167 ± 93) mb at 5 keV, about 26% above theoretical estimates, and up to 13% lower at higher energies; presolar SiC grains show an excess of ⁹⁴Mo that models fail to reproduce), 2026-10-13
+
+deboer2021:
+  authors: R. J. deBoer et al.
+  title: The ¹⁹F(p,γ)²⁰Ne and ¹⁹F(p,α)¹⁶O reaction rates and their effect on calcium production in Population III stars
+  journal: Phys. Rev. C 103, 055815 (2021)
+  year: 2021
+  checked: Notre Dame ISNAP research highlight and JINA listing, and the APS DNP 2021 abstract that gives the journal reference, by web search (R-matrix fits of ¹⁹F(p,γ), (p,α) and (p,p) data together; the (p,γ) rate uncertainty is considerably larger than previously reported, because of unresolved interferences, a possible threshold state, possible subthreshold states, direct capture and higher resonances; more experiments needed); DOI not seen, 2026-10-13
+
+dong2024:
+  authors: G. X. Dong, X. B. Wang, N. Michel, M. Płoszajczak
+  title: ¹⁹F(p,γ)²⁰Ne reaction rate and the puzzling calcium abundance in metal poor stars
+  journal: arXiv preprint (2024)
+  year: 2024
+  arxiv: "2411.17243"
+  checked: arXiv 2411.17243 abstract, November 2024, by web search (Gamow shell model in the coupled-channel representation; near 0.1 GK the predicted rate is close to the JUNA rate); no journal reference seen, 2026-10-13
+
+skowronski2025inpc:
+  authors: J. Skowronski (LUNA Collaboration)
+  title: Preliminary study of the ¹⁹F(p,γ)²⁰Ne at LUNA
+  journal: Conference talk, INPC 2025, Daejeon, 25–30 May 2025
+  year: 2025
+  url: https://indico.ibs.re.kr/event/701/contributions/6640/
+  luna: true
+  checked: Indico contribution page and abstract, and a 2025 Padova conference abstract by R. Biasissi, by web search (LUNA 400 kV accelerator; E_cm = 190–390 keV, covering the resonances at 213, 225 and 323 keV; several fluorine targets, among them a new chemically fluorinated one; nearly 4π BGO array; preliminary results only), 2026-10-13
+
+# --- History -------------------------------------------------------------------
+
+konopinski1946:
+  authors: E. J. Konopinski, C. Marvin, E. Teller
+  title: Ignition of the atmosphere with nuclear bombs
+  journal: Los Alamos report LA-602 (1946)
+  year: 1946
+  checked: Physics Today article of Wiescher and Langanke (2024) and the report's citations in the IF PAN seminar listing and Wikipedia, by web search (fusion of two ¹⁴N nuclei treated as the key reaction; radiation losses always exceed the nuclear energy gained, so no self-propagating burn); declassification year given as 1973 or 1979 by different sources, so not quoted, 2026-10-13
+
+wiescher2024pt:
+  authors: M. Wiescher, K. Langanke
+  title: Manhattan Project astrophysics
+  journal: Phys. Today 77(3), 34 (2024)
+  year: 2024
+  doi: 10.1063/pt.jksg.hage
+  checked: Physics Today feature page and the NSF PAR copy, by web search (Teller raised the fear of igniting the atmosphere at a 1942 meeting in Berkeley; Bethe estimated the probability as very low; the 1946 report of Teller, Konopinski and Marvin found no self-propagating chain likely; also ¹⁴N fusion with the hydrogen of water vapour; the wartime experience fed post-war nuclear astrophysics), 2026-10-13
+
+wiescher2024cool:
+  authors: P. Wiescher, M. Wiescher
+  title: Cooling the atmosphere
+  journal: Natural Sciences 4, e20240005 (2024)
+  year: 2024
+  doi: 10.1002/ntls.20240005
+  checked: Wiley Online Library record (first published 22 April 2024), DOAJ record and Advanced Science News article, by web search (formerly classified 1940s experiments at the Notre Dame accelerator laboratory on radiation effects in materials and on how efficiently the atmosphere cools the fireball of a fission device), 2026-10-13
+
+wiescher2025:
+  authors: M. Wiescher, K. Langanke
+  title: The astrophysical thoughts of Carl Friedrich von Weizsäcker
+  journal: Phys. Perspect. 27, 26 (2025)
+  year: 2025
+  doi: 10.1007/s00016-025-00325-0
+  checked: Springer article page and GSI repository record, by web search (pp. 26–49, CC BY 4.0; from Weizsäcker's notes and letters, 1935–1945; after his papers of 1937 and 1938 he turned to fission and the war, but kept thinking about neutron stars and cosmology; the CN cycle was tied for him to a change in the paradigm for the origin of the elements), 2026-10-13

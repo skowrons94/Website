@@ -120,4 +120,16 @@ open_questions:
 open_questions_it:
   - "La differenza di circa un fattore 3 tra l'intensità della risonanza a 64,5 keV misurata da LUNA e quella ricavata con il metodo del cavallo di Troia."
   - "Lo stato sotto soglia del ¹⁸F, il cui contributo alle energie solari è discusso in Solar Fusion II insieme alla risonanza a 65 keV."
+facts:
+  - text: >-
+      Stars may destroy oxygen-17 faster than the standard tables say: a 2025
+      LUNA analysis with Monte Carlo uncertainties finds the rates up to twice
+      the tabulated ones below about 100 million kelvin, with the dominant
+      (p,α) channel known to ±20%.
+    text_it: >-
+      Le stelle potrebbero distruggere l'ossigeno-17 più in fretta di quanto
+      dicano le tabelle: un'analisi di LUNA del 2025 con incertezze Monte Carlo
+      trova tassi fino al doppio di quelli tabulati sotto circa 100 milioni di
+      kelvin, con il canale dominante (p,α) noto al ±20%.
+    refs: [rapagnani2025]
 related: [17O-pg-18F, 16O-pg-17F, 17F-bp-17O, 14N-pg-15O]

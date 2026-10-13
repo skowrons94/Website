@@ -171,6 +171,19 @@ measurements:
       ratio of only about 2% between the proton and α branches to the first
       excited states.
     refs: [nippert2025]
+  - year: 2026
+    facility: other
+    lab: "HI-13 tandem accelerator, China Institute of Atomic Energy, Beijing"
+    method: thm
+    energy: "Gamow window, resonances near 1.5 MeV"
+    energy_it: "finestra di Gamow, risonanze vicino a 1,5 MeV"
+    note: >-
+      Preprint. The same ¹⁶O-breakup technique as for the α channel shows
+      resonant structure near 1.5 MeV in the p₀ and p₁ channels and no
+      hindrance in the measured range; the trend is qualitatively like that
+      of Tumino et al. (2018) and unlike the modified analysis of
+      Mukhamedzhanov et al. (2019).
+    refs: [li2026b]
 evaluations: [caughlan1988, jiang2018, monpribat2022]
 refs: [jiang2007, uzawa2025, gesue2025, cooper2009, adsley2022]
 open_questions:

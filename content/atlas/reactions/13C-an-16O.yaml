@@ -132,6 +132,18 @@ measurements:
       15%, with the first direct determination of the α strength of the
       near-threshold state.
     refs: [gao2022]
+  - year: 2023
+    facility: other
+    lab: "Edwards Accelerator Laboratory, Ohio University"
+    method: direct-surface
+    energy: "E_α = 2.9–8.0 MeV"
+    energy_it: "E_α = 2,9–8,0 MeV"
+    note: >-
+      Total cross section with a ³He–BF₃ neutron barrel: considerably lower
+      than earlier direct data above E_α = 5 MeV, as corrections based on
+      Hauser–Feshbach estimates had suggested; Hauser–Feshbach branchings do
+      not reproduce the earlier partial-channel data.
+    refs: [brandenburg2023]
   - year: 2024
     facility: notre-dame
     method: direct-surface
@@ -152,4 +164,16 @@ open_questions_it:
   - "L'ANC e l'energia esatta dello stato 1/2⁺ a 6,356 MeV nel ¹⁷O, che controllano l'estrapolazione sotto 230 keV."
   - "La normalizzazione assoluta dei dati diretti, che dipende dalla stechiometria del bersaglio sotto fascio e dall'efficienza di rivelazione dei neutroni in funzione della loro energia e del loro angolo."
   - "Dati coerenti su un ampio intervallo di energia, che si sovrappongano alle misure sotterranee e a quelle di superficie, per vincolare il fit R-matrix."
+facts:
+  - text: >-
+      The neutron source of the s-process also matters for dark-matter and
+      neutrino detectors, whose neutron backgrounds are estimated from its
+      yields. Above 6 MeV the yields measured in 2023 are noticeably higher
+      than those used so far.
+    text_it: >-
+      La sorgente di neutroni del processo s conta anche per i rivelatori di
+      materia oscura e di neutrini, il cui fondo di neutroni si stima dalle sue
+      rese. Sopra 6 MeV le rese misurate nel 2023 sono sensibilmente più alte
+      di quelle usate finora.
+    refs: [brandenburg2023]
 related: [13C-pg-14N, 22Ne-an-25Mg, 17O-an-20Ne]

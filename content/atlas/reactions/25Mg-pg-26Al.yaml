@@ -139,4 +139,16 @@ facts:
       92 keV brillerà a 1809 keV; il resto nasce in uno stato eccitato di vita
       breve che decade senza quella riga γ.
     refs: [kankainen2021]
+  - text: >-
+      Making aluminium-26 is only half the story: in massive stars neutrons
+      also destroy it. At CERN's n_TOF, nine of the eleven ²⁶Al(n,p)
+      resonances were measured for the first time in 2021, and all came out
+      clearly weaker than the only earlier values.
+    text_it: >-
+      Produrre l'alluminio-26 è solo metà della storia: nelle stelle massicce
+      anche i neutroni lo distruggono. A n_TOF, al CERN, nove delle undici
+      risonanze della ²⁶Al(n,p) sono state misurate per la prima volta nel
+      2021, e tutte sono risultate nettamente più deboli degli unici valori
+      precedenti.
+    refs: [ledererwoods2021]
 related: [26Al-bp-26Mg, 24Mg-pg-25Al, 25Al-bp-25Mg, 26Mg-pg-27Al, 22Ne-an-25Mg]

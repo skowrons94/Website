@@ -104,14 +104,18 @@ events:
       In two papers in Physikalische Zeitschrift, Carl Friedrich von
       Weizsäcker discussed which nuclear reactions could power stars. The
       second paper proposed a cycle in which carbon and nitrogen nuclei help
-      turn hydrogen into helium and are given back at the end.
+      turn hydrogen into helium and are given back at the end. His notes and
+      letters show that after he turned to fission and the war in 1939 he kept
+      thinking about neutron stars and cosmology.
     text_it: >-
       In due articoli sulla Physikalische Zeitschrift, Carl Friedrich von
       Weizsäcker discusse quali reazioni nucleari potessero alimentare le
       stelle. Il secondo articolo proponeva un ciclo in cui nuclei di carbonio e
       azoto aiutano a trasformare l'idrogeno in elio e alla fine vengono
-      restituiti.
-    refs: [weizsacker1937, weizsacker1938]
+      restituiti. Le sue note e lettere mostrano che, passato alla fissione e
+      alla guerra dal 1939, continuò a riflettere sulle stelle di neutroni e
+      sulla cosmologia.
+    refs: [weizsacker1937, weizsacker1938, wiescher2025]
 
   - year: 1939
     month: 3
@@ -133,6 +137,32 @@ events:
       combustione dell'idrogeno.
     refs: [bethe1939]
     reactions: [12C-pg-13N, 14N-pg-15O, 15N-pa-12C]
+
+  - year: 1946
+    title: Los Alamos rules out setting the atmosphere on fire
+    title_it: Los Alamos esclude che una bomba possa incendiare l'atmosfera
+    category: theory
+    categories: [experiment]
+    text: >-
+      In 1942 Edward Teller had asked whether a fission bomb could start
+      nitrogen burning in the air. Hans Bethe judged the chance very low, and
+      in 1946 Emil Konopinski, Cloyd Marvin and Teller showed that the energy
+      lost to radiation always beats the energy gained from the fusion of two
+      nitrogen-14 nuclei. At Notre Dame, secret accelerator experiments of the
+      1940s studied how efficiently the air cools a fireball. After the war,
+      the experience gained in this work flowed back into nuclear
+      astrophysics.
+    text_it: >-
+      Nel 1942 Edward Teller si era chiesto se una bomba a fissione potesse
+      innescare la combustione dell'azoto nell'aria. Hans Bethe giudicò molto
+      bassa la probabilità, e nel 1946 Emil Konopinski, Cloyd Marvin e Teller
+      mostrarono che l'energia persa per irraggiamento supera sempre quella
+      guadagnata dalla fusione di due nuclei di azoto-14. A Notre Dame,
+      esperimenti segreti con l'acceleratore negli anni Quaranta studiarono
+      quanto efficacemente l'aria raffreddi una palla di fuoco. Dopo la guerra
+      l'esperienza acquisita in questo lavoro tornò all'astrofisica
+      nucleare.
+    refs: [konopinski1946, wiescher2024pt, wiescher2024cool]
 
   - year: 1948
     month: 4
@@ -1017,3 +1047,24 @@ events:
       Fornisce fattori S raccomandati, con le loro incertezze, per la catena
       protone-protone e i cicli CNO.
     refs: [acharya2025]
+
+  - year: 2026
+    month: 8
+    title: Neutron capture on radioactive niobium-94 is measured
+    title_it: Misurata la cattura neutronica sul niobio-94 radioattivo
+    category: experiment
+    facility: n-tof
+    text: >-
+      Stardust grains older than the Sun hold more molybdenum-94 than models
+      predict. Its production depends on niobium-94, a radioactive branch
+      point of the s-process, where neutron capture competes with decay. At
+      CERN's n_TOF its capture cross section was measured for the first time:
+      at 5 keV about 26% above theoretical estimates.
+    text_it: >-
+      I grani di polvere stellare più antichi del Sole contengono più
+      molibdeno-94 di quanto prevedano i modelli. La sua produzione dipende
+      dal niobio-94, un punto di diramazione radioattivo del processo s, dove
+      la cattura neutronica compete con il decadimento. A n_TOF, al CERN, la
+      sua sezione d'urto di cattura è stata misurata per la prima volta: a
+      5 keV circa il 26% sopra le stime teoriche.
+    refs: [balibreacorrea2026]
