@@ -41,6 +41,9 @@ import { fill } from "@/lib/data/fill"
 import { compoundOf, displayNuc } from "@/lib/data/nuclide"
 import { atlasPanel } from "@/lib/data/panel"
 import { PageLd } from "@/components/json-ld"
+// --- lit ---
+import { OpenQuestionBadge } from "@/components/pages/open-questions"
+import { debatesFor } from "@/lib/atlas"
 
 export const reactionParams = () => getReactionIds().map((id) => ({ id }))
 
@@ -369,6 +372,8 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
   const atlas = getAtlas(lang)
   const html = await renderDetails(r.details)
   const events = eventsFor(r.id, lang)
+  // --- lit --- the open questions that concern this reaction
+  const debates = debatesFor(r.id, lang)
   // Sections whose text is still English on a translated page.
   const english = (section: Reaction["untranslated"][number]) => r.untranslated.includes(section)
   const enLang = (section: Reaction["untranslated"][number]) => (english(section) ? "en" : undefined)
@@ -433,7 +438,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
     // --- data expert ---
     exfor ? { id: "exfor", label: dx.panel.title } : null,
     r.evaluations.length > 0 ? { id: "evaluations", label: t.evaluationsTitle } : null,
-    r.openQuestions.length > 0 ? { id: "open-questions", label: t.openQuestions } : null,
+    r.openQuestions.length > 0 || debates.length > 0 ? { id: "open-questions", label: t.openQuestions } : null,
     order.length > 0 ? { id: "references", label: t.references } : null,
   ].filter((x): x is { id: string; label: string } => x !== null)
   // Glossary links in the running text, once each, in reading order.
@@ -504,6 +509,8 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
           {r.kind !== "decay" && <StatusBadge status={r.status} pending={!r.hasFile} lang={lang} link />}
           {!r.hasFile && r.kind === "decay" && <StatusBadge status={null} pending lang={lang} />}
           {r.luna && <LunaBadge label={t.measuredAtLuna} />}
+          {/* --- lit --- */}
+          <OpenQuestionBadge debates={debates} lang={lang} />
           {r.rmatrix.map((ev) => (
             <Link
               key={ev}
@@ -574,6 +581,22 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
                 {t.preparationText(networks.length === 1)}
               </p>
             </div>
+          )}
+
+          {/* --- lit --- "Did you know?" */}
+          {r.facts.length > 0 && (
+            <aside className="mt-8 rounded-lg border border-border bg-card p-5 sm:p-6" aria-labelledby="did-you-know">
+              <h2 id="did-you-know" className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
+                {dict(lang).openQuestions.didYouKnow}
+              </h2>
+              <ul className="mt-3 space-y-3">
+                {r.facts.map((f, i) => (
+                  <li key={i} className="text-pretty text-[0.975rem] leading-relaxed">
+                    <Sci>{f.text}</Sci> <Cite keys={f.refs} order={order} />
+                  </li>
+                ))}
+              </ul>
+            </aside>
           )}
 
           {familyPages.length > 0 && (
@@ -858,17 +881,38 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
             </section>
           )}
 
-          {r.openQuestions.length > 0 && (
+          {(r.openQuestions.length > 0 || debates.length > 0) && (
             <section className="mt-14">
               <SectionTitle id="open-questions">{t.openQuestions}</SectionTitle>
-              {notice("openQuestions")}
-              <ul lang={enLang("openQuestions")} className="mt-5 space-y-3 border-l-2 border-border pl-5 text-[0.95rem] leading-relaxed text-foreground/90">
-                {r.openQuestions.map((q, i) => (
-                  <li key={i} className="text-pretty">
-                    {questionTexts[i]}
-                  </li>
-                ))}
-              </ul>
+              {r.openQuestions.length > 0 && notice("openQuestions")}
+              {r.openQuestions.length > 0 && (
+                <ul lang={enLang("openQuestions")} className="mt-5 space-y-3 border-l-2 border-border pl-5 text-[0.95rem] leading-relaxed text-foreground/90">
+                  {r.openQuestions.map((q, i) => (
+                    <li key={i} className="text-pretty">
+                      {questionTexts[i]}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {/* --- lit --- the debates this reaction is part of */}
+              {debates.length > 0 && (
+                <div className="mt-6">
+                  <p className="text-sm text-muted-foreground">{dict(lang).openQuestions.onReaction}</p>
+                  <ul className="mt-2 space-y-1">
+                    {debates.map((d) => (
+                      <li key={d.id}>
+                        <Link
+                          href={to(`/atlas/open-questions#${d.id}`)}
+                          className="group inline-flex min-h-9 items-center gap-1.5 text-[0.95rem] font-medium text-link underline-offset-4 hover:underline"
+                        >
+                          <Sci>{d.title}</Sci>
+                          <ArrowRight className="h-3.5 w-3.5 shrink-0 transition-transform group-hover:translate-x-0.5" aria-hidden />
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </section>
           )}
 

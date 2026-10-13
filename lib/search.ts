@@ -37,6 +37,8 @@ export type EntryType =
   | "method"
   | "facility"
   | "publication"
+  // --- lit ---
+  | "question"
 
 export interface SearchEntry {
   t: EntryType
@@ -67,6 +69,8 @@ export const TYPE_ORDER: EntryType[] = [
   "reaction",
   "evaluation",
   "glossary",
+  // --- lit ---
+  "question",
   "note",
   "section",
   "research",
@@ -81,6 +85,8 @@ const TYPE_WEIGHT: Record<EntryType, number> = {
   reaction: 2,
   evaluation: 2,
   glossary: 2,
+  // --- lit ---
+  question: 1,
   note: 1.5,
   research: 1,
   method: 1,

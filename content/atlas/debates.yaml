@@ -1,0 +1,903 @@
+# The open questions of nuclear astrophysics, as shown on /atlas/open-questions.
+# Order in the file is display order.
+#
+#   id          anchor (/atlas/open-questions#<id>), never translated
+#   title       a short question or name, sentence case
+#   status      open | converging (the literature is converging on one answer)
+#   summary     two to four plain sentences for a general reader
+#   positions   who holds which view: `who` (a group, a method, a paper),
+#               `text` (one or two sentences, specialist register) and `refs`
+#   settle      what would settle it
+#   reactions   reaction ids: each page gets an "open question" badge and the
+#               page links to it, to its measurements in the data explorer, to
+#               the rate explorer and to the site's evaluations of it
+#   curiosity   optional id of a rate curiosity (lib/rates/curiosities.ts) that
+#               shows what a different rate would change
+#   refs        further key papers, beyond those of the positions
+#   *_it        the Italian text, beside each field
+#
+# The positions are stated as their authors state them. A question is marked
+# "converging" only where the recent literature agrees; no position is
+# declared the winner otherwise. Every number is taken from the cited papers
+# or from the records in their `checked` field.
+
+questions:
+  - id: carbon-alpha-gamma
+    title: How fast does carbon-12 capture helium?
+    title_it: Quanto velocemente il carbonio-12 cattura l'elio?
+    status: open
+    reactions: [12C-ag-16O, 4He-aa-12C]
+    summary: >-
+      When helium burns, carbon-12 can capture another helium nucleus and turn
+      into oxygen-16. How often this happens decides how much carbon and how
+      much oxygen a star leaves, and through that how the star ends. The
+      reaction has never been measured at the energies where stars burn helium,
+      so its rate rests on an extrapolation, and different ways of making it
+      disagree by tens of per cent.
+    summary_it: >-
+      Quando l'elio brucia, il carbonio-12 può catturare un altro nucleo di
+      elio e trasformarsi in ossigeno-16. Quanto spesso accade decide quanto
+      carbonio e quanto ossigeno lascia una stella, e quindi come finisce. La
+      reazione non è mai stata misurata alle energie a cui le stelle bruciano
+      l'elio: il suo tasso si basa su un'estrapolazione, e i modi diversi di
+      farla non concordano per decine di punti percentuali.
+    positions:
+      - who: Global R-matrix analysis
+        who_it: Analisi R-matrix globale
+        text: >-
+          deBoer et al. (2017) fitted capture, scattering and β-delayed α data
+          together and gave the recommended rate; the lowest capture data lie
+          near 1 MeV, about three times above the stellar energy of 300 keV.
+        text_it: >-
+          deBoer et al. (2017) hanno eseguito un fit congiunto di dati di
+          cattura, di diffusione e di emissione α ritardata dal decadimento β, e
+          hanno dato il tasso raccomandato; i dati di cattura più bassi sono
+          intorno a 1 MeV, circa tre volte sopra l'energia stellare di 300 keV.
+        refs: [deboer2017]
+      - who: Larger asymptotic normalization coefficients
+        who_it: Coefficienti di normalizzazione asintotica più grandi
+        text: >-
+          A ground-state ANC from ¹²C(¹¹B,⁷Li)¹⁶O gives a total rate up to 21%
+          higher (Shen et al. 2023); with larger subthreshold ANCs,
+          Mukhamedzhanov, deBoer et al. (2024) obtain S(300 keV) = 174 keV b,
+          against 137 keV b in the 2017 fit.
+        text_it: >-
+          Un ANC dello stato fondamentale ricavato dalla ¹²C(¹¹B,⁷Li)¹⁶O dà un
+          tasso totale fino al 21% più alto (Shen et al. 2023); con ANC più
+          grandi per gli stati sotto soglia, Mukhamedzhanov, deBoer et al.
+          (2024) ottengono S(300 keV) = 174 keV b, contro 137 keV b del fit del
+          2017.
+        refs: [shen2023, mukhamedzhanov2024]
+      - who: Inverse reaction with γ beams
+        who_it: Reazione inversa con fasci γ
+        text: >-
+          A time projection chamber in the HIγS γ beam measured background-free
+          angular distributions of ¹⁶O(γ,α)¹²C; the E1–E2 phase is reported to
+          agree with unitarity for the first time, removing one source of
+          disagreement among earlier data (Haverson et al. 2026).
+        text_it: >-
+          Una camera a proiezione temporale nel fascio γ di HIγS ha misurato
+          distribuzioni angolari senza fondo della ¹⁶O(γ,α)¹²C; la fase
+          E1–E2 risulta per la prima volta in accordo con l'unitarietà, il che
+          toglie una delle cause di disaccordo tra i dati precedenti
+          (Haverson et al. 2026).
+        refs: [haverson2026]
+    settle: >-
+      Direct capture data well below 1 MeV, which need intense α beams in a
+      low-background underground laboratory, or γ beams intense enough for the
+      inverse reaction at low energy; and an agreed set of ANCs for the
+      subthreshold states.
+    settle_it: >-
+      Dati diretti di cattura ben sotto 1 MeV, che richiedono fasci α intensi in
+      un laboratorio sotterraneo a basso fondo, o fasci γ abbastanza intensi per
+      la reazione inversa a bassa energia; e un insieme condiviso di ANC per gli
+      stati sotto soglia.
+    refs: [plag2012, schurmann2011]
+
+  - id: black-hole-mass-gap
+    title: Carbon, oxygen and the heaviest black holes
+    title_it: Carbonio, ossigeno e i buchi neri più pesanti
+    status: open
+    reactions: [12C-ag-16O]
+    summary: >-
+      Very massive stars become unstable when their cores grow hot enough to
+      make electron–positron pairs, and some are blown apart without leaving a
+      black hole. Where this starts depends on how much carbon survives helium
+      burning, so the heaviest black holes that ordinary stars can make depend
+      on the ¹²C(α,γ)¹⁶O rate. Gravitational-wave detectors now weigh such
+      black holes, which turns them into a measurement of a nuclear reaction.
+    summary_it: >-
+      Le stelle molto massicce diventano instabili quando il loro cuore è
+      abbastanza caldo da creare coppie elettrone–positrone, e alcune esplodono
+      senza lasciare un buco nero. Dove questo comincia dipende da quanto
+      carbonio sopravvive alla combustione dell'elio: i buchi neri più pesanti
+      che una stella ordinaria può formare dipendono quindi dal tasso della
+      ¹²C(α,γ)¹⁶O. I rivelatori di onde gravitazionali ora pesano questi buchi
+      neri, e li trasformano in una misura di una reazione nucleare.
+    positions:
+      - who: Gravitational waves
+        who_it: Onde gravitazionali
+        text: >-
+          From the first ten black-hole mergers, Farmer et al. (2020) infer
+          S(300 keV) > 175 keV b at 68% confidence, and expect about fifty
+          detections to pin it to ±10–30 keV b.
+        text_it: >-
+          Dalle prime dieci fusioni di buchi neri, Farmer et al. (2020)
+          ricavano S(300 keV) > 175 keV b al 68% di confidenza, e si aspettano
+          che una cinquantina di rivelazioni lo fissino entro ±10–30 keV b.
+        refs: [farmer2020]
+      - who: Nuclear physics
+        who_it: Fisica nucleare
+        text: >-
+          The laboratory rates are lower: the 2017 R-matrix fit gives
+          S(300 keV) = 137 keV b, a 2024 refit with larger ANCs 174 keV b, and
+          the rate of Shen et al. (2023) lowers the edges of the gap by about
+          12% and 5%.
+        text_it: >-
+          I tassi di laboratorio sono più bassi: il fit R-matrix del 2017 dà
+          S(300 keV) = 137 keV b, un nuovo fit del 2024 con ANC più grandi
+          174 keV b, e il tasso di Shen et al. (2023) abbassa i bordi della
+          lacuna di circa il 12% e il 5%.
+        refs: [deboer2017, mukhamedzhanov2024, shen2023]
+    settle: >-
+      A laboratory rate with an uncertainty of about 10% at 300 keV, and enough
+      black-hole detections, with stellar models whose other uncertainties
+      (mass loss, convection) are under control, to make the astrophysical
+      constraint independent.
+    settle_it: >-
+      Un tasso di laboratorio con un'incertezza di circa il 10% a 300 keV, e
+      abbastanza rivelazioni di buchi neri, con modelli stellari le cui altre
+      incertezze (perdita di massa, convezione) siano sotto controllo, perché
+      il vincolo astrofisico diventi indipendente.
+
+  - id: hoyle-state
+    title: How often does the Hoyle state make carbon?
+    title_it: Quanto spesso lo stato di Hoyle produce carbonio?
+    status: converging
+    reactions: [4He-aa-12C]
+    summary: >-
+      Carbon forms in stars through an excited state of carbon-12, the Hoyle
+      state, which nearly always breaks up again into three helium nuclei.
+      The rare times it settles into carbon set the rate of the triple-alpha
+      process. A 2020 measurement put that probability about a third higher
+      than thought; the measurements since then, and a reanalysis of the 2020
+      data, agree on the earlier value.
+    summary_it: >-
+      Il carbonio si forma nelle stelle attraverso uno stato eccitato del
+      carbonio-12, lo stato di Hoyle, che quasi sempre si spezza di nuovo in
+      tre nuclei di elio. Le rare volte in cui si stabilizza in carbonio
+      fissano il tasso del processo tre alfa. Una misura del 2020 dava quella
+      probabilità più alta di circa un terzo; le misure successive, e una
+      nuova analisi dei dati del 2020, concordano sul valore precedente.
+    positions:
+      - who: Kibédi et al. (2020)
+        who_it: Kibédi et al. (2020)
+        text: >-
+          Proton–γ–γ coincidences gave Γ_rad/Γ = 6.2(6)×10⁻⁴ and, with a new
+          pair-decay branching ratio, Γ_rad 34% above the adopted value.
+        text_it: >-
+          Coincidenze protone–γ–γ diedero Γ_rad/Γ = 6,2(6)×10⁻⁴ e, con un nuovo
+          rapporto di diramazione del decadimento in coppie, una Γ_rad più alta
+          del 34% rispetto al valore adottato.
+        refs: [kibedi2020, eriksen2020]
+      - who: Measurements of 2024–2025
+        who_it: Misure del 2024–2025
+        text: >-
+          Rana et al. find 4.01(30)×10⁻⁴, Dell'Aquila et al. 4.4(6)×10⁻⁴ and
+          Paulsen et al. 4.1(4)×10⁻⁴; Paulsen et al. reanalysed the 2014 data
+          behind the 2020 value, found several issues and obtain 4.6(6)×10⁻⁴,
+          no longer discrepant with the ENSDF average of 4.16(11)×10⁻⁴.
+        text_it: >-
+          Rana et al. trovano 4,01(30)×10⁻⁴, Dell'Aquila et al. 4,4(6)×10⁻⁴ e
+          Paulsen et al. 4,1(4)×10⁻⁴; Paulsen et al. hanno rianalizzato i dati
+          del 2014 alla base del valore del 2020, vi hanno trovato diversi
+          problemi e ottengono 4,6(6)×10⁻⁴, non più in disaccordo con la media
+          ENSDF di 4,16(11)×10⁻⁴.
+        refs: [rana2024, dellaquila2024, paulsen2025]
+    settle: >-
+      Largely settled for the γ branch. What remains is the pair-decay width
+      Γ_π and its branching ratio, which multiply Γ_rad/Γ in the rate.
+    settle_it: >-
+      In gran parte risolta per il ramo γ. Restano la larghezza del
+      decadimento in coppie Γ_π e il suo rapporto di diramazione, che
+      moltiplicano Γ_rad/Γ nel tasso.
+
+  - id: triple-alpha-cold
+    title: The triple-alpha rate at low temperature
+    title_it: Il tasso tre alfa a bassa temperatura
+    status: open
+    reactions: [4He-aa-12C]
+    summary: >-
+      At the lowest temperatures, three helium nuclei meet without the help of
+      the Hoyle state. Theory then has to compute a
+      three-body collision directly, and different methods have disagreed by
+      many orders of magnitude. The largest claims would have changed how red
+      giants evolve; smaller enhancements remain possible.
+    summary_it: >-
+      Alle temperature più basse, tre nuclei di elio si incontrano senza
+      l'aiuto dello stato di Hoyle. La
+      teoria deve allora calcolare direttamente un urto a tre corpi, e metodi
+      diversi non concordano per molti ordini di grandezza. Gli aumenti più
+      grandi proposti avrebbero cambiato l'evoluzione delle giganti rosse;
+      aumenti minori restano possibili.
+    positions:
+      - who: Continuum-discretized coupled channels (CDCC)
+        who_it: Canali accoppiati con continuo discretizzato (CDCC)
+        text: >-
+          Ogata, Kan and Kamimura (2009) solved the three-body problem with
+          CDCC and found a rate about 20 orders of magnitude above NACRE near
+          10⁷ K.
+        text_it: >-
+          Ogata, Kan e Kamimura (2009) hanno risolto il problema a tre corpi con
+          il metodo CDCC e trovato un tasso circa 20 ordini di grandezza sopra
+          NACRE intorno a 10⁷ K.
+        refs: [ogata2009]
+      - who: Hyperspherical harmonics with R-matrix
+        who_it: Armoniche ipersferiche con teoria R-matrix
+        text: >-
+          Nguyen et al. (2012) agree with NACRE above 0.07 GK but find an
+          enhancement of about 10¹² at 0.02 GK, much smaller than the CDCC
+          one; with it, red giants still evolve as observed.
+        text_it: >-
+          Nguyen et al. (2012) concordano con NACRE sopra 0,07 GK ma trovano un
+          aumento di circa 10¹² a 0,02 GK, molto minore di quello CDCC; con
+          esso le giganti rosse evolvono ancora come si osserva.
+        refs: [nguyen2012, angulo1999]
+    settle: >-
+      Agreement between independent three-body methods on the non-resonant
+      rate, tested against the evolution of low-mass stars.
+    settle_it: >-
+      Un accordo tra metodi a tre corpi indipendenti sul tasso non risonante,
+      verificato sull'evoluzione delle stelle di piccola massa.
+
+  - id: helium-3-alpha
+    title: The S-factor of ³He(α,γ)⁷Be at zero energy
+    title_it: Il fattore S della ³He(α,γ)⁷Be a energia zero
+    status: open
+    reactions: [3He-ag-7Be]
+    curiosity: pp-sun-beryllium-7
+    summary: >-
+      This reaction opens the branches of the Sun's proton–proton chain that
+      make beryllium-7 and boron-8 neutrinos, and in the Big Bang it makes
+      most of the lithium. It is measured down to about 93 keV, but the Sun
+      burns it near 20 keV, so the rate depends on how the measured trend is
+      extended. The low-energy data agree well; the extension is where the
+      uncertainty now grows.
+    summary_it: >-
+      Questa reazione apre i rami della catena protone-protone del Sole che
+      producono i neutrini del berillio-7 e del boro-8, e nel Big Bang produce
+      la maggior parte del litio. È misurata fino a circa 93 keV, ma il Sole la
+      brucia intorno a 20 keV: il tasso dipende da come si prolunga
+      l'andamento misurato. I dati a bassa energia concordano bene; è nel
+      prolungamento che l'incertezza ora cresce.
+    positions:
+      - who: Solar Fusion III
+        who_it: Solar Fusion III
+        text: >-
+          Recommends S(0) = 0.561 ± 0.018 (exp) ± 0.022 (theory) keV b; the
+          theoretical uncertainty has grown since Solar Fusion II and is now
+          comparable to the experimental one.
+        text_it: >-
+          Raccomanda S(0) = 0,561 ± 0,018 (sper.) ± 0,022 (teoria) keV b;
+          l'incertezza teorica è cresciuta rispetto a Solar Fusion II ed è ora
+          paragonabile a quella sperimentale.
+        refs: [acharya2025]
+      - who: Data above 1 MeV
+        who_it: Dati sopra 1 MeV
+        text: >-
+          The recoil-separator data of ERNA differ from the γ-ray data above
+          1 MeV in both normalization and slope, which pulls fits of the energy
+          dependence apart; activation data now extend above the proton
+          threshold of ⁷Be.
+        text_it: >-
+          I dati del separatore di rinculo ERNA differiscono da quelli γ sopra
+          1 MeV sia nella normalizzazione sia nella pendenza, il che separa i fit
+          dell'andamento in energia; i dati per attivazione arrivano ora sopra
+          la soglia protonica del ⁷Be.
+        refs: [dileva2009, toth2023]
+    settle: >-
+      Consistent data between 100 keV and 1 MeV, where the shape of the
+      S-factor is decided, and theory that reproduces them without free
+      normalization.
+    settle_it: >-
+      Dati coerenti tra 100 keV e 1 MeV, dove si decide la forma del fattore
+      S, e una teoria che li riproduca senza normalizzazioni libere.
+    refs: [bemmerer2006, confortola2007]
+
+  - id: boron-8-neutrinos
+    title: ⁷Be(p,γ)⁸B and the boron-8 solar neutrinos
+    title_it: La ⁷Be(p,γ)⁸B e i neutrini solari del boro-8
+    status: open
+    reactions: [7Be-pg-8B]
+    summary: >-
+      The most energetic common solar neutrinos come from boron-8, made when
+      beryllium-7 captures a proton. Their predicted number is directly
+      proportional to the rate of that capture. The best experiments disagree
+      by up to 15%, and an indirect method, breaking boron-8 apart in the
+      electric field of a heavy nucleus, gives a second route to the same
+      number.
+    summary_it: >-
+      I neutrini solari comuni più energetici vengono dal boro-8, prodotto
+      quando il berillio-7 cattura un protone. Il loro numero previsto è
+      direttamente proporzionale al tasso di questa cattura. I migliori
+      esperimenti non concordano fino al 15%, e un metodo indiretto, che spezza
+      il boro-8 nel campo elettrico di un nucleo pesante, dà una seconda via
+      per lo stesso numero.
+    positions:
+      - who: Direct experiments with ⁷Be targets
+        who_it: Esperimenti diretti con bersagli di ⁷Be
+        text: >-
+          Extrapolated S(0) values range from 18.5 ± 2.4 eV b (Orsay) to
+          21.5 ± 0.6 ± 0.6 eV b (Seattle), with target characterization the
+          main systematic uncertainty.
+        text_it: >-
+          I valori estrapolati di S(0) vanno da 18,5 ± 2,4 eV b (Orsay) a
+          21,5 ± 0,6 ± 0,6 eV b (Seattle), e la caratterizzazione del bersaglio
+          è la principale incertezza sistematica.
+        refs: [hammache2001, junghans2010]
+      - who: Coulomb dissociation and Solar Fusion III
+        who_it: Dissociazione coulombiana e Solar Fusion III
+        text: >-
+          Solar Fusion III combines the direct and Coulomb-dissociation data in
+          a halo effective field theory and recommends S(0) = 20.5 ± 0.7 eV b,
+          where Solar Fusion II had used the direct data alone.
+        text_it: >-
+          Solar Fusion III combina i dati diretti e quelli di dissociazione
+          coulombiana in una teoria di campo efficace per nuclei ad alone e
+          raccomanda S(0) = 20,5 ± 0,7 eV b, dove Solar Fusion II aveva usato i
+          soli dati diretti.
+        refs: [acharya2025, schumann2006, adelberger2011]
+    settle: >-
+      New direct measurements with independently characterized ⁷Be targets,
+      and Coulomb-dissociation data analysed in the same theoretical
+      framework.
+    settle_it: >-
+      Nuove misure dirette con bersagli di ⁷Be caratterizzati in modo
+      indipendente, e dati di dissociazione coulombiana analizzati nello
+      stesso quadro teorico.
+    refs: [sno2002]
+
+  - id: solar-abundances
+    title: The solar abundance problem and the CNO neutrinos
+    title_it: Il problema delle abbondanze solari e i neutrini CNO
+    status: open
+    reactions: [14N-pg-15O]
+    curiosity: cno-sun-oxygen-15
+    summary: >-
+      How much carbon, nitrogen and oxygen does the Sun contain? Analyses of
+      the solar spectrum have disagreed since 2009, and the lower values break
+      the agreement between solar models and helioseismology. Borexino's CNO
+      neutrinos measure the carbon and nitrogen in the Sun's core directly,
+      but only as well as the rate of ¹⁴N(p,γ)¹⁵O is known, and two recent
+      values of that rate differ by about 14%.
+    summary_it: >-
+      Quanto carbonio, azoto e ossigeno contiene il Sole? Le analisi dello
+      spettro solare non concordano dal 2009, e i valori più bassi rompono
+      l'accordo tra i modelli solari e l'eliosismologia. I neutrini CNO di
+      Borexino misurano direttamente il carbonio e l'azoto nel cuore del Sole,
+      ma solo con la precisione con cui si conosce il tasso della
+      ¹⁴N(p,γ)¹⁵O, e due valori recenti di quel tasso differiscono di circa il
+      14%.
+    positions:
+      - who: Low metallicity
+        who_it: Bassa metallicità
+        text: >-
+          Asplund, Amarsi and Grevesse (2021) give Z = 0.0139 and find that the
+          solar modelling problem remains with their abundances.
+        text_it: >-
+          Asplund, Amarsi e Grevesse (2021) danno Z = 0,0139 e trovano che con
+          le loro abbondanze il problema dei modelli solari resta.
+        refs: [asplund2021]
+      - who: High metallicity
+        who_it: Alta metallicità
+        text: >-
+          Magg et al. (2022) find Z/X = 0.0225 and report that the mismatch with
+          helioseismology is resolved. Borexino's final CNO flux,
+          6.7 (+1.2/−0.8) × 10⁸ cm⁻² s⁻¹, with its ⁷Be and ⁸B data, disfavours
+          the low-metallicity standard solar model at 3.2σ.
+        text_it: >-
+          Magg et al. (2022) trovano Z/X = 0,0225 e riferiscono che il
+          disaccordo con l'eliosismologia è risolto. Il flusso CNO finale di
+          Borexino, 6,7 (+1,2/−0,8) × 10⁸ cm⁻² s⁻¹, con i suoi dati sul ⁷Be e
+          sull'⁸B, sfavorisce il modello solare standard a bassa metallicità a
+          3,2σ.
+        refs: [magg2022, borexino2023]
+      - who: The nuclear input
+        who_it: Il dato nucleare
+        text: >-
+          Solar Fusion III recommends S(0) = 1.68 ± 0.14 keV b for
+          ¹⁴N(p,γ)¹⁵O; a 2025 measurement in Hefei finds 1.92 ± 0.08 keV b. The
+          core C + N inferred from the neutrino flux depends directly on this
+          rate.
+        text_it: >-
+          Solar Fusion III raccomanda S(0) = 1,68 ± 0,14 keV b per la
+          ¹⁴N(p,γ)¹⁵O; una misura del 2025 a Hefei trova 1,92 ± 0,08 keV b. Il
+          contenuto di C + N del cuore ricavato dal flusso di neutrini dipende
+          direttamente da questo tasso.
+        refs: [acharya2025, chen2025]
+    settle: >-
+      A ¹⁴N(p,γ)¹⁵O rate known to about 5% at solar energies, the aim of a new
+      underground campaign at LUNA, an explanation of the difference between
+      the recent values, and CNO neutrino measurements of higher statistics.
+    settle_it: >-
+      Un tasso della ¹⁴N(p,γ)¹⁵O noto a circa il 5% alle energie solari,
+      l'obiettivo di una nuova campagna sotterranea a LUNA, una spiegazione
+      della differenza tra i valori recenti, e misure dei neutrini CNO con più
+      statistica.
+    refs: [borexino2020, gosta2025]
+
+  - id: oxygen-15-subthreshold
+    title: The 6.79 MeV state of oxygen-15
+    title_it: Lo stato a 6,79 MeV dell'ossigeno-15
+    status: open
+    reactions: [14N-pg-15O]
+    summary: >-
+      Much of the proton capture on nitrogen-14 in the Sun goes through an
+      excited state of oxygen-15 that lies just below the energy the two bring in. How much
+      it contributes at solar energies depends on how quickly the state
+      decays: its lifetime is a few tenths of a femtosecond, and published
+      measurements disagree.
+    summary_it: >-
+      Nel Sole buona parte delle catture di protoni sull'azoto-14 passa per uno
+      stato eccitato dell'ossigeno-15 che si trova appena sotto l'energia portata
+      dai due nuclei. Quanto contribuisca alle energie solari dipende da
+      quanto velocemente lo stato decade: la sua vita media è di pochi decimi
+      di femtosecondo, e le misure pubblicate non concordano.
+    positions:
+      - who: Doppler-shift lifetimes
+        who_it: Vite medie dallo spostamento Doppler
+        text: >-
+          Bertone et al. (2001) found τ ≈ 1.6 fs; Schürmann et al. (2008) set
+          τ < 0.77 fs; Frentz et al. (2021) found τ = 0.6 ± 0.4 fs. A lifetime
+          measurement with AGATA is under review.
+        text_it: >-
+          Bertone et al. (2001) trovarono τ ≈ 1,6 fs; Schürmann et al. (2008)
+          posero τ < 0,77 fs; Frentz et al. (2021) trovarono τ = 0,6 ± 0,4 fs.
+          Una misura della vita media con AGATA è in fase di revisione.
+        refs: [bertone2001, schurmann2008, frentz2021]
+      - who: Transfer reactions and R-matrix fits
+        who_it: Reazioni di trasferimento e fit R-matrix
+        text: >-
+          ANCs from transfer reactions fix the state's contribution in another
+          way; R-matrix fits of the capture data, including the ground-state
+          transition with which it interferes, still leave differences
+          between data and fits.
+        text_it: >-
+          Gli ANC dalle reazioni di trasferimento fissano il contributo dello
+          stato per un'altra via; i fit R-matrix dei dati di cattura, inclusa
+          la transizione allo stato fondamentale con cui interferisce,
+          lasciano ancora differenze tra dati e fit.
+        refs: [mukhamedzhanov2003, frentz2022]
+    settle: >-
+      A lifetime measured to a small fraction of a femtosecond, and direct capture
+      data at low energy that separate the individual γ-ray transitions.
+    settle_it: >-
+      Una vita media misurata con la precisione di una piccola frazione di
+      femtosecondo, e dati diretti di
+      cattura a bassa energia che separino le singole transizioni γ.
+    refs: [imbriani2005, gosta2025]
+
+  - id: electron-screening
+    title: Why do electrons screen more in the laboratory than theory allows?
+    title_it: Perché gli elettroni schermano in laboratorio più di quanto consenta la teoria?
+    status: open
+    reactions: [3He-dp-4He, 7Li-pa-4He]
+    summary: >-
+      In a laboratory target, the electrons around the nuclei lower the
+      repulsion between them, so reactions at very low energy run faster than
+      for bare nuclei. Atomic physics sets a maximum for this boost, yet the
+      boost measured is often about twice that maximum. The correction must be
+      removed before the data are used for stars, so the puzzle adds an
+      uncertainty to several rates.
+    summary_it: >-
+      In un bersaglio di laboratorio gli elettroni intorno ai nuclei ne
+      riducono la repulsione, e le reazioni a energia molto bassa avvengono
+      più in fretta che tra nuclei nudi. La fisica atomica fissa un massimo
+      per questo aumento, ma quello misurato è spesso circa il doppio. La
+      correzione va tolta prima di usare i dati per le stelle: l'enigma
+      aggiunge quindi un'incertezza a diversi tassi.
+    positions:
+      - who: Direct measurements
+        who_it: Misure dirette
+        text: >-
+          ³He(d,p)⁴He gives U_e = 219 ± 7 eV against the adiabatic limit of
+          120 eV (Aliotta et al. 2001); a hierarchical Bayesian reanalysis keeps
+          it high, 213 ± 13 eV (de Souza et al. 2019).
+        text_it: >-
+          La ³He(d,p)⁴He dà U_e = 219 ± 7 eV contro il limite adiabatico di
+          120 eV (Aliotta et al. 2001); una nuova analisi bayesiana gerarchica
+          lo conferma alto, 213 ± 13 eV (de Souza et al. 2019).
+        refs: [aliotta2001, desouza2019]
+      - who: Trojan Horse method
+        who_it: Metodo del cavallo di Troia
+        text: >-
+          The bare S-factor measured indirectly, compared with direct data,
+          gives U_e = 330 ± 40 eV for ⁷Li(p,α)α against 175 eV adiabatic
+          (Lattuada et al. 2001); for ³He(d,p) the Trojan Horse bare S-factor
+          was also used to extract the screening.
+        text_it: >-
+          Il fattore S nudo misurato per via indiretta, confrontato con i dati
+          diretti, dà U_e = 330 ± 40 eV per la ⁷Li(p,α)α contro 175 eV
+          adiabatici (Lattuada et al. 2001); anche per la ³He(d,p) il fattore S
+          nudo del cavallo di Troia è stato usato per ricavare lo schermaggio.
+        refs: [lattuada2001, lacognata2005]
+    settle: >-
+      Stopping powers measured at the lowest energies, since an error in them
+      mimics screening; experiments that vary the target environment; and a
+      theory of the effect that does not need a free potential.
+    settle_it: >-
+      Poteri frenanti misurati alle energie più basse, perché un loro errore
+      imita lo schermaggio; esperimenti che variano l'ambiente del bersaglio;
+      e una teoria dell'effetto che non richieda un potenziale libero.
+
+  - id: deuterium-cosmology
+    title: Primordial deuterium and the baryon density
+    title_it: Il deuterio primordiale e la densità di barioni
+    status: open
+    reactions: [2H-pg-3He]
+    summary: >-
+      The deuterium left from the Big Bang measures how much ordinary matter
+      the Universe contains, if the rate at which deuterium burned is known.
+      With the LUNA measurement, the Big Bang and the cosmic microwave
+      background give the same baryon density to 1.6%. Whether a small tension
+      remains depends on how the rate is analysed.
+    summary_it: >-
+      Il deuterio rimasto dal Big Bang misura quanta materia ordinaria contiene
+      l'Universo, se si conosce il tasso a cui il deuterio bruciò. Con la
+      misura di LUNA, il Big Bang e la radiazione cosmica di fondo danno la
+      stessa densità di barioni entro l'1,6%. Se resti una piccola tensione
+      dipende da come si analizza il tasso.
+    positions:
+      - who: Agreement
+        who_it: Accordo
+        text: >-
+          With the LUNA data, deuterium points to a baryon density in excellent
+          agreement with Planck (Mossa et al. 2020; Pisanti et al. 2021).
+        text_it: >-
+          Con i dati di LUNA, il deuterio indica una densità di barioni in
+          ottimo accordo con Planck (Mossa et al. 2020; Pisanti et al. 2021).
+        refs: [mossa2020, pisanti2021]
+      - who: A small tension
+        who_it: Una piccola tensione
+        text: >-
+          Pitrou et al. (2021) find a tension of about 1.8σ between the baryon
+          density from the light elements and from the CMB and baryon acoustic
+          oscillations.
+        text_it: >-
+          Pitrou et al. (2021) trovano una tensione di circa 1,8σ tra la
+          densità di barioni ricavata dagli elementi leggeri e quella dalla
+          radiazione di fondo e dalle oscillazioni acustiche dei barioni.
+        refs: [pitrou2021]
+    settle: >-
+      More precise rates of the deuteron–deuteron reactions, which enter the
+      deuterium error budget beside d(p,γ)³He, and an agreed energy
+      dependence of d(p,γ)³He at Big Bang energies.
+    settle_it: >-
+      Tassi più precisi delle reazioni deutone–deutone, che entrano nel
+      bilancio degli errori del deuterio accanto alla d(p,γ)³He, e un
+      andamento in energia condiviso della d(p,γ)³He alle energie del Big
+      Bang.
+
+  - id: aluminium-26-isomer
+    title: How much aluminium-26 shines?
+    title_it: Quanto alluminio-26 brilla?
+    status: open
+    reactions: [25Mg-pg-26Al]
+    curiosity: mgal-agb-aluminium-26
+    summary: >-
+      Aluminium-26 seen across the Galaxy through its 1809 keV γ-ray line is
+      made when magnesium-25 captures a proton. Only aluminium-26 made in its
+      ground state emits that line; a short-lived excited state decays without
+      it. The key resonance feeds the ground state only about half the time,
+      less than once adopted.
+    summary_it: >-
+      L'alluminio-26 visto in tutta la Galassia attraverso la sua riga γ a
+      1809 keV si forma quando il magnesio-25 cattura un protone. Solo
+      l'alluminio-26 prodotto nello stato fondamentale emette quella riga; uno
+      stato eccitato di vita breve decade senza emetterla. La risonanza chiave
+      alimenta lo stato fondamentale solo circa metà delle volte, meno di
+      quanto si adottasse.
+    positions:
+      - who: Strength of the 92 keV resonance
+        who_it: Intensità della risonanza a 92 keV
+        text: >-
+          Measured underground, first at LUNA and then at JUNA.
+        text_it: >-
+          Misurata sotto terra, prima a LUNA e poi a JUNA.
+        refs: [strieder2012, su2022]
+      - who: Ground-state fraction
+        who_it: Frazione verso lo stato fondamentale
+        text: >-
+          Kankainen et al. (2021) find f₀ = 0.52(2)(6), the most precise value
+          and at the lower end of the range adopted before, which means less
+          ground-state ²⁶Al and less 1809 keV emission.
+        text_it: >-
+          Kankainen et al. (2021) trovano f₀ = 0,52(2)(6), il valore più
+          preciso, all'estremo inferiore dell'intervallo adottato in
+          precedenza: meno ²⁶Al nello stato fondamentale e meno emissione a
+          1809 keV.
+        refs: [kankainen2021]
+    settle: >-
+      An independent measurement of the ground-state fraction, and of the
+      lower-energy resonances that matter at the temperatures of the
+      hydrogen-burning shells.
+    settle_it: >-
+      Una misura indipendente della frazione verso lo stato fondamentale, e
+      delle risonanze a energia più bassa che contano alle temperature dei
+      gusci in cui brucia l'idrogeno.
+    refs: [limata2010]
+
+  - id: carbon-fusion
+    title: Carbon fusion at stellar energies
+    title_it: La fusione del carbonio alle energie stellari
+    status: open
+    reactions: [12C-12Ca-20Ne, 12C-12Cp-23Na]
+    summary: >-
+      When two carbon nuclei fuse, a massive star moves to its last stages.
+      Measurements stop above the energies at which this happens, and their
+      extension downwards is disputed: the rate could fall (fusion hindrance),
+      keep its trend, or be raised by resonances that have not been seen
+      directly.
+    summary_it: >-
+      Quando due nuclei di carbonio si fondono, una stella massiccia passa alle
+      sue ultime fasi. Le misure si fermano sopra le energie a cui questo
+      avviene, e il loro prolungamento verso il basso è controverso: il tasso
+      potrebbe calare (soppressione della fusione), mantenere il suo
+      andamento, o essere aumentato da risonanze non ancora viste direttamente.
+    positions:
+      - who: Fusion hindrance
+        who_it: Soppressione della fusione
+        text: >-
+          Jiang et al. (2007) predict an S-factor that peaks and falls at low
+          energy. Uzawa and Hagino (2025), refitting the same data with a free
+          exponent, find no hindrance; the answer depends on the fit and on
+          the data sets chosen.
+        text_it: >-
+          Jiang et al. (2007) prevedono un fattore S che raggiunge un massimo e
+          poi cala a bassa energia. Uzawa e Hagino (2025), con un nuovo fit
+          degli stessi dati con esponente variabile, non trovano soppressione;
+          la risposta dipende dal fit e dalle serie di dati scelte.
+        refs: [jiang2007, uzawa2025]
+      - who: Low-energy resonances
+        who_it: Risonanze a bassa energia
+        text: >-
+          The Trojan Horse data of Tumino et al. (2018) show resonances that
+          would raise the rate strongly; Mukhamedzhanov et al. (2019) attribute
+          the rise to the plane-wave approximation, and the direct data of Tan
+          et al. (2020) disagree with it. 0⁺ cluster states of ²⁴Mg near
+          threshold are a possible physical origin (Adsley et al. 2022).
+        text_it: >-
+          I dati del cavallo di Troia di Tumino et al. (2018) mostrano risonanze
+          che aumenterebbero molto il tasso; Mukhamedzhanov et al. (2019)
+          attribuiscono l'aumento all'approssimazione a onde piane, e i dati
+          diretti di Tan et al. (2020) non lo confermano. Stati 0⁺ a grappolo
+          del ²⁴Mg vicino alla soglia ne sono una possibile origine fisica
+          (Adsley et al. 2022).
+        refs: [tumino2018, mukhamedzhanov2019, tan2020, adsley2022]
+      - who: Recent direct data
+        who_it: Dati diretti recenti
+        text: >-
+          STELLA finds a lower average S-factor than standard extrapolations at
+          2.2–2.6 MeV and cannot confirm an overall rise at deep sub-barrier
+          energies.
+        text_it: >-
+          STELLA trova un fattore S medio più basso delle estrapolazioni
+          standard a 2,2–2,6 MeV e non conferma un aumento complessivo a energie
+          molto sotto la barriera.
+        refs: [nippert2025]
+    settle: >-
+      Direct data below 2 MeV with background low enough to see single
+      resonances, the aim of an underground LUNA campaign, and a
+      Trojan Horse analysis whose distortions are agreed.
+    settle_it: >-
+      Dati diretti sotto 2 MeV con un fondo abbastanza basso da vedere singole
+      risonanze, l'obiettivo di una campagna sotterranea di LUNA, e un'analisi
+      del cavallo di Troia le cui distorsioni siano condivise.
+    refs: [gesue2025, moralesgallegos2024]
+
+  - id: neon-22-neutrons
+    title: Neon-22, neutrons or γ-rays?
+    title_it: Neon-22, neutroni o raggi γ?
+    status: open
+    reactions: [22Ne-an-25Mg, 22Ne-ag-26Mg]
+    curiosity: s-core-neon-22-rival
+    summary: >-
+      Neon-22 can capture helium in two ways: one frees a neutron, the other
+      does not. Which one wins decides how many neutrons massive stars and
+      thermal pulses of giant stars have for the s-process. Transfer
+      experiments suggest the two are about even at the key resonance; direct
+      measurements find the neutron channel about three times stronger.
+    summary_it: >-
+      Il neon-22 può catturare elio in due modi: uno libera un neutrone,
+      l'altro no. Quale prevalga decide quanti neutroni abbiano per il
+      processo s le stelle massicce e gli impulsi termici delle stelle
+      giganti. Gli esperimenti di trasferimento indicano che i due canali si
+      equivalgono alla risonanza chiave; le misure dirette trovano il canale
+      dei neutroni circa tre volte più intenso.
+    positions:
+      - who: Transfer reactions and evaluation
+        who_it: Reazioni di trasferimento e valutazione
+        text: >-
+          α-transfer at Texas A&M (Ota et al. 2020; Jayatissa et al. 2020) and
+          the evaluation of Adsley et al. (2021), which lowered the (α,n) rate
+          substantially and left the (α,γ) rate almost unchanged.
+        text_it: >-
+          Il trasferimento α a Texas A&M (Ota et al. 2020; Jayatissa et al. 2020)
+          e la valutazione di Adsley et al. (2021), che ha abbassato molto il
+          tasso (α,n) lasciando quasi invariato quello (α,γ).
+        refs: [ota2020, jayatissa2020, adsley2021]
+      - who: Direct measurements
+        who_it: Misure dirette
+        text: >-
+          The strength of the 830 keV resonance in (α,n), remeasured with a
+          stilbene detector, is about three times that in (α,γ) (Shahina et al.
+          2024).
+        text_it: >-
+          L'intensità della risonanza a 830 keV nella (α,n), rimisurata con un
+          rivelatore a stilbene, è circa tre volte quella nella (α,γ) (Shahina
+          et al. 2024).
+        refs: [shahina2024, massimi2017]
+    settle: >-
+      A direct (α,n) measurement in the Gamow window, the aim of the SHADES
+      project at the Bellotti Ion Beam Facility, and direct (α,γ) data below
+      the 830 keV resonance.
+    settle_it: >-
+      Una misura diretta della (α,n) nella finestra di Gamow, l'obiettivo del
+      progetto SHADES alla Bellotti Ion Beam Facility, e dati diretti della
+      (α,γ) sotto la risonanza a 830 keV.
+    refs: [rapagnani2022]
+
+  - id: carbon-13-pocket
+    title: How does the carbon-13 pocket form?
+    title_it: Come si forma la tasca di carbonio-13?
+    status: open
+    reactions: [13C-an-16O]
+    curiosity: s-pocket-carbon-13
+    summary: >-
+      Much of the s-process is driven by neutrons from a thin layer
+      of carbon-13 in giant stars. To make it, some protons must be mixed down
+      into the helium layer, but stellar models cannot yet do this from first
+      principles. They treat the pocket's size and shape as free parameters,
+      tuned to stardust grains and stellar spectra.
+    summary_it: >-
+      Buona parte del processo s è alimentata dai neutroni di uno strato
+      sottile di carbonio-13 nelle stelle giganti. Per crearlo,
+      alcuni protoni devono scendere mescolandosi nello strato di elio, ma i
+      modelli stellari non sanno ancora farlo a partire dai principi primi.
+      Trattano dimensione e forma della tasca come parametri liberi, regolati
+      sui grani di polvere stellare e sugli spettri delle stelle.
+    positions:
+      - who: Overshoot and rotation
+        who_it: Overshoot e rotazione
+        text: >-
+          Exponentially decaying overshoot at third dredge-up forms the pocket,
+          and rotation keeps mixing it in the interpulse (Herwig and Langer
+          2000).
+        text_it: >-
+          Un overshoot con efficienza che decade esponenzialmente durante il
+          terzo dragaggio forma la tasca, e la rotazione continua a mescolarla
+          tra un impulso e l'altro (Herwig e Langer 2000).
+        refs: [herwig2000]
+      - who: Magnetic buoyancy
+        who_it: Galleggiamento magnetico
+        text: >-
+          Mixing driven by magnetic buoyancy, built into stellar models, fits
+          the Ni, Sr, Zr, Mo and Ba isotope ratios of presolar SiC grains with
+          one field configuration (Vescovi et al. 2020).
+        text_it: >-
+          Un rimescolamento guidato dal galleggiamento magnetico, inserito nei
+          modelli stellari, riproduce i rapporti isotopici di Ni, Sr, Zr, Mo e
+          Ba dei grani presolari di SiC con un'unica configurazione del campo
+          (Vescovi et al. 2020).
+        refs: [vescovi2020]
+    settle: >-
+      Multidimensional simulations of the convective boundaries of giant
+      stars, tested against grain and spectroscopic data; on the nuclear side,
+      the ¹³C(α,n)¹⁶O rate is now measured in the Gamow window.
+    settle_it: >-
+      Simulazioni multidimensionali dei confini convettivi delle stelle
+      giganti, verificate sui dati dei grani e spettroscopici; sul fronte
+      nucleare, il tasso della ¹³C(α,n)¹⁶O è ora misurato nella finestra di
+      Gamow.
+    refs: [lugaro2023, straniero2006, ciani2021, gao2022]
+
+  - id: stellar-beta-decay
+    title: Decays that change inside stars
+    title_it: Decadimenti che cambiano dentro le stelle
+    status: open
+    reactions: [204Tl-ng-205Tl]
+    summary: >-
+      A half-life measured on Earth is that of a neutral atom. Inside a star
+      atoms lose their electrons and excited nuclear states are populated, so
+      some nuclei decay much faster, or decay at all. Bare rhenium-187 lives
+      33 years instead of 42 billion. Most stellar half-lives are computed,
+      not measured.
+    summary_it: >-
+      Un tempo di dimezzamento misurato sulla Terra è quello di un atomo
+      neutro. Dentro una stella gli atomi perdono gli elettroni e si popolano
+      stati nucleari eccitati, e alcuni nuclei decadono molto più in fretta, o
+      decadono soltanto lì. Il renio-187 nudo vive 33 anni invece di 42
+      miliardi. La maggior parte dei tempi di dimezzamento stellari è
+      calcolata, non misurata.
+    positions:
+      - who: Storage-ring measurements
+        who_it: Misure in anelli di accumulazione
+        text: >-
+          Bound-state β decay of bare ¹⁸⁷Re, 32.9 ± 2.0 yr (Bosch et al. 1996),
+          and of bare ²⁰⁵Tl, 291 (+33/−27) d, longer than the earlier
+          theoretical estimate (Leckenby et al. 2024).
+        text_it: >-
+          Decadimento β in stato legato del ¹⁸⁷Re nudo, 32,9 ± 2,0 anni (Bosch
+          et al. 1996), e del ²⁰⁵Tl nudo, 291 (+33/−27) giorni, più lungo
+          della stima teorica precedente (Leckenby et al. 2024).
+        refs: [bosch1996, leckenby2024]
+      - who: Tabulated stellar rates
+        who_it: Tassi stellari tabulati
+        text: >-
+          Most stellar decay rates in s-process models are calculated, many
+          of them taken from Takahashi and Yokoi (1987), and few can be
+          tested in the laboratory.
+        text_it: >-
+          La maggior parte dei tassi di decadimento stellari nei modelli del
+          processo s è calcolata, molti sono presi da Takahashi e Yokoi
+          (1987), e pochi si possono verificare in laboratorio.
+        refs: [takahashi1987]
+    settle: >-
+      More measurements of highly charged ions in storage rings, and of the
+      nuclear matrix elements of the excited states that thermal photons
+      populate.
+    settle_it: >-
+      Altre misure di ioni altamente carichi in anelli di accumulazione, e
+      degli elementi di matrice nucleari degli stati eccitati che i fotoni
+      termici popolano.
+
+  - id: i-process
+    title: Where does the i-process happen?
+    title_it: Dove avviene il processo i?
+    status: open
+    reactions: [13C-an-16O]
+    summary: >-
+      Some old stars show a mixture of heavy elements that neither the slow
+      nor the rapid neutron-capture process explains. An intermediate process,
+      with neutron densities near 10¹⁵ per cubic centimetre, reproduces them.
+      It needs protons mixed into a helium-burning zone, but which stars do
+      this is debated.
+    summary_it: >-
+      Alcune stelle antiche mostrano una miscela di elementi pesanti che né il
+      processo lento né quello rapido di cattura di neutroni spiegano. Un
+      processo intermedio, con densità di neutroni intorno a 10¹⁵ per
+      centimetro cubo, la riproduce. Richiede protoni mescolati in una zona in
+      cui brucia l'elio, ma quali stelle lo facciano è controverso.
+    positions:
+      - who: Network calculations
+        who_it: Calcoli di rete
+        text: >-
+          Constant neutron densities between those of the s- and r-processes
+          reproduce carbon-enhanced metal-poor stars with both s and r
+          signatures (Hampel et al. 2016).
+        text_it: >-
+          Densità di neutroni costanti, intermedie tra quelle dei processi s e
+          r, riproducono le stelle povere di metalli e ricche di carbonio con
+          firme sia s sia r (Hampel et al. 2016).
+        refs: [hampel2016]
+      - who: Candidate sites
+        who_it: Siti candidati
+        text: >-
+          Proton ingestion events in low-mass, low-metallicity AGB stars are a
+          promising candidate, but the site of the i-process is still a
+          matter of debate (Choplin et al. 2022).
+        text_it: >-
+          L'ingestione di protoni nelle stelle AGB di piccola massa e bassa
+          metallicità è un candidato promettente, ma il sito del processo i è
+          ancora oggetto di discussione (Choplin et al. 2022).
+        refs: [choplin2022]
+    settle: >-
+      Multidimensional simulations of proton ingestion, and measured neutron
+      captures on the unstable nuclei the i-process passes through; the
+      ¹³C(α,n)¹⁶O rate in its window is now measured directly.
+    settle_it: >-
+      Simulazioni multidimensionali dell'ingestione di protoni, e catture di
+      neutroni misurate sui nuclei instabili attraverso cui passa il processo
+      i; il tasso della ¹³C(α,n)¹⁶O nella sua finestra è ora misurato
+      direttamente.
+    refs: [gao2022, lugaro2023]

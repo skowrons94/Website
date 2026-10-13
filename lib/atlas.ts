@@ -156,6 +156,8 @@ export interface Reaction {
   evaluations: string[]
   rmatrix: string[]
   openQuestions: string[]
+  // --- lit --- "Did you know?" facts, each with its references
+  facts: { text: string; refs: string[] }[]
   related: string[]
   q: QValue | null
   gamow: GamowWindow[]
@@ -254,6 +256,29 @@ export interface GlossaryTerm {
   keywords: string[]
 }
 
+// --- lit ---
+export interface DebatePosition {
+  who: string
+  text: string
+  refs: string[]
+}
+
+/** An open question of the field (content/atlas/debates.yaml). */
+export interface Debate {
+  id: string
+  title: string
+  /** "converging" where the recent literature agrees on one answer. */
+  status: "open" | "converging"
+  summary: string
+  positions: DebatePosition[]
+  settle: string
+  reactions: string[]
+  /** A rate curiosity that shows what a different rate would change. */
+  curiosity: string | null
+  /** Every reference cited, positions first. */
+  refs: string[]
+}
+
 export interface Atlas {
   families: Family[]
   networks: Network[]
@@ -266,6 +291,8 @@ export interface Atlas {
   timelinePresent: boolean
   meta: AtlasMeta
   glossary: GlossaryTerm[]
+  // --- lit ---
+  debates: Debate[]
 }
 
 /* -- loading --------------------------------------------------------------- */
@@ -357,6 +384,13 @@ export function paragraphs(markdown: string, perParagraph = 3, minLength = 650):
 
 /** The glossary, in file order. */
 export const getGlossary = (lang: Lang = "en") => getAtlas(lang).glossary
+
+// --- lit ---
+/** The open questions, in file order. */
+export const getDebates = (lang: Lang = "en") => getAtlas(lang).debates
+
+/** The open questions that concern a reaction. */
+export const debatesFor = (id: string, lang: Lang = "en") => getAtlas(lang).debates.filter((d) => d.reactions.includes(id))
 
 /** Events that name a reaction, oldest first. */
 export function eventsFor(id: string, lang: Lang = "en"): TimelineEvent[] {

@@ -622,6 +622,9 @@ const en = {
     news: "News",
     exercises: "Exercises",
     exercisesDescription: "Three problems to solve with the atlas, the rates and an evaluation",
+    // --- lit ---
+    openQuestions: "Open questions",
+    openQuestionsDescription: "What the field still argues about, and what would settle it",
   },
   footer: {
     work: "Work",
@@ -649,6 +652,36 @@ const en = {
     exercises: "Exercises",
     // --- r11 sec ---
     privacy: "Privacy",
+  },
+  // --- lit --- the open questions (/atlas/open-questions)
+  openQuestions: {
+    meta: "Open questions · Reaction atlas",
+    description:
+      "The debates of nuclear astrophysics in plain language: who holds which view, the key papers, and what measurement would settle each one.",
+    title: "Open questions",
+    lead: "Where the measurements, the theory or the stars do not yet agree. Each question gives the positions as their authors state them, the key papers, and what would settle it; none is declared won unless the recent literature has converged.",
+    contents: "Questions",
+    open: "Open",
+    converging: "Converging",
+    convergingHint: "Recent measurements agree; the question is close to settled.",
+    positions: "Who holds which view",
+    settle: "What would settle it",
+    explore: "Explore",
+    atlasLink: "In the atlas",
+    dataLink: "Measurements in the data explorer",
+    ratesLink: "In the rate explorer",
+    curiosityLink: "What a different rate would change",
+    evaluationLink: "R-matrix evaluation",
+    references: "References",
+    badge: "An open question",
+    badges: (n: number) => `${n} open questions`,
+    onReaction: "Discussed on the open-questions page",
+    card: "Open questions",
+    cardText: "What the field still argues about, who holds which view, and what would settle it.",
+    link: "Open questions",
+    count: (n: number) => `${n} questions`,
+    // "Did you know?" on reaction pages
+    didYouKnow: "Did you know?",
   },
   // --- r11 site ---
   // "Report an error · Suggest a reaction" (components/report-links.tsx): a new
@@ -711,6 +744,8 @@ const en = {
       method: "Method",
       facility: "Laboratory",
       publication: "Paper",
+      // --- lit ---
+      question: "Open question",
     } as Record<string, string>,
     // Before anything is typed.
     tryLabel: "Try:",
@@ -1275,6 +1310,9 @@ const it: Dictionary = {
     news: "Novità",
     exercises: "Esercizi",
     exercisesDescription: "Tre problemi da risolvere con l'atlante, i tassi e una valutazione",
+    // --- lit ---
+    openQuestions: "Questioni aperte",
+    openQuestionsDescription: "Su che cosa si discute ancora, e che cosa lo risolverebbe",
   },
   footer: {
     work: "Lavoro",
@@ -1302,6 +1340,35 @@ const it: Dictionary = {
     exercises: "Esercizi",
     // --- r11 sec ---
     privacy: "Privacy",
+  },
+  // --- lit --- le questioni aperte (/it/atlas/open-questions)
+  openQuestions: {
+    meta: "Questioni aperte · Atlante delle reazioni",
+    description:
+      "I dibattiti dell'astrofisica nucleare in parole semplici: chi sostiene che cosa, gli articoli chiave e quale misura risolverebbe ciascuno.",
+    title: "Questioni aperte",
+    lead: "Dove le misure, la teoria o le stelle non concordano ancora. Per ogni questione trovi le posizioni come le espongono i loro autori, gli articoli chiave e che cosa la risolverebbe; nessuna è data per vinta, a meno che la letteratura recente non sia ormai concorde.",
+    contents: "Le questioni",
+    open: "Aperta",
+    converging: "In via di soluzione",
+    convergingHint: "Le misure recenti concordano; la questione è vicina a una soluzione.",
+    positions: "Chi sostiene che cosa",
+    settle: "Che cosa la risolverebbe",
+    explore: "Approfondisci",
+    atlasLink: "Nell'atlante",
+    dataLink: "Le misure nell'esploratore dei dati",
+    ratesLink: "Nell'esploratore dei tassi",
+    curiosityLink: "Che cosa cambierebbe un tasso diverso",
+    evaluationLink: "Valutazione R-matrix",
+    references: "Bibliografia",
+    badge: "Una questione aperta",
+    badges: (n: number) => `${n} questioni aperte`,
+    onReaction: "Discussa nella pagina delle questioni aperte",
+    card: "Questioni aperte",
+    cardText: "Su che cosa si discute ancora, chi sostiene che cosa, e che cosa lo risolverebbe.",
+    link: "Questioni aperte",
+    count: (n: number) => `${n} questioni`,
+    didYouKnow: "Lo sapevi?",
   },
   // --- r11 site ---
   report: {
@@ -1358,6 +1425,8 @@ const it: Dictionary = {
       method: "Metodo",
       facility: "Laboratorio",
       publication: "Articolo",
+      // --- lit ---
+      question: "Questione aperta",
     } as Record<string, string>,
     tryLabel: "Prova:",
     tryQueries: ["LUNA", "Sole", "processo s"],

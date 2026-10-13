@@ -173,6 +173,8 @@ export function SiteHeader({
     item("/atlas/methods", t.methods, d.methods),
     item("/atlas/timeline", t.timeline, d.timeline),
     item("/atlas/s-process", t.sProcess, d.sProcess),
+    // --- lit ---
+    item("/atlas/open-questions", t.openQuestions, t.openQuestionsDescription),
     item("/atlas/rates", t.rates, t.ratesDescription),
     item("/atlas/rates/curiosities", t.curiosities, t.curiositiesDescription),
     // --- data public ---

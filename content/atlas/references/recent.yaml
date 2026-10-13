@@ -221,7 +221,7 @@ leckenby2024:
   year: 2024
   doi: 10.1038/s41586-024-08130-4
   arxiv: "2411.08856"
-  checked: MPI-K and TRIUMF press releases, the Zenodo record of the analysis and the ORIGINS news item, by web search (bound-state β decay of bare ²⁰⁵Tl⁸¹⁺ in the GSI storage ring, half-life 291 +33/−27 days; 4.7 times longer than the earlier theoretical estimate; feeds the ²⁰⁵Pb chronometer); title, pages 321–326 and arXiv 2411.08856 from the GSI repository record, 2026-10-13
+  checked: MPI-K and TRIUMF press releases, the Zenodo record of the analysis and the ORIGINS news item, by web search (bound-state β decay of bare ²⁰⁵Tl⁸¹⁺ in the GSI storage ring, half-life 291 +33/−27 days; longer than the earlier theoretical estimate, by 4.7 times in the GSI record and the ORIGINS news but twice in the MPI-K press release, so no factor is quoted; feeds the ²⁰⁵Pb chronometer); title, pages 321–326 and arXiv 2411.08856 from the GSI repository record, 2026-10-13
 
 bosch1996:
   authors: F. Bosch et al.
@@ -238,3 +238,30 @@ lerendegui2023:
   year: 2023
   url: https://indico.cern.ch/event/1283224/contributions/5585039
   checked: Indico contribution page (results of the first measurement of the s-process branching-point reaction ⁷⁹Se(n,γ)), the 2020 n_TOF proposal (3 mg of ⁷⁹Se in a PbSe sample; i-TED) and the CERN EP newsletter item (EAR1 and EAR2; key to the s-only ⁸⁰Kr and ⁸²Kr), by web search; no journal article yet, 2026-10-13
+
+# --- Sources of the open-questions page ----------------------------------------
+
+mukhamedzhanov2024:
+  authors: A. M. Mukhamedzhanov, R. J. deBoer et al.
+  title: Asymptotic normalization coefficients for α + ¹²C synthesis and the S factor for ¹²C(α,γ)¹⁶O radiative capture
+  journal: Phys. Rev. C 110, 055803 (2024)
+  year: 2024
+  doi: 10.1103/PhysRevC.110.055803
+  checked: published record and the Texas A&M Cyclotron Institute progress report 2023–2024, by web search (R-matrix fits with AZURE2; with their larger subthreshold ANCs the total S(300 keV) is 174 keV b, against 137 keV b in deBoer et al. 2017), 2026-10-13
+
+herwig2000:
+  authors: F. Herwig, N. Langer
+  title: Formation of the neutron donor ¹³C in AGB stars by overshoot and rotation
+  journal: Mem. Soc. Astron. Ital. (invited talk, Torino–Melbourne–Pasadena workshop)
+  year: 2000
+  arxiv: astro-ph/0007390
+  checked: arXiv astro-ph/0007390 listing and the Potsdam abstract page, by web search (exponentially decaying overshoot during third dredge-up forms the pocket; rotation keeps mixing it during the interpulse); volume and page not seen, 2026-10-13
+
+choplin2022:
+  authors: A. Choplin, L. Siess, S. Goriely
+  title: The intermediate neutron capture process. III. The i-process in AGB stars of different masses and metallicities without overshoot
+  journal: Astron. Astrophys. 667, A155 (2022)
+  year: 2022
+  doi: 10.1051/0004-6361/202244360
+  arxiv: "2209.10303"
+  checked: arXiv 2209.10303 (proton ingestion events; "the astrophysical site of the i-process is still a matter of debate"; low-mass, low-metallicity AGB stars as candidates) and the A&A record (volume 667, A155, 22 November 2022, DOI), by web search, 2026-10-13
