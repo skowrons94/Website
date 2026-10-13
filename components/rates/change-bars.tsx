@@ -1,14 +1,14 @@
 "use client"
 
+import { useState } from "react"
+
 import { Sci } from "@/components/sci"
 import type { Lang } from "@/lib/locale"
+import { visible, type ChangeRow, type SplitChanges } from "@/lib/rates/changes"
+import { ratesDict } from "@/lib/rates/i18n"
 import { dec, sci } from "./format"
 
-export interface ChangeRow {
-  name: string
-  label: string
-  ratio: number
-}
+export type { ChangeRow }
 
 const STEPS = [1.1, 1.25, 1.5, 2, 3, 5, 10, 30, 100, 1e3, 1e4, 1e6, 1e9]
 
@@ -23,7 +23,8 @@ export function ratioText(r: number, lang: Lang): string {
  * The final abundances with the changed rates over the unchanged ones, one
  * diverging bar per nucleus on a symmetric log scale: right (violet) is
  * more, left (brown) is less — a pair kept apart from the series colours — and the label says ×2 or ÷2 in
- * words as well, so the direction never rests on colour alone.
+ * words as well, so the direction never rests on colour alone. Every bar is
+ * at least a few pixels long, so a change of 1% never reads as no change.
  */
 export function ChangeBars({
   rows,
@@ -70,9 +71,10 @@ export function ChangeBars({
                 <span className="absolute inset-y-0 left-1/2 w-px bg-[var(--viz-axis)]" aria-hidden />
                 <span
                   className="absolute top-1/2 h-3 -translate-y-1/2"
+                  data-bar
                   style={{
-                    left: up ? "50%" : `${50 + p * 50}%`,
-                    width: `${Math.max(Math.abs(p) * 50, 0.4)}%`,
+                    ...(up ? { left: "50%" } : { right: "50%" }),
+                    width: `max(6px, ${(Math.abs(p) * 50).toFixed(2)}%)`,
                     background: up ? "var(--rates-up)" : "var(--rates-down)",
                     borderRadius: up ? "0 4px 4px 0" : "4px 0 0 4px",
                   }}
@@ -89,6 +91,132 @@ export function ChangeBars({
           )
         })}
       </ul>
+    </div>
+  )
+}
+
+/**
+ * "What changes most" after a change: the changed reactions' own targets on
+ * a line of their own (expected), the knock-on effects on every other
+ * nucleus as bars (the news), the changes under 1% in a fold, and, when no
+ * other nucleus moved by 1%, why not in words, with a reaction to try
+ * instead (from the sensitivity tables).
+ */
+export function ChangeResult({
+  split,
+  changed,
+  decays,
+  lang,
+  cycle,
+  suggestion,
+  limit,
+}: {
+  split: SplitChanges
+  /** a rate has been changed */
+  changed: boolean
+  /** of each self-effect, whether its reaction is a decay */
+  decays: Map<string, boolean>
+  lang: Lang
+  /** the network's [name, "cycle" | "chain"] for the explanation */
+  cycle?: [string, string]
+  suggestion: { label: string; why: "slowest" | "sensitive"; factor: string; onTry: () => void } | null
+  /** bars shown before "show every nucleus" */
+  limit: number
+}) {
+  const t = ratesDict(lang)
+  const [all, setAll] = useState(false)
+  if (!changed)
+    return (
+      <p className="rounded-md border border-dashed border-border px-4 py-5 text-sm text-muted-foreground">
+        {t.noChange}
+      </p>
+    )
+  const { self, knock, small, state } = split
+  const moved = self.filter((r) => visible(r.ratio))
+  const [before, after] = suggestion ? t.trySuggest(suggestion.why, cycle?.[1]) : ["", ""]
+  return (
+    <div className="space-y-3" data-state={state}>
+      {self.length > 0 && (
+        <ul className="space-y-0.5 text-sm" data-self>
+          {self.map((r) => (
+            <li key={r.name}>
+              <span className="tabular font-medium">
+                <Sci>{t.selfLine(r.label, "")}</Sci>
+                <span style={{ color: r.ratio >= 1 ? "var(--rates-up)" : "var(--rates-down)" }}>
+                  <Sci>{ratioText(r.ratio, lang)}</Sci>
+                </span>
+              </span>{" "}
+              <span className="text-muted-foreground">{t.selfNote(decays.get(r.name) ?? false)}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+      {state === "knock" ? (
+        <div>
+          {self.length > 0 && (
+            <p className="mb-1.5 text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
+              {t.knockTitle}
+            </p>
+          )}
+          <ChangeBars
+            rows={all ? knock : knock.slice(0, limit)}
+            lang={lang}
+            label={t.changeChartLabel}
+            more={t.more}
+            less={t.less}
+          />
+          {knock.length > limit && (
+            <button
+              type="button"
+              onClick={() => setAll(!all)}
+              className="mt-2 min-h-8 text-sm text-link underline-offset-4 hover:underline"
+            >
+              {all ? t.showKeyNuclei : t.showAllNuclei}
+            </button>
+          )}
+        </div>
+      ) : (
+        <p className="text-pretty rounded-md border border-dashed border-border px-4 py-4 text-sm leading-relaxed" data-quiet>
+          <Sci>
+            {state === "self"
+              ? t.quietSelf(moved.map((r) => r.label).join(lang === "it" ? " e " : " and "), cycle)
+              : t.quietNone}
+          </Sci>
+          {suggestion && (
+            <>
+              {" "}
+              {before}
+              <button
+                type="button"
+                onClick={suggestion.onTry}
+                title={t.trySuggestTitle}
+                className="font-medium text-link underline underline-offset-4 hover:decoration-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <Sci>{suggestion.label}</Sci> <span className="tabular">{suggestion.factor}</span>
+              </button>
+              {after}
+            </>
+          )}
+        </p>
+      )}
+      {small.length > 0 && (
+        <details className="group text-sm">
+          <summary className="min-h-8 cursor-pointer py-1 text-muted-foreground hover:text-foreground">
+            {t.smallFold(small.length)}
+          </summary>
+          <ul className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5">
+            {small.map((r) => (
+              <li key={r.name} className="tabular whitespace-nowrap">
+                <span className="font-serif font-semibold">
+                  <Sci>{r.label}</Sci>
+                </span>{" "}
+                <Sci>{ratioText(r.ratio, lang)}</Sci>
+                <span className="sr-only"> {r.ratio >= 1 ? t.more : t.less}</span>
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
     </div>
   )
 }

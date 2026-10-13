@@ -18,11 +18,12 @@ import { networkProvider } from "@/lib/rates/rate-provider"
 import type { RunResult } from "@/lib/rates/run"
 import type { SProcessFirstView } from "@/lib/rates/first-view"
 import type { Network, Reaction } from "@/lib/rates/schema"
-import { ChangeBars, type ChangeRow } from "./change-bars"
+import { changedTargets, defaultReaction, splitChanges, sprocessChangeRows, suggestReaction, visible } from "@/lib/rates/changes"
+import { ChangeResult } from "./change-bars"
 import { BusyLine, Download, Figure, Fold, Formula, RATES_TOKENS, Segmented } from "./chart-kit"
 import { DistributionChart, type DistPoint } from "./distribution-chart"
 import { EvolutionChart } from "./evolution-chart"
-import { FactorSlider } from "./factor-slider"
+import { FactorSlider, factorText } from "./factor-slider"
 import { dec, density, duration, NB, sci, sig2, temperature, tShort } from "./format"
 import {
   ScenarioPanel,
@@ -32,7 +33,15 @@ import {
   sameConditions,
   type Conditions,
 } from "./scenario-panel"
-import { ChangesList, ReactionPicker, ResultStrip, SourceCell, StatusLine, type PickGroup } from "./what-if"
+import {
+  ChangesList,
+  ReactionPicker,
+  ResultStrip,
+  SourceCell,
+  StatusLine,
+  useRevealFirstResult,
+  type PickGroup,
+} from "./what-if"
 
 
 // shown on request only: its code loads then
@@ -51,6 +60,9 @@ const K_KEV = 86.17333 // keV per GK
  * first screen), then "what if" with one reaction at a time and its effect
  * in view, then the sensitivity map and the numbers.
  */
+/** The reactions of the picker's groups, in order. */
+const pickable = (n: Network) => (n.ui.groups ?? []).flatMap((g) => g.reactions)
+
 export function SProcessExplorer({
   lang,
   sOnly,
@@ -81,7 +93,6 @@ export function SProcessExplorer({
   const [mod, setMod] = useState<RunResult | null>(null)
   const [busy, setBusy] = useState(false)
   const [runError, setRunError] = useState<string | null>(null)
-  const [allChanges, setAllChanges] = useState(false)
   const [heavyOnly, setHeavyOnly] = useState<"heavy" | "light">("heavy")
   const [active, setActive] = useState<string | null>(null)
   const [sensOpen, setSensOpen] = useState(false)
@@ -89,14 +100,15 @@ export function SProcessExplorer({
 
   // a setting from the address (#site=massive-he-core&s=…): on load, and
   // when the address changes on the page (back/forward, a curiosity's "Try it")
-  const applyHash = (n: Network) => {
+  const applyHash = (n: Network, b: Baseline | null) => {
     const h = parseRatesHash(window.location.hash)
     const s = n.scenarios.find((x) => x.id === h.site) ?? n.scenarios[0]
     const sc = Object.fromEntries(Object.entries(h.scale).filter(([id]) => n.reactions.some((r) => r.id === id)))
     setScenarioId(s.id)
     setCond(fromScenario(s))
     setScale(sc)
-    setActive(Object.keys(sc)[0] ?? n.ui.groups?.[0]?.reactions[0] ?? null)
+    // a changed rate, else the picker's reaction whose doubling reaches most nuclei at this site
+    setActive(Object.keys(sc)[0] ?? defaultReaction(pickable(n), b?.suggest?.[s.id]))
     if (h.focus) showWhatIf()
   }
   const applyRef = useRef(applyHash)
@@ -108,7 +120,7 @@ export function SProcessExplorer({
       .then((d) => {
         if (!live) return
         setData(d)
-        applyRef.current(d.network)
+        applyRef.current(d.network, d.baseline)
       })
       .catch((e) => live && setError(String(e)))
     return () => {
@@ -118,7 +130,7 @@ export function SProcessExplorer({
 
   useEffect(() => {
     if (!data) return
-    const on = () => applyRef.current(data.network)
+    const on = () => applyRef.current(data.network, data.baseline)
     window.addEventListener("hashchange", on)
     return () => window.removeEventListener("hashchange", on)
   }, [data])
@@ -128,6 +140,7 @@ export function SProcessExplorer({
   const provider = useMemo(() => (network ? networkProvider(network) : null), [network])
   const decays = useMemo(() => (network && provider ? decayMap(network, provider) : null), [network, provider])
   const changed = Object.values(scale).some((v) => v !== 1)
+  useRevealFirstResult(changed && !busy && mod !== null && base !== mod, "sprocess-changes")
 
   // keep the address in step (replace, so the back button leaves the page)
   useEffect(() => {
@@ -202,25 +215,23 @@ export function SProcessExplorer({
         })
       })
     }
-    const changes: ChangeRow[] = []
-    if (baseDec && modDec && changed) {
-      network.nuclei.forEach((n, i) => {
-        const a = baseDec[i]
-        const b = modDec[i]
-        if (decays.branches.has(i) || Math.max(a, b) < 1e-14 || n.Z === 0 || n.name in notModelled) return
-        if ((heavyOnly === "heavy") !== n.Z >= 26) return
-        const ratio = a > 0 ? b / a : Infinity
-        if (Math.abs(Math.log10(ratio)) < 1e-3) return
-        changes.push({ name: n.name, label: n.label, ratio })
-      })
-      changes.sort((a, b) => Math.abs(Math.log10(b.ratio)) - Math.abs(Math.log10(a.ratio)))
-    }
-    return { X0, sOnlySet, notModelled, baseDec, modDec, points, changes }
+    const rows =
+      baseDec && modDec && changed ? sprocessChangeRows(network, baseDec, modDec, decays, heavyOnly === "heavy") : []
+    return { X0, sOnlySet, notModelled, baseDec, modDec, points, rows }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [network, scenario, decays, base, mod, changed, heavyOnly, sOnly])
+  // the changed reactions' own targets apart from the knock-on effects
+  const split = useMemo(() => {
+    if (!network || !results) return null
+    const targets = changedTargets(network, scale)
+    const selfDecay = new Map(
+      [...targets].map(([name, id]) => [name, network.reactions.find((r) => r.id === id)?.reactants.length === 1] as const),
+    )
+    return { changes: splitChanges(results.rows, targets), selfDecay }
+  }, [network, results, scale])
 
   if (error) return <p className="text-sm text-destructive">{error}</p>
-  if (!network || !scenario || !cond || !provider || !decays || !results || (!base && !runError)) {
+  if (!network || !scenario || !cond || !provider || !decays || !results || !split || (!base && !runError)) {
     // until the first burn is in, the server's first view stands in for it
     if (firstView) return <FirstView view={firstView} lang={lang} />
     return (
@@ -233,7 +244,8 @@ export function SProcessExplorer({
   const byId = new Map(network.reactions.map((r) => [r.id, r]))
   const custom = !sameConditions(cond, fromScenario(scenario))
   const altered = changed || custom
-  const { X0, sOnlySet, notModelled, baseDec, modDec, points, changes } = results
+  const { X0, sOnlySet, notModelled, baseDec, modDec, points } = results
+  const { changes, selfDecay } = split
 
   const stat = (r: RunResult | null) =>
     r
@@ -276,6 +288,24 @@ export function SProcessExplorer({
   })
   const activeR = (active && byId.get(active)) || pickGroups[0]?.reactions[0] || null
   const activeGroup = groups.find((g) => activeR && g.reactions.includes(activeR.id))
+  // when a change moved only its own target: the reaction that reaches furthest here, by the same factor
+  const changedIds = Object.keys(scale).filter((id) => scale[id] !== 1)
+  const suggested =
+    changed && changes.state !== "knock" ? suggestReaction(data?.baseline?.suggest?.[scenario.id], changedIds) : null
+  const suggestion = suggested
+    ? (() => {
+        const f = scale[(active && changedIds.includes(active) && active) || changedIds[0]]
+        return {
+          label: byId.get(suggested.id)?.label ?? suggested.id,
+          why: suggested.why,
+          factor: factorText(f, lang),
+          onTry: () => {
+            setScale({ [suggested.id]: f })
+            setActive(suggested.id)
+          },
+        }
+      })()
+    : null
   const tryRate = (id: string) => {
     setActive(id)
     setFactor(id, 2)
@@ -360,6 +390,9 @@ export function SProcessExplorer({
           onScenario={(s) => {
             setScenarioId(s.id)
             setCond(fromScenario(s))
+            // nothing changed yet: open "What if" on this site's most telling reaction
+            const was = defaultReaction(pickable(network), data?.baseline?.suggest?.[scenario.id])
+            if (!changed && active === was) setActive(defaultReaction(pickable(network), data?.baseline?.suggest?.[s.id]))
           }}
           cond={cond}
           setCond={setCond}
@@ -504,7 +537,7 @@ export function SProcessExplorer({
               }
             />
             <div className={`space-y-8 transition-opacity motion-reduce:transition-none ${busy ? "opacity-55" : ""}`}>
-              <div id="sprocess-changes" className="relative rounded-lg border border-border bg-card p-3 sm:p-4">
+              <div id="sprocess-changes" className="relative scroll-mt-24 rounded-lg border border-border bg-card p-3 sm:p-4">
                 <BusyLine busy={busy} />
                 <div className="flex flex-wrap items-end justify-between gap-3">
                   <div>
@@ -524,30 +557,15 @@ export function SProcessExplorer({
                   />
                 </div>
                 <div className="mt-3">
-                  {changes.length ? (
-                    <>
-                      <ChangeBars
-                        rows={allChanges ? changes : changes.slice(0, 10)}
-                        lang={lang}
-                        label={t.changeChartLabel}
-                        more={t.more}
-                        less={t.less}
-                      />
-                      {changes.length > 10 && (
-                        <button
-                          type="button"
-                          onClick={() => setAllChanges(!allChanges)}
-                          className="mt-2 min-h-8 text-sm text-link underline-offset-4 hover:underline"
-                        >
-                          {allChanges ? t.showKeyNuclei : t.showAllNuclei}
-                        </button>
-                      )}
-                    </>
-                  ) : (
-                    <p className="rounded-md border border-dashed border-border px-4 py-5 text-sm text-muted-foreground">
-                      {t.noChange}
-                    </p>
-                  )}
+                  <ChangeResult
+                    key={heavyOnly}
+                    split={changes}
+                    changed={changed}
+                    decays={selfDecay}
+                    lang={lang}
+                    suggestion={suggestion}
+                    limit={10}
+                  />
                 </div>
               </div>
 
@@ -616,7 +634,8 @@ export function SProcessExplorer({
           )}
         </div>
         <ResultStrip
-          rows={changes}
+          rows={changes.knock}
+          self={changes.self.filter((r) => visible(r.ratio))}
           busy={busy}
           href="#sprocess-results"
           lang={lang}

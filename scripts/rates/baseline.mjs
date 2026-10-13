@@ -7,7 +7,9 @@
  *   node scripts/rates/baseline.mjs [network ids...]
  *
  * It also writes public/rates/<id>.sensitivity.json, every reaction doubled
- * in turn (scripts/rates/sensitivity.mjs), for the one-click sensitivity map.
+ * in turn (scripts/rates/sensitivity.mjs), for the one-click sensitivity map,
+ * and ranks the reactions by their knock-on reach in that table (the
+ * baseline's `suggest`): "What if" opens on the best of them.
  *
  * The page shows these at once and compares every "what if" against them;
  * they come from the browser's own code, so an unmodified rerun in the
@@ -19,6 +21,7 @@ import path from "node:path"
 
 import { compiled, requestKey, run, scenarioRequest } from "../../lib/rates/run.ts"
 import { checkNetwork } from "../../lib/rates/schema.ts"
+import { rankReactions } from "../../lib/rates/changes.ts"
 import { sensitivity } from "./sensitivity.mjs"
 
 const DIR = path.join(process.cwd(), "public", "rates")
@@ -36,11 +39,14 @@ for (const file of fs.readdirSync(DIR).sort()) {
     runs[s.id] = { key: requestKey(req), ...res }
     console.log(`${network.id} ${s.id}: ${res.steps} steps, ${res.ms} ms, stopped on ${res.stopped}`)
   }
-  const out = path.join(DIR, `${network.id}.baseline.json`)
-  fs.writeFileSync(out, JSON.stringify({ network: network.id, generated: network.provenance.generated, runs }))
-  console.log(`  ${path.relative(process.cwd(), out)}: ${(fs.statSync(out).size / 1024).toFixed(0)} kB`)
   const t0 = Date.now()
+  const table = sensitivity(network)
   const sens = path.join(DIR, `${network.id}.sensitivity.json`)
-  fs.writeFileSync(sens, JSON.stringify(sensitivity(network)))
+  fs.writeFileSync(sens, JSON.stringify(table))
+  // the reactions "What if" opens on and suggests, from the same table
+  const suggest = rankReactions(network, table)
+  const out = path.join(DIR, `${network.id}.baseline.json`)
+  fs.writeFileSync(out, JSON.stringify({ network: network.id, generated: network.provenance.generated, runs, suggest }))
+  console.log(`  ${path.relative(process.cwd(), out)}: ${(fs.statSync(out).size / 1024).toFixed(0)} kB`)
   console.log(`  ${path.relative(process.cwd(), sens)}: ${(fs.statSync(sens).size / 1024).toFixed(0)} kB, ${Date.now() - t0} ms`)
 }

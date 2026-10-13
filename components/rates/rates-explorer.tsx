@@ -21,11 +21,13 @@ import { CuriosityStrip } from "./curiosity-card"
 import { parseRatesHash, ratesHash, showWhatIf } from "@/lib/rates/url"
 import { bottleneck, closes, dominantPath, heaviestProduct, integratedFlows, pathStart } from "@/lib/rates/flow"
 import { LUNA_RATES_PUBLIC } from "@/lib/rates/features"
+import { changedTargets, defaultReaction, lightChangeRows, splitChanges, suggestReaction, visible } from "@/lib/rates/changes"
 import { ratesDict } from "@/lib/rates/i18n"
 import { compiled, historyOf, providerFor, requestKey, type RunResult } from "@/lib/rates/run"
 import type { Network, Reaction, Scenario } from "@/lib/rates/schema"
 import { lifetimes } from "@/lib/rates/solver"
-import { ChangeBars, type ChangeRow } from "./change-bars"
+import { ChangeResult } from "./change-bars"
+import { factorText } from "./factor-slider"
 import { BusyLine, C, Download, Figure, Fold, Formula, RATES_TOKENS, SERIES, Segmented, Swatch } from "./chart-kit"
 import { EvolutionChart, type EvolutionSeries } from "./evolution-chart"
 import { FlowRing } from "./flow-ring"
@@ -43,7 +45,7 @@ import {
   shortName,
   type Conditions,
 } from "./scenario-panel"
-import { ChangesList, LunaMark, ReactionPicker, ResultStrip, SourceCell, StatusLine } from "./what-if"
+import { ChangesList, LunaMark, ReactionPicker, ResultStrip, SourceCell, StatusLine, useRevealFirstResult } from "./what-if"
 import { LunaPanel } from "./luna-panel"
 
 export interface NetworkTab {
@@ -139,7 +141,8 @@ function initState(n: Network, baseline: Baseline | null, h: ReturnType<typeof p
     refId: n.ui.reference,
     slots: fill3(plotted.slice(0, 3)),
     shown: fill3((n.ui.show ?? []).slice(0, 3)),
-    active: Object.keys(scale)[0] ?? n.ui.key?.[0] ?? null,
+    // a changed rate, else the key reaction whose doubling reaches most other nuclei here
+    active: Object.keys(scale)[0] ?? defaultReaction(n.ui.key ?? [], baseline?.suggest?.[s.id]),
     base: fresh,
     mod: Object.keys(scale).length || h?.luna ? null : fresh,
     luna: Boolean(h?.luna) && n.reactions.some((r) => r.alternatives?.length),
@@ -201,7 +204,6 @@ export function RatesExplorer({
   const [mod, setMod] = useState<RunResult | null>(init0?.mod ?? null)
   const [busy, setBusy] = useState(false)
   const [runError, setRunError] = useState<string | null>(null)
-  const [allChanges, setAllChanges] = useState(false)
   const [active, setActive] = useState<string | null>(init0?.active ?? null)
   const [sensOpen, setSensOpen] = useState(false)
   const [sens, setSens] = useState<SensitivityFile | null>(null)
@@ -295,6 +297,7 @@ export function RatesExplorer({
   // `changed`: the controls (immediate); `changedD`: what the results show
   const changed = Object.values(scale).some((v) => v !== 1) || luna
   const changedD = Object.values(scaleD).some((v) => v !== 1) || lunaD
+  useRevealFirstResult(changedD && !busy && mod !== null, "what-changes")
 
   // keep the address in step (replace, so the back button leaves the page)
   useEffect(() => {
@@ -449,18 +452,13 @@ export function RatesExplorer({
     const endIdx = !life.closed && last ? heaviestProduct(compiled(network), last.reaction) : undefined
     const pathEnd = endIdx !== undefined ? nucleus(endIdx).label : null
     const stalled = life.stall !== null
-    const changes: ChangeRow[] = []
-    if (base && mod && changedD) {
-      network.nuclei.forEach((n, i) => {
-        const a = base.final[i]
-        const b = mod.final[i]
-        if (Math.max(a, b) < 1e-20) return
-        const ratio = a > 0 ? b / a : b > 0 ? Infinity : 1
-        if (Math.abs(Math.log10(ratio)) < 4.3e-4) return
-        changes.push({ name: n.name, label: n.label, ratio })
-      })
-      changes.sort((a, b) => Math.abs(Math.log10(b.ratio)) - Math.abs(Math.log10(a.ratio)))
-    }
+    const rows = base && mod && changedD ? lightChangeRows(network, base.final, mod.final) : []
+    // the changed reactions' own targets (and the LUNA rates' when they are on) apart from the rest
+    const targets = changedTargets(network, { ...scaleD, ...Object.fromEntries(alts.map((id) => [id, 0])) })
+    const changes = splitChanges(rows, targets)
+    const selfDecay = new Map(
+      [...targets].map(([name, id]) => [name, (byId.get(id)?.reactants.length ?? 2) === 1] as const),
+    )
     const evo: EvolutionSeries[] = []
     if (mod) {
       shown.forEach((name, slot) => {
@@ -477,8 +475,8 @@ export function RatesExplorer({
         })
       })
     }
-    return { lifeRows, pathText, pathEnd, stalled, changes, evo }
-  }, [network, life, allSteps, slots, scaleD, changedD, base, mod, shown])
+    return { lifeRows, pathText, pathEnd, stalled, changes, selfDecay, evo }
+  }, [network, life, allSteps, slots, scaleD, alts, byId, changedD, base, mod, shown])
   const lifeRefs = useMemo(
     () => [
       { t: mod?.tFinal ?? condD?.time_s ?? 0, label: t.burnRef },
@@ -524,7 +522,7 @@ export function RatesExplorer({
     )
   }
 
-  const { lifeRows, pathText, pathEnd, stalled, changes, evo } = derived
+  const { lifeRows, pathText, pathEnd, stalled, changes, selfDecay, evo } = derived
   const sName = (s: Scenario) => (it ? s.name_it : s.name)
   const custom = !sameConditions(cond, fromScenario(scenario))
 
@@ -550,6 +548,31 @@ export function RatesExplorer({
   const keyReactions = keyIds.map((id) => byId.get(id)!).filter(Boolean)
   const otherReactions = network.reactions.filter((r) => !keyIds.includes(r.id))
   const activeR = (active && byId.get(active)) || keyReactions[0] || null
+  // when a change moved only its own target: the bottleneck, or the reaction
+  // that reaches furthest here, by the same factor, in place of the change
+  const changedIds = Object.keys(scaleD).filter((id) => scaleD[id] !== 1)
+  const suggested =
+    changes.state !== "knock" && changedIds.length
+      ? suggestReaction(
+          data?.baseline?.suggest?.[scenario.id],
+          changedIds,
+          life.slow.step ? network.reactions[life.slow.step.reaction].id : null,
+        )
+      : null
+  const suggestion = suggested
+    ? (() => {
+        const f = scaleD[(active && changedIds.includes(active) && active) || changedIds[0]]
+        return {
+          label: byId.get(suggested.id)?.label ?? suggested.id,
+          why: suggested.why,
+          factor: factorText(f, lang),
+          onTry: () => {
+            setScale({ [suggested.id]: f })
+            setActive(suggested.id)
+          },
+        }
+      })()
+    : null
   const tryRate = (id: string) => {
     setActive(id)
     setFactor(id, 2)
@@ -681,6 +704,9 @@ export function RatesExplorer({
           onScenario={(s) => {
             setScenarioId(s.id)
             setCond(fromScenario(s))
+            // nothing changed yet: open "What if" on this site's most telling reaction
+            if (!changed && active === defaultReaction(keyIds, data?.baseline?.suggest?.[scenario.id]))
+              setActive(defaultReaction(keyIds, data?.baseline?.suggest?.[s.id]))
           }}
           cond={cond}
           setCond={setCond}
@@ -960,37 +986,22 @@ export function RatesExplorer({
               }
             />
             <div className={`space-y-8 transition-opacity motion-reduce:transition-none ${busy ? "opacity-55" : ""}`}>
-              <div id="what-changes" className="relative rounded-lg border border-border bg-card p-3 sm:p-4">
+              <div id="what-changes" className="relative scroll-mt-24 rounded-lg border border-border bg-card p-3 sm:p-4">
                 <BusyLine busy={busy} />
                 <h3 className="font-serif text-lg font-semibold tracking-tight">{t.changedTitle}</h3>
                 <p className="mt-1 text-sm text-muted-foreground">
                   {t.changedLead(runTime, changedD ? baseTime : undefined)}
                 </p>
                 <div className="mt-3">
-                  {changes.length ? (
-                    <>
-                      <ChangeBars
-                        rows={allChanges ? changes : changes.slice(0, 8)}
-                        lang={lang}
-                        label={t.changeChartLabel}
-                        more={t.more}
-                        less={t.less}
-                      />
-                      {changes.length > 8 && (
-                        <button
-                          type="button"
-                          onClick={() => setAllChanges(!allChanges)}
-                          className="mt-2 min-h-8 text-sm text-link underline-offset-4 hover:underline"
-                        >
-                          {allChanges ? t.showKeyNuclei : t.showAllNuclei}
-                        </button>
-                      )}
-                    </>
-                  ) : (
-                    <p className="rounded-md border border-dashed border-border px-4 py-5 text-sm text-muted-foreground">
-                      {t.noChange}
-                    </p>
-                  )}
+                  <ChangeResult
+                    split={changes}
+                    changed={changedD}
+                    decays={selfDecay}
+                    lang={lang}
+                    cycle={t.cycleOf[network.id]}
+                    suggestion={suggestion}
+                    limit={8}
+                  />
                 </div>
               </div>
               <div>
@@ -1073,7 +1084,8 @@ export function RatesExplorer({
           )}
         </div>
         <ResultStrip
-          rows={changes}
+          rows={changes.knock}
+          self={changes.self.filter((r) => visible(r.ratio))}
           busy={busy}
           href="#what-if-results"
           lang={lang}
