@@ -162,43 +162,42 @@ export function SiteHeader({
   const item = (path: string, label: string, description: string): Item => ({ href: to(path), label, description })
 
   const research = item("/research", t.research, d.research)
-  const atlas = item("/atlas", t.atlas, d.atlas)
-  const evaluations = item("/evaluations", t.evaluations, d.evaluations)
   const publications = item("/publications", t.publications, d.publications)
   const cv = item("/cv", t.cv, d.cv)
   const software = item("/software", t.software, d.software)
+  // The tools, in one menu, the same as the footer's "Explore" column.
+  const explore: Item[] = [
+    item("/atlas", t.atlas, d.atlas),
+    item("/data", t.data, t.dataDescription),
+    item("/atlas/rates", t.rates, t.ratesDescription),
+    item("/evaluations", t.evaluations, d.evaluations),
+  ]
   const learn: Item[] = [
     item("/notes", t.notes, d.notes),
     item("/glossary", t.glossary, d.glossary),
+    item("/learn/exercises", t.exercises, t.exercisesDescription),
     item("/atlas/methods", t.methods, d.methods),
     item("/atlas/timeline", t.timeline, d.timeline),
     item("/atlas/s-process", t.sProcess, d.sProcess),
-    // --- lit ---
     item("/atlas/open-questions", t.openQuestions, t.openQuestionsDescription),
-    item("/atlas/rates", t.rates, t.ratesDescription),
     item("/atlas/rates/curiosities", t.curiosities, t.curiositiesDescription),
-    // --- data public ---
-    item("/data", t.data, t.dataDescription),
-    // --- find ---
-    item("/learn/exercises", t.exercises, t.exercisesDescription),
-    item("/about", t.about, t.aboutDescription),
   ]
-  const bar: Item[] = [research, atlas, evaluations, publications, software, cv]
+  const bar: Item[] = [research, publications, software, cv]
   const groups: { id: string; title: string; items: Item[] }[] = [
-    { id: "work", title: t.groups.work, items: [research, publications, cv, software] },
-    { id: "explore", title: t.groups.explore, items: [atlas, evaluations] },
+    { id: "work", title: t.groups.work, items: bar },
+    { id: "explore", title: t.groups.explore, items: explore },
     { id: "learn", title: t.groups.learn, items: learn },
   ]
 
-  // The atlas' own pages that live under Learn do not light up "Atlas".
+  // The most specific item only: on /atlas/rates/curiosities neither "Reaction
+  // rates" nor "Atlas" lights up, on /atlas/methods not "Atlas".
+  const every = [...bar, ...explore, ...learn]
   const isActive = (href: string) => {
-    const on = pathname === href || pathname.startsWith(`${href}/`)
-    if (!on) return false
-    const under = (l: Item) => pathname === l.href || pathname.startsWith(`${l.href}/`)
-    if (href === atlas.href) return !learn.some(under)
-    // The most specific item only: the curiosities, not also "Reaction rates".
-    return !learn.some((l) => l.href.length > href.length && l.href.startsWith(`${href}/`) && under(l))
+    const under = (h: string) => pathname === h || pathname.startsWith(`${h}/`)
+    if (!under(href)) return false
+    return !every.some((l) => l.href.length > href.length && l.href.startsWith(`${href}/`) && under(l.href))
   }
+  const exploreActive = explore.some((l) => isActive(l.href))
   const learnActive = learn.some((l) => isActive(l.href))
 
   // A new page closes the menu; so does Escape, which hands focus back to the
@@ -254,7 +253,10 @@ export function SiteHeader({
               </li>
             ))}
             <li>
-              <LearnMenu label={t.learn} items={learn} active={learnActive} isActive={isActive} />
+              <NavMenu label={t.groups.explore} items={explore} active={exploreActive} isActive={isActive} />
+            </li>
+            <li>
+              <NavMenu label={t.learn} items={learn} active={learnActive} isActive={isActive} />
             </li>
           </ul>
         </nav>
@@ -353,13 +355,13 @@ function BarLink({ item, active }: { item: Item; active: boolean }) {
 }
 
 /**
- * "Learn ▾": a disclosure (a button that shows and hides a list of links),
+ * "Explore ▾" and "Learn ▾": a disclosure (a button that shows and hides a list of links),
  * not an ARIA menu, since what it holds is navigation. Escape closes it and
  * returns focus to the button; so does a click outside it, or focus leaving
  * it. The arrow keys move between its links, and Down on the button opens it
  * on the first one.
  */
-function LearnMenu({
+function NavMenu({
   label,
   items,
   active,
