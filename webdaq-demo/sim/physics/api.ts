@@ -162,8 +162,22 @@ export interface PhysicsEngine {
    * Null when the channel has nothing to show.
    */
   waveform(ch: number): Int16Array | null
-  /** Beam-current readings at simulated time t_s: [target, coll. 1, coll. 2, idle], µA. */
+  /**
+   * Beam-current readings at demo time t_s (seconds since the demo session
+   * started, NOT since run start): [target, coll. 1, coll. 2, idle], µA.
+   * Must be a pure function of (seed, scenario, t_s) — no hidden state — so the
+   * live plot, the charge integral and current.txt can all be recomputed for
+   * any instant. The state machine samples it at 10 Hz.
+   */
   beamSample(t_s: number): [number, number, number, number]
+  /**
+   * The true calibration of channel ch at the current registers, as the
+   * `offset slope` line of calib/<name>_<id>.cal (energy = offset + slope·bin,
+   * keV). The state machine seeds the calibration file with it when the board
+   * is added (design §3.4: spectra start in keV), and never again — changing
+   * the gain later de-calibrates the spectrum, as on real hardware.
+   */
+  calibration(ch: number): [number, number]
   /** Fitted peak near energy_keV on channel ch, or null when there is none. */
   fwhmProbe(ch: number, energy_keV: number): FwhmProbe | null
   /** JSON-serialisable state for sessionStorage (spectra compactly encoded). */
@@ -356,6 +370,9 @@ export function createPhysics(seed: number): PhysicsEngine {
       const out = new Int16Array(len)
       for (let i = 0; i < len; i++) out[i] = base + Math.round((rnd() - 0.5) * 8)
       return out
+    },
+    calibration() {
+      return board?.dpp === 'DPP-PSD' ? [0, 0.125] : [0, 0.25]
     },
     beamSample() {
       const I = scenario.source === 'n14pg' ? scenario.beam_I0_uA : 0

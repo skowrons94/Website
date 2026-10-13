@@ -72,7 +72,8 @@ in **`sim/physics/api.ts`**. It declares the types and exports:
 | `engine.spectrum(ch)` | `GET /histograms/<b>/<ch>`, ROI integrals, `roi.json` | live `Uint32Array` (32768 PHA energy / 65536 PSD Q_long) |
 | `engine.psd(ch)` | `GET /psd/<b>/<ch>` | `Uint32Array` 2048 × 256, x fastest, or null |
 | `engine.waveform(ch)` | `GET /waveforms/1/<b>/<ch>` while running with waveforms on | `Int16Array` (probe of `0x8000[13:12]`), or null |
-| `engine.beamSample(t_s)` | 10 Hz beam sampling (current, charge, `current.txt`) | `[target, coll1, coll2, idle]` µA |
+| `engine.beamSample(t_s)` | 10 Hz beam sampling (current, charge, `current.txt`); `t_s` is demo time, and the result must be a pure function of (seed, scenario, t_s) | `[target, coll1, coll2, idle]` µA |
+| `engine.calibration(ch)` | once, when the board is added: seeds `calib/V1730_0.cal` | `[offset, slope]` keV per bin |
 | `engine.fwhmProbe(ch, E)` | the tour's live line | `{energy_keV, centroid_keV, fwhm_keV, counts}` or null |
 | `engine.snapshot()` / `restore()` | sessionStorage snapshots | JSON-serialisable |
 | `th1f`, `th2f`, `emptyTH1F`, `waveformTH1F` | every histogram/trace response | TBufferJSON-shaped objects for `JSROOT.parse` |
