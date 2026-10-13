@@ -40,7 +40,7 @@ organisation:
     date_it: lug 2026
     event: R-Matrix Workshop on Methods and Applications
     place: Oak Ridge National Laboratory, TN, USA
-    role: Member of International Committee
+    role: Member of the International Committee
     role_it: Membro del comitato internazionale
   - date: Jun 2026
     date_it: giu 2026
@@ -54,9 +54,9 @@ organisation:
     event: HELIUM Workshop
     place: HZDR, Dresden, Germany
     place_it: HZDR, Dresda, Germania
-    role: Co-Chair
+    role: Co-chair
     role_it: Co-presidente
-  - date: 2024 — 2025
+  - date: 2024–2025
     event: IReNA Online Seminar Organizing Committee
     role: Member
     role_it: Membro
@@ -64,7 +64,7 @@ organisation:
     date_it: mag 2023
     event: 2nd Frontiers in Nuclear Astrophysics Summer School
     place: East Lansing, Michigan, USA
-    role: Member of Organizing Committee
+    role: Member of the Organizing Committee
     role_it: Membro del comitato organizzatore
 
 participation:
@@ -114,7 +114,7 @@ participation:
     event: 16th International Symposium on Nuclei in the Cosmos
     place: Online
     title: "Poster: Measurement and analysis for a study of ¹²C(p,γ)¹³N and ¹³C(p,γ)¹⁴N"
-  - date: 2020 — 2022
+  - date: 2020–2022
     event: Schools and national congresses
     event_it: Scuole e congressi nazionali
     title: >-
