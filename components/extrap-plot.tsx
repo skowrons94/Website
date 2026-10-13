@@ -932,6 +932,7 @@ export function ExtrapPlot({
             </ul>
             <p className="text-xs text-muted-foreground">{rich(t.sZeroNote)}</p>
             <p className="text-xs text-muted-foreground">{rich(t.rateNote)}</p>
+            <p className="text-xs text-muted-foreground">{t.noBands}</p>
           </CardContent>
         </Card>
       )}

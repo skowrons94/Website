@@ -10,12 +10,43 @@
     "⁴He(α,α)⁴He"
   ],
   "datasets": {
-    "tombrello_aa_ang1": "Tombrello",
-    "tombrello_aa_ang2": "Tombrello",
-    "tombrello_aa_ang3": "Tombrello",
-    "tombrello_aa_ang4": "Tombrello",
-    "tombrello_aa_ang5": "Tombrello"
+    "tombrello_aa_ang1": {
+      "label": "Tombrello 1963",
+      "authors": "T. A. Tombrello and L. S. Senhouse",
+      "ref": "Phys. Rev. 129, 2252 (1963)",
+      "doi": "10.1103/PhysRev.129.2252"
+    },
+    "tombrello_aa_ang2": {
+      "label": "Tombrello 1963",
+      "authors": "T. A. Tombrello and L. S. Senhouse",
+      "ref": "Phys. Rev. 129, 2252 (1963)",
+      "doi": "10.1103/PhysRev.129.2252"
+    },
+    "tombrello_aa_ang3": {
+      "label": "Tombrello 1963",
+      "authors": "T. A. Tombrello and L. S. Senhouse",
+      "ref": "Phys. Rev. 129, 2252 (1963)",
+      "doi": "10.1103/PhysRev.129.2252"
+    },
+    "tombrello_aa_ang4": {
+      "label": "Tombrello 1963",
+      "authors": "T. A. Tombrello and L. S. Senhouse",
+      "ref": "Phys. Rev. 129, 2252 (1963)",
+      "doi": "10.1103/PhysRev.129.2252"
+    },
+    "tombrello_aa_ang5": {
+      "label": "Tombrello 1963",
+      "authors": "T. A. Tombrello and L. S. Senhouse",
+      "ref": "Phys. Rev. 129, 2252 (1963)",
+      "doi": "10.1103/PhysRev.129.2252"
+    }
   },
+  "notes": [
+    {
+      "text": "These datasets carry a fixed normalization factor of 2 (identical-particle convention between the data and the code); explanation from the analyst pending.",
+      "text_it": "Queste serie di dati hanno un fattore di normalizzazione fisso pari a 2 (convenzione per particelle identiche tra i dati e il codice); la spiegazione dell'analista è in attesa."
+    }
+  ],
   "atlas": [
     "4He-aa-12C"
   ]

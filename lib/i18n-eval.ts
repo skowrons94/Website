@@ -27,7 +27,7 @@ const en = {
     eyebrow: "Running on AZURE2",
     title: "R-matrix evaluations",
     introBefore:
-      "Each of these is a multi-level, multi-channel R-matrix fit. Open one to see its level scheme and the data it was fitted to, then move a level energy or a reduced width and see the cross section and the χ² change — the calculation is AZURE2 itself, not an approximation. Every evaluation can also be downloaded as an ",
+      "Each of these is a multi-level, multi-channel R-matrix fit. Open one to see its level scheme and the data it was fitted to, then move a level energy or a width and see the cross section and the χ² change — the calculation is AZURE2 itself, not an approximation. Every evaluation can also be downloaded as an ",
     introAfter: " project and run locally.",
     loading: "Loading evaluations…",
     loadFailed: "The evaluations could not be loaded.",
@@ -105,6 +105,25 @@ const en = {
     whatIsThis: "What am I looking at?",
     citeWhatNoPaper:
       "Cite AZURE2 for the code, and this page (with its version) if you use the interactive calculation or its numbers. The measured data belong to their authors: cite the original papers listed in the table of the Plot & data tab.",
+    // --- r18: disclosure ---
+    inProgress: "Work in progress",
+    notesTitle: "Notes on this model",
+    /** Around the paper's citation, which the page inserts twice. */
+    preliminary: [
+      "The model file shown here is a preliminary version of the R-matrix model behind ",
+      ". It does not yet reproduce the published best fit; the converged parameters will replace it. For the published results, see ",
+      ".",
+    ] as [string, string, string],
+    bands: (scattering: boolean): string =>
+      scattering
+        ? "The model curves on this page are best-fit curves, without uncertainty bands."
+        : "The S-factor and extrapolation curves on this page are best-fit curves, without uncertainty bands.",
+    pinnedNorms: (names: string, n: number) =>
+      n === 1
+        ? `This scale is fixed: the normalization of ${names} enters the fit with an uncertainty of 0.1% or less.`
+        : `These scales are fixed: the normalizations of ${names} enter the fit with an uncertainty of 0.1% or less.`,
+    fixedNorms: (list: string) => `Normalizations not varied by the fit (fixed in the model file): ${list}.`,
+    and: "and",
   },
 
   /* -- the evaluation workspace ------------------------------------------- */
@@ -265,7 +284,7 @@ const en = {
     tipData: "data × n",
     keyLabel: "Key",
     keyText: "Points: measured data × their normalization n, with ±1σ error bars. Solid line: the R-matrix model.",
-    keyOriginal: "Dashed grey line: the fit as published, before your changes.",
+    keyOriginal: "Dashed grey line: the evaluation's own fit, before your changes.",
     zoomHint: "Drag across the plot to zoom in; double-click to reset.",
     resetZoom: "Reset zoom",
     save: "Save",
@@ -301,7 +320,7 @@ const en = {
     editLevel: "Adjust its parameters →",
     // --- evaluations (round 4) ---
     modelLine: "R-matrix model",
-    publishedFit: "published fit",
+    publishedFit: "evaluation's fit",
     // --- evaluations (round 5: the model beyond the data) ---
     modelBeyond: "model beyond the data",
     extend: "Extend beyond data",
@@ -312,7 +331,11 @@ const en = {
     resetAllHint: "Back to the evaluation's own parameters (every level)",
     view: "View",
     chi2Plain:
-      "χ²/N near 1 means the line passes through the points within their error bars; above 1 it misses some of them by more, often because of normalizations and systematic effects that the error bars leave out.",
+      "χ²/N near 1 means the line passes through the points within their error bars; above 1 it misses some of them by more. Normalizations, systematic effects that the error bars leave out and a model that is not yet converged can all contribute.",
+    chi2Preliminary:
+      "For this evaluation, the model file is a preliminary version that does not yet reproduce the published best fit (see the note at the top of the page).",
+    refPending: "Reference to be confirmed",
+    noBands: "Best-fit curves only: no uncertainty band is drawn.",
     chi2NormNote: (allOne: boolean) =>
       `This page does not refit the normalizations: they stay at the values stored in the file${allOne ? " (n = 1 for every dataset)" : ""}, and the χ² shown counts only each point's own uncertainty, not a dataset's overall scale uncertainty.`,
     chi2AllSummary: "χ² for all the data in the fit",
@@ -415,15 +438,15 @@ const en = {
     longer: "taking longer than usual",
     busy: (n: string) => `The server is busy. Trying again in ${n} s…`,
     extrapStale: "Faded: the extrapolations from before your change, shown until the new ones are ready.",
-    previewNote: "The published fit is shown while the calculation starts; a change you make now is sent as soon as it is ready.",
+    previewNote: "The evaluation's own fit is shown while the calculation starts; a change you make now is sent as soon as it is ready.",
     skipToLevels: "Skip to the levels",
     skipToPlot: "Back to the plot",
     nFreeParams: (n: number) => `${n} free`,
-    publishedFitLegend: "published fit (before your change)",
+    publishedFitLegend: "evaluation's fit (before your change)",
     muchWorse: (x: string) => `much worse, ×${x}`,
     muchBetter: (x: string) => `much better, ÷${x}`,
     chi2Huge:
-      "Large here because these data have very small error bars: a small shift of a narrow resonance moves the line off many points at once.",
+      "Much larger after this change: the line now misses many points at once, as happens when a narrow resonance moves even a little.",
     gridTitle: "Energy × angle grids",
     gridText: (n: number) =>
       `${n === 1 ? "This curve is" : "These curves are"} a differential cross section on a grid of energies and angles: shown on request, as a few angles or as a map.`,
@@ -450,7 +473,7 @@ const en = {
     better: "much better",
     sharing: "the server is preparing other models too",
     noSpare: "First change on this model: it is still being prepared. Later changes are much quicker.",
-    publishedShown: "Published curves shown, faded; yours appear when ready.",
+    publishedShown: "The evaluation's own curves are shown, faded; yours appear when ready.",
     gridSummaryOne: (ne: number, e0: string, e1: string, a: string) => `${ne} energies (${e0}–${e1} MeV) at ${a}°`,
   },
 
@@ -465,7 +488,7 @@ const en = {
     curveAlmost: "Smooth curve almost ready; until then, the line through the points is shown.",
     chi2Settled: (v: string) => `χ²/N of the shown datasets: ${v}.`,
     chi2AllDiffers: "on all data:",
-    chi2Published: "the published fit; see why it is above 1",
+    chi2Published: "the evaluation's own fit; see why it is above 1",
     sLowest: "S at the lowest energy",
   },
   // --- r13 final ---
@@ -485,7 +508,7 @@ const it: EvalDictionary = {
     eyebrow: "Calcolate con AZURE2",
     title: "Valutazioni R-matrix",
     introBefore:
-      "Ognuna di queste è un fit R-matrix a più livelli e più canali. Aprine una per vedere il suo schema dei livelli e i dati del fit, poi sposta l'energia di un livello o una larghezza ridotta e osserva come rispondono la sezione d'urto e il χ²: il calcolo è il vero codice AZURE2, non un'approssimazione. Ogni valutazione si può anche scaricare come progetto ",
+      "Ognuna di queste è un fit R-matrix a più livelli e più canali. Aprine una per vedere il suo schema dei livelli e i dati del fit, poi sposta l'energia di un livello o una larghezza e osserva come rispondono la sezione d'urto e il χ²: il calcolo è il vero codice AZURE2, non un'approssimazione. Ogni valutazione si può anche scaricare come progetto ",
     introAfter: " ed eseguire in locale.",
     loading: "Caricamento delle valutazioni…",
     loadFailed: "Non è stato possibile caricare le valutazioni.",
@@ -565,6 +588,24 @@ const it: EvalDictionary = {
     whatIsThis: "Che cosa sto guardando?",
     citeWhatNoPaper:
       "Cita AZURE2 per il codice e questa pagina (con la sua versione) se usi il calcolo interattivo o i suoi numeri. I dati misurati appartengono ai loro autori: cita gli articoli originali elencati nella tabella della scheda Grafico e dati.",
+    // --- r18: disclosure ---
+    inProgress: "Lavoro in corso",
+    notesTitle: "Note su questo modello",
+    preliminary: [
+      "Il file del modello mostrato qui è una versione preliminare del modello R-matrix alla base di ",
+      ". Non riproduce ancora il fit migliore pubblicato; i parametri a convergenza lo sostituiranno. Per i risultati pubblicati, vedi ",
+      ".",
+    ] as [string, string, string],
+    bands: (scattering: boolean): string =>
+      scattering
+        ? "Le curve del modello in questa pagina sono le curve del fit migliore, senza fasce d'incertezza."
+        : "Le curve del fattore S e delle estrapolazioni in questa pagina sono le curve del fit migliore, senza fasce d'incertezza.",
+    pinnedNorms: (names: string, n: number) =>
+      n === 1
+        ? `Questa scala è fissa: la normalizzazione di ${names} entra nel fit con un'incertezza dello 0,1% o meno.`
+        : `Queste scale sono fisse: le normalizzazioni di ${names} entrano nel fit con un'incertezza dello 0,1% o meno.`,
+    fixedNorms: (list: string) => `Normalizzazioni non variate nel fit (fisse nel file del modello): ${list}.`,
+    and: "e",
   },
 
   /* -- the evaluation workspace ------------------------------------------- */
@@ -727,7 +768,7 @@ const it: EvalDictionary = {
     tipData: "dati × n",
     keyLabel: "Legenda",
     keyText: "Punti: dati misurati × la loro normalizzazione n, con barre d'errore di ±1σ. Linea continua: il modello R-matrix.",
-    keyOriginal: "Linea grigia tratteggiata: il fit pubblicato, prima delle tue modifiche.",
+    keyOriginal: "Linea grigia tratteggiata: il fit della valutazione, prima delle tue modifiche.",
     zoomHint: "Trascina sul grafico per ingrandire; doppio clic per tornare indietro.",
     resetZoom: "Annulla lo zoom",
     save: "Salva",
@@ -764,7 +805,7 @@ const it: EvalDictionary = {
     editLevel: "Regola i suoi parametri →",
     // --- evaluations (round 4) ---
     modelLine: "modello R-matrix",
-    publishedFit: "fit pubblicato",
+    publishedFit: "fit della valutazione",
     // --- evaluations (round 5: the model beyond the data) ---
     modelBeyond: "modello oltre i dati",
     extend: "Estendi oltre i dati",
@@ -775,7 +816,11 @@ const it: EvalDictionary = {
     resetAllHint: "Torna ai parametri della valutazione (tutti i livelli)",
     view: "Vista",
     chi2Plain:
-      "χ²/N vicino a 1 vuol dire che la linea passa per i punti entro le barre d'errore; sopra 1 la linea si allontana di più dai punti, spesso per normalizzazioni ed effetti sistematici che le barre d'errore non includono.",
+      "χ²/N vicino a 1 vuol dire che la linea passa per i punti entro le barre d'errore; sopra 1 la linea si allontana di più da alcuni punti. Possono contribuire le normalizzazioni, effetti sistematici che le barre d'errore non includono e un modello non ancora a convergenza.",
+    chi2Preliminary:
+      "Per questa valutazione il file del modello è una versione preliminare, che non riproduce ancora il fit migliore pubblicato (vedi la nota in cima alla pagina).",
+    refPending: "Riferimento da confermare",
+    noBands: "Solo le curve del fit migliore: non è tracciata alcuna fascia d'incertezza.",
     chi2NormNote: (allOne: boolean) =>
       `Questa pagina non include le normalizzazioni nel fit: restano ai valori memorizzati nel file${allOne ? " (n = 1 per ogni serie di dati)" : ""}, e il χ² mostrato conta solo l'incertezza di ciascun punto, non quella sulla scala complessiva di una serie di dati.`,
     chi2AllSummary: "χ² per tutti i dati del fit",
@@ -877,15 +922,15 @@ const it: EvalDictionary = {
     longer: "più del solito",
     busy: (n: string) => `Il server è occupato. Nuovo tentativo tra ${n} s…`,
     extrapStale: "Fino ad allora sono mostrate, sbiadite, le estrapolazioni precedenti alla tua modifica.",
-    previewNote: "Mentre il calcolo si avvia è mostrato il fit pubblicato; una modifica fatta ora verrà applicata appena il calcolo sarà pronto.",
+    previewNote: "Mentre il calcolo si avvia è mostrato il fit della valutazione; una modifica fatta ora verrà applicata appena il calcolo sarà pronto.",
     skipToLevels: "Vai ai livelli",
     skipToPlot: "Torna al grafico",
     nFreeParams: (n: number) => (n === 1 ? "1 parametro libero" : `${n} parametri liberi`),
-    publishedFitLegend: "fit pubblicato (prima della tua modifica)",
+    publishedFitLegend: "fit della valutazione (prima della tua modifica)",
     muchWorse: (x: string) => `molto peggio, ×${x}`,
     muchBetter: (x: string) => `molto meglio, ÷${x}`,
     chi2Huge:
-      "Qui è grande perché questi dati hanno barre d'errore piccolissime: spostare di poco una risonanza stretta allontana la linea da molti punti insieme.",
+      "Molto più grande dopo questa modifica: ora la linea si allontana da molti punti insieme, come succede quando una risonanza stretta si sposta anche di poco.",
     gridTitle: "Griglie energia × angolo",
     gridText: (n: number) =>
       `${n === 1 ? "Questa curva è" : "Queste curve sono"} una sezione d'urto differenziale su una griglia di energie e angoli: mostrate a richiesta, per alcuni angoli o come mappa.`,
@@ -912,7 +957,7 @@ const it: EvalDictionary = {
     better: "molto meglio",
     sharing: "il server sta preparando anche altri modelli",
     noSpare: "Prima modifica su questo modello: il server lo sta ancora preparando. Le modifiche successive sono molto più rapide.",
-    publishedShown: "Sono mostrate, sbiadite, le curve pubblicate; le tue compaiono appena pronte.",
+    publishedShown: "Sono mostrate, sbiadite, le curve della valutazione; le tue compaiono appena pronte.",
     gridSummaryOne: (ne: number, e0: string, e1: string, a: string) => `${ne} energie (${e0}–${e1} MeV) a ${a}°`,
   },
 
@@ -927,7 +972,7 @@ const it: EvalDictionary = {
     curveAlmost: "Curva continua quasi pronta; fino ad allora è mostrata la linea che unisce i punti.",
     chi2Settled: (v: string) => `χ²/N delle serie di dati mostrate: ${v}.`,
     chi2AllDiffers: "su tutti i dati:",
-    chi2Published: "il fit pubblicato: perché è sopra 1",
+    chi2Published: "il fit della valutazione: perché è sopra 1",
     sLowest: "S all'energia più bassa",
   },
   // --- r13 final ---

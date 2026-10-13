@@ -181,7 +181,13 @@ def info_template(eid, reactions, files, title):
         "purpose": "TODO: one plain sentence, in English, on what this reaction does in stars.",
         "purpose_it": "TODO: la stessa frase, in italiano.",
         "reactions": reactions or ["TODO: e.g. ¹²C(p,γ)¹³N"],
-        "datasets": {check.stem(f): dataset_label(check.stem(f)) for f in files},
+        # Every dataset names its publication (npm run check:evaluations).
+        "datasets": {check.stem(f): {
+            "label": dataset_label(check.stem(f)),
+            "authors": "TODO: as cited, e.g. A. Rossi et al.",
+            "ref": "TODO: journal reference with the year, e.g. Phys. Rev. C 108, 035805 (2023)",
+            "doi": "TODO: the bare DOI (10.xxxx/...), or null if the paper has none",
+        } for f in files},
     }
     if atlas:
         info["atlas"] = sorted(set(atlas))
@@ -296,8 +302,9 @@ def main(argv=None):
     say(f"""
 What is left (docs/ADDING-AN-EVALUATION.md has the details):
   1. Edit {rel}/info.json: replace every TODO (analysis, purpose,
-     purpose_it), check `reactions` (headline reaction first), `status`, and give the
-     data files proper labels ("Author year", or {{"label", "ref", "doi"}}).
+     purpose_it, and each dataset's authors, ref and doi), check `reactions`
+     (headline reaction first), `status`, and give the data files proper
+     labels ("Author year").
      Link it from the reaction atlas: list the atlas pages it belongs on in
      `atlas` (file names in content/atlas/reactions/, e.g. "12C-pg-13N").
   2. Check it:            npm run check:evaluations   (or: make check-evaluations)

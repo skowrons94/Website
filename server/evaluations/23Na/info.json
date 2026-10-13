@@ -28,45 +28,58 @@
   "datasets": {
     "tunl2017_0": {
       "label": "Kelly 2017, TUNL",
+      "authors": "K. J. Kelly, A. E. Champagne, L. N. Downen, J. R. Dermigny, S. Hunt, C. Iliadis and A. L. Cooper",
       "ref": "Phys. Rev. C 95, 015806 (2017)",
       "doi": "10.1103/PhysRevC.95.015806"
     },
     "tunl2017_440": {
       "label": "Kelly 2017, TUNL",
+      "authors": "K. J. Kelly, A. E. Champagne, L. N. Downen, J. R. Dermigny, S. Hunt, C. Iliadis and A. L. Cooper",
       "ref": "Phys. Rev. C 95, 015806 (2017)",
       "doi": "10.1103/PhysRevC.95.015806"
     },
     "tunl2017_2391": {
       "label": "Kelly 2017, TUNL",
+      "authors": "K. J. Kelly, A. E. Champagne, L. N. Downen, J. R. Dermigny, S. Hunt, C. Iliadis and A. L. Cooper",
       "ref": "Phys. Rev. C 95, 015806 (2017)",
       "doi": "10.1103/PhysRevC.95.015806"
     },
     "tunl2017_2982": {
       "label": "Kelly 2017, TUNL",
+      "authors": "K. J. Kelly, A. E. Champagne, L. N. Downen, J. R. Dermigny, S. Hunt, C. Iliadis and A. L. Cooper",
       "ref": "Phys. Rev. C 95, 015806 (2017)",
       "doi": "10.1103/PhysRevC.95.015806"
     },
     "tunl2017_6308": {
       "label": "Kelly 2017, TUNL",
+      "authors": "K. J. Kelly, A. E. Champagne, L. N. Downen, J. R. Dermigny, S. Hunt, C. Iliadis and A. L. Cooper",
       "ref": "Phys. Rev. C 95, 015806 (2017)",
       "doi": "10.1103/PhysRevC.95.015806"
     },
     "tunl2017_6921": {
       "label": "Kelly 2017, TUNL",
+      "authors": "K. J. Kelly, A. E. Champagne, L. N. Downen, J. R. Dermigny, S. Hunt, C. Iliadis and A. L. Cooper",
       "ref": "Phys. Rev. C 95, 015806 (2017)",
       "doi": "10.1103/PhysRevC.95.015806"
     },
     "williams2020": {
       "label": "Williams 2020",
+      "authors": "M. Williams et al.",
       "ref": "Phys. Rev. C 102, 035801 (2020)",
       "doi": "10.1103/PhysRevC.102.035801"
     },
     "ferraro2018": {
       "label": "Ferraro 2018, LUNA",
+      "authors": "F. Ferraro et al. (LUNA Collaboration)",
       "ref": "Phys. Rev. Lett. 121, 172701 (2018)",
       "doi": "10.1103/PhysRevLett.121.172701"
     },
-    "rolfs1975": "Rolfs (1975)"
+    "rolfs1975": {
+      "label": "Rolfs 1975",
+      "authors": "C. Rolfs, W. S. Rodney, M. H. Shapiro and H. Winkler",
+      "ref": "Nucl. Phys. A 241, 460 (1975)",
+      "doi": "10.1016/0375-9474(75)90398-X"
+    }
   },
   "split_total_capture": true,
   "atlas": [

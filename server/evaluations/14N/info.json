@@ -9,6 +9,7 @@
     "journal": "Phys. Rev. C 111, 064611",
     "year": 2025
   },
+  "preliminary": true,
   "analysis": "J. Skowronski",
   "purpose": "The step of the CN cycle that destroys carbon-13 and makes nitrogen-14.",
   "purpose_it": "Il passo del ciclo CN che distrugge il carbonio-13 e produce azoto-14.",
@@ -29,76 +30,125 @@
   "datasets": {
     "c13_bgo": {
       "label": "Skowronski 2023, LUNA (BGO, total capture)",
+      "authors": "J. Skowronski et al. (LUNA Collaboration)",
       "ref": "Phys. Rev. Lett. 131, 162701 (2023)",
       "doi": "10.1103/PhysRevLett.131.162701"
     },
-    "zeps_no_narrow": "Zeps",
+    "zeps_no_narrow": {
+      "label": "Zeps 1995",
+      "authors": "V. J. Zeps, E. G. Adelberger, A. García, C. A. Gossett, H. E. Swanson, W. Haeberli, P. A. Quin and J. Sromicki",
+      "ref": "Phys. Rev. C 51, 1494 (1995)",
+      "doi": null
+    },
     "king_0": {
       "label": "King 1994",
+      "authors": "J. D. King, R. E. Azuma, J. B. Vise, J. Görres, C. Rolfs, H. P. Trautvetter and A. E. Vlieks",
       "ref": "Nucl. Phys. A 567, 354 (1994)",
       "doi": "10.1016/0375-9474(94)90154-6"
     },
     "king_2312": {
       "label": "King 1994",
+      "authors": "J. D. King, R. E. Azuma, J. B. Vise, J. Görres, C. Rolfs, H. P. Trautvetter and A. E. Vlieks",
       "ref": "Nucl. Phys. A 567, 354 (1994)",
       "doi": "10.1016/0375-9474(94)90154-6"
     },
     "king_3948": {
       "label": "King 1994",
+      "authors": "J. D. King, R. E. Azuma, J. B. Vise, J. Görres, C. Rolfs, H. P. Trautvetter and A. E. Vlieks",
       "ref": "Nucl. Phys. A 567, 354 (1994)",
       "doi": "10.1016/0375-9474(94)90154-6"
     },
     "king_4915": {
       "label": "King 1994",
+      "authors": "J. D. King, R. E. Azuma, J. B. Vise, J. Görres, C. Rolfs, H. P. Trautvetter and A. E. Vlieks",
       "ref": "Nucl. Phys. A 567, 354 (1994)",
       "doi": "10.1016/0375-9474(94)90154-6"
     },
     "king_5105": {
       "label": "King 1994",
+      "authors": "J. D. King, R. E. Azuma, J. B. Vise, J. Görres, C. Rolfs, H. P. Trautvetter and A. E. Vlieks",
       "ref": "Nucl. Phys. A 567, 354 (1994)",
       "doi": "10.1016/0375-9474(94)90154-6"
     },
     "king_5691": {
       "label": "King 1994",
+      "authors": "J. D. King, R. E. Azuma, J. B. Vise, J. Görres, C. Rolfs, H. P. Trautvetter and A. E. Vlieks",
       "ref": "Nucl. Phys. A 567, 354 (1994)",
       "doi": "10.1016/0375-9474(94)90154-6"
     },
     "fels_0": {
       "label": "Skowronski 2025, Felsenkeller",
+      "authors": "J. Skowronski, D. Piatti, A. Caciolli, S. Turkat et al.",
       "ref": "Phys. Rev. C 111, 064611 (2025)",
       "doi": "10.1103/h1yt-5myk"
     },
     "fels_2312": {
       "label": "Skowronski 2025, Felsenkeller",
+      "authors": "J. Skowronski, D. Piatti, A. Caciolli, S. Turkat et al.",
       "ref": "Phys. Rev. C 111, 064611 (2025)",
       "doi": "10.1103/h1yt-5myk"
     },
     "fels_3948": {
       "label": "Skowronski 2025, Felsenkeller",
+      "authors": "J. Skowronski, D. Piatti, A. Caciolli, S. Turkat et al.",
       "ref": "Phys. Rev. C 111, 064611 (2025)",
       "doi": "10.1103/h1yt-5myk"
     },
     "fels_4915": {
       "label": "Skowronski 2025, Felsenkeller",
+      "authors": "J. Skowronski, D. Piatti, A. Caciolli, S. Turkat et al.",
       "ref": "Phys. Rev. C 111, 064611 (2025)",
       "doi": "10.1103/h1yt-5myk"
     },
     "fels_5105": {
       "label": "Skowronski 2025, Felsenkeller",
+      "authors": "J. Skowronski, D. Piatti, A. Caciolli, S. Turkat et al.",
       "ref": "Phys. Rev. C 111, 064611 (2025)",
       "doi": "10.1103/h1yt-5myk"
     },
     "fels_5691": {
       "label": "Skowronski 2025, Felsenkeller",
+      "authors": "J. Skowronski, D. Piatti, A. Caciolli, S. Turkat et al.",
       "ref": "Phys. Rev. C 111, 064611 (2025)",
       "doi": "10.1103/h1yt-5myk"
     },
-    "hebbard_90": "Hebbard",
-    "hebbard_120": "Hebbard",
-    "genard": "Genard",
-    "vogl": "Vogl",
-    "hester": "Hester"
+    "hebbard_90": {
+      "label": "Hebbard 1960",
+      "authors": "D. F. Hebbard and J. L. Vogl",
+      "ref": "Nucl. Phys. 21, 652 (1960)",
+      "doi": null
+    },
+    "hebbard_120": {
+      "label": "Hebbard 1960",
+      "authors": "D. F. Hebbard and J. L. Vogl",
+      "ref": "Nucl. Phys. 21, 652 (1960)",
+      "doi": null
+    },
+    "genard": {
+      "label": "Genard 2010",
+      "authors": "G. Genard, P. Descouvemont and G. Terwagne",
+      "ref": "J. Phys. Conf. Ser. 202, 012015 (2010)",
+      "doi": null
+    },
+    "vogl": {
+      "label": "Vogl 1963",
+      "authors": "J. L. Vogl",
+      "ref": "PhD thesis, California Institute of Technology (1963)",
+      "doi": "10.7907/PTTG-5G83"
+    },
+    "hester": {
+      "label": "Hester 1961",
+      "authors": "R. E. Hester and W. A. S. Lamb",
+      "ref": "Phys. Rev. 121, 584 (1961)",
+      "doi": "10.1103/PhysRev.121.584"
+    }
   },
+  "notes": [
+    {
+      "text": "Total capture in this model: the total-capture curve (“¹³C(p,γ)¹⁴N, total”, all final states) gives S(0) ≈ 6.05 keV b, while the curves for the individual final states add up to S(0) ≈ 7.84 keV b. With the total-capture issue in AZURE2 corrected, the fit departs from the LUNA total-capture data; this is under investigation.",
+      "text_it": "Cattura totale in questo modello: la curva di cattura totale («¹³C(p,γ)¹⁴N, total», tutti gli stati finali) dà S(0) ≈ 6,05 keV b, mentre le curve dei singoli stati finali, sommate, danno S(0) ≈ 7,84 keV b. Con il problema della cattura totale di AZURE2 corretto, il fit si discosta dai dati di cattura totale di LUNA; la questione è in corso di verifica."
+    }
+  ],
   "atlas": [
     "13C-pg-14N"
   ]

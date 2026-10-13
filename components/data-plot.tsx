@@ -104,6 +104,8 @@ interface Props {
   /** Open the table drawer (the old Data tab, reached by ?tab=data). */
   tableOpen?: boolean
   evaluationId: string
+  /** info.json `preliminary`: the χ² notes say the model is not the published best fit. */
+  preliminary?: boolean
   /** The level selected in the scheme (its slider group opens), shared. */
   selectedLevel?: string | null
   onSelectLevel?: (key: string | null) => void
@@ -244,6 +246,7 @@ export function DataPlot({
   onRedo,
   tableOpen = false,
   evaluationId,
+  preliminary = false,
   selectedLevel,
   onSelectLevel,
   deltaChi2,
@@ -921,6 +924,7 @@ export function DataPlot({
       <p id="chi2-why" className="scroll-mt-28">
         {t.chi2Plain}
       </p>
+      {preliminary && <p className="text-foreground/80">{t.chi2Preliminary}</p>}
       {huge && <p className="text-foreground/80">{lv.chi2Huge}</p>}
       {allChi2 !== null && allChi2 > 5 && <p>{t.chi2NormNote(allOne)}</p>}
       {allChi2 !== null && (

@@ -33,8 +33,15 @@ export interface EvaluationPaper {
 /** A data file's source, from info.json `datasets` (string or object form). */
 export interface DatasetSource {
   label: string
+  authors: string | null
   ref: string | null
   doi: string | null
+}
+
+/** A caveat shown on the page (info.json `notes`). */
+export interface EvaluationNote {
+  text: string
+  text_it: string
 }
 
 export interface EvaluationMeta {
@@ -68,6 +75,14 @@ export interface EvaluationMeta {
   observables: Record<string, number>
   /** Data-file stem → readable name and source, from info.json. */
   datasets: Record<string, DatasetSource>
+  /** info.json `preliminary`: the model file does not yet reproduce the published best fit. */
+  preliminary: boolean
+  /** info.json `notes`: caveats shown on the page. */
+  notes: EvaluationNote[]
+  /** Labels of the active datasets whose normalization is free but pinned by a prior of ≤ 0.1%. */
+  pinnedNorms: string[]
+  /** Active datasets whose normalization is fixed in the .azr (not varied), with its value. */
+  fixedNorms: { label: string; n: number }[]
 }
 
 const OBSERVABLE: Record<number, string> = {
@@ -114,14 +129,23 @@ function datasetsOf(value: unknown): Record<string, DatasetSource> {
   if (!value || typeof value !== "object") return {}
   const out: Record<string, DatasetSource> = {}
   for (const [stem, entry] of Object.entries(value as Record<string, unknown>)) {
-    if (typeof entry === "string") out[stem] = { label: entry, ref: null, doi: null }
+    if (typeof entry === "string") out[stem] = { label: entry, authors: null, ref: null, doi: null }
     else if (entry && typeof entry === "object") {
       const e = entry as Record<string, unknown>
       const label = text(e.label)
-      if (label) out[stem] = { label, ref: text(e.ref), doi: doiOf(text(e.doi)) }
+      if (label) out[stem] = { label, authors: text(e.authors), ref: text(e.ref), doi: doiOf(text(e.doi)) }
     }
   }
   return out
+}
+
+function notesOf(value: unknown): EvaluationNote[] {
+  if (!Array.isArray(value)) return []
+  return value.flatMap((n) => {
+    const e = (n ?? {}) as Record<string, unknown>
+    const en = text(e.text)
+    return en ? [{ text: en, text_it: text(e.text_it) ?? en }] : []
+  })
 }
 
 /** timings.json: its `server` part, and its `browser` part or an estimate from the server's. */
@@ -183,6 +207,10 @@ export function evaluationMeta(id: string): EvaluationMeta {
     files: 0,
     observables: {},
     datasets: {},
+    preliminary: false,
+    notes: [],
+    pinnedNorms: [],
+    fixedNorms: [],
   }
   // Resolve against the listing, never by joining an id onto a path.
   if (!evaluationIds().includes(id)) return empty
@@ -207,11 +235,14 @@ export function evaluationMeta(id: string): EvaluationMeta {
     timings: timingsFile(path.join(dir, "timings.json")),
     filename: azr,
     datasets: datasetsOf(info.datasets),
+    preliminary: info.preliminary === true,
+    notes: notesOf(info.notes),
   }
 
   if (azr) {
     // <segmentsData>: one line per segment, "active entrance exit eMin eMax
-    // aMin aMax isDiff …  data/file.dat …" (see pyazr's datasets.py).
+    // aMin aMax isDiff norm varyNorm normError(%) …  data/file.dat …" (see
+    // pyazr's datasets.py).
     const source = fs.readFileSync(path.join(dir, azr), "utf8")
     const block = /<segmentsData>([\s\S]*?)<\/segmentsData>/.exec(source)?.[1] ?? ""
     const files = new Set<string>()
@@ -225,6 +256,14 @@ export function evaluationMeta(id: string): EvaluationMeta {
       meta.observables[code] = (meta.observables[code] ?? 0) + 1
       const file = t.find((tok) => /[A-Za-z]/.test(tok) && /\.\w+$/.test(tok))
       if (file) files.add(file)
+      // Normalizations the fit cannot move: fixed (not varied), or varied
+      // under a prior of 0.1% or less, which pins the dataset as the scale.
+      const [norm, vary, sigma] = [Number(t[8]), Number(t[9]), Number(t[10])]
+      const stem = file ? file.replace(/^.*\//, "").replace(/\.[^.]*$/, "") : ""
+      const label = meta.datasets[stem]?.label ?? stem
+      if (!label || !Number.isFinite(norm)) continue
+      if (vary === 0 && !meta.fixedNorms.some((f) => f.label === label && f.n === norm)) meta.fixedNorms.push({ label, n: norm })
+      else if (vary === 1 && sigma > 0 && sigma <= 0.1 && !meta.pinnedNorms.includes(label)) meta.pinnedNorms.push(label)
     }
     meta.files = files.size
   }

@@ -2,18 +2,37 @@
   "id": "24Mg",
   "title": "^{24}\\text{Mg}",
   "reference": null,
-  "status": "unpublished",
-  "analysis": "J. Skowronski (work in progress)",
+  "status": "in-progress",
+  "analysis": "J. Skowronski",
   "purpose": "Proton scattering on sodium-23: the magnesium-24 levels through which ²³Na(p,α) and ²³Na(p,γ) destroy sodium in stars.",
   "purpose_it": "Diffusione di protoni sul sodio-23: i livelli del magnesio-24 attraverso cui ²³Na(p,α) e ²³Na(p,γ) distruggono il sodio nelle stelle.",
   "reactions": [
     "²³Na(p,p)²³Na"
   ],
   "datasets": {
-    "Vanhoy_F0918002": "Vanhoy (EXFOR F0918.002)",
-    "Cruz": "Cruz",
-    "Caciolli_D0458001": "Caciolli (EXFOR D0458.001)"
+    "Vanhoy_F0918002": {
+      "label": "Vanhoy 1987 (EXFOR F0918.002)",
+      "authors": "J. R. Vanhoy, E. G. Bilpuch, C. R. Westerfeldt and G. E. Mitchell",
+      "ref": "Phys. Rev. C 36, 920 (1987)",
+      "doi": null
+    },
+    "Cruz": {
+      "label": "Cruz",
+      "pending": "Publication not yet confirmed; possibly the ²³Na(p,p) excitation function at 157° in Eur. Phys. J. A (2026), doi:10.1140/epja/s10050-026-01847-y, whose author list could not be checked"
+    },
+    "Caciolli_D0458001": {
+      "label": "Caciolli 2008 (EXFOR D0458.001)",
+      "authors": "A. Caciolli, G. Calzolai, M. Chiari, A. Climent-Font, G. García, F. Lucarelli and S. Nava",
+      "ref": "Nucl. Instrum. Methods B 266, 1392 (2008)",
+      "doi": "10.1016/j.nimb.2007.11.025"
+    }
   },
+  "notes": [
+    {
+      "text": "Work in progress: the model still contains ¹²C + ¹²C channels with odd orbital angular momentum (the 1⁻ and 3⁻ levels), which the symmetry of two identical spin-0 nuclei forbids. AZURE2 warns about them; they will be removed in the finished fit.",
+      "text_it": "Lavoro in corso: il modello contiene ancora canali ¹²C + ¹²C con momento angolare orbitale dispari (i livelli 1⁻ e 3⁻), vietati dalla simmetria di due nuclei identici di spin 0. AZURE2 li segnala; saranno tolti nel fit definitivo."
+    }
+  ],
   "atlas": [
     "23Na-pg-24Mg"
   ]

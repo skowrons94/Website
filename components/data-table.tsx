@@ -210,6 +210,7 @@ export function DataTable({ data, selected, onToggle }: Props) {
                       )}
                       {segment.source?.ref && (
                         <span className="block text-[11px] text-muted-foreground">
+                          {segment.source.authors && `${segment.source.authors}, `}
                           {segment.source.doi ? (
                             <a
                               href={`https://doi.org/${segment.source.doi}`}
@@ -221,6 +222,17 @@ export function DataTable({ data, selected, onToggle }: Props) {
                             segment.source.ref
                           )}
                         </span>
+                      )}
+                      {!segment.source?.ref && segment.source?.pending && (
+                        <span className="block text-[11px] text-muted-foreground">{t.refPending}</span>
+                      )}
+                      {segment.exfor && (
+                        <a
+                          href={`https://nds.iaea.org/EXFOR/${segment.exfor.split(".")[0]}`}
+                          className="block text-[11px] text-link underline-offset-4 hover:underline"
+                        >
+                          EXFOR {segment.exfor}
+                        </a>
                       )}
                       <span className="block font-mono text-[11px] text-muted-foreground">
                         {segment.data_file.replace(/^.*\//, "")}

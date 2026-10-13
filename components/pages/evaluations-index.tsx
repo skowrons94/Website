@@ -160,7 +160,9 @@ export function EvaluationsIndex({ initial = [] }: { initial?: CardMeta[] }) {
               ? `${card.paper.authors}${card.paper.journal ? `, ${card.paper.journal}` : ""}${card.paper.year ? ` (${card.paper.year})` : ""}`
               : card.doi
                 ? `doi:${card.doi}`
-                : t.unpublished
+                : card.status === "in-progress"
+                  ? t.inProgress
+                  : t.unpublished
             return (
               <li
                 key={card.id}

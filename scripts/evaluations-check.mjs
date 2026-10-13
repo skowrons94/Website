@@ -200,6 +200,34 @@ function atlasLinks(dir) {
 
 /* -- the checks ------------------------------------------------------------------ */
 
+const YEAR = /\b(1[89]|20)\d\d\b/
+const FORM = '{"label": "Author year", "authors": "A. Author et al.", "ref": "Phys. Rev. C 1, 1 (1970)", "doi": "10.xxxx/..." or null}'
+
+/**
+ * [level, message] for a `datasets` entry without a full reference (as
+ * server/app/check.py's dataset_reference_problems): every dataset names its
+ * publication (`authors`, `ref` with the year, `doi` or null); one whose
+ * publication is not known yet says why in `pending`, a warning.
+ */
+export function datasetReferenceProblems(key, entry) {
+  if (typeof entry === "string") {
+    return [["error", `dataset ${shown(key)} has no reference: write it as ${FORM}, or give "pending" with the reason when the publication is not known yet`]]
+  }
+  if (!TYPES.object(entry)) return [] // the schema reports it
+  const { ref, pending } = entry
+  if (!(typeof ref === "string" && ref.trim())) {
+    if (typeof pending === "string" && pending.trim()) return [["warning", `dataset ${shown(key)}: reference pending (${pending.trim()})`]]
+    return [["error", `dataset ${shown(key)} has no \`ref\`: add the publication as ${FORM}, or give "pending" with the reason`]]
+  }
+  const out = []
+  if (!(typeof entry.authors === "string" && entry.authors.trim())) {
+    out.push(["error", `dataset ${shown(key)} has no \`authors\` (as cited, e.g. "C. Rolfs and R. E. Azuma")`])
+  }
+  if (!YEAR.test(ref) && !ref.includes("TODO")) out.push(["error", `dataset ${shown(key)}: \`ref\` ${shown(ref)} has no year; write it as "Nucl. Phys. A 227, 291 (1974)"`])
+  if (!("doi" in entry)) out.push(["warning", `dataset ${shown(key)} has no \`doi\`: add it, or write null when the paper has none or none could be confirmed`])
+  return out
+}
+
 export function checkEvaluation(dir, atlas = null) {
   const id = path.basename(dir)
   const problems = []
@@ -275,7 +303,10 @@ export function checkEvaluation(dir, atlas = null) {
       }
     }
     for (const s of stems) {
-      if (!(s in datasets)) error("info.json", `data file ${shown(s)} has no label: add "${s}": "Author year" (or {"label", "ref", "doi"}) to \`datasets\``)
+      if (!(s in datasets)) error("info.json", `data file ${shown(s)} has no label: add "${s}": {"label": "Author year", "authors", "ref", "doi"} to \`datasets\``)
+    }
+    for (const [key, entry] of Object.entries(datasets)) {
+      for (const [level, message] of datasetReferenceProblems(key, entry)) (level === "error" ? error : warn)("info.json", message)
     }
     if (atlas && Array.isArray(info.atlas)) {
       for (const rid of info.atlas) {

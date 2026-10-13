@@ -175,6 +175,8 @@ export function EvaluationHeader({
                 doi:{meta.doi}
                 <ExternalLink className="ml-1 inline h-3.5 w-3.5 align-[-0.15em]" aria-hidden />
               </a>
+            ) : meta.status === "in-progress" ? (
+              t.inProgress
             ) : meta.status === "unpublished" ? (
               t.unpublished
             ) : (
@@ -275,6 +277,8 @@ export function PaperLine({ meta, lang }: { meta: EvaluationMeta; lang: Lang }) 
         <a href={doiUrl} className="break-words text-link underline-offset-4 hover:underline">
           doi:{meta.doi}
         </a>
+      ) : meta.status === "in-progress" ? (
+        t.inProgress
       ) : (
         t.unpublished
       )}
