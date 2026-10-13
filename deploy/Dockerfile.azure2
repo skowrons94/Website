@@ -16,7 +16,7 @@
 # Both stages pin ubuntu:22.04 by the digest of its multi-architecture index
 # (Docker Hub, 2026-10-13), so a rebuild uses the image that was checked;
 # Dependabot (docker, /deploy) proposes the new digest each month.
-FROM ubuntu:22.04@sha256:5ec03bb3441e8b0bf3b4f9cd4629a1ae763010dc3035bb8da3ae6cf026486401 AS build
+FROM ubuntu:22.10@sha256:e322f4808315c387868a9135beeb11435b5b83130a8599fd7d0014452c34f489 AS build
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Etc/UTC
@@ -73,7 +73,7 @@ RUN pip install --no-cache-dir --no-deps --no-build-isolation /src/AZURE2 \
 
 # --- runtime ----------------------------------------------------------------
 
-FROM ubuntu:22.04@sha256:5ec03bb3441e8b0bf3b4f9cd4629a1ae763010dc3035bb8da3ae6cf026486401 AS runtime
+FROM ubuntu:22.10@sha256:e322f4808315c387868a9135beeb11435b5b83130a8599fd7d0014452c34f489 AS runtime
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Etc/UTC
