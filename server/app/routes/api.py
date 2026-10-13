@@ -616,7 +616,6 @@ def health():
     root = _root()
     return jsonify({
         "status": "ok",
-        "evaluations_dir": root,
         "evaluations": len(evaluations_module.discover(root))
         if os.path.isdir(root) else 0,
         "sessions": len(_manager().stats()),

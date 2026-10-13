@@ -70,7 +70,8 @@ evaluations:                ## pick up new or edited evaluations, without a rebu
 	@$(MAKE) --no-print-directory check
 
 warm:                       ## precompute every evaluation's curves and timings (fails if one fails)
-	$(COMPOSE) exec -T azure2 python3 -m app.warm $(ID)
+	@id=$(call shq,$(value ID)); $(check_id_optional) \
+	$(COMPOSE) exec -T azure2 python3 -m app.warm $${id:+"$$id"}
 
 # -- R-matrix evaluations (docs/ADDING-AN-EVALUATION.md) ---------------------
 # add-evaluation reads the model with pyazr when it can (AZURE2_SRC, below, or
@@ -78,16 +79,33 @@ warm:                       ## precompute every evaluation's curves and timings 
 
 PYTHON ?= python3
 
+# ID, AZR, DATA and FORCE reach the shell as single-quoted words of their raw
+# (unexpanded) values, never as recipe text, so a path holding ", `, $( ) or
+# ; is only a path; the ID must look like one. (r15 security #5)
+# Not exported either: make would expand an exported value ($(shell ...)) to
+# build each recipe's environment.
+unexport ID AZR DATA FORCE
+shq = '$(subst ','\'',$(1))'
+check_id_optional = case "$$id" in "") ;; [!A-Za-z0-9]*|*[!A-Za-z0-9_.-]*) \
+	  echo "ID must match ^[A-Za-z0-9][A-Za-z0-9_.-]*\$$, e.g. ID=12C" >&2; exit 2;; esac;
+
 add-evaluation:             ## add one: make add-evaluation ID=12C AZR=path/to/12C.azr [DATA=dir]
-	@test -n "$(ID)" -a -n "$(AZR)" || { \
+	@id=$(call shq,$(value ID)); azr=$(call shq,$(value AZR)); \
+	data=$(call shq,$(value DATA)); force=$(call shq,$(value FORCE)); \
+	src=$(call shq,$(value AZURE2_SRC)); \
+	if [ -z "$$id" ] || [ -z "$$azr" ]; then \
 	  echo "usage: make add-evaluation ID=12C AZR=~/azure/12C/12C.azr [DATA=~/azure/12C/data] [FORCE=1]"; \
-	  echo "       (docs/ADDING-AN-EVALUATION.md)"; exit 2; }
-	PYTHONPATH="$(AZURE2_SRC)$${PYTHONPATH:+:$$PYTHONPATH}" $(PYTHON) scripts/add-evaluation.py \
-	  "$(ID)" "$(AZR)" $(if $(DATA),--data "$(DATA)") $(if $(FORCE),--force)
+	  echo "       (docs/ADDING-AN-EVALUATION.md)"; exit 2; fi; \
+	$(check_id_optional) \
+	set -- "$$id" "$$azr"; \
+	if [ -n "$$data" ]; then set -- "$$@" --data "$$data"; fi; \
+	if [ -n "$$force" ]; then set -- "$$@" --force; fi; \
+	PYTHONPATH="$$src$${PYTHONPATH:+:$$PYTHONPATH}" $(PYTHON) scripts/add-evaluation.py "$$@"
 
 check-evaluations:          ## check every evaluation's info.json, .azr and data files
-	cd server && $(PYTHON) -m app.check $(ID)
-	@if command -v node > /dev/null; then node scripts/evaluations-check.mjs --quiet $(ID); fi
+	@id=$(call shq,$(value ID)); $(check_id_optional) \
+	(cd server && $(PYTHON) -m app.check $${id:+"$$id"}) && \
+	if command -v node > /dev/null; then node scripts/evaluations-check.mjs --quiet $${id:+"$$id"}; fi
 
 # -- the data explorer's data (scripts/data/README.md) ---------------------
 # Needs python3 (3.10+) with PyYAML, and git. Inputs are cached in build/dx/

@@ -37,6 +37,10 @@ def create_app(config=Config):
         spare_wait=app.config.get("SPARE_WAIT", 20),
         evict_after=app.config.get("EVICT_AFTER") or None,
         max_per_owner=app.config.get("MAX_PER_IP", 0),
+        max_per_prefix=app.config.get("MAX_PER_PREFIX", 0),
+        v4_prefix=app.config.get("V4_PREFIX", 24),
+        v6_prefix=app.config.get("V6_PREFIX", 56),
+        max_age=app.config.get("MAX_AGE", 0),
     )
     if app.config.get("GZIP"):
         install_gzip(app, app.config.get("GZIP_LEVEL", 5))

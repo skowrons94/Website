@@ -34,7 +34,8 @@ It takes the `.azr` file exactly as AZURE2 saved it and:
   writes full paths like `/home/you/azure/12C/data/kettner_0.dat`, which only
   work on your machine; on the server the model would not open;
 - copies every data file the model reads into `data/`. It finds them where the
-  `.azr` says, or next to the `.azr` (and in its `data/`), or in `DATA=`;
+  `.azr` says, or next to the `.azr` (and in its `data/`), or in `DATA=`, and
+  prints each copy as `source -> data/name`;
 - copies `output/intEC.dat` and `output/intEC.extrap` from your run, if there
   are any (AZURE2's external-capture integrals: slow to recompute);
 - writes `info.json`, filled in as far as it can (below), with `TODO` where
@@ -43,6 +44,15 @@ It takes the `.azr` file exactly as AZURE2 saved it and:
 
 Nothing outside the new directory is touched. If something goes wrong,
 delete the directory and run it again.
+
+**Only the model's own files are copied.** A file is copied only if the
+`.azr` names it (a data segment's file, or the integrals in its output
+directory) *and* it lies, after following symlinks, inside the `.azr`'s own
+directory (subdirectories included) or a `DATA=` directory you named. A path
+that leads anywhere else (`/etc/passwd`, `../../.ssh/id_rsa`, a symlink
+pointing out) stops the command with the path it refused, so a `.azr` from a
+collaborator cannot slip a private file into the repository. Read the
+`source -> data/name` lines before you commit.
 
 **The id** is the directory name and the web address (`/evaluations/12C`).
 Use the compound nucleus (`12C`, `24Mg`): it is shown as ¹²C. Letters, digits,
@@ -70,7 +80,7 @@ An annotated example (the `//` comments are only here; JSON has none):
     "journal": "Phys. Rev. C 111, 035802",
     "year": 2025
   },
-  "analysis": "J. Skowronski",               // who did the R-matrix analysis
+  "analysis": "J. Skowronski",               // who did the R-matrix analysis (add-evaluation leaves a TODO here)
   "purpose": "The first step of the CN cycle, which burns hydrogen in stars.",   // on the card, English
   "purpose_it": "Il primo passo del ciclo CN, che brucia idrogeno nelle stelle.", // the same, Italian
   "reactions": ["¹²C(p,γ)¹³N", "¹²C(p,p)¹²C"],// what was fitted, the headline reaction first
@@ -106,6 +116,45 @@ Required: `status`, `analysis`, `purpose`, `purpose_it`, `reactions`,
 | `split_total_capture` | `true` for a model with total-capture data over several capture pairs (see README, "Total capture") |
 
 The full definition is `server/app/info.schema.json`.
+
+`analysis` starts as a `TODO`, like `purpose`: the command cannot know who
+made the fit, and the check refuses the evaluation until you write it.
+
+### Total capture over several capture pairs: `split_total_capture`
+
+**When it matters.** Only for a model with *two or more capture pairs* (γ
+exit channels, e.g. to the ground state and to an excited state) *and* a data
+segment of **total capture** over them (in AZURE2, exit pair `-1`). AZURE2
+calculates such a segment as the first pair plus one component segment per
+further pair, and at the pinned revision it reuses the external-capture
+integrals (`output/intEC.*`) wrongly for those components: the total comes
+out too low (¹⁷F's about 15 times, ⁷Be's ³He(α,γ) about 20%). Only a
+calculation with no stored integrals is right; the server reuses them, and so
+does AZURE2 on your machine from the second run on, so a fit may have been
+made against the wrong total too. The details are in the
+README ("Total capture and `split_total_capture`") and in `summed` in
+`server/app/fine.py`. With a single capture pair, or no total-capture data,
+leave the flag out: it changes nothing.
+
+**What it does.** With `"split_total_capture": true` the server calculates
+each total capture as one segment per capture pair and sums them, which does
+not depend on the reused integrals. The `.azr` and its parameters are not
+changed. Without the flag the model is calculated as AZURE2 does as shipped.
+
+**Turn it on, then check it against the published fit:**
+
+1. Open the evaluation locally without the flag (`make dev-server`,
+   `make dev-site`, `/evaluations/<id>`) and note the χ²/N of the
+   total-capture data sets in the data table and how their curve sits.
+2. Add `"split_total_capture": true` to `info.json` and restart the API
+   (`make evaluations` on the server). The flag is part of the cache key, so
+   everything is calculated again.
+3. Compare with the paper: the total-capture curve should now go through the
+   total-capture data, with χ²/N close to the published value (or better),
+   and every other data set should be unchanged. Keep the flag.
+4. If the corrected total misses the data (¹⁴N: χ²/N 0.9 → 95), the fit
+   itself relied on the wrong numbers. Leave the flag off, so the page shows
+   the fit as published, and have the fit checked.
 
 ## 3. Check it
 
@@ -184,6 +233,7 @@ If the evaluation feeds the reaction rates (¹²C(p,γ), ¹³C(p,γ)), rerun
 
 - [ ] `make add-evaluation ID=<id> AZR=<file.azr>` ran without errors
 - [ ] `info.json`: no TODO left; `status`, `reference`, `paper`, `analysis` right
+- [ ] total capture over two or more capture pairs: `split_total_capture` checked against the published fit (section 2)
 - [ ] `purpose` and `purpose_it` read well to a non-physicist
 - [ ] `reactions`: headline reaction first
 - [ ] every data file has a real label ("Author year"), with `ref` and `doi` where known

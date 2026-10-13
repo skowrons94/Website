@@ -230,18 +230,37 @@ one to bind ports 80/443), cannot gain privileges, runs as a non-root user
 processes; Docker keeps at most 3 x 10 MB of each container's log. Caddy
 refuses request bodies over 64 KB, and the API does again. The API sends no
 CORS headers (everything is same-origin) and limits each client address
-(an IPv6 address counts by its /64):
+(an IPv6 address counts by its /64) and each IPv6 network (/56):
 
 | Variable (`.env`) | Default | What it limits |
 |---|---|---|
 | `AZURE2_MAX_PER_IP` | `2` | evaluations open at once; past it, that address's own stale session gives way, else "busy, retrying" (HTTP 429) |
+| `AZURE2_MAX_PER_PREFIX` | `3` | evaluations open at once from one IPv6 /56 (a home line usually holds a whole /56, i.e. 256 /64s); same answer past it. IPv4 /24s are not capped |
+| `AZURE2_MAX_AGE` | `1800` | seconds after which a session gives its slot to a waiting newcomer when the server is full, even with its page open; the page reopens it on its own, with its changes |
 | `AZURE2_OPEN_RATE` | `10/60` | opening evaluations: 10 per 60 s |
 | `AZURE2_EDIT_RATE` | `20/1` | level edits: 20 per second, bursts of 60 |
 | `AZURE2_MAX_INFLIGHT_PER_IP` | `8` | slow requests (calculations) under way at once; keep it below `AZURE2_THREADS` (16) |
 
-`0` turns one off. When the server is full, a newcomer also takes a slot from
-the address holding the most sessions, so no single client can keep others
-out. These need the visitor's real address, which Caddy passes on and the API
+`0` turns one off. When the server is full, a newcomer takes, in this order:
+the slot of a session nobody has seen for a minute; else the oldest session of
+the network holding the most slots, if it holds at least two more than the
+newcomer's (an IPv6 /56, an IPv4 /24: `AZURE2_V6_PREFIX`, `AZURE2_V4_PREFIX`);
+else the oldest session past `AZURE2_MAX_AGE`; else "busy, retrying" (503).
+So neither one /56 nor a handful of addresses can keep others out for more
+than half an hour.
+
+*Why IPv4 /24s are weighed but not capped.* A /24 is often one campus, one
+office or a carrier's NAT pool, with many unrelated visitors; a hard cap
+there would refuse them while the server has room. They are counted only
+when the server is full, and then only to decide who gives way, so the cost
+falls on a /24 that holds more than everyone else. The price: two colleagues
+on one campus network, each with a model open, can lose the older one to an
+outsider on a full server (the page reopens it once there is room again). To
+stop grouping IPv4 addresses, set `AZURE2_V4_PREFIX=32`. An IPv6 /56 is
+capped because it normally belongs to one household or one server. A session
+evicted this way shows in `make logs-azure2` as "evicting ... of a network
+holding N sessions" or "past AZURE2_MAX_AGE"; frequent ones mean
+`AZURE2_MAX_SESSIONS` is too small for the traffic. These need the visitor's real address, which Caddy passes on and the API
 believes because compose sets `AZURE2_TRUSTED_PROXIES=1`; never set that on an
 API reachable without Caddy. Raise `AZURE2_MAX_PER_IP` to 4 if a whole
 institute behind one address uses the site at once (a workshop).

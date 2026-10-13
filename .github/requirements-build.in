@@ -1,0 +1,5 @@
+# The native AZURE2 build (pages.yml) and the server tests run against it.
+# Regenerate the .txt with the command at its top.
+-r ../server/requirements.txt
+pybind11
+mpmath

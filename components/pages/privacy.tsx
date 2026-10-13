@@ -10,8 +10,11 @@ import { pageMetadata } from "@/lib/metadata"
  * /privacy: what is logged and for how long, what the browser keeps, and who
  * else sees a visit (GDPR Art. 13, in short). Running text in both
  * languages, as on /about. The facts it states live elsewhere and must move
- * with it: the access log's retention and address masking in
- * deploy/Caddyfile, the API's log in server/app/routes/api.py and
+ * with it: the access log's retention, address masking and dropped headers
+ * in deploy/Caddyfile (Caddy's JSON access log: request remote_ip/client_ip
+ * masked, remote_port, proto, method, host, uri, headers, tls {resumed,
+ * version, cipher_suite, proto, server_name}; bytes_read, duration, size,
+ * status, resp_headers), the API's log in server/app/routes/api.py and
  * app/limits.py, the browser storage in components/search/command-palette.tsx
  * (recent searches), next-themes (the theme), lib/api.ts (sessionStorage) and
  * browser/worker.js (Cache Storage, static build).
@@ -87,15 +90,30 @@ function BodyEn({ email, name, to }: { email: string; name: string; to: (p: stri
           <ul className={list}>
             <li>
               your IP address, <strong>shortened before it is written</strong>: the last of its four numbers is removed
-              (IPv4), or everything after the first 48 bits (IPv6), so the log never holds a full address;
+              (IPv4), or everything after the first 48 bits (IPv6), so the log never holds a full address; and the port
+              number your device used for the connection;
             </li>
-            <li>the date and time, the address requested, the answer&apos;s status and size, and how long it took;</li>
-            <li>the browser&apos;s identification (user agent) and the page you came from (referrer), as your browser sends them.</li>
+            <li>
+              the date and time; the request (its method, the site name, the address requested with anything after the
+              “?” and the protocol); the answer&apos;s status and size, the size of what you sent and how long it took;
+            </li>
+            <li>
+              the headers your browser sends with the request, with cookies and credentials removed: among them its
+              identification (user agent), the page you came from (referrer), your preferred languages
+              (Accept-Language) and, in Chromium-based browsers, the browser&apos;s brand, version and platform (the
+              sec-ch-ua headers);
+            </li>
+            <li>
+              the details of the encrypted connection: the TLS version and cipher, and the site name your browser asked
+              for (SNI);
+            </li>
+            <li>the headers of the server&apos;s answer.</li>
           </ul>
           <div className={prose}>
             <p>
               The log is deleted automatically after <strong>{RETENTION_DAYS} days</strong>. The calculation server (the
-              R-matrix evaluations) logs each request with the same shortened address; its log is overwritten as it grows
+              R-matrix evaluations) logs the method and address of each request, without anything after the “?”, with
+              the same shortened IP address and the time; its log is overwritten as it grows
               and cleared whenever the server is updated. Nobody else has access to either log, and they are not used to
               identify visitors or to build profiles. The legal basis is my legitimate interest in running the site
               securely (Art. 6(1)(f) GDPR).
@@ -192,18 +210,30 @@ function BodyIt({ email, name, to }: { email: string; name: string; to: (p: stri
             <li>
               il tuo indirizzo IP, <strong>abbreviato prima di essere scritto</strong>: senza l&apos;ultimo dei suoi
               quattro numeri (IPv4), o senza tutto ciò che segue i primi 48 bit (IPv6), così il registro non contiene mai
-              un indirizzo completo;
+              un indirizzo completo; e il numero di porta che il tuo dispositivo ha usato per la connessione;
             </li>
-            <li>data e ora, l&apos;indirizzo richiesto, lo stato e la dimensione della risposta, e il tempo impiegato;</li>
             <li>
-              l&apos;identificazione del browser (user agent) e la pagina di provenienza (referrer), come li invia il tuo
-              browser.
+              data e ora; la richiesta (il metodo, il nome del sito, l&apos;indirizzo richiesto con quanto segue il «?» e
+              il protocollo); lo stato e la dimensione della risposta, la dimensione di ciò che hai inviato e il tempo
+              impiegato;
             </li>
+            <li>
+              le intestazioni che il tuo browser invia con la richiesta, tolti i cookie e le credenziali: tra queste
+              l&apos;identificazione del browser (user agent), la pagina di provenienza (referrer), le lingue che
+              preferisci (Accept-Language) e, nei browser basati su Chromium, marca, versione e piattaforma del browser
+              (le intestazioni sec-ch-ua);
+            </li>
+            <li>
+              i dettagli della connessione cifrata: la versione di TLS, il cifrario e il nome del sito richiesto dal
+              browser (SNI);
+            </li>
+            <li>le intestazioni della risposta del server.</li>
           </ul>
           <div className={prose}>
             <p>
               Il registro viene cancellato automaticamente dopo <strong>{RETENTION_DAYS} giorni</strong>. Il server di
-              calcolo (le valutazioni R-matrix) registra ogni richiesta con lo stesso indirizzo abbreviato; il suo registro
+              calcolo (le valutazioni R-matrix) registra il metodo e l&apos;indirizzo di ogni richiesta, senza quanto segue
+              il «?», con lo stesso indirizzo IP abbreviato e l&apos;ora; il suo registro
               viene sovrascritto man mano che cresce e azzerato a ogni aggiornamento del server. Nessun altro ha accesso ai
               registri, che non servono a identificare i visitatori né a profilarli. La base giuridica è il mio legittimo
               interesse a gestire il sito in sicurezza (art. 6, par. 1, lett. f, GDPR).

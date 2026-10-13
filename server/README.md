@@ -105,17 +105,25 @@ is ignored rather than overwriting newer values; `seq` is echoed back.
   60: a visible page pings every 30 s), taken first from the address
   holding the most sessions. If there is none, and some address holds at
   least two more sessions than the newcomer's, its least recently seen one
-  goes anyway (fairness: one client cannot keep the others out); otherwise
-  503. The reaper rebuilds spares evicted this way once there is room.
+  goes anyway (fairness: one client cannot keep the others out). Addresses
+  are grouped here by network (an IPv6 /56, an IPv4 /24:
+  `AZURE2_V6_PREFIX`, `AZURE2_V4_PREFIX`), and the network's oldest
+  session goes. Failing that, the oldest session opened more than
+  `AZURE2_MAX_AGE` seconds ago (1800) and not mid-request goes, pinged or
+  not (its page reopens it, with the changes); otherwise 503. The reaper rebuilds spares evicted this way once there is room.
 - **Limits per client address** (`app/limits.py`; an IPv6 address counts by
   its /64): at most `AZURE2_MAX_PER_IP` sessions (2; past it the address's
-  own session unseen longest gives way if it may, else 429),
+  own session unseen longest gives way if it may, else 429), at most
+  `AZURE2_MAX_PER_PREFIX` per IPv6 /56 (3; the same, by network; IPv4 /24s
+  are never capped, see DEPLOY.md section 10),
   `AZURE2_OPEN_RATE` opens (`10/60`, a token bucket, burst
   `AZURE2_OPEN_BURST`), `AZURE2_EDIT_RATE` edits (`20/1`, burst
   `AZURE2_EDIT_BURST`, 60) and `AZURE2_MAX_INFLIGHT_PER_IP` slow requests
   at once (8). `0` turns each off. Behind Caddy, `AZURE2_TRUSTED_PROXIES=1`
   (docker-compose.yml) makes the address the client's (Werkzeug ProxyFix,
-  one hop); never set it when clients reach the API directly. The log keeps
+  one hop; `main.serve_options` then tells waitress, which drops
+  X-Forwarded-For by default, to keep it); never set it when clients reach
+  the API directly. The log keeps
   addresses cut to /24 (IPv4) or /48 (IPv6), as Caddy's access log does.
 - **CORS** is off: in production Caddy serves the site and `/api` on one
   origin. For development (site on :3000, API on :5001) list the origins in

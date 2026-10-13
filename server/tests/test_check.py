@@ -239,7 +239,8 @@ class AddEvaluation(unittest.TestCase):
         # An AZURE2 working directory elsewhere, as the GUI leaves it.
         work = os.path.join(self.tmp, "azure", "8Be")
         os.makedirs(os.path.join(work, "output"))
-        self.measurements = os.path.join(self.tmp, "measurements")
+        self.work = work
+        self.measurements = os.path.join(work, "measurements")
         shutil.copytree(os.path.join(ROOT, "8Be", "data"), self.measurements)
         for name in ("intEC.dat", "intEC.extrap"):
             shutil.copy(os.path.join(ROOT, "8Be", "output", name), os.path.join(work, "output"))
@@ -278,7 +279,13 @@ class AddEvaluation(unittest.TestCase):
             info = json.load(f)
         self.assertEqual(sorted(info["datasets"]), [f"tombrello_aa_ang{i}" for i in range(1, 6)])
         self.assertIn("TODO", info["purpose"])
+        # Nobody's name is filled in for them: the analyst is a TODO too.
+        self.assertIn("TODO", info["analysis"])
+        self.assertNotIn("Skowronski", info["analysis"])
         self.assertIn("What is left", out)
+        # Every copy is listed, source -> destination.
+        self.assertIn(f"{os.path.realpath(self.measurements)}/tombrello_aa_ang1.dat -> data/tombrello_aa_ang1.dat", out)
+        self.assertIn("-> output/intEC.dat", out)
         # Only the TODOs (and the missing timings) stand between it and the site.
         problems = check.check_root(self.root, ["8Be-test"], atlas_dir=ATLAS)
         self.assertTrue(errors(problems))
@@ -299,6 +306,80 @@ class AddEvaluation(unittest.TestCase):
         self.assertFalse(os.path.exists(os.path.join(self.root, "8Be-test")))
         status, _ = self.run_add("--data", moved)
         self.assertEqual(status, 0)
+
+    # -- r15 security #4: only the model's own files, from its own tree ----------
+
+    def write_azr(self, old, new):
+        with open(self.azr, encoding="utf-8") as f:
+            text = f.read()
+        self.assertIn(old, text)
+        with open(self.azr, "w", encoding="utf-8") as f:
+            f.write(text.replace(old, new, 1))
+
+    def secret(self):
+        """A private file outside the .azr's directory."""
+        outside = os.path.join(self.tmp, "home", ".ssh")
+        os.makedirs(outside)
+        path = os.path.join(outside, "id_rsa.dat")
+        with open(path, "w") as f:
+            f.write("PRIVATE KEY\n")
+        return path
+
+    def assert_refused(self, *args):
+        with self.assertRaises(self.add.Failure) as caught:
+            self.run_add(*args)
+        self.assertIn("outside", str(caught.exception))
+        self.assertFalse(os.path.exists(os.path.join(self.root, "8Be-test")))
+        return str(caught.exception)
+
+    def test_absolute_path_outside_the_tree_is_refused(self):
+        secret = self.secret()
+        self.write_azr(f"{self.measurements}/tombrello_aa_ang1.dat", secret)
+        self.assertIn(secret, self.assert_refused())
+
+    def test_relative_path_climbing_out_is_refused(self):
+        self.secret()
+        self.write_azr(f"{self.measurements}/tombrello_aa_ang1.dat", "../../home/.ssh/id_rsa.dat")
+        self.assert_refused()
+
+    def test_symlink_pointing_out_is_refused(self):
+        secret = self.secret()
+        link = os.path.join(self.measurements, "tombrello_aa_ang1.dat")
+        os.remove(link)
+        os.symlink(secret, link)
+        self.assertIn(os.path.realpath(secret), self.assert_refused())
+
+    def test_symlink_inside_the_tree_is_fine(self):
+        target = os.path.join(self.work, "real.dat")
+        link = os.path.join(self.measurements, "tombrello_aa_ang1.dat")
+        shutil.move(link, target)
+        os.symlink(target, link)
+        status, out = self.run_add()
+        self.assertEqual(status, 0)
+        self.assertIn(f"{os.path.realpath(target)} -> data/tombrello_aa_ang1.dat", out)
+
+    def test_data_directory_named_on_the_command_line_is_allowed(self):
+        moved = os.path.join(self.tmp, "shared-data")
+        shutil.move(self.measurements, moved)
+        self.write_azr(self.measurements, moved)
+        self.assert_refused()
+        status, _ = self.run_add("--data", moved)
+        self.assertEqual(status, 0)
+
+    def test_output_directory_outside_is_not_copied(self):
+        outside = os.path.join(self.tmp, "other-run", "output")
+        shutil.move(os.path.join(self.work, "output"), outside)
+        self.write_azr(f"\n{self.work}/output/ ", f"\n{outside}/ ")
+        status, out = self.run_add()
+        self.assertEqual(status, 0)
+        self.assertIn("not copying", out)
+        self.assertFalse(os.path.exists(os.path.join(self.root, "8Be-test", "output", "intEC.dat")))
+
+    def test_file_not_named_by_the_azr_is_not_copied(self):
+        with open(os.path.join(self.measurements, "notes.dat"), "w") as f:
+            f.write("not data\n")
+        self.run_add()
+        self.assertNotIn("notes.dat", os.listdir(os.path.join(self.root, "8Be-test", "data")))
 
     def test_existing_id_is_refused_unless_forced(self):
         self.run_add()

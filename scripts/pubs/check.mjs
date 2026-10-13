@@ -251,6 +251,37 @@ export function compare(publications, orcid, crossref) {
 
 /* -- writing ------------------------------------------------------------------- */
 
+// Everything from ORCID and Crossref (titles, journals, DOIs, types) is
+// someone else's text and goes into a GitHub issue: it is shown as text, never
+// as Markdown, so it cannot ping anyone (@user, @org/team), link anywhere or
+// reference an issue (#1). A word joiner (U+2060) after "@", "#" and in "://"
+// and "www." stops GitHub's autolinking without changing what one reads.
+const WJ = "\u2060"
+export const mdText = (t) =>
+  String(t ?? "")
+    .replace(/[\u0000-\u001f\u007f\u2028\u2029]+/g, " ")
+    .replace(/[\\`*_{}\[\]()<>#+!|~=-]/g, (c) => `\\${c}`)
+    .replace(/@/g, `@${WJ}`)
+    .replace(/#/g, `#${WJ}`)
+    .replace(/:\/\//g, `:/${WJ}/`)
+    .replace(/\bwww\./gi, (w) => `${w.slice(0, 3)}${WJ}.`)
+    .replace(/&/g, "&amp;")
+    .replace(/\s+/g, " ")
+    .trim()
+
+/** A link to a DOI: shown escaped, the URL percent-encoded (no ")" or space can end it early). */
+const doiLink = (doi, label = doi) => {
+  const href = `https://doi.org/${String(doi ?? "").split("/").map((part) => encodeURIComponent(part).replace(/[!'()*]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`)).join("/")}`
+  return `[${mdText(label)}](${href})`
+}
+
+/** A fenced block that the text inside cannot close (a fence longer than any run of backticks in it). */
+const fence = (lang, text) => {
+  const longest = Math.max(0, ...(String(text).match(/`+/g) ?? []).map((r) => r.length))
+  const f = "`".repeat(Math.max(3, longest + 1))
+  return [`${f}${lang}`, text, f]
+}
+
 const KIND = (type) => (/proceedings|conference/i.test(type ?? "") ? "proceedings" : "article")
 
 function yamlEntry(f) {
@@ -279,31 +310,31 @@ export function proposal(result, { orcid, date }) {
   if (count === 0 && missing.length === 0) md.push(`Nothing to do: every work matches.`, ``)
   if (published.length) {
     md.push(`## Submitted papers that now have a DOI (${published.length})`, ``)
-    for (const p of published) md.push(`- **${p.title}** (was: ${p.status ?? "no DOI"}) → [${p.doi}](https://doi.org/${p.doi})${p.journal ? `, ${p.journal}` : ""}${p.year ? ` (${p.year})` : ""}: replace \`status\` with \`journal\`, \`doi\` and the year.`)
+    for (const p of published) md.push(`- **${mdText(p.title)}** (was: ${mdText(p.status ?? "no DOI")}) → ${doiLink(p.doi)}${p.journal ? `, ${mdText(p.journal)}` : ""}${p.year ? ` (${mdText(p.year)})` : ""}: replace \`status\` with \`journal\`, \`doi\` and the year.`)
     md.push(``)
   }
   if (fresh.length) {
     md.push(`## New works (${fresh.length})`, ``)
     for (const f of fresh) {
-      md.push(`### ${f.title || f.doi}`, ``)
-      md.push(`[doi:${f.doi}](https://doi.org/${f.doi}) · ${[f.journal, f.year, f.type].filter(Boolean).join(" · ")} · from ${f.sources.join(" and ")}`, ``)
-      md.push("```yaml", yamlEntry(f), "```", ``)
+      md.push(`### ${mdText(f.title || f.doi)}`, ``)
+      md.push(`${doiLink(f.doi, `doi:${f.doi}`)} · ${[f.journal, f.year, f.type].filter(Boolean).map(mdText).join(" · ")} · from ${f.sources.map(mdText).join(" and ")}`, ``)
+      md.push(...fence("yaml", yamlEntry(f)), ``)
     }
     md.push(`Check each entry before pasting: \`kind\`, the form of the author list and any \`tags\` (\`[luna]\`) are for you to decide.`, ``)
   }
   if (years.length) {
     md.push(`## Years that differ (${years.length})`, ``, `| DOI | title | publications.yaml | ${"found"} |`, `|---|---|---|---|`)
-    for (const y of years) md.push(`| [${y.doi}](https://doi.org/${y.doi}) | ${plainTitle(y.title)} | ${y.yaml} | ${y.found} (${y.source}) |`)
+    for (const y of years) md.push(`| ${doiLink(y.doi)} | ${mdText(plainTitle(y.title))} | ${mdText(y.yaml)} | ${mdText(y.found)} (${mdText(y.source)}) |`)
     md.push(``, `Crossref's year is the first publication (online or in print); the YAML may deliberately give the volume's year.`, ``)
   }
   if (titles.length) {
     md.push(`## Titles that differ (${titles.length})`, ``)
-    for (const t of titles) md.push(`- [${t.doi}](https://doi.org/${t.doi})`, `  - publications.yaml: ${t.yaml}`, `  - ${t.source}: ${t.found}`)
+    for (const t of titles) md.push(`- ${doiLink(t.doi)}`, `  - publications.yaml: ${mdText(t.yaml)}`, `  - ${mdText(t.source)}: ${mdText(t.found)}`)
     md.push(``)
   }
   if (missing.length) {
     md.push(`## In publications.yaml but not on ORCID or Crossref's ORCID list (${missing.length})`, ``)
-    for (const m of missing) md.push(`- [${m.doi}](https://doi.org/${m.doi}) ${plainTitle(m.title)} (${m.year})`)
+    for (const m of missing) md.push(`- ${doiLink(m.doi)} ${mdText(plainTitle(m.title))} (${mdText(m.year)})`)
     md.push(``, `Usually nothing to change here: the work is just not on the ORCID record yet (add it on orcid.org).`, ``)
   }
   return { markdown: md.join("\n"), count }
