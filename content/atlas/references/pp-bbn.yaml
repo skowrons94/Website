@@ -403,7 +403,9 @@ damone2018:
   year: 2018
   doi: 10.1103/PhysRevLett.121.042701
   arxiv: "1806.03050"
-  checked: Seville, INAF, Manchester and White Rose repository records with DOI, 2026-10-11
+  # arXiv 1803.05701 is the same paper, withdrawn by the arXiv administrators
+  # as a duplicate of 1806.03050; the later number is the one to cite.
+  checked: Seville, INAF, Manchester and White Rose repository records with DOI, 2026-10-11; arXiv number rechecked by web search (1803.05701 withdrawn as a duplicate of 1806.03050), 2026-10-13
 
 # --- Weak processes: pp, pep, hep ---------------------------------------------------
 

@@ -286,6 +286,17 @@ for (const [id, { file, data: r }] of reactionFiles) {
   // The general-reader fields are expected in Italian; the specialist ones
   // (details, measurement notes, open questions) may stay English.
   checkTranslations(file, r, ["summary", "role", "status_note", "status_plain", "keywords"])
+  // --- lit --- "Did you know?" facts: at most three, each sourced and translated
+  const facts = checkList(file, r, "facts")
+  if (facts.length > 3) error(file, "at most three `facts`")
+  facts.forEach((f, j) => {
+    const at = `facts[${j}]: `
+    requireFields(file, f, ["text", "refs"], at)
+    const refs = checkList(file, f, "refs", at)
+    if (refs.length === 0) error(file, `${at}a fact needs at least one reference`)
+    checkRefs(file, refs, at)
+    checkTranslations(file, f, ["text"], at)
+  })
   checkKeywords(file, r)
   checkEnum(file, r.status, "status")
 
@@ -411,6 +422,33 @@ if (raw.glossary && typeof raw.glossary === "object") {
     for (const see of checkList(file, t, "see", `terms[${i}]: `)) {
       if (!ids.has(String(see))) error(file, `terms[${i}] (${t?.id}): \`see\` names unknown term \`${see}\``)
     }
+  })
+}
+// --- lit --- the open questions
+if (raw.debates && typeof raw.debates === "object") {
+  const file = "debates.yaml"
+  const questions = isList(raw.debates) ? raw.debates : checkList(file, raw.debates, "questions")
+  const ids = new Set()
+  questions.forEach((q, i) => {
+    const where = `questions[${i}] (${q?.id ?? "?"}): `
+    requireFields(file, q, ["id", "title", "status", "summary", "positions", "settle", "reactions"], where)
+    if (q?.id && !/^[a-z0-9-]+$/.test(String(q.id))) error(file, `${where}\`id\` must be lower case, digits and hyphens`)
+    if (q?.id && ids.has(q.id)) error(file, `${where}id \`${q.id}\` used twice`)
+    if (q?.id) ids.add(q.id)
+    if (q?.status !== undefined && !["open", "converging"].includes(q.status)) error(file, `${where}\`status\` must be open | converging`)
+    for (const id of checkList(file, q, "reactions", where)) if (!reactionFiles.has(String(id))) error(file, `${where}unknown reaction \`${id}\``)
+    checkRefs(file, checkList(file, q, "refs", where), where)
+    const positions = checkList(file, q, "positions", where)
+    if (isList(q?.positions) && positions.length < 1) error(file, `${where}needs at least one position`)
+    positions.forEach((p, j) => {
+      const at = `${where}positions[${j}]: `
+      requireFields(file, p, ["who", "text", "refs"], at)
+      const refs = checkList(file, p, "refs", at)
+      if (refs.length === 0) error(file, `${at}a position needs at least one reference`)
+      checkRefs(file, refs, at)
+      checkTranslations(file, p, ["who", "text"], at)
+    })
+    checkTranslations(file, q, ["title", "summary", "settle"], where)
   })
 }
 if (raw.meta && typeof raw.meta === "object" && raw.meta.version !== undefined) {

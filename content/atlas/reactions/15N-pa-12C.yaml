@@ -80,7 +80,7 @@ measurements:
       direct data, adopted by Solar Fusion II, and 70.0 ± 13.5 MeV b from the
       Trojan-Horse data.
     refs: [lacognata2009]
-evaluations: [adelberger2011, acharya2025]
+evaluations: [adelberger2011, xu2013, acharya2025]
 open_questions:
   - The electron-screening correction needed to compare direct data at the lowest energies with Trojan-Horse results.
 open_questions_it:

@@ -85,6 +85,14 @@ moralesgallegos2022:
   # Eur. Phys. J. A 59, 120); the corrected article is moralesgallegos2024.
   checked: EPJ Web of Conferences abstract page and DOAJ record (CIRCE, Caserta; ΔE–E telescopes; E = 2.51–4.36 MeV in 10–25 keV steps); EPJ A retraction note seen in search results, 2026-10-12
 
+moralesgallegos2023r:
+  authors: L. Morales-Gallegos, M. Aliotta, L. Gialanella et al.
+  title: "Retraction Note: Direct measurements of the ¹²C + ¹²C reactions cross-sections towards astrophysical energies"
+  journal: Eur. Phys. J. A 59, 120 (2023)
+  year: 2023
+  doi: 10.1140/epja/s10050-023-01022-7
+  checked: Springer and EPJ A pages for the DOI, by web search (retraction of Eur. Phys. J. A 58, 65 (2022) for an error in the script computing beam energy losses from tabulated stopping powers; general analysis and conclusions unchanged), 2026-10-13
+
 moralesgallegos2024:
   authors: L. Morales-Gallegos et al.
   title: Direct measurements of the ¹²C+¹²C reactions cross-sections towards astrophysical energies
@@ -153,7 +161,7 @@ nippert2025:
   year: 2025
   doi: 10.1103/PhysRevC.111.065804
   arxiv: "2509.14717"
-  checked: arXiv 2509.14717, HAL record hal-05104930 and White Rose record 234979 (DOI, abstract), 2026-10-12
+  checked: arXiv 2509.14717, HAL record hal-05104930 and White Rose record 234979 (DOI, abstract), 2026-10-12; abstract rechecked by web search (no confirmed overall rise of S at deep sub-barrier energies; p₁/α₁ branching ratio of about 2% at 3.23 MeV; lower average S between 2.2 and 2.6 MeV), 2026-10-13
 
 gesue2025:
   authors: R. M. Gesuè, S. Turkat, J. Skowronski, M. Aliotta et al. (LUNA Collaboration)
@@ -206,9 +214,11 @@ uzawa2025:
   title: Re-examination of fusion hindrance in astrophysical ¹²C + ¹²C and ¹²C + ¹³C reactions
   journal: Phys. Rev. C 112, L061601 (2025)
   year: 2025
-  doi: 10.1103/PhysRevC.112.L061601
   arxiv: "2507.18065"
-  checked: arXiv 2507.18065 abstract; journal reference from K. Hagino's publication list (Yukawa Institute) and his 2026 talk slides; DOI from the APS scheme, 2026-10-12
+  # The DOI built from the old APS pattern (10.1103/PhysRevC.112.L061601) was
+  # not found by any search; late-2025 APS articles carry new-style DOIs, so
+  # it is omitted until it can be read from the APS page.
+  checked: arXiv 2507.18065 abstract; journal reference from K. Hagino's publication list (Yukawa Institute) and his 2026 talk slides, 2026-10-12; DOI searched again and not found, so removed, 2026-10-13
 
 woosley2002:
   authors: S. E. Woosley, A. Heger, T. A. Weaver

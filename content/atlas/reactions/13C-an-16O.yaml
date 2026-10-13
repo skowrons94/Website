@@ -58,6 +58,10 @@ details: >-
   JUNA measurement in the China Jinping Underground Laboratory, combined with
   data taken at Sichuan University, covered 0.24–1.9 MeV in one consistent data
   set and constrained the near-threshold state directly (Gao et al. 2022).
+  At higher energies, the first accurate differential cross sections below
+  1 MeV, at 18 angles from 0.8 to 6.5 MeV, resolve long-standing differences
+  between the earlier data and, in an R-matrix fit, could bring the
+  uncertainty of the extrapolation to about 5% (deBoer et al. 2024).
 status: improving
 status_note: >-
   Measurements deep underground now reach the upper part of the energy range
@@ -128,6 +132,17 @@ measurements:
       15%, with the first direct determination of the α strength of the
       near-threshold state.
     refs: [gao2022]
+  - year: 2024
+    facility: notre-dame
+    method: direct-surface
+    energy: "E_α = 0.8–6.5 MeV, 18 angles (α,n₀)"
+    energy_it: "E_α = 0,8–6,5 MeV, 18 angoli (α,n₀)"
+    note: >-
+      Differential cross section of the (α,n₀) channel at angles from 0 to
+      160°, over 700 angular distributions, the first accurate ones below
+      1 MeV; added to the R-matrix fit, they suggest an extrapolation
+      uncertainty of about 5%, against about 15% before.
+    refs: [deboer2024]
 evaluations: [angulo1999, xu2013, deboer2020]
 open_questions:
   - The ANC and the exact energy of the 1/2⁺ state at 6.356 MeV in ¹⁷O, which control the extrapolation below 230 keV.

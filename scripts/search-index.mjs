@@ -184,6 +184,8 @@ const PAGES = [
   { href: "/glossary", en: ["Glossary", "The words the atlas uses, in plain language"], it: ["Glossario", "Le parole dell'atlante, in linguaggio semplice"], k: "glossary glossario terms termini definitions" },
   { href: "/atlas/methods", en: ["Methods and laboratories", "How reactions are measured, and where"], it: ["Metodi e laboratori", "Come si misurano le reazioni, e dove"], k: "methods metodi laboratories laboratori facilities" },
   { href: "/atlas/timeline", en: ["Timeline", "A century of nuclear astrophysics"], it: ["Cronologia", "Un secolo di astrofisica nucleare"], k: "timeline cronologia history storia" },
+  // --- lit ---
+  { href: "/atlas/open-questions", en: ["Open questions", "What the field still argues about, and what would settle it"], it: ["Questioni aperte", "Su che cosa si discute ancora, e che cosa lo risolverebbe"], k: "open questions questioni aperte domande aperte debates dibattiti controversy controversie puzzle enigma unsolved irrisolto tension tensione discrepancy discrepanza" },
   { href: "/atlas/s-process", en: ["The s-process", "How stars make about half the nuclei heavier than iron"], it: ["Il processo s", "Come le stelle producono metà degli elementi pesanti"], k: "s-process processo s slow neutron capture cattura neutronica lenta lead piombo bismuth bismuto barium bario strontium stronzio heavy elements elementi pesanti from iron to lead dal ferro al piombo" },
   // --- r11 site ---
   { href: "/about", en: ["About this site", "How it was made and checked, its data, and how to cite it"], it: ["Informazioni sul sito", "Come è stato realizzato e verificato, i dati e come citarlo"], k: "about informazioni colophon AI artificial intelligence intelligenza artificiale Claude Anthropic verification verifica sources fonti licence licenza cite citare citation citazione DOI Zenodo github open source codice aperto report error segnala errore contribute contribuire" },
@@ -413,6 +415,21 @@ function build(lang) {
       ),
       a: clean(extraKeys(raw.glossary?.terms?.find((x) => x.id === term.id)).join(" · ")),
       b: bodyWords(term.text),
+    })
+  }
+
+  // --- lit --- the open questions, one entry each
+  for (const d of atlas.debates ?? []) {
+    const o = atlasOther.debates?.find((x) => x.id === d.id)
+    entries.push({
+      t: "question",
+      // Below the reactions and pages they discuss: "Hoyle state" finds the reaction first.
+      w: -12,
+      l: clean(d.title),
+      s: short(d.summary, 120),
+      h: loc(lang, `/atlas/open-questions#${d.id}`),
+      k: clean([o?.title, d.id.replace(/-/g, " "), ...d.reactions.map((id) => atlas.reactions.find((r) => r.id === id)?.label ?? id)].filter(Boolean).join(" · ")),
+      b: bodyWords(d.summary, d.positions.map((p) => [p.who, p.text]), d.settle),
     })
   }
 

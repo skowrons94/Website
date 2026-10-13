@@ -47,7 +47,11 @@ details: >-
   energies from about 0.3 MeV upwards and constrained the energy dependence needed to extrapolate to the
   solar Gamow window. Above 1 MeV the ERNA data differ from earlier results in
   both normalization and slope. Activation measurements at Atomki extended the
-  data to the ⁷Be proton separation threshold. BBN analyses with the current
+  data to the ⁷Be proton separation threshold and, in 2023, above it, into the
+  region of the known ⁷Be levels. Solar Fusion III recommends
+  S(0) = 0.561 ± 0.018 (exp) ± 0.022 (theory) keV b; the theoretical
+  uncertainty has grown since Solar Fusion II and is now comparable to the
+  experimental one. BBN analyses with the current
   rates conclude that a nuclear-physics solution of the lithium problem is
   highly unlikely.
 status: improving
@@ -143,6 +147,16 @@ measurements:
       the ⁷Be proton separation threshold and an upper limit of 45 neV on the
       strength of a resonance there.
     refs: [szucs2019]
+  - year: 2023
+    facility: atomki
+    method: activation
+    energy: "above the ⁷Be proton separation threshold"
+    energy_it: "sopra la soglia di separazione del protone del ⁷Be"
+    note: >-
+      Activation with a thin-window ³He gas cell, extending the capture data
+      into the energy range of the known ⁷Be levels, where only one narrow data
+      set (4.0–4.4 MeV) existed before.
+    refs: [toth2023]
 evaluations: [adelberger2011, acharya2025, descouvemont2004, iliadis2020]
 open_questions:
   - The energy dependence of the S-factor between 100 keV and 1 MeV, which controls the extrapolation to the solar Gamow window.

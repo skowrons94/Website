@@ -39,7 +39,14 @@ details: >-
   coefficients from transfer reactions. The LUNA measurements at the 400 kV
   accelerator under Gran Sasso extended the data down to 70 keV, much closer
   to the solar energies than any surface experiment, and gave a total S(0)
-  near 1.7 keV b. Surface measurements at HZDR and Notre Dame since 2018 cover
+  near 1.7 keV b; Solar Fusion III recommends S(0) = 1.68 ± 0.14 keV b, an
+  uncertainty of 8.4%. A 2025 measurement at Ep = 110–260 keV with the 350 kV
+  accelerator in Hefei determined all transitions together in a multichannel
+  Bayesian analysis and reports S(0) = 1.92 ± 0.08 keV b, about 14% above the
+  Solar Fusion III value (Chen et al. 2025); the two have not yet been
+  reconciled. The rate matters for the Sun because Borexino's measurement of the
+  CNO neutrino flux can be turned into the carbon and nitrogen content of the
+  solar core only through it (Borexino 2023). Surface measurements at HZDR and Notre Dame since 2018 cover
   0.3–1.3 MeV with high precision and anchor the R-matrix fit above the
   underground data, and an activation measurement at Atomki gives the total
   cross section at 0.55–1.4 MeV independently of γ-ray spectroscopy. A new
@@ -50,18 +57,23 @@ status: improving
 status_note: >-
   Direct data reach 70 keV; the remaining uncertainty comes from the split into
   the individual γ-ray transitions and from the extrapolation to solar energies.
+  Solar Fusion III recommends S(0) = 1.68 ± 0.14 keV b; a 2025 measurement
+  finds 1.92 ± 0.08 keV b.
 status_note_it: >-
   I dati diretti arrivano a 70 keV; l'incertezza residua viene dalla
   suddivisione nelle singole transizioni γ e dall'estrapolazione alle energie
-  solari.
+  solari. Solar Fusion III raccomanda S(0) = 1,68 ± 0,14 keV b; una misura del
+  2025 trova 1,92 ± 0,08 keV b.
 status_plain: >-
   Measured underground close to the energies of the Sun. What remains
   uncertain is how the reaction divides among its several ways of giving off
-  γ-rays, and the last step down to solar energies.
+  γ-rays, and the last step down to solar energies; a 2025 measurement finds
+  a rate about 14% above the recommended one.
 status_plain_it: >-
   Misurata sotto terra vicino alle energie del Sole. Resta incerto come la
   reazione si ripartisca tra i diversi modi in cui emette raggi γ, e
-  l'ultimo passo fino alle energie solari.
+  l'ultimo passo fino alle energie solari; una misura del 2025 trova un
+  tasso più alto di circa il 14% rispetto a quello raccomandato.
 methods: [direct-underground, direct-surface, activation, lifetime, anc]
 measurements:
   - year: 2001
@@ -193,11 +205,26 @@ measurements:
       BGO detector, which aims at total and partial cross sections for a rate
       with 5% precision; no cross sections published yet.
     refs: [gosta2025, compagnucci2025]
-evaluations: [adelberger2011, acharya2025]
+  - year: 2025
+    facility: other
+    lab: "350 kV accelerator, Hefei"
+    method: direct-surface
+    energy: "Eₚ = 110–260 keV"
+    note: >-
+      All transitions measured at once and their S-factors determined together
+      in a multichannel Bayesian analysis of the γ spectra; S(0) =
+      1.92 ± 0.08 keV b, about 14% above the Solar Fusion III recommendation.
+      The authors discuss what the higher value means for the tension between
+      Borexino's CNO neutrinos and the low-metallicity solar composition.
+    refs: [chen2025]
+evaluations: [adelberger2011, xu2013, acharya2025]
+refs: [borexino2020, borexino2023]
 open_questions:
   - The ground-state transition, whose contribution at low energy depends on interference in the R-matrix fit.
   - The lifetime of the 6.79 MeV state of ¹⁵O, for which the published values disagree.
+  - The total S(0), where the 2025 value of 1.92 ± 0.08 keV b and the Solar Fusion III recommendation of 1.68 ± 0.14 keV b differ by about 14%.
 open_questions_it:
   - "La transizione allo stato fondamentale, il cui contributo a bassa energia dipende dall'interferenza nel fit R-matrix."
   - "La vita media dello stato a 6,79 MeV del ¹⁵O, per la quale i valori pubblicati non concordano."
+  - "Il fattore S totale S(0), per il quale il valore del 2025, 1,92 ± 0,08 keV b, e la raccomandazione di Solar Fusion III, 1,68 ± 0,14 keV b, differiscono di circa il 14%."
 related: [13C-pg-14N, 15O-bp-15N, 15N-pa-12C, 15N-pg-16O, 12C-pg-13N]

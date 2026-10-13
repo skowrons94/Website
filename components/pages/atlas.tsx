@@ -67,6 +67,10 @@ export function AtlasPage({ lang }: { lang: Lang }) {
       <Link href={to("/atlas/methods")} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
         {t.methodsLink}
       </Link>
+      {/* --- lit --- */}
+      <Link href={to("/atlas/open-questions")} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
+        {dict(lang).openQuestions.link}
+      </Link>
       <Link href={to("/glossary")} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
         {t.glossaryLink}
       </Link>
@@ -213,7 +217,7 @@ export function AtlasPage({ lang }: { lang: Lang }) {
       )}
 
       {/* -- further ------------------------------------------------------- */}
-      <section className="mt-16 grid gap-6 border-t border-border/70 pt-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      <section className="mt-16 grid gap-6 border-t border-border/70 pt-10 sm:grid-cols-2 lg:grid-cols-3">
         <Link href={to("/atlas/timeline")} className="group block rounded-lg border border-border bg-card p-6">
           <h2 className="font-serif text-lg font-semibold tracking-tight group-hover:text-link">{t.timelineCard}</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t.timelineCardText}</p>
@@ -234,6 +238,12 @@ export function AtlasPage({ lang }: { lang: Lang }) {
             {t.methodsCard}
           </h2>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t.methodsCardText}</p>
+          <ArrowRight className="mt-4 h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+        </Link>
+        {/* --- lit --- */}
+        <Link href={to("/atlas/open-questions")} className="group block rounded-lg border border-border bg-card p-6">
+          <h2 className="font-serif text-lg font-semibold tracking-tight group-hover:text-link">{dict(lang).openQuestions.card}</h2>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{dict(lang).openQuestions.cardText}</p>
           <ArrowRight className="mt-4 h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
         </Link>
         <a

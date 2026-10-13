@@ -95,7 +95,7 @@ measurements:
       Exclusive cross sections for the γ-ray cascades through excited states
       of ¹⁶O, measured together with ¹⁵N(p,α₁γ)¹²C.
     refs: [imbriani2012]
-evaluations: [adelberger2011, acharya2025]
+evaluations: [adelberger2011, xu2013, acharya2025]
 open_questions:
   - The direct-capture contribution to the ground state, which sets the S-factor below the lower resonance.
 open_questions_it:

@@ -34,7 +34,10 @@ details: >-
   measured separately. For the α₀ channel, direct data reach 0.2 MeV and give
   S-factors 1.5–2 times larger than the adopted extrapolations, and
   Trojan-Horse data, which reach lower energies, show resonances that direct
-  measurements had not seen. The (p,αγ) channel was measured deep underground
+  measurements had not seen. Between 0.4 and 0.9 MeV, measurements with the
+  LHASA silicon-strip array (2023, 2025) give an α₀ S-factor about 1.4 times
+  the NACRE value at 0.6–0.8 MeV and resolve the disagreement between the two
+  earlier data sets there. The (p,αγ) channel was measured deep underground
   at JUNA across the whole Gamow window, from E = 72 to 344 keV.
 status: uncertain
 status_note: >-
@@ -84,6 +87,17 @@ measurements:
       Gamow window (70–200 keV), at the China JinPing Underground
       Laboratory.
     refs: [zhang2021]
+  - year: 2023
+    method: direct-surface
+    energy: "E_cm = 0.4–0.9 MeV (α₀ channel)"
+    energy_it: "E_cm = 0,4–0,9 MeV (canale α₀)"
+    note: >-
+      Direct measurement with the LHASA silicon-strip array; the S-factor is
+      about 1.4 times the NACRE value in the 0.6–0.8 MeV region, confirming the
+      trend of the latest data. A fuller account with angular distributions
+      followed in 2025 and resolves the discrepancy between the two earlier
+      data sets.
+    refs: [guardo2023, petruse2025]
 open_questions:
   - The contribution of low-energy resonances to the separate α channels.
   - The ratio to ¹⁹F(p,γ)²⁰Ne, which decides how much material leaks from the CNO cycles towards neon.
@@ -100,4 +114,8 @@ details_it: >-
   delle estrapolazioni adottate, e i dati del Cavallo di Troia, che arrivano
   a energie più basse, mostrano risonanze che le misure dirette non avevano
   visto. Il canale (p,αγ) è stato misurato in profondità sotto terra a JUNA
-  in tutta la finestra di Gamow, da E = 72 a 344 keV.
+  in tutta la finestra di Gamow, da E = 72 a 344 keV. Tra 0,4 e 0,9 MeV le
+  misure con la matrice di rivelatori al silicio LHASA (2023, 2025) danno un
+  fattore S del canale α₀ circa 1,4 volte il valore di NACRE a 0,6–0,8 MeV e
+  risolvono il disaccordo tra le due serie di dati precedenti in quella
+  regione.

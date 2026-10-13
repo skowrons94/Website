@@ -129,4 +129,14 @@ open_questions_it:
   - "La frazione verso lo stato fondamentale della risonanza a 92 keV, che fissa quanta parte del tasso produce ²⁶Al nel suo stato fondamentale, e quindi la riga a 1809 keV."
   - "Il confronto tra le intensità della risonanza a 92 keV misurate da LUNA e da JUNA, le due misure dirette in laboratori sotterranei profondi."
   - "L'effetto della maggiore produzione dell'isomero sulle rese di ²⁶Al delle stelle di Wolf–Rayet e delle AGB massicce."
+facts:
+  - text: >-
+      Only about half of the aluminium-26 made at the key 92 keV resonance
+      will ever shine at 1809 keV; the rest is born in a short-lived excited
+      state that decays without that γ-ray line.
+    text_it: >-
+      Solo circa metà dell'alluminio-26 prodotto alla risonanza chiave a
+      92 keV brillerà a 1809 keV; il resto nasce in uno stato eccitato di vita
+      breve che decade senza quella riga γ.
+    refs: [kankainen2021]
 related: [26Al-bp-26Mg, 24Mg-pg-25Al, 25Al-bp-25Mg, 26Mg-pg-27Al, 22Ne-an-25Mg]

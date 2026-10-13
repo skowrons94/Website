@@ -51,7 +51,10 @@ details: >-
   (Ota et al. 2020; Jayatissa et al. 2020). The
   evaluation of Adsley et al. (2021), based on updated spin-parity
   assignments, lowered the (α,n) rate substantially while leaving the (α,γ)
-  rate almost unchanged.
+  rate almost unchanged. The transfer data suggest that the neutron and γ
+  strengths of the 830 keV resonance are about equal; direct measurements,
+  most recently with a stilbene detector (Shahina et al. 2024), find the
+  (α,n) strength about three times the (α,γ) strength.
 
 
   A direct measurement in the Gamow window is the aim of the SHADES project,
@@ -122,11 +125,24 @@ measurements:
       Partial α widths of ²⁶Mg resonances in the Gamow window; the derived
       (α,n) and (α,γ) rates differ significantly from earlier values.
     refs: [jayatissa2020]
+  - year: 2024
+    facility: notre-dame
+    method: direct-surface
+    energy: "E(α,lab) = 830 keV resonance"
+    energy_it: "risonanza a E(α,lab) = 830 keV"
+    note: >-
+      Strength of the key resonance remeasured with a stilbene detector;
+      similar to the earlier direct results and about three times the
+      (α,γ) strength, against transfer data that imply the two are about
+      equal.
+    refs: [shahina2024]
 evaluations: [angulo1999, adsley2021]
 open_questions:
   - A direct measurement below the 830 keV resonance, which needs the low neutron background of an underground laboratory and a neutron detector with energy sensitivity.
   - Spin, parity and α width of the ²⁶Mg states just above the neutron threshold, where transfer and neutron-resonance data still disagree.
+  - The ratio of the (α,n) and (α,γ) strengths of the 830 keV resonance, about 3 in direct measurements and about 1 from transfer data.
 open_questions_it:
   - "Una misura diretta sotto la risonanza a 830 keV, che richiede il basso fondo di neutroni di un laboratorio sotterraneo e un rivelatore di neutroni sensibile alla loro energia."
   - "Spin, parità e larghezza α degli stati del ²⁶Mg appena sopra la soglia neutronica, per i quali i dati di trasferimento e quelli delle risonanze di neutroni non concordano ancora."
+  - "Il rapporto tra le intensità (α,n) e (α,γ) della risonanza a 830 keV, circa 3 nelle misure dirette e circa 1 dai dati di trasferimento."
 related: [22Ne-ag-26Mg, 13C-an-16O, 18O-ag-22Ne, 14N-ag-18F, 25Mg-ng-26Mg]

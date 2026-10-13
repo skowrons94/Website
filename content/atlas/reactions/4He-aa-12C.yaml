@@ -58,9 +58,15 @@ details: >-
   about 34% above the previously adopted value. Eriksen et al. alone had
   lowered Γ_rad by 11% through a 14% larger Γ_π/Γ. Rana et al. (2024) found
   Γ_rad/Γ = 4.01(30)×10⁻⁴ from p–γ–γ triple coincidences, consistent with the
-  previously adopted value and not with the 34% increase. Paulsen et al. (2025)
-  remeasured the γ-decay branching ratio at Oslo and reanalysed the data used
-  by Kibédi et al. At high temperatures (T₉ ≳ 1) broader states above the Hoyle
+  previously adopted value and not with the 34% increase. Dell'Aquila et al.
+  (2024), with charged-particle coincidences, found Γ_rad/Γ = 4.4(6)×10⁻⁴.
+  Paulsen et al. (2025) remeasured the γ-decay branching ratio at Oslo,
+  Γ_γ/Γ = 4.0(3)×10⁻⁴ and Γ_rad/Γ = 4.1(4)×10⁻⁴, and reanalysed the 2014 data
+  used by Kibédi et al.: after correcting several issues in that analysis they
+  obtain 4.6(6)×10⁻⁴, no longer discrepant with the ENSDF average of
+  4.16(11)×10⁻⁴. The measurements have therefore converged on the value
+  adopted before 2020, with Kibédi et al. (2020) the outlier, now reanalysed.
+  At high temperatures (T₉ ≳ 1) broader states above the Hoyle
   state and non-resonant contributions matter: Fynbo et al. (2005) mapped the
   ¹²C continuum in β decay, and Tsumura et al. (2021) gave the first value for
   the radiative-decay probability of the 3⁻₁ state.
@@ -68,12 +74,15 @@ status: improving
 status_note: >-
   The rate depends on how often the Hoyle state of carbon-12 settles into
   stable carbon instead of breaking up again into three helium nuclei. That
-  probability is tiny, and measurements since 2020 disagree on it by about 30%.
+  probability is tiny; a 2020 measurement put it about 30% higher, but the
+  measurements of 2024–2025 and a reanalysis of the 2020 data agree on
+  the earlier value, about 4.1 in 10 000.
 status_note_it: >-
   Il tasso dipende da quanto spesso lo stato di Hoyle del carbonio-12 si
   stabilizza in carbonio invece di spezzarsi di nuovo in tre nuclei di elio.
-  Questa probabilità è minuscola, e le misure dal 2020 in poi non concordano
-  sul suo valore, con differenze di circa il 30%.
+  Questa probabilità è minuscola; una misura del 2020 la dava più alta di circa
+  il 30%, ma le misure del 2024–2025 e una nuova analisi dei dati del 2020
+  concordano sul valore precedente, circa 4,1 su 10 000.
 methods: [direct-surface, inverse-kinematics, theory]
 measurements:
   - year: 1953
@@ -138,6 +147,8 @@ measurements:
       temperature, where it had been assumed to be negligible.
     refs: [tsumura2021]
   - year: 2024
+    facility: other
+    lab: "Variable Energy Cyclotron Centre, Kolkata"
     method: direct-surface
     energy: "¹²C(p,p′γγ) triple coincidences, and a kinematically complete ¹²C(p,p′) measurement"
     energy_it: "coincidenze triple ¹²C(p,p′γγ), e una misura cinematicamente completa di ¹²C(p,p′)"
@@ -147,6 +158,15 @@ measurements:
       Γ_rad = 3.75(40)×10⁻³ eV, consistent with the value adopted before 2020
       and not with the 34% increase.
     refs: [rana2024]
+  - year: 2024
+    method: direct-surface
+    energy: "Hoyle state, charged-particle coincidences"
+    energy_it: "stato di Hoyle, coincidenze di particelle cariche"
+    note: >-
+      An almost background-free measurement with charged-particle
+      coincidences and a two-dimensional map of the coincidence efficiency:
+      Γ_rad/Γ = 4.4(6)×10⁻⁴.
+    refs: [dellaquila2024]
   - year: 2025
     facility: oslo-ocl
     method: direct-surface
@@ -155,14 +175,26 @@ measurements:
     note: >-
       Remeasurement of the γ-decay branching ratio from triple coincidences,
       checked with a surrogate γ-ray cascade in ²⁸Si, together with a
-      reanalysis of the 2014 data used by Kibédi et al.
+      reanalysis of the 2014 data used by Kibédi et al.: Γ_γ/Γ = 4.0(3)×10⁻⁴ and
+      Γ_rad/Γ = 4.1(4)×10⁻⁴; the corrected analysis of the 2014 data gives
+      4.6(6)×10⁻⁴, no longer in conflict with the ENSDF average.
     refs: [paulsen2025]
 evaluations: [angulo1999, freer2014]
 open_questions:
-  - The γ-decay branching ratio of the Hoyle state, where the 2020, 2024 and 2025 determinations must be reconciled before the rate can be quoted to better than about 10%.
+  - The γ-decay branching ratio of the Hoyle state has converged (Rana 2024, Dell'Aquila 2024, Paulsen 2025 and the reanalysis of the 2020 data agree at about 4.1×10⁻⁴); Γ_rad still depends on the pair-decay quantities Γ_π/Γ and Γ_π that multiply it.
   - The rate at T₉ ≳ 1, which depends on broad higher-lying states and on the 3⁻₁ radiative width, known only to about a factor of two.
 open_questions_it:
-  - "Il rapporto di diramazione del decadimento γ dello stato di Hoyle, per il quale le determinazioni del 2020, del 2024 e del 2025 vanno riconciliate prima che il tasso possa essere dato con un'incertezza migliore di circa il 10%."
+  - "Il rapporto di diramazione del decadimento γ dello stato di Hoyle è ormai convergente (Rana 2024, Dell'Aquila 2024, Paulsen 2025 e la nuova analisi dei dati del 2020 concordano su circa 4,1×10⁻⁴); Γ_rad dipende ancora dalle grandezze del decadimento in coppie, Γ_π/Γ e Γ_π, che lo moltiplicano."
   - "Il tasso a T₉ ≳ 1, che dipende da stati larghi a energia più alta e dalla larghezza radiativa dello stato 3⁻₁, nota solo entro circa un fattore due."
+facts:
+  - text: >-
+      Only about 4 in every 10 000 Hoyle states settle into carbon-12; the
+      rest break up again into three helium nuclei. All the carbon in the
+      Universe comes through that small fraction.
+    text_it: >-
+      Solo circa 4 stati di Hoyle su 10 000 si stabilizzano in carbonio-12;
+      gli altri si spezzano di nuovo in tre nuclei di elio. Tutto il carbonio
+      dell'Universo passa per quella piccola frazione.
+    refs: [paulsen2025, rana2024]
 related: [12C-ag-16O]
 rmatrix: [8Be]

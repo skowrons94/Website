@@ -55,7 +55,12 @@ details: >-
   section in inverse kinematics, independent of the γ-ray angular
   distribution. The review of deBoer et al. (2017) combined capture,
   scattering and β-delayed α-emission data in a global R-matrix analysis and
-  gave the recommended rate used here.
+  gave the recommended rate used here. Its extrapolation is still debated: a
+  ground-state ANC measured through ¹²C(¹¹B,⁷Li)¹⁶O gives a total rate up to
+  21% higher (Shen et al. 2023), and a time projection chamber in the γ beam
+  of HIγS measured background-free angular distributions of the inverse reaction
+  ¹⁶O(γ,α)¹²C, with an E1–E2 phase reported
+  to agree with unitarity for the first time (Haverson et al. 2026).
 status: uncertain
 status_note: >-
   No experiment has yet reached the energies at which helium burns in stars:
@@ -69,7 +74,7 @@ status_note_it: >-
   Il tasso stellare si ottiene prolungando verso il basso l'andamento misurato
   con un modello nucleare, e la sua incertezza dipende da come la reazione si
   ripartisce tra i suoi due modi principali di emettere il raggio γ.
-methods: [direct-surface, inverse-kinematics, anc, theory]
+methods: [direct-surface, inverse-kinematics, anc, photonuclear, theory]
 measurements:
   - year: 2001
     facility: stuttgart-dynamitron
@@ -127,7 +132,33 @@ measurements:
       beam currents, avoiding target degradation, and gave E1 and E2
       components with accuracy comparable to the best Ge data.
     refs: [plag2012]
+  - year: 2023
+    facility: other
+    lab: "Q3D magnetic spectrograph"
+    method: anc
+    energy: "¹⁶O ground state via ¹²C(¹¹B,⁷Li)¹⁶O"
+    energy_it: "stato fondamentale del ¹⁶O tramite ¹²C(¹¹B,⁷Li)¹⁶O"
+    note: >-
+      A new ground-state ANC, addressing a spread of more than two orders of
+      magnitude among earlier values; the resulting total rate is up to 21%
+      above deBoer et al. (2017), and in massive helium-core models it lowers
+      the lower and upper edges of the black-hole mass gap by about 12% and
+      5%.
+    refs: [shen2023]
+  - year: 2026
+    facility: other
+    lab: "HIγS, Triangle Universities Nuclear Laboratory"
+    method: photonuclear
+    energy: "¹⁶O(γ,α)¹²C angular distributions"
+    energy_it: "distribuzioni angolari della ¹⁶O(γ,α)¹²C"
+    note: >-
+      Background-free angular distributions of the time-reversed reaction,
+      measured with a time projection chamber filled with N₂O gas; the
+      measured E1–E2 mixing phase is reported to agree with the unitarity
+      prediction for the first time.
+    refs: [haverson2026]
 evaluations: [deboer2017, angulo1999, xu2013]
+refs: [farmer2020]
 open_questions:
   - Direct data below 1 MeV, which need an underground accelerator able to deliver intense α beams, or high-intensity γ beams for the inverse reaction ¹⁶O(γ,α)¹²C.
   - The E2 ground-state S-factor, whose extrapolation depends on the ANC of the 6.92 MeV subthreshold state and on the interference with the direct capture.
@@ -136,4 +167,16 @@ open_questions_it:
   - "Dati diretti sotto 1 MeV, che richiedono un acceleratore sotterraneo capace di fornire fasci α intensi, oppure fasci γ di alta intensità per la reazione inversa ¹⁶O(γ,α)¹²C."
   - "Il fattore S della transizione E2 allo stato fondamentale, la cui estrapolazione dipende dall'ANC dello stato sotto soglia a 6,92 MeV e dall'interferenza con la cattura diretta."
   - "Il contributo della cascata attraverso lo stato a 6,05 MeV a bassa energia, dove le analisi di DRAGON e di ERNA differiscono."
+facts:
+  - text: >-
+      Black holes can measure this reaction: from the first ten black-hole
+      mergers seen in gravitational waves, its S-factor at 300 keV must be
+      above 175 keV b (68% confidence), if stellar models are right about the
+      rest.
+    text_it: >-
+      I buchi neri possono misurare questa reazione: dalle prime dieci
+      fusioni di buchi neri viste con le onde gravitazionali, il suo fattore S
+      a 300 keV deve superare 175 keV b (68% di confidenza), se i modelli
+      stellari sono giusti per tutto il resto.
+    refs: [farmer2020]
 related: [4He-aa-12C, 16O-ag-20Ne, 12C-12Ca-20Ne, 12C-12Cp-23Na]

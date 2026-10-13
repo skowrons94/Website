@@ -82,7 +82,7 @@ measurements:
       literature over the whole range; new parameters for the two resonances
       and S_tot(0) = 6.4(4) keV b.
     refs: [skowronski2025]
-evaluations: [acharya2025]
+evaluations: [xu2013, acharya2025]
 open_questions:
   - The branching of the capture to the excited states of ¹⁴N below 300 keV, where only the LUNA data exist.
   - The cause of the 20–30% difference between the recent data and the 1994 data set.

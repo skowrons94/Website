@@ -677,7 +677,9 @@ terms:
       temperature, which is what stellar models need. By convention it is
       quoted at a thermal energy kT = 30 keV, about 350 million kelvin. The
       measured values are collected in KADoNiS, the Karlsruhe Astrophysical
-      Database of Nucleosynthesis in Stars (Dillmann et al. 2014).
+      Database of Nucleosynthesis in Stars (Dillmann et al. 2014), and now in
+      its successor ASTRAL, which recalculates them from the raw data of each
+      measurement (Vescovi et al. 2023).
     text_it: >-
       In una stella i neutroni hanno la distribuzione di energie di un gas
       caldo, la distribuzione di Maxwell–Boltzmann. La sezione d'urto mediata
@@ -686,7 +688,8 @@ terms:
       stellari. Per convenzione si cita a un'energia termica kT = 30 keV,
       circa 350 milioni di kelvin. I valori misurati sono raccolti in KADoNiS,
       il Karlsruhe Astrophysical Database of Nucleosynthesis in Stars
-      (Dillmann et al. 2014).
+      (Dillmann et al. 2014), e ora nel suo successore ASTRAL, che li
+      ricalcola dai dati grezzi di ogni misura (Vescovi et al. 2023).
     see: [cross-section, time-of-flight, activation]
 
   - id: time-of-flight
