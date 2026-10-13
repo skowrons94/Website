@@ -126,6 +126,31 @@ function fetchJsroot() {
 const JSROOT_EXTERNAL = ['three', 'three/addons', 'canvas', 'jsdom', '@oneidentity/zstd-js', 'mathjax', 'mathjax/*',
   'xhr2', 'tmp', '@resvg/resvg-js', 'fs', 'zlib', 'path', 'url', 'crypto', 'os', 'child_process']
 
+/**
+ * Stubs for what WebDAQ never draws: three.js (3-D/lego, statically imported by the
+ * 2-D painters through base3d) and jsPDF (PDF export, statically imported by draw.mjs).
+ * The stubs keep every export name, so the 2-D code loads; 3-D draws nothing, PDF export rejects.
+ */
+const jsrootStubs = {
+  name: 'jsroot-stubs',
+  setup(build) {
+    build.onLoad({ filter: /[\\/]jsroot[\\/]modules[\\/](three|three_addons)\.mjs$/ }, args => {
+      const src = fs.readFileSync(args.path, 'utf8')
+      const lists = [...src.matchAll(/^export \{([^}]*)\};?\s*$/gm)].map(m => m[1])
+      const names = lists.flatMap(l => l.split(',').map(x => x.trim().split(/\s+as\s+/).pop()).filter(Boolean))
+      const body = names.map(n => n === 'REVISION' ? `export const REVISION = '0';` : `export const ${n} = Inert;`).join('\n')
+      // base3d builds a few THREE objects at module load (Box3D), so the stub must be
+      // constructible: an inert proxy that absorbs construction, calls and property reads.
+      const inert = `const h = { get: (t, p) => p === Symbol.toPrimitive ? () => 0 : p === 'prototype' ? {} : Inert, apply: () => Inert, construct: () => Inert }\n` +
+        `const Inert = new Proxy(function () {}, h)\n`
+      return { contents: `${inert}${body}\n`, loader: 'js' }
+    })
+    build.onLoad({ filter: /[\\/]jsroot[\\/]modules[\\/]base[\\/]makepdf\.mjs$/ }, () => ({
+      contents: `export function makePDF() { return Promise.reject(new Error('PDF export is not part of the WebDAQ demo bundle')) }\n`, loader: 'js',
+    }))
+  },
+}
+
 async function bundles(esbuild, publicDir) {
   fetchJsroot()
   const jsOut = path.join(publicDir, 'jsroot')
@@ -133,7 +158,7 @@ async function bundles(esbuild, publicDir) {
     entryPoints: { jsroot: path.join(HERE, 'jsroot', 'entry.mjs') }, bundle: true, splitting: true, format: 'esm',
     minify: true, outdir: jsOut, nodePaths: [path.join(WORK, 'node_modules')], external: JSROOT_EXTERNAL,
     entryNames: '[name]-[hash]', chunkNames: 'c-[hash]', target: 'es2020', platform: 'browser', metafile: true,
-    legalComments: 'none', logLevel: 'warning',
+    legalComments: 'none', logLevel: 'warning', plugins: [jsrootStubs],
   })
   const outs = r1.metafile.outputs
   const jsEntry = Object.entries(outs).find(([, o]) => o.entryPoint?.endsWith('jsroot/entry.mjs'))[0]
@@ -152,12 +177,22 @@ async function bundles(esbuild, publicDir) {
     if (Object.keys(o.inputs).some(i => PAINTERS.some(p => i.endsWith('/modules/' + p)))) closure(f, draw)
   }
   const jsrootDraw = [...draw].map(f => path.basename(f)).sort()
+  // A module worker, split: line data and each detector's response table are
+  // chunks loaded after the detector choice (design §6.4).
   const r2 = await esbuild.build({
-    entryPoints: { worker: path.join(HERE, 'sim', 'state', 'worker.ts') }, bundle: true, format: 'iife', minify: true,
-    outdir: path.join(publicDir, 'demo'), entryNames: '[name]-[hash]', target: 'es2020', platform: 'browser',
-    metafile: true, legalComments: 'none', logLevel: 'warning', tsconfig: path.join(HERE, 'tsconfig.json'),
+    entryPoints: { worker: path.join(HERE, 'sim', 'state', 'worker.ts') }, bundle: true, format: 'esm', splitting: true,
+    minify: true, outdir: path.join(publicDir, 'demo'), entryNames: '[name]-[hash]', chunkNames: 'c-[hash]',
+    target: 'es2020', platform: 'browser', metafile: true, legalComments: 'none', logLevel: 'warning',
+    tsconfig: path.join(HERE, 'tsconfig.json'),
   })
-  const wEntry = Object.keys(r2.metafile.outputs).find(f => f.endsWith('.js'))
+  const wOuts = r2.metafile.outputs
+  const wEntry = Object.entries(wOuts).find(([, o]) => o.entryPoint?.endsWith('sim/state/worker.ts'))[0]
+  const workerChunks = {}
+  for (const [f, o] of Object.entries(wOuts)) {
+    if (!f.endsWith('.js') || f === wEntry) continue
+    const m = Object.keys(o.inputs).map(i => /(?:tables\/(\w+)|data\/(lines))\.json$/.exec(i)).find(Boolean)
+    workerChunks[path.basename(f)] = m ? (m[1] ?? m[2]) : 'code'
+  }
   const storage = await esbuild.build({
     entryPoints: [path.join(HERE, 'shim', 'storage-shim.ts')], bundle: false, format: 'iife', minify: true,
     write: false, target: 'es2019', logLevel: 'warning',
@@ -166,6 +201,7 @@ async function bundles(esbuild, publicDir) {
     jsrootDraw,
     jsrootFile: path.basename(jsEntry),
     workerFile: path.basename(wEntry),
+    workerChunks,
     jsroot: `${BASE}/jsroot/${path.basename(jsEntry)}`,
     worker: `${BASE}/demo/${path.basename(wEntry)}`,
     storageShim: storage.outputFiles[0].text.trim(),
@@ -231,7 +267,7 @@ async function main() {
   // A few hundred bytes the size script and the shell read: what was built from what.
   fs.writeFileSync(path.join(APP, 'public', 'demo', 'build-info.json'), JSON.stringify({
     webdaq: { repo: pin.repo, commit: pin.commit }, jsroot: { version: pin.jsroot.version, entry: b.jsrootFile, draw: b.jsrootDraw },
-    worker: b.workerFile, basePath: BASE,
+    worker: b.workerFile, workerChunks: b.workerChunks, basePath: BASE,
   }) + '\n')
   const env = {
     ...process.env, NEXT_TELEMETRY_DISABLED: '1', NEXT_IGNORE_INCORRECT_LOCKFILE: '1', DEMO_BASE_PATH: BASE,

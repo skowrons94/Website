@@ -14,7 +14,7 @@ const DETECTORS = [
 ] as const;
 const SOURCES = [
   ['co60', '⁶⁰Co'], ['cs137', '¹³⁷Cs'], ['background', 'Room background only'],
-  ['n14pg', 'In-beam ¹⁴N(p,γ)¹⁵O'], ['ambe', 'AmBe (neutrons)'], ['cf252', '²⁵²Cf (neutrons)'],
+  ['n14pg', 'In-beam ¹⁴N(p,γ)¹⁵O'], ['cf252', '²⁵²Cf (neutrons, for EJ-309)'],
 ] as const;
 
 export default function Home() {

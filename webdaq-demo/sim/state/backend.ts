@@ -3,9 +3,9 @@
  * The worker (worker.ts) wraps it in postMessage; the contract tests use it directly.
  */
 import { Daq, type DaqOptions } from './daq'
-import { buildRouter } from '../../shim/handlers'
+import { buildRouter, LAZY_FAMILIES } from '../../shim/handlers'
 import type { Req, Res, Router } from '../../shim/router'
-import type { Scenario } from '../physics/api'
+import { loadPhysicsData, type Scenario, type DetectorKind } from '../physics/api'
 
 export interface BackendResponse extends Res {
   /** True when no mock route matched (recorded as an unmocked request). */
@@ -29,7 +29,26 @@ export class Backend {
     this.router = buildRouter(this.daq)
   }
 
-  handle(req: Req): BackendResponse {
+  private loaded = new Set<number>()
+
+  /** Register the lazily loaded handler families a path needs (all of them with no path). */
+  async ensureFamilies(path?: string): Promise<void> {
+    for (let i = 0; i < LAZY_FAMILIES.length; i++) {
+      if (this.loaded.has(i) || (path !== undefined && !LAZY_FAMILIES[i].prefix.test(path))) continue
+      const m = await LAZY_FAMILIES[i].load()
+      if (this.loaded.has(i)) continue
+      m.default(this.router, this.daq)
+      this.loaded.add(i)
+    }
+  }
+
+  async handle(req: Req): Promise<BackendResponse> {
+    await this.ensureFamilies(req.path)
+    return this.handleSync(req)
+  }
+
+  /** Handle a request whose handler family is already registered (tests: after ensureFamilies()). */
+  handleSync(req: Req): BackendResponse {
     this.daq.advance()
     const m = this.router.match(req.method, req.path)
     if (!m.ok) {
@@ -45,12 +64,28 @@ export class Backend {
     }
   }
 
+  /**
+   * Create a backend once the physics data of the detector kinds it needs are loaded
+   * (lines.json and tables/<kind>.json are separate chunks).
+   */
+  static async create(opts: DaqOptions, snapshot?: { scenario?: Partial<Scenario> } | null): Promise<Backend> {
+    const kinds = new Set<DetectorKind>([opts.scenario?.detectors ?? 'hpge', snapshot?.scenario?.detectors ?? 'hpge'])
+    for (const k of kinds) await loadPhysicsData(k)
+    const b = new Backend(opts)
+    if (snapshot) b.daq.restore(snapshot)
+    return b
+  }
+
   /** Demo-shell commands that are not part of the WebDAQ API. */
-  control(cmd: ControlCommand): unknown {
+  async control(cmd: ControlCommand): Promise<unknown> {
     const d = this.daq
     d.advance()
     switch (cmd.type) {
-      case 'scenario': return d.setScenario(cmd.scenario)
+      case 'scenario':
+        if (cmd.scenario.detectors) {
+          try { await loadPhysicsData(cmd.scenario.detectors) } catch (e) { return { ok: false, message: `Could not load the detector data: ${String((e as Error)?.message ?? e)}` } }
+        }
+        return d.setScenario(cmd.scenario)
       case 'fault':
         if (cmd.board_fail_at_s !== undefined) d.faults.board_fail_at_s = cmd.board_fail_at_s
         if (cmd.stall_at_s !== undefined) d.faults.stall_at_s = cmd.stall_at_s

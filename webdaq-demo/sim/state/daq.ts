@@ -256,11 +256,23 @@ export class Daq {
       { path: 'demo.accelerator.terminal_voltage', alias: 'Terminal voltage (simulated)', unit: 'kV', enabled: true },
       { path: 'demo.beam.current', alias: 'Beam current (simulated)', unit: 'uA', enabled: true },
     ]
-    this.rules = [{
+    this.seedBeamRule()
+  }
+
+  /**
+   * In-beam scenarios get one beam-current rule, so a beam trip shows in the bell and
+   * on Troubleshoot (design §1.10). Added once, the first time the beam is chosen;
+   * the visitor may edit or delete it like any other rule.
+   */
+  seededBeamRule = false
+  seedBeamRule() {
+    if (this.seededBeamRule || this.scenario.source !== 'n14pg') return
+    this.seededBeamRule = true
+    this.rules.push({
       id: 'demobeam0001', type: 'beam_current', name: 'Beam current (demo)', enabled: true,
       transports: ['telegram'],
       params: { comparison: 'below', threshold: 20, seconds: 1, during_run_only: true },
-    }]
+    })
   }
 
   // ─────────────────────────────────────────────────────────── helpers
@@ -310,9 +322,10 @@ export class Daq {
   }
 
   /** Re-configure physics from the first board (the demo has one). */
-  reconfigure() {
+  reconfigure(): string | null {
     const b = this.boards[0]
-    if (b) this.physics.configure(this.scenario, this.view(b))
+    if (!b) return null
+    try { this.physics.configure(this.scenario, this.view(b)); return null } catch (e) { return String((e as Error)?.message ?? e) }
   }
 
   /** Visitor's scenario (start page, scenario panel). Changing the detector re-creates the board's firmware. */
@@ -324,16 +337,24 @@ export class Daq {
     }
     const prev = this.scenario
     this.scenario = next
+    const sourceChange = next.source !== prev.source
+    // The starting configuration depends on the detector and on in-beam vs source.
+    const recreate = dppChange || next.detectors !== prev.detectors
+    const beamSwitch = !recreate && sourceChange && (next.source === 'n14pg' || prev.source === 'n14pg')
     try {
-      if (dppChange || next.detectors !== prev.detectors) {
-        for (const b of this.boards) this.recreateBoardFirmware(b)
-      }
-      this.reconfigure()
+      if (recreate) for (const b of this.boards) this.recreateBoardFirmware(b)
+      // Switching to or from the beam keeps the visitor's tuning and only moves the
+      // gain and DC offset the in-beam lines need (both online-safe on DPP-PHA).
+      if (beamSwitch && next.detectors === 'hpge') for (const b of this.boards) this.seedInBeam(b, next.source === 'n14pg')
+      const err = this.reconfigure()
+      if (err) throw new Error(err)
     } catch (e) {
       this.scenario = prev
+      if (recreate) for (const b of this.boards) { try { this.recreateBoardFirmware(b) } catch { /* keep going */ } }
       this.reconfigure()
       return { ok: false, message: String((e as Error)?.message ?? e) }
     }
+    this.seedBeamRule()
     return { ok: true, message: 'Scenario updated' }
   }
 
@@ -342,20 +363,42 @@ export class Daq {
     b.dpp = dppFor(this.scenario.detectors)
     delete this.configs[oldKey]
     this.configs[this.boardKey(b)] = this.startingConfig(b)
-    this.physics.configure(this.scenario, this.view(b))
-    this.calib[this.boardKey(b)] = Array.from({ length: b.chan }, (_, c) => this.physics.calibration(c))
+    const err = this.reconfigure()
+    if (err) throw new Error(err)
+    this.calib[this.boardKey(b)] = calibRows(Array.from({ length: b.chan }, (_, c) => this.physics.calibration(c)))
     this.runBoards = null
     this.lastTraces = {}
+  }
+
+  private seedInBeam(b: BoardCfg, on: boolean) {
+    const regs = this.regs(b)
+    for (let c = 0; c < b.chan; c++) {
+      const algo = 0x1080 + c * 0x100
+      setRegValue(regs, algo, (regValue(regs, algo) & ~0x3f) | (on ? 6 : 4))
+      setRegValue(regs, 0x1098 + c * 0x100, on ? 0x1999 : 0x8000)
+    }
+    this.noteRegisterWrite(b, 'reg_1080', 'in-beam seeds')
+    // The demo moved the gain, not the visitor: keep the spectra in keV.
+    if (this.reconfigure() === null) this.calib[this.boardKey(b)] = calibRows(Array.from({ length: b.chan }, (_, c) => this.physics.calibration(c)))
   }
 
   /** Test-mode defaults, plus the per-scenario starting point of design §3.2. */
   startingConfig(b: BoardCfg): BoardConfigFile {
     const cfg = defaultBoardConfig(b.name, b.id, b.dpp, b.chan)
-    // Negative PMT pulses (BGO, EJ-309): invert input (0x1n80 bit 16) so they trigger.
-    if (this.scenario.detectors === 'bgo' || this.scenario.detectors === 'ej309') {
-      for (let c = 0; c < b.chan; c++) {
-        const a = 0x1080 + c * 0x100
-        setRegValue(cfg.registers, a, regValue(cfg.registers, a) | (1 << 16))
+    const kind = this.scenario.detectors
+    const inBeam = this.scenario.source === 'n14pg'
+    for (let c = 0; c < b.chan; c++) {
+      const algo = 0x1080 + c * 0x100
+      // Negative pulses (BGO and EJ-309 PMTs, the ³He preamplifier): invert the
+      // input (0x1n80 bit 16), or nothing triggers — realistic, but a dead start.
+      if (kind !== 'hpge') setRegValue(cfg.registers, algo, regValue(cfg.registers, algo) | (1 << 16))
+      // ³He: the charge arrives over microseconds; a long gate of 2000 samples (4 µs).
+      if (kind === 'he3') setRegValue(cfg.registers, 0x1058 + c * 0x100, 2000)
+      // In-beam HPGe: coarser trapezoid rescaling (0x1n80[5:0] = 6) and the DC offset at
+      // ~10 % for positive pulses (caen-settings.md §2.1), or the 6.79 MeV line is off scale.
+      if (inBeam && kind === 'hpge') {
+        setRegValue(cfg.registers, algo, (regValue(cfg.registers, algo) & ~0x3f) | 6)
+        setRegValue(cfg.registers, 0x1098 + c * 0x100, 0x1999)
       }
     }
     return cfg
@@ -628,10 +671,15 @@ export class Daq {
     // daq_manager writes reg_EF08 = "0x" + str(id) (a decimal string with a hex prefix).
     if (conf.registers.reg_EF08) conf.registers.reg_EF08.value = '0x' + String(id)
     this.configs[this.boardKey(b)] = conf
+    try {
+      this.physics.configure(this.scenario, this.view({ ...b } as BoardCfg))
+    } catch (e) {
+      delete this.configs[this.boardKey(b)]
+      return { status: 404, data: { message: `Failed to connect to the board! (${String((e as Error)?.message ?? e)})` } }
+    }
     this.boards.push(b)
     this.boards.sort((x, y) => x.id - y.id)
-    this.physics.configure(this.scenario, this.view(b))
-    this.calib[this.boardKey(b)] = Array.from({ length: b.chan }, (_, c) => this.physics.calibration(c))
+    this.calib[this.boardKey(b)] = calibRows(Array.from({ length: b.chan }, (_, c) => this.physics.calibration(c)))
     // The dashboard gets a histogram per detector channel the first time a board appears.
     if (!this.hist.histograms.length) {
       for (let c = 0; c < 2; c++) {
@@ -691,7 +739,7 @@ export class Daq {
   noteRegisterWrite(b: BoardCfg, key: string, value: string) {
     const rec = this.running && this.save ? this.runs.find(r => r.run_number === this.runNumber) : undefined
     if (rec && rec.demo.timeline.length < 5000) rec.demo.timeline.push([r6(this.simT - this.runSimStart), key, value])
-    if (b === this.boards[0]) this.physics.configure(this.scenario, this.view(b))
+    if (b === this.boards[0]) this.reconfigure()
     this.lastTraces = {}
   }
 
@@ -703,8 +751,9 @@ export class Daq {
     if (this.save && this.runNumber > DEMO_MAX_RUN) {
       return { status: 500, data: { message: `Failed to prepare run start (the demo keeps runs 1–${DEMO_MAX_RUN}; use Reset demo to start again).` } }
     }
+    const err = this.reconfigure()
+    if (err) return { status: 500, data: { message: `Failed to configure acquisition (${err})` } }
     this.runBoards = this.boards.map(b => String(b.id))
-    this.physics.configure(this.scenario, this.view(this.boards[0]))
     this.physics.clear()
     this.lastTraces = {}
     this.running = true
@@ -1079,7 +1128,7 @@ export class Daq {
       metrics: [...this.metrics.entries()].map(([k, m]) => [k, m.t.slice(-600), m.v.slice(-600)]),
       telegram: this.telegram, zulip: this.zulip, rules: this.rules, notifyRecovery: this.notifyRecovery,
       watching: this.watching, alertState: this.alertState, events: this.events.slice(0, 100),
-      elog: this.elog, grafana: this.grafana, cache: this.cache, scan: this.scan,
+      elog: this.elog, grafana: this.grafana, cache: this.cache, scan: this.scan, seededBeamRule: this.seededBeamRule,
       physics: this.physics.snapshot(),
     }
   }
@@ -1090,7 +1139,7 @@ export class Daq {
       'running', 'startTime', 'runNumber', 'save', 'limitSize', 'fileSizeLimit', 'runBoards', 'runSimStart', 'runs',
       'autoRestart', 'boardFailures', 'faults', 'diag', 'win', 'winBytes', 'winStart', 'winEnd', 'rates', 'runEvents',
       'runBytes', 'rebinFactor', 'hist', 'current', 'stats', 'telegram', 'zulip', 'rules', 'notifyRecovery', 'watching',
-      'alertState', 'events', 'elog', 'grafana', 'cache', 'scan'] as const
+      'alertState', 'events', 'elog', 'grafana', 'cache', 'scan', 'seededBeamRule'] as const
     for (const k of keys) if (k in s) (this as any)[k] = s[k]
     for (const r of this.runs) if (r.demo?.config) r.demo.config = expandConfig(r.demo.config as any)
     this.metrics = new Map((s.metrics ?? []).map(([k, t, v]: [string, number[], number[]]) => [k, { t, v }]))
@@ -1186,6 +1235,11 @@ function uaFamily(ua: string) {
   if (/Chrome\//.test(ua)) return 'Chrome'
   if (/Safari\//.test(ua)) return 'Safari'
   return 'browser'
+}
+
+/** calib/<name>_<id>.cal rows, rounded as the file would print them. */
+function calibRows(rows: [number, number][]): [number, number][] {
+  return rows.map(([a, b]) => [Number(a.toPrecision(10)), Number(b.toPrecision(10))])
 }
 
 /** A run's register file is stored as its difference from the defaults (sessionStorage budget). */

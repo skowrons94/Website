@@ -9,6 +9,18 @@ def serve(out: str, base: str, port: int = 0):
         def log_message(self, *a):
             pass
 
+        def send_error(self, code, *a, **k):
+            srv.errors.append((code, self.path))
+            return super().send_error(code, *a, **k)
+
+        def do_GET(self):
+            # Browsers ask for /favicon.ico on their own; the hosting site has one.
+            if self.path.split('?')[0] == '/favicon.ico' and base:
+                self.send_response(204)
+                self.end_headers()
+                return
+            return super().do_GET()
+
         def translate_path(self, path):
             p = path.split('?', 1)[0].split('#', 1)[0]
             if base and not (p == base or p.startswith(base + '/')):
@@ -16,6 +28,7 @@ def serve(out: str, base: str, port: int = 0):
             return super().translate_path(p[len(base):] or '/')
 
     srv = http.server.ThreadingHTTPServer(('127.0.0.1', port), functools.partial(H, directory=out))
+    srv.errors = []
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     return srv
 

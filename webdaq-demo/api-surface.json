@@ -1,0 +1,1496 @@
+{
+ "commit": "a1cc18f86daee0345b2001e663086555105202a3",
+ "hash": "c798634afb31ab75afbb6673aa8ff3a63c8bfe9bd8e98dee173caf88f5bcb385",
+ "calls": [
+  {
+   "method": "GET",
+   "template": "/api/cache?type=visualization-channels",
+   "via": "fetch",
+   "files": [
+    "store/visualization-settings-store.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/api/cache?type=wave-config",
+   "via": "fetch",
+   "files": [
+    "components/wave-dashboard.tsx"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/api/cache?type=working-directories",
+   "via": "fetch",
+   "files": [
+    "components/server-status.tsx"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/api/cache",
+   "via": "fetch",
+   "files": [
+    "components/server-status.tsx",
+    "components/wave-dashboard.tsx",
+    "store/visualization-settings-store.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/api/server-control?logs=1",
+   "via": "fetch",
+   "files": [
+    "components/server-status.tsx"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/api/server-control",
+   "via": "fetch",
+   "files": [
+    "components/server-status.tsx"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/api/server-control",
+   "via": "fetch",
+   "files": [
+    "components/server-status.tsx"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/calib/get/${boardName}/${boardId}/${channel}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/calib/set/${boardName}/${boardId}/${channel}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/current/accumulated",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/current/collimator/1",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/current/collimator/2",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/current/connect",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/current/data",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/current/data_array",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/current/get/${setting}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/current/get_ip",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/current/get_port",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/current/graphite_config",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/current/graphite_config",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/current/history",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/current/is_connected",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/current/module_settings",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/current/module_settings",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/current/module_type",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/current/module_type",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/current/reset",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/current/reset_total_accumulated",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/current/serial_ports",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/current/set/${setting}/${value}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/current/set_ip_port/${ip}/${port}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/current/start/${runNumber}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/current/status",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/current/stop",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/current/total_accumulated",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/data/runs/${runNumber}/convert",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/data/runs/${runNumber}/convert",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/data/runs/${runNumber}/current",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/data/runs/${runNumber}/stats",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/data/runs/${runNumber}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/data/runs",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/digitizer/${id}/${setting}/${value}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/digitizer/${id}/${setting}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/digitizer/${id}/online_registers",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/digitizer/${id}/registers",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/digitizer/${id}/setting/${setting}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/digitizer/channel/${id}/${channel}/${value}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/digitizer/channel/${id}/${channel}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/digitizer/connectivity",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/digitizer/polarity/${id}/${channel}/${value}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/digitizer/polarity/${id}/${channel}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/digitizer/scan/a4818",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/digitizer/scan/cancel",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/digitizer/scan",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/digitizer/scan",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/digitizer/update",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/elog/attachment",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/elog/attributes",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/elog/entries/${id}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/elog/entries",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/elog/entries",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/elog/fields",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/elog/run_draft/${runNumber}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/elog/runs",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/elog/settings",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/elog/settings",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/elog/test",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/experiment/add_board",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/experiment/add_note",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/experiment/add_run_metadata",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/experiment/board_diagnostics",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/experiment/board_info",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/experiment/check_run_directory",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/experiment/file_bandwidth",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/experiment/get_auto_restart",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/experiment/get_board_configuration",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/experiment/get_board_status",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/experiment/get_data_size_limit",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/experiment/get_limit_data_size",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/experiment/get_restart_status",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/experiment/get_run_metadata/${runNumber}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/experiment/get_run_metadata",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/experiment/get_run_number",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/experiment/get_run_status",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/experiment/get_save_data",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/experiment/get_start_time",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/experiment/get_sync_settings",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/experiment/get_telegram_settings",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/experiment/refresh_board_connections",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/experiment/remove_board",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/experiment/reset",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/experiment/set_auto_restart",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/experiment/set_data_size_limit",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/experiment/set_limit_data_size",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/experiment/set_run_number",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/experiment/set_save_data",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/experiment/set_telegram_settings",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/experiment/start_run",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/experiment/stats",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/experiment/stop_run",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/experiment/test_telegram",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/experiment/update_run_flag",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/experiment/update_run_notes",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/faraday/close",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/faraday/open",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/grafana/alert-rules/${ruleUid}",
+   "via": "grafana",
+   "files": [
+    "lib/grafana-api.ts"
+   ]
+  },
+  {
+   "method": "PUT",
+   "template": "/grafana/alert-rules/${ruleUid}",
+   "via": "grafana",
+   "files": [
+    "lib/grafana-api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/grafana/alert-rules",
+   "via": "grafana",
+   "files": [
+    "lib/grafana-api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/grafana/settings",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/grafana/settings",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/grafana/test",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/histograms/${boardId}/${channel}/${roiMin}/${roiMax}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/histograms/${boardId}/${channel}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "template": "/histograms/config/histograms/${histogramId}/rois/${roiId}",
+   "via": "axios",
+   "files": [
+    "lib/histogram-config.ts"
+   ]
+  },
+  {
+   "method": "PUT",
+   "template": "/histograms/config/histograms/${histogramId}/rois/${roiId}",
+   "via": "axios",
+   "files": [
+    "lib/histogram-config.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/histograms/config/histograms/${histogramId}/rois",
+   "via": "axios",
+   "files": [
+    "lib/histogram-config.ts"
+   ]
+  },
+  {
+   "method": "PUT",
+   "template": "/histograms/config/histograms/${id}/zoom",
+   "via": "axios",
+   "files": [
+    "lib/histogram-config.ts"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "template": "/histograms/config/histograms/${id}",
+   "via": "axios",
+   "files": [
+    "lib/histogram-config.ts"
+   ]
+  },
+  {
+   "method": "PUT",
+   "template": "/histograms/config/histograms/${id}",
+   "via": "axios",
+   "files": [
+    "lib/histogram-config.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/histograms/config/histograms",
+   "via": "axios",
+   "files": [
+    "lib/histogram-config.ts"
+   ]
+  },
+  {
+   "method": "PUT",
+   "template": "/histograms/config/order",
+   "via": "axios",
+   "files": [
+    "lib/histogram-config.ts"
+   ]
+  },
+  {
+   "method": "PUT",
+   "template": "/histograms/config/settings",
+   "via": "axios",
+   "files": [
+    "lib/histogram-config.ts"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "template": "/histograms/config/zoom",
+   "via": "axios",
+   "files": [
+    "lib/histogram-config.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/histograms/config",
+   "via": "axios",
+   "files": [
+    "lib/histogram-config.ts"
+   ]
+  },
+  {
+   "method": "PUT",
+   "template": "/histograms/config",
+   "via": "axios",
+   "files": [
+    "lib/histogram-config.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/histograms/rebin",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/histograms/rebin",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/histograms/roi_integrals",
+   "via": "axios",
+   "files": [
+    "lib/histogram-config.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/histograms/run/${runNumber}/roi_snapshot",
+   "via": "axios",
+   "files": [
+    "lib/histogram-config.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/login",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/notifications/events/seen",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/notifications/events/summary",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "template": "/notifications/events",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/notifications/events",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "template": "/notifications/rules/${id}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "PUT",
+   "template": "/notifications/rules/${id}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/notifications/rules",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/notifications/rules",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/notifications/settings",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/notifications/status",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/notifications/transports/${transport}/test",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/notifications/transports/telegram",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/notifications/transports/zulip",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/notifications/transports",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/notifications/watcher",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/psd/${boardId}/${channel}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/qlong/${boardId}/${channel}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/qshort/${boardId}/${channel}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/recovery/actions/${name}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/recovery/actions",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/register",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/roi/${boardId}/${channel}/${roiMin}/${roiMax}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/stats/${entityName}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/stats/board_rates",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/stats/board_rates_dt",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/stats/board_rates_lost",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/stats/board_rates_pu",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/stats/board_rates_satu",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/stats/browse",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/stats/column_current",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/stats/connection",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/stats/extraction_voltage",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/stats/graphite_config",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/stats/graphite_config",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/stats/metric/${metric}/last",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/stats/metric/${metric}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "template": "/stats/paths/${path}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "PUT",
+   "template": "/stats/paths/${path}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/stats/paths",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/stats/paths",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/stats/run/${runNumber}/start",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/stats/run/status",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/stats/run/stop",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/stats/sampling",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/stats/sampling",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/stats/terminal_voltage",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/waveforms/1/${boardId}/${channel}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/waveforms/2/${boardId}/${channel}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/waveforms/activate/${boardId}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/waveforms/activate",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/waveforms/deactivate/${boardId}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "POST",
+   "template": "/waveforms/deactivate",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/waveforms/probe1/${boardId}/${channel}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/waveforms/probe2/${boardId}/${channel}",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/waveforms/status",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  },
+  {
+   "method": "GET",
+   "template": "/waveforms/status_per_board",
+   "via": "axios",
+   "files": [
+    "lib/api.ts"
+   ]
+  }
+ ]
+}

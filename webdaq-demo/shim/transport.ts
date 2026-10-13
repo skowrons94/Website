@@ -63,7 +63,7 @@ function onMessage(ev: MessageEvent) {
 export function ensureWorker(): Worker {
   if (worker) return worker
   if (!WORKER_URL) throw new Error('webdaq-demo: NEXT_PUBLIC_DEMO_WORKER is not set')
-  worker = new Worker(WORKER_URL)
+  worker = new Worker(WORKER_URL, { type: 'module' })
   worker.onmessage = onMessage
   worker.onerror = e => { console.error('webdaq-demo worker error', e.message) }
   worker.postMessage({ type: 'init', seed: demoSeed(), snapshot: readJSON('state'), scenario: readJSON('scenario') ?? undefined, commit: COMMIT })

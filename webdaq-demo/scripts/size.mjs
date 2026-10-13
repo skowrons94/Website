@@ -88,7 +88,7 @@ for (const p of pages.sort()) {
   const fl = firstLoad(path.join(OUT, p))
   shellInline = Math.max(shellInline, fl.inline)
   const key = route === '/' ? 'start_page_first_load' : route === '/dashboard/' ? 'heaviest_route_dashboard' : 'any_other_route'
-  check(`route ${route.replace(/\/\d+\/$/, '/[run_number]/')}`, fl.total + fl.inline, key)
+  check(`route ${route.replace(/^\/logbook\/\d+\/$/, '/logbook/[run_number]/')}`, fl.total + fl.inline, key)
 }
 
 // ── demo shell (main-thread demo code, bundled alone from the sources) ──
@@ -113,16 +113,29 @@ try {
 // ── worker, JSROOT, tables, tour, fflate ──
 const demoFiles = walk(path.join(OUT, 'demo'))
 const worker = info?.worker ? path.join(OUT, 'demo', info.worker) : null
-check('worker (DAQ state + physics + writers)', worker && fs.existsSync(worker) ? gz(worker) : null, 'worker')
+const wChunks = Object.entries(info?.workerChunks ?? {})
+// The worker's first load: its entry and the chunks it imports statically. Chunks it
+// imports dynamically (handler families for some pages, data tables) are reported apart.
+const staticGraph = (file, seen = new Set()) => {
+  if (seen.has(file) || !fs.existsSync(file)) return seen
+  seen.add(file)
+  const src = fs.readFileSync(file, 'utf8')
+  for (const m of src.matchAll(/(?:\bfrom|\bimport)\s*["'](\.\/[^"']+)["']/g)) staticGraph(path.join(path.dirname(file), m[1]), seen)
+  return seen
+}
+const wFirst = worker ? staticGraph(worker) : new Set()
+check('worker first load (DAQ state + physics)', worker && fs.existsSync(worker) ? [...wFirst].reduce((n, f) => n + gz(f), 0) : null, 'worker')
+const lazyCode = wChunks.filter(([f, k]) => k === 'code' && !wFirst.has(path.join(OUT, 'demo', f)))
+if (lazyCode.length) rows.push(['worker, lazy handler chunks (logbook, ELOG/Grafana)', kB(lazyCode.reduce((n, [f]) => n + gz(path.join(OUT, 'demo', f)), 0)).toFixed(1), '', '', 'loaded when a page needs them'])
 const jsDraw = info?.jsroot?.draw ?? []
 const jsTotal = walk(path.join(OUT, 'jsroot')).reduce((n, f) => n + gz(path.join(OUT, 'jsroot', f)), 0)
 check('JSROOT draw set (entry + TH1/TH2/TCanvas painters)', jsDraw.length ? jsDraw.reduce((n, f) => n + gz(path.join(OUT, 'jsroot', f)), 0) : null,
   'jsroot_draw', `all JSROOT chunks on disk: ${kB(jsTotal).toFixed(0)} kB, loaded on demand`)
 const tableGroups = new Map()
-for (const f of demoFiles.filter(f => f.startsWith('tables/'))) {
-  const kind = f.split('/')[1].replace(/[-_.].*$/, '')
-  tableGroups.set(kind, (tableGroups.get(kind) ?? 0) + gz(path.join(OUT, 'demo', f)))
-}
+const linesChunk = wChunks.find(([, k]) => k === 'lines')
+const linesGz = linesChunk ? gz(path.join(OUT, 'demo', linesChunk[0])) : 0
+for (const [f, k] of wChunks) if (k !== 'code' && k !== 'lines') tableGroups.set(`${k} (+ lines.json)`, gz(path.join(OUT, 'demo', f)) + linesGz)
+if (!tableGroups.size && linesChunk) tableGroups.set('lines.json', linesGz)
 if (!tableGroups.size) check('response tables per detector', null, 'tables_per_detector', 'or embedded in the worker')
 for (const [k, n] of tableGroups) check(`response tables: ${k}`, n, 'tables_per_detector')
 const allJs = walk(OUT).filter(f => f.endsWith('.js') && !f.startsWith('jsroot/'))

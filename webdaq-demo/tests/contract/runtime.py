@@ -56,7 +56,8 @@ def main():
         seen = {'outside': [], 'errors': [], 'jsroot': set(), 'notfound': []}
         page.on('request', lambda r: seen['outside'].append(r.url) if not r.url.startswith(origin) and not r.url.startswith('data:') and not r.url.startswith('blob:') else None)
         page.on('request', lambda r: seen['jsroot'].add(r.url.rsplit('/', 1)[-1]) if '/jsroot/' in r.url else None)
-        page.on('response', lambda r: seen['notfound'].append(r.url) if r.status >= 400 and r.url.startswith(origin) else None)
+        all404 = []
+        page.on('response', lambda r: (seen['notfound'].append(r.url), all404.append(r.url)) if r.status >= 400 and r.url.startswith(origin) else None)
         page.on('pageerror', lambda e: seen['errors'].append(f'pageerror: {e}') if not any(x in str(e) for x in ALLOWED_CONSOLE) else None)
         page.on('console', lambda m: seen['errors'].append(f'console: {m.text}') if m.type == 'error' and not any(x in m.text for x in ALLOWED_CONSOLE) else None)
 
@@ -83,6 +84,7 @@ def main():
 
         # 2. the flow through the UI
         seen['errors'].clear()
+        seen['notfound'].clear()
         try:
             flow(page, origin, base, a, seen, report, failures)
         except Exception as e:  # a broken flow is a failure, with a picture of where it broke
@@ -100,6 +102,8 @@ def main():
         if bad:
             failures.append(f'missing static files: {bad[:5]}')
         report['jsroot files loaded'] = sorted(seen['jsroot'])
+        report['404s (any)'] = sorted(set(all404))
+        report['server errors'] = sorted(set(srv.errors))
         browser.close()
 
     print(json.dumps(report, indent=1, default=str))
@@ -148,7 +152,7 @@ def flow(page, origin, base, a, seen, report, failures):
         if flow_misses:
             failures.append(f'flow: unmocked {flow_misses}')
         if seen['errors']:
-            failures.append(f'flow: {seen["errors"][:3]}')
+            failures.append(f'flow: {seen["errors"][:3]} {seen["notfound"][:5]}')
         page.goto(origin + base + '/logbook/1/')
         page.wait_for_timeout(2500)
         text = page.inner_text('body')
