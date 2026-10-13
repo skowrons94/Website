@@ -158,6 +158,12 @@ export interface PhysicsExtras {
    * file, never by the live one.
    */
   eventSink: ((ch: number, t_s: number, a: number, b: number, pu: boolean, satu: boolean) => void) | null
+  /**
+   * The work the last tick() did, in arrivals taken through the DPP model (deposits and
+   * simulated noise triggers) plus bulk histogram fills: what a tick costs, counted
+   * rather than timed, so the tests can bound it deterministically.
+   */
+  readonly lastTickWork: number
 }
 
 class Engine implements PhysicsEngine, PhysicsExtras {
@@ -165,6 +171,7 @@ class Engine implements PhysicsEngine, PhysicsExtras {
   private board: BoardView | null = null
   kind: DetectorKind | null = null
   eventSink: PhysicsExtras['eventSink'] = null
+  lastTickWork = 0
   private L: LinesJson | null = null
   private resp: Response | null = null
   private hk: HpgeConst | null = null
@@ -325,6 +332,8 @@ class Engine implements PhysicsEngine, PhysicsExtras {
   // ── the tick ───────────────────────────────────────────────────────
 
   tick(env: TickEnv): TickResult {
+    this.lastTickWork = 0
+    // a long gap simulates 0.5 s and scales it (O(bins), not O(events)): bounded work
     if (env.dt_s > 10) return this.catchUp(env)
     return this.step(env.t_s, env.dt_s, env.beamCurrent_uA)
   }
@@ -386,6 +395,7 @@ class Engine implements PhysicsEngine, PhysicsExtras {
       const s = this.chans[c], r = this.rCh[c]
       const P = isPha ? this.pha[c] : this.psdp[c]
       const m = s.n
+      this.lastTickWork += m
       const ts = s.ts
       // time order: sort packed keys (time quantised to dt/2^30 ≈ 0.05 ns, index in the low 20 bits)
       const keys = new Float64Array(m)

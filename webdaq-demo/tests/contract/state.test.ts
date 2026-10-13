@@ -5,6 +5,7 @@
  */
 import { describe, expect, it } from 'vitest'
 import { Backend } from '../../sim/state/backend'
+import { createPhysics } from '../../sim/physics/api'
 
 function make(seed = 7, scenario = {}) {
   let t = 1_700_000_000_000
@@ -211,6 +212,32 @@ describe('simulated DAQ', () => {
     console.log(`10 s of demo time in ${ms.toFixed(0)} ms; ch0 ${JSON.stringify(ch0)}`)
     expect(ms).toBeLessThan(3000)
     expect(ch0.lost_rate + ch0.event_rate).toBeGreaterThan(1e5)
+  })
+
+  it('advance() keeps to its time budget: slow ticks are folded into one longer step', async () => {
+    // A physics engine whose tick costs 40 ms of wall time, longer than the 50 ms of demo
+    // time it covers once a few pile up: the outcome is bounded whatever the machine's load.
+    let calls = 0
+    const slow = (seed: number) => {
+      const real = createPhysics(seed)
+      const tick = real.tick.bind(real)
+      real.tick = (env) => { calls++; const end = performance.now() + 40; while (performance.now() < end) { /* busy */ } return tick(env) }
+      return real
+    }
+    let t = 1_700_000_000_000
+    const b = await Backend.create({ seed: 5, clock: { now: () => t }, physics: slow })
+    const call = (method: string, path: string, body: unknown = null) => b.handle({ method, path, query: {}, body })
+    await call('POST', '/digitizer/scan', { optical: { enabled: true, links: 1, nodes: 1 } }); t += 1000
+    await call('GET', '/digitizer/scan')
+    await call('POST', '/experiment/add_board', { id: '0', vme: '0', link_type: 'Optical', link_num: '0', dpp: 'DPP-PHA' })
+    await call('POST', '/experiment/start_run')
+    const sim0 = b.daq.simT
+    calls = 0
+    t += 5000 // 100 ticks of demo time
+    await call('GET', '/experiment/get_run_status')
+    expect(b.daq.simT - sim0).toBeGreaterThan(4.9)   // all of the gap is simulated
+    expect(calls).toBeLessThanOrEqual(7)               // ≤ 200 ms / 40 ms of ticks, then one long step
+    expect(b.daq.slowTicks).toBe(1)
   })
 })
 

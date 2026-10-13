@@ -83,13 +83,22 @@ describe('a threshold inside the noise degrades, it does not hang (EJ-309 at 8 L
       b.set(0x1060, thr)
       const e = engine(33, { detectors: 'ej309', source: 'cf252', distance_cm: 10 }, b)
       run(e, 0.2) // warm up
+      let maxWork = 0
       const t = performance.now()
-      const c = run(e, 1).tot[0]
-      return { ms: (performance.now() - t) / 20, c }
+      const c = { offered: 0, events: 0, pileup: 0, lost: 0, saturated: 0, dead_s: 0 }
+      for (let i = 0; i < 20; i++) {
+        const r = e.tick({ t_s: 0.2 + i * 0.05, dt_s: 0.05, beamCurrent_uA: 0 }).channels[0]
+        maxWork = Math.max(maxWork, e.lastTickWork)
+        for (const k of Object.keys(c) as (keyof typeof c)[]) c[k] += r[k]
+      }
+      return { ms: (performance.now() - t) / 20, maxWork, c }
     }
     const quiet = go(60), noisy = go(8)
-    console.log(`threshold 60: ${quiet.ms.toFixed(2)} ms/tick ${JSON.stringify(quiet.c)}; threshold 8: ${noisy.ms.toFixed(2)} ms/tick ${JSON.stringify(noisy.c)}`)
-    expect(noisy.ms).toBeLessThan(25)            // 16 channels at ~6 MHz of noise each; was seconds per tick
+    console.log(`threshold 60: ${quiet.maxWork} arrivals/tick max, ${quiet.ms.toFixed(2)} ms/tick ${JSON.stringify(quiet.c)}; threshold 8: ${noisy.maxWork} arrivals/tick max, ${noisy.ms.toFixed(2)} ms/tick ${JSON.stringify(noisy.c)}`)
+    // bounded work: at most NOISE_SIMULATED noise triggers per channel and tick on all 16
+    // channels (plus the few physics deposits), not the ~300 000 crossings per channel
+    expect(noisy.maxWork).toBeLessThanOrEqual(16 * NOISE_SIMULATED + 200)
+    expect(noisy.ms).toBeLessThan(250)          // hang detector only
     expect(noisy.c.offered).toBeGreaterThan(3e6) // the crossings are all counted
     expect(noisy.c.lost).toBeGreaterThan(1e5)    // the readout cannot keep up
     expect(noisy.c.dead_s).toBeGreaterThan(0.3)  // the hold-off after each trigger
