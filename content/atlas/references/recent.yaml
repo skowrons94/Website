@@ -1,0 +1,240 @@
+# Results of 2020–2026 added after the literature reviews of 2026-10-13, and
+# the references of the open-questions page (debates.yaml). Every entry was
+# checked by web search on that date; `checked` says what the search showed.
+# A DOI is given only where a record showed it.
+
+# --- Hydrogen burning and the Sun -------------------------------------------
+
+chen2025:
+  authors: X. Chen, J. Su, Y. P. Shen et al.
+  title: Enhanced S-factor for the ¹⁴N(p,γ)¹⁵O reaction and its impact on the solar composition problem
+  journal: Phys. Rev. Lett. 135, 232701 (2025)
+  year: 2025
+  doi: 10.1103/q756-hzmt
+  arxiv: "2410.16086"
+  checked: Nature Index record (PRL 135, 232701, 2 December 2025, DOI) and arXiv 2410.16086 snippets (direct measurement at Ep = 110–260 keV with the 350 kV accelerator in Hefei, all transitions fitted together in a multichannel Bayesian analysis), by web search; S(0) = 1.92 ± 0.08 keV b, about 14% above Solar Fusion III, from a web-search summary only (see needs-full-text), 2026-10-13
+
+borexino2023:
+  authors: D. Basilico et al. (Borexino Collaboration)
+  title: Final results of Borexino on CNO solar neutrinos
+  journal: Phys. Rev. D 108, 102005 (2023)
+  year: 2023
+  arxiv: "2307.14636"
+  checked: arXiv 2307.14636 abstract and the Princeton, TUM and TU Dresden records, by web search (φ_CNO = 6.7 +1.2/−0.8 × 10⁸ cm⁻² s⁻¹; with ⁷Be and ⁸B, B16-AGSS09met disfavoured at 3.2σ assuming B16-GS98; N_CN = 5.81 +1.22/−0.94 × 10⁻⁴, 2σ from the low-metallicity case; published 14 November 2023); DOI not shown, 2026-10-13
+
+asplund2021:
+  authors: M. Asplund, A. M. Amarsi, N. Grevesse
+  title: "The chemical make-up of the Sun: A 2020 vision"
+  journal: Astron. Astrophys. 653, A141 (2021)
+  year: 2021
+  arxiv: "2105.01661"
+  checked: arXiv 2105.01661 and ANU record (Z = 0.0139; the solar modelling problem "remains intact"; journal reference A&A 653, A141), by web search, 2026-10-13
+
+magg2022:
+  authors: E. Magg et al.
+  title: Observational constraints on the origin of the elements. IV. Standard composition of the Sun
+  journal: Astron. Astrophys. 661, A140 (2022)
+  year: 2022
+  doi: 10.1051/0004-6361/202142971
+  arxiv: "2203.02255"
+  checked: A&A article page and arXiv 2203.02255 (Z/X = 0.0225; the mismatch with helioseismology resolved with this composition), by web search, 2026-10-13
+
+iliadis2022:
+  authors: C. Iliadis, V. Palanivelrajan, R. S. de Souza
+  title: Bayesian estimation of the S factor and thermonuclear reaction rate for ¹⁶O(p,γ)¹⁷F
+  journal: Phys. Rev. C 106, 055802 (2022)
+  year: 2022
+  doi: 10.1103/PhysRevC.106.055802
+  arxiv: "2210.14354"
+  checked: arXiv 2210.14354 abstract and University of Hertfordshire record, by web search (potential model with the ANCs as scaling parameters; rate uncertainty ±4.2%, about half of the earlier 7.5%); DOI from the APS scheme, 2026-10-13
+
+toth2023:
+  authors: Á. Tóth, T. Szücs et al.
+  title: Experimental determination of the ³He(α,γ)⁷Be reaction cross section above the ⁷Be proton separation threshold
+  journal: Phys. Rev. C 108, 025802 (2023)
+  year: 2023
+  doi: 10.1103/PhysRevC.108.025802
+  arxiv: "2307.10218"
+  checked: EXFOR entry D4430 (journal reference and DOI) and arXiv 2307.10218, by web search (activation with a ³He gas cell; extends the data above the proton threshold, where only one data set at 4.0–4.4 MeV existed), 2026-10-13
+
+hayakawa2021:
+  authors: S. Hayakawa, M. La Cognata, L. Lamia et al.
+  title: "Constraining the primordial lithium abundance: new cross section measurement of the ⁷Be + n reactions updates the total ⁷Be destruction rate"
+  journal: Astrophys. J. Lett. 915, L13 (2021)
+  year: 2021
+  doi: 10.3847/2041-8213/ac061f
+  checked: conference abstracts of the same group and the CRIB report, by web search (Trojan Horse ⁷Be(d,⁷Li p)¹H and ⁷Be(d,αα)¹H with a CRIB beam; improved (n,p₀), first (n,p₁) at BBN energies; about 10% less ⁷Li in PRIMAT), 2026-10-13
+
+guardo2023:
+  authors: G. L. Guardo et al.
+  title: Direct measurement of the ¹⁹F(p,α)¹⁶O reaction at E_cm = 0.4–0.9 MeV using the LHASA detector array
+  journal: Eur. Phys. J. A 59 (2023)
+  year: 2023
+  doi: 10.1140/epja/s10050-023-00957-1
+  checked: DOAJ and Osmangazi University records (EPJ A 59, issue 3; S-factor about 1.4 times NACRE at 0.6–0.8 MeV), by web search; article number not seen, 2026-10-13
+
+petruse2025:
+  authors: T. Petruse et al.
+  title: Direct measurement of the ¹⁹F(p,α)¹⁶O reaction using the LHASA detector array
+  journal: Eur. Phys. J. A 61, 4 (2025)
+  year: 2025
+  doi: 10.1140/epja/s10050-024-01462-9
+  checked: web-search records of the article (EPJ A 61, issue 1, DOI; E_cm = 400–900 keV; resolves the discrepancy between the two earlier data sets; INSPIRE copy of the article header, title),  2026-10-13
+
+# --- Big Bang ----------------------------------------------------------------
+
+pitrou2021:
+  authors: C. Pitrou, A. Coc, J.-P. Uzan, E. Vangioni
+  title: A new tension in the cosmological model from primordial deuterium?
+  journal: Mon. Not. R. Astron. Soc. 502, 2474 (2021)
+  year: 2021
+  arxiv: "2011.11320"
+  checked: arXiv 2011.11320 abstract (a 1.8σ tension on the baryon density, or on D/H, between BBN and CMB + BAO), by web search, 2026-10-13
+
+desouza2019:
+  authors: R. S. de Souza, C. Iliadis, A. Coc
+  title: Astrophysical S-factors, thermonuclear rates, and electron screening potential for the ³He(d,p)⁴He Big Bang reaction via a hierarchical Bayesian model
+  journal: Astrophys. J. (2019)
+  year: 2019
+  arxiv: "1809.06966"
+  checked: arXiv 1809.06966 (journal ApJ; screening potential 213 ± 13 eV, consistent with Aliotta et al. 2001), by web search; volume and page not seen, 2026-10-13
+
+# --- Carbon burning ----------------------------------------------------------
+
+adsley2022:
+  authors: P. Adsley et al.
+  title: Extending the Hoyle-state paradigm to ¹²C + ¹²C fusion
+  journal: Phys. Rev. Lett. 129, 102701 (2022)
+  year: 2022
+  doi: 10.1103/PhysRevLett.129.102701
+  checked: University of the Western Cape and White Rose records, by web search (0⁺ states of ²⁴Mg near the ¹²C + ¹²C threshold from ²⁴Mg(α,α′), decaying mostly to ²⁰Ne + α; proposed cluster states that could enhance fusion), 2026-10-13
+
+# --- Helium burning ----------------------------------------------------------
+
+dellaquila2024:
+  authors: D. Dell'Aquila et al.
+  title: Clarifying the radiative decay of the Hoyle state with charged-particle spectroscopy
+  journal: Sci. Rep. 14 (2024)
+  year: 2024
+  doi: 10.1038/s41598-024-68415-6
+  arxiv: "2401.18026"
+  checked: DOAJ record (Scientific Reports, August 2024) and arXiv 2401.18026, by web search (Γrad/Γ = 4.4(6) × 10⁻⁴; arXiv and journal versions may differ); article number not seen, 2026-10-13
+
+ogata2009:
+  authors: K. Ogata, M. Kan, M. Kamimura
+  title: Quantum three-body calculation of the nonresonant triple-α reaction rate at low temperatures
+  journal: Prog. Theor. Phys. 122, 1055 (2009)
+  year: 2009
+  arxiv: "0905.0007"
+  checked: arXiv 0905.0007 (CDCC; about 20 orders of magnitude above NACRE near 10⁷ K) and a Tsukuba lecture citing the journal, by web search; the arXiv record gives the year as 2010, 2026-10-13
+
+nguyen2012:
+  authors: N. B. Nguyen, F. M. Nunes, I. J. Thompson, E. F. Brown
+  title: Low-temperature triple-alpha rate in a full three-body model
+  journal: Phys. Rev. Lett. 109, 141101 (2012)
+  year: 2012
+  arxiv: "1112.2136"
+  checked: JINA Virtual Journal listing (PRL 109, 141101) and arXiv 1112.2136 (agrees with NACRE above 0.07 GK; about 10¹² larger at 0.02 GK; red giants unaffected in MESA), by web search, 2026-10-13
+
+shen2023:
+  authors: Y. P. Shen et al.
+  title: New determination of the ¹²C(α,γ)¹⁶O reaction rate and its impact on the black-hole mass gap
+  journal: Astrophys. J. 945, 41 (2023)
+  year: 2023
+  doi: 10.3847/1538-4357/acb7de
+  checked: ApJ article page, NSF PAR and DOAJ records, by web search (ground-state ANC from ¹²C(¹¹B,⁷Li)¹⁶O at the Q3D spectrograph; total rate up to 21% above deBoer et al. 2017; lower and upper edges of the black-hole gap down by about 12% and 5%), 2026-10-13
+
+haverson2026:
+  authors: K. Haverson, R. Smith, M. Gai et al.
+  title: Background-free ¹²C(α,γ) angular distribution measurements with a time projection chamber operating in gamma beams
+  journal: Commun. Phys. 9, 27 (2026)
+  year: 2026
+  doi: 10.1038/s42005-025-02458-7
+  checked: Communications Physics record (6 January 2026, DOI) and a 2026 LBL conference abstract, by web search (¹⁶O(γ,α) with an N₂O gas target at HIγS; E1–E2 phase angle reported to agree with unitarity for the first time); the value of the phase needs the full text, 2026-10-13
+
+farmer2020:
+  authors: R. Farmer, M. Renzo, S. E. de Mink, M. Fishbach, S. Justham
+  title: Constraints from gravitational-wave detections of binary black hole mergers on the ¹²C(α,γ)¹⁶O rate
+  journal: Astrophys. J. Lett. 902, L36 (2020)
+  year: 2020
+  arxiv: "2006.06678"
+  checked: arXiv 2006.06678 and University of Amsterdam record, by web search (S(300 keV) > 175 keV b at 68% from the first ten black-hole mergers; O(50) mergers could pin S to ±10–30 keV b), 2026-10-13
+
+# --- Neutron sources -----------------------------------------------------------
+
+deboer2024:
+  authors: R. J. deBoer et al.
+  title: Measurement of the ¹³C(α,n₀)¹⁶O differential cross section from 0.8 to 6.5 MeV
+  journal: Phys. Rev. Lett. 132, 062702 (2024)
+  year: 2024
+  doi: 10.1103/PhysRevLett.132.062702
+  checked: ORNL record and NSF PAR copy, by web search (18 angles, 0–160°, over 700 angular distributions; extrapolation uncertainty potentially about 5%, against about 15% before; published 9 February 2024), 2026-10-13
+
+shahina2024:
+  authors: Shahina, R. J. deBoer, M. Wiescher et al.
+  title: Strength measurement of the E_α,lab = 830 keV resonance in the ²²Ne(α,n)²⁵Mg reaction using a stilbene detector
+  journal: Phys. Rev. C 110, 015801 (2024)
+  year: 2024
+  doi: 10.1103/PhysRevC.110.015801
+  checked: ORNL and AFIT records and the Notre Dame highlight, by web search (published 3 July 2024; (α,n) strength similar to earlier direct studies, about three times the (α,γ) strength, against transfer data that suggest the two are about equal), 2026-10-13
+
+# --- The s-process --------------------------------------------------------------
+
+tessler2021:
+  authors: M. Tessler, M. Paul et al.
+  title: Stellar s-process neutron capture cross sections on ⁷⁸,⁸⁰,⁸⁴,⁸⁶Kr determined via activation, atom trap trace analysis, and decay counting
+  journal: Phys. Rev. C 104, 015806 (2021)
+  year: 2021
+  doi: 10.1103/PhysRevC.104.015806
+  checked: APS accepted-manuscript link and Hebrew University and INAF records, by web search (SARAF-LiLiT activation; ⁸¹Kr and ⁸⁵ᵍKr counted by ATTA); its partial cross section to ⁸⁵Krᵐ underlies a branching to the isomer of about 0.59 used in arXiv 2107.12037, 2026-10-13
+
+lugaro2023:
+  authors: M. Lugaro, M. Pignatari, R. Reifarth, M. Wiescher
+  title: The s process and beyond
+  journal: Annu. Rev. Nucl. Part. Sci. 73, 315 (2023)
+  year: 2023
+  doi: 10.1146/annurev-nucl-102422-080857
+  arxiv: "2511.06987"
+  checked: Annual Reviews record (pp. 315–340, 2 August 2023, CC BY 4.0) and arXiv 2511.06987, by web search, 2026-10-13
+
+vescovi2020:
+  authors: D. Vescovi, S. Cristallo, M. Busso, N. Liu
+  title: "Magnetic-buoyancy-induced mixing in AGB stars: presolar SiC grains"
+  journal: Astrophys. J. Lett. 897, L25 (2020)
+  year: 2020
+  doi: 10.3847/2041-8213/ab9fa1
+  arxiv: "2006.13729"
+  checked: arXiv 2006.13729 and INAF record, by web search (ApJL 897, L25; FRUITY models with mixing triggered by magnetic buoyancy fit the Ni, Sr, Zr, Mo and Ba isotope ratios of mainstream SiC grains with one field configuration), 2026-10-13
+
+vescovi2023:
+  authors: D. Vescovi, R. Reifarth, E. Lorenz, A. Elbe
+  title: The ASTRAL database for neutron-capture nucleosynthesis studies
+  journal: EPJ Web Conf. 279, 11011 (2023)
+  year: 2023
+  doi: 10.1051/epjconf/202327911011
+  checked: EPJ Web of Conferences page and Frankfurt repository copy, by web search (MACS recalculated from the raw data with updated half-lives and γ intensities; successor of KADoNiS, whose version 1.0 was never released, per R. Reifarth's 2021 IAEA report), 2026-10-13
+
+leckenby2024:
+  authors: G. Leckenby et al.
+  title: High-temperature ²⁰⁵Tl decay clarifies ²⁰⁵Pb dating in early Solar System
+  journal: Nature 635, 321 (2024)
+  year: 2024
+  doi: 10.1038/s41586-024-08130-4
+  arxiv: "2411.08856"
+  checked: MPI-K and TRIUMF press releases, the Zenodo record of the analysis and the ORIGINS news item, by web search (bound-state β decay of bare ²⁰⁵Tl⁸¹⁺ in the GSI storage ring, half-life 291 +33/−27 days; 4.7 times longer than the earlier theoretical estimate; feeds the ²⁰⁵Pb chronometer); title, pages 321–326 and arXiv 2411.08856 from the GSI repository record, 2026-10-13
+
+bosch1996:
+  authors: F. Bosch et al.
+  title: "Observation of bound-state β⁻ decay of fully ionized ¹⁸⁷Re: ¹⁸⁷Re–¹⁸⁷Os cosmochronometry"
+  journal: Phys. Rev. Lett. 77, 5190 (1996)
+  year: 1996
+  doi: 10.1103/PhysRevLett.77.5190
+  checked: GSI repository and OSTI records, and the ENSDF evaluation, by web search (half-life of bare ¹⁸⁷Re 32.9 ± 2.0 yr against about 42 Gyr for the neutral atom), 2026-10-13
+
+lerendegui2023:
+  authors: J. Lerendegui-Marco
+  title: Recent developments and perspectives for key stellar (n,γ) measurements at the CERN n_TOF facility
+  journal: Conference talk, Madrid, 2–6 October 2023
+  year: 2023
+  url: https://indico.cern.ch/event/1283224/contributions/5585039
+  checked: Indico contribution page (results of the first measurement of the s-process branching-point reaction ⁷⁹Se(n,γ)), the 2020 n_TOF proposal (3 mg of ⁷⁹Se in a PbSe sample; i-TED) and the CERN EP newsletter item (EAR1 and EAR2; key to the s-only ⁸⁰Kr and ⁸²Kr), by web search; no journal article yet, 2026-10-13
