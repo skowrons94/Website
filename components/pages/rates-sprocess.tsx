@@ -22,7 +22,7 @@ import { curiosityCards } from "@/lib/rates/curiosity-data"
 const TEXT = {
   en: {
     eyebrow: "Reaction rates",
-    title: "The s-process, what if",
+    title: "The s-process: what if?",
     description:
       "Change the neutron sources, the poisons and the seeds of the s-process and see the neutron exposure and the heavy isotopes from iron to bismuth change. A network of some 500 nuclei, calculated in your browser.",
     back: "Reaction rates",
@@ -58,8 +58,8 @@ function Lead({ lang }: { lang: Lang }) {
   ) : (
     <>
       In the {term("s-process", "s-process")} iron captures neutrons from <Sci>{"¹³C(α,n)"}</Sci> and{" "}
-      <Sci>{"²²Ne(α,n)"}</Sci> and climbs up to lead. Pick a site, change a reaction or a{" "}
-      {term("neutron-poison", "neutron poison")} and watch the heavy isotopes move.
+      <Sci>{"²²Ne(α,n)"}</Sci> and climbs up to lead. Choose a site, change a reaction or a{" "}
+      {term("neutron-poison", "neutron poison")} and see how the heavy isotopes change.
     </>
   )
 }
@@ -109,7 +109,7 @@ function How({ lang }: { lang: Lang }) {
       <P>
         Making a source faster in the ¹³C pocket changes little: the ¹³C burns completely anyway, only sooner. What
         matters more is how much ¹³C there is, and how many neutrons the poisons take: raise the initial ¹⁴N, or
-        ¹⁴N(n,p)¹⁴C, and watch the lead fall. In a thermal pulse, instead, ²²Ne(α,n) burns only partly, and its rate
+        ¹⁴N(n,p)¹⁴C, and the lead falls. In a thermal pulse, instead, ²²Ne(α,n) burns only partly, and its rate
         directly decides how many neutrons there are.
       </P>
       <P>

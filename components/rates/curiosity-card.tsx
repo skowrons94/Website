@@ -161,7 +161,7 @@ export function CuriosityCopy({ c, lang }: { c: CuriosityCardData; lang: Lang })
     const text =
       what === "link"
         ? url()
-        : `J. Skowronski, “${c.sentence}” ${c.caveat} Reaction rates explorer (${c.model}). ${url()}. ${t.rate}: ${c.rateSource}.`
+        : `J. Skowronski, “${c.sentence}” ${c.caveat} Rate explorer (${c.model}). ${url()}. ${t.rate}: ${c.rateSource}.`
     try {
       await navigator.clipboard.writeText(text)
     } catch {
