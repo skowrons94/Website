@@ -505,6 +505,21 @@ corrected total reproduces the data; 14N is left off (corrected, its LUNA total
 capture is 20% above the data, χ²/N 0.9 → 95: the fit needs checking). The flag
 is part of the results-cache key, so toggling it recalculates.
 
+### The data explorer's data
+
+`scripts/data/` turns EXFOR (measured reaction data, IAEA/NRDC, CC BY 4.0)
+and ENSDF (levels and γ-rays, NNDC) into JSON under `public/data/`: an index
+of every dataset in scope (charged-particle reactions on Z ≤ 30, s-process
+captures and MACS, neutron reactions on Z ≤ 30), one file per reaction with
+the points, and a summary per nucleus. Both sources are pinned
+(`scripts/data/sources.json`). The index and the atlas nuclei's ENSDF files
+are committed; the per-reaction files (~460 MB) are built by `make data`
+(and by the Pages workflow), so the site builds without them. Exports for a
+selection: AZURE2 data files with a stub `<segmentsData>`, CSV, JSON, BibTeX
+(`python scripts/data/dx.py export ...`). Tests: `npm run test:data`.
+Everything else — scope, rules, schemas, the AZURE2 column layout, licences —
+is in `scripts/data/README.md`.
+
 ## Development
 
 ```sh
@@ -582,6 +597,7 @@ lib/atlas-core.mjs   the atlas loader and its physics (Q, Gamow window, half-lif
 lib/atlas.ts         the same, typed, for the pages
 components/atlas/    the network map, timeline and badges
 scripts/             atlas check and JSON export, run before every build
+scripts/data/        EXFOR + ENSDF → public/data/ (the data explorer's data)
 lib/api.ts           client for the AZURE2 API
 server/              the Flask API
 server/app/engine.py one AZURE2 model per process

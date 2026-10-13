@@ -115,6 +115,43 @@ jobs:
             --pyazr build/wasm/AZURE2/pyazr \
             --evaluations build/azure2/evaluations --out public/azure2
 
+      # -- the data explorer's data (scripts/data/README.md) -------------------
+      # The index and the atlas nuclei's ENSDF files are committed; the
+      # per-reaction shards (~460 MB) and the other ENSDF summaries are built
+      # here from the EXFOR commit and ENSDF archive pinned in
+      # scripts/data/sources.json. The inputs are cached by that file, the
+      # output by it and the pipeline's code, so an unchanged pipeline costs
+      # one cache restore.
+      - name: Cache the data explorer's inputs
+        uses: actions/cache@v4
+        with:
+          path: |
+            build/dx/exfor_master.git
+            build/dx/ensdf
+          key: dx-inputs-${{ hashFiles('scripts/data/sources.json') }}
+
+      - name: Cache the data explorer's output
+        id: dx
+        uses: actions/cache@v4
+        with:
+          path: public/data
+          key: dx-out-${{ hashFiles('scripts/data/sources.json', 'scripts/data/nucdata/**', 'scripts/data/vendor/**', 'content/atlas/reactions/**', 'content/atlas/nuclear-data/**') }}
+
+      - name: Data explorer (EXFOR shards, ENSDF summaries)
+        if: steps.dx.outputs.cache-hit != 'true'
+        run: |
+          pip install --quiet pyyaml
+          python scripts/data/dx.py fetch-exfor
+          python scripts/data/dx.py build-exfor --shards all
+          python scripts/data/dx.py fetch-ensdf
+          python scripts/data/dx.py build-ensdf --set scope
+
+      - name: Data explorer checks
+        run: |
+          pip install --quiet pyyaml pytest jsonschema
+          python scripts/data/dx.py check --shards 500
+          python -m pytest -q scripts/data/tests
+
       # -- the site -----------------------------------------------------------
       - run: npm ci
       - name: Static export

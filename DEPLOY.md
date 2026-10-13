@@ -31,7 +31,8 @@ The whole site runs as three containers from `docker-compose.yml`: Caddy
   `AZURE2_SPARES=7Be:2,24Mg:1` serves two ⁷Be visitors arriving together
   at once (+0.9 GB); replacements are built one at a time, when no visitor
   is preparing.
-- **Disk: 5 GB free** for the images (about 650 MB) and the build cache.
+- **Disk: 5 GB free** for the images (about 650 MB) and the build cache, plus
+  about 1.5 GB for the data explorer's files if you build them (`make data`, §5).
 - Install Docker Engine and the Compose plugin:
 
   ```sh
@@ -140,6 +141,21 @@ safe; unchanged layers are reused.
 
 A new or corrected evaluation under `server/evaluations/` needs only
 `make evaluations` (restarts the API, no rebuild), then `make warm`.
+
+**The data explorer's files** (EXFOR per-reaction data and ENSDF summaries,
+`public/data/`) are not in git, apart from the index; build them on the host
+before `make update`, once and again whenever `scripts/data/` or
+`scripts/data/sources.json` changes:
+
+```sh
+sudo apt-get install -y python3-yaml     # PyYAML; git and python3 are already there
+make data                                # ~8 min, ~600 MB of inputs in build/dx/, ~480 MB in public/data/
+make update
+```
+
+The site image copies `public/data/`, so it grows by about 480 MB. Without
+`make data` the site still builds and runs; the explorer pages then have the
+index and the atlas nuclei, but no data points.
 
 ## 6. Where things live
 

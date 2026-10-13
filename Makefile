@@ -12,7 +12,7 @@ COMPOSE ?= docker compose
 
 .DEFAULT_GOAL := help
 .PHONY: help env deploy update restart down logs logs-web logs-azure2 check \
-        evaluations warm dev-server dev-site
+        evaluations warm dev-server dev-site data data-committed test-data
 
 help:                       ## show this list
 	@grep -hE '^[a-z0-9-]+:.*?## ' $(MAKEFILE_LIST) \
@@ -64,6 +64,31 @@ evaluations:                ## pick up new or edited evaluations, without a rebu
 
 warm:                       ## precompute every evaluation's curves, so first visits are instant
 	$(COMPOSE) exec -T azure2 python3 -m app.warm
+
+# -- the data explorer's data (scripts/data/README.md) ---------------------
+# Needs python3 (3.10+) with PyYAML, and git. Inputs are cached in build/dx/
+# (about 600 MB); the output goes to public/data/ (about 480 MB), which the
+# site image copies. Run before `make update`.
+
+PYTHON ?= python3
+
+data:                       ## build the explorer's EXFOR shards and ENSDF summaries (~8 min)
+	$(PYTHON) scripts/data/dx.py fetch-exfor
+	$(PYTHON) scripts/data/dx.py build-exfor --shards all
+	$(PYTHON) scripts/data/dx.py fetch-ensdf
+	$(PYTHON) scripts/data/dx.py build-ensdf --set scope
+	$(PYTHON) scripts/data/dx.py check --shards 500
+
+data-committed:             ## regenerate the committed part of public/data (index, meta, atlas ENSDF)
+	rm -rf public/data/exfor/r public/data/exfor/sets public/data/ensdf
+	$(PYTHON) scripts/data/dx.py fetch-exfor
+	$(PYTHON) scripts/data/dx.py build-exfor --shards none
+	$(PYTHON) scripts/data/dx.py fetch-ensdf
+	$(PYTHON) scripts/data/dx.py build-ensdf --set atlas
+	$(PYTHON) scripts/data/dx.py check
+
+test-data:                  ## the pipeline's tests (pytest, jsonschema)
+	$(PYTHON) -m pytest -q scripts/data/tests
 
 # -- local development -------------------------------------------------------
 # The API needs pyazr, which ships with AZURE2. Point AZURE2_SRC at a checkout
