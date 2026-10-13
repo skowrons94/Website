@@ -127,7 +127,9 @@ export function GapMap({
   const height = plotBottom + 36
   const decades: number[] = []
   for (let d = Math.round(Math.log10(layout.lo)); d <= Math.round(Math.log10(layout.hi)); d++) decades.push(d)
-  const every = decades.length > 9 ? 2 : 1
+  // A tick label needs about 46 px; on a narrow chart, label every second
+  // (or third) decade so they never print on top of each other.
+  const every = Math.max(decades.length > 9 ? 2 : 1, Math.ceil((decades.length * 46) / plotW))
 
   const groupsText = layout.groups
     .map((grp) =>
@@ -290,8 +292,9 @@ export function GapMap({
           <g>
             <line x1={x(lowest)} x2={x(lowest)} y1={top - 4} y2={plotBottom} stroke="var(--viz-series-2)" strokeWidth={1.6} />
             <text
-              x={x(lowest) + 4}
+              x={x(lowest) > left + plotW * 0.6 ? x(lowest) - 4 : x(lowest) + 4}
               y={plotBottom - 3}
+              textAnchor={x(lowest) > left + plotW * 0.6 ? "end" : "start"}
               fontSize={11}
               fontWeight={600}
               fill="var(--viz-text)"
