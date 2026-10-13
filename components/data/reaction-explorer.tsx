@@ -417,6 +417,10 @@ export function ReactionExplorer({
                 {curves.map((c) => c.label).join(" · ")}
               </li>
             )}
+            {view === "total" &&
+              curvesRaw
+                .filter(({ id }) => evaluations.find((e) => e.id === id)?.preliminary)
+                .map(({ id }) => <li key={`pre-${id}`}>{fill(strings.plot.evaluationPreliminary, { id })}</li>)}
             <li>
               {strings.plot.extrapolatedNever} {!neutral && view !== "dsigma" && strings.plot.converted}
             </li>

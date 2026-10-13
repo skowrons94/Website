@@ -102,7 +102,7 @@ export function DataReactionPage({ slug, lang }: { slug: string; lang: Lang }) {
           strings={dx}
           lang={lang}
           channel={ch ? { z1: ch.z1, z2: ch.z2, mu: ch.mu } : null}
-          evaluations={evals.map((e) => ({ id: e.id, reactions: e.reactions, entries: e.entries, subentries: e.subentries, dois: e.dois }))}
+          evaluations={evals.map((e) => ({ id: e.id, reactions: e.reactions, entries: e.entries, subentries: e.subentries, dois: e.dois, preliminary: e.preliminary }))}
           window={w0 && !panel.neutron ? { lo: w0.lo, hi: w0.hi, E0: w0.E0, label: w0.label } : null}
         />
       </div>
@@ -128,6 +128,7 @@ export function DataReactionAnyPage({ lang }: { lang: Lang }) {
           entries: e.entries,
           subentries: e.subentries,
           dois: e.dois,
+          preliminary: e.preliminary,
         }))}
       />
       <Attribution lang={lang} className="mt-14" />

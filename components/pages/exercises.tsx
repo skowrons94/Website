@@ -137,14 +137,14 @@ Prendi:
           problem: `Apri la valutazione della ¹²C(p,γ)¹³N. Il fattore $S$ è dominato dal livello 1/2⁺ del ¹³N a $E_x$ = ${f(t.level.Ex_MeV, 4)} MeV: con la soglia protonica a 1,944 MeV, è una risonanza a $E_R$ ≈ ${f(t.level.ER_keV / 1000, 2)} MeV nel centro di massa, con larghezza protonica $\\Gamma_p$ = ${t.level.gammaP_keV} keV e larghezza γ di circa 0,5 eV.
 
 1. Prima di toccare qualunque cosa, prevedi. In un'approssimazione di Breit–Wigner a un solo livello, $\\sigma(E) \\propto \\dfrac{\\Gamma_p \\Gamma_\\gamma}{(E-E_R)^2 + \\Gamma^2/4}$ con $\\Gamma \\approx \\Gamma_p$ (perché $\\Gamma_\\gamma \\ll \\Gamma_p$). Se $\\Gamma_p$ passa da ${t.level.gammaP_keV} a ${t.level.changedTo_keV} keV, che cosa succede (a) al fattore $S$ al picco, (b) alla larghezza del picco, (c) al fattore $S$ molto sotto la risonanza, alle energie stellari?
-2. Annota il χ² ai parametri pubblicati: quello di tutti i dati («χ² per tutti i dati del fit») e quello dei dati LUNA (HPGe) nella tabella delle serie di dati.
+2. Annota il χ² ai parametri di partenza della valutazione: quello di tutti i dati («χ² per tutti i dati del fit») e quello dei dati LUNA (HPGe) nella tabella delle serie di dati.
 3. Nello «Schema dei livelli» scegli il livello 1/2⁺ a ${f(t.level.Ex_MeV, 4)} MeV e porta la larghezza del canale protonico a ${t.level.changedTo_keV} keV. Aspetta il ricalcolo e confronta con le tue previsioni: il picco nel grafico, il fattore $S$ a circa 25 keV nella scheda «Estrapolazioni», i due χ².
 4. Perché i dati LUNA, che stanno tutti sotto la risonanza (fra 68 e 362 keV), reagiscono così tanto? E perché il fattore $S$ alle energie stellari cresce meno di $\\Gamma_p$?
-5. Torna ai valori pubblicati («Ripristina tutto») e sposta invece l'energia del livello di 5 keV verso l'alto. Che cosa succede al χ²?`,
+5. Torna ai valori di partenza («Ripristina tutto») e sposta invece l'energia del livello di 5 keV verso l'alto. Che cosa succede al χ²?`,
           solution: `1. Al picco, $E = E_R$: $\\sigma \\propto 4\\Gamma_\\gamma/\\Gamma_p$, quindi scende di ${t.level.gammaP_keV}/${t.level.changedTo_keV} = ${f(t.level.gammaP_keV / t.level.changedTo_keV, 2)}, **−15%**. La larghezza del picco è $\\Gamma \\approx \\Gamma_p$: **+18%**. Lontano dalla risonanza, $(E-E_R)^2 \\gg \\Gamma^2/4$ e $\\sigma \\propto \\Gamma_p \\Gamma_\\gamma/(E-E_R)^2$: la coda **sale del 18%**. Un picco più largo e più basso, con le code più alte.
-2. e 3. Con AZURE2 su questa valutazione (calcolato il 13 ottobre 2026; solo $\\Gamma_p$ cambiato, tutto il resto come pubblicato):
+2. e 3. Con AZURE2 su questa valutazione (calcolato il 13 ottobre 2026; solo $\\Gamma_p$ cambiato, tutto il resto come nel file del modello):
 
-| | pubblicato | $\\Gamma_p$ = ${t.level.changedTo_keV}\u00a0keV | |
+| | modello | $\\Gamma_p$ = ${t.level.changedTo_keV}\u00a0keV | |
 |---|---|---|---|
 | $S$ al picco | ${f(t.sfactor.peak.before, 0)}\u00a0keV\u00a0b | ${f(t.sfactor.peak.after, 0)}\u00a0keV\u00a0b | ${pct(t.sfactor.peak.before, t.sfactor.peak.after)} |
 | larghezza a metà altezza | ${f(t.fwhm.before, 1)}\u00a0keV | ${f(t.fwhm.after, 1)}\u00a0keV | ${pct(t.fwhm.before, t.fwhm.after)} |
@@ -153,7 +153,7 @@ Prendi:
 | χ², tutti i dati (${t.chi2.all.points} punti) | ${n(t.chi2.all.before)} | ${n(t.chi2.all.after)} | |
 | χ², LUNA HPGe (${t.chi2.lunaHpge.points} punti) | ${n(t.chi2.lunaHpge.before)} | ${n(t.chi2.lunaHpge.after)} | |
 
-Il picco e la larghezza si comportano come prevede la formula a un livello. Il χ²/N del fit pubblicato è già molto sopra 1 su questa pagina, che non include nel fit le normalizzazioni dei dati (la pagina spiega perché): conta la variazione, non il valore assoluto. E la variazione è enorme: i dati fissano $\\Gamma_p$ molto meglio dei 6 keV di cui l'hai spostata.
+Il picco e la larghezza si comportano come prevede la formula a un livello. Il χ²/N del modello è già molto sopra 1 su questa pagina: il file del modello è una versione preliminare che non riproduce ancora il best fit pubblicato (lo spiega la nota nella pagina della valutazione). Conta la variazione, non il valore assoluto. E la variazione è enorme: i dati fissano $\\Gamma_p$ molto meglio dei 6 keV di cui l'hai spostata.
 4. I dati LUNA stanno sul fianco di bassa energia della risonanza, dove il fattore $S$ sale del 10–14% circa (a 300 keV da 6,72 a 7,64 keV b), e hanno incertezze intorno all'1%: in media ogni punto si sposta di circa ${sigmas} deviazioni standard (la radice di Δχ²/N), e il χ² cresce col quadrato dello scarto. Alle energie stellari, invece, il fattore $S$ cresce solo del ${pct(t.sfactor.at24keV.before, t.sfactor.at24keV.after).replace(/[+ %]/g, "")}%, non del 18%: lì non c'è solo la coda della risonanza ma anche la cattura diretta, che non dipende da $\\Gamma_p$, e le due ampiezze si sommano (interferiscono) prima di elevare al quadrato. Cresce solo la parte risonante.
 5. Con l'energia spostata di 5 keV il χ² di tutti i dati arriva a ${n(t.energyShift.chi2All)}, più che cambiando la larghezza: sui fianchi ripidi di una risonanza larga ${t.level.gammaP_keV} keV, spostarla di 5 keV cambia il fattore $S$ di molte volte l'incertezza dei dati misurati lì. Per questo l'energia di una risonanza ben misurata è il parametro più vincolato di un fit R-matrix.`,
         },
@@ -230,14 +230,14 @@ Take:
         problem: `Open the ¹²C(p,γ)¹³N evaluation. Its $S$-factor is dominated by the 1/2⁺ level of ¹³N at $E_x$ = ${f(t.level.Ex_MeV, 4)} MeV: with the proton threshold at 1.944 MeV, a resonance at $E_R$ ≈ ${f(t.level.ER_keV / 1000, 2)} MeV in the centre of mass, with proton width $\\Gamma_p$ = ${t.level.gammaP_keV} keV and a γ width of about 0.5 eV.
 
 1. Before touching anything, predict. In a single-level Breit–Wigner approximation, $\\sigma(E) \\propto \\dfrac{\\Gamma_p \\Gamma_\\gamma}{(E-E_R)^2 + \\Gamma^2/4}$ with $\\Gamma \\approx \\Gamma_p$ (because $\\Gamma_\\gamma \\ll \\Gamma_p$). If $\\Gamma_p$ goes from ${t.level.gammaP_keV} to ${t.level.changedTo_keV} keV, what happens to (a) the $S$-factor at the peak, (b) the width of the peak, (c) the $S$-factor far below the resonance, at stellar energies?
-2. Note the χ² at the published parameters: for all the data (“χ² for all the data in the fit”) and for the LUNA (HPGe) data in the table of all datasets.
+2. Note the χ² at the evaluation's starting parameters: for all the data (“χ² for all the data in the fit”) and for the LUNA (HPGe) data in the table of all datasets.
 3. In the “Level scheme”, choose the 1/2⁺ level at ${f(t.level.Ex_MeV, 4)} MeV and set the width of its proton channel to ${t.level.changedTo_keV} keV. Wait for the recalculation and compare with your predictions: the peak in the plot, the $S$-factor at about 25 keV in the “Extrapolations” tab, the two χ².
 4. Why do the LUNA data, all of them below the resonance (68 to 362 keV), react so strongly? And why does the $S$-factor at stellar energies grow by less than $\\Gamma_p$ does?
-5. Go back to the published values (“Reset all”) and move the level's energy up by 5 keV instead. What happens to the χ²?`,
+5. Go back to the starting values (“Reset all”) and move the level's energy up by 5 keV instead. What happens to the χ²?`,
         solution: `1. At the peak, $E = E_R$: $\\sigma \\propto 4\\Gamma_\\gamma/\\Gamma_p$, so it falls by ${t.level.gammaP_keV}/${t.level.changedTo_keV} = ${f(t.level.gammaP_keV / t.level.changedTo_keV, 2)}, **−15%**. The width of the peak is $\\Gamma \\approx \\Gamma_p$: **+18%**. Far from the resonance, $(E-E_R)^2 \\gg \\Gamma^2/4$ and $\\sigma \\propto \\Gamma_p \\Gamma_\\gamma/(E-E_R)^2$: the tail **rises by 18%**. A wider, lower peak with higher wings.
-2. and 3. With AZURE2 on this evaluation (computed on 13 October 2026; only $\\Gamma_p$ changed, everything else as published):
+2. and 3. With AZURE2 on this evaluation (computed on 13 October 2026; only $\\Gamma_p$ changed, everything else as in the model file):
 
-| | published | $\\Gamma_p$ = ${t.level.changedTo_keV}\u00a0keV | |
+| | model | $\\Gamma_p$ = ${t.level.changedTo_keV}\u00a0keV | |
 |---|---|---|---|
 | $S$ at the peak | ${f(t.sfactor.peak.before, 0)}\u00a0keV\u00a0b | ${f(t.sfactor.peak.after, 0)}\u00a0keV\u00a0b | ${pct(t.sfactor.peak.before, t.sfactor.peak.after)} |
 | full width at half maximum | ${f(t.fwhm.before, 1)}\u00a0keV | ${f(t.fwhm.after, 1)}\u00a0keV | ${pct(t.fwhm.before, t.fwhm.after)} |
@@ -246,7 +246,7 @@ Take:
 | χ², all data (${t.chi2.all.points} points) | ${n(t.chi2.all.before)} | ${n(t.chi2.all.after)} | |
 | χ², LUNA HPGe (${t.chi2.lunaHpge.points} points) | ${n(t.chi2.lunaHpge.before)} | ${n(t.chi2.lunaHpge.after)} | |
 
-The peak and the width do what the one-level formula says. The published fit's χ²/N is already far above 1 on this page, which does not refit the data's normalizations (the page explains why): what counts is the change, not the absolute value. And the change is huge: the data fix $\\Gamma_p$ far more tightly than the 6 keV you moved it by.
+The peak and the width do what the one-level formula says. The model's χ²/N is already far above 1 on this page: the model file is a preliminary version that does not yet reproduce the published best fit (the note on the evaluation page explains). What counts is the change, not the absolute value. And the change is huge: the data fix $\\Gamma_p$ far more tightly than the 6 keV you moved it by.
 4. The LUNA data sit on the low-energy flank of the resonance, where the $S$-factor rises by some 10–14% (at 300 keV from 6.72 to 7.64 keV b), and their uncertainties are around 1%: on average every point moves by about ${sigmas} standard deviations (the square root of Δχ²/N), and the χ² grows with the square of the shift. At stellar energies, though, the $S$-factor grows by only ${pct(t.sfactor.at24keV.before, t.sfactor.at24keV.after).replace(/[+ %]/g, "")}%, not 18%: there it is not only the resonance's tail but also direct capture, which does not depend on $\\Gamma_p$, and the two amplitudes add (interfere) before they are squared. Only the resonant part grows.
 5. With the energy moved by 5 keV the χ² of all the data reaches ${n(t.energyShift.chi2All)}, more than for the change of width: on the steep flanks of a resonance ${t.level.gammaP_keV} keV wide, moving it by 5 keV changes the $S$-factor by many times the uncertainty of the data measured there. That is why the energy of a well-measured resonance is the most tightly constrained parameter of an R-matrix fit.`,
       },

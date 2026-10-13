@@ -284,6 +284,8 @@ export interface EvaluationLink {
   /** DOIs of its datasets (info.json) */
   dois: string[]
   reference: string | null
+  /** info.json `preliminary`: the model does not yet reproduce the published best fit */
+  preliminary: boolean
 }
 
 const EXFOR_TOKEN = /^([A-Z0-9]\d{4})(\d{3})$/
@@ -353,6 +355,7 @@ export function evaluationLinks(): EvaluationLink[] {
       subentries: [...subentries],
       dois: [...dois],
       reference: typeof info.reference === "string" ? info.reference : null,
+      preliminary: info.preliminary === true,
     })
   }
   evalCache = out

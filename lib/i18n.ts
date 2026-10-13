@@ -174,6 +174,8 @@ const dataExpertEn = {
       dsigma: "dσ/dΩ against energy, one series per angle; never converted, and never on the axis of σ or S.",
     },
     evaluation: "R-matrix fit, evaluation {id}",
+    evaluationPreliminary:
+      "Evaluation {id} shows a preliminary model that does not yet reproduce the published best fit; see its page.",
     evaluationLoading: "Loading the fit of evaluation {id}…",
     window: "Gamow window, {T}",
     extrapolatedNever: "Extrapolated rows and upper limits are never plotted.",
@@ -456,6 +458,8 @@ const dataExpertIt: typeof dataExpertEn = {
       dsigma: "dσ/dΩ in funzione dell'energia, una serie per angolo; mai convertita, e mai sull'asse di σ o S.",
     },
     evaluation: "Fit R-matrix, valutazione {id}",
+    evaluationPreliminary:
+      "La valutazione {id} mostra un modello preliminare che non riproduce ancora il best fit pubblicato; vedi la sua pagina.",
     evaluationLoading: "Caricamento del fit della valutazione {id}…",
     window: "Finestra di Gamow, {T}",
     extrapolatedNever: "Le righe estrapolate e i limiti superiori non vengono mai disegnati.",

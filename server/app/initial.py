@@ -39,6 +39,7 @@ only for the model it was made from: the cache fingerprint (``app.cache``) is
 stored with it, so an edited evaluation is not described by an old file.
 """
 
+import hashlib
 import json
 import logging
 import os
@@ -74,7 +75,20 @@ def read(directory):
         return None
     if payload.get("version") != VERSION or payload.get("model") != cache.fingerprint(directory):
         return None
+    # The labels and references come from info.json, which the model
+    # fingerprint leaves out: a stored payload from an older info.json is stale.
+    if payload.get("info") != info_fingerprint(directory):
+        return None
     return payload
+
+
+def info_fingerprint(directory):
+    """A hash of the evaluation's info.json (None when it has none)."""
+    try:
+        with open(os.path.join(directory, "info.json"), "rb") as f:
+            return hashlib.sha256(f.read()).hexdigest()
+    except OSError:
+        return None
 
 
 _bytes = {}
@@ -145,6 +159,7 @@ def build(session, labels, timings=None):
     payload = {
         "version": VERSION,
         "model": cache.fingerprint(session.evaluation.path),
+        "info": info_fingerprint(session.evaluation.path),
         "evaluation": session.evaluation.to_dict(),
         "scheme": serializers.scheme_to_dict(session, labels, params),
         "n_data_segments": len(session.datasets),

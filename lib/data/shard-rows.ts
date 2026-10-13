@@ -13,6 +13,8 @@ export interface EvalLink {
   entries: string[]
   subentries: string[]
   dois: string[]
+  /** the evaluation's model is preliminary (lib/data/build.ts) */
+  preliminary?: boolean
 }
 
 const FRAMES = ["lab", "cm", "lab-res", "cm-res", null]
