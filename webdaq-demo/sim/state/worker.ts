@@ -66,7 +66,9 @@ self.onmessage = async (ev: MessageEvent) => {
   }
   if (m.type === 'ctl') {
     const result = await backend.control(m.cmd)
-    snapshot()
-    self.postMessage({ type: 'ctl', id: m.id, result })
+    if (m.cmd?.type !== 'files' && m.cmd?.type !== 'state' && m.cmd?.type !== 'fwhm') snapshot()
+    // File contents are transferred, not copied.
+    const files = (result as { files?: { bytes: Uint8Array }[] })?.files
+    self.postMessage({ type: 'ctl', id: m.id, result }, files ? files.map(f => f.bytes.buffer as ArrayBuffer) : [])
   }
 }

@@ -33,6 +33,8 @@ WEBDAQ_SRC=/path/to/webdaq node build.mjs            # use a local clone instead
 node scripts/size.mjs ../public/webdaq-demo          # size report, fails over budget
 npm run test:contract                                # API contract + state machine (needs .work/webdaq: any build, or --fetch-only)
 npm run test:physics                                 # physics suite
+npm run test:files                                   # run files: formats, metadata keys, .caendat read back
+python3 tests/shell/shell.py ../public/webdaq-demo /webdaq-demo --axe <axe.min.js>   # the demo frame
 npx tsc --noEmit                                     # handlers type-check against WebDAQ's own types
 python3 tests/contract/runtime.py ../public/webdaq-demo /webdaq-demo   # every route and tab in Chromium, and the
                                                      # scan → add → start → stop flow: no unmocked request,
@@ -110,17 +112,62 @@ fetch('/api/server-control' | '/api/cache') → shim/fetch-shim.ts ────�
 * Alerts: the in-beam scenario seeds one `beam_current` rule; it and
   `board_failure` are evaluated locally, and every delivery is marked failed
   ("nothing leaves your browser"). ELOG and Grafana answer "not configured".
-* Run files (phase P3): `sim/state/runfiles.ts` lists the files and sizes the
-  Logbook shows (estimates for now) and reads `current.txt`/`stats.csv` back from
-  the run record. P3 plugs the real writers in with `setRunFileProvider()`; they
-  belong in a lazily imported chunk (the worker's first chunk is at its budget).
+* Rules, transports, the watcher and recovery (`shim/handlers/notify-settings.ts`)
+  are a lazy family too; the bell's event routes stay in the first chunk.
+
+## Run files (sim/files, phase P3)
+
+Nothing per event is stored. A finished run's directory is regenerated on demand
+from its record: seed, scenario, the register file at start, the timeline of
+register writes and scenario changes during the run, and its demo-time span.
+
+| File | Written like |
+|---|---|
+| `run_<N>_0000.sim.caendat` | CaenDAQ: XDAQ header (`DataFileHeader.hpp`), x730 board aggregates, extras option 2 (47-bit time stamps, 2 ns ticks); first 50 000 events; no traces |
+| `events.csv` | RUReader's tree columns: `Board,Channel,Timestamp_ps,Energy` (PHA) or `EnergyShort,EnergyLong` (PSD), `PU,SATU,LOST` |
+| `V1730_0.json` | the register dump copied at run start |
+| `current.txt` | `mock_current.py` and the real modules, 10 Hz, four channels |
+| `stats.csv` | `stats_manager.py`, plus `# SIMULATED DATA — …` |
+| `roi.json` | `roi_analysis.build_snapshot` at stop |
+| `metadata.json` | `run_metadata_snapshot.build_run_metadata_snapshot`, key for key, plus `Demo` |
+| `README.txt` | what each file is, how to convert, what FAIR means here |
+
+The events come from a fresh physics engine replaying the run (`replay.ts`,
+through the engine's `eventSink`), so the file is statistically the run that was
+taken, not a copy of the live spectrum. The writers are a lazy worker chunk:
+the Logbook's handler family imports them (`setRunFileProvider` gives the real
+sizes) and the shell's `control({type:'files', run})` returns the bytes.
+
+## The demo frame (shell/, phase P4)
+
+* `shell/Shell.tsx`, mounted by the overlaid layout: the banner (role region
+  "Demo notice", 40 px, sticky; WebDAQ's sticky header moves below it), the
+  not-in-demo notes per route (dismissal kept for the tab), and on demand the
+  Run files drawer (`RunFiles.tsx`, zip through `zip.ts` = fflate's `zipSync`)
+  and the Scenario panel (`ScenarioPanel.tsx`: detectors, source, distance,
+  activity, background level, beam current, the two faults).
+* `shell/StartPage.tsx` is the start page; below 768 px it first explains that
+  WebDAQ is a desktop interface (*Continue anyway* / *Read about WebDAQ*).
+* EN/IT: `?lang=it` or the banner switch; Italian strings load on demand
+  (`strings-it.ts`), panel strings live with the panels.
+* Look: `shim/tokens.css`, the site's surface tokens (checked against
+  `app/globals.css` by `tests/shell/tokens.test.ts`), system fonts; light and
+  dark follow the `theme` key the site and WebDAQ share.
+* The tour (phase P5) plugs in by defining `window.__webdaqTour(lang)` and
+  dispatching `webdaq-demo:tour-ready`; the banner's *Guide* and the start
+  page's *Take the guided tour* then appear. Its chunk should contain the
+  string `__webdaqTourBundle` so `scripts/size.mjs` can measure it.
+* `tests/shell/shell.py` checks all of this in Chromium, including axe-core on
+  the frame (pass `--axe` the path of an `axe.min.js`; nothing is installed).
 
 ## Sizes (gzip -9, this build)
 
-First-load JS: start page 115 kB, `/dashboard` 373 kB (budget 400), other routes
-113–342 kB; demo shell 3.8 kB; worker first chunk 39.7 kB (budget 40) plus 3.9 kB
-of lazily loaded handlers; response table + line data 39 kB per detector; JSROOT
-needed to draw 297 kB (budget 360). `node scripts/size.mjs` prints the table.
+First-load JS: start page 119.8 kB (budget 120), `/dashboard` 376.6 kB (budget
+400), other routes 116–345 kB; demo shell 6.9 kB (budget 25); worker first chunk
+38.6 kB (budget 40), plus 11.8 kB of lazy chunks (Logbook and run files, ELOG and
+Grafana, notification settings); response table + line data 39 kB per detector;
+JSROOT needed to draw 297 kB (budget 360); zip 4.6 kB (budget 10).
+`node scripts/size.mjs <export>` prints the table.
 
 ## Known upstream behaviour the demo shows as it is
 

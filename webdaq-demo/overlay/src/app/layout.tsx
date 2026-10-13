@@ -2,13 +2,15 @@
 // two differences — the root.cern JSRoot.core.js <Script> is gone (JSROOT is
 // self-hosted and loaded on demand), and the demo is booted: the storage shim
 // runs first in <head>, then <DemoBoot> installs the fetch shim and the worker.
-// The demo shell (banner, tour, notes) is mounted here by phase P4.
+// <DemoShell> is the demo frame: banner, notes, Run files, Scenario (shell/).
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster"
 import { ThemeProvider } from "@/components/theme-provider"
 import DemoBoot from "@/demo/shim/boot"
+import DemoShell from "@/demo/shell/Shell"
+import "@/demo/shim/tokens.css"
 import { STORAGE_SHIM_JS } from "@/demo/generated"
 
 const inter = Inter({ subsets: ["latin"] });
@@ -30,6 +32,7 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <DemoBoot />
+        <DemoShell />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

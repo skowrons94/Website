@@ -18,6 +18,7 @@ export type ControlCommand =
   | { type: 'state' }
   | { type: 'fwhm'; channel: number; energy_keV: number }
   | { type: 'snapshot' }
+  | { type: 'files'; run: number }
 
 export class Backend {
   readonly daq: Daq
@@ -92,6 +93,16 @@ export class Backend {
         return { ok: true }
       case 'fwhm': return d.physics.fwhmProbe(cmd.channel, cmd.energy_keV)
       case 'snapshot': return d.snapshot()
+      case 'files': {
+        // The run's directory, regenerated (sim/files, a lazy chunk): [{name, type, bytes}].
+        const run = d.runs.find(r => r.run_number === Number(cmd.run))
+        if (!run) return { ok: false, message: `Run ${cmd.run} not found` }
+        if (run.demo.sim_end_s === null) return { ok: false, message: 'The run is still in progress.' }
+        await loadPhysicsData(run.demo.scenario.detectors).catch(() => undefined)
+        const { runFilesFull } = await import('../files')
+        // Copies: the worker posts them as transferables, and the replay cache keeps its own.
+        return { ok: true, files: runFilesFull(d, run).map(f => ({ ...f, bytes: f.bytes.slice() })) }
+      }
       case 'state':
       default: return this.summary()
     }
