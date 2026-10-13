@@ -1249,8 +1249,8 @@ const it: Dictionary = {
       research: "Misure sotterranee, teoria R-matrix, tracciamento dei raggi γ",
       atlas: "Le reazioni che alimentano le stelle, sulla carta dei nuclidi",
       evaluations: "Modelli R-matrix da esplorare dal vivo",
-      publications: "Articoli e atti di congressi",
-      cv: "Impieghi, formazione, seminari e didattica",
+      publications: "Articoli e atti di convegni",
+      cv: "Posizioni, formazione, seminari e didattica",
       software: "AZURE2, LunaSRIM e altro codice",
       notes: "La teoria R-matrix per esteso, con esempi svolti (in inglese)",
       glossary: "Le parole dell'atlante, in linguaggio semplice",
@@ -1376,7 +1376,7 @@ const it: Dictionary = {
         text: "Le reazioni nucleari che alimentano le stelle, sulla carta dei nuclidi.",
       },
       { href: "/research", label: "Ricerca", text: "Misure in laboratorio sotterraneo, teoria R-matrix e altro." },
-      { href: "/publications", label: "Pubblicazioni", text: "Articoli e atti di conferenze." },
+      { href: "/publications", label: "Pubblicazioni", text: "Articoli e atti di convegni." },
     ],
   },
 
@@ -1406,15 +1406,15 @@ const it: Dictionary = {
     figureCaption: (name: string, summary: string) =>
       `${name}. ${summary} Salendo si aggiunge un protone, andando a destra un neutrone.`,
     figureLink: "Guardalo nell'atlante",
-    selected: "Lavori scelti",
+    selected: "Una selezione di lavori",
     firstAuthor: "Primo autore",
     about: "Più nel dettaglio",
     // --- site (round 2) ---
     // --- site (round 3) ---: la legenda in parole semplici
     legendCapture: "viene catturato un protone",
     legendDecay: "decadimento β⁺: un protone diventa un neutrone",
-    legendClose: "entra un protone, esce un elio: di nuovo carbonio",
-    selectedPapers: "Articoli scelti",
+    legendClose: "entra un protone, esce un nucleo di elio: di nuovo carbonio",
+    selectedPapers: "Articoli principali",
     // --- site (round 4) ---
     rolesTitle: "Ruoli e riconoscimenti",
     rolesMore: "Tutto nel CV",
@@ -1464,7 +1464,7 @@ const it: Dictionary = {
     title: "Ricerca",
     description:
       "Misure di sezioni d'urto in laboratorio sotterraneo, valutazioni R-matrix, tracciamento dei raggi γ e schermaggio elettronico.",
-    lead: "Quattro programmi, tutti rivolti allo stesso problema: conoscere una sezione d'urto nucleare alle energie a cui la usano le stelle, e non solo dove arriva un fascio.",
+    lead: "Quattro programmi, tutti rivolti allo stesso problema: conoscere una sezione d'urto nucleare alle energie che contano nelle stelle, e non solo a quelle che un fascio riesce a raggiungere.",
     more: "Altro sul mio lavoro",
     publications: "Pubblicazioni",
     software: "Software",
@@ -1490,9 +1490,9 @@ const it: Dictionary = {
   publications: {
     title: "Pubblicazioni",
     description:
-      "Articoli su riviste con revisione paritaria e atti di conferenze di Jakub Skowronski in astrofisica nucleare sperimentale.",
+      "Articoli su riviste con revisione paritaria e atti di convegni di Jakub Skowronski in astrofisica nucleare sperimentale.",
     lead: (articles: number, proceedings: number, review: number) =>
-      `${articles} articoli su riviste con revisione paritaria e ${proceedings} contributi ad atti di conferenze${review ? `, più ${review} inviati o in revisione` : ""}. Una linea scura segna gli articoli di cui sono primo autore; una linea chiara gli altri miei articoli principali: quelli in cui sono tra i primi autori o autore corrispondente, e quelli in cui il mio ruolo è indicato accanto agli autori. I titoli sono riportati come pubblicati.`,
+      `${articles} articoli su riviste con revisione paritaria e ${proceedings} contributi ad atti di convegni${review ? `, più ${review} inviati o in revisione` : ""}. Una linea scura segna gli articoli di cui sono primo autore; una linea chiara gli altri miei articoli principali: quelli in cui sono tra i primi autori o autore corrispondente, e quelli in cui il mio ruolo è indicato accanto agli autori. I titoli sono riportati come pubblicati.`,
     sections: { article: "Articoli di ricerca", proceedings: "Atti di conferenze" },
     // --- site ---
     profiles: "Elenchi completi e aggiornati, con le citazioni:",
@@ -1510,7 +1510,7 @@ const it: Dictionary = {
     none: "Nessuna pubblicazione corrisponde a questo filtro.",
     // --- r7 site ---
     firstAuthorSummary: (articles: number, venues: string, proceedings: number, submitted: number) =>
-      `Primo autore: ${articles} ${articles === 1 ? "articolo" : "articoli"}${venues ? ` (${venues})` : ""}, ${proceedings} ${proceedings === 1 ? "contributo" : "contributi"} ad atti di conferenze${submitted ? ` e ${submitted} ${submitted === 1 ? "inviato" : "inviati"}` : ""}.`,
+      `Primo autore: ${articles} ${articles === 1 ? "articolo" : "articoli"}${venues ? ` (${venues})` : ""}, ${proceedings} ${proceedings === 1 ? "contributo" : "contributi"} ad atti di convegni${submitted ? ` e ${submitted} ${submitted === 1 ? "inviato" : "inviati"}` : ""}.`,
     firstAuthorTag: "Primo autore",
   },
 
@@ -1522,14 +1522,14 @@ const it: Dictionary = {
       "Curriculum vitae di Jakub Skowronski, astrofisico nucleare sperimentale: impieghi, formazione, esperienze di ricerca, premi, seminari e didattica.",
     publications: "Pubblicazioni",
     research: "Ricerca",
-    employment: "Impieghi",
+    employment: "Posizioni",
     education: "Formazione",
     researchExperience: "Esperienze di ricerca",
     projects: "Progetti",
     awards: "Premi e incarichi",
     invited: "Contributi su invito",
     organisation: "Organizzazione e comitati",
-    participation: "Partecipazioni scelte",
+    participation: "Altre partecipazioni (selezione)",
     teaching: "Didattica",
     supervision: "Supervisione",
     outreach: "Divulgazione",
@@ -1541,7 +1541,7 @@ const it: Dictionary = {
     title: "Note",
     description:
       "Note esplicative sulla teoria R-matrix: osservabili di polarizzazione, particelle identiche, raggio di canale, percorsi di reazione e tassi di reazione stellari.",
-    lead: "Pezzi di teoria R-matrix scritti per esteso: prima la fisica, poi un esempio svolto su una reazione reale. Pensate per chi vuole capire il meccanismo, e non solo usarlo.",
+    lead: "Argomenti di teoria R-matrix svolti per esteso: prima la fisica, poi un esempio svolto su una reazione reale. Pensate per chi vuole capire il meccanismo, e non solo usarlo.",
     seeBefore: "Per vedere il meccanismo all'opera, apri una delle ",
     seeEvaluations: "valutazioni R-matrix dal vivo",
     seeMiddle: "; per sapere che cosa fanno le reazioni nelle stelle, consulta l'",

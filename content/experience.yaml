@@ -63,7 +63,7 @@ research:
       - Design and implementation of new features, the GUI and the documentation
       - Support and training for the international user community across academia, national laboratories and the IAEA
     bullets_it:
-      - Responsabile del codice R-matrix di riferimento usato in tutto il mondo dalle comunità dell'astrofisica nucleare, della valutazione dei dati nucleari della IAEA e dell'analisi dei materiali
+      - Responsabile del codice R-matrix di riferimento usato in tutto il mondo dalle comunità dell'astrofisica nucleare, della valutazione dei dati nucleari dell'IAEA e dell'analisi dei materiali
       - Progettazione e realizzazione di nuove funzionalità, dell'interfaccia grafica e della documentazione
       - Supporto e formazione per la comunità internazionale degli utenti, in università, laboratori nazionali e alla IAEA
 
@@ -120,7 +120,7 @@ research:
     bullets:
       - Characterization of the GALTRACE silicon detector with neural networks
     bullets_it:
-      - Caratterizzazione del rivelatore al silicio GALTRACE con tecniche a reti neurali
+      - Caratterizzazione del rivelatore al silicio GALTRACE mediante reti neurali
 
 projects:
   - period: May 2026 – May 2031
@@ -152,13 +152,13 @@ awards:
   - period: Oct 2024 – present
     period_it: ott 2024 — oggi
     title: IAEA INDEN-LE Committee
-    title_it: Comitato INDEN-LE della IAEA
+    title_it: Comitato INDEN-LE dell'IAEA
     detail: >-
       International Atomic Energy Agency, Vienna — invited member of the
       committee of R-matrix experts that evaluates and extrapolates
       light-element nuclear cross sections for research and industry
     detail_it: >-
-      Agenzia Internazionale per l'Energia Atomica, Vienna — membro su invito
+      Agenzia internazionale per l'energia atomica (IAEA), Vienna — membro su invito
       del comitato IAEA di esperti R-matrix che valuta ed estrapola le sezioni
       d'urto nucleari degli elementi leggeri per la ricerca e le applicazioni
       industriali
@@ -186,12 +186,12 @@ supervision:
     title: Master's theses
     title_it: Tesi magistrali
     detail: Co-supervision of T. Tasnim (2025), M. M. S. Nusir (2024), A. Vigolo (2023), Università degli Studi di Padova
-    detail_it: Co-supervisione di T. Tasnim (2025), M. M. S. Nusir (2024), A. Vigolo (2023), Università degli Studi di Padova
+    detail_it: Correlatore delle tesi di T. Tasnim (2025), M. M. S. Nusir (2024), A. Vigolo (2023), Università degli Studi di Padova
   - period: 2023–2025
     title: Bachelor's theses
     title_it: Tesi triennali
     detail: Co-supervision of A. Lorenzetto, T. Prins (2025), M. Ponchio, E. D'Amore (2024), L. Cavezza (2023), Università degli Studi di Padova
-    detail_it: Co-supervisione di A. Lorenzetto, T. Prins (2025), M. Ponchio, E. D'Amore (2024), L. Cavezza (2023), Università degli Studi di Padova
+    detail_it: Correlatore delle tesi di A. Lorenzetto, T. Prins (2025), M. Ponchio, E. D'Amore (2024), L. Cavezza (2023), Università degli Studi di Padova
 
 outreach:
   - period: 2024

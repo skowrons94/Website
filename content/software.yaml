@@ -89,12 +89,12 @@ software:
       - >-
         lunasrim è una reimplementazione di SRIM-2013 in Python 3: TRIM, il
         trasporto Monte Carlo degli ioni nella materia, e il modulo SR, che
-        tabula poteri frenanti, range e straggling. Entrambi sono stati ricavati
-        per reverse engineering da TRIM.exe e SRModule.exe, e lunasrim li
+        tabula poteri frenanti, percorsi (range) e dispersione in energia
+        (straggling). Entrambi sono stati ricostruiti per ingegneria inversa da TRIM.exe e SRModule.exe, e lunasrim li
         riproduce cifra per cifra, con gli stessi numeri casuali, la stessa
         aritmetica e gli stessi file di output.
       - >-
-        Non richiede Windows, wine o docker, e non ha dipendenze obbligatorie.
+        Non richiede Windows, Wine o Docker, e non ha dipendenze obbligatorie.
         Un'applicazione web lo esegue nel browser.
     uses:
       - Stopping-power and range tables for any ion in any element or compound
@@ -154,7 +154,7 @@ software:
         serve, script e materiale di riferimento; le skill di analisi includono
         una demo offline che deve stampare PASS.
       - >-
-        Credo che l'IA entrerà presto nel modo di fare ricerca: permette a chi
+        Credo che l'IA diventerà presto parte del lavoro scientifico: permette a chi
         fa ricerca di dedicare più tempo alla fisica e di usare strumenti ben
         oltre il proprio campo. Queste skill sono il modo in cui la uso,
         condivise perché possano usarle anche altri.
@@ -167,7 +167,7 @@ software:
     uses_it:
       - Rese, forme dei picchi, efficienza di rivelazione e correzioni di somma, profili dei bersagli
       - Simulazioni Geant4 di apparati per raggi γ in laboratorio sotterraneo e di AGATA
-      - Vite medie di femtosecondi con il metodo dell'attenuazione dello spostamento Doppler (DSAM)
+      - Vite medie dell'ordine del femtosecondo con il metodo dell'attenuazione dello spostamento Doppler (DSAM)
       - Calcoli, fit e tassi di reazione R-matrix con AZURE2
       - "Scrittura e comunicazione: prosa semplice, figure nello stile di Physical Review C e slide"
     links:
@@ -190,7 +190,7 @@ software:
         - { name: target-analysis, text: "Target profiles, stoichiometry and degradation from excitation curves; SRIM tables", text_it: "Profili dei bersagli, stechiometria e degrado dalle curve di eccitazione; tabelle SRIM" }
         - { name: underground-gamma-simulation, text: "Geant4 and ROOT simulations of γ-ray detection set-ups at underground accelerators", text_it: "Simulazioni Geant4 e ROOT di apparati di rivelazione γ presso acceleratori sotterranei" }
         - { name: agata-simulation, text: "The AGATA Geant4 code: custom geometries, external cascades, pulse-shape analysis emulation, summing and tracking", text_it: "Il codice Geant4 di AGATA: geometrie personalizzate, cascate esterne, emulazione dell'analisi della forma degli impulsi, somma e tracciamento" }
-        - { name: delta-beta-dsam, text: "Femtosecond lifetimes with the Doppler-velocity (Δβ) DSAM method", text_it: "Vite medie di femtosecondi con il metodo DSAM a velocità Doppler (Δβ)" }
+        - { name: delta-beta-dsam, text: "Femtosecond lifetimes with the Doppler-velocity (Δβ) DSAM method", text_it: "Vite medie dell'ordine del femtosecondo con il metodo DSAM a velocità Doppler (Δβ)" }
         - { name: azure2, text: "AZURE2 and pyazr R-matrix calculations, fits, decompositions, extrapolations and rates", text_it: "Calcoli, fit, decomposizioni, estrapolazioni e tassi di reazione R-matrix con AZURE2 e pyazr" }
         - { name: nuclear-research-project, text: "Layout, provenance and reports of reproducible feasibility studies", text_it: "Struttura, tracciabilità e rapporti di studi di fattibilità riproducibili" }
         - { name: clear-experimental-writing, group: Writing and communication, group_it: Scrittura e comunicazione, text: "Experimental manuscripts, abstracts, captions and referee replies", text_it: "Manoscritti sperimentali, abstract, didascalie e risposte ai referee" }
