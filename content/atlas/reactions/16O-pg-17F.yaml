@@ -34,22 +34,26 @@ details: >-
   model. Solar Fusion II adopts S(0) = 10.6 ± 0.8 keV b from model
   calculations normalized to the data of 1973 and 1997. A 2008 evaluation,
   which corrected the data sets since 1958 for coincidence summing and
-  stopping powers, gives the rate with an uncertainty of about 7%.
+  stopping powers, gives the rate with an uncertainty of about 7%. A Bayesian
+  fit of all reliable data, with a potential model whose scaling parameters
+  are the asymptotic normalization coefficients of the two bound states,
+  halves that uncertainty to ±4.2% (Iliadis et al. 2022).
 status: well-known
 status_note: >-
   A non-resonant direct-capture reaction whose energy dependence is fixed by
-  theory; the rate is known to about 7%, limited by the normalization of the
-  surface data.
+  theory; a Bayesian analysis (2022) gives the rate to ±4.2%, about half the
+  earlier 7%, limited by the normalization of the surface data.
 status_note_it: >-
   Una reazione di cattura diretta non risonante il cui andamento in energia è
-  fissato dalla teoria; il tasso è noto a circa il 7%, limitato dalla
-  normalizzazione dei dati in superficie.
+  fissato dalla teoria; un'analisi bayesiana (2022) dà il tasso entro il
+  ±4,2%, circa metà del 7% precedente, limitato dalla normalizzazione dei dati
+  in superficie.
 status_plain: >-
-  Known to about 7%: how the cross section changes with energy is well
+  Known to about 4%: how the cross section changes with energy is well
   understood from theory, and the remaining uncertainty is in the overall
   scale of the measurements.
 status_plain_it: >-
-  Nota a circa il 7%: come la sezione d'urto varia con l'energia è ben
+  Nota a circa il 4%: come la sezione d'urto varia con l'energia è ben
   compreso dalla teoria, e l'incertezza residua riguarda la scala
   complessiva delle misure.
 methods: [direct-surface, theory]
@@ -62,7 +66,18 @@ measurements:
       decreases, which the authors explained by the loose binding of the
       proton in the 1/2⁺ state.
     refs: [morlock1997]
-evaluations: [adelberger2011, iliadis2008, acharya2025]
+  - year: 2022
+    method: theory
+    energy: "all reliable data sets, refitted"
+    energy_it: "tutte le serie di dati affidabili, in un nuovo fit"
+    note: >-
+      All reliable cross sections fitted with a single-particle potential
+      model, the ANCs of the ¹⁷F ground and first excited states used as
+      scaling parameters, with statistical and systematic uncertainties
+      treated separately; the rate uncertainty is ±4.2%, about half of the
+      previously reported 7.5%.
+    refs: [iliadis2022]
+evaluations: [adelberger2011, iliadis2008, acharya2025, iliadis2022]
 open_questions:
   - Direct data closer to the Gamow window, to test the predicted rise of the S-factor at low energy.
 open_questions_it:
