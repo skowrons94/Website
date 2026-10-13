@@ -67,6 +67,15 @@ export function rootMetadata(lang: Lang): Metadata {
   }
 }
 
+/** What a page is, for its Open Graph card (`og:type` and the article's dates). */
+export type PageKind = {
+  type?: "website" | "article" | "profile"
+  /** ISO date, for an article. */
+  publishedTime?: string
+  modifiedTime?: string
+  section?: string
+}
+
 /**
  * Per-page metadata with matching Open Graph and Twitter cards.
  *
@@ -75,9 +84,44 @@ export function rootMetadata(lang: Lang): Metadata {
  * shared link would preview as the landing page. `title` is the bare page
  * title; the site name is appended here, as the root template does for <title>.
  */
-export function pageMetadata(title: string, description: string, lang: Lang = "en"): Metadata {
+/**
+ * A description short enough for a search result or a link preview, which
+ * show about 160–200 characters: whole sentences up to `max`, else words.
+ */
+export function clipDescription(text: string, max = 220): string {
+  const s = text.replace(/\s+/g, " ").trim()
+  if (s.length <= max) return s
+  const sentences = s.match(/[^.!?]+[.!?]+(\s|$)/g) ?? []
+  let out = ""
+  for (const sentence of sentences) {
+    if ((out + sentence).trim().length > max) break
+    out += sentence
+  }
+  if (out.trim().length >= 80) return out.trim()
+  const cut = s.slice(0, max - 1)
+  return `${cut.slice(0, cut.lastIndexOf(" ")).replace(/[,;:\s]+$/, "")}…`
+}
+
+export function pageMetadata(title: string, fullDescription: string, lang: Lang = "en", kind: PageKind = {}): Metadata {
+  // --- find ---: long summaries (an atlas entry, a curiosity) are clipped.
+  const description = clipDescription(fullDescription)
   const { name } = getProfile(lang)
   const full = `${title} · ${name}`
+  // --- find ---: the card's type follows the page (a note is an article, the
+  // CV a profile); an article carries its date and author.
+  const type = kind.type ?? "website"
+  const typed =
+    type === "article"
+      ? {
+          type,
+          ...(kind.publishedTime ? { publishedTime: kind.publishedTime } : {}),
+          ...(kind.modifiedTime ? { modifiedTime: kind.modifiedTime } : {}),
+          authors: [name],
+          ...(kind.section ? { section: kind.section } : {}),
+        }
+      : type === "profile"
+        ? { type, firstName: name.split(/\s+/)[0], lastName: name.split(/\s+/).slice(1).join(" ") }
+        : { type }
   return {
     title,
     description,
@@ -85,7 +129,7 @@ export function pageMetadata(title: string, description: string, lang: Lang = "e
       title: full,
       description,
       siteName: name,
-      type: "website",
+      ...typed,
       locale: OG_LOCALE[lang],
       alternateLocale: OG_LOCALE[lang === "en" ? "it" : "en"],
       images: ogImages(full),
