@@ -38,12 +38,16 @@ jobs:
         uses: actions/configure-pages@v5
         continue-on-error: true
 
-      - name: Base path
+      # SITE_URL: the origin the site is served from, for the canonical
+      # addresses, the structured data, the sitemap and the feeds (lib/site-url.ts).
+      - name: Base path and address
         run: |
           if [ "${{ steps.pages.outcome }}" = success ]; then
             echo "BASE_PATH=${{ steps.pages.outputs.base_path }}" >> "$GITHUB_ENV"
+            echo "SITE_URL=${{ steps.pages.outputs.origin }}" >> "$GITHUB_ENV"
           else
             echo "BASE_PATH=/${{ github.event.repository.name }}" >> "$GITHUB_ENV"
+            echo "SITE_URL=https://${{ github.repository_owner }}.github.io" >> "$GITHUB_ENV"
           fi
 
       - uses: actions/setup-node@v4
@@ -167,6 +171,13 @@ jobs:
           STATIC_EXPORT: "1"
           API_BASE: browser
         run: npm run build
+
+      # Every page's canonical address, hreflang, Open Graph card and JSON-LD,
+      # the sitemap and the feeds (scripts/seo-test.mjs).
+      - name: Structured data, sitemap and feeds
+        env:
+          STATIC_EXPORT: "1"
+        run: npm run test:seo
 
       - uses: actions/upload-pages-artifact@v3
         with:

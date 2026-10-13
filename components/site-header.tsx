@@ -177,6 +177,8 @@ export function SiteHeader({
     item("/atlas/rates/curiosities", t.curiosities, t.curiositiesDescription),
     // --- data public ---
     item("/data", t.data, t.dataDescription),
+    // --- find ---
+    item("/learn/exercises", t.exercises, t.exercisesDescription),
     item("/about", t.about, t.aboutDescription),
   ]
   const bar: Item[] = [research, atlas, evaluations, publications, software, cv]

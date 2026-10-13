@@ -195,6 +195,9 @@ const PAGES = [
   { href: "/data/path/sodium-in-salt", w: -6, en: ["Where does the sodium in salt come from?", "A guided path: from neon-22 to sodium-23"], it: ["Da dove viene il sodio del sale?", "Un percorso guidato: dal neon-22 al sodio-23"], k: "guided path percorso guidato sodium sodio salt sale 22Ne(p,g) NeNa globular clusters ammassi globulari" },
   { href: "/data/path/iron-to-lead", w: -6, en: ["From iron to lead", "A guided path: the neutrons of the s-process"], it: ["Dal ferro al piombo", "Un percorso guidato: i neutroni del processo s"], k: "guided path percorso guidato s-process processo s neutron source sorgente di neutroni 13C(a,n)" },
   { href: "/atlas/rates", en: ["Reaction rates", "How fast each reaction runs, and what if it were different"], it: ["Tassi di reazione", "Quanto è veloce ogni reazione, e se fosse diversa"], k: "reaction rates tassi di reazione rate tasso reaclib pynucastro what if sensitivity sensibilità bottleneck collo di bottiglia waiting time tempo di attesa lifetime network rete pp CNO NeNa MgAl" },
+  // --- find ---
+  { href: "/learn/exercises", en: ["Exercises", "Three problems to solve with the atlas, the rates and an evaluation"], it: ["Esercizi", "Tre problemi da risolvere con l'atlante, i tassi e una valutazione"], k: "exercises esercizi problems problemi homework compiti students studenti teaching didattica solution soluzione Gamow peak picco di Gamow underground sotterraneo LUNA background fondo muons muoni R-matrix level livello 13N 14N" },
+  { href: "/news", en: ["News", "What is new on the site, with an Atom feed"], it: ["Novità", "Le novità del sito, con un feed Atom"], k: "news novità changelog what's new updates aggiornamenti feed rss atom" },
 ]
 
 /* -- reactions: every way of writing one --------------------------------- */

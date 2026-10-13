@@ -6,6 +6,8 @@ import { getProfile, getPublications, isFirstAuthor, type Publication } from "@/
 import { Sci } from "@/components/sci"
 import { dict, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
+import { PageLd } from "@/components/json-ld"
+import { publicationsLd } from "@/lib/structured-data"
 
 export const publicationsMetadata = (lang: Lang): Metadata =>
   pageMetadata(dict(lang).publications.title, dict(lang).publications.description, lang)
@@ -188,6 +190,8 @@ export function PublicationsPage({ lang }: { lang: Lang }) {
 
   return (
     <Container wide>
+      {/* --- find --- */}
+      <PageLd lang={lang} trail={[{ name: dict(lang).nav.publications, path: "/publications" }]} nodes={publicationsLd(lang)} />
       <PageHeader title={t.title} lead={t.lead(count("article"), count("proceedings"), review.length)} />
       <p data-first-summary="" className="-mt-6 mb-8 max-w-3xl border-l-2 border-foreground/80 pl-4 text-pretty text-[0.95rem]">
         <Sci>{firstAuthorLine(all, lang)}</Sci>

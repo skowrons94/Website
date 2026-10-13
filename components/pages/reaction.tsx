@@ -39,6 +39,7 @@ import { compoundNuclei } from "@/lib/data/build"
 import { fill } from "@/lib/data/fill"
 import { compoundOf, displayNuc } from "@/lib/data/nuclide"
 import { atlasPanel } from "@/lib/data/panel"
+import { PageLd } from "@/components/json-ld"
 
 export const reactionParams = () => getReactionIds().map((id) => ({ id }))
 
@@ -443,6 +444,8 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-14 [overflow-wrap:anywhere] sm:px-8 xl:max-w-7xl">
+      {/* --- find --- */}
+      <PageLd lang={lang} trail={[{ name: dict(lang).nav.atlas, path: "/atlas" }, { name: r.label, path: `/atlas/${r.id}` }]} />
       <Link
         href={to(family ? familyHref(family.id) : "/atlas")}
         className="-my-2.5 inline-flex py-2.5 items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"

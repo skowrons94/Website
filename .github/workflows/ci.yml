@@ -51,5 +51,7 @@ jobs:
         run: npm run test:rates
       - name: Evaluation checks and add-evaluation (pytest)
         run: cd server && python -m pytest -q tests/test_check.py
+      - name: ORCID/Crossref check against its recorded answers
+        run: npm run test:pubs
       - name: Data explorer pipeline (pytest)
         run: python -m pytest -q scripts/data/tests

@@ -1,0 +1,53 @@
+{
+  "_fixture": "Synthetic answer in the shape of the ORCID public API v3.0 GET /v3.0/{orcid}/works (application/json), written by hand for scripts/pubs/test.mjs because the sandbox it was written in cannot reach pub.orcid.org. The 10.5555 DOIs are Crossref's test prefix and do not exist; the differences from publications.yaml are deliberate.",
+  "last-modified-date": { "value": 1760313600000 },
+  "group": [
+    {
+      "last-modified-date": { "value": 1760313600000 },
+      "external-ids": { "external-id": [ { "external-id-type": "doi", "external-id-value": "10.1103/PhysRevLett.131.162701", "external-id-normalized": { "value": "10.1103/physrevlett.131.162701", "transient": true }, "external-id-url": { "value": "https://doi.org/10.1103/PhysRevLett.131.162701" }, "external-id-relationship": "self" } ] },
+      "work-summary": [ {
+        "put-code": 1001, "path": "/0000-0001-7292-6353/work/1001", "type": "journal-article", "visibility": "public",
+        "title": { "title": { "value": "Proton-Capture Rates on Carbon Isotopes and Their Impact on the Astrophysical 12C/13C Ratio" }, "subtitle": null, "translated-title": null },
+        "external-ids": { "external-id": [ { "external-id-type": "doi", "external-id-value": "10.1103/PhysRevLett.131.162701", "external-id-relationship": "self" } ] },
+        "publication-date": { "year": { "value": "2023" }, "month": { "value": "10" }, "day": { "value": "16" } },
+        "journal-title": { "value": "Physical Review Letters" }
+      } ]
+    },
+    {
+      "external-ids": { "external-id": [ { "external-id-type": "doi", "external-id-value": "10.1103/PhysRevC.107.L062801", "external-id-relationship": "self" } ] },
+      "work-summary": [ {
+        "put-code": 1002, "type": "journal-article",
+        "title": { "title": { "value": "Improved S factor of the 12C(p,γ)13N reaction at E=320–620 keV and the 422 keV resonance" } },
+        "publication-date": { "year": { "value": "2023" } },
+        "journal-title": { "value": "Physical Review C" }
+      } ]
+    },
+    {
+      "external-ids": { "external-id": [ { "external-id-type": "doi", "external-id-value": "10.1103/PhysRevC.111.035802", "external-id-relationship": "self" } ] },
+      "work-summary": [ {
+        "put-code": 1003, "type": "journal-article",
+        "title": { "title": { "value": "Comparative analysis of R-matrix fitting: 12C(p,γ)13N as a test case" } },
+        "publication-date": { "year": { "value": "2025" } },
+        "journal-title": { "value": "Physical Review C" }
+      } ]
+    },
+    {
+      "external-ids": { "external-id": [ { "external-id-type": "doi", "external-id-value": "10.5555/test.new.2026", "external-id-relationship": "self" } ] },
+      "work-summary": [ {
+        "put-code": 1004, "type": "journal-article",
+        "title": { "title": { "value": "A fixture paper that publications.yaml does not have" } },
+        "publication-date": { "year": { "value": "2026" } },
+        "journal-title": { "value": "Journal of Test Fixtures" }
+      } ]
+    },
+    {
+      "external-ids": { "external-id": [ { "external-id-type": "other-id", "external-id-value": "conference-abstract-17", "external-id-relationship": "self" } ] },
+      "work-summary": [ {
+        "put-code": 1005, "type": "conference-abstract",
+        "title": { "title": { "value": "A work with no DOI, which the check cannot compare and leaves alone" } },
+        "publication-date": { "year": { "value": "2024" } }
+      } ]
+    }
+  ],
+  "path": "/0000-0001-7292-6353/works"
+}

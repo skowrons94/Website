@@ -6,6 +6,7 @@ import { formatDate, getAllNotes } from "@/lib/content"
 import { Sci } from "@/components/sci"
 import { dict, localePath, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
+import { PageLd } from "@/components/json-ld"
 
 export const notesMetadata = (lang: Lang): Metadata =>
   pageMetadata(dict(lang).notes.title, dict(lang).notes.description, lang)
@@ -22,6 +23,8 @@ export function NotesPage({ lang }: { lang: Lang }) {
 
   return (
     <Container>
+      {/* --- find --- */}
+      <PageLd lang={lang} trail={[{ name: dict(lang).nav.notes, path: "/notes" }]} />
       <PageHeader
         title={t.title}
         lead={t.lead}

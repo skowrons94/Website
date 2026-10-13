@@ -13,9 +13,11 @@ import {
 import { Sci } from "@/components/sci"
 import { dict, localePath, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
+import { PageLd } from "@/components/json-ld"
+import { personLd } from "@/lib/structured-data"
 
 export const cvMetadata = (lang: Lang): Metadata =>
-  pageMetadata(dict(lang).cv.metaTitle, dict(lang).cv.description, lang)
+  pageMetadata(dict(lang).cv.metaTitle, dict(lang).cv.description, lang, { type: "profile" })
 
 function Section({
   id,
@@ -128,6 +130,8 @@ export function CVPage({ lang }: { lang: Lang }) {
 
   return (
     <Container wide>
+      {/* --- find --- */}
+      <PageLd lang={lang} trail={[{ name: dict(lang).nav.cv, path: "/cv" }]} nodes={[{ "@type": "ProfilePage", mainEntity: personLd(lang) }]} />
       <div className="cv-page">
       {/* On paper the page has no header or footer, so the name and how to
           reach him go on top. */}

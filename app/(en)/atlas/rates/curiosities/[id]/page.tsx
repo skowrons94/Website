@@ -1,4 +1,5 @@
 import { RatesCuriosityPage, curiosityIds, curiosityMetadata } from "@/components/pages/rates-curiosities"
+import { RouteLd } from "@/components/route-ld"
 
 export const generateStaticParams = curiosityIds
 
@@ -11,5 +12,11 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function Page({ params }: Props) {
-  return <RatesCuriosityPage id={(await params).id} lang={"en"} />
+  return (
+    <>
+      <RatesCuriosityPage id={(await params).id} lang={"en"} />
+      {/* --- find --- */}
+      <RouteLd lang={"en"} page="curiosity" id={(await params).id} />
+    </>
+  )
 }

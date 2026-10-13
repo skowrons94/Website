@@ -12,6 +12,8 @@ import { SiteDoiLine } from "@/components/site-doi"
 import { getAtlas, getMapData } from "@/lib/atlas"
 import { dict, localePath, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
+import { PageLd } from "@/components/json-ld"
+import { atlasDatasetLd } from "@/lib/structured-data"
 
 export const atlasMetadata = (lang: Lang): Metadata =>
   pageMetadata(dict(lang).atlas.name, dict(lang).atlas.description, lang)
@@ -114,6 +116,8 @@ export function AtlasPage({ lang }: { lang: Lang }) {
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-14 [overflow-wrap:anywhere] sm:px-8 xl:max-w-7xl">
+      {/* --- find --- */}
+      <PageLd lang={lang} trail={[{ name: dict(lang).nav.atlas, path: "/atlas" }]} nodes={[atlasDatasetLd(lang)]} />
       {/* the map is some thirty Tab stops down: a way past them */}
       <a
         href="#map"

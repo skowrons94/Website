@@ -20,6 +20,10 @@ import { getSummary, group } from "@/lib/data/public"
 import { dict, localePath, type Lang } from "@/lib/i18n"
 import { LUNA_RATES_PUBLIC } from "@/lib/rates/features"
 import { CURIOSITIES } from "@/lib/rates/curiosities"
+// --- find ---
+import { JsonLd } from "@/components/json-ld"
+import { NewsStrip } from "@/components/news-strip"
+import { personLd, websiteLd } from "@/lib/structured-data"
 
 /**
  * A paragraph with `[text](/path)` links, the only markup the profile's lead
@@ -210,6 +214,8 @@ export function HomePage({ lang }: { lang: Lang }) {
 
   return (
     <div className="mx-auto max-w-6xl px-5 sm:px-8 xl:max-w-7xl">
+      {/* --- find --- */}
+      <JsonLd nodes={[websiteLd(lang), personLd(lang)]} />
       {/* -- hero ---------------------------------------------------------- */}
       {/* Who, one plain paragraph and the two ways in, for any reader; the
           picture beside it from lg (below it on a phone, so the buttons stay
@@ -325,6 +331,9 @@ export function HomePage({ lang }: { lang: Lang }) {
           .
         </p>
       </section>
+
+      {/* --- find ---: the latest news, small */}
+      <NewsStrip lang={lang} />
 
       {/* -- roles and recognition ----------------------------------------- */}
       {/* Under the community resources, small: the responsibilities for a

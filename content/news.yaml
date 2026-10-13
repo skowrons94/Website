@@ -1,0 +1,123 @@
+# What is new on the site: /news (and /it/news), the latest three on the home
+# page, and the Atom feed at /news/feed.xml (/it/news/feed.xml in Italian).
+#
+# Add an item at the top (the list is shown newest first whatever the order
+# here, but newest-on-top keeps the file easy to read):
+#
+#   - date: 2026-10-12          # YYYY-MM-DD, the day it went on the site
+#     text: >-                  # one or two plain sentences; the first one is
+#       What changed, and       # the feed entry's title. Nuclide notation
+#       why it is useful.       # (¹²C) may be typed as Unicode, as elsewhere.
+#     text_it: >-               # the same in Italian; without it the Italian
+#       Che cosa è cambiato.    # page shows the English
+#     link: /atlas/rates        # optional: a page of the site (English path,
+#                               # localized on /it) or a full https:// address
+#     commit: 90727fb           # optional: where the date comes from
+#
+# Only things that are on the site, dated by when they arrived there: the
+# dates below are those of the commits that added them (git log).
+# `npm run test:seo` (after a build) and `npm run build` check the file: a
+# date must be a real YYYY-MM-DD, every item needs `text`, and a link to a
+# page of the site must be a page that exists.
+
+news:
+  - date: 2026-10-12
+    commit: eff78d8
+    link: /atlas/rates/curiosities
+    text: >-
+      Rate curiosities: what would change if a single reaction ran twice as
+      fast, in short sentences whose numbers come from the rate explorer's own
+      calculations.
+    text_it: >-
+      Curiosità sui tassi: che cosa cambierebbe se una sola reazione fosse due
+      volte più veloce, in frasi brevi i cui numeri vengono dai calcoli
+      dell'esploratore dei tassi.
+
+  - date: 2026-10-12
+    commit: 66e41f9
+    link: /about
+    text: >-
+      About this site: how it was made and checked, where its data come from,
+      its licences, and how to cite it.
+    text_it: >-
+      Informazioni sul sito: come è stato fatto e verificato, da dove vengono i
+      dati, le licenze e come citarlo.
+
+  - date: 2026-10-12
+    commit: 90727fb
+    link: /atlas/rates
+    text: >-
+      Reaction-rate explorer: the rates of the pp chains, the CNO cycles and
+      the NeNa and MgAl cycles plotted against temperature, how long a nucleus
+      waits before each reaction, and what a burn does when one rate is
+      changed. It runs in the browser.
+    text_it: >-
+      Esploratore dei tassi di reazione: i tassi delle catene pp, dei cicli
+      CNO e dei cicli NeNa e MgAl in funzione della temperatura, quanto aspetta
+      un nucleo prima di ogni reazione, e che cosa fa una combustione quando si
+      cambia un tasso. Funziona nel browser.
+
+  - date: 2026-10-12
+    commit: 43aa3f0
+    text: >-
+      Site search: press / or Ctrl-K (⌘-K on a Mac) on any page to find a
+      reaction, a glossary term, a paper or a page.
+    text_it: >-
+      Ricerca nel sito: premi / o Ctrl-K (⌘-K su Mac) in qualunque pagina per
+      trovare una reazione, un termine del glossario, un articolo o una pagina.
+
+  - date: 2026-10-12
+    commit: 653e4f6
+    link: /atlas/s-process
+    text: >-
+      The s-process: how stars make about half of the elements heavier than
+      iron, one neutron capture at a time, with the path drawn on the chart of
+      nuclides and its branch points.
+    text_it: >-
+      Il processo s: come le stelle producono circa metà degli elementi più
+      pesanti del ferro, una cattura di neutroni alla volta, con il percorso
+      disegnato sulla carta dei nuclidi e i suoi punti di diramazione.
+
+  - date: 2026-10-12
+    commit: 409b0e2
+    link: /glossary
+    text: >-
+      A glossary of the words the atlas uses, from Gamow window to reduced
+      width, in plain language.
+    text_it: >-
+      Un glossario delle parole usate nell'atlante, dalla finestra di Gamow
+      alla larghezza ridotta, in linguaggio semplice.
+
+  - date: 2026-10-11
+    commit: f2f885a
+    link: /it
+    text: >-
+      The site in Italian: every page also exists under /it. The notes on
+      R-matrix theory stay in English.
+    text_it: >-
+      Il sito in italiano: ogni pagina esiste anche sotto /it. Le note sulla
+      teoria R-matrix restano in inglese.
+
+  - date: 2026-10-11
+    commit: 724298a
+    link: /evaluations
+    text: >-
+      The R-matrix evaluations can now run entirely in the browser: in the
+      static build of this site AZURE2 is compiled to WebAssembly and
+      calculates on the reader's own computer, with no server.
+    text_it: >-
+      Le valutazioni R-matrix ora possono funzionare interamente nel browser:
+      nella versione statica del sito AZURE2 è compilato in WebAssembly e
+      calcola sul computer di chi legge, senza server.
+
+  - date: 2026-10-11
+    commit: cb87f00
+    link: /atlas
+    text: >-
+      The reaction atlas: the nuclear reactions that power stars and make the
+      elements, on the chart of nuclides, each with how it has been measured
+      and what is still uncertain.
+    text_it: >-
+      L'atlante delle reazioni: le reazioni nucleari che alimentano le stelle e
+      producono gli elementi, sulla carta dei nuclidi, ognuna con il modo in cui
+      è stata misurata e che cosa resta incerto.

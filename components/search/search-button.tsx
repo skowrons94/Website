@@ -25,7 +25,23 @@ function editing(target: EventTarget | null): boolean {
  */
 export function SearchButton({ lang, strings }: { lang: Lang; strings: ChromeStrings["search"] }) {
   const [open, setOpen] = useState(false)
+  const [initialQuery, setInitialQuery] = useState("")
   const button = useRef<HTMLButtonElement>(null)
+
+  // --- find ---: an address with ?q=… (the WebSite SearchAction in the home
+  // page's structured data) opens search with that query typed in.
+  useEffect(() => {
+    let q: string | null = null
+    try {
+      q = new URLSearchParams(window.location.search).get("q")
+    } catch {
+      q = null
+    }
+    if (q && q.trim()) {
+      setInitialQuery(q.trim().slice(0, 200))
+      setOpen(true)
+    }
+  }, [])
 
   const warm = useCallback(() => {
     loadPalette().then((m) => m.loadIndex(lang)).catch(() => {})
@@ -75,8 +91,10 @@ export function SearchButton({ lang, strings }: { lang: Lang; strings: ChromeStr
         <CommandPalette
           lang={lang}
           strings={strings}
+          initialQuery={initialQuery}
           onClose={() => {
             setOpen(false)
+            setInitialQuery("")
             // Back where search was opened from: the button, if that was it.
             requestAnimationFrame(() => {
               if (document.activeElement === document.body) button.current?.focus()

@@ -14,13 +14,15 @@ import { Breadcrumbs } from "@/components/breadcrumbs"
 import { Sci } from "@/components/sci"
 import { dict, localePath, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
+import { PageLd } from "@/components/json-ld"
+import { noteLd } from "@/lib/structured-data"
 
 export const noteParams = () => getNoteSlugs().map((slug) => ({ slug }))
 
 export async function noteMetadata(slug: string, lang: Lang): Promise<Metadata> {
   if (!getNoteSlugs().includes(slug)) return {}
   const note = await getNote(slug)
-  return pageMetadata(note.title, note.summary, lang)
+  return pageMetadata(note.title, note.summary, lang, { type: "article", publishedTime: note.date, section: note.topic })
 }
 
 export async function NotePage({ slug, lang }: { slug: string; lang: Lang }) {
@@ -47,6 +49,8 @@ export async function NotePage({ slug, lang }: { slug: string; lang: Lang }) {
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 xl:max-w-7xl">
+      {/* --- find --- */}
+      <PageLd lang={lang} trail={[{ name: nav.notes, path: "/notes" }, { name: note.title, path: `/notes/${slug}` }]} nodes={[noteLd({ ...note, slug }, lang)]} />
       <Breadcrumbs
         label={nav.breadcrumb}
         items={[

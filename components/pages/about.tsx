@@ -4,10 +4,11 @@ import Link from "next/link"
 import { Container, PageHeader } from "@/components/page-header"
 import { getAtlas } from "@/lib/atlas"
 import { getEvaluationCounts, getProfile } from "@/lib/content"
-import { localePath, type Lang } from "@/lib/i18n"
+import { dict, localePath, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
 import { issueUrl, REPO } from "@/lib/repo"
 import { siteRelease } from "@/lib/site-release"
+import { PageLd } from "@/components/json-ld"
 
 /*
  * /about: how the site was made (with AI assistance, under the owner's
@@ -407,6 +408,8 @@ export function AboutPage({ lang }: { lang: Lang }) {
 
   return (
     <Container>
+      {/* --- find --- */}
+      <PageLd lang={lang} trail={[{ name: dict(lang).nav.about, path: "/about" }]} />
       <PageHeader title={t.title} lead={t.lead} />
 
       <nav aria-label={t.contents} className="-mt-6 mb-12 flex flex-wrap gap-x-6 gap-y-1 text-sm">

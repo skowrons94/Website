@@ -7,6 +7,7 @@ import { getOutlook, getResearch } from "@/lib/content"
 import { Sci } from "@/components/sci"
 import { dict, localePath, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
+import { PageLd } from "@/components/json-ld"
 
 export const researchMetadata = (lang: Lang): Metadata =>
   pageMetadata(dict(lang).research.title, dict(lang).research.description, lang)
@@ -19,6 +20,8 @@ export function ResearchPage({ lang }: { lang: Lang }) {
 
   return (
     <Container>
+      {/* --- find --- */}
+      <PageLd lang={lang} trail={[{ name: dict(lang).nav.research, path: "/research" }]} />
       <PageHeader
         title={t.title}
         lead={t.lead}

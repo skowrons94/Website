@@ -1,0 +1,15 @@
+{
+  "_fixture": "Synthetic answer in the shape of the Crossref REST API GET /works/{doi}, for scripts/pubs/test.mjs. The title is deliberately altered (421 for 422 keV) so the test sees a title mismatch.",
+  "status": "ok",
+  "message-type": "work",
+  "message": {
+    "DOI": "10.1103/PhysRevC.107.L062801",
+    "type": "journal-article",
+    "title": ["Improved S factor of the <sup>12</sup>C(p,γ)<sup>13</sup>N reaction at E=320–620 keV and the 421 keV resonance"],
+    "container-title": ["Physical Review C"],
+    "short-container-title": ["Phys. Rev. C"],
+    "volume": "107", "issue": "6", "article-number": "L062801",
+    "issued": { "date-parts": [[2023, 6, 20]] },
+    "author": [ { "given": "J.", "family": "Skowronski", "sequence": "first" } ]
+  }
+}

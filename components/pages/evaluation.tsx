@@ -11,6 +11,8 @@ import { getAtlas } from "@/lib/atlas"
 import { azure2Ref, evaluationIds, evaluationMeta, type EvaluationMeta } from "@/lib/evaluation-meta"
 import { dict, localePath, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
+import { PageLd } from "@/components/json-ld"
+import { evaluationDatasetLd } from "@/lib/structured-data"
 
 /**
  * Every evaluation directory that holds a .azr file, so each build has a page
@@ -60,8 +62,15 @@ export function EvaluationPage({ id, lang }: { id: string; lang: Lang }) {
     temperatures.sort((a, b) => a.T9 - b.T9)
   }
 
+  const ev = dict(lang).evaluations
   return (
     <>
+      {/* --- find --- */}
+      <PageLd
+        lang={lang}
+        trail={[{ name: dict(lang).nav.evaluations, path: "/evaluations" }, { name: ev.pageTitle(nuclide(id)), path: `/evaluations/${id}` }]}
+        nodes={[evaluationDatasetLd(meta, ev.pageTitle(nuclide(id)), ev.pageDescription(nuclide(id)), lang)]}
+      />
       <EvaluationHeader meta={meta} lang={lang} azure2Ref={azure2Ref()} licence={licence} />
       <EvaluationIntro reaction={headline} compound={id} lang={lang} scattering={scatteringOnly} meta={meta} />
       <EvaluationWorkspace id={id} known={meta.known} scatteringOnly={scatteringOnly} temperatures={temperatures} typical={meta.timings} />
