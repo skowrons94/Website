@@ -178,6 +178,8 @@ const PAGES = [
   { href: "/publications", en: ["Publications", "Articles and conference proceedings"], it: ["Pubblicazioni", "Articoli e atti di congressi"], k: "publications pubblicazioni papers articoli bibliography" },
   { href: "/cv", en: ["CV", "Employment, education, talks and teaching"], it: ["CV", "Impieghi, formazione, seminari e didattica"], k: "cv curriculum vitae resume" },
   { href: "/software", en: ["Software", "AZURE2, LunaSRIM and other code"], it: ["Software", "AZURE2, LunaSRIM e altro codice"], k: "software code codice azure2 lunasrim srim github" },
+  // --- webdaq ---
+  { href: "/software/webdaq", en: ["WebDAQ", "Data acquisition for the LUNA experiment, in a browser"], it: ["WebDAQ", "L'acquisizione dati dell'esperimento LUNA, nel browser"], k: "webdaq daq data acquisition acquisizione dati caen digitizer digitizzatori caendaq rureader shift turno remote remoto FAIR metadata metadati demo simulation simulazione run control" },
   { href: "/notes", en: ["Notes", "R-matrix theory written out, with worked examples"], it: ["Note", "La teoria R-matrix per esteso, con esempi svolti (in inglese)"], k: "notes note theory teoria" },
   { href: "/glossary", en: ["Glossary", "The words the atlas uses, in plain language"], it: ["Glossario", "Le parole dell'atlante, in linguaggio semplice"], k: "glossary glossario terms termini definitions" },
   { href: "/atlas/methods", en: ["Methods and laboratories", "How reactions are measured, and where"], it: ["Metodi e laboratori", "Come si misurano le reazioni, e dove"], k: "methods metodi laboratories laboratori facilities" },
