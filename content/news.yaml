@@ -1,5 +1,5 @@
-# What is new on the site: /news (and /it/news), the latest three on the home
-# page, and the Atom feed at /news/feed.xml (/it/news/feed.xml in Italian).
+# What is new on the site: /news (and /it/news), the latest day's items (three
+# to six) on the home page, and the Atom feed at /news/feed.xml (/it/news/feed.xml in Italian).
 #
 # Add an item at the top (the list is shown newest first whatever the order
 # here, but newest-on-top keeps the file easy to read):
@@ -21,6 +21,62 @@
 # page of the site must be a page that exists.
 
 news:
+  - date: 2026-10-13
+    commit: a33321c
+    link: /data
+    text: >-
+      Nuclear data explorer: the measurements in EXFOR, the international
+      library of nuclear experiments, linked to the reaction atlas, with the
+      gap between the energies stars need and the lowest ones measured, and
+      the levels of each nucleus.
+    text_it: >-
+      Esploratore dei dati nucleari: le misure di EXFOR, la libreria
+      internazionale degli esperimenti nucleari, collegate all'atlante delle
+      reazioni, con il vuoto tra le energie che servono alle stelle e le più
+      basse misurate, e i livelli di ogni nucleo.
+
+  - date: 2026-10-13
+    commit: 7caaa58
+    link: /data/path/iron-to-lead
+    text: >-
+      Guided paths: short walks through the site, from a question (why does
+      the Sun shine slowly? where does the sodium in salt come from? how do
+      stars get from iron to lead?) to what we still don't know.
+    text_it: >-
+      Percorsi guidati: brevi passeggiate nel sito, da una domanda (perché il
+      Sole brilla lentamente? da dove viene il sodio del sale? come arrivano
+      le stelle dal ferro al piombo?) a ciò che ancora non sappiamo.
+
+  - date: 2026-10-13
+    commit: 62490d8
+    link: /atlas/open-questions
+    text: >-
+      Open questions: what the field still argues about, reaction by
+      reaction, and what would settle it.
+    text_it: >-
+      Questioni aperte: su che cosa si discute ancora, reazione per reazione,
+      e che cosa lo risolverebbe.
+
+  - date: 2026-10-13
+    commit: 7325438
+    link: /learn/exercises
+    text: >-
+      Exercises: problems to solve with the atlas, the rate explorer and an
+      evaluation, each with a worked solution.
+    text_it: >-
+      Esercizi: problemi da risolvere con l'atlante, l'esploratore dei tassi e
+      una valutazione, ciascuno con la soluzione svolta.
+
+  - date: 2026-10-13
+    commit: 2d186a0
+    link: /privacy
+    text: >-
+      Privacy: what the site and its server record, and for how long. No
+      cookies and no trackers.
+    text_it: >-
+      Privacy: che cosa registrano il sito e il suo server, e per quanto
+      tempo. Niente cookie e niente tracciamento.
+
   - date: 2026-10-12
     commit: eff78d8
     link: /atlas/rates/curiosities
@@ -32,16 +88,6 @@ news:
       Curiosità sui tassi: che cosa cambierebbe se una sola reazione fosse due
       volte più veloce, in frasi brevi i cui numeri vengono dai calcoli
       dell'esploratore dei tassi.
-
-  - date: 2026-10-12
-    commit: 66e41f9
-    link: /about
-    text: >-
-      About this site: how it was made and checked, where its data come from,
-      its licences and how to cite it.
-    text_it: >-
-      Informazioni sul sito: come è stato realizzato e verificato, da dove vengono i
-      dati, le licenze e come citarlo.
 
   - date: 2026-10-12
     commit: 90727fb
@@ -74,7 +120,7 @@ news:
       one neutron capture at a time, with the path drawn on the chart of
       nuclides and its branch points.
     text_it: >-
-      Il processo s: come le stelle producono circa metà degli elementi più
+      Il processo s: come le stelle producono circa metà dei nuclei più
       pesanti del ferro, una cattura di neutroni alla volta, con il percorso
       disegnato sulla carta dei nuclidi e i suoi punti di diramazione.
 

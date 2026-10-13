@@ -7,12 +7,15 @@ import { localePath, type Lang } from "@/lib/i18n"
 import { getNews, headline } from "@/lib/news"
 
 /**
- * The latest three items of content/news.yaml, small, on the home page: the
- * date and the first sentence of each, linking to it on /news.
+ * The latest items of content/news.yaml, small, on the home page: everything
+ * from the most recent day (at least three, at most six), the date and the
+ * first sentence of each, linking to it on /news.
  */
 export function NewsStrip({ lang }: { lang: Lang }) {
   const t = NEWS_TEXT[lang]
-  const items = getNews(lang).slice(0, 3)
+  const all = getNews(lang)
+  const sameDay = all.filter((n) => n.date === all[0]?.date).length
+  const items = all.slice(0, Math.min(6, Math.max(3, sameDay)))
   if (items.length === 0) return null
   const to = (p: string) => localePath(lang, p)
   return (
