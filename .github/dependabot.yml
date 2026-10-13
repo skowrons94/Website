@@ -20,3 +20,9 @@ updates:
     groups:
       npm:
         patterns: ["*"]
+    # Major versions (Next, Tailwind, TypeScript...) need a migration by
+    # hand, so the monthly pull request leaves them out; security updates
+    # for them still arrive.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
