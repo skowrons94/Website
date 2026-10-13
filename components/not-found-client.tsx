@@ -27,7 +27,15 @@ export function NotFoundClient({
     const base = process.env.BASE_PATH ?? ""
     const path = window.location.pathname.startsWith(base) ? window.location.pathname.slice(base.length) : window.location.pathname
     const misspelt = /^(\/it)?\/evaluations\/([^/]+)(\/?)$/.exec(path)
-    const id = misspelt && evaluations.find((e) => e.toLowerCase() === decodeURIComponent(misspelt[2]).toLowerCase())
+    let asked: string | null = null
+    if (misspelt) {
+      try {
+        asked = decodeURIComponent(misspelt[2]).toLowerCase()
+      } catch {
+        // A malformed escape (/evaluations/%E0): no evaluation has that name.
+      }
+    }
+    const id = asked !== null && evaluations.find((e) => e.toLowerCase() === asked)
     if (misspelt && id && id !== misspelt[2]) {
       const { search, hash } = window.location
       window.location.replace(`${base}${misspelt[1] ?? ""}/evaluations/${id}${misspelt[3]}${search}${hash}`)
