@@ -184,18 +184,20 @@ measurements:
       10–25 keV. The branching ratios of the individual proton and α groups
       change strongly with energy, and the angular distributions (three
       angles) are not isotropic, a possible cause of the disagreement
-      between data sets. The first journal article (Eur. Phys. J. A 58, 2022)
-      was retracted in 2023; the corrected article appeared in 2024.
-    refs: [moralesgallegos2022, moralesgallegos2024]
+      between data sets. A first journal article (Eur. Phys. J. A 58, 65, 2022)
+      was retracted (Eur. Phys. J. A 59, 120, 2023) because of an error in the
+      script that computed the beam energy loss; the corrected article (Eur.
+      Phys. J. A 60, 2024) keeps the general conclusions.
+    refs: [moralesgallegos2022, moralesgallegos2023r, moralesgallegos2024]
   - year: 2025
     facility: andromede
     method: direct-surface
-    energy: "E ≈ 2.2–2.6 MeV"
+    energy: "E ≈ 2.2–2.6 MeV; 3.23 MeV"
     note: >-
       Refined STELLA excitation function near its lowest coincidence
-      points: a lower average S-factor than standard extrapolations, and no
-      confirmation of an overall rise of the S-factor at deep sub-barrier
-      energies.
+      points: a lower average S-factor than standard extrapolations between
+      2.2 and 2.6 MeV, and no confirmation of an overall rise of the S-factor
+      at deep sub-barrier energies.
     refs: [nippert2025]
 evaluations: [caughlan1988, jiang2018, monpribat2022]
 refs: [jiang2007, uzawa2025, gesue2025, cooper2009]
