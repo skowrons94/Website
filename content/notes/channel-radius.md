@@ -1,8 +1,8 @@
 ---
 title: When a reduced width stops being measurable
 summary: >-
-  An R-matrix fit can describe the data beautifully and still contain a parameter
-  the data cannot see at all. Why that happens, why the channel radius controls
+  An R-matrix fit can describe the data well and still contain a parameter the
+  data cannot see. Why that happens, why the channel radius controls
   it, and how to tell before trusting an uncertainty.
 date: 2026-07-20
 topic: R-matrix theory
@@ -20,14 +20,14 @@ sampling the posterior. The sampler does not converge: the walkers drift away
 without bound, the transformation between parameter sets starts throwing warnings,
 and the marginal distributions come out in shapes no Gaussian would recognise.
 
-Nothing is wrong with the sampler, and nothing is wrong with the data. What has
-happened is that one of the parameters has stopped being a physical quantity and
-become a redundant coordinate — and the diagnosis, the cure, and the reason both
-are governed by the channel radius, are what follows.
+Neither the sampler nor the data is at fault. One of the parameters has stopped
+being a physical quantity and become a redundant coordinate. Why that happens, how
+to diagnose it and how to cure it all come down to the channel radius, and that is
+what this note is about.
 
-## What R-matrix theory actually does
+## What R-matrix theory does
 
-R-matrix theory is, before anything else, a division of space. One draws a sphere
+R-matrix theory is, before anything else, a division of space. Draw a sphere
 of radius $a$ — the *channel radius* — around the pair of fragments and treats the
 two sides by completely different means:
 
@@ -258,8 +258,8 @@ channels moved together, each row an independent converged refit.
 Three columns deserve attention.
 
 **$\chi^2$ is flat.** It varies between 96.4 and 97.9 across a factor of more than
-two in radius. The data are genuinely indifferent to where the surface is placed,
-exactly as the theory says they should be. *Goodness of fit cannot be used to
+two in radius. The data are indifferent to where the surface is placed, just as
+the theory says they should be. *Goodness of fit cannot be used to
 choose $a$.*
 
 **The reduced width becomes identified.** Its fractional error falls monotonically
@@ -273,7 +273,7 @@ at 3.5 fm a proposal only 2% away is already unrepresentable, while at 6 fm it
 takes a 77% excursion.
 
 None of this makes $a$ a free parameter to be pushed as far as convenient. Too
-small, and a genuinely extended cluster state is mostly external — the pathology
+small, and a truly extended cluster state is mostly external — the pathology
 of this note. Too large, and the assumption that only Coulomb and centrifugal
 forces act beyond $a$ fails, while the interior grows too big to be described by a
 few poles. There is a window, and the diagnostics above tell one which end of it a
@@ -299,7 +299,7 @@ ceiling itself, and the $\Delta\chi^2 = 1$ interval runs from about 58 keV to
 89 keV — a flat-topped slab with a hard wall on one side. That is not a shape any
 sampler can render as a Gaussian. Past the wall the folded branch re-enters the
 model space backwards and contributes a second, spurious lobe. At 6 fm the profile
-near the mode is an ordinary parabola and the width is genuinely measured.
+near the mode is an ordinary parabola and the width is measured.
 
 One caution. Enlarging the radius removes the *failures* and restores a Gaussian
 core, but it does not by itself remove the unbounded direction: the folded branch
@@ -308,7 +308,7 @@ $\Delta\chi^2 \approx 1$. The reason is transparent in the algebra — on the fo
 branch $\gamma_c^2 = \Gamma_c/(P_c|\mathcal{D}|)$ and, as $\Gamma_d \to \infty$,
 $\mathcal{D} \to -\Gamma_d D_d$, so $\gamma_d \to (\mathrm{d}S_d/\mathrm{d}E)^{-1/2}$,
 which is precisely the knee. When the knee happens to lie near the best-fit value,
-as it does at 6 fm, the far branch is a genuinely decent model. **A bounded prior
+as it does at 6 fm, the far branch is a reasonable model. **A bounded prior
 is required regardless of the radius.**
 
 ## An alternative: an attractive potential outside the surface
@@ -345,9 +345,9 @@ regime altogether:
 | $a = 6.0$ fm, pure Coulomb | 96.4 | 0.794 | 0.66 | 56.58% | 76.8% |
 
 The second and third rows are numerically indistinguishable: $N = 3.011$ against
-3.010, $f_{\mathrm{ext}} = 66.79$ % against 66.78%. **Adding an attractive tail at
+3.010, $f_{\mathrm{ext}} = 66.79$% against 66.78%. **Adding an attractive tail at
 3.5 fm does the same job as moving the surface to 5 fm**, and for the same reason —
-both get the description to where the state actually is.
+both get the description to where the state is.
 
 Two cautions. First, the effect is *not monotonic* in the well depth. The external
 potential has single-particle states of its own, and when one of them falls near

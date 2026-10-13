@@ -3,8 +3,8 @@ title: From a cross section to a stellar reaction rate
 summary: >-
   The integral that turns a laboratory cross section into the quantity a stellar
   model consumes, why it samples an energy window no experiment can reach, and a
-  regime where the standard perturbative treatment of radiative capture quietly
-  breaks down.
+  regime in which the standard perturbative treatment of radiative capture fails
+  without any obvious warning.
 date: 2026-05-30
 topic: Nuclear astrophysics
 featured: true
@@ -179,10 +179,10 @@ as it must.
 
 This is not free. Reich–Moore eliminates the γ-channels as explicit channels, which
 sits awkwardly with the external-capture amplitude discussed in
-[Where radiative capture actually happens](/notes/external-capture) — the external
+[Where radiative capture happens](/notes/external-capture) — the external
 amplitude is built in the same channel that Reich–Moore has absorbed. For neutron
 capture, where external capture is negligible, the combination is
-straightforward. For low-energy charged-particle capture, which is exactly where
+straightforward. For low-energy charged-particle capture, which is where
 $\Gamma_\gamma \gg \Gamma_p$ arises, combining a Reich–Moore-broadened internal
 amplitude coherently with an external one is a genuine open problem in the
 formalism rather than a matter of implementation.
@@ -204,7 +204,7 @@ backbone across the energy range gives smooth cheap coverage and keeps the Gamow
 window resolved at every temperature; on top of it, each resonance needs a cluster
 of points, geometrically spaced from a core of order $\Gamma/16$ out to wings of
 order $64\Gamma$. And the width that sets the cluster spacing is the width that
-actually shapes $\sigma(E)$ — which, by the argument above, is $\Gamma_p$ in the
+shapes $\sigma(E)$ — which, by the argument above, is $\Gamma_p$ in the
 perturbative treatment and $\Gamma_{\text{total}}$ under Reich–Moore. Sizing the
 cluster with the wrong one is how a resonance gets stepped over entirely, producing
 a rate that is too *low* by an equally arbitrary factor.
@@ -220,6 +220,6 @@ in the Brune parameterisation the boundary condition is $B_c = S_c(E_\lambda)$, 
 at $E = E_\lambda$ the real part of the level-matrix diagonal,
 $(E_\lambda - E) - \gamma^2[S(E) - S(E_\lambda)]$, vanishes identically, leaving
 only a small imaginary part. If the penetrability is also small the matrix can be
-genuinely singular. The physical values immediately either side are finite and
+truly singular. The physical values immediately either side are finite and
 well behaved, so the practical answer is to detect the failure and drop that single
 point rather than to place a grid point exactly on the resonance energy.

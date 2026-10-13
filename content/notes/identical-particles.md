@@ -1,5 +1,5 @@
 ---
-title: Identical particles, and half the partial waves that vanish
+title: "Identical particles: why half the partial waves vanish"
 summary: >-
   When the projectile and the target are the same nucleus, quantum mechanics
   forbids asking which one went where. The consequences — a Mott cross section

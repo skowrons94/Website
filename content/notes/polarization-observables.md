@@ -136,7 +136,7 @@ conservation: whatever the exit spins take as $\nu'$, the orbital motion must
 carry the remainder $\mu = \nu - \nu'$.
 
 **The collision-matrix term** $\delta_{ss'}\delta_{ll'} - U$ is the part that
-actually scatters: subtracting the identity removes the piece of the wave that
+scatters: subtracting the identity removes the piece of the wave that
 went straight through. **The spherical harmonic** $Y_{l'}^{\mu}(\theta)$ is the
 angular pattern of the outgoing motion.
 
@@ -392,7 +392,7 @@ $$
 with $\epsilon(E)$ the stopping power: each energy is weighted by the cross
 section and by the target thickness the beam spends at that energy, so the depths
 where the reaction is likely count for more. For charged-particle scattering this is severe. Rutherford scattering makes
-the cross section blow up as the beam slows down, exactly where the analyzing power
+the cross section blow up as the beam slows down, just where the analyzing power
 goes to zero — so the low-energy tail of the target dominates the weighting and
 drowns the asymmetry. A resonant $A_y$ of $0.8$ can average down to $10^{-6}$
 through a thick gas target. This is why analyzing powers are measured on thin
