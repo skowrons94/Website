@@ -47,8 +47,8 @@ scenarios:
       balance: he4
     source: "Bahcall, Pinsonneault & Basu 2001, ApJ 555, 990 (BP2000): T = 15.7 MK, ρ ≈ 150 g/cm³, X(H) = 0.340; metals: Lodders 2021"
     source_it: "Bahcall, Pinsonneault e Basu 2001, ApJ 555, 990 (BP2000): T = 15,7 MK, ρ ≈ 150 g/cm³, X(H) = 0,340; metalli: Lodders 2021"
-    note: "Burn time 1 Gyr: long enough for ³He, ⁷Be and the CN nuclei to reach their equilibrium values, short against the Sun's 10 Gyr."
-    note_it: "Tempo di combustione 1 miliardo di anni: abbastanza perché ³He, ⁷Be e i nuclei CN raggiungano l'equilibrio, breve rispetto ai 10 miliardi di anni del Sole."
+    note: "Burn time 1 Gyr: long enough for ³He, ⁷Be and the CN nuclei to reach their equilibrium values, short against the Sun's 10 Gyr. The C, N and O start from the surface mixture, as fresh fuel at today's temperature and density: in the real core ¹²C has already turned into ¹⁴N, and the burn first redoes that."
+    note_it: "Tempo di combustione 1 miliardo di anni: abbastanza perché ³He, ⁷Be e i nuclei CN raggiungano l'equilibrio, breve rispetto ai 10 miliardi di anni del Sole. C, N e O partono dalla miscela della superficie, come combustibile fresco alla temperatura e alla densità di oggi: nel cuore vero il ¹²C è già diventato ¹⁴N, e la combustione ripete prima quel passaggio."
 
   # Woosley, Heger & Weaver (2002), Rev. Mod. Phys. 74, 1015, Table I,
   # hydrogen burning in a 15 M☉ star: T = 0.035 GK, ρ = 5.8 g/cm³,

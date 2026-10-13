@@ -64,6 +64,11 @@ export interface CuriositySpec {
   hook: Words
   /** a limit of the model for this one result, after the caveat */
   note?: Words
+  /**
+   * What the energy line covers, when the network is not all of the site's
+   * burning (CNO alone in the Sun's centre): it leads the line.
+   */
+  energyScope?: Words
 }
 
 /** "this model of …", per scenario, so each is written once. */
@@ -120,6 +125,14 @@ export const CURIOSITIES: CuriositySpec[] = [
       en: "Oxygen‑15 gives off CNO neutrinos as it decays; Borexino first detected them in 2020.",
       it: "L'ossigeno‑15 decade emettendo neutrini CNO, rivelati per la prima volta da Borexino nel 2020.",
     },
+    note: {
+      en: "The C, N and O start as fresh fuel at today's temperature and density, not as the Sun's processed core.",
+      it: "C, N e O partono come combustibile fresco alla temperatura e alla densità di oggi, non come il cuore già trasformato del Sole.",
+    },
+    energyScope: {
+      en: "CNO reactions only (about 1% of the Sun's power)",
+      it: "Solo le reazioni CNO (circa l'1% della potenza del Sole)",
+    },
   },
   {
     id: "cno-carbon-ratio",
@@ -161,7 +174,7 @@ export const CURIOSITIES: CuriositySpec[] = [
     where: W.hbb,
     hook: {
       en: "Sodium varies from star to star in globular clusters; LUNA measured this rate in 2018.",
-      it: "Il sodio varia tra le stelle degli ammassi globulari; tasso misurato da LUNA nel 2018.",
+      it: "Il sodio varia tra le stelle degli ammassi globulari; LUNA l'ha misurata nel 2018.",
     },
   },
   {
@@ -186,7 +199,7 @@ export const CURIOSITIES: CuriositySpec[] = [
     name: nm("aluminium‑26", "alluminio‑26"),
     where: W.hbb,
     hook: {
-      en: "Aluminium‑26's 1.809 MeV glow maps the Milky Way.",
+      en: "Aluminium‑26's 1809 keV glow maps the Milky Way.",
       it: "La riga γ a 1809 keV dell'alluminio‑26 disegna la Via Lattea.",
     },
     note: {
@@ -216,7 +229,7 @@ export const CURIOSITIES: CuriositySpec[] = [
     name: nm("sodium‑22", "sodio‑22"),
     where: W.one,
     hook: {
-      en: "Sodium‑22's 1.275 MeV gamma-ray line has not yet been seen from a nova.",
+      en: "Sodium‑22's 1275 keV gamma-ray line has not yet been seen from a nova.",
       it: "Nessuno ha ancora visto in una nova la riga γ a 1275 keV del sodio‑22.",
     },
   },
@@ -309,8 +322,8 @@ export const CURIOSITIES: CuriositySpec[] = [
     name: nm("hydrogen", "l'idrogeno"),
     where: W.m15,
     hook: {
-      en: "The slowest step of the CNO cycle sets how fast a massive star burns.",
-      it: "Il passo più lento del ciclo CNO decide quanto in fretta brucia una stella massiccia.",
+      en: "The CNO cycle's slowest step sets the temperature at which a massive star burns hydrogen.",
+      it: "Il passo più lento del ciclo CNO fissa a che temperatura brucia una stella massiccia.",
     },
   },
   {
@@ -432,8 +445,18 @@ export function curiosityRatio(spec: CuriositySpec, sens: SensitivityLike): numb
   return 2 ** (a - b)
 }
 
-/** Nuclei a knock-on line never names: the fuel and the free particles, besides the excluded headlines. */
-const NOT_KNOCK = ["p", "n", "he4"]
+/**
+ * The p-nuclei: in nature they come mostly from other processes, not from
+ * neutron captures, so an s-process knock-on line never names them (¹⁵²Gd
+ * and ¹⁶⁴Er, with large s-process shares, are left out of the list).
+ */
+const P_NUCLEI = [
+  "se74", "kr78", "sr84", "mo92", "mo94", "ru96", "ru98", "pd102", "cd106", "cd108", "in113", "sn112",
+  "sn114", "sn115", "te120", "xe124", "xe126", "ba130", "ba132", "la138", "ce136", "ce138", "sm144",
+  "dy156", "dy158", "er162", "yb168", "hf174", "ta180", "w180", "os184", "pt190", "hg196",
+]
+/** Nuclei a knock-on line never names: the fuel, the free particles and the p-nuclei, besides the excluded headlines. */
+const NOT_KNOCK = ["p", "n", "he4", ...P_NUCLEI]
 export { ENERGY_NETS }
 /** The smallest change an extra line reports: 5%. */
 export const EXTRA_MIN = 0.05
@@ -682,7 +705,8 @@ export function durationWords(s: number, lang: CLang): string {
 
 export function temperatureWords(T9: number, lang: CLang): string {
   const mk = sig2(T9 * 1000)
-  return lang === "it" ? `${group(mk, lang)} milioni di K` : `${group(mk, lang)} million K`
+  // the one-line model caveat: MK in English (docs/STYLE.md), in words in Italian
+  return lang === "it" ? `${group(mk, lang)} milioni di K` : `${group(mk, lang)} MK`
 }
 
 /** A site's own limit, on every card of that site (from its note in scenarios.yaml). */
@@ -699,7 +723,7 @@ export interface CuriosityText {
   /** the same, plain: alt text, citation, screen readers */
   sentence: string
   hook: string
-  /** "One-zone model at 16 million K over 1 billion years. Real stars adjust.", then the site's and the card's own limits */
+  /** "One-zone model at 16 MK over 1 billion years. Real stars adjust.", then the site's and the card's own limits */
   caveat: string
   /** the caveat without those limits (one line on the social card) */
   shortCaveat: string
@@ -807,8 +831,15 @@ export function curiosityText(spec: CuriositySpec, r: number, lang: CLang, ctx: 
       : `Biggest knock-on effect: ${ctx.knock.label} (${percentText(ctx.knock.ratio, lang)}).`
     : null
   const e = ctx.energy
+  const scope = spec.energyScope?.[lang]
   const energyLine = e
-    ? (it ? `Energia prodotta ${percentText(e.power, lang)}` : `Energy output ${percentText(e.power, lang)}`) +
+    ? (scope
+        ? it
+          ? `${scope}: energia prodotta ${percentText(e.power, lang)}`
+          : `${scope}: energy output ${percentText(e.power, lang)}`
+        : it
+          ? `Energia prodotta ${percentText(e.power, lang)}`
+          : `Energy output ${percentText(e.power, lang)}`) +
       (e.fuel !== null && ctx.fuel && Math.abs(e.fuel - 1) >= 0.01 ? `; ${fuelClause(e.fuel, ctx.fuel, Boolean(ctx.until), lang)}` : "") +
       "."
     : null
