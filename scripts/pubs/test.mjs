@@ -18,7 +18,7 @@ import fs from "node:fs"
 import os from "node:os"
 import path from "node:path"
 
-import { authorLine, normDoi, normTitle, proposal, run } from "./check.mjs"
+import { authorLine, mdText, normDoi, normTitle, proposal, run } from "./check.mjs"
 
 let passed = 0
 const test = async (name, fn) => {
@@ -86,6 +86,30 @@ await test("nothing to report gives a short, clear proposal", () => {
   const empty = proposal({ fresh: [], years: [], titles: [], published: [], missing: [] }, { orcid: "0000-0001-7292-6353", date: "2026-10-13" })
   assert.equal(empty.count, 0)
   assert.match(empty.markdown, /Nothing to do/)
+})
+
+await test("ORCID and Crossref text cannot ping, link or break out of the issue's Markdown", () => {
+  const evil = "Hi @jakub @org/team see [x](https://evil.example) <img src=x> #1 www.evil.example `code` | col"
+  const hostile = {
+    fresh: [{ doi: "10.1/x)](https://evil.example", title: evil, journal: "J @nobody", year: 2026, type: "journal-article", sources: ["ORCID"], authors: [], volume: null, pages: "```\n@x" }],
+    years: [{ doi: "10.1/y", title: evil, yaml: 2025, found: 2026, source: "Crossref" }],
+    titles: [{ doi: "10.1/z", yaml: "t", found: evil, source: "ORCID" }],
+    published: [{ title: evil, status: "submitted", doi: "10.1/w", year: 2026, journal: "@j" }],
+    missing: [{ doi: "10.1/v", title: evil, year: 2026 }],
+  }
+  const { markdown: md } = proposal(hostile, { orcid: "0000-0001-7292-6353", date: "2026-10-13" })
+  // Outside code blocks, no bare @mention, no Markdown link to evil.example, no raw HTML, no bare URL.
+  const prose = md.replace(/^(`{3,})[^\n]*\n[\s\S]*?^\1$/gm, "")
+  assert.doesNotMatch(prose, /(^|[^\w`])@[A-Za-z0-9]/)
+  assert.doesNotMatch(prose, /\]\(https:\/\/evil/)
+  assert.doesNotMatch(prose, /(^|[^\\])<img/)
+  assert.doesNotMatch(prose, /https:\/\/evil/)
+  assert.doesNotMatch(prose, /(^|\s)#1\b/)
+  // The DOI's ")" cannot end its link early.
+  assert.match(md, /\(https:\/\/doi\.org\/10\.1\/x%29%5D%28https%3A/)
+  // The YAML block's fence is longer than any backtick run inside it.
+  assert.match(md, /^````yaml$/m)
+  assert.equal(mdText("a\nb  @c"), "a b @\u2060c")
 })
 
 await test("author lines in the YAML's own form", () => {
