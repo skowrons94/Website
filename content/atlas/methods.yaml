@@ -72,7 +72,7 @@ methods:
       - Laboratory data include electron screening, which differs from that in a stellar plasma.
       - Below the lowest measured energy an extrapolation, usually by R-matrix, is still needed.
     limits_it:
-      - Esistono poche infrastrutture, e il tempo fascio è limitato.
+      - Esistono poche infrastrutture, e il tempo di fascio è limitato.
       - Alle energie più basse la resa è ancora piccola e domina l'incertezza statistica.
       - I dati di laboratorio includono lo schermaggio elettronico, diverso da quello di un plasma stellare.
       - Al di sotto della più bassa energia misurata serve comunque un'estrapolazione, di solito R-matrix.
@@ -341,7 +341,7 @@ methods:
       reaction and the reaction model (DWBA or coupled channels).
     details_it: >-
       Il coefficiente di normalizzazione asintotica (ANC) fissa l'ampiezza della
-      funzione d'onda dello stato legato fuori dall'interno del nucleo. Per
+      funzione d'onda dello stato legato all'esterno del nucleo. Per
       reazioni di trasferimento periferiche, misurate a energie dove la sezione
       d'urto è grande, l'ANC si può estrarre con una dipendenza molto minore dai
       parametri del modello ottico e di particella singola rispetto a un fattore
@@ -554,7 +554,7 @@ methods:
       - Probes the product nucleus, not the stellar reaction at stellar energies.
     limits_it:
       - Dà la sezione d'urto di cattura solo attraverso un modello.
-      - Studia il nucleo prodotto, non la reazione stellare alle energie stellari.
+      - Studia il nucleo prodotto, non la reazione che avviene nella stella, alle energie stellari.
     refs: [raut2013]
     examples: [85Kr-ng-86Kr]
 

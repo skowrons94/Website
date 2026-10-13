@@ -365,8 +365,8 @@ terms:
       resta. Incerto: l'incertezza è abbastanza grande da cambiare i modelli
       che ne dipendono. Non misurato: non ci sono dati diretti alle energie
       che contano, e il tasso si basa su estrapolazioni, metodi indiretti o
-      teoria. L'etichetta è la sintesi dell'autore delle valutazioni citate
-      nella pagina.
+      teoria. L'etichetta riassume, a giudizio dell'autore, le valutazioni
+      citate nella pagina.
     see: [rate]
 
   - id: temperature
@@ -594,11 +594,12 @@ terms:
       above 10²⁰. Branch points of the s-process measure it.
     text_it: >-
       Il numero di neutroni liberi per centimetro cubo in una stella. Nel
-      processo s è bassa: circa 10⁷ per centimetro cubo nella tasca di ¹³C di
-      una stella AGB, dove un nucleo con una tipica sezione d'urto di un
-      decimo di barn aspetta circa 250 anni tra due catture, fino a circa 10¹⁰ nei brevi lampi del ²²Ne durante gli impulsi
-      termici, e circa 10¹¹–10¹² nel guscio in cui brucia il carbonio di una
-      stella massiccia. Nel processo r è più alta ancora di molti ordini di
+      processo s è bassa: va da circa 10⁷ per centimetro cubo nella tasca di
+      ¹³C di una stella AGB fino a circa 10¹⁰ nei brevi lampi del ²²Ne durante
+      gli impulsi termici, e arriva a circa 10¹¹–10¹² nel guscio in cui brucia
+      il carbonio di una stella massiccia. Nella tasca un nucleo con una tipica
+      sezione d'urto di un decimo di barn aspetta circa 250 anni tra due
+      catture. Nel processo r è più alta ancora di molti ordini di
       grandezza, oltre 10²⁰. I punti di diramazione del processo s la misurano.
     see: [branch-point, s-process, r-process]
 
@@ -640,7 +641,7 @@ terms:
       biforca, e la quota di ciascun ramo dipende dalla densità di neutroni e
       talvolta dalla temperatura della stella. Le abbondanze dei nuclei che
       seguono, come il kripton-86 o gli isotopi del samario, fanno quindi da
-      misuratore della densità di neutroni o da termometro.
+      indicatore della densità di neutroni o da termometro.
     page: /atlas/s-process
     see: [neutron-density, s-process, branching-ratio]
 
@@ -753,8 +754,8 @@ terms:
       ospita una macchina da 3,5 MV per la combustione dell'elio e del
       carbonio. Altri acceleratori in profondità sono in funzione in Cina
       (JUNA) e negli Stati Uniti (CASPAR); il Felsenkeller di Dresda, sotto
-      45 m di roccia, è un laboratorio a bassa profondità che aggiunge veti
-      attivi per i muoni.
+      45 m di roccia, è un laboratorio a bassa profondità che aggiunge un
+      sistema di veto attivo per i muoni.
     see: [mwe, gamow-window]
 
   - id: mwe
