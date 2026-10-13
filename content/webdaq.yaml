@@ -1,0 +1,641 @@
+# The WebDAQ companion page, /software/webdaq and /it/software/webdaq
+# (components/pages/webdaq.tsx). A field ending in `_it` is the Italian version
+# of the field before it.
+#
+# Every statement about what WebDAQ does is checked against the WebDAQ code at
+# commit a1cc18f (github.com/skowrons94/WebDAQ): README.md, doc/details.md,
+# doc/example-session.md, doc/usage.md, doc/run-data.md,
+# server/app/services/run_metadata_snapshot.py and
+# server/app/services/caen_acquisition.py. Under FAIR, `now` is only what the
+# code does (Jakub: metadata.json is designed to be FAIR-ready); `later` holds
+# only what verifiably does not exist yet, shown as next steps.
+# Wording rule: the 3.5 MV accelerator is "the MV machine of the Bellotti Ion
+# Beam Facility (BIBF)".
+
+lead: >-
+  WebDAQ runs the data acquisition of the LUNA experiment from a web browser.
+  It configures the CAEN digitizers, tunes them against a live spectrum, takes
+  the runs, watches the rates and the beam, and keeps with every run a record
+  meant to outlive the shift.
+lead_it: >-
+  WebDAQ gestisce l'acquisizione dati dell'esperimento LUNA da un browser.
+  Configura i digitizzatori CAEN, li regola guardando uno spettro in tempo
+  reale, avvia i run, sorveglia i rate e il fascio, e accompagna ogni run con
+  una documentazione pensata per durare più del turno.
+
+demoNote: >-
+  The demo runs in your browser with simulated detectors: nothing in it is real
+  hardware or real data.
+demoNote_it: >-
+  La demo gira nel tuo browser con rivelatori simulati: niente di ciò che vedi
+  è hardware vero o dati veri.
+
+hero:
+  alt: >-
+    The WebDAQ dashboard, split diagonally between the light and the dark theme:
+    cards for run status, beam current, accumulated charge and data bandwidth,
+    counters for three regions of interest, the Start and Stop buttons and the
+    table of acquisition parameters.
+  alt_it: >-
+    Il cruscotto di WebDAQ, diviso in diagonale tra tema chiaro e tema scuro:
+    riquadri per lo stato del run, la corrente del fascio, la carica accumulata
+    e la banda dei dati, i conteggi di tre regioni di interesse, i pulsanti
+    Start e Stop e la tabella dei parametri di acquisizione.
+  caption: >-
+    The dashboard, in the light and the dark theme. Image from the WebDAQ
+    repository (MIT licence); the interface has moved on a little since.
+  caption_it: >-
+    Il cruscotto, nel tema chiaro e in quello scuro. Immagine dal repository di
+    WebDAQ (licenza MIT); da allora l'interfaccia è un po' cambiata.
+
+why:
+  title: Why from a browser
+  title_it: Perché da un browser
+  paragraphs:
+    - >-
+      LUNA measures nuclear reactions under about 1.4 km of rock at the Gran
+      Sasso laboratory, where access to the underground halls is regulated.
+      Being next to the digitizers
+      cannot be a condition for running the experiment. With WebDAQ the
+      acquisition is driven from any computer that can reach the DAQ machine,
+      so shifts can be taken remotely.
+    - >-
+      The design follows from that. The acquisition runs inside the DAQ server,
+      not in the page: closing the browser, reloading it or losing the network
+      leaves a run untouched. A board that stops answering raises an alert, and
+      with auto-restart the run is stopped, flagged and started again, so a
+      night shift loses one run rather than the rest of the night.
+  paragraphs_it:
+    - >-
+      LUNA misura reazioni nucleari sotto circa 1,4 km di roccia, nel
+      laboratorio del Gran Sasso, dove l'accesso alle sale sotterranee è
+      regolato. Stare accanto ai
+      digitizzatori non può essere una condizione per far funzionare
+      l'esperimento. Con WebDAQ l'acquisizione si comanda da qualunque computer
+      che raggiunga la macchina DAQ, e i turni si possono fare da remoto.
+    - >-
+      Il progetto discende da qui. L'acquisizione gira dentro il server DAQ, non
+      nella pagina: chiudere il browser, ricaricarlo o perdere la rete non tocca
+      il run in corso. Una scheda che smette di rispondere fa scattare un
+      allarme e, con il riavvio automatico, il run viene fermato, segnalato e
+      ripartito: un turno di notte perde un run, non il resto della notte.
+
+architecture:
+  title: How it is put together
+  title_it: Come è fatto
+  intro: >-
+    Two processes on the DAQ machine, a web interface and a Python server, and
+    no network hop in the data path: the boards are read, decoded and written to
+    disk by a C++ library inside the server itself.
+  intro_it: >-
+    Due processi sulla macchina DAQ, un'interfaccia web e un server Python, e
+    nessun passaggio di rete sul percorso dei dati: le schede vengono lette,
+    decodificate e scritte su disco da una libreria C++ dentro il server stesso.
+  alt: >-
+    Diagram of WebDAQ. The browser talks to the WebDAQ server over HTTP. Inside
+    the same server process, CaenDAQ reads the CAEN digitizers and writes the
+    run files to data/run<N>/, which RUReader converts to ROOT. CaenDAQ also
+    publishes the rates to Graphite, shown by Grafana. The server reads the
+    picoammeter, posts to the ELOG logbook and sends alerts to Telegram or
+    Zulip.
+  alt_it: >-
+    Schema di WebDAQ. Il browser parla con il server WebDAQ via HTTP. Nello
+    stesso processo del server, CaenDAQ legge i digitizzatori CAEN e scrive i
+    file del run in data/run<N>/, che RUReader converte in ROOT. CaenDAQ
+    pubblica anche i rate su Graphite, mostrati da Grafana. Il server legge il
+    picoamperometro, scrive nel logbook ELOG e manda gli allarmi su Telegram o
+    Zulip.
+  # In the order of the numbered markers on the diagram.
+  items:
+    - >-
+      The browser: the interface, a React application. It asks the server for
+      everything over HTTP, with a login token, and keeps nothing that a run
+      needs.
+    - >-
+      The WebDAQ server (Python, Flask): run control, the run database, the
+      metadata of each run, and the histograms handed to the browser.
+    - >-
+      CaenDAQ, a C++ library bound into the same process: it opens the boards,
+      reads and decodes their data, writes the .caendat files and fills the
+      live spectra as it goes.
+    - >-
+      The CAEN digitizers, over USB, optical link or VME: DPP-PHA firmware for
+      germanium detectors, DPP-PSD for scintillators.
+    - >-
+      The run directory, data/run<N>/: the data, the board configuration, the
+      beam current, the monitored values, the regions of interest and
+      metadata.json.
+    - >-
+      RUReader, the offline converter from .caendat to ROOT. It reads only the
+      file header, which is why one converter reads the runs of every WebDAQ
+      version.
+    - >-
+      Graphite and Grafana: CaenDAQ publishes the rates, Grafana draws them and
+      holds the alert rules that WebDAQ switches on at Start and off at Stop.
+    - >-
+      The picoammeter (TetrAMM, RBD 9103, or a value the accelerator already
+      publishes): beam current and accumulated charge.
+    - >-
+      The collaboration's PSI ELOG: read, written and drafted from run control.
+    - >-
+      Alerts to Telegram or Zulip: a board failure, a board that stops sending
+      data, the beam current, or any monitored value.
+  items_it:
+    - >-
+      Il browser: l'interfaccia, un'applicazione React. Chiede tutto al server
+      via HTTP, con un token di accesso, e non custodisce nulla di cui un run
+      abbia bisogno.
+    - >-
+      Il server WebDAQ (Python, Flask): controllo dei run, il database dei run,
+      i metadati di ciascun run e gli istogrammi passati al browser.
+    - >-
+      CaenDAQ, una libreria C++ inserita nello stesso processo: apre le schede,
+      ne legge e decodifica i dati, scrive i file .caendat e intanto riempie gli
+      spettri in tempo reale.
+    - >-
+      I digitizzatori CAEN, via USB, fibra ottica o VME: firmware DPP-PHA per i
+      rivelatori al germanio, DPP-PSD per gli scintillatori.
+    - >-
+      La cartella del run, data/run<N>/: i dati, la configurazione delle schede,
+      la corrente del fascio, i valori monitorati, le regioni di interesse e
+      metadata.json.
+    - >-
+      RUReader, il convertitore offline da .caendat a ROOT. Legge solo
+      l'intestazione del file, ed è per questo che un solo convertitore legge i
+      run di ogni versione di WebDAQ.
+    - >-
+      Graphite e Grafana: CaenDAQ pubblica i rate, Grafana li disegna e
+      custodisce le regole di allarme che WebDAQ attiva allo Start e spegne allo
+      Stop.
+    - >-
+      Il picoamperometro (TetrAMM, RBD 9103, o un valore che l'acceleratore già
+      pubblica): corrente del fascio e carica accumulata.
+    - >-
+      L'ELOG PSI della collaborazione: letto, scritto e precompilato dal
+      controllo dei run.
+    - >-
+      Allarmi su Telegram o Zulip: guasto di una scheda, una scheda che smette
+      di mandare dati, la corrente del fascio o qualunque valore monitorato.
+
+# The eight rows of the WebDAQ README's "What it does", in its order. `id`
+# names the illustration, and the screenshot scripts/webdaq-screens.mjs takes
+# from the demo (public/images/webdaq/screen-<id>.*), shown instead of the
+# drawing once it exists.
+capabilities:
+  title: What it does
+  title_it: Cosa fa
+  items:
+    - id: boards
+      name: Boards
+      name_it: Schede
+      text: >-
+        Scan the links for connected digitizers (USB, optical, A4818, VME), add
+        them, and keep each board's full register configuration in one file.
+        From then on that file is the board's configuration, and every run
+        carries a copy.
+      text_it: >-
+        Cerca i digitizzatori collegati (USB, fibra ottica, A4818, VME), li
+        aggiunge e conserva l'intera configurazione dei registri di ogni scheda
+        in un file. Da quel momento quel file è la configurazione della scheda,
+        e ogni run ne porta con sé una copia.
+      shot: >-
+        Settings, Boards: the boards WebDAQ found, with model, firmware and link.
+      shot_it: >-
+        Impostazioni, Schede: le schede trovate da WebDAQ, con modello, firmware
+        e collegamento.
+    - id: acquisition
+      name: Acquisition
+      name_it: Acquisizione
+      text: >-
+        One .caendat file per run for all the boards together, with the boards
+        started in step by their own synchronised start.
+      text_it: >-
+        Un solo file .caendat per run per tutte le schede insieme, avviate in
+        sincronia dal loro stesso meccanismo di partenza.
+      shot: >-
+        The dashboard during a run: run number, elapsed time, beam current and
+        charge.
+      shot_it: >-
+        Il cruscotto durante un run: numero del run, tempo trascorso, corrente
+        del fascio e carica.
+    - id: tuning
+      name: Online tuning
+      name_it: Regolazione in linea
+      text: >-
+        Change thresholds, gates and the trapezoid filter while the run is
+        going, and watch the trace and the spectrum react. Only what is safe to
+        move during a run is sent to the board; the rest waits for the next run.
+      text_it: >-
+        Cambia soglie, finestre e filtro trapezoidale mentre il run è in corso,
+        e guarda la traccia e lo spettro reagire. Alla scheda arriva solo ciò
+        che si può toccare durante un run; il resto aspetta il run successivo.
+      shot: >-
+        The tuner: a pulse, its trapezoid and the spectrum, with the filter
+        settings beside them.
+      shot_it: >-
+        Il tuner: un impulso, il suo trapezio e lo spettro, con accanto i
+        parametri del filtro.
+    - id: monitoring
+      name: Monitoring
+      name_it: Monitoraggio
+      text: >-
+        Spectra, waveforms and pulse-shape plots for every channel; event,
+        pile-up, lost and saturated rates per channel; beam current and
+        accumulated charge.
+      text_it: >-
+        Spettri, forme d'onda e grafici di forma dell'impulso per ogni canale;
+        rate di eventi, pile-up, persi e saturati canale per canale; corrente
+        del fascio e carica accumulata.
+      shot: >-
+        Data Rates: events, pile-up, lost and saturated counts per second, per
+        channel.
+      shot_it: >-
+        Data Rates: eventi, pile-up, persi e saturati al secondo, canale per
+        canale.
+    - id: rois
+      name: Spectra and regions of interest
+      name_it: Spettri e regioni di interesse
+      text: >-
+        Named regions of interest with live counts, defined once on the server:
+        the same dashboard on every screen, restored after a restart, and
+        written into each run as roi.json.
+      text_it: >-
+        Regioni di interesse con nome e conteggi in tempo reale, definite una
+        volta sola sul server: lo stesso cruscotto su ogni schermo, ripristinato
+        dopo un riavvio e scritto in ogni run come roi.json.
+      shot: >-
+        A germanium spectrum with a region of interest around a peak, and its
+        counts.
+      shot_it: >-
+        Uno spettro al germanio con una regione di interesse attorno a un picco,
+        e i suoi conteggi.
+    - id: slowcontrol
+      name: Slow control
+      name_it: Slow control
+      text: >-
+        Beam current from a TetrAMM, an RBD 9103 or a value the accelerator
+        already publishes, and any other monitored value, recorded into each
+        run's stats.csv with its name and unit.
+      text_it: >-
+        La corrente del fascio da un TetrAMM, da un RBD 9103 o da un valore che
+        l'acceleratore già pubblica, e qualunque altro valore monitorato,
+        registrati nel file stats.csv di ogni run con nome e unità di misura.
+      shot: >-
+        Stats: the monitored values of the run, one plot each.
+      shot_it: >-
+        Stats: i valori monitorati del run, un grafico ciascuno.
+    - id: bookkeeping
+      name: Bookkeeping
+      name_it: Documentazione dei run
+      text: >-
+        Run metadata written beside the data, a logbook of every run with
+        search, flags and notes, the collaboration's ELOG, and Grafana alert
+        rules tied to the run.
+      text_it: >-
+        I metadati del run scritti accanto ai dati, un registro di tutti i run
+        con ricerca, valutazione e note, l'ELOG della collaborazione e le regole
+        di allarme di Grafana legate al run.
+      shot: >-
+        The logbook page of one run: times, charge, boards, files and
+        provenance.
+      shot_it: >-
+        La pagina di un run nel registro: tempi, carica, schede, file e
+        provenienza.
+    - id: watching
+      name: Watching
+      name_it: Sorveglianza
+      text: >-
+        Readout counters for each board, alerts to Telegram or Zulip, and a
+        history of what happened with the recovery offered next to it.
+      text_it: >-
+        Contatori di lettura per ogni scheda, allarmi su Telegram o Zulip e uno
+        storico di ciò che è successo, con accanto le azioni per rimediare.
+      shot: >-
+        Troubleshoot: a board failure in the history, with the recovery actions
+        beside it.
+      shot_it: >-
+        Troubleshoot: il guasto di una scheda nello storico, con accanto le
+        azioni per rimediare.
+
+shift:
+  title: A shift, in six steps
+  title_it: Un turno, in sei passi
+  intro: >-
+    Condensed from the "complete session" chapter of the WebDAQ documentation.
+    The demo's guided tour walks through the same steps.
+  intro_it: >-
+    In breve, dal capitolo "una sessione completa" della documentazione di
+    WebDAQ. Il tour guidato della demo percorre gli stessi passi.
+  steps:
+    - lead: Open the experiment.
+      text: >-
+        Start WebDAQ and choose the working directory of the campaign. The
+        server starts there and creates what it needs: configuration,
+        calibrations, data and the run database. The directory is the
+        experiment.
+    - lead: Check the hardware.
+      text: >-
+        The boards are listed with model, firmware and link, green when the
+        server has them open. The picoammeter reads near zero with the beam
+        off, and the monitored values (terminal voltage, rates) are chosen,
+        each with a name and a unit.
+    - lead: Tune a channel.
+      text: >-
+        In the tuner, with data saving off, set the threshold, then the
+        trapezoid (or, for a scintillator, the charge gates) while watching the
+        pulse and the spectrum.
+    - lead: Take the run.
+      text: >-
+        Fill in target, terminal and probe voltage and run type, and press
+        Start. WebDAQ copies each board's configuration into the run, starts
+        the boards together, the current recording and the statistics, and
+        switches the run's alert rules on.
+    - lead: Watch it.
+      text: >-
+        Spectra, rates, beam current and charge, and the boards' own counters,
+        from wherever the shift is. If a board fails, the alert arrives on the
+        phone and the Troubleshoot page offers the fix.
+    - lead: Stop and write it down.
+      text: >-
+        Stop writes the charge, the region-of-interest counts and the run's
+        metadata. The logbook entry is drafted from the run's own record; the
+        shift adds the reasons.
+  steps_it:
+    - lead: Apri l'esperimento.
+      text: >-
+        Avvia WebDAQ e scegli la cartella di lavoro della campagna. Il server
+        parte lì e crea ciò che gli serve: configurazione, calibrazioni, dati e
+        database dei run. La cartella è l'esperimento.
+    - lead: Controlla l'hardware.
+      text: >-
+        Le schede compaiono con modello, firmware e collegamento, in verde
+        quando il server le ha aperte. Il picoamperometro segna quasi zero a
+        fascio spento, e si scelgono i valori da monitorare (tensione di
+        terminale, rate), ognuno con nome e unità di misura.
+    - lead: Regola un canale.
+      text: >-
+        Nel tuner, con il salvataggio dei dati spento, imposta la soglia, poi il
+        trapezio (o, per uno scintillatore, le finestre di carica) guardando
+        l'impulso e lo spettro.
+    - lead: Avvia il run.
+      text: >-
+        Inserisci bersaglio, tensione di terminale e di sonda e tipo di run, e
+        premi Start. WebDAQ copia nel run la configurazione di ogni scheda, avvia
+        insieme le schede, la registrazione della corrente e le statistiche, e
+        attiva le regole di allarme del run.
+    - lead: Tienilo d'occhio.
+      text: >-
+        Spettri, rate, corrente del fascio e carica, e i contatori delle schede,
+        da dovunque si faccia il turno. Se una scheda si guasta, l'allarme
+        arriva sul telefono e la pagina Troubleshoot propone il rimedio.
+    - lead: Ferma e scrivi.
+      text: >-
+        Lo Stop scrive la carica, i conteggi delle regioni di interesse e i
+        metadati del run. La voce del logbook viene precompilata dalla
+        documentazione del run; chi è di turno aggiunge il perché.
+
+fair:
+  title: FAIR in practice
+  title_it: FAIR in pratica
+  intro: >-
+    FAIR data are findable, accessible, interoperable and reusable. For an
+    experiment that starts at the acquisition: whatever is not written down
+    while the run is taken is hard to recover afterwards. WebDAQ is designed so
+    that every run leaves a FAIR-ready record, centred on its metadata.json.
+    Here is what each letter rests on in the code today, and the next steps.
+  intro_it: >-
+    I dati FAIR sono reperibili, accessibili, interoperabili e riutilizzabili
+    (findable, accessible, interoperable, reusable). Per un esperimento tutto
+    comincia dall'acquisizione: ciò che non viene annotato mentre il run è in
+    corso è difficile da ricostruire dopo. WebDAQ è progettato perché ogni run
+    lasci una documentazione pronta per il FAIR, che ruota attorno al suo
+    metadata.json. Ecco su cosa poggia oggi ciascuna lettera, nel codice, e
+    quali sono i prossimi passi.
+  rows:
+    - letter: F
+      name: Findable
+      name_it: Reperibili
+      now:
+        - >-
+          Every run is a directory, data/run<N>/, with a versioned
+          metadata.json (schema 1): run number, start and stop, duration,
+          target, terminal and probe voltage, run type, accumulated charge,
+          quality flag and notes.
+        - >-
+          The same file lists every file of the run with its role (raw data,
+          board configuration, beam current, statistics, ROOT) and its size.
+        - >-
+          The logbook searches runs by number, target, notes and voltages,
+          filters them by type and flag, and exports the selection as CSV.
+      later:
+        - A persistent identifier (DOI or similar) for each run or data set, beyond the run number of the working directory.
+        - The run's ELOG entry recorded in its metadata.
+      now_it:
+        - >-
+          Ogni run è una cartella, data/run<N>/, con un metadata.json versionato
+          (schema 1): numero del run, inizio e fine, durata, bersaglio, tensione
+          di terminale e di sonda, tipo di run, carica accumulata, valutazione
+          di qualità e note.
+        - >-
+          Lo stesso file elenca tutti i file del run con il loro ruolo (dati
+          grezzi, configurazione delle schede, corrente del fascio, statistiche,
+          ROOT) e la loro dimensione.
+        - >-
+          Il registro cerca i run per numero, bersaglio, note e tensioni, li
+          filtra per tipo e valutazione ed esporta la selezione in CSV.
+      later_it:
+        - Un identificativo persistente (DOI o simile) per ogni run o insieme di dati, oltre al numero di run della cartella di lavoro.
+        - La voce ELOG del run registrata nei suoi metadati.
+    - letter: A
+      name: Accessible
+      name_it: Accessibili
+      now:
+        - >-
+          Open, plain formats (JSON, CSV, text) beside the binary data.
+          metadata.json is rewritten atomically after every change, so a reader
+          never sees half a file.
+        - >-
+          The programs that write and read the data are open source under the
+          MIT licence: WebDAQ, CaenDAQ and RUReader.
+        - >-
+          Everything the interface shows comes from the server's HTTP API, with
+          a login, which a script can use as well.
+      later:
+        - Deposit of released data sets in a long-term repository, with their access terms.
+      now_it:
+        - >-
+          Formati aperti e leggibili (JSON, CSV, testo) accanto ai dati binari.
+          metadata.json viene riscritto in modo atomico a ogni modifica, così
+          chi lo legge non trova mai un file a metà.
+        - >-
+          I programmi che scrivono e leggono i dati sono open source con licenza
+          MIT: WebDAQ, CaenDAQ e RUReader.
+        - >-
+          Tutto ciò che l'interfaccia mostra viene dall'API HTTP del server, con
+          accesso autenticato, che può usare anche uno script.
+      later_it:
+        - Il deposito degli insiemi di dati pubblicati in un archivio a lungo termine, con le loro condizioni di accesso.
+    - letter: I
+      name: Interoperable
+      name_it: Interoperabili
+      now:
+        - >-
+          The .caendat files keep one documented header layout across every
+          WebDAQ version, so a single converter, RUReader, reads them all.
+        - >-
+          RUReader writes ROOT files that carry the time-stamp unit, the start
+          time and the list of boards next to the event tree.
+        - >-
+          The register dumps name every register with its address, as in
+          CAEN's manuals; stats.csv gives each column its name, unit and
+          source.
+      later:
+        - The run metadata carried into the converted ROOT file as well; today RUReader takes only what the .caendat header holds.
+        - A published JSON Schema for metadata.json.
+      now_it:
+        - >-
+          I file .caendat mantengono in ogni versione di WebDAQ la stessa
+          intestazione documentata, così un solo convertitore, RUReader, li
+          legge tutti.
+        - >-
+          RUReader scrive file ROOT che riportano l'unità dei tempi, l'istante
+          di inizio e l'elenco delle schede accanto all'albero degli eventi.
+        - >-
+          I dump dei registri danno a ogni registro nome e indirizzo, come nei
+          manuali CAEN; stats.csv dà a ogni colonna nome, unità e provenienza.
+      later_it:
+        - I metadati del run riportati anche nel file ROOT convertito; oggi RUReader prende solo ciò che contiene l'intestazione del .caendat.
+        - Uno JSON Schema pubblicato per metadata.json.
+    - letter: R
+      name: Reusable
+      name_it: Riutilizzabili
+      now:
+        - >-
+          Provenance captured at Start: for each board model, serial number,
+          firmware, DPP type, ADC bits, sampling and synchronisation role; the
+          versions of WebDAQ, CaenDAQ, Python and the operating system; and
+          whether the data came from real boards or from test mode.
+        - >-
+          The complete register configuration of every board, copied into the
+          run.
+        - >-
+          Beam current and accumulated charge; region-of-interest definitions
+          and counts.
+        - >-
+          A quality flag and notes, including the automatic [AUTO-RESTART] note
+          when a board failure restarts a run.
+      later:
+        - A licence field for the data in metadata.json.
+      now_it:
+        - >-
+          La provenienza, registrata allo Start: per ogni scheda modello, numero
+          di serie, firmware, tipo di DPP, bit dell'ADC, campionamento e ruolo
+          nella sincronizzazione; le versioni di WebDAQ, CaenDAQ, Python e del
+          sistema operativo; e se i dati vengono da schede vere o dalla modalità
+          di prova.
+        - >-
+          La configurazione completa dei registri di ogni scheda, copiata nel
+          run.
+        - >-
+          Corrente del fascio e carica accumulata; definizioni e conteggi delle
+          regioni di interesse.
+        - >-
+          Una valutazione di qualità e le note, compresa la nota automatica
+          [AUTO-RESTART] quando il guasto di una scheda fa ripartire un run.
+      later_it:
+        - Un campo con la licenza dei dati in metadata.json.
+  # An abridged metadata.json: the keys and their order are those of
+  # build_run_metadata_snapshot() (run_metadata_snapshot.py); the values are
+  # made up for the example.
+  example: |-
+    {
+      "Schema Version": 1,
+      "Run Number": 1276,
+      "Start Time": "2025-11-14T21:03:12",
+      "Stop Time": "2025-11-15T05:47:40",
+      "Duration (s)": 31468.0,
+      "Terminal Voltage": 380,
+      "Run Type": "beam",
+      "Target Name": "TiN #4",
+      "Accumulated Charge": 2.71,
+      "Flag": "good",
+      "Acquisition": {
+        "Synchronisation": "daisy-chain",
+        "Software": { "webdaq": "…", "caendaq": "…", "acquisition_mode": "hardware" },
+        "Boards": [ … ]
+      },
+      "Files": {
+        "Data": ["run_1276_0000.caendat"],
+        "Board Configuration": ["V1730_0.json"],
+        "Current": ["current.txt"],
+        "Statistics": ["stats.csv"],
+        "Manifest": [ { "Name": "run_1276_0000.caendat", "Role": "raw-data", "Bytes": 1843200000 } ]
+      }
+    }
+  exampleCaption: >-
+    An abridged metadata.json. The keys and their order are WebDAQ's; the values
+    are made up for the example.
+  exampleCaption_it: >-
+    Un metadata.json abbreviato. Le chiavi e il loro ordine sono quelli di
+    WebDAQ; i valori sono inventati per l'esempio.
+
+demo:
+  title: Try the demo
+  title_it: Prova la demo
+  text: >-
+    The real WebDAQ interface, built from its code and connected to a simulated
+    acquisition that runs in your browser. Choose the detectors: germanium
+    (HPGe) for resolution, BGO scintillators for efficiency, or neutron
+    detectors, liquid scintillators like EJ-309 that tell neutrons from γ rays
+    by the shape of the pulse. Then pick a source, tune a channel while the run
+    goes, mark a peak, and download the files a real run would leave,
+    metadata.json included.
+  text_it: >-
+    La vera interfaccia di WebDAQ, costruita dal suo codice e collegata a
+    un'acquisizione simulata che gira nel tuo browser. Scegli i rivelatori: al
+    germanio (HPGe) per la risoluzione, scintillatori BGO per l'efficienza,
+    oppure rivelatori di neutroni, scintillatori liquidi come l'EJ-309 che
+    distinguono i neutroni dai raggi γ dalla forma dell'impulso. Poi scegli una
+    sorgente, regola un canale mentre il run va avanti, segna un picco e
+    scarica i file che lascerebbe un run vero, metadata.json compreso.
+  phone: >-
+    WebDAQ is made for a desktop screen; on a phone the demo works, but its
+    tables scroll sideways.
+  phone_it: >-
+    WebDAQ è pensato per lo schermo di un computer; sul telefono la demo
+    funziona, ma le sue tabelle scorrono di lato.
+
+outlook: >-
+  Keeping data alive starts with recording them well. I keep developing the
+  LUNA data acquisition with that aim, and the demo is kept in step with WebDAQ
+  by a test that checks every call the interface makes against the simulation.
+outlook_it: >-
+  Tenere vivi i dati comincia dal registrarli bene. È con questo obiettivo che
+  continuo a sviluppare l'acquisizione dati di LUNA, e la demo resta allineata
+  a WebDAQ grazie a un test che confronta ogni chiamata dell'interfaccia con la
+  simulazione.
+
+links:
+  - { label: WebDAQ source on GitHub, label_it: Codice di WebDAQ su GitHub, href: "https://github.com/skowrons94/WebDAQ" }
+  - { label: Documentation, label_it: Documentazione, href: "https://skowrons94.github.io/WebDAQ/" }
+  - { label: The manual (PDF), label_it: Il manuale (PDF), href: "https://github.com/skowrons94/WebDAQ/blob/main/manual/webdaq-manual.pdf" }
+  - { label: CaenDAQ, the acquisition library, label_it: "CaenDAQ, la libreria di acquisizione", href: "https://github.com/skowrons94/CaenDAQ" }
+  - { label: RUReader, the converter to ROOT, label_it: "RUReader, il convertitore in ROOT", href: "https://github.com/skowrons94/RUReader" }
+
+licence:
+  text: >-
+    MIT licence. WebDAQ is written by J. Skowronski, A. Compagnucci and
+    R. Gesue; contributions are welcome as issues or pull requests.
+  text_it: >-
+    Licenza MIT. WebDAQ è scritto da J. Skowronski, A. Compagnucci e
+    R. Gesue; i contributi sono benvenuti come issue o pull request.
+  # No DOI or CITATION.cff exists yet (checked at a1cc18f).
+  cite: >-
+    J. Skowronski, A. Compagnucci, R. Gesue, WebDAQ: data acquisition for the
+    LUNA experiment, https://github.com/skowrons94/WebDAQ
+  pending: >-
+    A citable release with a DOI (for instance on Zenodo) is to confirm by
+    Jakub; until then, cite the repository and the commit you used.
+  pending_it: >-
+    Una versione citabile con un DOI (per esempio su Zenodo) è da confermare da
+    parte di Jakub; nel frattempo si citano il repository e il commit usato.
