@@ -269,7 +269,7 @@ networks:
       di sodio e l'anticorrelazione sodio-ossigeno osservata negli ammassi
       globulari.
     temperatures:
-      - { label: AGB hot-bottom burning, label_it: "combustione alla base dell'inviluppo (HBB) nelle AGB", T9: 0.08 }
+      - { label: AGB hot-bottom burning, label_it: "combustione HBB nelle stelle AGB", T9: 0.08 }
       - { label: classical nova, label_it: "nova classica", T9: 0.2 }
     reactions: [20Ne-pg-21Na, 21Na-bp-21Ne, 21Ne-pg-22Na, 22Na-bp-22Ne, 22Ne-pg-23Na, 23Na-pa-20Ne, 23Na-pg-24Mg]
 
@@ -286,7 +286,7 @@ networks:
       produce il ²⁶Al radioattivo, la cui riga γ a 1809 keV traccia la mappa
       della nucleosintesi recente nella Galassia.
     temperatures:
-      - { label: AGB hot-bottom burning, label_it: "combustione alla base dell'inviluppo (HBB) nelle AGB", T9: 0.08 }
+      - { label: AGB hot-bottom burning, label_it: "combustione HBB nelle stelle AGB", T9: 0.08 }
       - { label: classical nova, label_it: "nova classica", T9: 0.2 }
     reactions: [24Mg-pg-25Al, 25Al-bp-25Mg, 25Mg-pg-26Al, 26Al-bp-26Mg, 26Mg-pg-27Al, 27Al-pa-24Mg, 27Al-pg-28Si]
 

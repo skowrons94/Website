@@ -113,9 +113,9 @@ function content(lang: Lang) {
 Prendi:
 - $S \\approx 1{,}7$ keV b, il fattore $S$ totale di LUNA ([atlante](${to("/atlas/14N-pg-15O")}); Formicola et al. 2004), costante a queste energie, ed $E_G$ dall'esercizio 1;
 - la sezione d'urto $\\sigma(E) = \\dfrac{S(E)}{E}\\, e^{-2\\pi\\eta}$, con $2\\pi\\eta = \\sqrt{E_G/E}$ (esercizio 1, punto 5);
-- un fascio di protoni di 200 µA, un bersaglio con 10¹⁸ nuclei di ¹⁴N per cm² e un'efficienza di rivelazione fra l'1% (un rivelatore al germanio) e il 50% (un cristallo a somma che circonda il bersaglio). Sono ipotesi tonde, dell'ordine di grandezza giusto, non i parametri di un esperimento preciso;
+- un fascio di protoni di 200 µA, un bersaglio con 10¹⁸ nuclei di ¹⁴N per cm² e un'efficienza di rivelazione fra l'1% (un rivelatore al germanio) e il 50% (un rivelatore a somma che circonda il bersaglio). Sono ipotesi tonde, dell'ordine di grandezza giusto, non i parametri di un esperimento preciso;
 - un rivelatore che offre 100 cm² al cielo, e in superficie circa un muone cosmico per cm² al minuto (Particle Data Group);
-- la roccia sopra LUNA, circa 1400 m, riduce i muoni di circa un milione di volte ([glossario](${to("/glossary#luna")})).
+- la roccia sopra LUNA, circa 1,4 km, riduce i muoni di circa un milione di volte ([glossario](${to("/glossary#luna")})).
 
 1. Quanto vale $\\sigma$(70 keV)?
 2. Quante reazioni al giorno vedi?

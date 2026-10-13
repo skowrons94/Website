@@ -337,7 +337,7 @@ const dataExpertIt: typeof dataExpertEn = {
     title: "Misure (EXFOR)",
     intro: "Tutte le serie di dati che EXFOR contiene per questa reazione, disegnate secondo le energie che coprono, a confronto con le energie che una stella usa davvero.",
     counts: "{n} serie di dati in {e} voci EXFOR, {years}",
-    noEnergy: "{n} senza un intervallo di energia, non disegnati",
+    noEnergy: "{n} senza un intervallo di energia, non disegnate",
     temperature: "Temperatura",
     lowest: "Energia più bassa in EXFOR",
     lowestSub: "{who}, {year}",

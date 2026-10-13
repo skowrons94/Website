@@ -163,7 +163,7 @@ export function ChangeResult({
     )
   const { self, knock, small, state } = split
   const moved = self.filter((r) => visible(r.ratio))
-  const [before, after] = suggestion ? t.trySuggest(suggestion.why, cycle?.[1]) : ["", ""]
+  const [before, after] = suggestion ? t.trySuggest(suggestion.why, cycle?.[1], suggestion.label) : ["", ""]
   return (
     <div className="space-y-3" data-state={state}>
       {self.length > 0 && (
@@ -227,7 +227,7 @@ export function ChangeResult({
         <p className="text-pretty rounded-md border border-dashed border-border px-3 py-3 text-sm leading-relaxed sm:px-4 sm:py-4" data-quiet>
           <Sci>
             {state === "self"
-              ? t.quietSelf(moved.map((r) => r.label).join(lang === "it" ? " e " : " and "), cycle)
+              ? t.quietSelf(moved.map((r) => r.label), cycle)
               : t.quietNone}
           </Sci>
           {suggestion && (

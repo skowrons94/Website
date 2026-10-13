@@ -927,11 +927,11 @@ terms:
       R-matrix evaluation each data set may be given a normalization factor,
       allowed to move only within its quoted scale uncertainty.
     text_it: >-
-      Ogni insieme di dati misurati porta con sé un'incertezza di scala
+      Ogni serie di dati misurati porta con sé un'incertezza di scala
       complessiva, dovuta alla corrente del fascio, al numero di nuclei del
       bersaglio o all'efficienza del rivelatore, che sposta tutti i suoi punti
       in su o in giù insieme. In un fit come una valutazione R-matrix a ogni
-      insieme di dati si può dare un fattore di normalizzazione, libero di
+      serie di dati si può dare un fattore di normalizzazione, libero di
       muoversi solo entro la sua incertezza di scala dichiarata.
     see: [r-matrix, chi-squared]
 

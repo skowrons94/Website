@@ -5,7 +5,11 @@
  */
 
 import type { Lang } from "@/lib/locale"
-import { elideItalian } from "../localize.mjs"
+import { beforeNuclide, elideItalian } from "../localize.mjs"
+
+/** "il ¹³C", "l'¹¹C": a nuclide label with its Italian article; other labels (n, p) as they are. */
+const ilNuclide = (label: string, cap = false) =>
+  /^[⁰¹²³⁴⁵⁶⁷⁸⁹]/.test(label) ? elideItalian(`${cap ? "Il" : "il"} ${label}`) : label
 
 /** "all'1%", "allo 0,1%", "al 5%": the Italian article before a percentage, as it is read. */
 function alPercent(f: number): string {
@@ -171,7 +175,7 @@ const en = {
   // what a change did: its own target apart, the knock-on effects as bars
   selfLine: (nucleus: string, ratio: string) => `${nucleus} itself: ${ratio}`,
   selfNote: (decay: boolean): string =>
-    decay ? "(expected: it is the nucleus that decays)" : "(expected: it is what this reaction burns)",
+    decay ? "(expected: this nucleus decays)" : "(expected: this reaction burns it)",
   selfBarely: "(barely changes: it is made again about as fast as it burns)",
   knockTitle: "Knock-on effects on the other nuclei",
   smallFold: (n: number) => `${n} ${n === 1 ? "nucleus changes" : "nuclei change"} by less than 1%`,
@@ -182,16 +186,19 @@ const en = {
     nena: ["the NeNa cycle", "cycle"],
     mgal: ["the MgAl cycle", "cycle"],
   } as Record<string, [string, string]>,
-  quietSelf: (nuclei: string, cycle?: [string, string]) =>
-    cycle
-      ? `In this burn ${cycle[0]} rebalances quickly: only ${nuclei} moves by more than 1%. Each nucleus of the ${cycle[1]} settles where it is burnt as fast as it is made, and the pace of the whole ${cycle[1]} is set by its slowest step.`
-      : `Only ${nuclei} moves by more than 1%: the rest of the burn takes up the change.`,
+  quietSelf: (list: string[], cycle?: [string, string]) => {
+    const nuclei = list.join(" and ")
+    const moves = list.length === 1 ? "moves" : "move"
+    return cycle
+      ? `In this burn ${cycle[0]} rebalances quickly: only ${nuclei} ${moves} by more than 1%. Each nucleus of the ${cycle[1]} settles where it is burnt as fast as it is made, and the pace of the whole ${cycle[1]} is set by its slowest step.`
+      : `Only ${nuclei} ${moves} by more than 1%: the rest of the burn takes up the change.`
+  },
   quietNone:
     "No nucleus moves by more than 1%: in this burn this reaction either barely runs or is not what anything waits for.",
   /** the text around the suggested reaction (a button) */
-  trySuggest: (why: "slowest" | "sensitive", kind = "cycle"): [string, string] =>
+  trySuggest: (why: "slowest" | "sensitive", kind = "cycle", _label = ""): [string, string] =>
     why === "slowest"
-      ? ["Try ", `, the slowest step, to see the whole ${kind} respond.`]
+      ? ["Try ", `, the slowest step, to see the pace of the whole ${kind} change.`]
       : ["Try ", ", one of the reactions this burn is most sensitive to."],
   trySuggestTitle: "Change this reaction instead, by the same factor",
   stripSelf: "itself",
@@ -551,7 +558,7 @@ const it: RatesDict = {
 
   whatIfTitle: "E se un tasso fosse diverso?",
   whatIfLead:
-    "Ogni tasso è noto solo con una certa incertezza, da qualche punto percentuale fino a un fattore dieci. Scegline uno, cambialo e guarda quali nuclei escono diversi alla fine della combustione.",
+    "Ogni tasso è noto solo con una certa incertezza, da qualche per cento fino a un fattore dieci. Scegline uno, cambialo e guarda quali nuclei escono diversi alla fine della combustione.",
   pickReaction: "Scegli una reazione da cambiare",
   moreReactionsPick: "Un'altra reazione della rete…",
   yourChanges: "Le tue modifiche",
@@ -569,9 +576,9 @@ const it: RatesDict = {
       ? `Frazione di massa finale, modificata ÷ originale: la combustione modificata si è fermata dopo ${time}, quella originale dopo ${baseTime}. Barre a destra: più di quel nucleo.`
       : `Frazione di massa finale dopo ${time}, modificata ÷ originale. Barre a destra: più di quel nucleo.`,
   noChange: "Cambia un tasso per vedere che cosa fa: per ora ogni nucleo finisce come nella combustione originale.",
-  selfLine: (nucleus: string, ratio: string) => `${nucleus} stesso: ${ratio}`,
+  selfLine: (nucleus: string, ratio: string) => `${ilNuclide(nucleus, true)} stesso: ${ratio}`,
   selfNote: (decay: boolean): string =>
-    decay ? "(atteso: è il nucleo che decade)" : "(atteso: è ciò che questa reazione brucia)",
+    decay ? "(atteso: questo nucleo decade)" : "(atteso: questa reazione lo brucia)",
   selfBarely: "(cambia appena: si riforma quasi alla stessa velocità con cui brucia)",
   knockTitle: "Effetti a catena sugli altri nuclei",
   smallFold: (n: number) => `${n} ${n === 1 ? "nucleo cambia" : "nuclei cambiano"} meno dell'1%`,
@@ -581,18 +588,20 @@ const it: RatesDict = {
     nena: ["il ciclo NeNa", "cycle"],
     mgal: ["il ciclo MgAl", "cycle"],
   } as Record<string, [string, string]>,
-  quietSelf: (nuclei: string, cycle?: [string, string]) => {
-    if (!cycle) return `Solo ${nuclei} cambia più dell'1%: il resto della combustione assorbe il cambiamento.`
+  quietSelf: (list: string[], cycle?: [string, string]) => {
+    const nuclei = list.map((x) => ilNuclide(x)).join(" e ")
+    const cambia = list.length === 1 ? "cambia" : "cambiano"
+    if (!cycle) return `Solo ${nuclei} ${cambia} più dell'1%: il resto della combustione assorbe il cambiamento.`
     const chain = cycle[1] === "chain"
     const [of, whole] = chain ? ["della catena", "tutta la catena"] : ["del ciclo", "tutto il ciclo"]
-    return `In questa combustione ${cycle[0]} si riequilibra in fretta: solo ${nuclei} cambia più dell'1%. Ogni nucleo ${of} si assesta dove viene bruciato con la stessa velocità con cui è prodotto, e il ritmo di ${whole} lo detta il passo più lento.`
+    return `In questa combustione ${cycle[0]} si riequilibra in fretta: solo ${nuclei} ${cambia} più dell'1%. Ogni nucleo ${of} si assesta dove viene bruciato con la stessa velocità con cui è prodotto, e il ritmo di ${whole} lo detta il passo più lento.`
   },
   quietNone:
     "Nessun nucleo cambia più dell'1%: in questa combustione questa reazione o quasi non avviene, o non è lei a far aspettare le altre.",
-  trySuggest: (why: "slowest" | "sensitive", kind = "cycle"): [string, string] =>
+  trySuggest: (why: "slowest" | "sensitive", kind = "cycle", label = ""): [string, string] =>
     why === "slowest"
-      ? ["Prova ", `, il passo più lento, e vedrai rispondere ${kind === "chain" ? "tutta la catena" : "tutto il ciclo"}.`]
-      : ["Prova ", ", una delle reazioni a cui questa combustione è più sensibile."],
+      ? [beforeNuclide("Prova la", label), `, il passo più lento, e vedrai cambiare il ritmo di ${kind === "chain" ? "tutta la catena" : "tutto il ciclo"}.`]
+      : [beforeNuclide("Prova la", label), ", una delle reazioni a cui questa combustione è più sensibile."],
   trySuggestTitle: "Cambia invece questa reazione, dello stesso fattore",
   stripSelf: "stesso",
   stripOthers: "il resto meno dell'1%",

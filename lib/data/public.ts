@@ -281,8 +281,10 @@ export interface Waiting {
   tau: number
   /** the reaction that is the bottleneck of the scenario, by its label */
   bottleneck: string | null
-  /** the next-slowest step on the same path, s */
+  /** the next-slowest step on the same path: its nucleus's mean life against all the reactions that destroy it, s */
   nextTau: number | null
+  /** that nucleus */
+  nextNucleus: { Z: number; A: number; symbol: string } | null
   T9: number
   rho: number
 }
@@ -302,6 +304,7 @@ export function waitingTime(net: string, site: string, atlasId: string): Waiting
   const taus = lifetimes(c, { history: { kind: "constant", T9: s.T9, rho: s.rho }, screening: true }, s.X)
   let bn: string | null = null
   let nextTau: number | null = null
+  let nextNucleus: Waiting["nextNucleus"] = null
   try {
     const base = JSON.parse(fs.readFileSync(path.join(RATES, `${net}.baseline.json`), "utf8"))
     const tBurn = base.runs[site].tFinal as number
@@ -313,14 +316,17 @@ export function waitingTime(net: string, site: string, atlasId: string): Waiting
       const b = bottleneck(p, taus, closes(c, p), cycle, tBurn, fuel)
       if (b.step) {
         bn = n.reactions[b.step.reaction].label
-        const others = b.path.filter((x) => x.reaction !== b.step!.reaction).map((x) => x.tau)
-        nextTau = others.length ? Math.max(...others) : null
+        const others = b.path.filter((x) => x.reaction !== b.step!.reaction)
+        const next = others.length ? others.reduce((a, x) => (x.tau > a.tau ? x : a)) : null
+        nextTau = next ? next.tau : null
+        const nuc = next ? n.nuclei[next.nucleus] : null
+        nextNucleus = nuc ? { Z: nuc.Z, A: nuc.A, symbol: nuc.label } : null
       }
     }
   } catch {
     // no baseline: the waiting time alone
   }
-  return { tau: taus[k], bottleneck: bn, nextTau, T9: s.T9, rho: s.rho }
+  return { tau: taus[k], bottleneck: bn, nextTau, nextNucleus, T9: s.T9, rho: s.rho }
 }
 
 /* -- inside the nucleus: a level scheme with the Gamow window --------------- */
