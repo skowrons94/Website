@@ -33,9 +33,11 @@ details: >-
   section is far too small to measure, so the S-factor is extrapolated from
   higher energies with R-matrix fits. The capture proceeds mainly to the
   6.79 MeV excited state of ¹⁵O and to its ground state, which makes the
-  extrapolation sensitive to the γ-ray summing and to the subthreshold state at
-  6.79 MeV. The width of that state, and so its contribution at low energy,
-  has been probed through its lifetime and through asymptotic normalization
+  extrapolation sensitive to the γ-ray summing. Capture into the 6.79 MeV
+  state carries most of the low-energy S-factor. As a subthreshold resonance,
+  the state also shapes the ground-state transition, and that contribution
+  scales with its radiative width, i.e. with the inverse of its lifetime; it
+  has been probed through the lifetime and through asymptotic normalization
   coefficients from transfer reactions. The LUNA measurements at the 400 kV
   accelerator under Gran Sasso extended the data down to 70 keV, much closer
   to the solar energies than any surface experiment, and gave a total S(0)
@@ -85,8 +87,8 @@ measurements:
     note: >-
       Mean lifetime of the 6793 keV state of ¹⁵O, τ ≈ 1.6 fs (90% C.L.), from
       the Doppler-shift attenuation method. The value implies a much smaller
-      contribution of the subthreshold state than inferred from the (p,γ)
-      data.
+      contribution of the subthreshold state to the ground-state transition
+      than inferred from the (p,γ) data.
     refs: [bertone2001]
   - year: 2003
     facility: texas-am

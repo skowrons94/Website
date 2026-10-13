@@ -152,11 +152,13 @@ threads:
       di femtosecondo, e che cosa questo ci dice sul Sole.
     body:
       - >-
-        The 6.79 MeV state in ¹⁵O sits about 0.5 MeV below the proton threshold
-        and dominates the low-energy behaviour of ¹⁴N(p,γ)¹⁵O — the slowest step
-        of the CNO cycle, and therefore the reaction that sets the cycle's rate
-        and the CNO neutrino flux. Its lifetime enters that extrapolation
-        directly. The lifetime is shorter than a femtosecond and the published
+        The 6.79 MeV state in ¹⁵O sits about 0.5 MeV below the proton threshold.
+        Capture into this state carries most of the low-energy S-factor of
+        ¹⁴N(p,γ)¹⁵O, the slowest step of the CNO cycle and therefore the
+        reaction that sets the cycle's rate and the CNO neutrino flux. As a
+        subthreshold resonance, the state also shapes the ground-state
+        transition, and that contribution scales with its radiative width, i.e.
+        with the inverse of its lifetime. The lifetime is shorter than a femtosecond and the published
         values disagree; a γ-ray tracking array has the position resolution to
         measure it precisely from the Doppler shift.
       - >-
@@ -168,10 +170,13 @@ threads:
     body_it:
       - >-
         Lo stato a 6,79 MeV del ¹⁵O si trova circa 0,5 MeV sotto la soglia
-        protonica e domina il comportamento a bassa energia della ¹⁴N(p,γ)¹⁵O, il
-        passo più lento del ciclo CNO e quindi la reazione che ne fissa il ritmo
-        e il flusso di neutrini CNO. La sua vita media entra direttamente in
-        quella estrapolazione. È inferiore al femtosecondo, e i valori pubblicati
+        protonica. La cattura in questo stato fornisce la maggior parte del
+        fattore astrofisico S a bassa energia della ¹⁴N(p,γ)¹⁵O, il passo più
+        lento del ciclo CNO e quindi la reazione che ne fissa il ritmo e il
+        flusso di neutrini CNO. Come risonanza sotto soglia, lo stato influenza
+        anche la transizione allo stato fondamentale, e questo contributo è
+        proporzionale alla sua larghezza radiativa, cioè all'inverso della sua
+        vita media. La vita media è inferiore al femtosecondo, e i valori pubblicati
         non concordano; la risoluzione in posizione di un rivelatore a
         tracciamento di raggi γ è ciò che permette di misurarla con precisione
         sfruttando l'effetto Doppler.
