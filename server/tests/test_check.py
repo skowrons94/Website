@@ -32,7 +32,11 @@ from app import warm  # noqa: E402
 
 ROOT = os.path.join(SERVER, "evaluations")
 ATLAS = os.path.join(REPO, "content", "atlas", "reactions")
-NODE = shutil.which("node")
+# The site's own checker needs the npm dependencies; without them (the
+# Pages workflow runs these tests before `npm ci`) only app.check is tested.
+NODE = (shutil.which("node")
+        if os.path.isdir(os.path.join(REPO, "node_modules", "js-yaml"))
+        else None)
 
 try:
     import pyazr  # noqa: F401
