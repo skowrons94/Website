@@ -123,7 +123,7 @@ export function DataNucleusPage({ nuclide, lang }: { nuclide: string; lang: Lang
                 {dx.nucleus.total}
               </th>
               {groups.map((g) => (
-                <th key={g} scope="col" className="px-3 py-2 font-medium" title={dx.quantityShort[g]}>
+                <th key={g} scope="col" className="whitespace-nowrap px-3 py-2 font-medium" title={dx.quantityShort[g]}>
                   {g === "other" ? dx.quantityShort.other : GROUP_SYMBOL[g]}
                 </th>
               ))}
