@@ -121,7 +121,9 @@ is ignored rather than overwriting newer values; `seq` is echoed back.
   `AZURE2_EDIT_BURST`, 60) and `AZURE2_MAX_INFLIGHT_PER_IP` slow requests
   at once (8). `0` turns each off. Behind Caddy, `AZURE2_TRUSTED_PROXIES=1`
   (docker-compose.yml) makes the address the client's (Werkzeug ProxyFix,
-  one hop); never set it when clients reach the API directly. The log keeps
+  one hop; `main.serve_options` then tells waitress, which drops
+  X-Forwarded-For by default, to keep it); never set it when clients reach
+  the API directly. The log keeps
   addresses cut to /24 (IPv4) or /48 (IPv6), as Caddy's access log does.
 - **CORS** is off: in production Caddy serves the site and `/api` on one
   origin. For development (site on :3000, API on :5001) list the origins in

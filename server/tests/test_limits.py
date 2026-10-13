@@ -465,3 +465,56 @@ def test_gone_clients_are_bounded(fake):
         manager.close_client(f"token{i:06d}")
     assert len(manager._gone_clients) <= 50
     manager.close_all()
+
+
+# -- waitress keeps X-Forwarded-For only behind a trusted proxy ------------------
+
+def test_waitress_keeps_forwarded_for_only_when_a_proxy_is_trusted(tmp_path):
+    """waitress 3 drops X-Forwarded-For unless told not to; behind Caddy that
+    made every visitor one address (found re-running the r15 attacks).  Runs
+    waitress, with main.serve_options, in a child process."""
+    import os
+    import socket
+    import subprocess
+    import sys
+    import urllib.request
+
+    server_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    child = tmp_path / "echo.py"
+    child.write_text(
+        "import sys\n"
+        f"sys.path.insert(0, {server_dir!r})\n"
+        "import main\n"
+        "from waitress import serve\n"
+        "class Cfg:\n"
+        "    HOST, THREADS, MAX_CONTENT_LENGTH = '127.0.0.1', 2, 1024\n"
+        "    PORT, TRUSTED_PROXIES = int(sys.argv[1]), int(sys.argv[2])\n"
+        "def app(environ, start):\n"
+        "    start('200 OK', [('Content-Type', 'text/plain')])\n"
+        "    return [environ.get('HTTP_X_FORWARDED_FOR', '-').encode()]\n"
+        "serve(app, **main.serve_options(Cfg))\n")
+
+    def seen(trusted):
+        with socket.socket() as s:
+            s.bind(("127.0.0.1", 0))
+            port = s.getsockname()[1]
+        proc = subprocess.Popen([sys.executable, str(child), str(port), str(trusted)],
+                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        try:
+            opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+            req = urllib.request.Request(f"http://127.0.0.1:{port}/",
+                                         headers={"X-Forwarded-For": "203.0.113.9"})
+            deadline = time.time() + 20
+            while True:
+                try:
+                    return opener.open(req, timeout=5).read().decode()
+                except OSError:
+                    if time.time() > deadline:
+                        raise
+                    time.sleep(0.1)
+        finally:
+            proc.kill()
+            proc.wait()
+
+    assert seen(1) == "203.0.113.9"
+    assert seen(0) == "-"
