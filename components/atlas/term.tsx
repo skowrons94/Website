@@ -21,6 +21,7 @@ export function Term({
   return (
     <Link
       href={localePath(lang, `/glossary#${id}`)}
+      prefetch={false}
       className={cn(
         "underline decoration-muted-foreground/50 decoration-dotted underline-offset-[3px] transition-colors hover:text-link hover:decoration-current",
         className,

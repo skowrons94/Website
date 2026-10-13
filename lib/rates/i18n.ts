@@ -326,7 +326,7 @@ const en = {
   gamowResonances:
     "The window is where a smooth (non-resonant) cross section reacts most. A narrow resonance inside it dominates instead (²⁴Mg(p,γ) at 300 million kelvin through its 214 keV resonance, ²⁵Mg(p,γ) at 80 million kelvin): the rate then follows the resonance's energy, not the window.",
   nowFactor: (f: string) => `now ${f}`,
-  builtByPlain: "Built by J. Skowronski; the explorer can take rates from his AZURE2 evaluations in place of REACLIB's.",
+  builtByPlain: "Built by J. Skowronski.",
   lunaChip: "LUNA",
   lunaChipTitle: (refs: string) => `Measured underground at LUNA: ${refs}`,
   // -- curiosities (lib/rates/curiosities.ts) ---------------------------------
@@ -716,7 +716,7 @@ const it: RatesDict = {
   gamowResonances:
     "La finestra indica dove avviene la maggior parte delle reazioni se la sezione d'urto è liscia (non risonante). Se al suo interno c'è una risonanza stretta, è lei a dominare (la ²⁴Mg(p,γ) a 300 milioni di K con la sua risonanza a 214 keV, la ²⁵Mg(p,γ) a 80 milioni di K): il tasso segue allora l'energia della risonanza, non la finestra.",
   nowFactor: (f: string) => `ora ${f}`,
-  builtByPlain: "Realizzato da J. Skowronski; l'esploratore può usare i tassi delle sue valutazioni AZURE2 al posto di quelli di REACLIB.",
+  builtByPlain: "Realizzato da J. Skowronski.",
   lunaChip: "LUNA",
   lunaChipTitle: (refs: string) => `Misurata sotto terra a LUNA: ${refs}`,
   cur: {

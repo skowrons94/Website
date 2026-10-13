@@ -2,6 +2,7 @@ import Link from "next/link"
 import { ChevronRight } from "lucide-react"
 
 import { Sci } from "@/components/sci"
+import { prefetchFor } from "@/lib/prefetch"
 
 export type Crumb = {
   label: string
@@ -37,6 +38,7 @@ export function Breadcrumbs({ label, items, className = "" }: { label: string; i
               {item.href && !last ? (
                 <Link
                   href={item.href}
+                  prefetch={prefetchFor(item.href)}
                   lang={item.lang}
                   className="-my-2 inline-flex min-h-10 items-center py-2 underline-offset-4 transition-colors hover:text-foreground hover:underline [@media(pointer:fine)]:min-h-0"
                 >
