@@ -3,10 +3,8 @@
  * phase) and the physics engine (sim/physics, owned by the physics phase).
  *
  * The state machine only ever talks to physics through what is declared here.
- * The bodies below are the P1 PLACEHOLDER: flat spectra, a flat noisy trace and
- * a constant beam, so the mock backend can be built and tested before the
- * physics exists. The physics phase replaces the bodies (or re-exports its own
- * implementation from here) and keeps the signatures. Changing a signature is a
+ * The physics phase (P2) implements the engine in engine.ts and re-exports it at
+ * the end of this file; the signatures are the ones P1 declared. Changing a signature is a
  * change to both phases: say so in webdaq-demo/README.md ("Physics interface").
  *
  * Conventions
@@ -223,7 +221,8 @@ function axis(name: string, nbins: number, xmin: number, xmax: number): RootJson
 
 function histBase(typename: string, name: string, title: string, ncells: number, entries: number): RootJson {
   return {
-    _typename: typename, fUniqueID: 0, fBits: 8, fName: name, fTitle: title,
+    // fBits 8 | kNoStats (BIT 9): spy.py calls SetStats(0) on every histogram it builds.
+    _typename: typename, fUniqueID: 0, fBits: 8 | 512, fName: name, fTitle: title,
     fLineColor: 602, fLineStyle: 1, fLineWidth: 1, fFillColor: 0, fFillStyle: 1001,
     fMarkerColor: 1, fMarkerStyle: 1, fMarkerSize: 1, fNcells: ncells,
     fBarOffset: 0, fBarWidth: 1000, fEntries: entries, fTsumw: 0, fTsumw2: 0,
@@ -303,83 +302,14 @@ export function waveformTH1F(samples: ArrayLike<number>, o: { name: string; titl
   return th1f(samples, { name: o.name, title: o.title, xmin: 0, xmax: samples.length })
 }
 
-// ─────────────────────────────────────────────── P1 placeholder engine
-
-/** splitmix32: seeds the placeholder's single stream. */
-function splitmix32(a: number) {
-  return () => {
-    a |= 0; a = (a + 0x9e3779b9) | 0
-    let t = a ^ (a >>> 16); t = Math.imul(t, 0x21f0aaad)
-    t ^= t >>> 15; t = Math.imul(t, 0x735a2d97)
-    return ((t ^= t >>> 15) >>> 0) / 4294967296
-  }
-}
+// ──────────────────────────────────────────────────────── the engine (P2)
 
 /**
- * PLACEHOLDER (P1). Flat spectra at a fixed rate on the two detector channels
- * (0 and 1) and a trickle of noise on the others; a flat noisy trace; the
- * scenario's I0 as a constant beam. To be replaced by the physics phase.
+ * createPhysics(seed) is the engine of engine.ts. Before configure() with a detector
+ * kind, the worker must `await loadPhysicsData(kind)`: it loads sim/data/lines.json
+ * and tables/<kind>.json as separate chunks (design §6.4). configure() throws when
+ * the data are missing, when the board's DPP does not match the detector kind
+ * (dppFor), and for the AmBe source (not modelled: no sourced spectrum bundled).
  */
-export function createPhysics(seed: number): PhysicsEngine {
-  let rnd = splitmix32(seed >>> 0)
-  let board: BoardView | null = null
-  let scenario: Scenario = DEFAULT_SCENARIO
-  let spectra: Uint32Array[] = []
-  let psds: (Uint32Array | null)[] = []
-  const alloc = () => {
-    const n = board?.nChannels ?? 16
-    const bins = board?.dpp === 'DPP-PSD' ? QLONG_BINS : ENERGY_BINS
-    spectra = Array.from({ length: n }, () => new Uint32Array(bins))
-    psds = Array.from({ length: n }, () => (board?.dpp === 'DPP-PSD' ? new Uint32Array(PSD_XBINS * PSD_YBINS) : null))
-  }
-  alloc()
-  return {
-    configure(s, b) {
-      const realloc = !board || b.dpp !== board.dpp || b.nChannels !== board.nChannels
-      scenario = s; board = b
-      if (realloc) alloc()
-    },
-    clear() { alloc() },
-    tick(env) {
-      const n = board?.nChannels ?? 16
-      const channels: ChannelCounters[] = []
-      let bytes = 0
-      for (let ch = 0; ch < n; ch++) {
-        const on = board ? board.channelEnabled(ch) : true
-        const rate = !on ? 0 : ch < 2 ? 500 : 0.5
-        const mean = rate * env.dt_s
-        const events = Math.floor(mean + rnd())
-        const spec = spectra[ch]
-        const nb = spec.length
-        for (let k = 0; k < events; k++) {
-          spec[Math.floor(rnd() * nb * 0.9)]++
-          const p = psds[ch]
-          if (p) p[Math.floor(rnd() * PSD_YBINS) * PSD_XBINS + Math.floor(rnd() * PSD_XBINS * 0.9)]++
-        }
-        bytes += events * 8
-        channels.push({ offered: events, events, pileup: 0, lost: 0, saturated: 0, dead_s: 0 })
-      }
-      return { channels, bytes, blocksDropped: 0 }
-    },
-    spectrum(ch) { return spectra[ch] ?? new Uint32Array(ENERGY_BINS) },
-    psd(ch) { return psds[ch] ?? null },
-    waveform(ch) {
-      if (!board) return null
-      const len = Math.max(8, Math.min(65536, (board.chReg(0x1020, ch) || 125) * 8))
-      const base = 1000
-      const out = new Int16Array(len)
-      for (let i = 0; i < len; i++) out[i] = base + Math.round((rnd() - 0.5) * 8)
-      return out
-    },
-    calibration() {
-      return board?.dpp === 'DPP-PSD' ? [0, 0.125] : [0, 0.25]
-    },
-    beamSample() {
-      const I = scenario.source === 'n14pg' ? scenario.beam_I0_uA : 0
-      return [I, I * 0.05, I * 0.03, 0]
-    },
-    fwhmProbe() { return null },
-    snapshot() { return null },
-    restore() { /* placeholder keeps nothing */ },
-  }
-}
+export { createPhysics, loadPhysicsData, registerPhysicsData, physicsDataReady } from './engine'
+export type { PhysicsData, PhysicsExtras } from './engine'
