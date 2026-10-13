@@ -6,6 +6,21 @@
 # string, makes every API call same-origin and relative — the reverse proxy in
 # front of this container is what routes /api to the AZURE2 service.
 
+# The WebDAQ demo (webdaq-demo/README.md): the WebDAQ frontend at the commit
+# pinned in webdaq-demo/pin.json, with the demo's overlay and simulated
+# backend, exported as static files for /webdaq-demo/. git fetches the pinned
+# commit (and checks its objects), build.mjs checks every upstream file the
+# overlay replaces, npm checks JSROOT's tarball.
+FROM node:22-alpine AS webdaq-demo
+RUN apk add --no-cache git
+WORKDIR /demo
+ENV NEXT_TELEMETRY_DISABLED=1
+COPY webdaq-demo/package.json webdaq-demo/package-lock.json ./
+RUN npm ci --ignore-scripts
+COPY webdaq-demo/ ./
+RUN DEMO_BASE_PATH=/webdaq-demo node build.mjs --out /demo/export \
+ && node scripts/size.mjs /demo/export
+
 FROM node:22-alpine AS build
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -41,6 +56,7 @@ RUN addgroup -g 1001 -S nodejs && adduser -u 1001 -S nextjs -G nodejs
 COPY --from=build /app/.next/standalone ./
 COPY --from=build /app/.next/static ./.next/static
 COPY --from=build /app/public ./public
+COPY --from=webdaq-demo /demo/export ./public/webdaq-demo
 RUN mkdir -p .next/cache && chown nextjs:nodejs .next/cache
 
 USER nextjs

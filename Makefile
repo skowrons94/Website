@@ -15,7 +15,7 @@ COMPOSE ?= docker compose
 .DEFAULT_GOAL := help
 .PHONY: help env deploy update restart down logs logs-web logs-azure2 check \
         evaluations warm add-evaluation check-evaluations dev-server dev-site \
-        data data-committed test-data
+        data data-committed test-data demo
 
 help:                       ## show this list
 	@grep -hE '^[a-z0-9-]+:.*?## ' $(MAKEFILE_LIST) \
@@ -64,6 +64,8 @@ check:                      ## container status, and what the API reports
 	  "import json,urllib.request as u; \
 	   print('azure2:', json.load(u.urlopen('http://localhost:5001/api/health')))" \
 	  2>/dev/null || echo "azure2: not answering yet"
+	@$(COMPOSE) exec -T web wget -qO- http://localhost:3000/webdaq-demo/index.html 2>/dev/null \
+	  | grep -q 'webdaq-demo' && echo "webdaq-demo: served" || echo "webdaq-demo: not found"
 
 evaluations:                ## pick up new or edited evaluations, without a rebuild
 	$(COMPOSE) restart azure2
@@ -145,3 +147,10 @@ dev-server:                 ## run the AZURE2 API locally on :5001
 
 dev-site:                   ## run the site locally on :3000, against that API
 	API_BASE=http://localhost:5001 npm run dev
+
+# The WebDAQ demo into public/webdaq-demo/ (webdaq-demo/README.md). `next dev`
+# does not serve its directory indexes: look at it with
+# `python3 webdaq-demo/tests/contract/serve.py public/webdaq-demo /webdaq-demo`
+# or a static export of the site. The Docker image builds it itself.
+demo:                       ## build the WebDAQ demo into public/webdaq-demo (~1 min)
+	cd webdaq-demo && npm ci --ignore-scripts && node build.mjs

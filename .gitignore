@@ -75,3 +75,6 @@ public/search/
 
 # Backups (DEPLOY.md, section 8): they hold the TLS key and access logs.
 *.tgz
+
+# Built by webdaq-demo/build.mjs (the Pages workflow, `make demo`).
+/public/webdaq-demo/

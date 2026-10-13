@@ -3,7 +3,8 @@
 #
 # Steps: build AZURE2's engine module natively (as deploy/Dockerfile.azure2
 # does) and precompute every evaluation at its shipped parameters; build the
-# same module for WebAssembly; lay out public/azure2/; export the site.
+# same module for WebAssembly; lay out public/azure2/; build the WebDAQ demo
+# into public/webdaq-demo/; export the site.
 name: GitHub Pages
 
 # Builds and deploys from main only (the Checks workflow covers pull
@@ -79,6 +80,9 @@ jobs:
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            webdaq-demo/package-lock.json
 
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
@@ -242,6 +246,40 @@ jobs:
           pip install --quiet --require-hashes -r .github/requirements-ci.txt
           python scripts/data/dx.py check --shards 500
           python -m pytest -q scripts/data/tests
+
+      # -- the WebDAQ demo (webdaq-demo/README.md) -----------------------------
+      # The WebDAQ frontend at the commit pinned in webdaq-demo/pin.json, with
+      # the demo's overlay and simulated backend, exported into
+      # public/webdaq-demo/ (served at $BASE_PATH/webdaq-demo/). git checks
+      # the pinned commit's objects, build.mjs the hash of every upstream file
+      # the overlay replaces and npm the integrity of JSROOT's tarball. The
+      # fetched source is cached by the pinned commit (main writes it).
+      - name: WebDAQ commit
+        id: webdaq
+        run: echo "ref=$(node -p "require('./webdaq-demo/pin.json').commit")" >> "$GITHUB_OUTPUT"
+
+      - name: Restore the WebDAQ source
+        id: webdaq-src
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: webdaq-demo/.work/upstream
+          key: webdaq-src-${{ steps.webdaq.outputs.ref }}
+
+      - name: WebDAQ demo
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+        run: |
+          cd webdaq-demo
+          npm ci --ignore-scripts
+          DEMO_BASE_PATH="$BASE_PATH/webdaq-demo" node build.mjs
+          node scripts/size.mjs ../public/webdaq-demo   # fails over budget
+
+      - name: Save the WebDAQ source (main only)
+        if: github.ref == 'refs/heads/main' && steps.webdaq-src.outputs.cache-hit != 'true'
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: webdaq-demo/.work/upstream
+          key: ${{ steps.webdaq-src.outputs.cache-primary-key }}
 
       # -- the site -----------------------------------------------------------
       # No install scripts: nothing the site depends on needs one, and none

@@ -117,6 +117,9 @@ AZURE2) and needs about 2 GB of RAM at `BUILD_JOBS=4`. Then:
 - `https://<domain>/evaluations` lists the N evaluations. Open ¹³N: the level
   scheme appears within a few seconds, and the Plot tab shows curves.
 - `https://<domain>/atlas` and `https://<domain>/it` load.
+- `https://<domain>/webdaq-demo/` loads (`make check` says `webdaq-demo:
+  served`); the banner says it is a simulation, and *Open WebDAQ* reaches the
+  dashboard. `https://<domain>/software/webdaq` links to it.
 
 Then fill the results cache, once:
 
@@ -166,6 +169,19 @@ make update
 The site image copies `public/data/`, so it grows by about 480 MB. Without
 `make data` the site still builds and runs; the explorer pages then have the
 index and the atlas nuclei, but no data points.
+
+**The WebDAQ demo** (`/webdaq-demo/`, webdaq-demo/README.md) is built inside
+the site image by its own stage of `deploy/Dockerfile.web`: it fetches the
+WebDAQ frontend at the commit pinned in `webdaq-demo/pin.json` from GitHub,
+applies the demo's overlay and exports static files into the image's
+`public/webdaq-demo/`; Caddy turns its directory addresses into
+`index.html` (`deploy/Caddyfile`). This adds about a minute and some 400 MB of
+build cache to `make update`, and needs github.com and the npm registry
+reachable from the build. Nothing runs on the server for it: the simulated
+DAQ runs in the visitor's browser. To show a newer WebDAQ, change
+`webdaq-demo/pin.json` (webdaq-demo/README.md, "Updating WebDAQ") and
+`make update`. `make demo` builds it into `public/webdaq-demo/` outside
+Docker.
 
 ## 6. Where things live
 
@@ -344,3 +360,12 @@ https://github.com/emscripten-core/emsdk refs/tags/<version>` gives
 `EMSDK_RELEASE`. Record the NNDC ENSDF checksums once with
 `python scripts/data/dx.py fetch-ensdf --source nndc --record` and commit
 `scripts/data/sources.json`; CI then uses NNDC instead of the mirror.
+
+**The WebDAQ demo in CI.** The Pages build fetches WebDAQ by the commit in
+`webdaq-demo/pin.json` (git checks every object against it), checks the
+SHA-256 of every upstream file the demo's overlay replaces (the
+`overrides` in the same file) and installs JSROOT from the npm tarball whose
+integrity `pin.json` records; `npm ci --ignore-scripts` installs the rest from
+`webdaq-demo/package-lock.json`. The fetched source is cached by the commit
+(written by main only, like the other caches). `scripts/size.mjs` then fails
+the build if the demo is over its size budgets (`webdaq-demo/budgets.json`).

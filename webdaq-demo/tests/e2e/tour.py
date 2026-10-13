@@ -6,6 +6,7 @@ The guided tour, end to end, in Chromium (phase P5 acceptance, design §6.5):
   → Run files (8 files, metadata.json says simulated).
 
   python tests/e2e/tour.py <site or demo out dir> <base path> --start /software/webdaq/
+      (/it/software/webdaq/ for Italian)
       [--lang en|it] [--width 1440] [--detectors hpge]
 
 For the demo alone: out = the demo export, base = its base path, --start /.
@@ -13,7 +14,7 @@ For the demo alone: out = the demo export, base = its base path, --start /.
 With --start pointing at the companion page the out dir is the site's export
 (served under the site base path) and the demo is reached through its link.
 Fails on: a step that does not complete, an unmocked request, a request that
-leaves the origin, a page error (React hydration #418/#423 aside, see
+leaves the origin, a Content-Security-Policy violation, a page error (React hydration #418/#423 aside, see
 tests/contract/runtime.py), horizontal scroll of the page at phone width.
 Writes nothing.
 """
@@ -61,6 +62,8 @@ def main():
         outside, errors = [], []
         page.on('request', lambda r: outside.append(r.url) if not r.url.startswith(origin) and not r.url.startswith(('data:', 'blob:')) else None)
         page.on('pageerror', lambda e: errors.append(str(e)) if '#418' not in str(e) and '#423' not in str(e) else None)
+        # the site's static export puts a Content-Security-Policy into every page
+        page.on('console', lambda m: errors.append(m.text) if 'Content Security Policy' in m.text else None)
 
         # 1. the way in
         companion = 'software' in a.start

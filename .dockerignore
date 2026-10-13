@@ -16,3 +16,10 @@ server/access.log
 build
 out
 public/azure2
+
+# The WebDAQ demo is built inside the image (deploy/Dockerfile.web) from
+# webdaq-demo/'s sources; not its local install, fetches or build output.
+webdaq-demo/node_modules
+webdaq-demo/.work
+webdaq-demo/out
+public/webdaq-demo

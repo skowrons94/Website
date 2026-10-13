@@ -42,7 +42,9 @@ def wording(out: Path, failures):
 
 
 def axe(page, axe_js, failures, label):
-    page.add_script_tag(content=axe_js)
+    # evaluated, not added as a <script>: the site's export has a CSP that blocks inline scripts
+    if not page.evaluate('() => !!window.axe'):
+        page.evaluate(axe_js + '\n;0')
     res = page.evaluate("""async () => {
         const r = await axe.run({ include: [['.wd-frame']] }, { resultTypes: ['violations'] });
         return r.violations.filter(v => v.impact === 'serious' || v.impact === 'critical')

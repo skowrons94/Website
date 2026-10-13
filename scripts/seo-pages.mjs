@@ -29,9 +29,11 @@ const SKIP = /(^|\/)(_not-found|_global-error|_error|404|500)(\/|\.html$|$)/
 function walk(dir, out = []) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
     const p = path.join(dir, e.name)
-    // Static assets and the in-browser engine hold no pages.
+    // Static assets and the in-browser engine hold no pages; the WebDAQ demo
+    // (public/webdaq-demo, built by webdaq-demo/build.mjs) is an app of its
+    // own, marked noindex, and none of the site's pages.
     if (e.isDirectory()) {
-      if (e.name !== "_next" && e.name !== "azure2") walk(p, out)
+      if (e.name !== "_next" && e.name !== "azure2" && e.name !== "webdaq-demo") walk(p, out)
     } else if (e.name.endsWith(".html")) out.push(p)
   }
   return out
