@@ -107,16 +107,33 @@ export const LifetimeBars = memo(function LifetimeBars({
       id = requestAnimationFrame(fit)
     }
     const fit = () => {
+      // axis labels that would overprint (large text, a narrow track): every other one goes
+      let lastRight = -Infinity
+      el.querySelectorAll<HTMLElement>("[data-tick]").forEach((tick) => {
+        tick.style.visibility = ""
+        const b = tick.getBoundingClientRect()
+        if (b.left < lastRight + 4) tick.style.visibility = "hidden"
+        else lastRight = b.right
+      })
       el.querySelectorAll<HTMLElement>("[data-side]").forEach((span) => {
         const track = span.parentElement!
         span.style.left = span.dataset.left ?? ""
-        span.style.right = ""
-        if (span.dataset.side !== "right") return
-        const over = span.getBoundingClientRect().right - track.getBoundingClientRect().right
-        if (over > 2) {
+        span.style.right = span.dataset.right ?? ""
+        span.style.whiteSpace = ""
+        const box = () => span.getBoundingClientRect()
+        const tb = track.getBoundingClientRect()
+        // past the right end: to the other side of the dot
+        if (span.dataset.side === "right" && box().right - tb.right > 2) {
           span.style.left = ""
           span.style.right = span.dataset.flip ?? ""
         }
+        // past the left end (either side): held at the start of the track
+        if (tb.left - box().left > 2) {
+          span.style.right = ""
+          span.style.left = "0px"
+        }
+        // longer than the track itself (very large text): it wraps
+        if (box().right - tb.right > 2) span.style.whiteSpace = "normal"
       })
     }
     const idle = "requestIdleCallback" in window ? window.requestIdleCallback(later, { timeout: 1500 }) : 0
@@ -131,12 +148,13 @@ export const LifetimeBars = memo(function LifetimeBars({
 
   return (
     <div role="figure" aria-label={label} ref={root}>
-      <div className="grid grid-cols-1 gap-x-4 sm:grid-cols-[14rem_minmax(0,1fr)]">
-        <span className="hidden sm:block" />
+      <div className="grid grid-cols-1 gap-x-4 min-[40rem]:grid-cols-[minmax(0,14rem)_minmax(10rem,1fr)]">
+        <span className="hidden min-[40rem]:block" />
         <div className="relative mx-3" style={{ height: `${1.4 + 1.1 * shownRefs.length}rem` }} aria-hidden>
           {ticks.map((t) => (
             <span
               key={t}
+              data-tick
               className="tabular absolute bottom-0 -translate-x-1/2 whitespace-nowrap text-[0.7rem] text-muted-foreground"
               style={{ left: pct(t) }}
             >
@@ -170,7 +188,7 @@ export const LifetimeBars = memo(function LifetimeBars({
           return (
             <li
               key={r.id}
-              className="grid grid-cols-1 items-center gap-x-4 gap-y-1 border-b border-border/40 py-2 last:border-b-0 sm:grid-cols-[14rem_minmax(0,1fr)]"
+              className="grid grid-cols-1 items-center gap-x-4 gap-y-1 border-b border-border/40 py-2 last:border-b-0 min-[40rem]:grid-cols-[minmax(0,14rem)_minmax(10rem,1fr)]"
             >
               <div className="min-w-0 text-sm leading-snug">
                 {r.atlas ? (
@@ -269,6 +287,7 @@ export const LifetimeBars = memo(function LifetimeBars({
                       data-side={right ? "right" : "left"}
                       data-left={right ? `calc(${(edge * 100).toFixed(2)}% + 12px)` : undefined}
                       data-flip={right ? `calc(${(100 - Math.min(frac(r.tau), frac(ghost)) * 100).toFixed(2)}% + 12px)` : undefined}
+                      data-right={right ? undefined : `calc(${(100 - edge * 100).toFixed(2)}% + 12px)`}
                       style={
                         right
                           ? { left: `calc(${(edge * 100).toFixed(2)}% + 12px)` }

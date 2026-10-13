@@ -86,6 +86,9 @@ export const NEUTRINO_GROUPS: Record<string, { id: string; reactions: string[] }
   cno: [{ id: "cno", reactions: ["N13_to_C13_beta_pos_reaclib", "O15_to_N15_beta_pos_reaclib"] }],
 }
 
+/** Networks whose reactions make the burn's energy (in NeNa and MgAl the CNO cycle does, outside them). */
+export const ENERGY_NETS = ["pp", "cno", "sprocess"]
+
 /** The burn's fuel: what it stops on, else the network's fuel, else helium. */
 export function fuelOf(network: Network, until: { nucleus: string } | null | undefined): string | null {
   const name = until?.nucleus ?? network.ui.fuel ?? "he4"

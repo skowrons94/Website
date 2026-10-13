@@ -46,11 +46,12 @@ export const dec = (s: string, lang: Lang) => (lang === "it" ? s.replace(".", ",
 export function sig2(x: number, lang: Lang): string {
   // grouped by hand, not by toLocaleString: the server's and the browser's
   // ICU disagree on Italian four-digit numbers (3500 or 3.500), which breaks
-  // hydration. Italian groups from 10 000 (CLDR), English from 1,000.
+  // hydration. Both group from five digits (docs/STYLE.md): Italian with a
+  // point (10.000), English with a thin space (12 000), never a comma.
   if (x >= 100) {
     const v = String(Math.round(Number(x.toPrecision(2))))
-    if (v.length < (lang === "it" ? 5 : 4)) return v
-    return v.replace(/\B(?=(\d{3})+(?!\d))/g, lang === "it" ? "." : ",")
+    if (v.length < 5) return v
+    return v.replace(/\B(?=(\d{3})+(?!\d))/g, lang === "it" ? "." : "\u202f")
   }
   return dec(Number(x.toPrecision(2)).toString(), lang)
 }
@@ -133,3 +134,15 @@ export function density(rho: number, lang: Lang): string {
 }
 
 export const YEAR_S = YEAR
+
+/**
+ * A change as a reader says it, ≤ 2 significant figures: "+28%", "−6%",
+ * "×2.1" from ×1.75 up (as the curiosities write it, lib/rates/curiosities.ts).
+ */
+export function changeText(r: number, lang: Lang): string {
+  if (!Number.isFinite(r)) return r > 0 ? "∞" : "0"
+  if (r >= 1.75) return `×${dec(r.toPrecision(2), lang)}`
+  const p = (r - 1) * 100
+  const v = Math.abs(p) < 10 ? Math.round(p) : Number(p.toPrecision(2))
+  return `${v > 0 ? "+" : v < 0 ? "−" : "±"}${dec(String(Math.abs(v)), lang)}%`
+}

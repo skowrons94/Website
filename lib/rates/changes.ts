@@ -76,6 +76,26 @@ export function changedTargets(network: Network, scale: Record<string, number>):
   return out
 }
 
+/** The nuclei the changed reactions touch directly: every reactant and product. */
+export function directNuclei(network: Network, scale: Record<string, number>): Set<string> {
+  const out = new Set<string>()
+  for (const [id, f] of Object.entries(scale)) {
+    if (f === 1) continue
+    const r = network.reactions.find((x) => x.id === id)
+    if (r) for (const i of [...r.reactants, ...r.products]) out.add(network.nuclei[i].name)
+  }
+  return out
+}
+
+/**
+ * The knock-on effects proper: the rows (1% or more) of nuclei that no
+ * changed reaction burns or makes, biggest first. The most striking of them
+ * are what a change does beyond its own reaction (the owner's request, r11).
+ */
+export function indirectRows(knock: ChangeRow[], direct: { has(name: string): boolean }): ChangeRow[] {
+  return knock.filter((r) => !direct.has(r.name))
+}
+
 export interface SplitChanges {
   /** the changed reactions' own targets that moved (the expected part) */
   self: ChangeRow[]

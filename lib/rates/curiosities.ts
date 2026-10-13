@@ -29,9 +29,11 @@
  * one gram of gas at the model's temperature, not the star's luminosity, and
  * the caveat says so.
  *
- * Pure and dependency-free, so the pages (at build time), the card script
+ * Pure (it imports only lib/rates/energy.ts), so the pages (at build time), the card script
  * (scripts/rates/curiosity-cards.mjs) and test:rates share it.
  */
+
+import { ENERGY_NETS } from "./energy.ts"
 
 export type CLang = "en" | "it"
 type Words = Record<CLang, string>
@@ -432,8 +434,7 @@ export function curiosityRatio(spec: CuriositySpec, sens: SensitivityLike): numb
 
 /** Nuclei a knock-on line never names: the fuel and the free particles, besides the excluded headlines. */
 const NOT_KNOCK = ["p", "n", "he4"]
-/** Networks whose reactions make the burn's energy (in NeNa and MgAl the CNO cycle does, outside them). */
-export const ENERGY_NETS = ["pp", "cno", "sprocess"]
+export { ENERGY_NETS }
 /** The smallest change an extra line reports: 5%. */
 export const EXTRA_MIN = 0.05
 
@@ -503,9 +504,16 @@ export function curiosityFuel(spec: CuriositySpec, sens: SensitivityLike): numbe
 
 const dec = (s: string, lang: CLang) => (lang === "it" ? s.replace(".", ",") : s)
 const sig2 = (x: number) => Number(x.toPrecision(2))
-/** 1,000 / 1.000 and 78,000 / 78.000: thousands grouped as each language does. */
-const group = (x: number, lang: CLang) =>
-  x >= 1000 ? Math.round(x).toLocaleString(lang === "it" ? "it-IT" : "en-GB") : dec(String(x), lang)
+/**
+ * Thousands as each language's house style groups them (docs/STYLE.md):
+ * from five digits: English 4900 and 78 000 (a thin space, never a comma),
+ * Italian 4900 and 78.000.
+ */
+const group = (x: number, lang: CLang) => {
+  if (x < 1000) return dec(String(x), lang)
+  const v = String(Math.round(x))
+  return v.length < 5 ? v : v.replace(/\B(?=(\d{3})+(?!\d))/g, lang === "it" ? "." : "\u202f")
+}
 
 /** "(+21%)", "(−46%)", "(×3.1)": the number in brackets, ≤ 2 significant figures. */
 export function percentText(r: number, lang: CLang): string {

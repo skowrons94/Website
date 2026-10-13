@@ -96,6 +96,24 @@ export function ChangeBars({
 }
 
 /**
+ * The note after a changed reaction's own target: "(expected…)" only when it
+ * moved by 1% or more the way the change pushes it (down when the reaction
+ * is faster, up when slower); "(barely changes…)" when it moved by less; no
+ * note when it went the other way or the direction is not known (a LUNA rate).
+ */
+function selfNoteOf(
+  r: ChangeRow,
+  decays: Map<string, boolean>,
+  factors: Map<string, number> | undefined,
+  t: ReturnType<typeof ratesDict>,
+): string {
+  if (!visible(r.ratio)) return t.selfBarely
+  const f = factors ? factors.get(r.name) : 2
+  if (!f || f === 1) return ""
+  return (f > 1 ? r.ratio < 1 : r.ratio > 1) ? t.selfNote(decays.get(r.name) ?? false) : ""
+}
+
+/**
  * "What changes most" after a change: the changed reactions' own targets on
  * a line of their own (expected), the knock-on effects on every other
  * nucleus as bars (the news), the changes under 1% in a fold, and, when no
@@ -106,16 +124,25 @@ export function ChangeResult({
   split,
   changed,
   decays,
+  factors,
   lang,
   cycle,
   suggestion,
   limit,
+  indirect = [],
+  children,
 }: {
   split: SplitChanges
+  /** the knock-on effects on nuclei the changed reactions neither burn nor make, biggest first */
+  indirect?: ChangeRow[]
+  /** more of the result, after the nuclei (the energy) */
+  children?: React.ReactNode
   /** a rate has been changed */
   changed: boolean
   /** of each self-effect, whether its reaction is a decay */
   decays: Map<string, boolean>
+  /** the factor each target's reaction was changed by: the "(expected…)" note only when the target moved that way */
+  factors?: Map<string, number>
   lang: Lang
   /** the network's [name, "cycle" | "chain"] for the explanation */
   cycle?: [string, string]
@@ -127,9 +154,12 @@ export function ChangeResult({
   const [all, setAll] = useState(false)
   if (!changed)
     return (
-      <p className="rounded-md border border-dashed border-border px-4 py-5 text-sm text-muted-foreground">
-        {t.noChange}
-      </p>
+      <div>
+        <p className="rounded-md border border-dashed border-border px-4 py-5 text-sm text-muted-foreground">
+          {t.noChange}
+        </p>
+        {children}
+      </div>
     )
   const { self, knock, small, state } = split
   const moved = self.filter((r) => visible(r.ratio))
@@ -146,10 +176,28 @@ export function ChangeResult({
                   <Sci>{ratioText(r.ratio, lang)}</Sci>
                 </span>
               </span>{" "}
-              <span className="text-muted-foreground">{t.selfNote(decays.get(r.name) ?? false)}</span>
+              <span className="text-muted-foreground">{selfNoteOf(r, decays, factors, t)}</span>
             </li>
           ))}
         </ul>
+      )}
+      {indirect.length > 0 && (
+        <p className="text-pretty rounded-md bg-secondary/60 px-3 py-2 text-sm" data-indirect>
+          <span className="font-medium">{t.indirectTitle}</span>{" "}
+          <span className="text-muted-foreground">({t.indirectHint}):</span>{" "}
+          {indirect.slice(0, 3).map((r, i) => (
+            <span key={r.name} className="tabular whitespace-nowrap">
+              {i > 0 && <span className="text-muted-foreground"> · </span>}
+              <span className="font-serif font-semibold">
+                <Sci>{r.label}</Sci>
+              </span>{" "}
+              <span style={{ color: r.ratio >= 1 ? "var(--rates-up)" : "var(--rates-down)" }}>
+                <Sci>{ratioText(r.ratio, lang)}</Sci>
+              </span>
+              <span className="sr-only"> {r.ratio >= 1 ? t.more : t.less}</span>
+            </span>
+          ))}
+        </p>
       )}
       {state === "knock" ? (
         <div>
@@ -221,6 +269,7 @@ export function ChangeResult({
           </ul>
         </details>
       )}
+      {children}
     </div>
   )
 }
