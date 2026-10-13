@@ -1064,7 +1064,7 @@ const en = {
       "Hover over an arrow for its name and click it for the details, or click a square for the reactions of that nucleus. With a keyboard, Tab reaches the map and the arrow keys move along the reactions of the process on show.",
     closeDetails: "Close details",
     close: "Close",
-    selectArrow: "Select an arrow to see what the reaction does, its energy release and how well it is known.",
+    selectArrow: "Choose an arrow to see what the reaction does, its energy release and how well it is known.",
     decay: "decay",
     panelPending:
       "The entry for this reaction is in preparation. Its place in the network, its energy release and its Gamow window are below.",

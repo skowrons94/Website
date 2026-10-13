@@ -387,7 +387,7 @@ methods:
       gives lifetimes from about 1 fs to 1 ps. The radiative width that follows
       enters an R-matrix fit of the capture, for example for a subthreshold
       state whose tail reaches into the Gamow window. Systematic limits are
-      the stopping powers, which are known to a few percent at best, and the
+      the stopping powers, which are known to a few per cent at best, and the
       sensitivity at the shortest lifetimes, where the attenuation is nearly
       complete.
     details_it: >-
