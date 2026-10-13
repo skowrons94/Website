@@ -392,12 +392,12 @@ export function ReactionExplorer({
               className="h-10 rounded-md border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
           </label>
-          <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
+          <label className="flex min-w-0 max-w-full flex-col gap-1 text-xs font-medium text-muted-foreground">
             {t.quantity}
             <select
               value={group}
               onChange={(e) => setGroup(e.target.value as Group | "all")}
-              className="h-10 rounded-md border border-input bg-background px-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="h-10 w-full max-w-full rounded-md border border-input bg-background px-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <option value="all">{t.all}</option>
               {GROUPS.filter((g) => rows.some((r) => r.group === g)).map((g) => (
@@ -896,12 +896,12 @@ function Select({
   options: [string, string][]
 }) {
   return (
-    <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
+    <label className="flex min-w-0 max-w-full flex-col gap-1 text-xs font-medium text-muted-foreground">
       {label}
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="h-10 rounded-md border border-input bg-background px-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="h-10 w-full max-w-full rounded-md border border-input bg-background px-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         {options.map(([v, l]) => (
           <option key={v} value={v}>

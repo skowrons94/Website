@@ -122,7 +122,7 @@ export function NucleusView({
         </p>
         <div className="mt-5 flex flex-wrap items-end gap-x-6 gap-y-3">
           {entrances.length > 1 && (
-            <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
+            <label className="flex min-w-0 max-w-full flex-col gap-1 text-xs font-medium text-muted-foreground">
               {t.entranceChannel}
               <select
                 value={ei}
@@ -130,7 +130,7 @@ export function NucleusView({
                   setEi(Number(e.target.value))
                   setWi(0)
                 }}
-                className="h-10 rounded-md border border-input bg-background px-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="h-10 w-full max-w-full rounded-md border border-input bg-background px-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {entrances.map((e, i) => (
                   <option key={e.atlas} value={i}>
@@ -141,12 +141,12 @@ export function NucleusView({
             </label>
           )}
           {ent && ent.windows.length > 0 && (
-            <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
+            <label className="flex min-w-0 max-w-full flex-col gap-1 text-xs font-medium text-muted-foreground">
               {strings.panel.temperature}
               <select
                 value={wi}
                 onChange={(e) => setWi(Number(e.target.value))}
-                className="h-10 rounded-md border border-input bg-background px-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="h-10 w-full max-w-full rounded-md border border-input bg-background px-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {ent.windows.map((w, i) => (
                   <option key={i} value={i}>
