@@ -132,6 +132,15 @@ function patternHint(where, value) {
   return "see server/app/info.schema.json"
 }
 
+/** [path, text] of every string that still holds a TODO placeholder. */
+function* todos(value, where = "") {
+  if (typeof value === "string") {
+    if (value.includes("TODO")) yield [where || "info.json", value]
+  } else if (Array.isArray(value)) {
+    for (const [i, v] of value.entries()) yield* todos(v, `${where}[${i}]`)
+  } else if (value && typeof value === "object") for (const [k, v] of Object.entries(value)) yield* todos(v, where ? `${where}.${k}` : k)
+}
+
 /* -- the .azr file ----------------------------------------------------------- */
 
 function block(text, name) {
@@ -242,6 +251,9 @@ export function checkEvaluation(dir, atlas = null) {
 
   if (info) {
     for (const m of validate(info, SCHEMA)) error("info.json", m)
+    for (const [where, value] of todos(info)) {
+      error("info.json", `\`${where}\` still says ${shown(value)}: replace the TODO (make add-evaluation leaves these for what only you know)`)
+    }
     if ("id" in info && info.id !== id) {
       error("info.json", `\`id\` is ${shown(info.id)} but the directory is ${shown(id)}; the directory name is the id, so make them the same (or remove \`id\`)`)
     }

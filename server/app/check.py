@@ -327,6 +327,9 @@ def check_evaluation(directory: str, schema: Optional[Dict] = None,
     if info is not None:
         for message in validate(info, schema):
             error("info.json", message)
+        for where, value in _todos(info):
+            error("info.json", f"`{where}` still says {_shown(value)}: replace the TODO "
+                  "(make add-evaluation leaves these for what only you know)")
         if "id" in info and info.get("id") != eid:
             error("info.json", f"`id` is {_shown(info.get('id'))} but the directory is {_shown(eid)}; "
                   "the directory name is the id, so make them the same (or remove `id`)")
@@ -399,6 +402,19 @@ def check_evaluation(directory: str, schema: Optional[Dict] = None,
 
 TIMING_KEYS = ("open", "prepare_data", "prepare_fine", "prepare_extrap", "edit",
                "extrap_edit", "grid", "data", "fine")
+
+
+def _todos(value, path=""):
+    """(path, text) of every string that still holds a TODO placeholder."""
+    if isinstance(value, str):
+        if "TODO" in value:
+            yield path or "info.json", value
+    elif isinstance(value, dict):
+        for key, item in value.items():
+            yield from _todos(item, f"{path}.{key}" if path else key)
+    elif isinstance(value, list):
+        for i, item in enumerate(value):
+            yield from _todos(item, f"{path}[{i}]")
 
 
 def _relative_hint(kind: str, path: str) -> str:
