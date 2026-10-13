@@ -15,6 +15,8 @@ export interface EvalLink {
   dois: string[]
   /** the evaluation's model is preliminary (lib/data/build.ts) */
   preliminary?: boolean
+  /** info.json `notes`, in the page's language, shown with the evaluation's curve */
+  notes?: string[]
 }
 
 const FRAMES = ["lab", "cm", "lab-res", "cm-res", null]

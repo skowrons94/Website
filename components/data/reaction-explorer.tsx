@@ -421,6 +421,11 @@ export function ReactionExplorer({
               curvesRaw
                 .filter(({ id }) => evaluations.find((e) => e.id === id)?.preliminary)
                 .map(({ id }) => <li key={`pre-${id}`}>{fill(strings.plot.evaluationPreliminary, { id })}</li>)}
+            {/* The evaluation's own notes (info.json), as its page shows them. */}
+            {view === "total" &&
+              curvesRaw.flatMap(({ id }) =>
+                (evaluations.find((e) => e.id === id)?.notes ?? []).map((note, i) => <li key={`note-${id}-${i}`}>{note}</li>),
+              )}
             <li>
               {strings.plot.extrapolatedNever} {!neutral && view !== "dsigma" && strings.plot.converted}
             </li>

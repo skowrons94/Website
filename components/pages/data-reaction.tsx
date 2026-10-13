@@ -8,7 +8,7 @@ import { GenericReaction } from "@/components/data/generic-reaction"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { Sci } from "@/components/sci"
 import { getReaction } from "@/lib/atlas"
-import { compoundNuclei, evaluationLinks, prerenderedSlugs, readIndex } from "@/lib/data/build"
+import { compoundNuclei, evaluationLinks, evaluationNotes, prerenderedSlugs, readIndex } from "@/lib/data/build"
 import { fill } from "@/lib/data/fill"
 import { compoundOf, displayNuc, reactionLabel } from "@/lib/data/nuclide"
 import { slugPanel } from "@/lib/data/panel"
@@ -102,7 +102,7 @@ export function DataReactionPage({ slug, lang }: { slug: string; lang: Lang }) {
           strings={dx}
           lang={lang}
           channel={ch ? { z1: ch.z1, z2: ch.z2, mu: ch.mu } : null}
-          evaluations={evals.map((e) => ({ id: e.id, reactions: e.reactions, entries: e.entries, subentries: e.subentries, dois: e.dois, preliminary: e.preliminary }))}
+          evaluations={evals.map((e) => ({ id: e.id, reactions: e.reactions, entries: e.entries, subentries: e.subentries, dois: e.dois, preliminary: e.preliminary, notes: evaluationNotes(e, lang) }))}
           window={w0 && !panel.neutron ? { lo: w0.lo, hi: w0.hi, E0: w0.E0, label: w0.label } : null}
         />
       </div>
@@ -129,6 +129,7 @@ export function DataReactionAnyPage({ lang }: { lang: Lang }) {
           subentries: e.subentries,
           dois: e.dois,
           preliminary: e.preliminary,
+          notes: evaluationNotes(e, lang),
         }))}
       />
       <Attribution lang={lang} className="mt-14" />

@@ -286,7 +286,13 @@ export interface EvaluationLink {
   reference: string | null
   /** info.json `preliminary`: the model does not yet reproduce the published best fit */
   preliminary: boolean
+  /** info.json `notes` (the caveats the evaluation page shows), EN and IT */
+  notes: { text: string; text_it: string | null }[]
 }
+
+/** An evaluation's notes in one language (the Italian text when there is one). */
+export const evaluationNotes = (e: EvaluationLink, lang: Lang): string[] =>
+  e.notes.map((n) => (lang === "it" && n.text_it ? n.text_it : n.text))
 
 const EXFOR_TOKEN = /^([A-Z0-9]\d{4})(\d{3})$/
 
@@ -356,6 +362,11 @@ export function evaluationLinks(): EvaluationLink[] {
       dois: [...dois],
       reference: typeof info.reference === "string" ? info.reference : null,
       preliminary: info.preliminary === true,
+      notes: Array.isArray(info.notes)
+        ? info.notes
+            .filter((n: unknown): n is { text: string; text_it?: unknown } => Boolean(n) && typeof (n as { text?: unknown }).text === "string")
+            .map((n: { text: string; text_it?: unknown }) => ({ text: n.text, text_it: typeof n.text_it === "string" ? n.text_it : null }))
+        : [],
     })
   }
   evalCache = out
