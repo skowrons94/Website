@@ -23,6 +23,7 @@ import { ChangeResult } from "./change-bars"
 import { BusyLine, Download, Figure, Fold, Formula, RATES_TOKENS, Segmented } from "./chart-kit"
 import { DistributionChart, type DistPoint } from "./distribution-chart"
 import { EnergyChart, EnergyLines } from "./energy-panel"
+import { missingPower } from "@/lib/rates/energy"
 import { EvolutionChart } from "./evolution-chart"
 import { FactorSlider, factorText } from "./factor-slider"
 import { dec, density, duration, NB, sci, sig2, temperature, tShort } from "./format"
@@ -569,7 +570,7 @@ export function SProcessExplorer({
                     suggestion={suggestion}
                     limit={10}
                   >
-                    <EnergyLines base={base} mod={mod} changed={changed} net={network.id} lang={lang} />
+                    <EnergyLines base={base} mod={mod} changed={changed} missing={missingPower(network, scenario)} lang={lang} />
                   </ChangeResult>
                 </div>
               </div>
@@ -629,7 +630,14 @@ export function SProcessExplorer({
             <div id="sprocess-sens-map" className="mt-4">
               {custom && <p className="mb-2 text-xs text-muted-foreground">{t.sensCustom}</p>}
               {sensTable ? (
-                <SensitivityMap network={network} table={sensTable} lang={lang} columns={sensCols} onTry={tryRate} />
+                <SensitivityMap
+                  network={network}
+                  table={sensTable}
+                  lang={lang}
+                  columns={sensCols}
+                  noFuel={missingPower(network, scenario) !== null}
+                  onTry={tryRate}
+                />
               ) : (
                 <Loader2
                   className="h-4 w-4 animate-spin text-muted-foreground motion-reduce:animate-none"

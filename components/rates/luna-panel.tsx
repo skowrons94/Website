@@ -4,10 +4,63 @@ import Link from "next/link"
 
 import { Sci } from "@/components/sci"
 import { localePath, type Lang } from "@/lib/locale"
-import { ratesDict } from "@/lib/rates/i18n"
 import { providerFor } from "@/lib/rates/run"
 import type { Network } from "@/lib/rates/schema"
 import { sig2, temperature } from "./format"
+
+const en = {
+  title: "Rates from LUNA measurements",
+  toggle: "Use the LUNA/AZURE2 rates",
+  toggleHint: "for ¹²C(p,γ)¹³N and ¹³C(p,γ)¹⁴N",
+  lead: "LUNA measured the two proton captures on carbon deep underground, down to 60 keV (Skowronski et al. 2023). Switched on, the burn uses rates computed from the R-matrix evaluations of those data on this site, instead of REACLIB's.",
+  ratio: (T: string) => `¹²C/¹³C in CN equilibrium at ${T}`,
+  ratioHint: "number ratio, = rate of ¹³C(p,γ) ÷ rate of ¹²C(p,γ): what hydrogen burning leaves, the ratio astronomers measure in red giants",
+  reaclib: "REACLIB",
+  lunaWord: "LUNA/AZURE2",
+  burn: "at the end of this burn",
+  versus: (label: string, f: string) => `${label}: ${f} × REACLIB's rate here`,
+  evaluations: "The evaluations",
+  method:
+    "N_A⟨σv⟩ integrated numerically (Maxwell–Boltzmann) from each evaluation's cross section at its published parameters, from 1 keV to 4 MeV, narrow resonances resolved.",
+  on: "on",
+  off: "off",
+  builtBy:
+    "Built by J. Skowronski; rates from his AZURE2 evaluations can be dropped in for REACLIB's, as ¹²C(p,γ) and ¹³C(p,γ) are here (What if ▸ LUNA/AZURE2 rates).",
+  rateSource: "AZURE2 (LUNA)",
+}
+
+const it: typeof en = {
+  title: "Tassi dalle misure di LUNA",
+  toggle: "Usa i tassi LUNA/AZURE2",
+  toggleHint: "per la ¹²C(p,γ)¹³N e la ¹³C(p,γ)¹⁴N",
+  lead: "LUNA ha misurato sotto terra le due catture protoniche sul carbonio, fino a 60 keV (Skowronski et al. 2023). Attivando questa opzione, la combustione usa i tassi calcolati dalle valutazioni R-matrix di quei dati su questo sito, al posto di quelli di REACLIB.",
+  ratio: (T: string) => `¹²C/¹³C all'equilibrio del ciclo CN a ${T}`,
+  ratioHint: "rapporto tra numeri di nuclei, = tasso della ¹³C(p,γ) ÷ tasso della ¹²C(p,γ): ciò che lascia la combustione dell'idrogeno, il rapporto che gli astronomi misurano nelle giganti rosse",
+  reaclib: "REACLIB",
+  lunaWord: "LUNA/AZURE2",
+  burn: "alla fine di questa combustione",
+  versus: (label: string, f: string) => `${label}: ${f} × il tasso di REACLIB, qui`,
+  evaluations: "Le valutazioni",
+  method:
+    "N_A⟨σv⟩ integrato numericamente (Maxwell–Boltzmann) dalla sezione d'urto di ciascuna valutazione ai parametri pubblicati, da 1 keV a 4 MeV, con le risonanze strette risolte.",
+  on: "attivi",
+  off: "spenti",
+  builtBy:
+    "Realizzato da J. Skowronski; i tassi delle sue valutazioni AZURE2 possono prendere il posto di quelli di REACLIB, come qui per la ¹²C(p,γ) e la ¹³C(p,γ) (E se ▸ tassi LUNA/AZURE2).",
+  rateSource: "AZURE2 (LUNA)",
+}
+
+const LUNA_DICT: Record<Lang, typeof en> = { en, it }
+
+/** The explorer's credit line while the switch is public: it names the switch. */
+export function LunaCredit({ lang }: { lang: Lang }) {
+  return <Sci>{LUNA_DICT[lang].builtBy}</Sci>
+}
+
+/** The rate's source in the rates table, for a reaction run with its evaluated rate. */
+export function LunaRateSource({ lang }: { lang: Lang }) {
+  return <>{LUNA_DICT[lang].rateSource}</>
+}
 
 /**
  * "Use the LUNA/AZURE2 rates": a switch that runs ¹²C(p,γ)¹³N and
@@ -16,6 +69,12 @@ import { sig2, temperature } from "./format"
  * network file carries them as each reaction's `alternatives`), and what the
  * change does to the ¹²C/¹³C ratio: in CN equilibrium (the ratio of the two
  * rates, at the chosen temperature) and at the end of the burn.
+ *
+ * Hidden while LUNA_RATES_PUBLIC (lib/rates/features.ts) is false: the
+ * explorer then never imports this module (rates-explorer.tsx loads it with
+ * a dynamic import behind the flag), so neither the panel nor its words are
+ * in any shipped chunk, and the network files carry no `alternatives`
+ * (scripts/rates/rate_alternatives.py).
  */
 export function LunaPanel({
   network,
@@ -39,8 +98,7 @@ export function LunaPanel({
   Xbase: number[] | null
   lang: Lang
 }) {
-  const t = ratesDict(lang)
-  const l = t.luna
+  const l = LUNA_DICT[lang]
   const reaclib = providerFor(network)
   const luna = providerFor(network, ids)
   const c12 = "C12_p_to_N13_reaclib"

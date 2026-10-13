@@ -106,6 +106,32 @@ export function integratedFlows(
 }
 
 /**
+ * The share of a nucleus's destruction over a burn that goes through one
+ * reaction: its integrated flow (`integratedFlows`) times the nuclei it uses
+ * (two for ³He + ³He), over the same for every reaction that destroys the
+ * nucleus (its `target`). Null when the nucleus is not destroyed. The flow
+ * ring's side labels ("(α,γ)⁷Be 48%") are the same shares.
+ */
+export function destructionShare(
+  network: { nuclei: { name: string }[]; reactions: { id: string; target: number; reactants: number[] }[] },
+  flows: ArrayLike<number>,
+  nucleus: string,
+  reaction: string,
+): number | null {
+  const i = network.nuclei.findIndex((n) => n.name === nucleus)
+  if (i < 0) return null
+  let total = 0
+  let mine = 0
+  network.reactions.forEach((r, k) => {
+    if (r.target !== i) return
+    const f = flows[k] * r.reactants.filter((x) => x === i).length
+    total += f
+    if (r.id === reaction) mine += f
+  })
+  return total > 0 ? mine / total : null
+}
+
+/**
  * The bottleneck as the page states it: the slowest step of the path that
  * actually runs during the burn. Every step is timed by its reaction's own
  * waiting time (`taus`, what the waiting-time chart shows), so the headline

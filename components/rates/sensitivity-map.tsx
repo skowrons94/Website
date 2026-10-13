@@ -37,6 +37,7 @@ export function SensitivityMap({
   table,
   lang,
   columns,
+  noFuel = false,
   onTry,
 }: {
   network: Network
@@ -44,6 +45,8 @@ export function SensitivityMap({
   lang: Lang
   /** the nuclei to show (all of the table's when absent), in this order */
   columns?: string[]
+  /** leave out the fuel time: the network lacks the burning that sets it (lib/rates/energy.ts: missingPower) */
+  noFuel?: boolean
   onTry?: (reactionId: string) => void
 }) {
   const t = ratesDict(lang)
@@ -56,7 +59,7 @@ export function SensitivityMap({
   const cols: Col[] = nucCols.map((j) => ({ key: table.nuclei[j], label: label(table.nuclei[j]), get: (i) => table.s[i][j] }))
   const extra: Col[] = []
   if (table.energy) extra.push({ key: "energy", label: t.energy.sensEnergy, get: (i) => table.energy![i], extra: true })
-  if (table.fuel?.some((v) => v !== null)) extra.push({ key: "fuel", label: t.energy.sensFuel, get: (i) => table.fuel![i], extra: true })
+  if (!noFuel && table.fuel?.some((v) => v !== null)) extra.push({ key: "fuel", label: t.energy.sensFuel, get: (i) => table.fuel![i], extra: true })
   for (const [g, v] of Object.entries(table.nu ?? {})) extra.push({ key: `nu-${g}`, label: t.energy.nu[g] ?? g, get: (i) => v[i], extra: true })
   cols.push(...extra)
   const rows = table.reactions

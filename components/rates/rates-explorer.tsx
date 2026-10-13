@@ -19,7 +19,7 @@ import {
 import type { CuriosityCardData } from "@/lib/rates/curiosity-data"
 import { CuriosityStrip } from "./curiosity-card"
 import { parseRatesHash, ratesHash, showWhatIf } from "@/lib/rates/url"
-import { bottleneck, closes, dominantPath, heaviestProduct, integratedFlows, pathStart } from "@/lib/rates/flow"
+import { bottleneck, closes, destructionShare, dominantPath, heaviestProduct, integratedFlows, pathStart } from "@/lib/rates/flow"
 import { LUNA_RATES_PUBLIC } from "@/lib/rates/features"
 import {
   changedTargets,
@@ -39,6 +39,7 @@ import { ChangeResult } from "./change-bars"
 import { factorText } from "./factor-slider"
 import { BusyLine, C, Download, Figure, Fold, Formula, RATES_TOKENS, SERIES, Segmented, Swatch } from "./chart-kit"
 import { EnergyChart, EnergyLines } from "./energy-panel"
+import { missingPower } from "@/lib/rates/energy"
 import { EvolutionChart, type EvolutionSeries } from "./evolution-chart"
 import { FlowRing } from "./flow-ring"
 import { dec, duration, sci, sig2, temperature, YEAR_S } from "./format"
@@ -56,7 +57,6 @@ import {
   type Conditions,
 } from "./scenario-panel"
 import { ChangesList, LunaMark, ReactionPicker, ResultStrip, SourceCell, StatusLine, useRevealFirstResult } from "./what-if"
-import { LunaPanel } from "./luna-panel"
 
 export interface NetworkTab {
   id: string
@@ -65,6 +65,21 @@ export interface NetworkTab {
 
 
 // shown on request only: its code loads then
+/**
+ * The LUNA/AZURE2 switch (luna-panel.tsx), its credit line and its rates-table
+ * label: imported only once LUNA_RATES_PUBLIC is true, so that until then
+ * none of its code or words is in a shipped chunk. The condition is the flag
+ * written out as a literal (`false` while it is false): webpack drops a
+ * dynamic import, and the chunk it would make, only behind a literal, not
+ * behind an imported constant. test:rates checks that the two agree.
+ */
+const Luna = /* LUNA_RATES_PUBLIC */ false
+  ? {
+      Panel: dynamic(() => import("./luna-panel").then((m) => m.LunaPanel), { ssr: false }),
+      Credit: dynamic(() => import("./luna-panel").then((m) => m.LunaCredit), { ssr: false }),
+      Source: dynamic(() => import("./luna-panel").then((m) => m.LunaRateSource), { ssr: false }),
+    }
+  : null
 const SensitivityMap = dynamic(() => import("./sensitivity-map").then((m) => m.SensitivityMap), { ssr: false })
 const isTwoBody = (r: Reaction) => r.reactants.length === 2 && r.densExp === 1
 const SUN_AGE_S = 4.57e9 * YEAR_S
@@ -418,6 +433,14 @@ export function RatesExplorer({
     // asked for it, so these must not be read from an older render
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [network, mod, base, scenario, condD])
+
+  // how the burn uses up its ³He (pp chain): through ³He + ³He (ppI) and ³He + ⁴He (ppII, ppIII)
+  const he3Split = useMemo(() => {
+    if (!network || !flows) return null
+    const f33 = destructionShare(network, flows.now, "he3", "He3_He3_to_p_p_He4_reaclib")
+    const f34 = destructionShare(network, flows.now, "he3", "He3_He4_to_Be7_reaclib")
+    return f33 === null || f34 === null ? null : ([f33, f34] as const)
+  }, [network, flows])
 
   useEffect(() => {
     if (!sensOpen || !network) return
@@ -906,11 +929,9 @@ export function RatesExplorer({
               <Sci>
                 {[
                   pathText ? (pathEnd ? (stalled ? t.pathStall(pathText, pathEnd) : t.pathEnd(pathText, pathEnd)) : t.pathNote(pathText)) : "",
-                  network.id === "pp" ? t.pathPp : "",
+                  he3Split ? t.pathPp(he3Split[0], he3Split[1]) : "",
                   t.lifeFine,
-                  network.id === "pp" || (network.id === "mgal" && scenario.id === "massive-25")
-                    ? (t.lifeFineNet[network.id] ?? "")
-                    : "",
+                  (t.lifeFineSite as Record<string, string>)[`${network.id}/${scenario.id}`] ?? "",
                 ]
                   .filter(Boolean)
                   .join(" ")}
@@ -970,8 +991,8 @@ export function RatesExplorer({
               lang={lang}
             />
             <ChangesList scale={scale} byId={byId} setFactor={setFactor} reset={() => setScale({})} lang={lang} />
-            {altIds.length > 0 && (
-              <LunaPanel
+            {Luna && altIds.length > 0 && (
+              <Luna.Panel
                 network={network}
                 ids={altIds}
                 on={luna}
@@ -1017,7 +1038,7 @@ export function RatesExplorer({
                     limit={8}
                     indirect={indirect.length < changes.knock.length ? indirect : []}
                   >
-                    <EnergyLines base={base} mod={mod} changed={changedD} net={network.id} lang={lang} />
+                    <EnergyLines base={base} mod={mod} changed={changedD} missing={missingPower(network, scenario)} lang={lang} />
                   </ChangeResult>
                 </div>
               </div>
@@ -1091,7 +1112,13 @@ export function RatesExplorer({
             <div id="sens-map" className="mt-4">
               {custom && <p className="mb-2 text-xs text-muted-foreground">{t.sensCustom}</p>}
               {sensTable ? (
-                <SensitivityMap network={network} table={sensTable} lang={lang} onTry={tryRate} />
+                <SensitivityMap
+                  network={network}
+                  table={sensTable}
+                  lang={lang}
+                  noFuel={missingPower(network, scenario) !== null}
+                  onTry={tryRate}
+                />
               ) : (
                 <Loader2
                   className="h-4 w-4 animate-spin text-muted-foreground motion-reduce:animate-none"
@@ -1128,7 +1155,7 @@ export function RatesExplorer({
               )}
             </p>
             <p className="text-pretty leading-relaxed text-muted-foreground">
-              <Sci>{LUNA_RATES_PUBLIC ? t.builtBy : t.builtByPlain}</Sci>
+              {Luna ? <Luna.Credit lang={lang} /> : <Sci>{t.builtByPlain}</Sci>}
             </p>
             <ul className="space-y-1.5 font-mono text-[0.8rem] leading-relaxed">
               <li>
@@ -1180,8 +1207,8 @@ export function RatesExplorer({
                         <span className="block font-mono text-[0.7rem] text-muted-foreground">{r.id}</span>
                       </td>
                       <td className="px-3 py-1.5 font-mono">
-                        {luna && altIds.includes(r.id)
-                          ? "AZURE2 (LUNA)"
+                        {Luna && luna && altIds.includes(r.id)
+                          ? <Luna.Source lang={lang} />
                           : r.rate.kind === "reaclib"
                             ? r.rate.sets.map((s) => `${s.set}${s.flag}`).join(" ")
                             : "table"}

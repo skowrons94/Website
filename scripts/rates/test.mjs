@@ -36,6 +36,32 @@ import { sensitivity } from "./sensitivity.mjs"
 
 const ROOT = process.cwd()
 const DATA = path.join(ROOT, "public", "rates")
+
+/**
+ * A network file with its reactions' evaluated rates attached, as build.py
+ * writes them when LUNA_RATES_PUBLIC is true (scripts/rates/rate_alternatives.py:
+ * evaluated_rate), from the tables in scripts/rates/evaluated/.
+ */
+function withAlternatives(network) {
+  const dir = path.join(ROOT, "scripts", "rates", "evaluated")
+  return {
+    ...network,
+    reactions: network.reactions.map((r) => {
+      const file = path.join(dir, `${r.id}.json`)
+      if (!fs.existsSync(file)) return r
+      const d = JSON.parse(fs.readFileSync(file, "utf8"))
+      const alt = {
+        id: "luna",
+        evaluation: d.evaluation,
+        rate: { kind: "table", T9: d.T9, log10: d.log10, validity_T9: [d.T9[0], d.T9[d.T9.length - 1]] },
+        paper: d.paper,
+        fit: d.fit,
+        method: d.method,
+      }
+      return { ...r, alternatives: [alt] }
+    }),
+  }
+}
 const REF = path.join(ROOT, "scripts", "rates", "reference")
 const TOL = Number(process.env.RATES_TOL ?? 2e-3)
 const XMIN = 1e-12
@@ -164,6 +190,44 @@ for (const id of ["pp", "cno", "nena", "mgal", "sprocess"]) {
       if (JSON.stringify(stored.scenarios[s.id]?.reactions) !== JSON.stringify(want)) fail(`${id} ${s.id}: sensitivity map stale`)
   } else if (JSON.stringify(sensitivity(network)) !== JSON.stringify(stored)) fail(`${id}: sensitivity map stale (npm run rates:baseline)`)
   console.log(`sensitivity ${id}: ${Object.keys(stored.scenarios).length} scenarios checked`)
+}
+
+// 3b'. The words the explorer derives from the burn and the site: the ³He
+// split of the pp chain (step 2) and the energy panel's scope.
+{
+  const { RATES_DICT } = await import("../../lib/rates/i18n.ts")
+  const { destructionShare, integratedFlows } = await import("../../lib/rates/flow.ts")
+  const { missingPower } = await import("../../lib/rates/energy.ts")
+  const pp = checkNetwork(JSON.parse(fs.readFileSync(path.join(DATA, "pp.json"), "utf8")))
+  const base = JSON.parse(fs.readFileSync(path.join(DATA, "pp.baseline.json"), "utf8"))
+  const split = {}
+  for (const s of pp.scenarios) {
+    const r = base.runs[s.id]
+    const f = integratedFlows(compiled(pp), { history: historyOf(s) }, r.t, r.X)
+    split[s.id] = [destructionShare(pp, f, "he3", "He3_He3_to_p_p_He4_reaclib"), destructionShare(pp, f, "he3", "He3_He4_to_Be7_reaclib")]
+  }
+  const [sun33, sun34] = split["sun-core"]
+  const [m33, m34] = split["massive-15"]
+  console.log(`³He used up through ³He + ³He / ³He + ⁴He: Sun ${(100 * sun33).toFixed(0)}/${(100 * sun34).toFixed(0)}%, 15 M☉ ${(100 * m33).toFixed(0)}/${(100 * m34).toFixed(0)}%`)
+  if (!/^About half the ³He/.test(RATES_DICT.en.pathPp(sun33, sun34))) fail(`pp, Sun: "${RATES_DICT.en.pathPp(sun33, sun34)}"`)
+  if (!/^Most ³He \(9\d%\) captures ⁴He/.test(RATES_DICT.en.pathPp(m33, m34))) fail(`pp, 15 M☉: "${RATES_DICT.en.pathPp(m33, m34)}"`)
+  if (!/^La maggior parte del ³He \(9\d%\) cattura/.test(RATES_DICT.it.pathPp(m33, m34))) fail(`pp, 15 M☉ (it): "${RATES_DICT.it.pathPp(m33, m34)}"`)
+  // the protosolar ³He note is the Sun's alone
+  for (const lang of ["en", "it"])
+    for (const key of Object.keys(RATES_DICT[lang].lifeFineSite))
+      if (/protosolar/.test(RATES_DICT[lang].lifeFineSite[key]) && !key.endsWith("/sun-core")) fail(`${key}: the protosolar ³He note away from the Sun`)
+  // every site says what powers it, and the energy panel knows when a network leaves that out
+  const scope = {}
+  for (const id of ["pp", "cno", "nena", "mgal", "sprocess"]) {
+    const n = checkNetwork(JSON.parse(fs.readFileSync(path.join(DATA, `${id}.json`), "utf8")))
+    for (const s of n.scenarios) {
+      if (!["pp", "cno", "he"].includes(s.power)) fail(`${id} ${s.id}: no \`power\` (scripts/rates/scenarios.yaml)`)
+      scope[`${id}/${s.id}`] = missingPower(n, s)
+    }
+  }
+  const want = { "cno/sun-core": "pp", "pp/massive-15": "cno", "pp/sun-core": null, "cno/massive-15": null, "cno/nova": null, "nena/agb-hbb": "cno", "sprocess/massive-he-core": null }
+  for (const [k, v] of Object.entries(want)) if (scope[k] !== v) fail(`${k}: missing power ${scope[k]}, expected ${v}`)
+  console.log(`energy scope: only this network's reactions at ${Object.entries(scope).filter(([, v]) => v).map(([k]) => k).join(", ")}`)
 }
 
 // 3c. "What if" opens on a reaction whose change shows something: for every
@@ -387,7 +451,23 @@ for (const id of ["pp", "cno", "nena", "mgal", "sprocess"]) {
 {
   // the rates from the site's evaluations (scripts/rates/evaluated_rates.py)
   // reach the network as written, and only when asked for
-  const network = checkNetwork(JSON.parse(fs.readFileSync(path.join(DATA, "cno.json"), "utf8")))
+  // while LUNA_RATES_PUBLIC is false the shipped file has no `alternatives`
+  // (scripts/rates/rate_alternatives.py): they are rebuilt here from the same tables
+  const { LUNA_RATES_PUBLIC } = await import("../../lib/rates/features.ts")
+  const shipped = JSON.parse(fs.readFileSync(path.join(DATA, "cno.json"), "utf8"))
+  for (const id of ["cno", "sprocess"]) {
+    const n = id === "cno" ? shipped : JSON.parse(fs.readFileSync(path.join(DATA, `${id}.json`), "utf8"))
+    const has = n.reactions.some((r) => r.alternatives?.length)
+    if (has !== LUNA_RATES_PUBLIC)
+      fail(`${id}.json ${has ? "ships" : "lacks"} the evaluated rates with LUNA_RATES_PUBLIC = ${LUNA_RATES_PUBLIC}: run python scripts/rates/rate_alternatives.py`)
+  }
+  // the explorer loads the switch behind the flag written as a literal (rates-explorer.tsx: Luna)
+  const explorer = fs.readFileSync(path.join(ROOT, "components", "rates", "rates-explorer.tsx"), "utf8")
+  const literal = explorer.match(/const Luna = \/\* LUNA_RATES_PUBLIC \*\/ (true|false)\b/)?.[1]
+  if (literal !== String(LUNA_RATES_PUBLIC))
+    fail(`rates-explorer.tsx loads the LUNA panel behind ${literal ?? "no literal"}, LUNA_RATES_PUBLIC is ${LUNA_RATES_PUBLIC}`)
+  if (/from "\.\/luna-panel"/.test(explorer)) fail("rates-explorer.tsx imports luna-panel statically: it would ship while hidden")
+  const network = checkNetwork(withAlternatives(shipped))
   const ids = network.reactions.filter((r) => r.alternatives?.length).map((r) => r.id)
   if (ids.length !== 2) fail(`cno: ${ids.length} reactions with an evaluated rate, expected ¹²C(p,γ) and ¹³C(p,γ)`)
   const luna = providerFor(network, ids)
@@ -536,6 +616,13 @@ for (const id of ["pp", "cno", "nena", "mgal", "sprocess"]) {
       const b = cur.curiosityText(spec, solved, lang, ctxSolved)
       if (a.sentence !== b.sentence) fail(`curiosity ${spec.id} (${lang}): table says "${a.amount} (${a.percent})", the solver "${b.amount} (${b.percent})"`)
       if (a.knockLine !== b.knockLine) fail(`curiosity ${spec.id} (${lang}): knock-on "${a.knockLine}", the solver "${b.knockLine}"`)
+      // a network without its site's main burning (lib/rates/energy.ts: missingPower) counts only part of the energy
+      const { missingPower } = await import("../../lib/rates/energy.ts")
+      const partial = missingPower(network, network.scenarios.find((x) => x.id === spec.site))
+      if (partial && a.energyLine && !spec.energyScope) fail(`curiosity ${spec.id}: an energy line for part of the burning, without its energyScope`)
+      if (partial && spec.kind === "energy") fail(`curiosity ${spec.id}: an energy card for part of the burning`)
+      // a scope-limited line (CNO alone in the Sun) gives no fuel time: only the whole burning sets it
+      if (spec.energyScope && a.energyLine && a.energyLine.includes(";")) fail(`curiosity ${spec.id} (${lang}): "${a.energyLine}" times the fuel of a partial network`)
       if (a.energyLine !== b.energyLine) fail(`curiosity ${spec.id} (${lang}): energy "${a.energyLine}", the solver "${b.energyLine}"`)
       if (!/One-zone model|Modello a zona singola/.test(a.caveat) || !/Real stars adjust|Una stella vera si riassesta/.test(a.caveat)) fail(`curiosity ${spec.id}: caveat`)
       if ((spec.kind === "energy" || spec.kind === "neutrino" || a.energyLine) && !/a real star would adjust its temperature to keep its luminosity|una stella vera regolerebbe la temperatura per mantenere la sua luminosità/.test(a.caveat))
@@ -550,8 +637,9 @@ for (const id of ["pp", "cno", "nena", "mgal", "sprocess"]) {
     if (Math.abs(solved / shipped - 1) > 0.01) fail(`curiosity ${spec.id}: solver ${solved} vs table ${shipped}`)
     if (ctxShipped.knock) {
       const k = ctxShipped.knock
-      const own = [...reaction.reactants, ...reaction.products].map((i) => network.nuclei[i].label)
-      if (own.includes(k.label) || Math.abs(k.ratio - 1) < 0.05) fail(`curiosity ${spec.id}: knock-on ${k.label} is the reaction's own or under 5%`)
+      // the reaction's own nuclei and their one-step decay daughters (¹⁸F → ¹⁸O, ²¹Na → ²¹Ne)
+      const own = cur.ownNuclei(network, reaction).map((name) => network.nuclei.find((x) => x.name === name).label)
+      if (own.includes(k.label) || Math.abs(k.ratio - 1) < 0.05) fail(`curiosity ${spec.id}: knock-on ${k.label} is the reaction's own, one decay from it, or under 5%`)
     }
     const self = network.nuclei[reaction.target]?.name === spec.nucleus
     const sv = cur.sensOf(sens, spec.site, spec.reaction, spec.nucleus)

@@ -112,6 +112,12 @@ export interface Scenario {
   source_it: string
   note: string | null
   note_it: string | null
+  /**
+   * the burning that makes most of the site's energy (scenarios.yaml): the
+   * pp chain, the CNO cycle or helium burning. In a network without it only
+   * part of the energy is counted (lib/rates/energy.ts: missingPower).
+   */
+  power?: "pp" | "cno" | "he"
   /** optional extra data a network's explorer understands (the s-process) */
   extra?: Record<string, unknown>
   /**
