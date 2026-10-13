@@ -11,11 +11,37 @@
 #
 #   cp .env.example .env   # set SITE_DOMAIN and ACME_EMAIL
 #   docker compose up -d --build
+#
+# Hardening (DEPLOY.md, "Security"): every container drops all Linux
+# capabilities (Caddy keeps the one to bind :80/:443), cannot gain privileges,
+# runs on a read-only root filesystem with a small tmpfs for scratch, has a
+# memory, CPU and process cap, and keeps at most 3 x 10 MB of Docker logs.
+# The caps' defaults suit a 4 GB / 2-4 vCPU VPS; `make env` sizes AZURE2's to
+# the machine, and .env overrides any of them.
+
+x-hardened: &hardened
+  restart: unless-stopped
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "3"
 
 services:
   caddy:
-    image: caddy:2-alpine
-    restart: unless-stopped
+    <<: *hardened
+    # Minor version pinned, patch releases picked up by `docker compose pull`
+    # (DEPLOY.md, "Security"); bump the minor deliberately.
+    image: caddy:2.11-alpine
+    cap_add: [NET_BIND_SERVICE]
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m
+    mem_limit: ${CADDY_MEM_LIMIT:-256m}
+    cpus: ${CADDY_CPUS:-1}
+    pids_limit: 128
     ports:
       - "80:80"
       - "443:443"
@@ -44,7 +70,16 @@ services:
         # atlas citation and the printed CV. Defaults to https://SITE_DOMAIN;
         # set SITE_URL in .env only if the site is served elsewhere.
         SITE_URL: ${SITE_URL:-https://${SITE_DOMAIN}}
-    restart: unless-stopped
+    <<: *hardened
+    # Runs as the image's user `nextjs` (1001). Every page is prerendered, so
+    # the server writes nothing but Next's cache, kept in memory.
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m
+      - /app/.next/cache:uid=1001,gid=1001,mode=0755,size=64m
+    mem_limit: ${WEB_MEM_LIMIT:-512m}
+    cpus: ${WEB_CPUS:-1}
+    pids_limit: 256
     expose:
       - "3000"
 
@@ -56,7 +91,24 @@ services:
         # Empty means all cores. Set BUILD_JOBS=2 in .env on a small VPS, where
         # compiling the engine at full width runs the box out of memory.
         BUILD_JOBS: ${BUILD_JOBS:-}
-    restart: unless-stopped
+    <<: *hardened
+    # tini as PID 1: reaps the AZURE2 worker processes and forwards signals.
+    init: true
+    # The code is read-only; the server writes only to the bind-mounted
+    # evaluations below and to /tmp (a derived model's scratch directory when
+    # an evaluation's own is not writable).
+    read_only: true
+    tmpfs:
+      - /tmp:size=512m
+    # The memory cap is what turns "the VPS ran out of memory" into "one
+    # worker was killed" (its visitor sees "session expired"). Size it at
+    # about MAX_SESSIONS x 0.35-0.9 GB + 0.5 GB (DEPLOY.md, section 1), and
+    # below the machine's RAM: `make env` sets RAM - 1 GB. CPUs: AZURE2_CPUS
+    # (make env: the vCPUs minus a half, so Caddy and the site always get
+    # some); preparation scales with cores, so do not set it lower than needed.
+    mem_limit: ${AZURE2_MEM_LIMIT:-3g}
+    cpus: ${AZURE2_CPUS:-2}
+    pids_limit: 512
     # The image's own user is 1001. Override this when the bind-mounted
     # evaluations below belong to someone else on the host -- a worker caches
     # the external-capture integrals in the evaluation's own directory, so it
@@ -70,12 +122,21 @@ services:
       AZURE2_MAX_SESSIONS: ${AZURE2_MAX_SESSIONS:-8}
       AZURE2_SESSION_TTL: ${AZURE2_SESSION_TTL:-600}
       AZURE2_HEARTBEAT_TTL: ${AZURE2_HEARTBEAT_TTL:-120}
-      AZURE2_THREADS: ${AZURE2_THREADS:-10}
+      AZURE2_THREADS: ${AZURE2_THREADS:-16}
       AZURE2_OMP_THREADS: ${AZURE2_OMP_THREADS:-1}
       # Model builds (preparation) may use more cores than edits; empty = all.
       AZURE2_PREPARE_THREADS: ${AZURE2_PREPARE_THREADS:-}
       # Spare prepared sessions for the slow evaluations ("auto", "0", "7Be:1").
       AZURE2_SPARES: ${AZURE2_SPARES:-auto}
+      # Abuse limits per client address (server/README.md, DEPLOY.md
+      # "Security"): sessions at once, /open and edit rates (N/SECONDS), slow
+      # requests in flight. Caddy is the one proxy in front, and it writes
+      # X-Forwarded-For itself, so the API may believe exactly one hop.
+      AZURE2_TRUSTED_PROXIES: "1"
+      AZURE2_MAX_PER_IP: ${AZURE2_MAX_PER_IP:-2}
+      AZURE2_OPEN_RATE: ${AZURE2_OPEN_RATE:-10/60}
+      AZURE2_EDIT_RATE: ${AZURE2_EDIT_RATE:-20/1}
+      AZURE2_MAX_INFLIGHT_PER_IP: ${AZURE2_MAX_INFLIGHT_PER_IP:-8}
     volumes:
       # The evaluations are baked into the image, but bind-mounting them over
       # the top means adding or correcting one is a file copy and a
