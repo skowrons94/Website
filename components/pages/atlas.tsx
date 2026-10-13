@@ -290,7 +290,7 @@ function IntroEn() {
         elements from carbon up to iron; most of those beyond iron were made instead by neutron
         captures, slow ones mainly in red giants and rapid ones in stellar explosions and neutron-star
         mergers. To model a star, or to read the composition of an old one, we need to
-        know how fast each of these reactions runs at the temperature inside it.
+        know how fast each of these reactions runs at the temperature inside it: its reaction rate.
       </p>
       <p>
         That rate is hard to measure. Nuclei repel each other electrically, and at stellar temperatures
@@ -306,8 +306,8 @@ function IntroEn() {
         Even an intense beam then produces only a trickle of reactions, and at the surface of the Earth
         cosmic rays make far more counts than that in any γ-ray detector.
         In the early 1990s the LUNA collaboration therefore moved its accelerator under the Gran Sasso
-        mountain in Italy, where 1400 m of rock reduce the cosmic-ray muons by about a factor of a
-        million. Several reactions of the pp chains and the CNO cycles have since been measured there
+        mountain in Italy, where 1.4 km of rock cuts the flux of cosmic-ray muons about a
+        millionfold. Several reactions of the pp chains and the CNO cycles have since been measured there
         at, or close to, the energies at which the Sun runs them.
       </p>
       <p>
@@ -315,7 +315,7 @@ function IntroEn() {
         cycles: a reaction network. This atlas collects the reactions that matter most. For each it
         says what the reaction does, why it matters, how it has been measured and what is still
         uncertain. The map places them on the chart of nuclides, with protons counted upwards and
-        neutrons across; pick a process to follow its path.
+        neutrons across; choose a process to follow its path.
       </p>
     </>
   )
