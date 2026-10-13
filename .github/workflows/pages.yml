@@ -6,8 +6,8 @@
 # same module for WebAssembly; lay out public/azure2/; export the site.
 name: GitHub Pages
 
-# Every push builds (so a branch is checked before it is merged); only main
-# deploys.
+# Builds and deploys from main only (the Checks workflow covers pull
+# requests); "Run workflow" builds any branch by hand.
 #
 # Supply chain (DEPLOY.md, "Security"): the build job, which runs npm, pip,
 # emsdk and every downloaded tool, holds a read-only token and nothing else;
@@ -19,6 +19,7 @@ name: GitHub Pages
 # main, and so the deployed site, would use.
 on:
   push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:

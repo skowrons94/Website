@@ -1,13 +1,22 @@
-# Keeps the SHA-pinned actions current: a pull request per new release, with
-# the tag in the comment updated alongside the pin (DEPLOY.md, "Security").
+# Keeps the SHA-pinned actions and the npm packages current (DEPLOY.md,
+# "Security"): once a month, one grouped pull request per ecosystem, so the
+# checks run (and can fail) once rather than once per package. Security
+# updates are not affected by the grouping and still arrive when needed.
 version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: monthly
+    open-pull-requests-limit: 1
+    groups:
+      actions:
+        patterns: ["*"]
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: monthly
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
+    groups:
+      npm:
+        patterns: ["*"]

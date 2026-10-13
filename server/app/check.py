@@ -123,7 +123,9 @@ def validate(value, schema: Dict, path: str = "") -> List[str]:
         if len(value.strip()) < schema.get("minLength", 0):
             out.append(f"{here} is empty or too short" if value.strip()
                        else f"{here} is empty")
-        elif "pattern" in schema and not re.search(schema["pattern"], value):
+        # a TODO placeholder is reported once, as such (_todos below)
+        elif ("pattern" in schema and "TODO" not in value
+              and not re.search(schema["pattern"], value)):
             out.append(f"{here} is {_shown(value)}, which does not look right: "
                        + _pattern_hint(path, value))
     if isinstance(value, (int, float)) and not isinstance(value, bool):

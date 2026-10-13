@@ -1,11 +1,14 @@
-# Checks on every push and pull request, in a couple of minutes: the
+# Checks on every push to main and every pull request, in a couple of minutes: the
 # evaluations (docs/ADDING-AN-EVALUATION.md), the atlas, the search index, the
 # rates, the types and the Python tests that need no AZURE2. The tests that run
 # AZURE2 itself are in the GitHub Pages workflow, which builds it.
 name: Checks
 
+# Main and pull requests only: the working branches are merged into main,
+# so checking them as well sent every failure twice.
 on:
   push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
@@ -36,7 +39,7 @@ jobs:
           python-version: "3.12"
 
       - run: npm ci --ignore-scripts
-      - run: pip install --quiet pytest pyyaml jsonschema
+      - run: pip install --quiet -r server/requirements.txt pytest pyyaml jsonschema
 
       - name: Evaluations (info.json, .azr paths, data labels, atlas links)
         run: |
