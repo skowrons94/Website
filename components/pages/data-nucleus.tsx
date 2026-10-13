@@ -39,6 +39,7 @@ export function DataNucleusPage({ nuclide, lang }: { nuclide: string; lang: Lang
 
   /* -- channel matrix -- */
   const rs = reactionsInto(nuclide)
+  const atlasKeys = new Set(entrances.map((e) => e.key).filter((k): k is string => Boolean(k)))
   const perReaction = new Map(rs.map((r) => [r, gapRows(idx, [r])]))
   const allRows = [...perReaction.values()].flat()
   const matrix = rs
@@ -59,11 +60,17 @@ export function DataNucleusPage({ nuclide, lang }: { nuclide: string; lang: Lang
       const k = parseKey(key)!
       return { key, slug: idx.reactions.slug[r], n: idx.reactions.n[r], cells, entrance: `${k.projectile}+${k.target}`, evals: evals.filter((e) => e.reactions.includes(key)).map((e) => e.id) }
     })
-    .sort((a, b) => a.entrance.localeCompare(b.entrance) || b.n - a.n)
+    // the atlas' own entrance reactions first, then by number of datasets
+    .sort((a, b) => Number(atlasKeys.has(b.key)) - Number(atlasKeys.has(a.key)) || b.n - a.n || a.key.localeCompare(b.key))
   // light projectiles first (the channels of an R-matrix fit); heavy-ion reactions on request
   const LIGHT = new Set(["n", "p", "d", "t", "3He", "a", "g"])
-  const light = matrix.filter((m) => LIGHT.has(parseKey(m.key)!.projectile))
-  const heavy = matrix.filter((m) => !LIGHT.has(parseKey(m.key)!.projectile))
+  // ...and a single outgoing particle (or elastic/inelastic): the two-body channels
+  const twoBody = (key: string) => {
+    const k = parseKey(key)!
+    return LIGHT.has(k.projectile) && (["el", "inl", "g"].includes(k.process) || /^(n|p|d|t|3He|a|\d+[A-Z][a-z]?)$/.test(k.process))
+  }
+  const light = matrix.filter((m) => twoBody(m.key))
+  const heavy = matrix.filter((m) => !twoBody(m.key))
   const groups = GROUPS.filter((g) => matrix.some((m) => m.cells.has(g)))
 
   /* -- entrances, with their windows -- */
@@ -119,7 +126,8 @@ export function DataNucleusPage({ nuclide, lang }: { nuclide: string; lang: Lang
                             <span className="font-medium tabular">{c.n}</span>
                             {Number.isFinite(c.lo) && (
                               <span className="block whitespace-nowrap text-xs text-muted-foreground tabular">
-                                {energy(c.lo, lang, 2)}–{energy(c.hi, lang, 2)}
+                                {energy(c.lo, lang, 2)}
+                                {energy(c.hi, lang, 2) !== energy(c.lo, lang, 2) ? `–${energy(c.hi, lang, 2)}` : ""}
                               </span>
                             )}
                           </span>

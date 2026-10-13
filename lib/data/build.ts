@@ -8,7 +8,7 @@
 import fs from "node:fs"
 import path from "node:path"
 
-import { atomicMass, entranceChannel, parseParticle, qValue } from "@/lib/atlas-core.mjs"
+import { atomicMass, entranceChannel, initialParticles, parseParticle, qValue } from "@/lib/atlas-core.mjs"
 import { getAtlas, getReaction, type Reaction } from "@/lib/atlas"
 import {
   cumulative,
@@ -288,9 +288,11 @@ export function compoundNuclei(lang: Lang = "en"): Map<string, CompoundEntrance[
   const idx = readIndex()
   for (const r of getAtlas(lang).reactions) {
     if (!r.hasFile || r.kind === "decay" || r.kind === "weak") continue
+    // the two nuclei of the entrance channel (a neutron capture included, which has no Gamow window)
     const ch = entranceChannel(r)
-    if (!ch.pair || ch.pair.length !== 2) continue
-    const [a, b] = ch.pair as { A: number; Z: number; code: string }[]
+    const pair = ch.pair ?? (ch.noteKey === "neutron" ? initialParticles(r).filter((x: { lepton: boolean }) => !x.lepton) : null)
+    if (!pair || pair.length !== 2) continue
+    const [a, b] = pair as { A: number; Z: number; code: string }[]
     const A = a.A + b.A
     const Z = a.Z + b.Z
     const compound = `${A}${symbolOf(Z)}`

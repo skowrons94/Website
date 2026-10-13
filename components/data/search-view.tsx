@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useMemo, useState } from "react"
+import { useDeferredValue, useEffect, useMemo, useState } from "react"
 
 import { Sci } from "@/components/sci"
 import { dataUrl } from "@/lib/data/client"
@@ -66,7 +66,10 @@ export function SearchView({
     return () => w.terminate()
   }, [])
 
+  // filtering and re-rendering the list run as a deferred (interruptible) render, so a click never blocks the page
+  const filters = useDeferredValue({ projectile, process, quantity, zLo, zHi, T9, above, noPartials, noRecent, singleLab, levels })
   const results = useMemo(() => {
+    const { projectile, process, quantity, zLo, zHi, T9, above, noPartials, noRecent, singleLab, levels } = filters
     if (!data) return []
     const LIGHT = new Set(["p", "a", "d", "3He", "t", "n"])
     const qb = quantity === "any" ? 0 : 1 << GROUPS.indexOf(quantity)
@@ -84,12 +87,12 @@ export function SearchView({
         if (above) {
           const E0 = gamowPeak(s, T9)
           if (E0 === null) return false
-          if (s.lowest !== null && s.lowest <= 2 * E0) return false
+          if (s.lowest === null || s.lowest <= 2 * E0) return false
         }
         return true
       })
       .sort((a, b) => a.Zt - b.Zt || a.At - b.At || a.key.localeCompare(b.key))
-  }, [data, projectile, process, quantity, zLo, zHi, T9, above, noPartials, noRecent, singleLab, levels, levelsNoWg])
+  }, [data, filters, levelsNoWg])
 
   useEffect(() => setLimit(PAGE), [results])
 
@@ -196,7 +199,7 @@ export function SearchView({
             </thead>
             <tbody>
               {results.slice(0, limit).map((s) => {
-                const E0 = gamowPeak(s, T9)
+                const E0 = gamowPeak(s, filters.T9)
                 return (
                   <tr key={s.key} className="border-t border-border/60">
                     <th scope="row" className="whitespace-nowrap px-3 py-1.5 text-left font-normal">

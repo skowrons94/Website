@@ -201,7 +201,7 @@ export function GapMap({
               strokeDasharray="3 3"
               strokeWidth={0.8}
             />
-            {lowest !== null && lowest > w.lo && (
+            {!neutron && lowest !== null && lowest > w.lo && (
               <rect
                 x={clampX(w.lo)}
                 y={top - 4}
@@ -278,7 +278,7 @@ export function GapMap({
           </g>
         ))}
         {/* the lowest measurement */}
-        {lowest !== null && (
+        {!neutron && lowest !== null && (
           <g>
             <line x1={x(lowest)} x2={x(lowest)} y1={top - 4} y2={plotBottom} stroke="var(--viz-series-2)" strokeWidth={1.6} />
             <text

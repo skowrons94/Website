@@ -369,7 +369,54 @@ export function ReactionExplorer({
           </button>
         </div>
 
-        <div className="mt-3 max-h-[70vh] overflow-auto rounded-lg border border-border" tabIndex={0} role="region" aria-labelledby="table-title">
+        {/* phones: one card per dataset */}
+        <ul className="mt-3 max-h-[75vh] divide-y divide-border/60 overflow-auto rounded-lg border border-border md:hidden" aria-label={fill(t.caption, { reaction: label })}>
+          {shown.map((r) => (
+            <li key={r.id} className={`flex gap-3 px-3 py-3 text-sm ${sel.has(r.id) ? "" : "text-muted-foreground"}`}>
+              <input
+                type="checkbox"
+                className="mt-1 h-5 w-5 shrink-0 accent-[hsl(var(--link))]"
+                checked={sel.has(r.id)}
+                onChange={() => toggle(r.id)}
+                aria-label={fill(t.select, { id: `${r.id}, ${r.author} ${r.year ?? ""}` })}
+              />
+              <div className="min-w-0 flex-1">
+                <p className="flex flex-wrap items-baseline gap-x-2">
+                  <span className="tabular">{r.year ?? "–"}</span>
+                  <span className="font-medium text-foreground">
+                    {r.author}
+                    {r.authors.length > 1 ? " et al." : ""}
+                  </span>
+                  <a href={r.exfor} className="font-mono text-xs text-link underline-offset-2 hover:underline">
+                    {r.id}
+                  </a>
+                  {r.evaluations.map((id) => (
+                    <Link key={id} href={localePath(lang, `/evaluations/${id}`)} className="inline-flex rounded-full border border-[var(--viz-series-2)] px-1.5 text-[0.6875rem] font-medium text-foreground">
+                      {fill(t.usedInShort, { id })}
+                    </Link>
+                  ))}
+                </p>
+                <p className="mt-0.5 text-xs tabular">
+                  {GROUP_SYMBOL[r.group]}
+                  {r.levels > 0 ? ` (${fill(t.levels, { n: r.levels })})` : ""} ·{" "}
+                  {r.e0 !== null ? `${kev(r.e0 * 1000, lang)}${r.e1 !== null && r.e1 > r.e0 * 1.0001 ? `–${kev(r.e1 * 1000, lang)}` : ""} keV` : r.k0 !== null ? `kT ${kev(r.k0 * 1000, lang)} keV` : "–"} · {r.n} pt
+                  {r.errors.length ? ` · ${r.errors.join(", ")}` : ""}
+                </p>
+                {r.lab && <p className="mt-0.5 truncate text-xs text-muted-foreground">{r.lab}</p>}
+                {r.flags.length > 0 && (
+                  <p className="mt-1 flex flex-wrap gap-1 text-[0.6875rem]">
+                    {r.flags.map((f) => (
+                      <span key={f} className="rounded border border-border px-1">
+                        {(FLAG_BITS as readonly string[]).includes(f) ? flagLabel(f as Flag, lang) : f}
+                      </span>
+                    ))}
+                  </p>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-3 hidden max-h-[70vh] overflow-auto rounded-lg border border-border md:block" tabIndex={0} role="region" aria-labelledby="table-title">
           <table className="w-full min-w-[64rem] border-collapse text-sm">
             <caption className="sr-only">{fill(t.caption, { reaction: label })}</caption>
             <thead className="sticky top-0 z-[1] bg-card text-left text-xs text-muted-foreground shadow-[0_1px_0_hsl(var(--border))]">
@@ -380,14 +427,14 @@ export function ReactionExplorer({
                 <SortHead k="year" label={t.cols.year} sort={sort} setSort={setSort} sortBy={t.sortBy} />
                 <SortHead k="author" label={t.cols.author} sort={sort} setSort={setSort} sortBy={t.sortBy} />
                 <SortHead k="lab" label={t.cols.lab} sort={sort} setSort={setSort} sortBy={t.sortBy} />
-                <th scope="col" className="px-3 py-2 font-medium">{t.cols.method}</th>
+                <th scope="col" className="whitespace-nowrap px-3 py-2 font-medium">{t.cols.method}</th>
                 <SortHead k="quantity" label={t.cols.quantity} sort={sort} setSort={setSort} sortBy={t.sortBy} />
                 <SortHead k="energy" label={t.cols.energy} sort={sort} setSort={setSort} sortBy={t.sortBy} right />
                 <SortHead k="points" label={t.cols.points} sort={sort} setSort={setSort} sortBy={t.sortBy} right />
-                <th scope="col" className="px-3 py-2 font-medium">{t.cols.errors}</th>
-                <th scope="col" className="px-3 py-2 font-medium">{t.cols.flags}</th>
+                <th scope="col" className="whitespace-nowrap px-3 py-2 font-medium">{t.cols.errors}</th>
+                <th scope="col" className="whitespace-nowrap px-3 py-2 font-medium">{t.cols.flags}</th>
                 <SortHead k="id" label={t.cols.id} sort={sort} setSort={setSort} sortBy={t.sortBy} />
-                <th scope="col" className="px-3 py-2 font-medium">{t.cols.doi}</th>
+                <th scope="col" className="whitespace-nowrap px-3 py-2 font-medium">{t.cols.doi}</th>
               </tr>
             </thead>
             <tbody>
@@ -455,7 +502,7 @@ export function ReactionExplorer({
                     {r.flags.length ? (
                       <ul className="flex flex-wrap gap-1">
                         {r.flags.map((f) => (
-                          <li key={f} className="rounded border border-border px-1 py-px" title={(FLAG_BITS as readonly string[]).includes(f) ? flagExplain(f as Flag, lang) : f}>
+                          <li key={f} className="whitespace-nowrap rounded border border-border px-1 py-px" title={(FLAG_BITS as readonly string[]).includes(f) ? flagExplain(f as Flag, lang) : f}>
                             {(FLAG_BITS as readonly string[]).includes(f) ? flagLabel(f as Flag, lang) : f}
                           </li>
                         ))}
@@ -645,9 +692,10 @@ function ExportPanel({ slug, selected, strings }: { slug: string; selected: stri
         ))}
       </div>
       <fieldset className="mt-5 rounded-md border border-border/80 p-4">
-        <legend className="px-1 text-sm font-medium">
+        <legend className="sr-only">{t.azure2}</legend>
+        <p className="mb-3 text-sm font-medium" aria-hidden>
           {t.azure2} <span className="font-normal text-muted-foreground">· {t.azure2Hint}</span>
-        </legend>
+        </p>
         <div className="grid gap-3 sm:grid-cols-3">
           <Select label={t.labParticle} value={labParticle} onChange={(v) => setLabParticle(v as "projectile" | "target")} options={[["projectile", t.projectile], ["target", t.target]]} />
           <Select label={t.masses} value={massModel} onChange={(v) => setMassModel(v as "ame" | "integer")} options={[["ame", t.ame], ["integer", t.integer]]} />

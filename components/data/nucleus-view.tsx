@@ -255,7 +255,9 @@ export function NucleusView({
 
       <details className="group mt-10 rounded-lg border border-border/80">
         <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
-          <Sci>{`${fill(t.tableCaption, { cn })} (${levels.length})`}</Sci>
+          <span>
+            <Sci>{`${fill(t.tableCaption, { cn })} (${levels.length})`}</Sci>
+          </span>
           <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden />
         </summary>
         <div className="max-h-[70vh] overflow-auto px-2 pb-3" tabIndex={0} role="region" aria-label={fill(t.tableCaption, { cn })}>

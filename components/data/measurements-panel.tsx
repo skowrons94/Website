@@ -105,7 +105,7 @@ export function MeasurementsPanel(p: PanelProps) {
           <Tile
             label={t.macsTitle}
             value={p.macs ? fill(t.macsValue, { n: p.macs.n }) : t.noMacs}
-            sub={p.macs ? fill(t.macsSub, { lo: kev(p.macs.lo, lang), hi: kev(p.macs.hi, lang) }) : ""}
+            sub={p.macs ? fill(t.macsSub, { lo: energy(p.macs.lo, lang), hi: energy(p.macs.hi, lang) }) : ""}
           />
         )}
         <Tile
@@ -120,6 +120,11 @@ export function MeasurementsPanel(p: PanelProps) {
           }
         />
       </dl>
+
+      {w && !neutron && (() => {
+        const n = rows.filter((r) => r.g === "strength" && r.counted && r.e0 <= w.hi && r.e1 >= w.lo).length
+        return n > 0 ? <p className="mt-3 text-sm text-muted-foreground">{fill(t.strengthsInWindow, { n })}</p> : null
+      })()}
 
       <div className="mt-6 rounded-lg border border-border bg-[var(--viz-surface)] p-3 sm:p-4">
         <GapMap
