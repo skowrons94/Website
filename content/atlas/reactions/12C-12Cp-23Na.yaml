@@ -44,7 +44,7 @@ details: >-
   produce a beam-induced background that dominates singles measurements at
   the lowest energies (Zickefoose et al. 2018). Particle–γ coincidences
   (Fruet et al. 2020; Tan et al. 2020; Nippert et al. 2025) select the
-  protons in coincidence with the de-excitation γ rays and suppress this
+  protons in coincidence with the de-excitation γ-rays and suppress this
   background, at the cost of the ground-state branch, which must be
   inferred.
 
@@ -60,7 +60,7 @@ details: >-
   S-factor, and the disputed Trojan Horse resonances (Tumino et al. 2018;
   Mukhamedzhanov et al. 2019). The p channel also serves as the mirror
   reference for extrapolating the n channel, ¹²C(¹²C,n)²³Mg (Bucher et al.
-  2015). LUNA is preparing a direct measurement of the γ rays of the p and
+  2015). LUNA is preparing a direct measurement of the γ-rays of the p and
   α channels below 2.1 MeV at the underground Bellotti Ion Beam Facility,
   with an HPGe detector inside an active NaI(Tl) veto (Gesuè et al. 2025).
 status: uncertain

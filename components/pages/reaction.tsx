@@ -284,8 +284,8 @@ function Facts({ reaction: r, lang }: { reaction: Reaction; lang: Lang }) {
 
 /**
  * The thermal energies of a neutron capture in one plain line: "about 8–90
- * keV, the energy of a gas at 90–1,000 million degrees", rounded the way a
- * person would say it.
+ * keV, the energy of a gas at 90–1000 million kelvin", rounded the way a
+ * person would say it (English: no separator in four-digit numbers).
  */
 function ThermalPlain({ thermal, lang }: { thermal: Reaction["thermal"]; lang: Lang }) {
   const t = dict(lang).atlas
@@ -295,7 +295,7 @@ function ThermalPlain({ thermal, lang }: { thermal: Reaction["thermal"]; lang: L
   const span = (values: number[]) => {
     const lo = round(Math.min(...values))
     const hi = round(Math.max(...values))
-    const f = (v: number) => v.toLocaleString(lang === "it" ? "it-IT" : "en-GB")
+    const f = (v: number) => (lang === "it" ? v.toLocaleString("it-IT") : v.toLocaleString("en-GB", { useGrouping: v >= 10000 }).replace(/,/g, "\u2009"))
     return lo === hi ? f(lo) : `${f(lo)}–${f(hi)}`
   }
   return <span className="text-[0.9375rem] font-medium">{t.thermalPlain(span(kTs), span(mks))}</span>

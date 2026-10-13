@@ -226,7 +226,7 @@ function EvaluationIntro({
     ejectile === "γ"
       ? it
         ? "che poi si libera dell'energia in più emettendo un raggio γ"
-        : "which then sheds its extra energy as a γ ray"
+        : "which then sheds its extra energy as a γ-ray"
       : ejectile === projectile
         ? it
           ? "che subito si separa di nuovo negli stessi due nuclei (diffusione)"

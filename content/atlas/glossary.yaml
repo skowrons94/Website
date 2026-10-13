@@ -227,7 +227,7 @@ terms:
       A nucleus, like an atom, can exist only at certain energies. The lowest
       is the ground state; the others are excited states, which usually give
       up their extra energy within a tiny fraction of a second by emitting a
-      γ ray or a particle. Each nucleus has its own pattern of levels, and the
+      γ-ray or a particle. Each nucleus has its own pattern of levels, and the
       ones just above the energy at which two nuclei can merge decide where a
       reaction has resonances.
     text_it: >-
@@ -246,7 +246,7 @@ terms:
       The nucleus formed for a moment when two nuclei merge: a proton and
       nitrogen‑14 form oxygen‑15, two carbon nuclei form magnesium‑24. It is
       born in an excited state and at once gets rid of the extra energy, by
-      emitting a γ ray (a capture) or by breaking up into other particles.
+      emitting a γ-ray (a capture) or by breaking up into other particles.
       Which way it decays does not depend on how it was formed, only on its
       energy and its other properties.
     text_it: >-
@@ -875,7 +875,7 @@ terms:
     also_it: Γ, γ²
     text: >-
       How readily a level decays through one channel, for example by
-      emitting a proton or a γ ray. The partial width Γ is an energy (eV,
+      emitting a proton or a γ-ray. The partial width Γ is an energy (eV,
       keV): the larger it is, the faster that decay and the broader the
       resonance; the widths of all channels add up to the level's total
       width. The reduced width γ² is the same quantity with the
@@ -898,11 +898,11 @@ terms:
     term: Particle–γ coincidence
     term_it: Coincidenza particella–γ
     text: >-
-      Recording a particle and a γ ray only when they arrive together, within
+      Recording a particle and a γ-ray only when they arrive together, within
       a few billionths of a second. A real reaction often gives both, a
-      proton and the γ ray of the nucleus left behind, while most background
+      proton and the γ-ray of the nucleus left behind, while most background
       gives only one; requiring the two together removes most of the
-      background, at the cost of missing the decays that give no γ ray.
+      background, at the cost of missing the decays that give no γ-ray.
     text_it: >-
       Registrare una particella e un raggio γ solo quando arrivano insieme,
       entro pochi miliardesimi di secondo. Una reazione vera dà spesso

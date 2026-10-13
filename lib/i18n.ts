@@ -1194,7 +1194,7 @@ const en = {
     /** Said once per translated page, where its first English section begins. */
     englishSections: (_sections: string[]) => "",
     sectionNames: { measurements: "the list of measurements", details: "Details", openQuestions: "Open questions" },
-    thermalPlain: (kT: string, mk: string) => `about ${kT} keV, the energy of a gas at ${mk} million degrees`,
+    thermalPlain: (kT: string, mk: string) => `about ${kT} keV, the energy of a gas at ${mk} million kelvin`,
     thermalBySite: "By stellar site",
     skipToMap: "Skip to the map",
     lunaMountain: "Gran Sasso",
