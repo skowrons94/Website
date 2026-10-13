@@ -6,7 +6,7 @@ sys.path.insert(0, os.path.dirname(HERE))           # scripts/data, for `import 
 
 FIXTURES = os.path.join(HERE, "fixtures")
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(HERE)))
-PUBLIC_DATA = os.path.join(REPO, "public", "data")
+PUBLIC_DATA = os.environ.get("DX_OUT", os.path.join(REPO, "public", "data"))
 
 
 def fixture(*parts):

@@ -96,9 +96,10 @@ def test_budgets():
     with open(os.path.join(PUBLIC_DATA, "exfor", "index.json"), "rb") as f:
         gz = len(gzip.compress(f.read(), 6))
     assert gz <= config.BUDGET["index_gz"]
-    total = sum(os.path.getsize(os.path.join(r, f)) for r, _, fs in os.walk(os.path.join(PUBLIC_DATA, "ensdf"))
-                for f in fs)
-    assert total <= config.BUDGET["ensdf_commit_total"]
+    if load("ensdf", "index.json")["meta"]["set"] == "atlas":      # the committed set
+        total = sum(os.path.getsize(os.path.join(r, f))
+                    for r, _, fs in os.walk(os.path.join(PUBLIC_DATA, "ensdf")) for f in fs)
+        assert total <= config.BUDGET["ensdf_commit_total"]
 
 
 def test_attribution():
