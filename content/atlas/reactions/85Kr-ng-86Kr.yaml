@@ -14,9 +14,9 @@ summary: >-
   first tells how dense the neutrons were in the star, and it has never been
   measured directly.
 summary_it: >-
-  Il kripton-85 radioattivo cattura un neutrone. Che lo faccia o che decada
-  prima dice quanto densi erano i neutroni nella stella, e la reazione non è
-  mai stata misurata direttamente.
+  Il kripton-85 radioattivo cattura un neutrone. Che catturi il neutrone o
+  decada prima dipende dalla densità di neutroni nella stella. La reazione non
+  è mai stata misurata direttamente.
 role: >-
   Krypton-85 lives about ten years in the laboratory. In the ¹³C pocket of
   an AGB star a nucleus waits a few centuries for its next neutron, and in
@@ -62,7 +62,7 @@ status_note: >-
   statistical-model calculations constrained by ⁸⁶Kr photodisintegration.
 status_note_it: >-
   Non esiste una misura diretta; la sezione d'urto stellare viene da calcoli
-  con il modello statistico vincolati dalla fotodisintegrazione del ⁸⁶Kr.
+  con il modello statistico vincolati dalla fotodisintegrazione dell'⁸⁶Kr.
 status_plain: >-
   Never measured directly: the rate of this radioactive gas is inferred
   from calculations and indirect experiments.

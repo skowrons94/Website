@@ -4,37 +4,37 @@
 
 employment:
   - period: May 2025 – present
-    period_it: mag 2025 — oggi
+    period_it: mag. 2025–oggi
     title: Postdoctoral Researcher (research contract)
     title_it: Ricercatore postdoc (contratto di ricerca)
     detail: Università degli Studi di Padova
   - period: Oct 2023 – May 2025
-    period_it: ott 2023 — mag 2025
+    period_it: ott. 2023–mag. 2025
     title: Postdoctoral Researcher
     title_it: Ricercatore postdoc
     detail: Università degli Studi di Padova
 
 education:
   - period: Oct 2020 – Dec 2023
-    period_it: ott 2020 — dic 2023
+    period_it: ott. 2020–dic. 2023
     title: PhD in Physics
     title_it: Dottorato di ricerca in Fisica
     detail: "Università degli Studi di Padova — Supervisor: Prof. Antonio Caciolli · Defended 13 December 2023"
     detail_it: "Università degli Studi di Padova — Supervisore: Prof. Antonio Caciolli · Discussa il 13 dicembre 2023"
   - period: Sep 2018 – Sep 2020
-    period_it: set 2018 — set 2020
+    period_it: set. 2018–set. 2020
     title: MSc in Physics
     title_it: Laurea magistrale in Fisica
     detail: Università degli Studi di Padova — 110/110
   - period: Sep 2015 – Dec 2018
-    period_it: set 2015 — dic 2018
+    period_it: set. 2015–dic. 2018
     title: BSc in Physics
     title_it: Laurea triennale in Fisica
     detail: Università degli Studi di Padova
 
 research:
   - period: Feb 2020 – present
-    period_it: feb 2020 — oggi
+    period_it: feb. 2020–oggi
     title: LUNA experiment
     title_it: Esperimento LUNA
     detail: Laboratori Nazionali del Gran Sasso, INFN, Italy
@@ -48,12 +48,12 @@ research:
     bullets_it:
       - Coordinatore del gruppo di lavoro per la misura ¹⁹F + p (dal 2024); analisi degli esperimenti ¹²C + p e ¹³C + p
       - Coordinatore DAQ (dal 2024) — progettazione, installazione e gestione dei sistemi di acquisizione dati e di slow control in tutte le campagne di LUNA e nel nuovo Bellotti IBF
-      - Calibrazione dell'acceleratore Singletron da 3,5 MV del Bellotti Ion Beam Facility
+      - Calibrazione dell'acceleratore Singletron da 3,5 MV della Bellotti Ion Beam Facility
       - Messa a punto della simulazione Geant4 per gli apparati BGO e HPGe
       - Valutazione R-matrix delle reazioni ¹²C + p, ¹³C + p, ²⁰Ne + p e ²²Ne + p
 
   - period: Jun 2025 – present
-    period_it: giu 2025 — oggi
+    period_it: giu. 2025–oggi
     title: AZURE2 R-matrix code
     title_it: Codice R-matrix AZURE2
     detail: Maintainer and Lead Developer
@@ -63,12 +63,12 @@ research:
       - Design and implementation of new features, the GUI and the documentation
       - Support and training for the international user community across academia, national laboratories and the IAEA
     bullets_it:
-      - Responsabile del codice R-matrix di riferimento usato in tutto il mondo dalle comunità dell'astrofisica nucleare, della valutazione dei dati nucleari della IAEA e dell'analisi dei materiali
+      - Responsabile del codice R-matrix di riferimento usato in tutto il mondo dalle comunità dell'astrofisica nucleare, della valutazione dei dati nucleari dell'IAEA e dell'analisi dei materiali
       - Progettazione e realizzazione di nuove funzionalità, dell'interfaccia grafica e della documentazione
       - Supporto e formazione per la comunità internazionale degli utenti, in università, laboratori nazionali e alla IAEA
 
   - period: Jun 2024 – present
-    period_it: giu 2024 — oggi
+    period_it: giu. 2024–oggi
     title: CRYRING
     detail: GSI Helmholtzzentrum für Schwerionenforschung, Darmstadt, Germany
     detail_it: GSI Helmholtzzentrum für Schwerionenforschung, Darmstadt, Germania
@@ -78,7 +78,7 @@ research:
       - Studio dell'effetto di schermaggio elettronico con la reazione ¹⁵N + p in cinematica inversa
 
   - period: Nov 2023 – present
-    period_it: nov 2023 — oggi
+    period_it: nov. 2023–oggi
     title: AGATA set-up
     title_it: Apparato AGATA
     detail: Laboratori Nazionali di Legnaro, INFN, Italy
@@ -87,11 +87,11 @@ research:
       - Spokesperson for the sub-femtosecond lifetime measurement of the 6.79 MeV state in ¹⁵O with the AGATA γ-ray tracking array
       - Led the complete data analysis pipeline (Doppler correction, kinematic reconstruction, Geant4 simulation, Bayesian extraction of the lifetime); manuscript under review at Nature Physics
     bullets_it:
-      - Portavoce della misura della vita media, inferiore al femtosecondo, dello stato a 6,79 MeV dell'¹⁵O con il rivelatore a tracciamento di raggi γ AGATA
+      - Portavoce della misura della vita media, inferiore al femtosecondo, dello stato a 6,79 MeV del ¹⁵O con il rivelatore a tracciamento di raggi γ AGATA
       - Guida dell'intera catena di analisi dei dati (correzione Doppler, ricostruzione cinematica, simulazione Geant4, estrazione bayesiana della vita media); manoscritto in revisione presso Nature Physics
 
   - period: Feb 2024 – Mar 2024
-    period_it: feb 2024 — mar 2024
+    period_it: feb. 2024–mar. 2024
     title: Dalton Cumbrian Facility
     detail: Westlakes Science Park, Moor Row, UK
     detail_it: Westlakes Science Park, Moor Row, Regno Unito
@@ -101,7 +101,7 @@ research:
       - Calibrazione in energia dell'acceleratore Pelletron da 2,5 MV
 
   - period: Oct 2020 – May 2023
-    period_it: ott 2020 — mag 2023
+    period_it: ott. 2020–mag. 2023
     title: HEAT experiment
     title_it: Esperimento HEAT
     detail: Laboratori Nazionali di Legnaro, INFN, Italy
@@ -112,7 +112,7 @@ research:
       - Studi del desorbimento dell'idrogeno nei bersagli di carbonio con tecniche di analisi con fasci di ioni (IBA)
 
   - period: Feb 2019 – Feb 2020
-    period_it: feb 2019 — feb 2020
+    period_it: feb. 2019–feb. 2020
     title: GALILEO set-up
     title_it: Apparato GALILEO
     detail: Laboratori Nazionali di Legnaro, INFN, Italy
@@ -120,11 +120,11 @@ research:
     bullets:
       - Characterization of the GALTRACE silicon detector with neural networks
     bullets_it:
-      - Caratterizzazione del rivelatore al silicio GALTRACE con tecniche a reti neurali
+      - Caratterizzazione del rivelatore al silicio GALTRACE mediante reti neurali
 
 projects:
   - period: May 2026 – May 2031
-    period_it: mag 2026 — mag 2031
+    period_it: mag. 2026–mag. 2031
     title: GENESIS
     detail: >-
       Quantum-Enhanced Evaluation of Nuclear Reaction Cross Sections in R-Matrix
@@ -135,14 +135,15 @@ projects:
 
 awards:
   - period: Feb 2026
-    period_it: feb 2026
+    period_it: feb. 2026
     title: Villi Prize, INFN
     title_it: Premio Villi, INFN
     detail: Italy — INFN prize for the best PhD thesis
     detail_it: Italia — premio INFN per la migliore tesi di dottorato
   - period: Feb 2025 – present
-    period_it: feb 2025 — oggi
+    period_it: feb. 2025–oggi
     title: Honorary Fellow
+    title_it: Honorary Fellow (titolo onorario)
     detail: >-
       School of Physics and Astronomy, University of Edinburgh, UK — in
       recognition of contributions to supervision and research
@@ -150,15 +151,15 @@ awards:
       School of Physics and Astronomy, University of Edinburgh, Regno Unito — in
       riconoscimento del contributo alla supervisione e alla ricerca
   - period: Oct 2024 – present
-    period_it: ott 2024 — oggi
+    period_it: ott. 2024–oggi
     title: IAEA INDEN-LE Committee
-    title_it: Comitato INDEN-LE della IAEA
+    title_it: Comitato INDEN-LE dell'IAEA
     detail: >-
       International Atomic Energy Agency, Vienna — invited member of the
       committee of R-matrix experts that evaluates and extrapolates
       light-element nuclear cross sections for research and industry
     detail_it: >-
-      Agenzia Internazionale per l'Energia Atomica, Vienna — membro su invito
+      Agenzia internazionale per l'energia atomica (IAEA), Vienna — membro su invito
       del comitato IAEA di esperti R-matrix che valuta ed estrapola le sezioni
       d'urto nucleari degli elementi leggeri per la ricerca e le applicazioni
       industriali
@@ -177,7 +178,7 @@ teaching:
 
 supervision:
   - period: 2022–present
-    period_it: 2022 — oggi
+    period_it: 2022–oggi
     title: PhD theses
     title_it: Tesi di dottorato
     detail: Co-supervision of R. Biassisi (from 2024) and E. Pilotto (from 2022), Università degli Studi di Padova
@@ -186,12 +187,12 @@ supervision:
     title: Master's theses
     title_it: Tesi magistrali
     detail: Co-supervision of T. Tasnim (2025), M. M. S. Nusir (2024), A. Vigolo (2023), Università degli Studi di Padova
-    detail_it: Co-supervisione di T. Tasnim (2025), M. M. S. Nusir (2024), A. Vigolo (2023), Università degli Studi di Padova
+    detail_it: Correlatore delle tesi di T. Tasnim (2025), M. M. S. Nusir (2024), A. Vigolo (2023), Università degli Studi di Padova
   - period: 2023–2025
     title: Bachelor's theses
     title_it: Tesi triennali
     detail: Co-supervision of A. Lorenzetto, T. Prins (2025), M. Ponchio, E. D'Amore (2024), L. Cavezza (2023), Università degli Studi di Padova
-    detail_it: Co-supervisione di A. Lorenzetto, T. Prins (2025), M. Ponchio, E. D'Amore (2024), L. Cavezza (2023), Università degli Studi di Padova
+    detail_it: Correlatore delle tesi di A. Lorenzetto, T. Prins (2025), M. Ponchio, E. D'Amore (2024), L. Cavezza (2023), Università degli Studi di Padova
 
 outreach:
   - period: 2024

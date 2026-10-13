@@ -48,15 +48,15 @@ status_note: >-
   strength is known to about 5%; the low-energy extrapolation still rests on the
   separation of direct capture from the subthreshold state.
 status_note_it: >-
-  I dati sotterranei arrivano ora sotto E_cm = 352 keV e la forza della
-  risonanza a 368 keV è nota a circa il 5 %; l'estrapolazione a bassa energia si
+  I dati sotterranei arrivano ora sotto E_cm = 352 keV e l'intensità della
+  risonanza a 368 keV è nota a circa il 5%; l'estrapolazione a bassa energia si
   basa ancora sulla separazione della cattura diretta dallo stato sotto soglia.
 status_plain: >-
   Measured underground at low energies, and its main resonance is known to
   about 5%; the extension to the lowest energies still depends on a model.
 status_plain_it: >-
   Misurata sotto terra a basse energie, e la sua risonanza principale è nota
-  a circa il 5 %; il prolungamento alle energie più basse dipende ancora da
+  a circa il 5%; il prolungamento alle energie più basse dipende ancora da
   un modello.
 methods: [direct-underground, direct-surface]
 measurements:

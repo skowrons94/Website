@@ -11,7 +11,7 @@ summary: >-
   A proton capture that destroys sodium and makes magnesium. It competes with
   ²³Na(p,α)²⁰Ne, which also destroys sodium but returns the material to neon.
 summary_it: >-
-  Una cattura protonica che distrugge sodio e produce magnesio. Compete con
+  Una cattura protonica che distrugge sodio e produce magnesio. Compete con la
   ²³Na(p,α)²⁰Ne, che pure distrugge sodio ma riporta la materia al neon.
 role: >-
   When ²³Na captures a proton, the new nucleus either emits an alpha particle and
@@ -47,7 +47,7 @@ status_note: >-
   still in tension between direct and transfer data.
 status_note_it: >-
   Le due risonanze chiave sono state misurate direttamente a LUNA, il che limita
-  l'incertezza sul tasso a 0,07 GK a −35 %/+50 %; la forza della risonanza più
+  l'incertezza sul tasso a 0,07 GK a −35%/+50%; l'intensità della risonanza più
   bassa è ancora in tensione tra dati diretti e dati da trasferimento.
 status_plain: >-
   Its two key resonances were measured at LUNA, which narrows the rate to

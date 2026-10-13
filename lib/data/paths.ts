@@ -58,7 +58,7 @@ const mev = (x: number, lang: Lang) => `${dec(x.toFixed(3), lang)} MeV`
 function whoText(row: GapRow | null, lang: Lang): string {
   const low = row?.low
   if (!low) return ""
-  return [low.author, low.year, low.luna ? (lang === "it" ? "LUNA, sottoterra" : "LUNA, underground") : ""].filter(Boolean).join(", ")
+  return [low.author, low.year, low.luna ? (lang === "it" ? "LUNA, sotto terra" : "LUNA, underground") : ""].filter(Boolean).join(", ")
 }
 
 function words(id: PathId, lang: Lang, c: Record<string, string>): PathWords {

@@ -14,6 +14,7 @@
     "check:evaluations": "node scripts/evaluations-check.mjs",
     "eval:new": "python3 scripts/add-evaluation.py",
     "test:search": "node scripts/search-index.mjs && node scripts/search-test.mjs",
+    "test:i18n": "node scripts/localize-test.mjs",
     "test:rates": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/rates/test.mjs",
     "test:seo": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --disable-warning=ExperimentalWarning scripts/seo-test.mjs",
     "test:pubs": "node scripts/pubs/test.mjs",

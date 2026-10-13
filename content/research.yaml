@@ -10,7 +10,7 @@ threads:
     title_it: LUNA — catture protoniche, in profondità sotto terra
     venue: Laboratori Nazionali del Gran Sasso, INFN
     period: 2020–present
-    period_it: 2020 — oggi
+    period_it: 2020–oggi
     role: Working Group Leader (¹⁹F + p, since 2024) · DAQ Coordinator (since 2024)
     role_it: Coordinatore del gruppo di lavoro ¹⁹F + p (dal 2024) · Coordinatore DAQ (dal 2024)
     summary: >-
@@ -48,8 +48,8 @@ threads:
         1,4 km di dolomia sopra l'esperimento, che riducono il flusso di muoni di
         sei ordini di grandezza e rendono possibile la misura.
       - >-
-        Ho guidato la misura e l'analisi della cattura radiativa ¹²C + p e
-        ¹³C + p a LUNA e al Felsenkeller, che ha fissato i tassi di cattura
+        Ho guidato la misura e l'analisi delle catture radiative di protoni sul
+        ¹²C e sul ¹³C, a LUNA e al Felsenkeller: queste misure hanno fissato i tassi di cattura
         protonica su entrambi gli isotopi del carbonio e, con essi, il rapporto
         astrofisico ¹²C/¹³C. Oggi coordino il gruppo di lavoro ¹⁹F + p
         all'acceleratore da 400 kV di LUNA, nel laboratorio sotterraneo del Gran
@@ -66,7 +66,7 @@ threads:
       - Calibration of the 3.5 MV Singletron; Geant4 tuning for the BGO and HPGe setups
       - R-matrix evaluations for ¹²C + p, ¹³C + p, ²⁰Ne + p and ²²Ne + p
     highlights_it:
-      - Sezioni d'urto di ¹²C(p,γ)¹³N e ¹³C(p,γ)¹⁴N e loro impatto sul rapporto ¹²C/¹³C
+      - Sezioni d'urto della ¹²C(p,γ)¹³N e della ¹³C(p,γ)¹⁴N e loro impatto sul rapporto ¹²C/¹³C
       - Coordinatore del gruppo di lavoro ¹⁹F + p all'acceleratore LUNA da 400 kV
       - Calibrazione del Singletron da 3,5 MV; messa a punto di Geant4 per i rivelatori BGO e HPGe
       - Valutazioni R-matrix per ¹²C + p, ¹³C + p, ²⁰Ne + p e ²²Ne + p
@@ -81,7 +81,7 @@ threads:
     venue: Open source · used worldwide
     venue_it: Open source · usato in tutto il mondo
     period: Jun 2025 – present
-    period_it: giu 2025 — oggi
+    period_it: giu. 2025–oggi
     role: Maintainer and Lead Developer
     role_it: Responsabile e sviluppatore principale
     summary: >-
@@ -89,7 +89,7 @@ threads:
       evaluation and materials analysis.
     summary_it: >-
       Il codice R-matrix di riferimento per l'astrofisica nucleare, per la
-      valutazione dei dati nucleari della IAEA e per l'analisi dei materiali.
+      valutazione dei dati nucleari dell'IAEA e per l'analisi dei materiali.
     body:
       - >-
         AZURE2 is where a set of measured points becomes a cross section: a
@@ -110,7 +110,7 @@ threads:
         published and unpublished.
     body_it:
       - >-
-        AZURE2 è il punto in cui un insieme di punti misurati diventa una sezione
+        In AZURE2 un insieme di dati misurati diventa una sezione
         d'urto: un modello R-matrix a più livelli e più canali, adattato ai dati
         di tutti i canali che condividono un nucleo composto, e poi estrapolato
         alle energie a cui avviene davvero la combustione stellare. È usato in
@@ -118,9 +118,10 @@ threads:
       - >-
         Da quando ne sono il responsabile ho lavorato sulle parti che decidono se
         un'analisi moderna sia fattibile o no: gradienti analitici e jacobiano
-        dei residui calcolati all'interno del modello, così che un fit o una MCMC
-        non paghino più un fattore di qualche centinaio per le differenze finite;
-        un integratore del tasso di reazione che tabula una sola volta;
+        dei residui calcolati all'interno del modello, così che un fit o una catena
+        MCMC non debbano più pagare, con le differenze finite, tempi di calcolo
+        qualche centinaio di volte più lunghi; un integratore del tasso di
+        reazione che calcola la tabella una volta sola;
         osservabili di polarizzazione; diffusione di particelle identiche.
         Accanto a questo, l'interfaccia grafica, la documentazione, il supporto e
         la formazione per la comunità degli utenti.
@@ -134,10 +135,10 @@ threads:
 
   - id: agata
     title: AGATA — a sub-femtosecond lifetime in ¹⁵O
-    title_it: AGATA — una vita media sotto il femtosecondo nell'¹⁵O
+    title_it: AGATA — una vita media sotto il femtosecondo nel ¹⁵O
     venue: Laboratori Nazionali di Legnaro, INFN
     period: 2023–present
-    period_it: 2023 — oggi
+    period_it: 2023–oggi
     role: Spokesperson
     role_it: Portavoce
     summary: >-
@@ -163,16 +164,16 @@ threads:
         review at Nature Physics.
     body_it:
       - >-
-        Lo stato a 6,79 MeV dell'¹⁵O si trova circa 0,5 MeV sotto la soglia
-        protonica e domina il comportamento a bassa energia di ¹⁴N(p,γ)¹⁵O, il
+        Lo stato a 6,79 MeV del ¹⁵O si trova circa 0,5 MeV sotto la soglia
+        protonica e domina il comportamento a bassa energia della ¹⁴N(p,γ)¹⁵O, il
         passo più lento del ciclo CNO e quindi la reazione che ne fissa il ritmo
         e il flusso di neutrini CNO. La sua vita media entra direttamente in
         quella estrapolazione. È inferiore al femtosecondo, e i valori pubblicati
         non concordano; la risoluzione in posizione di un rivelatore a
-        tracciamento di raggi γ è ciò che rende precisa una sua misura per
-        effetto Doppler.
+        tracciamento di raggi γ è ciò che permette di misurarla con precisione
+        sfruttando l'effetto Doppler.
       - >-
-        Sono spokesperson della misura eseguita con AGATA a Legnaro e ho guidato
+        Sono il portavoce della misura eseguita con AGATA a Legnaro e ho guidato
         l'intera catena di analisi: correzione Doppler, ricostruzione cinematica,
         simulazione Geant4 ed estrazione bayesiana della vita media. L'analisi è
         conclusa e il manoscritto è in revisione presso Nature Physics.
@@ -182,14 +183,14 @@ threads:
     title_it: CRYRING — schermaggio elettronico in cinematica inversa
     venue: GSI Helmholtzzentrum für Schwerionenforschung, Darmstadt
     period: 2024–present
-    period_it: 2024 — oggi
+    period_it: 2024–oggi
     role: Participant
     role_it: Partecipante
     summary: >-
       Testing how atomic electrons distort a nuclear cross section measured in the
       laboratory, in a regime where the effect is largest.
     summary_it: >-
-      Verificare come gli elettroni atomici alterano una sezione d'urto nucleare
+      Verificare come gli elettroni atomici alterino una sezione d'urto nucleare
       misurata in laboratorio, nel regime in cui l'effetto è più grande.
     body:
       - >-
@@ -214,8 +215,8 @@ threads:
       - >-
         A CRYRING la reazione ¹⁵N + p è studiata in cinematica inversa con un
         fascio immagazzinato e raffreddato, che cambia la configurazione atomica
-        della collisione e così affronta la discrepanza da una direzione che un
-        normale esperimento su bersaglio non può prendere.
+        della collisione, e permette così di affrontare la discrepanza da
+        un'angolazione preclusa a un esperimento convenzionale su bersaglio.
 
 # FOR JAKUB (not shown on the site): the referee asks for one or two concrete
 # 3–5-year objectives. Only you can supply them; candidates, to fill in or drop:
@@ -259,7 +260,7 @@ outlook:
       text_it: >-
         Troppe buone misure sono andate perse perché nessuno riusciva a tenere
         in vita i dati, o il software che li leggeva. Mantenere il software non
-        è più il peso di una volta, quindi tenere vivi i dati è ormai alla
+        è più il peso di una volta, quindi conservare i dati è ormai alla
         portata di ogni collaborazione. Voglio che i
         dati degli esperimenti a cui partecipo siano FAIR (reperibili,
         accessibili, interoperabili, riutilizzabili) fin dal momento in cui
@@ -280,16 +281,16 @@ outlook:
         rate explorer shows where such evaluations end up: in the reaction rates
         of stellar models.
       text_it: >-
-        La teoria R-matrix è il punto in cui la teoria incontra ogni dettaglio
+        L'analisi R-matrix è il punto in cui la teoria incontra ogni dettaglio
         sperimentale: risoluzione, effetti del bersaglio, normalizzazioni,
         distribuzioni angolari. È proprio per questo che la amo. Eppure la
         maggior parte delle valutazioni vive nei file di una sola persona. Al
         settore serve un database condiviso e versionato di valutazioni, che
-        chiunque possa rieseguire, riadattare ed estendere quando arrivano
+        chiunque possa rieseguire, aggiornare ed estendere quando arrivano
         nuovi dati. È la direzione di GENESIS (NSF, 2026–2031), sulla
         valutazione delle sezioni d'urto nucleari nella teoria R-matrix con
         metodi quantistici, a cui partecipo, e del mio lavoro nel comitato
-        INDEN-LE della IAEA. AZURE2 e le valutazioni di questo sito, che
+        INDEN-LE dell'IAEA. AZURE2 e le valutazioni di questo sito, che
         chiunque può aprire, modificare e ricalcolare nel browser, ne sono un
         prototipo funzionante; l'esploratore dei tassi è pensato per mostrare
         dove finiscono queste valutazioni, nei tassi di reazione dei modelli
@@ -310,7 +311,7 @@ outlook:
         AGATA, in laboratorio sotterraneo, e misure di polarizzazione, che
         danno alla R-matrix un'informazione indipendente dalla sezione d'urto.
         I punti di partenza sono le misure che già guido: ¹⁹F + p all'acceleratore
-        LUNA da 400 kV e la vita media dello stato a 6,79 MeV dell'¹⁵O,
+        LUNA da 400 kV e la vita media dello stato a 6,79 MeV del ¹⁵O,
         misurata con AGATA, che vincola il ritmo del ciclo CNO e il suo flusso di neutrini.
     - lead: Working across the whole experiment.
       lead_it: Versatilità.
@@ -320,8 +321,8 @@ outlook:
         people who can.
       text_it: >-
         Passare dall'acceleratore ai rivelatori, alle simulazioni,
-        all'acquisizione dati e alla teoria è ciò che mi piace di più, ed è ciò
-        che credo un esperimento chieda alle sue persone.
+        all'acquisizione dati e alla teoria è ciò che mi piace di più, ed è,
+        credo, ciò che un esperimento chiede a chi ci lavora.
     - lead: AI as a research tool.
       lead_it: L'IA come strumento di ricerca.
       text: >-

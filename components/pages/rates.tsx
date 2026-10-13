@@ -92,9 +92,9 @@ function How({ lang }: { lang: Lang }) {
           decadere.
         </P>
         <P>
-          «E se» ricalcola la combustione in un modello a una zona: temperatura e densità fisse, la composizione
+          «E se» ricalcola la combustione in un modello a zona singola: temperatura e densità fisse, la composizione
           iniziale dello scenario, e la rete integrata nel tempo con un metodo implicito, in un thread separato del tuo
-          browser. Il risultato è confrontato con quello dei tassi originali. Un modello a una zona mostra quali
+          browser. Il risultato è confrontato con quello dei tassi originali. Un modello a zona singola mostra quali
           reazioni contano e quanto; non sostituisce un modello di stella. I valori di ogni scenario e la loro fonte
           sono sotto «Da dove vengono questi numeri».
         </P>

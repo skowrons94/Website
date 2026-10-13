@@ -47,8 +47,8 @@ const TEXT = {
   it: {
     title: "Informazioni sul sito",
     description:
-      "Come è stato fatto e verificato questo sito, da dove vengono i dati, le licenze, il codice sorgente, come segnalare un errore e come citarlo.",
-    lead: "Come è stato fatto questo sito, come è stato verificato, da dove vengono i suoi numeri e come citarlo.",
+      "Come è stato realizzato e verificato questo sito, da dove vengono i dati, le licenze, il codice sorgente, come segnalare un errore e come citarlo.",
+    lead: "Come è stato realizzato questo sito, come è stato verificato, da dove vengono i suoi numeri e come citarlo.",
     contents: "In questa pagina",
     sections: {
       ai: "Fatto con l'aiuto dell'intelligenza artificiale",
@@ -63,7 +63,7 @@ const TEXT = {
       noDoi: "Un DOI comparirà qui quando la prima versione sarà archiviata su Zenodo.",
       specific:
         "Per una singola reazione o valutazione, cita la pagina stessa (ognuna ha il suo riquadro) e, soprattutto, gli articoli originali su cui si basa.",
-      cff: "In formato leggibile dalle macchine:",
+      cff: "In formato leggibile da software:",
     },
   },
 }
@@ -275,28 +275,27 @@ function BodyIt({ to, n }: { to: (p: string) => string; n: Counts }) {
         <H2 id="checks">{TEXT.it.sections.checks}</H2>
         <div className={prose}>
           <p>
-            Ogni serie di modifiche è stata esaminata in modo indipendente da revisori IA distinti (anch&apos;essi
-            Claude), che non avevano scritto il lavoro, ciascuno incaricato di leggere il sito in un ruolo, da un solo
-            punto di vista:
+            Ogni serie di modifiche è stata esaminata da revisori IA indipendenti (anch&apos;essi Claude) che non
+            l&apos;avevano scritta; a ciascuno è stato affidato un ruolo e un solo punto di vista:
           </p>
         </div>
         <ul className={list}>
           <li>nel ruolo di un astrofisico nucleare: la fisica, i numeri e la bibliografia;</li>
           <li>nel ruolo di uno specialista di R-matrix: le valutazioni e le note;</li>
           <li>
-            nel ruolo di un revisore dell&apos;interfaccia e dell&apos;accessibilità: telefono e computer, testo al
-            200%, la sola tastiera;
+            nel ruolo di un revisore dell&apos;interfaccia e dell&apos;accessibilità: smartphone e computer, testo
+            ingrandito al 200%, navigazione con la sola tastiera;
           </li>
           <li>nel ruolo di lettori del grande pubblico, uno in inglese e uno in italiano;</li>
           <li>nel ruolo di un revisore senior, che legge l&apos;intero sito come farebbe il referee di una rivista.</li>
         </ul>
         <div className={prose}>
           <p>
-            Le revisioni sono state ripetute, e i problemi trovati corretti, finché nessuna ha più segnalato problemi di
-            gravità alta o media. Sono punti di vista che un&apos;IA è stata incaricata di assumere, non revisioni di
+            Le revisioni sono state ripetute, correggendo ogni volta i problemi trovati, finché nessuna ha più segnalato
+            problemi di gravità alta o media. Sono punti di vista che un&apos;IA è stata incaricata di assumere, non revisioni di
             persone, e non le sostituiscono: se trovi qualcosa di sbagliato, fammelo sapere (vedi sotto).
           </p>
-          <p>Il resto lo controllano test automatici:</p>
+          <p>Il resto è affidato a test automatici:</p>
         </div>
         <ul className={list}>
           <li>
@@ -313,11 +312,11 @@ function BodyIt({ to, n }: { to: (p: string) => string; n: Counts }) {
             le <L href="/evaluations">valutazioni</L> che girano nel tuo browser sono confrontate con AZURE2 nativo su
             ogni modello, e i fit pubblicati sono i risultati nativi;
           </li>
-          <li>la ricerca del sito è provata sulle parole che le persone scrivono davvero, in italiano e in inglese.</li>
+          <li>la ricerca interna è collaudata sulle parole che gli utenti digitano davvero, in italiano e in inglese.</li>
         </ul>
         <div className={prose}>
           <p>
-            Ogni numero nell&apos;atlante e nelle pagine divulgative ha una citazione alla sua fonte, e durante le
+            Ogni numero nell&apos;atlante e nelle pagine divulgative rimanda alla sua fonte, e durante le
             revisioni i riferimenti sono stati confrontati con le fonti che citano. Se ne trovi uno sbagliato, i
             collegamenti per le segnalazioni qui sotto sono il modo più rapido per dirmelo.
           </p>
@@ -375,7 +374,7 @@ function BodyIt({ to, n }: { to: (p: string) => string; n: Counts }) {
           </p>
           <p>
             Se trovi un errore,{" "}
-            <Ext href={issueUrl("Errore nel sito", "Pagina:\nSezione:\n\nCosa è sbagliato:\n\n\nCome dovrebbe essere, con una fonte se ce l'hai:\n")}>
+            <Ext href={issueUrl("Errore nel sito", "Pagina:\nSezione:\n\nChe cosa non va:\n\n\nCome dovrebbe essere, con una fonte se ce l'hai:\n")}>
               apri una segnalazione
             </Ext>
             ; ogni reazione dell&apos;atlante, la pagina sul processo s e ogni voce del glossario hanno anche un

@@ -61,7 +61,7 @@ status_note: >-
   calculations and with the data at higher energies.
 status_note_it: >-
   Dalla misura di LUNA del 2020 il tasso alle energie della nucleosintesi
-  primordiale è noto a circa il 3 %. Restano piccole differenze con i calcoli
+  primordiale è noto a circa il 3%. Restano piccole differenze con i calcoli
   teorici e con i dati a energie più alte.
 methods: [direct-underground, direct-surface, theory]
 measurements:
@@ -89,7 +89,7 @@ measurements:
   - year: 2016
     method: theory
     energy: "BBN range"
-    energy_it: "intervallo della BBN"
+    energy_it: "intervallo della nucleosintesi primordiale"
     note: >-
       Ab initio calculation with the AV18 and Urbana IX interactions and
       relativistic corrections to the one-body current; S-factor about 10%
@@ -108,7 +108,7 @@ measurements:
     facility: luna-400
     method: direct-underground
     energy: "BBN range"
-    energy_it: "intervallo della BBN"
+    energy_it: "intervallo della nucleosintesi primordiale"
     note: >-
       High-purity D₂ gas target, intense proton beam and a HPGe detector, after a
       commissioning campaign that brought the systematic uncertainty below 3%.

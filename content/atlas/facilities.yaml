@@ -52,11 +52,11 @@ facilities:
     country_it: Italia
     underground: true
     depth: about 1400 m of rock, 3800 metres water equivalent
-    depth_it: circa 1400 m di roccia, 3800 metri di acqua equivalente
+    depth_it: circa 1400 m di roccia, pari a 3800 m di acqua equivalente
     accelerator: 50 kV ion accelerator with a windowless gas target
     accelerator_it: acceleratore di ioni da 50 kV con bersaglio gassoso senza finestre
     years: described in 1994; first results on ³He(³He,2p)⁴He in 1996
-    years_it: descritto nel 1994; primi risultati su ³He(³He,2p)⁴He nel 1996
+    years_it: descritto nel 1994; primi risultati sulla ³He(³He,2p)⁴He nel 1996
     luna: true
     summary: >-
       The first accelerator built deep underground for nuclear astrophysics.
@@ -79,8 +79,8 @@ facilities:
       Acceleratore compatto da 50 kV con un bersaglio gassoso senza finestre a
       pompaggio differenziale, un calorimetro di fascio per la misura della
       corrente e telescopi di rivelatori al silicio per i prodotti carichi della
-      reazione. Era progettato per ³He(³He,2p)⁴He nel picco di Gamow solare, che
-      raggiunse fino a 16,5 keV.
+      reazione. Era progettato per misurare la ³He(³He,2p)⁴He nel picco di Gamow
+      solare, e scese fino a 16,5 keV.
     refs: [greife1994, arpesella1996, junker1998, bonetti1999, broggini2010]
 
   - id: luna-400
@@ -91,7 +91,7 @@ facilities:
     country_it: Italia
     underground: true
     depth: about 1400 m of rock, 3800 metres water equivalent
-    depth_it: circa 1400 m di roccia, 3800 metri di acqua equivalente
+    depth_it: circa 1400 m di roccia, pari a 3800 m di acqua equivalente
     accelerator: 400 kV electrostatic accelerator (LUNA II)
     accelerator_it: acceleratore elettrostatico da 400 kV (LUNA II)
     years: in operation from the early 2000s (facility paper 2003)
@@ -116,8 +116,8 @@ facilities:
       Acceleratore da 400 kV ad alta corrente. Scansioni di risonanze hanno dato
       un'energia assoluta dei protoni nota entro circa ±300 eV, una dispersione
       in energia inferiore a 100 eV e una deriva a lungo termine di circa 5 eV
-      all'ora. Ha servito sia bersagli solidi con rivelatori HPGe sia un
-      bersaglio gassoso senza finestre con un rivelatore BGO 4π a somma.
+      all'ora. È stato usato sia con bersagli solidi e rivelatori HPGe sia con
+      un bersaglio gassoso senza finestre e un rivelatore BGO 4π a somma.
     refs: [formicola2003, broggini2010, lemut2006]
 
   - id: bellotti-ibf
@@ -128,7 +128,7 @@ facilities:
     country_it: Italia
     underground: true
     depth: about 1400 m of rock, 3800 metres water equivalent
-    depth_it: circa 1400 m di roccia, 3800 metri di acqua equivalente
+    depth_it: circa 1400 m di roccia, pari a 3800 m di acqua equivalente
     accelerator: 3.5 MV Singletron (High Voltage Engineering Europa), terminal voltage 0.3–3.5 MV, ECR ion source
     accelerator_it: >-
       Singletron da 3,5 MV (High Voltage Engineering Europa), tensione di
@@ -143,8 +143,8 @@ facilities:
       laboratory. Its proton, helium and carbon beams extend underground
       measurements from hydrogen burning to helium and carbon burning.
     summary_it: >-
-      Un laboratorio sotterraneo con acceleratore al Gran Sasso, con una
-      macchina da 3,5 MV, intitolato a Enrico Bellotti, il primo direttore del
+      Un laboratorio sotterraneo del Gran Sasso, dotato di un acceleratore da
+      3,5 MV e intitolato a Enrico Bellotti, il primo direttore del
       laboratorio. I suoi fasci di protoni, elio e carbonio estendono le misure
       sotterranee dalla combustione dell'idrogeno a quella dell'elio e del
       carbonio.
@@ -158,9 +158,10 @@ facilities:
       Il Singletron ha una sorgente ECR a magneti permanenti da 10 GHz e
       fornisce circa 1 mA di protoni, 0,5 mA di elio e 0,15 mA di carbonio.
       L'articolo di progetto riporta una stabilità in energia migliore di 10⁻⁵ e
-      un ripple della tensione di terminale di 1,5 × 10⁻⁵. L'infrastruttura è
-      gestita come user facility dal servizio acceleratori dei LNGS, con il
-      tempo fascio assegnato tramite bandi annuali.
+      un'ondulazione residua (ripple) della tensione di terminale di 1,5 × 10⁻⁵.
+      L'impianto è aperto a utenti esterni ed è gestito dal servizio
+      acceleratori dei LNGS, con il
+      tempo di fascio assegnato tramite bandi annuali.
     refs: [sen2019, junker2023]
 
   - id: juna
@@ -314,7 +315,7 @@ facilities:
       A university accelerator laboratory with a long record in low-energy
       nuclear astrophysics at the surface.
     summary_it: >-
-      Un laboratorio universitario con acceleratore, con una lunga tradizione
+      Un laboratorio universitario dotato di acceleratore, con una lunga tradizione
       nell'astrofisica nucleare a bassa energia in superficie.
 
   - id: notre-dame
@@ -354,8 +355,8 @@ facilities:
     summary_it: >-
       Un separatore di rinculo costruito per studiare le catture di elio in
       cinematica inversa. Un fascio pesante colpisce un bersaglio di elio
-      gassoso, e il separatore isola i pochi nuclei prodotti dal fascio, molto
-      più intenso.
+      gassoso, e il separatore isola i pochi nuclei prodotti, scartando il fascio,
+      molto più intenso.
     details: >-
       St. George (Strong Gradient Electromagnetic Online Recoil separator for
       capture Gamma Ray Experiments) was designed for (α,γ) reactions in
@@ -365,7 +366,7 @@ facilities:
       St. George (Strong Gradient Electromagnetic Online Recoil separator for
       capture Gamma Ray Experiments) è stato progettato per reazioni (α,γ) in
       cinematica inversa con fasci fino a circa A = 40, con un'accettanza
-      angolare di 40 mrad e un'accettanza in energia del 7,4 %.
+      angolare di 40 mrad e un'accettanza in energia del 7,4%.
     refs: [couder2008]
 
   - id: tunl-lena
@@ -439,7 +440,7 @@ facilities:
       counting the product nuclei directly.
     summary_it: >-
       L'European Recoil separator for Nuclear Astrophysics, costruito per
-      misurare reazioni di cattura di elio come ¹²C(α,γ)¹⁶O in cinematica
+      misurare reazioni di cattura di elio come la ¹²C(α,γ)¹⁶O in cinematica
       inversa, contando direttamente i nuclei prodotti.
     details: >-
       ERNA was built at the 4 MV Dynamitron in Bochum to detect ¹⁶O recoils
@@ -450,7 +451,7 @@ facilities:
       the target.
     details_it: >-
       ERNA è stato costruito al Dynamitron da 4 MV di Bochum per rivelare i
-      nuclei di rinculo di ¹⁶O da ¹²C(α,γ)¹⁶O. Filtri di Wien prima e dopo il
+      nuclei di rinculo di ¹⁶O dalla ¹²C(α,γ)¹⁶O. Filtri di Wien prima e dopo il
       magnete di analisi riducevano la contaminazione di ¹⁶O nel fascio di ¹²C
       da circa 10⁻¹¹ a meno di 2 × 10⁻²⁹. Nel 2009 il separatore è stato
       trasferito al laboratorio CIRCE di Caserta, dove è stato aggiunto un
@@ -525,7 +526,7 @@ facilities:
     summary_it: >-
       Un laboratorio universitario con ciclotrone, dove sono state fatte molte
       misure di coefficienti di normalizzazione asintotica (ANC) con reazioni di
-      trasferimento, per reazioni di cattura di interesse astrofisico.
+      trasferimento, al servizio delle catture di interesse astrofisico.
 
   - id: n-tof
     name: n_TOF, CERN
@@ -551,7 +552,7 @@ facilities:
       Una sorgente di neutroni al CERN in cui i protoni di un acceleratore
       colpiscono un bersaglio di piombo ed estraggono neutroni di energie molto
       diverse. L'energia di ciascun neutrone si ricava dal suo tempo di volo
-      lungo una lunga linea di fascio. Misura catture di neutroni per i processi
+      su una base di volo molto lunga. Misura catture di neutroni per i processi
       s e r e reazioni indotte da neutroni su nuclei leggeri.
     details: >-
       Pulses of up to 8.5 × 10¹² protons, 6 ns (rms) long, strike the lead
@@ -584,8 +585,8 @@ facilities:
       Un grande sistema laser costruito per la fusione a confinamento inerziale.
       I suoi laser comprimono piccole capsule di combustibile in un plasma caldo
       e denso, in cui si possono studiare reazioni di fusione tra nuclei leggeri
-      in condizioni più vicine a quelle stellari di un fascio da acceleratore su
-      un bersaglio freddo.
+      in condizioni più vicine a quelle stellari rispetto a un fascio da
+      acceleratore su bersaglio freddo.
 
   - id: stuttgart-dynamitron
     name: Dynamitron, Stuttgart
@@ -600,7 +601,7 @@ facilities:
       helium-capture reactions, was measured with γ-ray detectors.
     summary_it: >-
       Un laboratorio universitario con acceleratore dove, tra altre reazioni di
-      cattura di elio, è stata misurata ¹²C(α,γ)¹⁶O con rivelatori di raggi γ.
+      cattura di elio, è stata misurata la ¹²C(α,γ)¹⁶O con rivelatori di raggi γ.
 
   - id: karlsruhe-vdg
     name: Karlsruhe Van de Graaff
@@ -620,7 +621,7 @@ facilities:
       capture rates in use today were measured with them.
     summary_it: >-
       Un acceleratore Van de Graaff del centro di ricerca nucleare di Karlsruhe,
-      usato per misure di ¹²C(α,γ)¹⁶O e, per decenni, delle catture di neutroni
+      usato per misure della ¹²C(α,γ)¹⁶O e, per decenni, delle catture di neutroni
       del processo s. Lì i protoni su un bersaglio di litio producono neutroni
       con energie che imitano quelle di una stella, e molti dei tassi di
       cattura stellari usati oggi sono stati misurati con essi.
@@ -716,7 +717,7 @@ facilities:
       ³He(α,γ)⁷Be, the reaction that makes the ⁷Be of the Sun, was measured.
     summary_it: >-
       Il laboratorio con acceleratore del Weizmann Institute, dove è stata
-      misurata ³He(α,γ)⁷Be, la reazione che produce il ⁷Be del Sole.
+      misurata la ³He(α,γ)⁷Be, la reazione che produce il ⁷Be del Sole.
 
   - id: cenpa
     name: CENPA, University of Washington
@@ -732,7 +733,7 @@ facilities:
       ³He(α,γ)⁷Be was measured for the solar neutrino fluxes.
     summary_it: >-
       Un laboratorio universitario di Seattle con un acceleratore tandem, dove è
-      stata misurata ³He(α,γ)⁷Be per i flussi di neutrini solari.
+      stata misurata la ³He(α,γ)⁷Be per i flussi di neutrini solari.
 
   - id: oslo-ocl
     name: Oslo Cyclotron Laboratory
@@ -847,7 +848,7 @@ facilities:
     summary_it: >-
       Un laboratorio vicino a Parigi con acceleratori di bassa energia e un
       impiantatore ionico. Qui sono state misurate catture protoniche su
-      bersagli radioattivi di ⁷Be e sull'¹⁷O.
+      bersagli radioattivi di ⁷Be e sul ¹⁷O.
     refs: [hammache2001, chafa2005]
 
   - id: cenbg
@@ -864,7 +865,7 @@ facilities:
       with a radioactive target.
     summary_it: >-
       Un laboratorio di fisica nucleare vicino a Bordeaux. Il suo acceleratore
-      Van de Graaff è stato usato per una delle misure dirette di ⁷Be(p,γ)⁸B
+      Van de Graaff è stato usato per una delle misure dirette della ⁷Be(p,γ)⁸B
       con un bersaglio radioattivo.
     refs: [hammache1998]
 
@@ -964,7 +965,7 @@ facilities:
     summary_it: >-
       Il Detector for Advanced Neutron Capture Experiments: una sfera di
       cristalli di fluoruro di bario che circonda un campione minuscolo e
-      raccoglie quasi tutti i raggi γ emessi quando cattura un neutrone.
+      raccoglie quasi tutti i raggi γ emessi quando il campione cattura un neutrone.
       Poiché il campione può pesare appena un milligrammo, può essere
       radioattivo, come serve per i punti di diramazione del processo s.
     details: >-
@@ -1024,8 +1025,8 @@ facilities:
     summary_it: >-
       Un acceleratore di protoni il cui fascio di qualche milliampere colpisce
       un velo di litio liquido in movimento, producendo neutroni con uno
-      spettro vicino a quello di una stella a 30 keV, più di dieci volte più
-      intensamente dei bersagli di litio precedenti. I campioni vengono
+      spettro vicino a quello di una stella a 30 keV, con un'intensità oltre
+      dieci volte superiore a quella dei bersagli di litio precedenti. I campioni vengono
       attivati e se ne conta la radioattività.
     details: >-
       The thick-target ⁷Li(p,n)⁷Be spectrum at 1.92 MeV is quasi-Maxwellian

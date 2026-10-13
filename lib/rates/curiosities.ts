@@ -73,7 +73,7 @@ export const CURIOSITIES: CuriositySpec[] = [
     where: W.sun,
     hook: {
       en: "The Sun's slowest step, never measured. A real Sun would cool down to compensate.",
-      it: "Il passo più lento del Sole, mai misurato. Un Sole vero si raffredderebbe per compensare.",
+      it: "Nessuno ha mai misurato il passo più lento del Sole. Un Sole vero compenserebbe raffreddandosi.",
     },
   },
   {
@@ -86,7 +86,7 @@ export const CURIOSITIES: CuriositySpec[] = [
     where: W.sun,
     hook: {
       en: "Beryllium‑7 gives off the Sun's ⁷Be neutrinos, which Borexino counted on Earth.",
-      it: "Il berillio‑7 emette i neutrini del ⁷Be del Sole, che Borexino conta sulla Terra.",
+      it: "Il berillio‑7 è la sorgente dei neutrini solari del ⁷Be, che Borexino rivela sulla Terra.",
     },
   },
   {
@@ -114,7 +114,7 @@ export const CURIOSITIES: CuriositySpec[] = [
     where: W.m15,
     hook: {
       en: "Astronomers measure this ratio in red giants; LUNA measured this rate underground in 2023.",
-      it: "Gli astronomi misurano questo rapporto nelle giganti rosse; LUNA ha misurato questo tasso sottoterra nel 2023.",
+      it: "Le giganti rosse mostrano questo rapporto; LUNA ha misurato il tasso sotto terra nel 2023.",
     },
   },
   {
@@ -129,7 +129,7 @@ export const CURIOSITIES: CuriositySpec[] = [
     where: W.m15,
     hook: {
       en: "Stardust grains in meteorites preserve this oxygen ratio; LUNA measured this rate in 2016.",
-      it: "I granelli di polvere di stelle nei meteoriti conservano questo rapporto; LUNA ha misurato il tasso nel 2016.",
+      it: "I grani presolari dei meteoriti conservano questo rapporto; LUNA ha misurato il tasso nel 2016.",
     },
   },
   {
@@ -142,7 +142,7 @@ export const CURIOSITIES: CuriositySpec[] = [
     where: W.hbb,
     hook: {
       en: "Sodium varies from star to star in globular clusters; LUNA measured this rate in 2018.",
-      it: "Il sodio varia da stella a stella negli ammassi globulari; LUNA ha misurato questo tasso nel 2018.",
+      it: "Il sodio varia tra le stelle degli ammassi globulari; tasso misurato da LUNA nel 2018.",
     },
   },
   {
@@ -155,7 +155,7 @@ export const CURIOSITIES: CuriositySpec[] = [
     where: W.hbb,
     hook: {
       en: "This reaction closes the NeNa cycle; its rival, (p,γ), lets sodium leak towards magnesium.",
-      it: "Questa reazione chiude il ciclo NeNa; la sua rivale, la (p,γ), fa uscire il sodio verso il magnesio.",
+      it: "Chiude il ciclo NeNa; la rivale (p,γ) porta invece il sodio verso il magnesio.",
     },
   },
   {
@@ -168,11 +168,11 @@ export const CURIOSITIES: CuriositySpec[] = [
     where: W.hbb,
     hook: {
       en: "Aluminium‑26's 1.809 MeV glow maps the Milky Way.",
-      it: "La luce a 1,809 MeV dell'alluminio‑26 disegna la Via Lattea.",
+      it: "La riga γ a 1809 keV dell'alluminio‑26 disegna la Via Lattea.",
     },
     note: {
       en: "This model counts all the aluminium‑26 made, including a short-lived form that never glows, so here it is an upper limit.",
-      it: "Il modello conta tutto l'alluminio‑26 prodotto, anche una forma di vita breve che non emette questa luce: qui è quindi un limite superiore.",
+      it: "Il modello conta tutto l'alluminio‑26 prodotto, anche una forma di vita breve che non emette questa riga: qui è quindi un limite superiore.",
     },
   },
   {
@@ -198,7 +198,7 @@ export const CURIOSITIES: CuriositySpec[] = [
     where: W.one,
     hook: {
       en: "Sodium‑22's 1.275 MeV gamma-ray line has not yet been seen from a nova.",
-      it: "La riga gamma a 1,275 MeV del sodio‑22 non è ancora mai stata vista in una nova.",
+      it: "Nessuno ha ancora visto in una nova la riga γ a 1275 keV del sodio‑22.",
     },
   },
   {
@@ -211,7 +211,7 @@ export const CURIOSITIES: CuriositySpec[] = [
     where: W.co,
     hook: {
       en: "Fluorine‑18 powers the 511 keV gamma-ray flash expected in a nova's first hours.",
-      it: "Il fluoro‑18 alimenta il lampo di raggi gamma a 511 keV atteso nelle prime ore di una nova.",
+      it: "Il fluoro‑18 alimenta il lampo γ a 511 keV atteso nelle prime ore della nova.",
     },
   },
   {
@@ -237,7 +237,7 @@ export const CURIOSITIES: CuriositySpec[] = [
     where: W.pulse,
     hook: {
       en: "In the short hot pulse, neon‑22 burns only partly: its rate sets the neutrons.",
-      it: "Nel breve impulso caldo il neon‑22 brucia solo in parte: il suo tasso decide i neutroni.",
+      it: "Nel breve impulso il neon‑22 brucia solo in parte: il tasso decide quanti neutroni libera.",
     },
   },
   {
@@ -424,7 +424,7 @@ export function temperatureWords(T9: number, lang: CLang): string {
 const SITE_NOTES: Record<string, Words> = {
   "massive-he-core": {
     en: "For this site the sizes are upper limits: read the direction of the change.",
-    it: "Per questo sito l'entità delle variazioni è un limite superiore: conta soprattutto la direzione.",
+    it: "Per questo ambiente stellare le variazioni indicate sono un limite superiore: conta soprattutto il segno.",
   },
 }
 
@@ -460,7 +460,7 @@ export function curiosityText(
   const d = durationWords(ctx.tFinal, lang)
   const extra = [SITE_NOTES[spec.site]?.[lang], spec.note?.[lang]].filter(Boolean).map((x) => ` ${x}`).join("")
   const shortCaveat = it
-    ? `Modello a una zona${ctx.cooling ? ` che si raffredda da ${T}` : `, ${T}`}, ${d}. Le stelle vere si adattano.`
+    ? `Modello a zona singola${ctx.cooling ? ` che si raffredda da ${T}` : `, ${T}`}, ${d}. Una stella vera si riassesta.`
     : `One-zone model ${ctx.cooling ? `cooling from ${T}` : `at ${T}`} over ${d}. Real stars adjust.`
   const caveat = shortCaveat + extra
   return { parts, sentence: parts.map((p) => p.text).join(""), hook: spec.hook[lang], caveat, shortCaveat, amount, percent }

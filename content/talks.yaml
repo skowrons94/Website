@@ -4,11 +4,11 @@
 
 invited:
   - date: Sep 2026
-    date_it: set 2026
+    date_it: set. 2026
     event: Nuclear Physics in Astrophysics XII (NPA XII)
     title: Nuclear Physics at LUNA and with the AGATA array
   - date: Oct 2025
-    date_it: ott 2025
+    date_it: ott. 2025
     event: Seminar, University of Notre Dame
     event_it: Seminario, University of Notre Dame
     place: South Bend, Indiana, USA
@@ -16,20 +16,20 @@ invited:
       A Young Eye on Ancient Stars: contemporary experimental approaches to
       nuclear astrophysics measurements and extrapolations
   - date: Mar 2025
-    date_it: mar 2025
+    date_it: mar. 2025
     event: 20th Russbach School on Nuclear Astrophysics
     place: Russbach, Austria
     title: "Lecture: Probing the Stars Beneath Our Feet — underground proton capture reactions"
     title_it: "Lezione: Probing the Stars Beneath Our Feet — underground proton capture reactions"
   - date: Jun 2024
-    date_it: giu 2024
+    date_it: giu. 2024
     event: AZURE2 R-matrix Summer School
     place: Edinburgh, UK
     place_it: Edimburgo, Regno Unito
     title: "Lecture: Uncertainty Estimation for R-matrix Analysis"
     title_it: "Lezione: Uncertainty Estimation for R-matrix Analysis"
   - date: Jun 2023
-    date_it: giu 2023
+    date_it: giu. 2023
     event: R-matrix Workshop on Methods and Applications
     place: Athens, Ohio, USA
     title: "Talk: Proton Capture on Carbon Isotopes"
@@ -37,20 +37,20 @@ invited:
 
 organisation:
   - date: Jul 2026
-    date_it: lug 2026
+    date_it: lug. 2026
     event: R-Matrix Workshop on Methods and Applications
     place: Oak Ridge National Laboratory, TN, USA
     role: Member of the International Committee
     role_it: Membro del comitato internazionale
   - date: Jun 2026
-    date_it: giu 2026
+    date_it: giu. 2026
     event: "Carbon Burning: Theory, Astrophysics and Experiments Workshop"
     place: Padova, Italy
     place_it: Padova, Italia
     role: Chair
     role_it: Presidente
   - date: Jul 2025
-    date_it: lug 2025
+    date_it: lug. 2025
     event: HELIUM Workshop
     place: HZDR, Dresden, Germany
     place_it: HZDR, Dresda, Germania
@@ -61,7 +61,7 @@ organisation:
     role: Member
     role_it: Membro
   - date: May 2023
-    date_it: mag 2023
+    date_it: mag. 2023
     event: 2nd Frontiers in Nuclear Astrophysics Summer School
     place: East Lansing, Michigan, USA
     role: Member of the Organizing Committee
@@ -69,48 +69,48 @@ organisation:
 
 participation:
   - date: May 2025
-    date_it: mag 2025
+    date_it: mag. 2025
     event: 29th International Nuclear Physics Conference
     place: Daejeon, South Korea
     place_it: Daejeon, Corea del Sud
     title: "Talk: Preliminary study of the ¹⁹F + p at LUNA"
     title_it: "Relazione: Preliminary study of the ¹⁹F + p at LUNA"
   - date: Aug 2024
-    date_it: ago 2024
+    date_it: ago. 2024
     event: Zakopane Conference on Nuclear Physics
     place: Zakopane, Poland
     place_it: Zakopane, Polonia
     title: "Talk: New results on proton capture on neon isotopes"
     title_it: "Relazione: New results on proton capture on neon isotopes"
   - date: Nov 2023
-    date_it: nov 2023
+    date_it: nov. 2023
     event: "ALPACA: Modern Algorithms in Machine Learning and Data Analysis"
     place: Trento, Italy
     place_it: Trento, Italia
     title: "Talk: Neural networks for nuclear astrophysics"
     title_it: "Relazione: Neural networks for nuclear astrophysics"
   - date: Jun 2023
-    date_it: giu 2023
+    date_it: giu. 2023
     event: 16th Varenna Conference on Nuclear Reaction Mechanism
     place: Varenna, Italy
     place_it: Varenna, Italia
     title: "Talk: Proton capture on carbon isotopes"
     title_it: "Relazione: Proton capture on carbon isotopes"
   - date: Jun 2022
-    date_it: giu 2022
+    date_it: giu. 2022
     event: ChETEC-INFRA 2nd General Assembly
     place: Padova, Italy
     place_it: Padova, Italia
     title: "Talk: ¹²C(p,γ)¹³N cross section measurement at Felsenkeller"
     title_it: "Relazione: ¹²C(p,γ)¹³N cross section measurement at Felsenkeller"
   - date: May 2022
-    date_it: mag 2022
+    date_it: mag. 2022
     event: JINA-CEE Frontiers in Nuclear Astrophysics
     place: South Bend, Indiana, USA
     title: "Talk: Study of proton capture on carbon isotopes at LUNA"
     title_it: "Relazione: Study of proton capture on carbon isotopes at LUNA"
   - date: Sep 2021
-    date_it: set 2021
+    date_it: set. 2021
     event: 16th International Symposium on Nuclei in the Cosmos
     place: Online
     title: "Poster: Measurement and analysis for a study of ¹²C(p,γ)¹³N and ¹³C(p,γ)¹⁴N"

@@ -149,8 +149,9 @@ events:
       Ralph Alpher e George Gamow proposero che gli elementi leggeri si fossero
       formati nei primi istanti di un Universo caldo e in espansione. Gamow
       aggiunse il nome di Bethe perché gli autori suonassero come le prime tre
-      lettere dell'alfabeto greco. L'idea divenne la nucleosintesi primordiale,
-      anche se gli elementi più pesanti si rivelarono prodotti nelle stelle.
+      lettere dell'alfabeto greco. Da quell'idea nacque la teoria della
+      nucleosintesi primordiale, anche se si scoprì poi che gli elementi più
+      pesanti si formano nelle stelle.
     refs: [alpher1948]
     reactions: [1H-ng-2H]
 
@@ -238,8 +239,8 @@ events:
     text_it: >-
       Al Kellogg Radiation Laboratory, Cook, Fowler, C. C. Lauritsen e T.
       Lauritsen studiarono il decadimento del ¹²B verso lo stato a 7,65 MeV del
-      ¹²C e la sua rottura in tre particelle alfa. Conclusero che lo stato può
-      fare da risonanza di cui Hoyle aveva bisogno per la combustione dell'elio
+      ¹²C e la sua rottura in tre particelle alfa. Conclusero che lo stato poteva
+      essere la risonanza di cui Hoyle aveva bisogno per la combustione dell'elio
       nelle giganti rosse.
     refs: [cook1957]
     reactions: [4He-aa-12C]
@@ -511,7 +512,7 @@ events:
       low-energy S-factors with uncertainties and named the experiments and
       calculations needed to improve them.
     text_it: >-
-      Un gruppo di sperimentali e teorici passò in rassegna le reazioni nucleari
+      Un gruppo di sperimentatori e teorici passò in rassegna le reazioni nucleari
       che producono l'energia del Sole e i suoi neutrini. Fornirono fattori S
       raccomandati a bassa energia, con le loro incertezze, e indicarono gli
       esperimenti e i calcoli necessari per migliorarli.
@@ -565,7 +566,7 @@ events:
       sezioni d'urto di cattura neutronica misurate per i nuclei
       dall'idrogeno al bismuto e raccomandarono valori stellari a un'energia
       termica di 30 keV, con calcoli dove non esisteva una misura. Divenne il
-      riferimento per i modelli del processo s, proseguito oggi dalla banca
+      riferimento per i modelli del processo s, e oggi prosegue nella banca
       dati KADoNiS.
     refs: [bao2000, dillmann2008]
 
@@ -675,7 +676,7 @@ events:
       sample from 1 eV to 1 MeV. The stellar value turned out well above the
       theoretical predictions used until then.
     text_it: >-
-      Alla struttura n_TOF del CERN la sezione d'urto di cattura neutronica del
+      All'impianto n_TOF del CERN la sezione d'urto di cattura neutronica del
       samario-151, che vive circa 95 anni, fu misurata su un campione
       radioattivo da 1 eV a 1 MeV. Il valore stellare risultò ben al di sopra
       delle previsioni teoriche usate fino ad allora.
@@ -692,9 +693,9 @@ events:
       0.24 picobarn, closer to solar energies than any earlier experiment.
     text_it: >-
       Con un bersaglio di azoto gassoso circondato da un grande rivelatore, LUNA
-      misurò ¹⁴N(p,γ)¹⁵O fino a 70 keV. Lì la sezione d'urto è di soli 0,24
-      picobarn, più vicino alle energie solari di qualunque esperimento
-      precedente.
+      misurò la ¹⁴N(p,γ)¹⁵O fino a 70 keV. A quell'energia la sezione d'urto è di
+      soli 0,24 picobarn: nessun esperimento si era mai spinto così vicino alle
+      energie solari.
     refs: [lemut2006]
     reactions: [14N-pg-15O]
 
@@ -744,7 +745,7 @@ events:
       the proton–proton chain and the CNO cycles and recommended values for
       solar models. The review followed an earlier one from 1998.
     text_it: >-
-      Un gruppo di sperimentali e teorici passò in rassegna le sezioni d'urto
+      Un gruppo di sperimentatori e teorici passò in rassegna le sezioni d'urto
       della catena protone-protone e dei cicli CNO e raccomandò i valori da
       usare nei modelli solari. La rassegna seguiva una precedente del 1998.
     refs: [adelberger2011]
@@ -761,7 +762,7 @@ events:
     text_it: >-
       Borexino misurò lo spettro dei neutrini della fusione protone-protone, la
       prima reazione della catena principale del Sole. La collaborazione stimò
-      che questa catena produce circa il 99 % della potenza del Sole.
+      che questa catena produce circa il 99% della potenza del Sole.
     refs: [borexino2014]
     reactions: [1H-pp-2H]
 
@@ -816,7 +817,7 @@ events:
 
   - year: 2017
     title: A review of ¹²C(α,γ)¹⁶O
-    title_it: Una rassegna su ¹²C(α,γ)¹⁶O
+    title_it: Una rassegna sulla ¹²C(α,γ)¹⁶O
     category: theory
     text: >-
       deBoer and colleagues collected the measurements of ¹²C(α,γ)¹⁶O, the
@@ -824,10 +825,10 @@ events:
       behind, and fitted them together with an R-matrix analysis. They also
       followed the effect of its uncertainty on stellar models.
     text_it: >-
-      deBoer e colleghi raccolsero le misure di ¹²C(α,γ)¹⁶O, la reazione che
+      deBoer e colleghi raccolsero le misure della ¹²C(α,γ)¹⁶O, la reazione che
       fissa quanto carbonio e quanto ossigeno lascia la combustione dell'elio, e
-      le adattarono insieme con un'analisi R-matrix. Seguirono anche l'effetto
-      della sua incertezza sui modelli stellari.
+      le adattarono insieme con un'analisi R-matrix. Studiarono anche come la
+      sua incertezza si rifletta sui modelli stellari.
     refs: [deboer2017]
     reactions: [12C-ag-16O]
 
@@ -845,7 +846,7 @@ events:
     text_it: >-
       Con il metodo indiretto del cavallo di Troia, ai LNS di Catania, Tumino
       e colleghi riportarono risonanze nella fusione del carbonio alle
-      energie dei nuclei stellari, che aumentano il tasso di oltre 25 volte
+      energie stellari, che aumentano il tasso di oltre 25 volte
       intorno a 0,5 GK. L'analisi fu presto contestata, e le misure dirette
       del 2020 a Orsay e a Notre Dame non videro un tale aumento.
     refs: [tumino2018, mukhamedzhanov2019, fruet2020, tan2020]
@@ -881,7 +882,7 @@ events:
     text_it: >-
       LUNA misurò con alta precisione d(p,γ)³He alle energie della nucleosintesi
       primordiale. Con questo tasso, la quantità osservata di deuterio
-      primordiale dà la densità della materia ordinaria nell'Universo all'1,6 %,
+      primordiale dà la densità della materia ordinaria nell'Universo all'1,6%,
       in accordo con la radiazione cosmica di fondo.
     refs: [mossa2020]
     reactions: [2H-pg-3He]
@@ -897,9 +898,9 @@ events:
       CNO cycle in the Sun. It shows directly that the cycle runs in stars. In
       the Sun it gives about one per cent of the energy.
     text_it: >-
-      Borexino riportò la prima evidenza sperimentale dei neutrini del ciclo CNO
+      Borexino riportò la prima osservazione sperimentale dei neutrini del ciclo CNO
       nel Sole. Mostra direttamente che il ciclo è attivo nelle stelle. Nel Sole
-      fornisce circa l'uno per cento dell'energia.
+      fornisce circa l'1% dell'energia.
     refs: [borexino2020]
     reactions: [14N-pg-15O, 15O-bp-15N, 13N-bp-13C]
 
@@ -916,7 +917,7 @@ events:
     text_it: >-
       Un acceleratore Singletron da 3,5 MV, costruito da High Voltage
       Engineering Europa, fu installato nel laboratorio sotterraneo del Gran
-      Sasso: è la macchina MV del Bellotti Ion Beam Facility (BIBF). Fornisce fasci di protoni, elio e carbonio,
+      Sasso: è la macchina MV della Bellotti Ion Beam Facility (BIBF). Fornisce fasci di protoni, elio e carbonio,
       così che la combustione dell'elio e del carbonio si possa studiare sotto
       terra.
     refs: [sen2019, junker2023]
@@ -935,7 +936,7 @@ events:
       the faster rate may explain the calcium in one of the oldest known stars.
     text_it: >-
       L'acceleratore JUNA, sotto circa 2400 m di roccia al China Jinping
-      Underground Laboratory, misurò ¹⁹F(p,γ)²⁰Ne fino a 186 keV e trovò una
+      Underground Laboratory, misurò la ¹⁹F(p,γ)²⁰Ne fino a 186 keV e trovò una
       risonanza a 225 keV. Intorno a 0,1 GK il nuovo tasso è fino a 7,4 volte
       quello precedente. La reazione fa uscire materia dal ciclo CNO, e il tasso
       più alto potrebbe spiegare il calcio in una delle stelle più antiche che
@@ -946,7 +947,7 @@ events:
   - year: 2023
     month: 10
     title: The Bellotti Ion Beam Facility is inaugurated
-    title_it: Inaugurazione del Bellotti Ion Beam Facility
+    title_it: Inaugurazione della Bellotti Ion Beam Facility
     category: luna
     text: >-
       The underground accelerator laboratory was inaugurated and named after
@@ -956,8 +957,8 @@ events:
     text_it: >-
       Il laboratorio sotterraneo con acceleratore fu inaugurato e intitolato a
       Enrico Bellotti, il primo direttore dei Laboratori Nazionali del Gran
-      Sasso, che vi avviò la fisica con acceleratori sotto terra. Funziona come
-      user facility, con il tempo fascio assegnato tramite bandi annuali.
+      Sasso, che vi avviò la fisica con acceleratori sotto terra. È aperto a
+      utenti esterni, con il tempo di fascio assegnato tramite bandi annuali.
     refs: [junker2023]
 
   - year: 2025

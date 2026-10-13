@@ -172,9 +172,9 @@ const TEXT = {
   it: {
     title: "Riconoscimenti, licenze e fonti",
     reaclib:
-      "Tassi di reazione: il database JINA REACLIB (Cyburt et al. 2010), versione del 30 marzo 2025 distribuita con pynucastro; la fonte di ogni tasso è indicata accanto a esso nelle tabelle per specialisti. REACLIB è libero di essere usato, citandolo.",
+      "Tassi di reazione: il database JINA REACLIB (Cyburt et al. 2010), versione del 30 marzo 2025 distribuita con pynucastro; la fonte di ogni tasso è indicata accanto a esso nelle tabelle per specialisti. REACLIB si può usare liberamente, citandone la fonte.",
     pynucastro:
-      "Le reti, le fonti dei tassi, la composizione solare e lo schermaggio elettronico sono stati esportati con pynucastro (Smith et al. 2023; Willcox e Zingale 2018), licenza BSD 3-Clause. Il risolutore del browser è verificato con l'integrazione delle stesse reti fatta da pynucastro.",
+      "Le reti, le fonti dei tassi, la composizione solare e lo schermaggio elettronico sono stati esportati con pynucastro (Smith et al. 2023; Willcox e Zingale 2018), licenza BSD a 3 clausole. Il risolutore che gira nel browser è stato verificato sull'integrazione delle stesse reti eseguita da pynucastro.",
     refs: "Bibliografia",
   },
 } as const

@@ -14,6 +14,7 @@ import { LunaBadge, StatusBadge } from "@/components/atlas/status-badge"
 import { linkTerms } from "@/components/atlas/linked-text"
 import { Term } from "@/components/atlas/term"
 import { Sci } from "@/components/sci"
+import { beforeNuclide } from "@/lib/localize.mjs"
 import {
   eventsFor,
   formatGamow,
@@ -168,10 +169,20 @@ function Facts({ reaction: r, lang }: { reaction: Reaction; lang: Lang }) {
         {r.halfLife && (
           <div>
             <dt className="text-muted-foreground">
-              <Term id="half-life" lang={lang}>
-                {t.halfLifeOf}
-              </Term>{" "}
-              <Sci>{r.from ? displayCode(r.target) : r.target}</Sci>
+              {(() => {
+                const nuclide = r.from ? displayCode(r.target) : r.target
+                // "dell'⁸B", "del ¹⁸F": the article follows the mass number.
+                const label = lang === "it" ? beforeNuclide(t.halfLifeOf, nuclide) : `${t.halfLifeOf} `
+                return (
+                  <>
+                    <Term id="half-life" lang={lang}>
+                      {label.trimEnd()}
+                    </Term>
+                    {label.endsWith(" ") ? " " : ""}
+                    <Sci>{nuclide}</Sci>
+                  </>
+                )
+              })()}
             </dt>
             <dd className="mt-0.5 text-base font-medium tabular">
               <Sci>{r.halfLife.text}</Sci>
@@ -757,8 +768,15 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
                     {rmatrixEvaluations(r.rmatrix).map((ev) => (
                       <li key={ev.id} className="flex flex-wrap items-baseline gap-x-2">
                         <Link href={to(`/evaluations/${ev.id}`)} className="font-medium text-link hover:underline">
-                          {t.openEvaluation[0]}
-                          <Sci>{ev.id.replace(/^(\d+)/, (m) => m.split("").map((d) => "⁰¹²³⁴⁵⁶⁷⁸⁹"[+d]).join(""))}</Sci>
+                          {(() => {
+                            const nuclide = ev.id.replace(/^(\d+)/, (m) => m.split("").map((d) => "⁰¹²³⁴⁵⁶⁷⁸⁹"[+d]).join(""))
+                            return (
+                              <>
+                                {lang === "it" ? beforeNuclide(t.openEvaluation[0], nuclide) : t.openEvaluation[0]}
+                                <Sci>{nuclide}</Sci>
+                              </>
+                            )
+                          })()}
                           {t.openEvaluation[1]}
                         </Link>
                         {ev.reference && (

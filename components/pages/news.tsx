@@ -35,7 +35,7 @@ export const NEWS_TEXT = {
     open: "Vai alla pagina",
     latest: "Novità",
     all: "Tutte le novità",
-    none: "Ancora niente.",
+    none: "Nessuna novità per ora.",
   },
 } as const
 

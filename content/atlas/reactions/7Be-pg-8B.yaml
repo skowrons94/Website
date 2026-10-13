@@ -12,7 +12,7 @@ summary: >-
   then decays and emits the high-energy solar neutrinos that started the solar
   neutrino problem.
 summary_it: >-
-  Un nucleo di ⁷Be cattura un protone e diventa ⁸B, emettendo un raggio γ. Il ⁸B
+  Un nucleo di ⁷Be cattura un protone e diventa ⁸B, emettendo un raggio γ. L'⁸B
   poi decade ed emette i neutrini solari di alta energia da cui nacque il
   problema dei neutrini solari.
 role: >-
@@ -52,7 +52,7 @@ status_note: >-
   of similar size.
 status_note_it: >-
   I migliori esperimenti, tutti con bersagli radioattivi di ⁷Be, differiscono
-  fino a circa il 15 %, e il prolungamento dei loro dati alle energie solari
+  fino a circa il 15%, e il prolungamento dei loro dati alle energie solari
   aggiunge un'incertezza di entità simile.
 methods: [direct-surface, coulomb-dissociation]
 measurements:
@@ -139,5 +139,5 @@ open_questions:
   - The spread of about 15% between the S(0) values of the modern direct experiments.
 open_questions_it:
   - "L'andamento in energia teorico usato per estrapolare i dati diretti alle energie solari."
-  - "La dispersione di circa il 15 % tra i valori di S(0) degli esperimenti diretti moderni."
+  - "La dispersione di circa il 15% tra i valori di S(0) degli esperimenti diretti moderni."
 related: [3He-ag-7Be, 8B-bp-8Be, 7Be-ec-7Li, 3He-hep-4He]

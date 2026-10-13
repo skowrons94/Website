@@ -22,7 +22,7 @@ role_it: >-
   Poiché questa cattura è lenta, la maggior parte dell'ossigeno-16 di una stella
   sopravvive alla combustione dell'idrogeno. La piccola parte che brucia produce
   ossigeno-17, la cui quantità rispetto all'ossigeno-16 si misura nelle giganti
-  rosse e nei grani di polvere stellare trovati nelle meteoriti, e serve a
+  rosse e nei grani di polvere stellare trovati nei meteoriti, e serve a
   verificare i modelli stellari.
 details: >-
   There are no resonances at stellar energies. The cross section is direct
@@ -42,14 +42,14 @@ status_note: >-
   surface data.
 status_note_it: >-
   Una reazione di cattura diretta non risonante il cui andamento in energia è
-  fissato dalla teoria; il tasso è noto a circa il 7 %, limitato dalla
+  fissato dalla teoria; il tasso è noto a circa il 7%, limitato dalla
   normalizzazione dei dati in superficie.
 status_plain: >-
   Known to about 7%: how the cross section changes with energy is well
   understood from theory, and the remaining uncertainty is in the overall
   scale of the measurements.
 status_plain_it: >-
-  Nota a circa il 7 %: come la sezione d'urto varia con l'energia è ben
+  Nota a circa il 7%: come la sezione d'urto varia con l'energia è ben
   compreso dalla teoria, e l'incertezza residua riguarda la scala
   complessiva delle misure.
 methods: [direct-surface, theory]

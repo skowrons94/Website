@@ -365,8 +365,8 @@ terms:
       resta. Incerto: l'incertezza è abbastanza grande da cambiare i modelli
       che ne dipendono. Non misurato: non ci sono dati diretti alle energie
       che contano, e il tasso si basa su estrapolazioni, metodi indiretti o
-      teoria. L'etichetta è la sintesi dell'autore delle valutazioni citate
-      nella pagina.
+      teoria. L'etichetta riassume, a giudizio dell'autore, le valutazioni
+      citate nella pagina.
     see: [rate]
 
   - id: temperature
@@ -594,11 +594,12 @@ terms:
       above 10²⁰. Branch points of the s-process measure it.
     text_it: >-
       Il numero di neutroni liberi per centimetro cubo in una stella. Nel
-      processo s è bassa: circa 10⁷ per centimetro cubo nella tasca di ¹³C di
-      una stella AGB, dove un nucleo con una tipica sezione d'urto di un
-      decimo di barn aspetta circa 250 anni tra due catture, fino a circa 10¹⁰ nei brevi lampi del ²²Ne durante gli impulsi
-      termici, e circa 10¹¹–10¹² nel guscio in cui brucia il carbonio di una
-      stella massiccia. Nel processo r è più alta ancora di molti ordini di
+      processo s è bassa: va da circa 10⁷ per centimetro cubo nella tasca di
+      ¹³C di una stella AGB fino a circa 10¹⁰ nei brevi lampi del ²²Ne durante
+      gli impulsi termici, e arriva a circa 10¹¹–10¹² nel guscio in cui brucia
+      il carbonio di una stella massiccia. Nella tasca un nucleo con una tipica
+      sezione d'urto di un decimo di barn aspetta circa 250 anni tra due
+      catture. Nel processo r è più alta ancora di molti ordini di
       grandezza, oltre 10²⁰. I punti di diramazione del processo s la misurano.
     see: [branch-point, s-process, r-process]
 
@@ -640,7 +641,7 @@ terms:
       biforca, e la quota di ciascun ramo dipende dalla densità di neutroni e
       talvolta dalla temperatura della stella. Le abbondanze dei nuclei che
       seguono, come il kripton-86 o gli isotopi del samario, fanno quindi da
-      misuratore della densità di neutroni o da termometro.
+      indicatore della densità di neutroni o da termometro.
     page: /atlas/s-process
     see: [neutron-density, s-process, branching-ratio]
 
@@ -749,12 +750,12 @@ terms:
       ai Laboratori Nazionali del Gran Sasso dell'INFN, usa acceleratori sotto
       circa 1400 m di roccia dall'inizio degli anni Novanta; la roccia riduce i
       muoni cosmici di circa un milione di volte. Oltre all'acceleratore da
-      400 kV di LUNA, il Bellotti Ion Beam Facility (BIBF), inaugurato nel 2023,
+      400 kV di LUNA, la Bellotti Ion Beam Facility (BIBF), inaugurata nel 2023,
       ospita una macchina da 3,5 MV per la combustione dell'elio e del
       carbonio. Altri acceleratori in profondità sono in funzione in Cina
       (JUNA) e negli Stati Uniti (CASPAR); il Felsenkeller di Dresda, sotto
-      45 m di roccia, è un laboratorio a bassa profondità che aggiunge veti
-      attivi per i muoni.
+      45 m di roccia, è un laboratorio a bassa profondità che aggiunge un
+      sistema di veto attivo per i muoni.
     see: [mwe, gamow-window]
 
   - id: mwe
@@ -946,8 +947,8 @@ terms:
     text_it: >-
       Una misura di quanto un modello descrive bene i dati: per ogni punto, la
       differenza tra modello e misura divisa per l'incertezza della misura,
-      elevata al quadrato e sommata su tutti i punti. Diviso per il numero di
-      punti, un χ²/N vicino a 1 significa che il modello è in accordo con i
+      elevata al quadrato e sommata su tutti i punti. Dividendolo per il numero
+      di punti si ottiene χ²/N: un valore vicino a 1 significa che il modello è in accordo con i
       dati entro le loro incertezze; valori molto più grandi indicano che non
       lo è, o che le incertezze sono sottostimate.
     see: [r-matrix, normalisation]
@@ -1021,7 +1022,7 @@ terms:
     text_it: >-
       Una diminuzione della probabilità di fusione di due nuclei pesanti, a
       energie molto sotto la barriera coulombiana, più rapida di quanto
-      prevedono i modelli usuali. Se avviene per due nuclei di carbonio, il
+      prevedano i modelli usuali. Se avviene per due nuclei di carbonio, il
       fattore S raggiunge un massimo e poi cala verso le energie stellari, e il
       carbonio brucia più lentamente di quanto dica il tasso standard. Se
       avvenga davvero è ancora discusso.

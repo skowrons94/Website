@@ -46,7 +46,7 @@ function fmt(lang: Lang) {
   /** A percentage change, signed. */
   const pct = (before: number, after: number) => {
     const p = ((after - before) / before) * 100
-    return `${p >= 0 ? "+" : "−"}${comma(Math.abs(p).toFixed(0))}${lang === "it" ? " " : ""}%`
+    return `${p >= 0 ? "+" : "−"}${comma(Math.abs(p).toFixed(0))}%`
   }
   return { f, n, e, pct }
 }
@@ -91,28 +91,28 @@ function content(lang: Lang) {
           id: "gamow",
           title: "Il picco di Gamow di ¹⁴N + p a 15 milioni di kelvin",
           needs: "una calcolatrice; per la verifica, l'atlante o l'esploratore dei tassi.",
-          problem: `Nel ciclo CNO il passo più lento è ¹⁴N(p,γ)¹⁵O. A che energia reagiscono davvero protoni e nuclei di ¹⁴N in una stella a $T = 15$ MK, e in quale intervallo?
+          problem: `Nel ciclo CNO il passo più lento è la ¹⁴N(p,γ)¹⁵O. A che energia reagiscono davvero protoni e nuclei di ¹⁴N in una stella a $T = 15$ MK, e in quale intervallo?
 
 1. Calcola $kT$ a 15 MK ($k = 8{,}617 \\times 10^{-5}$ eV/K).
 2. Calcola l'energia di Gamow $E_G = 2\\mu c^2 (\\pi \\alpha Z_1 Z_2)^2$, con la massa ridotta $\\mu$ di p + ¹⁴N (masse atomiche 1,007825 u e 14,003074 u; 1 u = 931,494 MeV/c²; $\\alpha = 1/137{,}036$).
 3. Il prodotto del fattore di Maxwell–Boltzmann $e^{-E/kT}$ e della probabilità di tunnel $e^{-\\sqrt{E_G/E}}$ ha il massimo in $E_0 = \\left(E_G (kT)^2/4\\right)^{1/3}$; approssimato con una gaussiana, la sua larghezza piena a $1/e$ è $\\Delta = 4\\sqrt{E_0 kT/3}$. Calcola entrambi.
-4. Verifica. La [scheda di ¹⁴N(p,γ)¹⁵O](${to("/atlas/14N-pg-15O")}) nell'atlante dà la finestra al centro del Sole, $T_9 = 0{,}0157$: riportala a 15 MK sapendo che $E_0 \\propto T^{2/3}$ e $\\Delta \\propto T^{5/6}$. Oppure apri l'[esploratore dei tassi](${to("/atlas/rates")}) sul ciclo CNO, scegli ¹⁴N(p,γ) e porta la temperatura a 15 MK: il pannello del picco di Gamow mostra $E_0 \\pm \\Delta/2$.
+4. Verifica. La [scheda della ¹⁴N(p,γ)¹⁵O](${to("/atlas/14N-pg-15O")}) nell'atlante dà la finestra al centro del Sole, $T_9 = 0{,}0157$: riportala a 15 MK sapendo che $E_0 \\propto T^{2/3}$ e $\\Delta \\propto T^{5/6}$. Oppure apri l'[esploratore dei tassi](${to("/atlas/rates")}) sul ciclo CNO, scegli ¹⁴N(p,γ) e porta la temperatura a 15 MK: il pannello del picco di Gamow mostra $E_0 \\pm \\Delta/2$.
 5. LUNA ha misurato questa reazione fino a 70 keV. Supponendo il fattore $S$ costante, di quanto è più piccola la sezione d'urto in $E_0$ che a 70 keV?`,
           solution: `1. $kT = 8{,}617 \\times 10^{-5}\\ \\text{eV/K} \\times 1{,}5 \\times 10^{7}\\ \\text{K}$ = **${f(x1.kT, 3)} keV**.
 2. $\\mu$ = ${f(x1.mu, 5)} u, quindi $\\mu c^2$ = ${muc2.replace(".", ",")} MeV, e $E_G$ = **${f(x1.EG / 1000, 1)} MeV** (${n(x1.EG)} keV).
 3. $E_0$ = **${f(x1.E0, 1)} keV** e $\\Delta$ = **${f(x1.width, 1)} keV**: la finestra va all'incirca da ${f(lowE, 0)} a ${f(highE, 0)} keV. $E_0$ vale circa ${f(x1.E0 / x1.kT, 0)} volte $kT$: le reazioni vengono dalla coda lontana della distribuzione termica, dove i protoni sono pochi ma la barriera è un po' più sottile.
-4. L'atlante dà ${f(x1.atlasE0, 1)} keV e ${f(x1.atlasWidth, 1)} keV a 15,7 MK; riportati a 15 MK diventano ${f(x1.scaledE0, 1)} keV e ${f(x1.scaledWidth, 1)} keV, come sopra. L'esploratore dei tassi mostra ${f(x1.explorerE0, 1)} ± ${f(x1.explorerHalf, 1)} keV: usa i numeri di massa (14 e 1) per la massa ridotta, e $\\mu$ più piccolo dello 0,7 % sposta $E_0$ dello 0,2 % ($E_0 \\propto \\mu^{1/3}$).
+4. L'atlante dà ${f(x1.atlasE0, 1)} keV e ${f(x1.atlasWidth, 1)} keV a 15,7 MK; riportati a 15 MK diventano ${f(x1.scaledE0, 1)} keV e ${f(x1.scaledWidth, 1)} keV, come sopra. L'esploratore dei tassi mostra ${f(x1.explorerE0, 1)} ± ${f(x1.explorerHalf, 1)} keV: usa i numeri di massa (14 e 1) per la massa ridotta, e un $\\mu$ più piccolo dello 0,7% sposta $E_0$ dello 0,2% ($E_0 \\propto \\mu^{1/3}$).
 5. $\\sigma(E) = \\dfrac{S}{E}\\, e^{-\\sqrt{E_G/E}}$, quindi $\\dfrac{\\sigma(E_0)}{\\sigma(70\\ \\text{keV})} = \\dfrac{70}{E_0}\\, e^{\\sqrt{E_G/70} - \\sqrt{E_G/E_0}}$ ≈ **${e(ratio)}**: circa ${f(1 / ratio / 1e6, 1)} milioni di volte più piccola. Per questo, alle energie del Sole, la sezione d'urto si estrapola (esercizio 3) invece di misurarla.`,
         },
         {
           id: "underground",
           title: "Perché LUNA è sotto terra?",
           needs: "una calcolatrice e i risultati dell'esercizio 1.",
-          problem: `Stima il segnale di ¹⁴N(p,γ)¹⁵O alla più bassa energia misurata da LUNA, 70 keV, e confrontalo con il fondo dei raggi cosmici in un rivelatore di raggi γ in superficie e sotto il Gran Sasso.
+          problem: `Stima il segnale della ¹⁴N(p,γ)¹⁵O alla più bassa energia misurata da LUNA, 70 keV, e confrontalo con il fondo dei raggi cosmici in un rivelatore di raggi γ in superficie e sotto il Gran Sasso.
 
 Prendi:
 - $S \\approx 1{,}7$ keV b, il fattore $S$ totale di LUNA ([atlante](${to("/atlas/14N-pg-15O")}); Formicola et al. 2004), costante a queste energie, ed $E_G$ dall'esercizio 1;
-- un fascio di protoni di 200 µA, un bersaglio con 10¹⁸ nuclei di ¹⁴N per cm² e un'efficienza di rivelazione fra l'1 % (un rivelatore al germanio) e il 50 % (un cristallo a somma che circonda il bersaglio). Sono ipotesi tonde, dell'ordine di grandezza giusto, non i parametri di un esperimento preciso;
+- un fascio di protoni di 200 µA, un bersaglio con 10¹⁸ nuclei di ¹⁴N per cm² e un'efficienza di rivelazione fra l'1% (un rivelatore al germanio) e il 50% (un cristallo a somma che circonda il bersaglio). Sono ipotesi tonde, dell'ordine di grandezza giusto, non i parametri di un esperimento preciso;
 - un rivelatore che offre 100 cm² al cielo, e in superficie circa un muone cosmico per cm² al minuto (Particle Data Group);
 - la roccia sopra LUNA, circa 1400 m, riduce i muoni di circa un milione di volte ([glossario](${to("/glossary#luna")})).
 
@@ -122,23 +122,23 @@ Prendi:
 4. Quale frazione dei muoni dovrebbe finire nella finestra di energia del segnale (circa 7,3 MeV) perché in superficie il fondo uguagli il segnale? È plausibile?
 5. Per finire: quante reazioni all'anno vedresti al picco di Gamow dell'esercizio 1?`,
           solution: `1. $\\sigma = \\dfrac{1{,}7\\ \\text{keV b}}{70\\ \\text{keV}}\\, e^{-\\sqrt{E_G/70\\ \\text{keV}}}$ = **${e(x2.sigma_b, 1)} b**, cioè ${f(x2.sigma_b * 1e12, 2)} pb (1 pb = 10⁻³⁶ cm²).
-2. 200 µA sono ${e(x2.protonsPerSecond, 2)} protoni al secondo. Reazioni al secondo: $\\sigma\\, n_t\\, N_p$ = ${e(x2.sigma_b * 1e-24, 1)} cm² × 10¹⁸ cm⁻² × ${e(x2.protonsPerSecond, 2)} s⁻¹ = ${e(perSecond, 1)} s⁻¹, cioè ${f(perSecond * 86400, 0)} al giorno. Rivelate: **${f(effLo.rate, 2)} al giorno** con l'1 % di efficienza, **circa ${f(effHi.rate, 0)} al giorno** con il 50 %. È quello che l'atlante chiama reazioni che avvengono «solo poche volte al giorno».
+2. 200 µA sono ${e(x2.protonsPerSecond, 2)} protoni al secondo. Reazioni al secondo: $\\sigma\\, n_t\\, N_p$ = ${e(x2.sigma_b * 1e-24, 1)} cm² × 10¹⁸ cm⁻² × ${e(x2.protonsPerSecond, 2)} s⁻¹ = ${e(perSecond, 1)} s⁻¹, cioè ${f(perSecond * 86400, 0)} al giorno. Rivelate: **${f(effLo.rate, 2)} al giorno** con l'1% di efficienza, **circa ${f(effHi.rate, 0)} al giorno** con il 50%. È quello che l'atlante chiama reazioni che avvengono «solo poche volte al giorno».
 3. In superficie: 1 cm⁻² min⁻¹ × 100 cm² × 1440 min = **${n(x2.muonsSurface)} muoni al giorno**. Sotto terra, un milione di volte meno: **${f(x2.muonsUnderground, 2)} al giorno**, uno ogni settimana circa.
 4. Con ${f(effHi.rate, 0)} eventi di segnale al giorno, il fondo dei muoni lo eguaglia già se ne finisce nella finestra uno su ${n(oneIn)} (${e(x2.fractionMax, 0)}). Un muone che attraversa tutto il cristallo vi lascia decine di MeV, sopra la finestra; ma quelli che ne sfiorano un angolo, e gli elettroni, i fotoni e i neutroni che i muoni producono nella schermatura e nelle pareti, distribuiscono energia su tutto lo spettro. Tenerne meno di uno su diecimila in una finestra di qualche centinaio di keV non è realistico in superficie: per questo il fondo dei muoni «limita la sensibilità per raggi γ fino a qualche MeV» ([metodi](${to("/atlas/methods")})). Sotto terra il problema sparisce: anche se ogni muone finisse nella finestra, sarebbero ${f(x2.muonsUnderground, 2)} eventi al giorno contro ${f(effHi.rate, 0)}. Il fondo che resta viene dalla radioattività della roccia e dell'apparato, quasi tutto sotto 2,6 MeV (la riga γ più energetica della radioattività naturale, del ²⁰⁸Tl), e dalle reazioni del fascio sulle impurità del bersaglio. Una via di mezzo è il Felsenkeller di Dresda: 45 m di roccia riducono i muoni di un fattore 40, e con un veto attivo il fondo è circa il doppio di quello di un laboratorio profondo ([cronologia](${to("/atlas/timeline")})).
-5. Al picco di Gamow, $E_0$ = ${f(x2.E0, 1)} keV, $\\sigma$ ≈ ${e(x2.sigmaPeak_b, 0)} b: con lo stesso fascio, lo stesso bersaglio e il 50 % di efficienza, **${e(x2.peakPerYear, 0)} reazioni all'anno**, una ogni ${n(years)} anni circa. Nessun laboratorio misura lì: alle energie del Sole si arriva estrapolando i dati con la teoria R-matrix, che è l'argomento dell'esercizio 3.`,
+5. Al picco di Gamow, $E_0$ = ${f(x2.E0, 1)} keV, $\\sigma$ ≈ ${e(x2.sigmaPeak_b, 0)} b: con lo stesso fascio, lo stesso bersaglio e il 50% di efficienza, **${e(x2.peakPerYear, 0)} reazioni all'anno**, una ogni ${n(years)} anni circa. Nessun laboratorio misura lì: alle energie del Sole si arriva estrapolando i dati con la teoria R-matrix, che è l'argomento dell'esercizio 3.`,
         },
         {
           id: "rmatrix",
           title: "Un livello R-matrix del ¹³N da modificare",
           needs: `un browser: la [valutazione del ¹³N](${to("/evaluations/13N")}).`,
-          problem: `Apri la valutazione di ¹²C(p,γ)¹³N. Il fattore $S$ è dominato dal livello 1/2⁺ del ¹³N a $E_x$ = ${f(t.level.Ex_MeV, 4)} MeV: con la soglia protonica a 1,944 MeV, è una risonanza a $E_R$ ≈ ${f(t.level.ER_keV / 1000, 2)} MeV nel centro di massa, con larghezza protonica $\\Gamma_p$ = ${t.level.gammaP_keV} keV e larghezza γ di circa 0,5 eV.
+          problem: `Apri la valutazione della ¹²C(p,γ)¹³N. Il fattore $S$ è dominato dal livello 1/2⁺ del ¹³N a $E_x$ = ${f(t.level.Ex_MeV, 4)} MeV: con la soglia protonica a 1,944 MeV, è una risonanza a $E_R$ ≈ ${f(t.level.ER_keV / 1000, 2)} MeV nel centro di massa, con larghezza protonica $\\Gamma_p$ = ${t.level.gammaP_keV} keV e larghezza γ di circa 0,5 eV.
 
 1. Prima di toccare qualunque cosa, prevedi. In un'approssimazione di Breit–Wigner a un solo livello, $\\sigma(E) \\propto \\dfrac{\\Gamma_p \\Gamma_\\gamma}{(E-E_R)^2 + \\Gamma^2/4}$ con $\\Gamma \\approx \\Gamma_p$ (perché $\\Gamma_\\gamma \\ll \\Gamma_p$). Se $\\Gamma_p$ passa da ${t.level.gammaP_keV} a ${t.level.changedTo_keV} keV, che cosa succede (a) al fattore $S$ al picco, (b) alla larghezza del picco, (c) al fattore $S$ molto sotto la risonanza, alle energie stellari?
 2. Annota il χ² ai parametri pubblicati: quello di tutti i dati («χ² per tutti i dati del fit») e quello dei dati LUNA (HPGe) nella tabella degli insiemi di dati.
 3. Nello «Schema dei livelli» scegli il livello 1/2⁺ a ${f(t.level.Ex_MeV, 4)} MeV e porta la larghezza del canale protonico a ${t.level.changedTo_keV} keV. Aspetta il ricalcolo e confronta con le tue previsioni: il picco nel grafico, il fattore $S$ a circa 25 keV nella scheda «Estrapolazioni», i due χ².
 4. Perché i dati LUNA, che stanno tutti sotto la risonanza (fra 68 e 362 keV), reagiscono così tanto? E perché il fattore $S$ alle energie stellari cresce meno di $\\Gamma_p$?
 5. Torna ai valori pubblicati («Ripristina tutto») e sposta invece l'energia del livello di 5 keV verso l'alto. Che cosa succede al χ²?`,
-          solution: `1. Al picco, $E = E_R$: $\\sigma \\propto 4\\Gamma_\\gamma/\\Gamma_p$, quindi scende di ${t.level.gammaP_keV}/${t.level.changedTo_keV} = ${f(t.level.gammaP_keV / t.level.changedTo_keV, 2)}, **−15 %**. La larghezza del picco è $\\Gamma \\approx \\Gamma_p$: **+18 %**. Lontano dalla risonanza, $(E-E_R)^2 \\gg \\Gamma^2/4$ e $\\sigma \\propto \\Gamma_p \\Gamma_\\gamma/(E-E_R)^2$: la coda **sale del 18 %**. Un picco più largo e più basso, con le code più alte.
+          solution: `1. Al picco, $E = E_R$: $\\sigma \\propto 4\\Gamma_\\gamma/\\Gamma_p$, quindi scende di ${t.level.gammaP_keV}/${t.level.changedTo_keV} = ${f(t.level.gammaP_keV / t.level.changedTo_keV, 2)}, **−15%**. La larghezza del picco è $\\Gamma \\approx \\Gamma_p$: **+18%**. Lontano dalla risonanza, $(E-E_R)^2 \\gg \\Gamma^2/4$ e $\\sigma \\propto \\Gamma_p \\Gamma_\\gamma/(E-E_R)^2$: la coda **sale del 18%**. Un picco più largo e più basso, con le code più alte.
 2. e 3. Con AZURE2 su questa valutazione (calcolato il 13 ottobre 2026; solo $\\Gamma_p$ cambiato, tutto il resto come pubblicato):
 
 | | pubblicato | $\\Gamma_p$ = ${t.level.changedTo_keV}\u00a0keV | |
@@ -150,14 +150,14 @@ Prendi:
 | χ², tutti i dati (${t.chi2.all.points} punti) | ${n(t.chi2.all.before)} | ${n(t.chi2.all.after)} | |
 | χ², LUNA HPGe (${t.chi2.lunaHpge.points} punti) | ${n(t.chi2.lunaHpge.before)} | ${n(t.chi2.lunaHpge.after)} | |
 
-Il picco e la larghezza fanno quello che dice la formula a un livello. Il χ²/N del fit pubblicato è già molto sopra 1 su questa pagina, che non riadatta le normalizzazioni dei dati (la pagina spiega perché): conta la variazione, non il valore assoluto. E la variazione è enorme: i dati fissano $\\Gamma_p$ molto meglio dei 6 keV di cui l'hai spostata.
-4. I dati LUNA stanno sul fianco di bassa energia della risonanza, dove il fattore $S$ sale di un 10–14 % (a 300 keV da 6,72 a 7,64 keV b), e hanno incertezze intorno all'1 %: ogni punto si sposta di una decina di deviazioni standard, e il χ² cresce col quadrato dello scarto. Alle energie stellari, invece, il fattore $S$ cresce solo del ${pct(t.sfactor.at24keV.before, t.sfactor.at24keV.after).replace(/[+ %]/g, "")} %, non del 18 %: lì non c'è solo la coda della risonanza ma anche la cattura diretta, che non dipende da $\\Gamma_p$, e le due ampiezze si sommano (interferiscono) prima di elevare al quadrato. Cresce solo la parte risonante.
+Il picco e la larghezza si comportano come prevede la formula a un livello. Il χ²/N del fit pubblicato è già molto sopra 1 su questa pagina, che non include nel fit le normalizzazioni dei dati (la pagina spiega perché): conta la variazione, non il valore assoluto. E la variazione è enorme: i dati fissano $\\Gamma_p$ molto meglio dei 6 keV di cui l'hai spostata.
+4. I dati LUNA stanno sul fianco di bassa energia della risonanza, dove il fattore $S$ sale del 10–14% circa (a 300 keV da 6,72 a 7,64 keV b), e hanno incertezze intorno all'1%: ogni punto si sposta di una decina di deviazioni standard, e il χ² cresce col quadrato dello scarto. Alle energie stellari, invece, il fattore $S$ cresce solo del ${pct(t.sfactor.at24keV.before, t.sfactor.at24keV.after).replace(/[+ %]/g, "")}%, non del 18%: lì non c'è solo la coda della risonanza ma anche la cattura diretta, che non dipende da $\\Gamma_p$, e le due ampiezze si sommano (interferiscono) prima di elevare al quadrato. Cresce solo la parte risonante.
 5. Con l'energia spostata di 5 keV il χ² di tutti i dati arriva a ${n(t.energyShift.chi2All)}, più che cambiando la larghezza: sui fianchi ripidi di una risonanza larga ${t.level.gammaP_keV} keV, spostarla di 5 keV cambia il fattore $S$ di molte volte l'incertezza dei dati misurati lì. Per questo l'energia di una risonanza ben misurata è il parametro più vincolato di un fit R-matrix.`,
         },
       ] satisfies Section[],
       sourceList: [
         { text: "AME2020: M. Wang et al., Chin. Phys. C 45, 030003 (2021): le masse atomiche", href: "https://doi.org/10.1088/1674-1137/abddaf" },
-        { text: "A. Formicola et al. (LUNA), Phys. Lett. B 591, 61 (2004): S(0) di ¹⁴N(p,γ)¹⁵O", href: "https://doi.org/10.1016/j.physletb.2004.03.092" },
+        { text: "A. Formicola et al. (LUNA), Phys. Lett. B 591, 61 (2004): S(0) della ¹⁴N(p,γ)¹⁵O", href: "https://doi.org/10.1016/j.physletb.2004.03.092" },
         { text: "Particle Data Group, Review of Particle Physics, rassegna «Cosmic rays»: circa 1 muone cm⁻² min⁻¹ al livello del mare", href: "https://pdg.lbl.gov/2024/reviews/rpp2024-rev-cosmic-rays.pdf" },
         { text: "J. Skowronski et al., Phys. Rev. C 111, 035802 (2025): la valutazione del ¹³N", href: "https://doi.org/10.1103/PhysRevC.111.035802" },
       ],

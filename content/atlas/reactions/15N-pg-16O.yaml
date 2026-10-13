@@ -48,7 +48,7 @@ status_note: >-
   several contributions to the reaction interfere with each other.
 status_note_it: >-
   Le misure in laboratorio sotterraneo arrivano a 70 keV e fissano il tasso a
-  circa il 10 %. L'incertezza residua sta nel prolungare i dati a energie più
+  circa il 10%. L'incertezza residua sta nel prolungare i dati a energie più
   basse, dove diversi contributi alla reazione interferiscono tra loro.
 methods: [direct-underground, direct-surface, anc]
 measurements:

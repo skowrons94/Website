@@ -5,6 +5,7 @@
  */
 
 import type { Lang } from "@/lib/locale"
+import { elideItalian } from "../localize.mjs"
 
 /** "all'1%", "allo 0,1%", "al 5%": the Italian article before a percentage, as it is read. */
 function alPercent(f: number): string {
@@ -405,7 +406,7 @@ const it: RatesDict = {
   metals: "Elementi più pesanti",
   metalsHint: (f: string) => (f === "1" ? "×1 (come nello scenario)" : `×${f} rispetto allo scenario`),
   metalsCap: (max: string) =>
-    `Al massimo ×${max} qui: idrogeno ed elio si riducono per fare posto, e tengono almeno un decimo della massa.`,
+    `Al massimo ×${max} qui: idrogeno ed elio si riducono per fare posto, e restano comunque almeno un decimo della massa.`,
   hydrogen: "Idrogeno",
   helium: "Elio",
   screening: "Schermaggio elettronico",
@@ -416,17 +417,17 @@ const it: RatesDict = {
   sources: "Fonti",
   million: "milioni",
   validity: (t: string) =>
-    `${t} è fuori dall'intervallo di temperature per cui sono fatti i fit di REACLIB (0,01–10 GK): prendi i tassi con cautela.`,
+    `${t} è fuori dall'intervallo di temperature per cui sono stati ricavati i fit di REACLIB (0,01–10 GK): usa questi tassi con cautela.`,
   howTo: "Scegli una rete e un ambiente; trascina la temperatura; poi cambia un tasso e guarda che cosa cambia.",
 
   step1: "Quanto sono veloci",
   step2: "Chi è il più lento",
   step3: "E se",
   headline: (site: string, reaction: string, time: string, cycle = true) =>
-    `${site}: il passo più lento ${cycle ? "del ciclo" : "della catena"} è la reazione ${reaction}, in media ${time}. Tutti gli altri devono aspettarla.`,
+    `${site}: il passo più lento ${cycle ? "del ciclo" : "della catena"} è la reazione ${reaction}, che richiede in media ${time}. Tutti gli altri devono aspettarla.`,
   headlineIdle: (list: string) => `Più lente dell'intera combustione, quindi qui quasi non avvengono: ${list}.`,
   headlineLeak: (reaction: string) => `Il flusso esce dal ciclo con la ${reaction}.`,
-  headlineStall: (nucleus: string) => `Così il flusso si ferma e si accumula nel ${nucleus}.`,
+  headlineStall: (nucleus: string) => elideItalian(`Così il flusso si ferma e si accumula nel ${nucleus}.`),
   headlineShort: "Collo di bottiglia",
   tryIt: "E se fosse più veloce?",
   notation: {
@@ -453,8 +454,8 @@ const it: RatesDict = {
   tAxis: "Temperatura (GK)",
   tAxisMK: "milioni di K",
   decaysNote:
-    "Non sono nel grafico: i decadimenti, che dipendono pochissimo dalla temperatura (tempi di dimezzamento di laboratorio), con due eccezioni: il ²⁶Al, il cui isomero di vita breve, popolato dal calore, ne accelera il decadimento sopra circa 0,1 GK, e la cattura elettronica del ⁷Be, che dipende dalla densità di elettroni. Sono tutti nel grafico successivo.",
-  pickHint: "Scegli fino a tre reazioni da colorare (per una quarta libera prima un colore); le altre restano grigie.",
+    "I decadimenti non compaiono in questo grafico perché dipendono pochissimo dalla temperatura (si usano i tempi di dimezzamento di laboratorio), con due eccezioni: il ²⁶Al, il cui isomero di vita breve, popolato dal calore, ne accelera il decadimento sopra circa 0,1 GK, e la cattura elettronica del ⁷Be, che dipende dalla densità di elettroni. Li trovi tutti nel grafico successivo.",
+  pickHint: "Scegli fino a tre reazioni da colorare (per aggiungerne una quarta, libera prima un colore); le altre restano grigie.",
   scrubHint: "Trascina sul grafico, o usa il cursore sotto, per cambiare la temperatura.",
   pickFull: "Si possono colorare fino a tre reazioni: togline una per colorarne un'altra.",
   highlight: "Colora",
@@ -488,7 +489,7 @@ const it: RatesDict = {
     mgal: "A 25 M☉ il ²⁶Al rimasto alla fine è quello che sopravvive al proprio decadimento dopo che il ²⁵Mg si è esaurito; in una stella vera i venti ne portano via una parte prima.",
   },
   pathEnd: (path: string, end: string) => `Il flusso va ${path} e finisce in ${end}.`,
-  pathStall: (path: string, end: string) => `Il flusso va ${path} → ${end} e, nel tempo della combustione, si accumula nel ${end}.`,
+  pathStall: (path: string, end: string) => elideItalian(`Il flusso va ${path} → ${end} e, nel tempo della combustione, si accumula nel ${end}.`),
   pathPp: "Quasi tutto il ³He si fonde con un altro ³He (ppI); una parte cattura ⁴He e prosegue attraverso il ⁷Be (ppII e ppIII).",
   bottleneck: "collo di bottiglia",
   waits: (nucleus: string) => `i nuclei di ${nucleus} aspettano`,
@@ -586,11 +587,11 @@ const it: RatesDict = {
 
   sensTitle: "Quale tasso conta di più?",
   sensLead:
-    "Ogni tasso raddoppiato a turno, alle condizioni dello scenario: il colore dice quanto ciascun nucleo alla fine della combustione lo segue. +1: raddoppia con il tasso; −1: si dimezza.",
+    "Ogni tasso viene raddoppiato a turno, alle condizioni dello scenario; il colore indica quanto ne risente l'abbondanza finale di ciascun nucleo. +1: raddoppia insieme al tasso; −1: si dimezza.",
   sensButton: "Mostra la mappa di sensibilità",
   sensHide: "Nascondi la mappa di sensibilità",
   sensCustom: "Precalcolata per le condizioni dello scenario; torna allo scenario per confrontarla.",
-  sensTry: "Fai clic su una casella per provare quel tasso ×2 (le frecce spostano tra le caselle).",
+  sensTry: "Fai clic su una casella per provare quel tasso ×2 (con le frecce ti sposti tra le caselle).",
   sensCell: (reaction: string, nucleus: string, s: string) => `${reaction} ×2: ${nucleus} ${s}`,
   sensLabel: "Mappa di calore della sensibilità di ciascun nucleo a ciascun tasso di reazione.",
   sensMore: "più abbondante",
@@ -634,13 +635,13 @@ const it: RatesDict = {
     "I tassi sono i fit di REACLIB stessi, calcolati nel tuo browser. I tassi inversi sono esclusi (trascurabili a queste temperature); i nuclei fuori dalla rete sono inerti. I decadimenti dei nuclei che NUBASE2020 dà come stabili o con vita più lunga di 10⁸ anni sono esclusi.",
   newerTitle: "Tassi con dati più recenti",
   gamowResonances:
-    "La finestra è dove reagisce di più una sezione d'urto liscia (non risonante). Una risonanza stretta al suo interno domina invece (la ²⁴Mg(p,γ) a 300 milioni di K con la sua risonanza a 214 keV, la ²⁵Mg(p,γ) a 80 milioni di K): allora il tasso segue l'energia della risonanza, non la finestra.",
+    "La finestra indica dove avviene la maggior parte delle reazioni se la sezione d'urto è liscia (non risonante). Se al suo interno c'è una risonanza stretta, è lei a dominare (la ²⁴Mg(p,γ) a 300 milioni di K con la sua risonanza a 214 keV, la ²⁵Mg(p,γ) a 80 milioni di K): il tasso segue allora l'energia della risonanza, non la finestra.",
   nowFactor: (f: string) => `ora ${f}`,
   luna: {
     title: "Tassi dalle misure di LUNA",
     toggle: "Usa i tassi LUNA/AZURE2",
     toggleHint: "per la ¹²C(p,γ)¹³N e la ¹³C(p,γ)¹⁴N",
-    lead: "LUNA ha misurato sotto terra le due catture protoniche sul carbonio, fino a 60 keV (Skowronski et al. 2023). Se li attivi, la combustione usa i tassi calcolati dalle valutazioni R-matrix di quei dati su questo sito, al posto di quelli di REACLIB.",
+    lead: "LUNA ha misurato sotto terra le due catture protoniche sul carbonio, fino a 60 keV (Skowronski et al. 2023). Attivando questa opzione, la combustione usa i tassi calcolati dalle valutazioni R-matrix di quei dati su questo sito, al posto di quelli di REACLIB.",
     ratio: (T: string) => `¹²C/¹³C all'equilibrio del ciclo CN a ${T}`,
     ratioHint: "rapporto tra numeri di nuclei, = tasso della ¹³C(p,γ) ÷ tasso della ¹²C(p,γ): ciò che lascia la combustione dell'idrogeno, il rapporto che gli astronomi misurano nelle giganti rosse",
     reaclib: "REACLIB",
@@ -683,7 +684,7 @@ const it: RatesDict = {
     model: "Modello",
     indexTitle: "Curiosità sui tassi",
     indexLead:
-      "Che cosa cambierebbe una reazione due volte più veloce, in sedici frasi. Ognuna viene da una combustione a una zona dell'esploratore dei tassi (un modello semplificato: una sola porzione di gas a temperatura e densità date, senza rimescolamento), dice che cosa lascia fuori e con «Provalo» apre esattamente quel calcolo.",
+      "Che cosa cambierebbe una reazione due volte più veloce, in sedici frasi. Ognuna viene da un calcolo a zona singola dell'esploratore dei tassi (un modello semplificato: una sola porzione di gas a temperatura e densità date, senza rimescolamento), dice che cosa lascia fuori e con «Provalo» apre esattamente quel calcolo.",
     indexHow:
       "I numeri sono letti dalle tabelle precalcolate dell'esploratore (ogni tasso ×2 alle condizioni di ciascun ambiente) e verificati con un nuovo calcolo dello stesso risolutore. Sono arrotondati a due cifre significative. ×2 è un'ipotesi: accanto è indicato quanto è noto davvero ogni tasso, dall'atlante delle reazioni.",
     back: "Tassi di reazione",

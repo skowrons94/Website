@@ -44,7 +44,7 @@ status_note: >-
   The 830 keV resonance is measured to about 6%, but the lower-lying resonances
   are known only from indirect data and direct upper limits.
 status_note_it: >-
-  La risonanza a 830 keV è misurata a circa il 6 %, ma le risonanze più basse
+  La risonanza a 830 keV è misurata a circa il 6%, ma le risonanze più basse
   sono note solo da dati indiretti e da limiti superiori diretti.
 methods: [direct-surface, direct-underground, anc]
 measurements:

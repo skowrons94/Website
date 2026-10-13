@@ -72,7 +72,7 @@ methods:
       - Laboratory data include electron screening, which differs from that in a stellar plasma.
       - Below the lowest measured energy an extrapolation, usually by R-matrix, is still needed.
     limits_it:
-      - Esistono poche infrastrutture, e il tempo fascio è limitato.
+      - Esistono poche infrastrutture, e il tempo di fascio è limitato.
       - Alle energie più basse la resa è ancora piccola e domina l'incertezza statistica.
       - I dati di laboratorio includono lo schermaggio elettronico, diverso da quello di un plasma stellare.
       - Al di sotto della più bassa energia misurata serve comunque un'estrapolazione, di solito R-matrix.
@@ -201,7 +201,7 @@ methods:
       rapporto di diramazione del decadimento. Il metodo dà la sezione d'urto
       totale, sommata su tutte le cascate γ e integrata sugli angoli, ed evita
       così le correzioni per somma e per distribuzione angolare della
-      spettroscopia γ prompta. I prodotti a vita lunga si possono anche contare
+      spettroscopia γ in linea (prompt). I prodotti a vita lunga si possono anche contare
       atomo per atomo con la spettrometria di massa con acceleratore. I limiti
       sistematici sono i dati di decadimento, l'efficienza di conteggio, la
       storia dell'irraggiamento e la perdita di nuclei prodotti dal bersaglio.
@@ -294,7 +294,7 @@ methods:
       s, in cui a ha una marcata struttura a cluster x + s e s fa da spettatore.
       In cinematica quasi libera la sezione d'urto a tre corpi misurata si
       fattorizza in un fattore cinematico, nella distribuzione dei momenti di x
-      dentro a e nella sezione d'urto a due corpi "half-off-energy- shell". Il
+      dentro a e nella sezione d'urto a due corpi «half-off-energy-shell». Il
       metodo dà l'andamento in energia della sezione d'urto del nucleo nudo,
       senza soppressione coulombiana né schermaggio elettronico; la sua scala
       assoluta è normalizzata ai dati diretti a energie più alte. I limiti
@@ -341,7 +341,7 @@ methods:
       reaction and the reaction model (DWBA or coupled channels).
     details_it: >-
       Il coefficiente di normalizzazione asintotica (ANC) fissa l'ampiezza della
-      funzione d'onda dello stato legato fuori dall'interno del nucleo. Per
+      funzione d'onda dello stato legato all'esterno del nucleo. Per
       reazioni di trasferimento periferiche, misurate a energie dove la sezione
       d'urto è grande, l'ANC si può estrarre con una dipendenza molto minore dai
       parametri del modello ottico e di particella singola rispetto a un fattore
@@ -493,8 +493,8 @@ methods:
       come lo schermaggio. I limiti sistematici sono la conoscenza delle condizioni
       del plasma, che variano nello spazio e nel tempo, e la separazione della
       reazione che interessa dalle altre reazioni nel combustibile. Alla
-      National Ignition Facility, Casey et al. hanno misurato i fattori S di
-      ²H(d,n)³He e ³H(t,2n)⁴He in implosioni a temperature di 2,1–5,4 keV e
+      National Ignition Facility, Casey et al. hanno misurato i fattori S della
+      ²H(d,n)³He e della ³H(t,2n)⁴He in implosioni a temperature di 2,1–5,4 keV e
       densità di 1,2–16 g cm⁻³, in accordo con i dati da acceleratore entro le
       incertezze.
     strengths:
@@ -554,7 +554,7 @@ methods:
       - Probes the product nucleus, not the stellar reaction at stellar energies.
     limits_it:
       - Dà la sezione d'urto di cattura solo attraverso un modello.
-      - Studia il nucleo prodotto, non la reazione stellare alle energie stellari.
+      - Studia il nucleo prodotto, non la reazione che avviene nella stella, alle energie stellari.
     refs: [raut2013]
     examples: [85Kr-ng-86Kr]
 

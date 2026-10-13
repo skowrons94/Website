@@ -12,7 +12,7 @@ summary: >-
   MgAl cycle, in competition with ²⁷Al(p,α)²⁴Mg, which keeps material inside it.
 summary_it: >-
   Una cattura protonica che trasforma l'alluminio in silicio. È la via d'uscita
-  dal ciclo MgAl, in competizione con ²⁷Al(p,α)²⁴Mg, che invece trattiene la
+  dal ciclo MgAl, in competizione con la ²⁷Al(p,α)²⁴Mg, che invece trattiene la
   materia nel ciclo.
 role: >-
   When ²⁷Al captures a proton, the new nucleus either emits an alpha particle and
@@ -75,5 +75,5 @@ open_questions:
   - The competition with ²⁷Al(p,α)²⁴Mg, which decides whether the MgAl cycle closes.
 open_questions_it:
   - "Misure dirette delle risonanze di energia più bassa, che richiedono un laboratorio sotterraneo."
-  - "La competizione con ²⁷Al(p,α)²⁴Mg, che decide se il ciclo MgAl si chiude."
+  - "La competizione con la ²⁷Al(p,α)²⁴Mg, che decide se il ciclo MgAl si chiude."
 related: [27Al-pa-24Mg, 26Mg-pg-27Al, 24Mg-pg-25Al]

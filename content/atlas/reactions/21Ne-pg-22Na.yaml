@@ -11,8 +11,8 @@ summary: >-
   A proton capture on the rare neon isotope ²¹Ne that makes radioactive ²²Na. It
   is the second proton capture of the NeNa cycle.
 summary_it: >-
-  Una cattura protonica sul raro isotopo ²¹Ne del neon che produce ²²Na
-  radioattivo. È la seconda cattura protonica del ciclo NeNa.
+  Una cattura protonica sul ²¹Ne, il più raro isotopo stabile del neon, che
+  produce ²²Na radioattivo. È la seconda cattura protonica del ciclo NeNa.
 role: >-
   ²¹Ne is the rarest of the stable neon isotopes, and in hydrogen burning it is
   destroyed quickly by this reaction. Its rate therefore sets how much ²¹Ne
@@ -42,8 +42,8 @@ status_note: >-
   uncertainties of about 5%.
 status_note_it: >-
   Le principali risonanze a bassa energia sono state rimisurate sotto terra nel
-  2025; due di esse sono risultate più forti di oltre il 50 % rispetto alla
-  letteratura precedente, con incertezze di circa il 5 %.
+  2025; due di esse sono risultate più forti di oltre il 50% rispetto alla
+  letteratura precedente, con incertezze di circa il 5%.
 methods: [direct-underground, direct-surface]
 measurements:
   - year: 2025
