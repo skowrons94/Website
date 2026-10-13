@@ -47,8 +47,8 @@ const TEXT = {
   it: {
     title: "Informazioni sul sito",
     description:
-      "Come è stato fatto e verificato questo sito, da dove vengono i dati, le licenze, il codice sorgente, come segnalare un errore e come citarlo.",
-    lead: "Come è stato fatto questo sito, come è stato verificato, da dove vengono i suoi numeri e come citarlo.",
+      "Come è stato realizzato e verificato questo sito, da dove vengono i dati, le licenze, il codice sorgente, come segnalare un errore e come citarlo.",
+    lead: "Come è stato realizzato questo sito, come è stato verificato, da dove vengono i suoi numeri e come citarlo.",
     contents: "In questa pagina",
     sections: {
       ai: "Fatto con l'aiuto dell'intelligenza artificiale",
@@ -291,11 +291,11 @@ function BodyIt({ to, n }: { to: (p: string) => string; n: Counts }) {
         </ul>
         <div className={prose}>
           <p>
-            Le revisioni sono state ripetute, e i problemi trovati corretti, finché nessuna ha più segnalato problemi di
-            gravità alta o media. Sono punti di vista che un&apos;IA è stata incaricata di assumere, non revisioni di
+            Le revisioni sono state ripetute, correggendo ogni volta i problemi trovati, finché nessuna ha più segnalato
+            problemi di gravità alta o media. Sono punti di vista che un&apos;IA è stata incaricata di assumere, non revisioni di
             persone, e non le sostituiscono: se trovi qualcosa di sbagliato, fammelo sapere (vedi sotto).
           </p>
-          <p>Il resto lo controllano test automatici:</p>
+          <p>Il resto è affidato a test automatici:</p>
         </div>
         <ul className={list}>
           <li>
