@@ -256,9 +256,11 @@ jobs:
       # The WebDAQ frontend at the commit pinned in webdaq-demo/pin.json, with
       # the demo's overlay and simulated backend, exported into
       # public/webdaq-demo/ (served at $BASE_PATH/webdaq-demo/). git checks
-      # the pinned commit's objects, build.mjs the hash of every upstream file
-      # the overlay replaces and npm the integrity of JSROOT's tarball. The
-      # fetched source is cached by the pinned commit (main writes it).
+      # the pinned commit's objects; build.mjs checks the whole fetched tree
+      # against pin.json's treeHash on every build, cached or fetched, and the
+      # hash of every upstream file the overlay replaces; npm checks the
+      # integrity of JSROOT's tarball. The fetched source is cached by the
+      # pinned commit (main writes it).
       - name: WebDAQ commit
         id: webdaq
         run: echo "ref=$(node -p "require('./webdaq-demo/pin.json').commit")" >> "$GITHUB_OUTPUT"

@@ -2,6 +2,7 @@
   "repo": "https://github.com/skowrons94/webdaq",
   "commit": "a1cc18f86daee0345b2001e663086555105202a3",
   "frontend": "frontend",
+  "treeHash": "0ac266a6dc69f078091b01dde18e25d7cd403a2f6bfb5cd19909601094f8e696",
   "jsroot": {
     "version": "7.11.2",
     "integrity": "sha512-Pria+SspD6+BmGNg4C8UOtP5y7GiODS/FXgQMiCSgGxpbm9icezifQLcVTJF7RaMnCot6ko7CoZozudM1a204g=="
