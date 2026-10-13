@@ -94,11 +94,11 @@ const en = {
     /* -- the gap --------------------------------------------------------- */
     gapTitle: "The gap: what EXFOR has no measurement of yet",
     gapLead:
-      "A star uses each reaction in a narrow band of energies, its Gamow window. Laboratories measure from high energies downwards, and the counting rate falls steeply as they go. For each reaction: the window a star needs and the lowest energy ever measured. The empty stretch between them is filled by extrapolation.",
+      "A star uses each reaction in a narrow band of energies, its Gamow window. Laboratories measure from high energies downwards, and the counting rate falls steeply as they go. For each reaction: the window a star needs and the lowest energy in EXFOR. The empty stretch between them is filled by extrapolation.",
     gapLegendWindow: "Energies the star uses (Gamow window)",
     gapLegendGap: "Never measured",
     gapLegendData: "Measured",
-    gapAxis: "Energy, centre-of-mass frame",
+    gapAxis: "Centre-of-mass energy",
     gapNever: (site: string, e0: string) => `Never measured directly. Needed: about ${e0} (${site}).`,
     gapAbove: (low: string, site: string, e0: string) => `Data down to ${low}. Needed: about ${e0} (${site}).`,
     gapInside: (low: string, site: string, e0: string) =>
@@ -366,11 +366,11 @@ const it: typeof en = {
 
     gapTitle: "Il vuoto: di che cosa EXFOR non ha ancora misure",
     gapLead:
-      "Una stella usa ogni reazione in una stretta banda di energie, la sua finestra di Gamow. I laboratori misurano dalle energie alte verso il basso, e il numero di conteggi crolla man mano che scendono. Per ogni reazione: la finestra che serve alla stella e l'energia più bassa mai misurata. Il tratto vuoto in mezzo si riempie con un'estrapolazione.",
+      "Una stella usa ogni reazione in una stretta banda di energie, la sua finestra di Gamow. I laboratori misurano dalle energie alte verso il basso, e il numero di conteggi crolla man mano che scendono. Per ogni reazione: la finestra che serve alla stella e l'energia più bassa in EXFOR. Il tratto vuoto in mezzo si riempie con un'estrapolazione.",
     gapLegendWindow: "Energie che usa la stella (finestra di Gamow)",
     gapLegendGap: "Mai misurato",
     gapLegendData: "Misurato",
-    gapAxis: "Energia nel sistema del centro di massa",
+    gapAxis: "Energia nel centro di massa",
     gapNever: (site: string, e0: string) => `Mai misurata direttamente. Serve: circa ${e0} (${site}).`,
     gapAbove: (low: string, site: string, e0: string) => `Dati fino a ${low}. Serve: circa ${e0} (${site}).`,
     gapInside: (low: string, site: string, e0: string) =>

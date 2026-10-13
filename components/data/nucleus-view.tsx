@@ -156,12 +156,12 @@ export function NucleusView({
               </select>
             </label>
           )}
-          <fieldset className="flex items-center gap-1">
+          <fieldset className="flex flex-wrap items-center gap-1">
             <legend className="sr-only">{t.levels}</legend>
             {(["threshold", "all"] as const).map((z) => (
               <label
                 key={z}
-                className={`inline-flex min-h-9 cursor-pointer items-center rounded-full border px-3 text-sm has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring ${zoom === z ? "border-foreground/60 bg-foreground text-background" : "border-border bg-card hover:border-foreground/30"}`}
+                className={`inline-flex min-h-9 cursor-pointer items-center rounded-full border px-3 text-sm [overflow-wrap:normal] has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring ${zoom === z ? "border-foreground/60 bg-foreground text-background" : "border-border bg-card hover:border-foreground/30"}`}
               >
                 <input type="radio" className="sr-only" name="zoom" checked={zoom === z} onChange={() => setZoom(z)} />
                 {z === "threshold" ? t.zoomThreshold : fill(t.all, { n: levels.length })}
