@@ -680,7 +680,7 @@ const it: EvalDictionary = {
     atlas: "Atlante delle reazioni",
     elasticAxis: "dσ/dΩ (b/sr)",
     elasticNote:
-      "I segmenti di diffusione elastica sono sempre mostrati come dσ/dΩ: per la diffusione il fattore S astrofisico non è definito.",
+      "I segmenti di diffusione elastica sono sempre mostrati come dσ/dΩ: per la diffusione il fattore astrofisico S non è definito.",
     mixedNote: "I segmenti scelti misurano grandezze diverse, quindi ognuno ha il suo grafico.",
     plotAria: (quantity: string, names: string) => `Grafico di ${quantity} in funzione dell'energia nel centro di massa: ${names}. I punti sono le misure, le linee il modello R-matrix.`,
     chi2Status: (v: string) => `Ricalcolato: il χ²/N medio degli insiemi di dati mostrati ora è ${v}.`,
@@ -777,7 +777,7 @@ const it: EvalDictionary = {
     chi2Plain:
       "χ²/N vicino a 1 vuol dire che la linea passa per i punti entro le barre d'errore; sopra 1 la linea si allontana di più dai punti, spesso per normalizzazioni ed effetti sistematici che le barre d'errore non includono.",
     chi2NormNote: (allOne: boolean) =>
-      `Questa pagina non riadatta le normalizzazioni: restano ai valori memorizzati nel file${allOne ? " (n = 1 per ogni insieme di dati)" : ""}, e il χ² mostrato conta solo l'incertezza di ciascun punto, non quella sulla scala complessiva di un insieme di dati.`,
+      `Questa pagina non include le normalizzazioni nel fit: restano ai valori memorizzati nel file${allOne ? " (n = 1 per ogni insieme di dati)" : ""}, e il χ² mostrato conta solo l'incertezza di ciascun punto, non quella sulla scala complessiva di un insieme di dati.`,
     chi2AllSummary: "χ² per tutti i dati del fit",
     chi2AllText: (v: string) => `χ²/N = ${v} su tutti gli insiemi di dati attivi (per ciascuno nella tabella qui sotto).`,
     elapsed: (s: string) => `${s} s`,

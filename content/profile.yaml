@@ -75,14 +75,14 @@ recognition:
     label: Working Group Leader
     label_it: Coordinatore del gruppo di lavoro
     period: 2024–present
-    period_it: 2024 — oggi
+    period_it: 2024–oggi
     what: ¹⁹F + p at LUNA
     what_it: ¹⁹F + p a LUNA
   - source: research/luna
     label: DAQ Coordinator
     label_it: Coordinatore DAQ
     period: 2024–present
-    period_it: 2024 — oggi
+    period_it: 2024–oggi
     what: LUNA collaboration
     what_it: Collaborazione LUNA
   - source: cv/research/AZURE2

@@ -1660,7 +1660,7 @@ const it: Dictionary = {
       facility: "Infrastruttura",
       luna: "LUNA",
     },
-    months: ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"],
+    months: ["gen.", "feb.", "mar.", "apr.", "mag.", "giu.", "lug.", "ago.", "set.", "ott.", "nov.", "dic."],
     decades: "Decenni",
     decade: (d: number) => (d >= 1910 && d < 2000 ? `Anni '${String(d).slice(2)}` : `Anni ${d}`),
     undated: "Senza data",

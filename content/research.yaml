@@ -10,7 +10,7 @@ threads:
     title_it: LUNA — catture protoniche, in profondità sotto terra
     venue: Laboratori Nazionali del Gran Sasso, INFN
     period: 2020–present
-    period_it: 2020 — oggi
+    period_it: 2020–oggi
     role: Working Group Leader (¹⁹F + p, since 2024) · DAQ Coordinator (since 2024)
     role_it: Coordinatore del gruppo di lavoro ¹⁹F + p (dal 2024) · Coordinatore DAQ (dal 2024)
     summary: >-
@@ -81,7 +81,7 @@ threads:
     venue: Open source · used worldwide
     venue_it: Open source · usato in tutto il mondo
     period: Jun 2025 – present
-    period_it: giu 2025 — oggi
+    period_it: giu. 2025–oggi
     role: Maintainer and Lead Developer
     role_it: Responsabile e sviluppatore principale
     summary: >-
@@ -138,7 +138,7 @@ threads:
     title_it: AGATA — una vita media sotto il femtosecondo nel ¹⁵O
     venue: Laboratori Nazionali di Legnaro, INFN
     period: 2023–present
-    period_it: 2023 — oggi
+    period_it: 2023–oggi
     role: Spokesperson
     role_it: Portavoce
     summary: >-
@@ -183,7 +183,7 @@ threads:
     title_it: CRYRING — schermaggio elettronico in cinematica inversa
     venue: GSI Helmholtzzentrum für Schwerionenforschung, Darmstadt
     period: 2024–present
-    period_it: 2024 — oggi
+    period_it: 2024–oggi
     role: Participant
     role_it: Partecipante
     summary: >-
@@ -286,7 +286,7 @@ outlook:
         distribuzioni angolari. È proprio per questo che la amo. Eppure la
         maggior parte delle valutazioni vive nei file di una sola persona. Al
         settore serve un database condiviso e versionato di valutazioni, che
-        chiunque possa rieseguire, riadattare ed estendere quando arrivano
+        chiunque possa rieseguire, aggiornare ed estendere quando arrivano
         nuovi dati. È la direzione di GENESIS (NSF, 2026–2031), sulla
         valutazione delle sezioni d'urto nucleari nella teoria R-matrix con
         metodi quantistici, a cui partecipo, e del mio lavoro nel comitato

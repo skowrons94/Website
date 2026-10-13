@@ -338,7 +338,7 @@ const it: typeof en = {
       known: (n: string) => `${n} reazioni sulla carta dei nuclidi, ognuna segnata da quanto bene ne conosciamo il tasso.`,
       gap: (n: string) =>
         `${n} reazioni, dall'energia che usa una stella alla più bassa mai misurata. Il tratto vuoto è la storia.`,
-      stories: "La reazione più lenta del Sole, il passo che detta il ritmo del ciclo CNO, e perché i fisici vanno sottoterra.",
+      stories: "La reazione più lenta del Sole, il passo che detta il ritmo del ciclo CNO, e perché i fisici vanno sotto terra.",
       nucleus: "I livelli di energia di un nucleo, con la stretta fascia che usa una stella disegnata sopra.",
       search: "Scrivi un elemento, in italiano o in inglese: i suoi isotopi, le loro reazioni e i loro tassi.",
       paths: "Tre brevi passeggiate nel sito, cinque passi ciascuna.",
@@ -375,7 +375,7 @@ const it: typeof en = {
     gapReached: "Finestra raggiunta",
     gapNone: "Nessun dato diretto",
     gapBy: (who: string, year: string) => `La più bassa: ${who}, ${year}`,
-    gapUnderground: "sottoterra (LUNA)",
+    gapUnderground: "sotto terra (LUNA)",
     gapShowAll: (n: number) => `Mostra tutte le ${n} reazioni`,
     gapHide: "Mostra meno",
     gapRule:
@@ -394,7 +394,7 @@ const it: typeof en = {
           `Nelle stelle più pesanti del Sole, carbonio, azoto e ossigeno aiutano a trasformare l'idrogeno in elio. Il passo lento è l'azoto-14 che cattura un protone: nel nucleo di una stella di 15 M☉ un nucleo di azoto-14 aspetta circa ${tau}. Le misure arrivano fino a ${low}; al centro del Sole servono circa ${e0}.`,
       },
       underground: {
-        title: "Perché sottoterra",
+        title: "Perché sotto terra",
         text: (datasets: string, reactions: string, lowest: string) =>
           `Alle energie che usano le stelle, un bersaglio può vedere poche reazioni al giorno, meno dei conteggi che i raggi cosmici lasciano in un rivelatore in superficie. Sotto 1400 m di roccia, al Gran Sasso, LUNA misura quasi nel silenzio. In EXFOR, ${datasets} serie di dati su ${reactions} reazioni dell'atlante vengono da lì, e per ${lowest} di queste sono ancora le energie più basse mai misurate.`,
       },
