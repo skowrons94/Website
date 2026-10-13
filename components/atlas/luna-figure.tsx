@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
  * Why LUNA is underground, as one schematic picture: cosmic-ray muons rain on
  * the mountain, about 1400 m of rock (3800 m w.e.) stops all but about one in
  * a million, and in the halls below two accelerators (LUNA 400 kV and the
- * 3.5 MV LUNA-MV of the Bellotti Ion Beam Facility) send their beams onto a
+ * 3.5 MV machine of the Bellotti Ion Beam Facility, BIBF) send their beams onto a
  * target surrounded by a detector. Numbers as in facilities.yaml and the
  * glossary; not to scale. The numbered labels are explained in an HTML list
  * under the picture, which stays legible on a phone; the colours are the
@@ -135,7 +135,7 @@ export function LunaFigure({ lang, className, compact = false }: { lang: Lang; c
         <circle cx={278} cy={325} r={2.5} fill="var(--viz-text)" />
         {!compact && <Marker x={203} y={288} n={3} />}
 
-        {/* LUNA-MV, Bellotti Ion Beam Facility */}
+        {/* the MV machine, Bellotti Ion Beam Facility (BIBF) */}
         <rect x={326} y={307} width={84} height={36} rx={5} fill={beam} />
         <line x1={410} y1={325} x2={456} y2={325} stroke={beam} strokeWidth={2.5} />
         <circle cx={466} cy={325} r={10} fill="none" stroke="var(--viz-text)" strokeWidth={2} />

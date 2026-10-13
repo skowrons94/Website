@@ -36,7 +36,7 @@ threads:
       - >-
         In parallel I am the collaboration's DAQ Coordinator: I designed and run
         the acquisition and slow-control infrastructure of every campaign, and of
-        the MV facility. It is what lets shifts be taken remotely,
+        the MV machine at the Bellotti Ion Beam Facility (BIBF). It is what lets shifts be taken remotely,
         which for an experiment under 1.4 km of rock is not a small thing.
     body_it:
       - >-

@@ -121,7 +121,7 @@ facilities:
     refs: [formicola2003, broggini2010, lemut2006]
 
   - id: bellotti-ibf
-    name: Bellotti Ion Beam Facility (LUNA MV)
+    name: Bellotti Ion Beam Facility (BIBF)
     lab: Laboratori Nazionali del Gran Sasso (INFN)
     location: Assergi, L'Aquila
     country: Italy

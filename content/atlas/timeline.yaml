@@ -908,14 +908,15 @@ events:
     title_it: Un acceleratore da 3,5 MV viene installato sotto il Gran Sasso
     category: luna
     text: >-
-      A 3.5 MV Singletron accelerator, built by High Voltage Engineering Europa
-      for the LUNA-MV project, was installed underground at Gran Sasso. It
+      A 3.5 MV Singletron accelerator, built by High Voltage Engineering Europa,
+      was installed underground at Gran Sasso: the MV machine of the Bellotti
+      Ion Beam Facility (BIBF). It
       delivers proton, helium and carbon beams, so that helium and carbon
       burning can be studied underground.
     text_it: >-
       Un acceleratore Singletron da 3,5 MV, costruito da High Voltage
-      Engineering Europa per il progetto LUNA-MV, fu installato nel laboratorio
-      sotterraneo del Gran Sasso. Fornisce fasci di protoni, elio e carbonio,
+      Engineering Europa, fu installato nel laboratorio sotterraneo del Gran
+      Sasso: è la macchina MV del Bellotti Ion Beam Facility (BIBF). Fornisce fasci di protoni, elio e carbonio,
       così che la combustione dell'elio e del carbonio si possa studiare sotto
       terra.
     refs: [sen2019, junker2023]
