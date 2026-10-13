@@ -173,6 +173,24 @@ def _jpi(j: str) -> dict:
     return out
 
 
+def clean_authors(text: Optional[str]) -> Optional[str]:
+    """ENSDF author lists as a reader writes them: without the typesetting
+    markup ({+#} affiliation marks), names in all capitals in title case,
+    'and' in lower case: 'M.S. BASUNIA{+#} AND A. CHAKRABORTY' -> 'M.S. Basunia and A. Chakraborty'."""
+    if not text:
+        return text
+    t = re.sub(r"\{[^}]*\}", "", text)
+    t = re.sub(r"\s+", " ", t).strip()
+
+    def name(m) -> str:
+        w = m.group(0)
+        if w == "AND":
+            return "and"
+        out = "-".join(p[:1] + p[1:].lower() for p in w.split("-"))
+        return re.sub(r"^Mc([a-z])", lambda x: "Mc" + x.group(1).upper(), out)
+    return re.sub(r"(?<![\w.])[A-Z][A-Z'][A-Z'\-]*\b", name, t)
+
+
 def _history(records: List[Record]) -> List[dict]:
     hist = []
     for r in records:
@@ -306,7 +324,7 @@ def summary(ds: DataSet) -> dict:
         "dsref": ds.dsref,
         "pub": ds.pub,
         "date": ds.date,
-        "evaluation": {"authors": ev.get("AUT"), "citation": ev.get("CIT"), "cutoff": ev.get("CUT"),
+        "evaluation": {"authors": clean_authors(ev.get("AUT")), "citation": ev.get("CIT"), "cutoff": ev.get("CUT"),
                        "type": ev.get("TYP")},
         "history": hist,
         "Q": q,
