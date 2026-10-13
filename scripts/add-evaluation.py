@@ -18,7 +18,14 @@ It creates server/evaluations/<ID>/ with
   know the answer;
 
 then checks the result and prints what is left to do.  Nothing outside that
-directory is changed.  docs/ADDING-AN-EVALUATION.md is the full guide.
+directory is changed.
+
+Only files the .azr names (its segments' data files, and the external-capture
+integrals in its output directory) are copied, and only from inside the
+.azr's own directory tree or a --data directory you name: a path in the .azr
+that leads elsewhere (/etc/passwd, ../../.ssh/id_rsa, a symlink pointing
+out) is refused, so a collaborator's .azr cannot get a private file
+committed.  Every copy is listed as source -> destination.  docs/ADDING-AN-EVALUATION.md is the full guide.
 """
 
 import argparse
@@ -49,17 +56,53 @@ def say(text=""):
     print(text, flush=True)
 
 
-def resolve(path, azr_dir, data_dirs):
-    """Where a path written in the .azr file really is, or None."""
+def inside(path, roots):
+    """Is ``path``, symlinks resolved, inside one of ``roots`` (real paths)?"""
+    real = os.path.realpath(path)
+    return any(real == r or real.startswith(r.rstrip(os.sep) + os.sep) for r in roots)
+
+
+def allowed_roots(azr_dir, data_dirs):
+    """Where files may be copied from: the .azr's own directory tree and the
+    --data directories named on the command line, as real paths."""
+    return [os.path.realpath(d) for d in [azr_dir] + list(data_dirs) if os.path.isdir(d)]
+
+
+def resolve(path, azr_dir, data_dirs, roots=None):
+    """Where a path written in the .azr file really is, or None.  Raises
+    Failure when it is a file outside ``roots`` (see allowed_roots)."""
+    roots = roots if roots is not None else allowed_roots(azr_dir, data_dirs)
     expanded = os.path.expanduser(path.replace("\\", "/"))
     candidates = [expanded] if os.path.isabs(expanded) else [os.path.join(azr_dir, expanded)]
     base = os.path.basename(expanded)
     candidates += [os.path.join(d, base) for d in data_dirs]
-    return next((c for c in candidates if os.path.isfile(c)), None)
+    outside = None
+    for c in candidates:
+        if not os.path.isfile(c):
+            continue
+        if inside(c, roots):
+            return c
+        outside = outside or c
+    if outside is not None:
+        raise Failure(
+            f"the .azr names {path}, which is {os.path.realpath(outside)}: outside the "
+            f".azr's directory ({azr_dir}) and any --data directory. Refusing to copy it. "
+            "If it really is a data file of this model, copy it next to the .azr (or "
+            "into its data/) and point the .azr there, or pass its directory with "
+            "DATA=... (--data).")
+    return None
+
+
+def safe_name(base, path):
+    """A data file's name as it will be in data/: a plain file name."""
+    if base in ("", ".", "..") or "/" in base or "\x00" in base:
+        raise Failure(f"the .azr names {path!r}, which is not a file name")
+    return base
 
 
 def rewrite(text, azr_dir, data_dirs, dest):
     """The .azr text with relative paths; copies the data files into dest/data."""
+    roots = allowed_roots(azr_dir, data_dirs)
     lines = text.split("\n")
     copied = {}         # basename -> source
     missing = []
@@ -72,8 +115,8 @@ def rewrite(text, azr_dir, data_dirs, dest):
                 output_dir = expanded if os.path.isabs(expanded) else os.path.join(azr_dir, expanded)
             lines[i] = lines[i].replace(path, f"{kind}/", 1) if path else f"{kind}/" + lines[i]
         elif kind == "data":
-            source = resolve(path, azr_dir, data_dirs)
-            base = os.path.basename(path.replace("\\", "/"))
+            source = resolve(path, azr_dir, data_dirs, roots)
+            base = safe_name(os.path.basename(path.replace("\\", "/")), path)
             if source is None:
                 if path not in missing:
                     missing.append(path)
@@ -92,7 +135,11 @@ def rewrite(text, azr_dir, data_dirs, dest):
                       + "\nPass the directory that holds them with DATA=... (or --data).")
     os.makedirs(os.path.join(dest, "data"), exist_ok=True)
     for base, source in copied.items():
-        shutil.copy2(source, os.path.join(dest, "data", base))
+        real = os.path.realpath(source)
+        if not inside(real, roots):           # changed since it was resolved
+            raise Failure(f"{source} now leads outside the .azr's directory; refusing to copy it")
+        shutil.copy2(real, os.path.join(dest, "data", base))
+        say(f"  {real} -> data/{base}")
     return "\n".join(lines), copied, output_dir
 
 
@@ -130,7 +177,7 @@ def info_template(eid, reactions, files, title):
         "$schema": "../../app/info.schema.json",
         "status": "in-progress",
         "reference": None,
-        "analysis": "J. Skowronski",
+        "analysis": "TODO: who made the R-matrix analysis, as in a reference (A. Rossi, B. Bianchi)",
         "purpose": "TODO: one plain sentence, in English, on what this reaction does in stars.",
         "purpose_it": "TODO: la stessa frase, in italiano.",
         "reactions": reactions or ["TODO: e.g. ¹²C(p,γ)¹³N"],
@@ -212,13 +259,20 @@ def main(argv=None):
             f.write(new_text)
         say(f"  {eid}.azr (paths made relative), data/ ({len(copied)} file(s))")
         os.makedirs(os.path.join(dest, "output"), exist_ok=True)
+        roots = allowed_roots(azr_dir, [])
         for name in ("intEC.dat", "intEC.extrap"):
             for src_dir in [d for d in (output_dir, os.path.join(azr_dir, "output")) if d]:
                 src = os.path.join(src_dir, name)
-                if os.path.isfile(src):
-                    shutil.copy2(src, os.path.join(dest, "output", name))
-                    say(f"  output/{name}")
-                    break
+                if not os.path.isfile(src):
+                    continue
+                if not inside(src, roots):
+                    say(f"  (not copying {os.path.realpath(src)}: the .azr's output directory "
+                        f"is outside {azr_dir}; AZURE2 recomputes {name} on the server)")
+                    continue
+                real = os.path.realpath(src)
+                shutil.copy2(real, os.path.join(dest, "output", name))
+                say(f"  {real} -> output/{name}")
+                break
 
         files = check.segment_files(new_text)
         if kept_info is not None:
@@ -241,8 +295,8 @@ def main(argv=None):
     rel = os.path.relpath(dest, REPO)
     say(f"""
 What is left (docs/ADDING-AN-EVALUATION.md has the details):
-  1. Edit {rel}/info.json: replace every TODO (purpose, purpose_it), check
-     `reactions` (headline reaction first), `status`, `analysis`, and give the
+  1. Edit {rel}/info.json: replace every TODO (analysis, purpose,
+     purpose_it), check `reactions` (headline reaction first), `status`, and give the
      data files proper labels ("Author year", or {{"label", "ref", "doi"}}).
      Link it from the reaction atlas: list the atlas pages it belongs on in
      `atlas` (file names in content/atlas/reactions/, e.g. "12C-pg-13N").
