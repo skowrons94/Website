@@ -27,7 +27,7 @@ role_it: >-
   Nelle stelle massicce, e ancor più in quelle povere di elementi pesanti,
   l'ossigeno-16 è molto abbondante e cattura molti dei neutroni liberati dal
   neon-22. Questi neutroni andrebbero persi per il processo s, ed è per questo
-  che l'ossigeno-16 è detto un veleno per i neutroni. L'ossigeno-17 che si forma
+  che l'ossigeno-16 è detto un veleno neutronico. L'ossigeno-17 che si forma
   può catturare un nucleo di elio in due modi. Questa reazione libera di nuovo
   il neutrone, mentre la concorrente ¹⁷O(α,γ)²¹Ne lo trattiene. Il rapporto tra
   le due decide quanto l'ossigeno-16 avvelena il processo s, e quindi quanti
@@ -84,5 +84,5 @@ evaluations: [angulo1999]
 open_questions:
   - The ratio of ¹⁷O(α,n)²⁰Ne to ¹⁷O(α,γ)²¹Ne at the temperatures of core helium burning and shell carbon burning.
 open_questions_it:
-  - "Il rapporto tra ¹⁷O(α,n)²⁰Ne e ¹⁷O(α,γ)²¹Ne alle temperature della combustione centrale dell'elio e della combustione del carbonio in shell."
+  - "Il rapporto tra ¹⁷O(α,n)²⁰Ne e ¹⁷O(α,γ)²¹Ne alle temperature della combustione centrale dell'elio e della combustione del carbonio nei gusci."
 related: [22Ne-an-25Mg, 13C-an-16O, 17O-pa-14N]

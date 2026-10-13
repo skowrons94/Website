@@ -66,7 +66,7 @@ measurements:
     lab: Tokyo Institute of Technology, 3.2 MV Pelletron
     method: neutron-beams
     energy: "keV neutrons, prompt capture γ-rays"
-    energy_it: "neutroni di qualche keV, raggi γ prompt di cattura"
+    energy_it: "neutroni di qualche keV, raggi γ di cattura in linea"
     note: >-
       Discrete γ-rays from the capture states of ²⁰Ne and ²²Ne observed for
       the first time; non-resonant direct p-wave capture identified; MACS
