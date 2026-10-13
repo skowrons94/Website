@@ -77,7 +77,11 @@ export function SearchView({
     return data
       .filter((s) => {
         if (s.Zt < zLo || s.Zt > zHi) return false
-        if (projectile !== "any" && (projectile === "heavy" ? LIGHT.has(s.projectile) || s.projectile === "g" : s.projectile !== projectile)) return false
+        if (
+          projectile !== "any" &&
+          (projectile === "heavy" ? LIGHT.has(s.projectile) || s.projectile === "g" : s.projectile !== projectile)
+        )
+          return false
         if (process !== "any" && (process === "other" ? PROCESSES.includes(s.process) : s.process !== process)) return false
         if (qb && !(s.groups & qb)) return false
         if (noPartials && s.groups & partialBit) return false
@@ -96,8 +100,10 @@ export function SearchView({
 
   useEffect(() => setLimit(PAGE), [results])
 
-  const href = (slug: string) => (pre.has(slug) ? localePath(lang, `/data/reaction/${slug}`) : `${localePath(lang, "/data/reaction")}?r=${encodeURIComponent(slug)}`)
-  const sel = "h-10 rounded-md border border-input bg-background px-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+  const href = (slug: string) =>
+    pre.has(slug) ? localePath(lang, `/data/reaction/${slug}`) : `${localePath(lang, "/data/reaction")}?r=${encodeURIComponent(slug)}`
+  const sel =
+    "h-10 rounded-md border border-input bg-background px-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
   const lab = "flex flex-col gap-1 text-xs font-medium text-muted-foreground"
 
   return (
@@ -140,11 +146,25 @@ export function SearchView({
           <div className="flex items-end gap-2">
             <label className={lab}>
               {t.zMin}
-              <input type="number" min={0} max={83} value={zLo} onChange={(e) => setZLo(Number(e.target.value))} className={`${sel} w-20`} />
+              <input
+                type="number"
+                min={0}
+                max={83}
+                value={zLo}
+                onChange={(e) => setZLo(Number(e.target.value))}
+                className={`${sel} w-20`}
+              />
             </label>
             <label className={lab}>
               {t.zMax}
-              <input type="number" min={0} max={83} value={zHi} onChange={(e) => setZHi(Number(e.target.value))} className={`${sel} w-20`} />
+              <input
+                type="number"
+                min={0}
+                max={83}
+                value={zHi}
+                onChange={(e) => setZHi(Number(e.target.value))}
+                className={`${sel} w-20`}
+              />
             </label>
           </div>
         </div>
@@ -183,18 +203,37 @@ export function SearchView({
       </div>
 
       {data && (
-        <div className="mt-3 overflow-x-auto rounded-lg border border-border" tabIndex={0} role="region" aria-label={fill(t.results, { n: results.length })}>
+        <div
+          className="mt-3 overflow-x-auto rounded-lg border border-border"
+          tabIndex={0}
+          role="region"
+          aria-label={fill(t.results, { n: results.length })}
+        >
           <table className="w-full min-w-[44rem] border-collapse text-sm">
             <caption className="sr-only">{fill(t.results, { n: results.length })}</caption>
             <thead className="bg-card text-left text-xs text-muted-foreground">
               <tr>
-                <th scope="col" className="px-3 py-2 font-medium">{t.cols.reaction}</th>
-                <th scope="col" className="px-3 py-2 text-right font-medium">{t.cols.datasets}</th>
-                <th scope="col" className="px-3 py-2 text-right font-medium">{t.cols.lowest}</th>
-                <th scope="col" className="px-3 py-2 text-right font-medium">{t.cols.E0}</th>
-                <th scope="col" className="px-3 py-2 font-medium">{t.cols.years}</th>
-                <th scope="col" className="px-3 py-2 text-right font-medium">{t.cols.labs}</th>
-                <th scope="col" className="px-3 py-2 font-medium">{t.cols.quantities}</th>
+                <th scope="col" className="px-3 py-2 font-medium">
+                  {t.cols.reaction}
+                </th>
+                <th scope="col" className="px-3 py-2 text-right font-medium">
+                  {t.cols.datasets}
+                </th>
+                <th scope="col" className="px-3 py-2 text-right font-medium">
+                  {t.cols.lowest}
+                </th>
+                <th scope="col" className="px-3 py-2 text-right font-medium">
+                  {t.cols.E0}
+                </th>
+                <th scope="col" className="px-3 py-2 font-medium">
+                  {t.cols.years}
+                </th>
+                <th scope="col" className="px-3 py-2 text-right font-medium">
+                  {t.cols.labs}
+                </th>
+                <th scope="col" className="px-3 py-2 font-medium">
+                  {t.cols.quantities}
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -206,7 +245,9 @@ export function SearchView({
                       <Link href={href(s.slug)} className="font-medium text-link underline-offset-4 hover:underline">
                         <Sci>{reactionLabel(s.key)}</Sci>
                       </Link>
-                      {levelsNoWg[s.key] > 0 && <span className="ml-2 text-xs text-muted-foreground">{fill(t.levelsCount, { n: levelsNoWg[s.key] })}</span>}
+                      {levelsNoWg[s.key] > 0 && (
+                        <span className="ml-2 text-xs text-muted-foreground">{fill(t.levelsCount, { n: levelsNoWg[s.key] })}</span>
+                      )}
                     </th>
                     <td className="px-3 py-1.5 text-right tabular">{s.n}</td>
                     <td className="px-3 py-1.5 text-right tabular">{s.lowest !== null ? kev(s.lowest, lang) : "–"}</td>
@@ -233,7 +274,11 @@ export function SearchView({
         </div>
       )}
       {results.length > limit && (
-        <button type="button" onClick={() => setLimit((l) => l + PAGE)} className="mt-3 inline-flex min-h-10 items-center rounded-md border border-border bg-card px-3.5 text-sm font-medium text-link hover:border-foreground/30">
+        <button
+          type="button"
+          onClick={() => setLimit((l) => l + PAGE)}
+          className="mt-3 inline-flex min-h-10 items-center rounded-md border border-border bg-card px-3.5 text-sm font-medium text-link hover:border-foreground/30"
+        >
           {fill(t.showMore, { n: Math.min(PAGE, results.length - limit) })}
         </button>
       )}

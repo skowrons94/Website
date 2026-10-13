@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react"
 import { ArrowDown, ArrowUp, ArrowUpDown, Download } from "lucide-react"
 
 import { ExforPlot, type PlotCurve, type PlotSeries } from "@/components/data/exfor-plot"
@@ -27,7 +27,11 @@ export interface ExplorerChannel {
 
 type SortKey = "year" | "author" | "lab" | "quantity" | "energy" | "points" | "id"
 
-const NOT_EXPERIMENT = (1 << FLAG_BITS.indexOf("not-experimental")) | (1 << FLAG_BITS.indexOf("derived")) | (1 << FLAG_BITS.indexOf("deleted")) | (1 << FLAG_BITS.indexOf("superseded"))
+const NOT_EXPERIMENT =
+  (1 << FLAG_BITS.indexOf("not-experimental")) |
+  (1 << FLAG_BITS.indexOf("derived")) |
+  (1 << FLAG_BITS.indexOf("deleted")) |
+  (1 << FLAG_BITS.indexOf("superseded"))
 
 /**
  * The full page of one reaction's EXFOR data: the table of datasets
@@ -51,6 +55,7 @@ export function ReactionExplorer({
   window: { lo: number; hi: number; E0: number; label: string } | null
 }) {
   const t = strings.table
+  const sym = (g: Group) => (g === "other" ? strings.quantityShort.other : GROUP_SYMBOL[g])
   const [shard, setShard] = useState<Shard | null>(null)
   const [error, setError] = useState<"notBuilt" | "failed" | null>(null)
   const [pagePoints, setPagePoints] = useState<Map<string, Points>>(new Map())
@@ -97,8 +102,14 @@ export function ReactionExplorer({
   const [onlySelected, setOnlySelected] = useState(false)
   const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 }>({ key: "year", dir: -1 })
   const [highlight, setHighlight] = useState<string | null>(null)
+  // a few dozen rows at a time, and only the layout the screen uses: a short commit, no long task
+  const [limit, setLimit] = useState(ROWS)
+  const wide = useWide()
 
+  // filtering re-renders up to a few hundred rows: deferred, so typing never blocks
+  const f = useDeferredValue({ group, text, hideFlagged, onlySelected, sort })
   const shown = useMemo(() => {
+    const { group, text, hideFlagged, onlySelected, sort } = f
     const q = text.trim().toLowerCase()
     const out = rows.filter(
       (r) =>
@@ -130,7 +141,10 @@ export function ReactionExplorer({
       const y = val(b)
       return (x < y ? -1 : x > y ? 1 : a.index - b.index) * sort.dir
     })
-  }, [rows, group, text, hideFlagged, onlySelected, sel, sort])
+  }, [rows, f, sel])
+
+  useEffect(() => setLimit(ROWS), [f])
+  const visible = shown.slice(0, limit)
 
   const toggle = (id: string) => {
     const next = new Set(sel)
@@ -166,7 +180,9 @@ export function ReactionExplorer({
         const v = p.value[i]
         if (e === null || v === null || !(e > 0)) continue
         if (p.limit && p.limit[i]) continue
-        let err = p.d_tot?.[i] ?? (p.d_stat?.[i] !== undefined || p.d_sys?.[i] !== undefined ? Math.hypot(p.d_stat?.[i] ?? 0, p.d_sys?.[i] ?? 0) || null : null)
+        let err =
+          p.d_tot?.[i] ??
+          (p.d_stat?.[i] !== undefined || p.d_sys?.[i] !== undefined ? Math.hypot(p.d_stat?.[i] ?? 0, p.d_sys?.[i] ?? 0) || null : null)
         let f = 1
         if (quantity === "S" && !isS) {
           if (!channel || neutral) continue
@@ -180,7 +196,15 @@ export function ReactionExplorer({
         dy.push(err === null || err === undefined ? null : err * f)
         err = null
       }
-      if (E.length) out.push({ id: r.id, label: `${r.author}${r.authors.length > 1 ? " et al." : ""} ${r.year ?? ""} · ${r.id}`, partial: r.group === "partial", E, y, dy })
+      if (E.length)
+        out.push({
+          id: r.id,
+          label: `${r.author}${r.authors.length > 1 ? " et al." : ""} ${r.year ?? ""} · ${r.id}`,
+          partial: r.group === "partial",
+          E,
+          y,
+          dy,
+        })
     }
     return out
   }, [shard, rows, sel, pagePoints, quantity, channel, neutral])
@@ -197,15 +221,23 @@ export function ReactionExplorer({
     const base = process.env.BASE_PATH ?? ""
     Promise.all(
       evs.map(async (e) => {
-        const url = apiBase === "browser" ? `${base}/azure2/evaluations/${encodeURIComponent(e.id)}/initial.json` : `${apiBase}/api/evaluations/${encodeURIComponent(e.id)}/initial`
+        const url =
+          apiBase === "browser"
+            ? `${base}/azure2/evaluations/${encodeURIComponent(e.id)}/initial.json`
+            : `${apiBase}/api/evaluations/${encodeURIComponent(e.id)}/initial`
         try {
           const r = await fetch(url)
           if (!r.ok) return null
           const init = (await r.json()) as {
             data?: { index: number; reaction: string; observable: string }[]
-            fine?: { curves: { id: number; energies: number[]; calculated: number[]; sfactor_energies?: number[]; calculated_sfactor?: number[] }[]; segments: { index: number; curve: number }[] }
+            fine?: {
+              curves: { id: number; energies: number[]; calculated: number[]; sfactor_energies?: number[]; calculated_sfactor?: number[] }[]
+              segments: { index: number; curve: number }[]
+            }
           }
-          const segs = (init.data ?? []).filter((s) => keyFromLabel(s.reaction) === key && (s.observable === "total-capture" || s.observable === "angle-integrated"))
+          const segs = (init.data ?? []).filter(
+            (s) => keyFromLabel(s.reaction) === key && (s.observable === "total-capture" || s.observable === "angle-integrated"),
+          )
           const pick = segs.find((s) => s.observable === "total-capture") ?? segs[0]
           if (!pick || !init.fine) return null
           const cid = init.fine.segments.find((s) => s.index === pick.index)?.curve
@@ -224,7 +256,9 @@ export function ReactionExplorer({
       live = false
     }
   }, [key, evaluations])
-  const [curvesRaw, setCurvesRaw] = useState<{ id: string; c: { energies: number[]; calculated: number[]; sfactor_energies?: number[]; calculated_sfactor?: number[] } }[]>([])
+  const [curvesRaw, setCurvesRaw] = useState<
+    { id: string; c: { energies: number[]; calculated: number[]; sfactor_energies?: number[]; calculated_sfactor?: number[] } }[]
+  >([])
   useEffect(() => {
     setCurves(
       curvesRaw.map(({ id, c }) =>
@@ -240,7 +274,11 @@ export function ReactionExplorer({
 
   /* -- render ----------------------------------------------------------------------------------- */
   if (error) {
-    return <p className="mt-6 rounded-lg border border-dashed border-border p-5 text-sm text-muted-foreground">{error === "notBuilt" ? t.notBuilt : t.failed}</p>
+    return (
+      <p className="mt-6 rounded-lg border border-dashed border-border p-5 text-sm text-muted-foreground">
+        {error === "notBuilt" ? t.notBuilt : t.failed}
+      </p>
+    )
   }
   if (!shard) {
     return (
@@ -273,8 +311,26 @@ export function ReactionExplorer({
                 onChange={(v) => setQuantity(v as "S" | "sigma")}
               />
             )}
-            <Segmented label={strings.plot.xAxis} value={logX ? "log" : "lin"} options={[["log", strings.plot.log], ["lin", strings.plot.linear]]} onChange={(v) => setLogX(v === "log")} prefix="x" />
-            <Segmented label={strings.plot.yAxis} value={logY ? "log" : "lin"} options={[["log", strings.plot.log], ["lin", strings.plot.linear]]} onChange={(v) => setLogY(v === "log")} prefix="y" />
+            <Segmented
+              label={strings.plot.xAxis}
+              value={logX ? "log" : "lin"}
+              options={[
+                ["log", strings.plot.log],
+                ["lin", strings.plot.linear],
+              ]}
+              onChange={(v) => setLogX(v === "log")}
+              prefix="x"
+            />
+            <Segmented
+              label={strings.plot.yAxis}
+              value={logY ? "log" : "lin"}
+              options={[
+                ["log", strings.plot.log],
+                ["lin", strings.plot.linear],
+              ]}
+              onChange={(v) => setLogY(v === "log")}
+              prefix="y"
+            />
           </div>
         </div>
         <div className="mt-4 rounded-lg border border-border bg-[var(--viz-surface)] p-2 sm:p-4">
@@ -370,173 +426,224 @@ export function ReactionExplorer({
         </div>
 
         {/* phones: one card per dataset */}
-        <ul className="mt-3 max-h-[75vh] divide-y divide-border/60 overflow-auto rounded-lg border border-border md:hidden" aria-label={fill(t.caption, { reaction: label })}>
-          {shown.map((r) => (
-            <li key={r.id} className={`flex gap-3 px-3 py-3 text-sm ${sel.has(r.id) ? "" : "text-muted-foreground"}`}>
-              <input
-                type="checkbox"
-                className="mt-1 h-5 w-5 shrink-0 accent-[hsl(var(--link))]"
-                checked={sel.has(r.id)}
-                onChange={() => toggle(r.id)}
-                aria-label={fill(t.select, { id: `${r.id}, ${r.author} ${r.year ?? ""}` })}
-              />
-              <div className="min-w-0 flex-1">
-                <p className="flex flex-wrap items-baseline gap-x-2">
-                  <span className="tabular">{r.year ?? "–"}</span>
-                  <span className="font-medium text-foreground">
-                    {r.author}
-                    {r.authors.length > 1 ? " et al." : ""}
-                  </span>
-                  <a href={r.exfor} className="font-mono text-xs text-link underline-offset-2 hover:underline">
-                    {r.id}
-                  </a>
-                  {r.evaluations.map((id) => (
-                    <Link key={id} href={localePath(lang, `/evaluations/${id}`)} className="inline-flex rounded-full border border-[var(--viz-series-2)] px-1.5 text-[0.6875rem] font-medium text-foreground">
-                      {fill(t.usedInShort, { id })}
-                    </Link>
-                  ))}
-                </p>
-                <p className="mt-0.5 text-xs tabular">
-                  {GROUP_SYMBOL[r.group]}
-                  {r.levels > 0 ? ` (${fill(t.levels, { n: r.levels })})` : ""} ·{" "}
-                  {r.e0 !== null ? `${kev(r.e0 * 1000, lang)}${r.e1 !== null && r.e1 > r.e0 * 1.0001 ? `–${kev(r.e1 * 1000, lang)}` : ""} keV` : r.k0 !== null ? `kT ${kev(r.k0 * 1000, lang)} keV` : "–"} · {r.n} pt
-                  {r.errors.length ? ` · ${r.errors.join(", ")}` : ""}
-                </p>
-                {r.lab && <p className="mt-0.5 truncate text-xs text-muted-foreground">{r.lab}</p>}
-                {r.flags.length > 0 && (
-                  <p className="mt-1 flex flex-wrap gap-1 text-[0.6875rem]">
-                    {r.flags.map((f) => (
-                      <span key={f} className="rounded border border-border px-1">
-                        {(FLAG_BITS as readonly string[]).includes(f) ? flagLabel(f as Flag, lang) : f}
-                      </span>
-                    ))}
-                  </p>
-                )}
-              </div>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-3 hidden max-h-[70vh] overflow-auto rounded-lg border border-border md:block" tabIndex={0} role="region" aria-labelledby="table-title">
-          <table className="w-full min-w-[64rem] border-collapse text-sm">
-            <caption className="sr-only">{fill(t.caption, { reaction: label })}</caption>
-            <thead className="sticky top-0 z-[1] bg-card text-left text-xs text-muted-foreground shadow-[0_1px_0_hsl(var(--border))]">
-              <tr>
-                <th scope="col" className="w-10 px-3 py-2">
-                  <span className="sr-only">{t.selected.replace("{n}", "")}</span>
-                </th>
-                <SortHead k="year" label={t.cols.year} sort={sort} setSort={setSort} sortBy={t.sortBy} />
-                <SortHead k="author" label={t.cols.author} sort={sort} setSort={setSort} sortBy={t.sortBy} />
-                <SortHead k="lab" label={t.cols.lab} sort={sort} setSort={setSort} sortBy={t.sortBy} />
-                <th scope="col" className="whitespace-nowrap px-3 py-2 font-medium">{t.cols.method}</th>
-                <SortHead k="quantity" label={t.cols.quantity} sort={sort} setSort={setSort} sortBy={t.sortBy} />
-                <SortHead k="energy" label={t.cols.energy} sort={sort} setSort={setSort} sortBy={t.sortBy} right />
-                <SortHead k="points" label={t.cols.points} sort={sort} setSort={setSort} sortBy={t.sortBy} right />
-                <th scope="col" className="whitespace-nowrap px-3 py-2 font-medium">{t.cols.errors}</th>
-                <th scope="col" className="whitespace-nowrap px-3 py-2 font-medium">{t.cols.flags}</th>
-                <SortHead k="id" label={t.cols.id} sort={sort} setSort={setSort} sortBy={t.sortBy} />
-                <th scope="col" className="whitespace-nowrap px-3 py-2 font-medium">{t.cols.doi}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {shown.map((r) => (
-                <tr
-                  key={r.id}
-                  className={`border-t border-border/60 align-top ${highlight === r.id ? "bg-[color-mix(in_srgb,var(--viz-series-1)_12%,transparent)]" : sel.has(r.id) ? "" : "text-muted-foreground"}`}
-                  onPointerEnter={() => r.plottable && sel.has(r.id) && setHighlight(r.id)}
-                  onPointerLeave={() => setHighlight(null)}
-                >
-                  <td className="px-3 py-2">
-                    <input
-                      type="checkbox"
-                      className="h-4 w-4 accent-[hsl(var(--link))]"
-                      checked={sel.has(r.id)}
-                      onChange={() => toggle(r.id)}
-                      onFocus={() => r.plottable && setHighlight(r.id)}
-                      aria-label={fill(t.select, { id: `${r.id}, ${r.author} ${r.year ?? ""}` })}
-                    />
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-2 tabular">{r.year ?? "–"}</td>
-                  <td className="min-w-[9rem] px-3 py-2">
-                    <span className="font-medium text-foreground">{r.author}</span>
-                    {r.authors.length > 1 && <span> et al.</span>}
+        {!wide && (
+          <ul
+            className="mt-3 max-h-[75vh] divide-y divide-border/60 overflow-auto rounded-lg border border-border"
+            aria-label={fill(t.caption, { reaction: label })}
+          >
+            {visible.map((r) => (
+              <li key={r.id} className={`flex gap-3 px-3 py-3 text-sm ${sel.has(r.id) ? "" : "text-muted-foreground"}`}>
+                <input
+                  type="checkbox"
+                  className="mt-1 h-5 w-5 shrink-0 accent-[hsl(var(--link))]"
+                  checked={sel.has(r.id)}
+                  onChange={() => toggle(r.id)}
+                  aria-label={fill(t.select, { id: `${r.id}, ${r.author} ${r.year ?? ""}` })}
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="flex flex-wrap items-baseline gap-x-2">
+                    <span className="tabular">{r.year ?? "–"}</span>
+                    <span className="font-medium text-foreground">
+                      {r.author}
+                      {r.authors.length > 1 ? " et al." : ""}
+                    </span>
+                    <a href={r.exfor} className="font-mono text-xs text-link underline-offset-2 hover:underline">
+                      {r.id}
+                    </a>
                     {r.evaluations.map((id) => (
                       <Link
                         key={id}
                         href={localePath(lang, `/evaluations/${id}`)}
-                        title={fill(t.usedIn, { id })}
-                        className="ml-1.5 inline-flex items-center rounded-full border border-[var(--viz-series-2)] px-1.5 text-[0.6875rem] font-medium text-foreground hover:bg-accent"
+                        className="inline-flex rounded-full border border-[var(--viz-series-2)] px-1.5 text-[0.6875rem] font-medium text-foreground"
                       >
                         {fill(t.usedInShort, { id })}
                       </Link>
                     ))}
-                  </td>
-                  <td className="max-w-[14rem] px-3 py-2" title={r.labFull}>
-                    <span className="line-clamp-2">{r.lab || "–"}</span>
-                    {r.facility && <span className="block text-xs text-muted-foreground">{r.facility}</span>}
-                  </td>
-                  <td className="max-w-[11rem] px-3 py-2 text-xs" title={[...r.methods.map((c) => (codes.methods as Record<string, string>)[c] ?? c), ...r.detectors.map((c) => (codes.detectors as Record<string, string>)[c] ?? c)].join("; ")}>
-                    {r.methods.map((c) => (codes.methods as Record<string, string>)[c] ?? c).join(", ") || "–"}
-                    {r.detectors.length > 0 && <span className="block text-muted-foreground">{r.detectors.join(", ")}</span>}
-                  </td>
-                  <td className="px-3 py-2">
-                    <span className="font-medium text-foreground">{GROUP_SYMBOL[r.group]}</span>
-                    {r.levels > 0 && <span className="block text-xs text-muted-foreground">{fill(t.levels, { n: r.levels })}</span>}
-                    <span className="block font-mono text-[0.6875rem] text-muted-foreground">{r.quantity}</span>
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-2 text-right tabular">
-                    {r.e0 !== null ? `${kev(r.e0 * 1000, lang)}${r.e1 !== null && r.e1 > r.e0 * 1.0001 ? `–${kev(r.e1 * 1000, lang)}` : ""}` : r.k0 !== null ? `kT ${kev(r.k0 * 1000, lang)}${r.k1 && r.k1 > r.k0 ? `–${kev(r.k1 * 1000, lang)}` : ""}` : "–"}
-                  </td>
-                  <td className="px-3 py-2 text-right tabular">
-                    {r.n}
-                    {r.decimated && (
-                      <span className="block text-[0.6875rem] text-muted-foreground" title={fill(t.decimated, { kept: r.decimated.kept, total: r.decimated.total })}>
-                        ({r.decimated.kept})
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-3 py-2 text-xs">
-                    {r.errors.join(", ") || "–"}
-                    {r.norm !== null && <span className="block text-muted-foreground">norm. {kev(r.norm, lang, 2)} %</span>}
-                  </td>
-                  <td className="max-w-[10rem] px-3 py-2 text-xs">
-                    {r.flags.length ? (
-                      <ul className="flex flex-wrap gap-1">
-                        {r.flags.map((f) => (
-                          <li key={f} className="whitespace-nowrap rounded border border-border px-1 py-px" title={(FLAG_BITS as readonly string[]).includes(f) ? flagExplain(f as Flag, lang) : f}>
-                            {(FLAG_BITS as readonly string[]).includes(f) ? flagLabel(f as Flag, lang) : f}
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      "–"
-                    )}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-2 font-mono text-xs">
-                    <a href={r.exfor} className="text-link underline-offset-2 hover:underline">
-                      {r.id}
-                    </a>
-                  </td>
-                  <td className="max-w-[12rem] px-3 py-2 text-xs">
-                    {r.doi ? (
-                      <a href={`https://doi.org/${r.doi}`} className="break-all text-link underline-offset-2 hover:underline">
-                        {r.doi}
-                      </a>
-                    ) : (
-                      "–"
-                    )}
-                  </td>
-                </tr>
-              ))}
-              {shown.length === 0 && (
+                  </p>
+                  <p className="mt-0.5 text-xs tabular">
+                    {sym(r.group)}
+                    {r.levels > 0 ? ` (${fill(t.levels, { n: r.levels })})` : ""} ·{" "}
+                    {r.e0 !== null
+                      ? `${kev(r.e0 * 1000, lang)}${r.e1 !== null && r.e1 > r.e0 * 1.0001 ? `–${kev(r.e1 * 1000, lang)}` : ""} keV`
+                      : r.k0 !== null
+                        ? `kT ${kev(r.k0 * 1000, lang)} keV`
+                        : "–"}{" "}
+                    · {r.n} pt
+                    {r.errors.length ? ` · ${r.errors.join(", ")}` : ""}
+                  </p>
+                  {r.lab && <p className="mt-0.5 truncate text-xs text-muted-foreground">{r.lab}</p>}
+                  {r.flags.length > 0 && (
+                    <p className="mt-1 flex flex-wrap gap-1 text-[0.6875rem]">
+                      {r.flags.map((f) => (
+                        <span key={f} className="rounded border border-border px-1">
+                          {(FLAG_BITS as readonly string[]).includes(f) ? flagLabel(f as Flag, lang) : f}
+                        </span>
+                      ))}
+                    </p>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+        {wide && (
+          <div
+            className="mt-3 max-h-[70vh] overflow-auto rounded-lg border border-border"
+            tabIndex={0}
+            role="region"
+            aria-labelledby="table-title"
+          >
+            <table className="w-full min-w-[64rem] border-collapse text-sm">
+              <caption className="sr-only">{fill(t.caption, { reaction: label })}</caption>
+              <thead className="sticky top-0 z-[1] bg-card text-left text-xs text-muted-foreground shadow-[0_1px_0_hsl(var(--border))]">
                 <tr>
-                  <td colSpan={12} className="px-3 py-6 text-center text-muted-foreground">
-                    {t.none}
-                  </td>
+                  <th scope="col" className="w-10 px-3 py-2">
+                    <span className="sr-only">{t.selected.replace("{n}", "")}</span>
+                  </th>
+                  <SortHead k="year" label={t.cols.year} sort={sort} setSort={setSort} sortBy={t.sortBy} />
+                  <SortHead k="author" label={t.cols.author} sort={sort} setSort={setSort} sortBy={t.sortBy} />
+                  <SortHead k="lab" label={t.cols.lab} sort={sort} setSort={setSort} sortBy={t.sortBy} />
+                  <th scope="col" className="whitespace-nowrap px-3 py-2 font-medium">
+                    {t.cols.method}
+                  </th>
+                  <SortHead k="quantity" label={t.cols.quantity} sort={sort} setSort={setSort} sortBy={t.sortBy} />
+                  <SortHead k="energy" label={t.cols.energy} sort={sort} setSort={setSort} sortBy={t.sortBy} right />
+                  <SortHead k="points" label={t.cols.points} sort={sort} setSort={setSort} sortBy={t.sortBy} right />
+                  <th scope="col" className="whitespace-nowrap px-3 py-2 font-medium">
+                    {t.cols.errors}
+                  </th>
+                  <th scope="col" className="whitespace-nowrap px-3 py-2 font-medium">
+                    {t.cols.flags}
+                  </th>
+                  <SortHead k="id" label={t.cols.id} sort={sort} setSort={setSort} sortBy={t.sortBy} />
+                  <th scope="col" className="whitespace-nowrap px-3 py-2 font-medium">
+                    {t.cols.doi}
+                  </th>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {visible.map((r) => (
+                  <tr
+                    key={r.id}
+                    className={`border-t border-border/60 align-top ${highlight === r.id ? "bg-[color-mix(in_srgb,var(--viz-series-1)_12%,transparent)]" : sel.has(r.id) ? "" : "text-muted-foreground"}`}
+                    onPointerEnter={() => r.plottable && sel.has(r.id) && setHighlight(r.id)}
+                    onPointerLeave={() => setHighlight(null)}
+                  >
+                    <td className="px-3 py-2">
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 accent-[hsl(var(--link))]"
+                        checked={sel.has(r.id)}
+                        onChange={() => toggle(r.id)}
+                        onFocus={() => r.plottable && setHighlight(r.id)}
+                        aria-label={fill(t.select, { id: `${r.id}, ${r.author} ${r.year ?? ""}` })}
+                      />
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-2 tabular">{r.year ?? "–"}</td>
+                    <td className="min-w-[9rem] px-3 py-2">
+                      <span className="font-medium text-foreground">{r.author}</span>
+                      {r.authors.length > 1 && <span> et al.</span>}
+                      {r.evaluations.map((id) => (
+                        <Link
+                          key={id}
+                          href={localePath(lang, `/evaluations/${id}`)}
+                          title={fill(t.usedIn, { id })}
+                          className="ml-1.5 inline-flex items-center rounded-full border border-[var(--viz-series-2)] px-1.5 text-[0.6875rem] font-medium text-foreground hover:bg-accent"
+                        >
+                          {fill(t.usedInShort, { id })}
+                        </Link>
+                      ))}
+                    </td>
+                    <td className="max-w-[14rem] px-3 py-2" title={r.labFull}>
+                      <span className="line-clamp-2">{r.lab || "–"}</span>
+                      {r.facility && <span className="block text-xs text-muted-foreground">{r.facility}</span>}
+                    </td>
+                    <td
+                      className="max-w-[11rem] px-3 py-2 text-xs"
+                      title={[
+                        ...r.methods.map((c) => (codes.methods as Record<string, string>)[c] ?? c),
+                        ...r.detectors.map((c) => (codes.detectors as Record<string, string>)[c] ?? c),
+                      ].join("; ")}
+                    >
+                      {r.methods.map((c) => (codes.methods as Record<string, string>)[c] ?? c).join(", ") || "–"}
+                      {r.detectors.length > 0 && <span className="block text-muted-foreground">{r.detectors.join(", ")}</span>}
+                    </td>
+                    <td className="px-3 py-2">
+                      <span className="font-medium text-foreground">{sym(r.group)}</span>
+                      {r.levels > 0 && <span className="block text-xs text-muted-foreground">{fill(t.levels, { n: r.levels })}</span>}
+                      <span className="block font-mono text-[0.6875rem] text-muted-foreground">{r.quantity}</span>
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-2 text-right tabular">
+                      {r.e0 !== null
+                        ? `${kev(r.e0 * 1000, lang)}${r.e1 !== null && r.e1 > r.e0 * 1.0001 ? `–${kev(r.e1 * 1000, lang)}` : ""}`
+                        : r.k0 !== null
+                          ? `kT ${kev(r.k0 * 1000, lang)}${r.k1 && r.k1 > r.k0 ? `–${kev(r.k1 * 1000, lang)}` : ""}`
+                          : "–"}
+                    </td>
+                    <td className="px-3 py-2 text-right tabular">
+                      {r.n}
+                      {r.decimated && (
+                        <span
+                          className="block text-[0.6875rem] text-muted-foreground"
+                          title={fill(t.decimated, { kept: r.decimated.kept, total: r.decimated.total })}
+                        >
+                          ({r.decimated.kept})
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-3 py-2 text-xs">
+                      {r.errors.join(", ") || "–"}
+                      {r.norm !== null && <span className="block text-muted-foreground">norm. {kev(r.norm, lang, 2)} %</span>}
+                    </td>
+                    <td className="max-w-[10rem] px-3 py-2 text-xs">
+                      {r.flags.length ? (
+                        <ul className="flex flex-wrap gap-1">
+                          {r.flags.map((f) => (
+                            <li
+                              key={f}
+                              className="whitespace-nowrap rounded border border-border px-1 py-px"
+                              title={(FLAG_BITS as readonly string[]).includes(f) ? flagExplain(f as Flag, lang) : f}
+                            >
+                              {(FLAG_BITS as readonly string[]).includes(f) ? flagLabel(f as Flag, lang) : f}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        "–"
+                      )}
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-2 font-mono text-xs">
+                      <a href={r.exfor} className="text-link underline-offset-2 hover:underline">
+                        {r.id}
+                      </a>
+                    </td>
+                    <td className="max-w-[12rem] px-3 py-2 text-xs">
+                      {r.doi ? (
+                        <a href={`https://doi.org/${r.doi}`} className="break-all text-link underline-offset-2 hover:underline">
+                          {r.doi}
+                        </a>
+                      ) : (
+                        "–"
+                      )}
+                    </td>
+                  </tr>
+                ))}
+                {shown.length === 0 && (
+                  <tr>
+                    <td colSpan={12} className="px-3 py-6 text-center text-muted-foreground">
+                      {t.none}
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+        {shown.length > limit && (
+          <button type="button" className={`${btn} mt-3`} onClick={() => setLimit((l) => l + 100)}>
+            {fill(t.more, { n: Math.min(100, shown.length - limit), total: shown.length })}
+          </button>
+        )}
         {flagsSeen.length > 0 && (
           <details className="group mt-3 text-sm">
             <summary className="inline-flex min-h-9 cursor-pointer items-center text-link">{t.flagsTitle}</summary>
@@ -544,7 +651,9 @@ export function ReactionExplorer({
               {flagsSeen.map((f) => (
                 <div key={f}>
                   <dt className="font-medium">{(FLAG_BITS as readonly string[]).includes(f) ? flagLabel(f as Flag, lang) : f}</dt>
-                  <dd className="text-muted-foreground">{(FLAG_BITS as readonly string[]).includes(f) ? flagExplain(f as Flag, lang) : `EXFOR: ${f}`}</dd>
+                  <dd className="text-muted-foreground">
+                    {(FLAG_BITS as readonly string[]).includes(f) ? flagExplain(f as Flag, lang) : `EXFOR: ${f}`}
+                  </dd>
                 </div>
               ))}
             </dl>
@@ -557,11 +666,39 @@ export function ReactionExplorer({
   )
 }
 
+const ROWS = 40
+
+/** Wider than Tailwind's md breakpoint (the table), else the card list. */
+function useWide(): boolean {
+  const [wide, setWide] = useState(true)
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)")
+    const on = () => setWide(mq.matches)
+    on()
+    mq.addEventListener("change", on)
+    return () => mq.removeEventListener("change", on)
+  }, [])
+  return wide
+}
+
 const btn =
   "inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-sm font-medium transition-colors hover:border-foreground/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
-const btnLink = "inline-flex min-h-8 items-center rounded px-1.5 text-sm text-link underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+const btnLink =
+  "inline-flex min-h-8 items-center rounded px-1.5 text-sm text-link underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
 
-function Segmented({ label, value, options, onChange, prefix = "q" }: { label: string; value: string; options: [string, string][]; onChange: (v: string) => void; prefix?: string }) {
+function Segmented({
+  label,
+  value,
+  options,
+  onChange,
+  prefix = "q",
+}: {
+  label: string
+  value: string
+  options: [string, string][]
+  onChange: (v: string) => void
+  prefix?: string
+}) {
   return (
     <fieldset className="flex items-center gap-1.5">
       <legend className="sr-only">{label}</legend>
@@ -610,7 +747,11 @@ function SortHead({
   const active = sort.key === k
   const Icon = !active ? ArrowUpDown : sort.dir === 1 ? ArrowUp : ArrowDown
   return (
-    <th scope="col" aria-sort={active ? (sort.dir === 1 ? "ascending" : "descending") : "none"} className={`whitespace-nowrap px-1 py-1 font-medium ${right ? "text-right" : ""}`}>
+    <th
+      scope="col"
+      aria-sort={active ? (sort.dir === 1 ? "ascending" : "descending") : "none"}
+      className={`whitespace-nowrap px-1 py-1 font-medium ${right ? "text-right" : ""}`}
+    >
       <button
         type="button"
         onClick={() => setSort({ key: k, dir: active ? (sort.dir === 1 ? -1 : 1) : k === "year" || k === "points" ? -1 : 1 })}
@@ -643,7 +784,10 @@ function ExportPanel({ slug, selected, strings }: { slug: string; selected: stri
       setBusy(kind)
       setNote(t.preparing)
       try {
-        const [{ fullDatasets, loadMasses, loadJournals, save }, ex] = await Promise.all([import("@/lib/data/client"), import("@/lib/data/export")])
+        const [{ fullDatasets, loadMasses, loadJournals, save }, ex] = await Promise.all([
+          import("@/lib/data/client"),
+          import("@/lib/data/export"),
+        ])
         const sets = await fullDatasets(slug, selected)
         const metaR = await fetch(`${process.env.BASE_PATH ?? ""}/data/meta.json`)
         const meta = (await metaR.json()) as { exfor: { snapshot_date: string; commit: string } }
@@ -674,7 +818,10 @@ function ExportPanel({ slug, selected, strings }: { slug: string; selected: stri
   return (
     <section aria-labelledby="export-title" className="rounded-lg border border-border bg-card p-5 sm:p-6">
       <h2 id="export-title" className="font-serif text-xl font-semibold tracking-tight">
-        {t.title} <span className="font-sans text-sm font-normal text-muted-foreground tabular">({fill(strings.table.selected, { n: selected.length })})</span>
+        {t.title}{" "}
+        <span className="font-sans text-sm font-normal text-muted-foreground tabular">
+          ({fill(strings.table.selected, { n: selected.length })})
+        </span>
       </h2>
       <p className="mt-1.5 max-w-prose text-sm text-muted-foreground">{t.intro}</p>
       <div className="mt-4 flex flex-wrap gap-2">
@@ -697,9 +844,34 @@ function ExportPanel({ slug, selected, strings }: { slug: string; selected: stri
           {t.azure2} <span className="font-normal text-muted-foreground">· {t.azure2Hint}</span>
         </p>
         <div className="grid gap-3 sm:grid-cols-3">
-          <Select label={t.labParticle} value={labParticle} onChange={(v) => setLabParticle(v as "projectile" | "target")} options={[["projectile", t.projectile], ["target", t.target]]} />
-          <Select label={t.masses} value={massModel} onChange={(v) => setMassModel(v as "ame" | "integer")} options={[["ame", t.ame], ["integer", t.integer]]} />
-          <Select label={t.error} value={error} onChange={(v) => setError(v as "point" | "stat" | "total")} options={[["point", t.errPoint], ["stat", t.errStat], ["total", t.errTotal]]} />
+          <Select
+            label={t.labParticle}
+            value={labParticle}
+            onChange={(v) => setLabParticle(v as "projectile" | "target")}
+            options={[
+              ["projectile", t.projectile],
+              ["target", t.target],
+            ]}
+          />
+          <Select
+            label={t.masses}
+            value={massModel}
+            onChange={(v) => setMassModel(v as "ame" | "integer")}
+            options={[
+              ["ame", t.ame],
+              ["integer", t.integer],
+            ]}
+          />
+          <Select
+            label={t.error}
+            value={error}
+            onChange={(v) => setError(v as "point" | "stat" | "total")}
+            options={[
+              ["point", t.errPoint],
+              ["stat", t.errStat],
+              ["total", t.errTotal],
+            ]}
+          />
         </div>
         <button type="button" className={`${btn} mt-4`} disabled={busy !== null} onClick={() => run("azure2")}>
           <Download className="h-3.5 w-3.5" aria-hidden /> {t.azure2} (.zip)
@@ -712,7 +884,17 @@ function ExportPanel({ slug, selected, strings }: { slug: string; selected: stri
   )
 }
 
-function Select({ label, value, onChange, options }: { label: string; value: string; onChange: (v: string) => void; options: [string, string][] }) {
+function Select({
+  label,
+  value,
+  onChange,
+  options,
+}: {
+  label: string
+  value: string
+  onChange: (v: string) => void
+  options: [string, string][]
+}) {
   return (
     <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
       {label}

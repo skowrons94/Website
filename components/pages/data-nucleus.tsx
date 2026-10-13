@@ -7,7 +7,18 @@ import { NucleusView, type NucleusEntrance } from "@/components/data/nucleus-vie
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { Sci } from "@/components/sci"
 import { getReaction } from "@/lib/atlas"
-import { atlasReactions, atlasWindows, channelOf, compoundNuclei, evaluationLinks, gapRows, prerenderedSlugs, reactionsInto, readEnsdf, readIndex } from "@/lib/data/build"
+import {
+  atlasReactions,
+  atlasWindows,
+  channelOf,
+  compoundNuclei,
+  evaluationLinks,
+  gapRows,
+  prerenderedSlugs,
+  reactionsInto,
+  readEnsdf,
+  readIndex,
+} from "@/lib/data/build"
 import { fill } from "@/lib/data/fill"
 import { energy } from "@/lib/data/format"
 import { GROUPS, GROUP_SYMBOL, type Group } from "@/lib/data/quantity"
@@ -58,7 +69,14 @@ export function DataNucleusPage({ nuclide, lang }: { nuclide: string; lang: Lang
         cells.set(g, c)
       }
       const k = parseKey(key)!
-      return { key, slug: idx.reactions.slug[r], n: idx.reactions.n[r], cells, entrance: `${k.projectile}+${k.target}`, evals: evals.filter((e) => e.reactions.includes(key)).map((e) => e.id) }
+      return {
+        key,
+        slug: idx.reactions.slug[r],
+        n: idx.reactions.n[r],
+        cells,
+        entrance: `${k.projectile}+${k.target}`,
+        evals: evals.filter((e) => e.reactions.includes(key)).map((e) => e.id),
+      }
     })
     // the atlas' own entrance reactions first, then by number of datasets
     .sort((a, b) => Number(atlasKeys.has(b.key)) - Number(atlasKeys.has(a.key)) || b.n - a.n || a.key.localeCompare(b.key))
@@ -93,77 +111,89 @@ export function DataNucleusPage({ nuclide, lang }: { nuclide: string; lang: Lang
 
   function MatrixTable({ rows }: { rows: typeof matrix }) {
     return (
-        <div className="mt-5 overflow-x-auto rounded-lg border border-border" tabIndex={0} role="region" aria-labelledby="channels">
-          <table className="w-full border-collapse text-sm">
-            <caption className="sr-only">{fill(dx.nucleus.channelsIntro, { cn })}</caption>
-            <thead className="bg-card text-left text-xs text-muted-foreground">
-              <tr>
-                <th scope="col" className="px-3 py-2 font-medium">{dx.nucleus.reaction}</th>
-                <th scope="col" className="whitespace-nowrap px-3 py-2 text-right font-medium">{dx.nucleus.total}</th>
-                {groups.map((g) => (
-                  <th key={g} scope="col" className="px-3 py-2 font-medium" title={dx.quantityShort[g]}>
-                    {g === "other" ? dx.quantityShort.other : GROUP_SYMBOL[g]}
-                  </th>
-                ))}
-                <th scope="col" className="px-3 py-2 font-medium">{dx.nucleus.usedBy}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((m) => (
-                <tr key={m.key} className="border-t border-border/60">
-                  <th scope="row" className="whitespace-nowrap px-3 py-2 text-left font-normal">
-                    <Link href={href(m.slug)} className="font-medium text-link underline-offset-4 hover:underline">
-                      <Sci>{reactionLabel(m.key)}</Sci>
-                    </Link>
-                  </th>
-                  <td className="px-3 py-2 text-right tabular">{m.n}</td>
-                  {groups.map((g) => {
-                    const c = m.cells.get(g)
-                    return (
-                      <td key={g} className="px-3 py-2 align-top">
-                        {c ? (
-                          <span className="block min-w-[5.5rem]">
-                            <span className="font-medium tabular">{c.n}</span>
-                            {Number.isFinite(c.lo) && (
-                              <span className="block whitespace-nowrap text-xs text-muted-foreground tabular">
-                                {energy(c.lo, lang, 2)}
-                                {energy(c.hi, lang, 2) !== energy(c.lo, lang, 2) ? `–${energy(c.hi, lang, 2)}` : ""}
-                              </span>
-                            )}
-                          </span>
-                        ) : (
-                          <span className="text-muted-foreground/60" aria-label="0">
-                            {dx.nucleus.noData}
-                          </span>
-                        )}
-                      </td>
-                    )
-                  })}
-                  <td className="px-3 py-2">
-                    {m.evals.map((id) => (
-                      <Link key={id} href={to(`/evaluations/${id}`)} className="mr-1 inline-flex items-center rounded-full border border-[var(--viz-series-2)] px-2 text-xs font-medium hover:bg-accent">
-                        {id}
-                      </Link>
-                    ))}
-                  </td>
-                </tr>
+      <div className="mt-5 overflow-x-auto rounded-lg border border-border" tabIndex={0} role="region" aria-labelledby="channels">
+        <table className="w-full border-collapse text-sm">
+          <caption className="sr-only">{fill(dx.nucleus.channelsIntro, { cn })}</caption>
+          <thead className="bg-card text-left text-xs text-muted-foreground">
+            <tr>
+              <th scope="col" className="px-3 py-2 font-medium">
+                {dx.nucleus.reaction}
+              </th>
+              <th scope="col" className="whitespace-nowrap px-3 py-2 text-right font-medium">
+                {dx.nucleus.total}
+              </th>
+              {groups.map((g) => (
+                <th key={g} scope="col" className="px-3 py-2 font-medium" title={dx.quantityShort[g]}>
+                  {g === "other" ? dx.quantityShort.other : GROUP_SYMBOL[g]}
+                </th>
               ))}
-            </tbody>
-          </table>
-        </div>
+              <th scope="col" className="px-3 py-2 font-medium">
+                {dx.nucleus.usedBy}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((m) => (
+              <tr key={m.key} className="border-t border-border/60">
+                <th scope="row" className="whitespace-nowrap px-3 py-2 text-left font-normal">
+                  <Link href={href(m.slug)} className="font-medium text-link underline-offset-4 hover:underline">
+                    <Sci>{reactionLabel(m.key)}</Sci>
+                  </Link>
+                </th>
+                <td className="px-3 py-2 text-right tabular">{m.n}</td>
+                {groups.map((g) => {
+                  const c = m.cells.get(g)
+                  return (
+                    <td key={g} className="px-3 py-2 align-top">
+                      {c ? (
+                        <span className="block min-w-[5.5rem]">
+                          <span className="font-medium tabular">{c.n}</span>
+                          {Number.isFinite(c.lo) && (
+                            <span className="block whitespace-nowrap text-xs text-muted-foreground tabular">
+                              {energy(c.lo, lang, 2)}
+                              {energy(c.hi, lang, 2) !== energy(c.lo, lang, 2) ? `–${energy(c.hi, lang, 2)}` : ""}
+                            </span>
+                          )}
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground/60" aria-label="0">
+                          {dx.nucleus.noData}
+                        </span>
+                      )}
+                    </td>
+                  )
+                })}
+                <td className="px-3 py-2">
+                  {m.evals.map((id) => (
+                    <Link
+                      key={id}
+                      href={to(`/evaluations/${id}`)}
+                      className="mr-1 inline-flex items-center rounded-full border border-[var(--viz-series-2)] px-2 text-xs font-medium hover:bg-accent"
+                    >
+                      {id}
+                    </Link>
+                  ))}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     )
   }
-  const pairs = [...new Set(entrances.map((e) => `${displayNuc(e.target)} + ${displayNuc(e.projectile === "4He" ? "a" : e.projectile === "1H" ? "p" : e.projectile)}`))]
+  const pairs = [
+    ...new Set(
+      entrances.map(
+        (e) => `${displayNuc(e.target)} + ${displayNuc(e.projectile === "4He" ? "a" : e.projectile === "1H" ? "p" : e.projectile)}`,
+      ),
+    ),
+  ]
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-14 [overflow-wrap:anywhere] sm:px-8 xl:max-w-7xl">
       <Breadcrumbs
         label={t.nav.breadcrumb}
-        items={[
-          { label: t.nav.home, href: to("/") },
-          { label: dx.name, href: to("/data") },
-          { label: cn },
-        ]}
+        items={[{ label: t.nav.home, href: to("/") }, { label: dx.name, href: to("/data") }, { label: cn }]}
       />
       <header className="mt-8 border-b border-border/70 pb-8">
         <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">{dx.nucleus.eyebrow}</p>
@@ -176,7 +206,10 @@ export function DataNucleusPage({ nuclide, lang }: { nuclide: string; lang: Lang
         <ul className="mt-5 flex flex-wrap gap-2">
           {entrances.map((e) => (
             <li key={e.atlas}>
-              <Link href={to(`/atlas/${e.atlas}`)} className="inline-flex min-h-10 items-center rounded-md border border-border bg-card px-3.5 py-2 font-serif text-[0.95rem] font-semibold transition-colors hover:border-foreground/30 hover:text-link">
+              <Link
+                href={to(`/atlas/${e.atlas}`)}
+                className="inline-flex min-h-10 items-center rounded-md border border-border bg-card px-3.5 py-2 font-serif text-[0.95rem] font-semibold transition-colors hover:border-foreground/30 hover:text-link"
+              >
                 <Sci>{e.label}</Sci>
               </Link>
             </li>
@@ -195,7 +228,9 @@ export function DataNucleusPage({ nuclide, lang }: { nuclide: string; lang: Lang
         <MatrixTable rows={light} />
         {heavy.length > 0 && (
           <details className="mt-3">
-            <summary className="inline-flex min-h-9 cursor-pointer items-center text-sm text-link">{fill(dx.nucleus.heavy, { n: heavy.length })}</summary>
+            <summary className="inline-flex min-h-9 cursor-pointer items-center text-sm text-link">
+              {fill(dx.nucleus.heavy, { n: heavy.length })}
+            </summary>
             <MatrixTable rows={heavy} />
           </details>
         )}
@@ -217,7 +252,15 @@ export function DataNucleusPage({ nuclide, lang }: { nuclide: string; lang: Lang
       <Attribution
         lang={lang}
         entries={allRows.map((r) => r.id.split(".")[0])}
-        ensdf={ensdf?.ensdf ? { nuclide: cn, citation: `${ensdf.ensdf.evaluation.authors}, ${ensdf.ensdf.evaluation.citation}`, cutoff: ensdf.ensdf.evaluation.cutoff } : null}
+        ensdf={
+          ensdf?.ensdf
+            ? {
+                nuclide: cn,
+                citation: `${ensdf.ensdf.evaluation.authors}, ${ensdf.ensdf.evaluation.citation}`,
+                cutoff: ensdf.ensdf.evaluation.cutoff,
+              }
+            : null
+        }
         className="mt-14"
       />
     </div>

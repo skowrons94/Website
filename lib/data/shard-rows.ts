@@ -63,7 +63,10 @@ export interface TableRow {
 }
 
 function shortName(name: string): string {
-  return name.split(",")[0].replace(/^L(INFN)/, "$1").trim()
+  return name
+    .split(",")[0]
+    .replace(/^L(INFN)/, "$1")
+    .trim()
 }
 
 export function evaluationsOf(links: EvalLink[], key: string, ds: ShardDataset, entry: ShardEntry | undefined): string[] {

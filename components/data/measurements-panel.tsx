@@ -57,7 +57,12 @@ export function MeasurementsPanel(p: PanelProps) {
 
   return (
     <section id={p.id ?? "exfor"} className="scroll-mt-24" aria-labelledby={`${p.id ?? "exfor"}-title`}>
-      <Heading id={`${p.id ?? "exfor"}-title`} className={Heading === "h2" ? "font-serif text-2xl font-semibold tracking-tight" : "font-serif text-xl font-semibold tracking-tight"}>
+      <Heading
+        id={`${p.id ?? "exfor"}-title`}
+        className={
+          Heading === "h2" ? "font-serif text-2xl font-semibold tracking-tight" : "font-serif text-xl font-semibold tracking-tight"
+        }
+      >
         {p.title ?? t.title}
       </Heading>
       <p className="mt-3 max-w-prose text-pretty text-[0.95rem] leading-relaxed text-muted-foreground">{t.intro}</p>
@@ -87,7 +92,11 @@ export function MeasurementsPanel(p: PanelProps) {
         <Tile
           label={t.lowest}
           value={lowest ? energy(lowest.E, lang) : t.noLowest}
-          sub={lowest ? `${fill(t.lowestSub, { who: lowest.a.replace(/\+$/, " et al."), year: lowest.y ?? "" })} · ${lowest.id}` : t.noLowestSub}
+          sub={
+            lowest
+              ? `${fill(t.lowestSub, { who: lowest.a.replace(/\+$/, " et al."), year: lowest.y ?? "" })} · ${lowest.id}`
+              : t.noLowestSub
+          }
         />
         {!neutron ? (
           <Tile
@@ -121,10 +130,12 @@ export function MeasurementsPanel(p: PanelProps) {
         />
       </dl>
 
-      {w && !neutron && (() => {
-        const n = rows.filter((r) => r.g === "strength" && r.counted && r.e0 <= w.hi && r.e1 >= w.lo).length
-        return n > 0 ? <p className="mt-3 text-sm text-muted-foreground">{fill(t.strengthsInWindow, { n })}</p> : null
-      })()}
+      {w &&
+        !neutron &&
+        (() => {
+          const n = rows.filter((r) => r.g === "strength" && r.counted && r.e0 <= w.hi && r.e1 >= w.lo).length
+          return n > 0 ? <p className="mt-3 text-sm text-muted-foreground">{fill(t.strengthsInWindow, { n })}</p> : null
+        })()}
 
       <div className="mt-6 rounded-lg border border-border bg-[var(--viz-surface)] p-3 sm:p-4">
         <GapMap
@@ -167,9 +178,15 @@ export function MeasurementsPanel(p: PanelProps) {
             <caption className="sr-only">{strings.gap.tableCaption}</caption>
             <thead>
               <tr className="border-b border-border text-left text-xs text-muted-foreground">
-                <th scope="col" className="py-2 pr-4 font-medium">{strings.gap.quantity}</th>
-                <th scope="col" className="py-2 pr-4 text-right font-medium">{strings.gap.count}</th>
-                <th scope="col" className="py-2 font-medium">{strings.gap.range}</th>
+                <th scope="col" className="py-2 pr-4 font-medium">
+                  {strings.gap.quantity}
+                </th>
+                <th scope="col" className="py-2 pr-4 text-right font-medium">
+                  {strings.gap.count}
+                </th>
+                <th scope="col" className="py-2 font-medium">
+                  {strings.gap.range}
+                </th>
               </tr>
             </thead>
             <tbody>

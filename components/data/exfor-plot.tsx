@@ -98,7 +98,10 @@ export function ExforPlot({
 
   if (!axes) {
     return (
-      <div ref={ref} className="flex min-h-[12rem] items-center justify-center rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+      <div
+        ref={ref}
+        className="flex min-h-[12rem] items-center justify-center rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground"
+      >
         {t.nothing}
       </div>
     )
@@ -128,7 +131,9 @@ export function ExforPlot({
       const X = sx(E)
       const Y = sy(v)
       if (Y < m.t - 2 || Y > m.t + ph + 2) continue
-      d += s.partial ? `M${X - r} ${Y}a${r} ${r} 0 1 0 ${2 * r} 0a${r} ${r} 0 1 0 ${-2 * r} 0` : `M${X - r} ${Y - r}h${2 * r}v${2 * r}h${-2 * r}z`
+      d += s.partial
+        ? `M${X - r} ${Y}a${r} ${r} 0 1 0 ${2 * r} 0a${r} ${r} 0 1 0 ${-2 * r} 0`
+        : `M${X - r} ${Y - r}h${2 * r}v${2 * r}h${-2 * r}z`
       const e = s.dy[i]
       if (e && e > 0) {
         const top = yClamp(v + e)
@@ -227,7 +232,14 @@ export function ExforPlot({
             s.id === highlight ? null : (
               <g key={s.id}>
                 <path d={bars} stroke="var(--viz-text-muted)" strokeOpacity={0.45} strokeWidth={1} fill="none" />
-                <path d={d} fill={s.partial ? "none" : "var(--viz-text-muted)"} fillOpacity={0.55} stroke="var(--viz-text-muted)" strokeOpacity={0.7} strokeWidth={s.partial ? 1 : 0} />
+                <path
+                  d={d}
+                  fill={s.partial ? "none" : "var(--viz-text-muted)"}
+                  fillOpacity={0.55}
+                  stroke="var(--viz-text-muted)"
+                  strokeOpacity={0.7}
+                  strokeWidth={s.partial ? 1 : 0}
+                />
               </g>
             ),
           )}
@@ -242,7 +254,12 @@ export function ExforPlot({
           {hl && (
             <g>
               <path d={hl.bars} stroke="var(--viz-series-1)" strokeWidth={1.4} fill="none" />
-              <path d={hl.d} fill={hl.s.partial ? "var(--viz-surface)" : "var(--viz-series-1)"} stroke="var(--viz-series-1)" strokeWidth={hl.s.partial ? 1.4 : 0} />
+              <path
+                d={hl.d}
+                fill={hl.s.partial ? "var(--viz-surface)" : "var(--viz-series-1)"}
+                stroke="var(--viz-series-1)"
+                strokeWidth={hl.s.partial ? 1.4 : 0}
+              />
             </g>
           )}
         </g>

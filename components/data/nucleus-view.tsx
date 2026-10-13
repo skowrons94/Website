@@ -31,12 +31,24 @@ const pName = (code: string) => PARTICLE[code] ?? code.replace(/^(\d+)/, (m) => 
 function lifetime(l: EnsdfLevel, lang: Lang): string {
   if (l.width_eV !== undefined) {
     const w = l.width_eV
-    const s = w >= 1e6 ? `${sig(w / 1e6, 3)} MeV` : w >= 1e3 ? `${sig(w / 1e3, 3)} keV` : w >= 1 ? `${sig(w, 3)} eV` : `${sig(w * 1e3, 3)} meV`
+    const s =
+      w >= 1e6 ? `${sig(w / 1e6, 3)} MeV` : w >= 1e3 ? `${sig(w / 1e3, 3)} keV` : w >= 1 ? `${sig(w, 3)} eV` : `${sig(w * 1e3, 3)} meV`
     return `Γ = ${l.limit === "LT" ? "< " : l.limit === "GT" ? "> " : ""}${dec(s, lang)}`
   }
   if (l.t_half_s !== undefined) {
     const t = l.t_half_s
-    const s = t >= 1 ? `${sig(t, 3)} s` : t >= 1e-3 ? `${sig(t * 1e3, 3)} ms` : t >= 1e-6 ? `${sig(t * 1e6, 3)} µs` : t >= 1e-9 ? `${sig(t * 1e9, 3)} ns` : t >= 1e-12 ? `${sig(t * 1e12, 3)} ps` : `${sig(t * 1e15, 3)} fs`
+    const s =
+      t >= 1
+        ? `${sig(t, 3)} s`
+        : t >= 1e-3
+          ? `${sig(t * 1e3, 3)} ms`
+          : t >= 1e-6
+            ? `${sig(t * 1e6, 3)} µs`
+            : t >= 1e-9
+              ? `${sig(t * 1e9, 3)} ns`
+              : t >= 1e-12
+                ? `${sig(t * 1e12, 3)} ps`
+                : `${sig(t * 1e15, 3)} fs`
     return `T½ = ${l.limit === "LT" ? "< " : l.limit === "GT" ? "> " : ""}${dec(s, lang)}`
   }
   return l.text ?? ""
@@ -111,7 +123,14 @@ export function NucleusView({
           {entrances.length > 1 && (
             <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
               {t.entranceChannel}
-              <select value={ei} onChange={(e) => { setEi(Number(e.target.value)); setWi(0) }} className="h-10 rounded-md border border-input bg-background px-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              <select
+                value={ei}
+                onChange={(e) => {
+                  setEi(Number(e.target.value))
+                  setWi(0)
+                }}
+                className="h-10 rounded-md border border-input bg-background px-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
                 {entrances.map((e, i) => (
                   <option key={e.atlas} value={i}>
                     {e.label}
@@ -123,7 +142,11 @@ export function NucleusView({
           {ent && ent.windows.length > 0 && (
             <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
               {strings.panel.temperature}
-              <select value={wi} onChange={(e) => setWi(Number(e.target.value))} className="h-10 rounded-md border border-input bg-background px-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              <select
+                value={wi}
+                onChange={(e) => setWi(Number(e.target.value))}
+                className="h-10 rounded-md border border-input bg-background px-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
                 {ent.windows.map((w, i) => (
                   <option key={i} value={i}>
                     {w.label}, T₉ = {dec(String(w.T9), lang)}
@@ -135,7 +158,10 @@ export function NucleusView({
           <fieldset className="flex items-center gap-1">
             <legend className="sr-only">{t.levels}</legend>
             {(["threshold", "all"] as const).map((z) => (
-              <label key={z} className={`inline-flex min-h-9 cursor-pointer items-center rounded-full border px-3 text-sm has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring ${zoom === z ? "border-foreground/60 bg-foreground text-background" : "border-border bg-card hover:border-foreground/30"}`}>
+              <label
+                key={z}
+                className={`inline-flex min-h-9 cursor-pointer items-center rounded-full border px-3 text-sm has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring ${zoom === z ? "border-foreground/60 bg-foreground text-background" : "border-border bg-card hover:border-foreground/30"}`}
+              >
                 <input type="radio" className="sr-only" name="zoom" checked={zoom === z} onChange={() => setZoom(z)} />
                 {z === "threshold" ? t.zoomThreshold : fill(t.all, { n: levels.length })}
               </label>
@@ -147,7 +173,15 @@ export function NucleusView({
             levels={levels}
             thresholds={thresholds}
             entrance={ent ? { S: ent.S / 1000, x: pName(ent.particle) } : null}
-            window={win && ent ? { lo: (ent.S + win.lo) / 1000, hi: (ent.S + win.hi) / 1000, label: `${strings.gap.window}, T₉ = ${dec(String(win.T9), lang)}` } : null}
+            window={
+              win && ent
+                ? {
+                    lo: (ent.S + win.lo) / 1000,
+                    hi: (ent.S + win.hi) / 1000,
+                    label: `${strings.gap.window}, T₉ = ${dec(String(win.T9), lang)}`,
+                  }
+                : null
+            }
             zoom={zoom}
             measured={new Set(inWindow.filter((l) => l.strengths.length).map((l) => l.level.E_keV))}
             strings={strings}
@@ -156,11 +190,15 @@ export function NucleusView({
           />
           <ul className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-xs text-muted-foreground">
             <li className="flex items-center gap-1.5">
-              <svg aria-hidden width="18" height="6"><line x1="0" x2="18" y1="3" y2="3" stroke="var(--viz-series-1)" strokeWidth="2" /></svg>
+              <svg aria-hidden width="18" height="6">
+                <line x1="0" x2="18" y1="3" y2="3" stroke="var(--viz-series-1)" strokeWidth="2" />
+              </svg>
               {t.legendMeasured}
             </li>
             <li className="flex items-center gap-1.5">
-              <svg aria-hidden width="18" height="6"><line x1="0" x2="18" y1="3" y2="3" stroke="var(--viz-series-2)" strokeWidth="2" /></svg>
+              <svg aria-hidden width="18" height="6">
+                <line x1="0" x2="18" y1="3" y2="3" stroke="var(--viz-series-2)" strokeWidth="2" />
+              </svg>
               {t.legendNone}
             </li>
             <li>{t.tentative}</li>
@@ -193,11 +231,21 @@ export function NucleusView({
               <caption className="sr-only">{t.resonances}</caption>
               <thead className="bg-card text-left text-xs text-muted-foreground">
                 <tr>
-                  <th scope="col" className="px-3 py-2 text-right font-medium">{t.energy}</th>
-                  <th scope="col" className="px-3 py-2 text-right font-medium">{t.Er}</th>
-                  <th scope="col" className="px-3 py-2 font-medium">{t.jpi}</th>
-                  <th scope="col" className="px-3 py-2 font-medium">{t.halfLife}</th>
-                  <th scope="col" className="px-3 py-2 font-medium">{t.wg}</th>
+                  <th scope="col" className="px-3 py-2 text-right font-medium">
+                    {t.energy}
+                  </th>
+                  <th scope="col" className="px-3 py-2 text-right font-medium">
+                    {t.Er}
+                  </th>
+                  <th scope="col" className="px-3 py-2 font-medium">
+                    {t.jpi}
+                  </th>
+                  <th scope="col" className="px-3 py-2 font-medium">
+                    {t.halfLife}
+                  </th>
+                  <th scope="col" className="px-3 py-2 font-medium">
+                    {t.wg}
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -223,7 +271,10 @@ export function NucleusView({
                               <span className="text-muted-foreground">
                                 {" "}
                                 · {x.author} {x.year ?? ""} ·{" "}
-                                <a href={`https://nds.iaea.org/EXFOR/${x.id.split(".")[0]}`} className="font-mono text-link hover:underline">
+                                <a
+                                  href={`https://nds.iaea.org/EXFOR/${x.id.split(".")[0]}`}
+                                  className="font-mono text-link hover:underline"
+                                >
                                   {x.id}
                                 </a>
                               </span>
@@ -234,7 +285,9 @@ export function NucleusView({
                       ) : strengths === null ? (
                         "…"
                       ) : (
-                        <span className="inline-flex rounded border border-[var(--viz-series-2)] px-1.5 text-xs font-medium">{t.noMeasurement}</span>
+                        <span className="inline-flex rounded border border-[var(--viz-series-2)] px-1.5 text-xs font-medium">
+                          {t.noMeasurement}
+                        </span>
                       )}
                     </td>
                   </tr>
@@ -265,10 +318,18 @@ export function NucleusView({
             <caption className="sr-only">{fill(t.tableCaption, { cn })}</caption>
             <thead className="sticky top-0 bg-card text-left text-xs text-muted-foreground">
               <tr>
-                <th scope="col" className="px-3 py-2 text-right font-medium">{t.energy}</th>
-                <th scope="col" className="px-3 py-2 font-medium">{t.jpi}</th>
-                <th scope="col" className="px-3 py-2 font-medium">{t.halfLife}</th>
-                <th scope="col" className="px-3 py-2 font-medium">{t.gammas}</th>
+                <th scope="col" className="px-3 py-2 text-right font-medium">
+                  {t.energy}
+                </th>
+                <th scope="col" className="px-3 py-2 font-medium">
+                  {t.jpi}
+                </th>
+                <th scope="col" className="px-3 py-2 font-medium">
+                  {t.halfLife}
+                </th>
+                <th scope="col" className="px-3 py-2 font-medium">
+                  {t.gammas}
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -282,7 +343,10 @@ export function NucleusView({
                   <td className="px-3 py-1.5 text-xs tabular">
                     {(l.gammas ?? [])
                       .filter((g) => g.E_final_keV !== undefined)
-                      .map((g) => `${fill(t.gammaTo, { E: kev(g.E_final_keV as number, lang, 5) })}${g.BR !== undefined ? ` (${dec(sig(g.BR, 2), lang)} %)` : ""}`)
+                      .map(
+                        (g) =>
+                          `${fill(t.gammaTo, { E: kev(g.E_final_keV as number, lang, 5) })}${g.BR !== undefined ? ` (${dec(sig(g.BR, 2), lang)} %)` : ""}`,
+                      )
                       .join(", ") || "–"}
                   </td>
                 </tr>
@@ -341,11 +405,35 @@ function LevelScheme({
 
   return (
     <div ref={ref} className="w-full">
-      <svg role="img" aria-label={summary} width={width * k} height={height * k} viewBox={`0 0 ${width} ${height}`} className="block max-w-full">
+      <svg
+        role="img"
+        aria-label={summary}
+        width={width * k}
+        height={height * k}
+        viewBox={`0 0 ${width} ${height}`}
+        className="block max-w-full"
+      >
         {w && w.hi > lo && (
           <g>
-            <rect x={x0 - 4} width={x1 - x0 + 8} y={y(Math.min(w.hi, hi))} height={Math.max(2, y(Math.max(w.lo, lo)) - y(Math.min(w.hi, hi)))} fill="var(--viz-series-2)" fillOpacity={0.16} />
-            <text x={(x0 + x1) / 2} y={y(Math.min(w.hi, hi)) - 4} textAnchor="middle" fontSize={11} fontWeight={600} fill="var(--viz-text)" paintOrder="stroke" stroke="var(--viz-surface)" strokeWidth={3}>
+            <rect
+              x={x0 - 4}
+              width={x1 - x0 + 8}
+              y={y(Math.min(w.hi, hi))}
+              height={Math.max(2, y(Math.max(w.lo, lo)) - y(Math.min(w.hi, hi)))}
+              fill="var(--viz-series-2)"
+              fillOpacity={0.16}
+            />
+            <text
+              x={(x0 + x1) / 2}
+              y={y(Math.min(w.hi, hi)) - 4}
+              textAnchor="middle"
+              fontSize={11}
+              fontWeight={600}
+              fill="var(--viz-text)"
+              paintOrder="stroke"
+              stroke="var(--viz-surface)"
+              strokeWidth={3}
+            >
               {w.label}
             </text>
           </g>
@@ -353,8 +441,25 @@ function LevelScheme({
         {thresholds.map((t) =>
           t.S >= lo && t.S <= hi ? (
             <g key={t.x}>
-              <line x1={x0 - 10} x2={x1 + 10} y1={y(t.S)} y2={y(t.S)} stroke="var(--viz-text)" strokeDasharray="6 4" strokeWidth={entrance && t.x === entrance.x ? 1.6 : 1} />
-              <text x={x0 + 4} y={y(t.S) + 13} fontSize={11} fontWeight={entrance && t.x === entrance.x ? 700 : 500} fill="var(--viz-text)" paintOrder="stroke" stroke="var(--viz-surface)" strokeWidth={3}>
+              <line
+                x1={x0 - 10}
+                x2={x1 + 10}
+                y1={y(t.S)}
+                y2={y(t.S)}
+                stroke="var(--viz-text)"
+                strokeDasharray="6 4"
+                strokeWidth={entrance && t.x === entrance.x ? 1.6 : 1}
+              />
+              <text
+                x={x0 + 4}
+                y={y(t.S) + 13}
+                fontSize={11}
+                fontWeight={entrance && t.x === entrance.x ? 700 : 500}
+                fill="var(--viz-text)"
+                paintOrder="stroke"
+                stroke="var(--viz-surface)"
+                strokeWidth={3}
+              >
                 {fill(strings.nucleus.thresholdLabel, { x: t.x, S: dec(t.S.toFixed(3), lang) })}
               </text>
             </g>
@@ -367,14 +472,28 @@ function LevelScheme({
           const inWin = w && E >= w.lo && E <= w.hi
           return (
             <g key={`${l.E_keV}-${i}`}>
-              <line x1={x0} x2={x1} y1={yy} y2={yy} stroke={inWin ? (has ? "var(--viz-series-1)" : "var(--viz-series-2)") : "var(--viz-text-muted)"} strokeWidth={inWin ? 2 : 1} />
+              <line
+                x1={x0}
+                x2={x1}
+                y1={yy}
+                y2={yy}
+                stroke={inWin ? (has ? "var(--viz-series-1)" : "var(--viz-series-2)") : "var(--viz-text-muted)"}
+                strokeWidth={inWin ? 2 : 1}
+              />
               <path d={`M${x0} ${yy}L${x0 - 8} ${lab[i]}H${x0 - 12}`} fill="none" stroke="var(--viz-grid)" />
               <text x={x0 - 14} y={lab[i] + 4} textAnchor="end" fontSize={10.5} fill="var(--viz-text)" className="tabular-nums">
                 {dec(E.toFixed(E < 10 ? 3 : 2), lang)}
               </text>
               <path d={`M${x1} ${yy}L${x1 + 8} ${lab[i]}`} fill="none" stroke="var(--viz-grid)" />
               {!narrow || i % 1 === 0 ? (
-                <text x={x1 + 10} y={lab[i] + 4} fontSize={10.5} fill="var(--viz-text)" fontStyle={l.firm === false ? "italic" : "normal"} opacity={l.firm === false ? 0.75 : 1}>
+                <text
+                  x={x1 + 10}
+                  y={lab[i] + 4}
+                  fontSize={10.5}
+                  fill="var(--viz-text)"
+                  fontStyle={l.firm === false ? "italic" : "normal"}
+                  opacity={l.firm === false ? 0.75 : 1}
+                >
                   {l.J ?? ""}
                 </text>
               ) : null}

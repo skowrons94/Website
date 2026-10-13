@@ -31,11 +31,7 @@ function Crumbs({ lang, label }: { lang: Lang; label: string }) {
   return (
     <Breadcrumbs
       label={t.nav.breadcrumb}
-      items={[
-        { label: t.nav.home, href: localePath(lang, "/") },
-        { label: t.dataExpert.name, href: localePath(lang, "/data") },
-        { label },
-      ]}
+      items={[{ label: t.nav.home, href: localePath(lang, "/") }, { label: t.dataExpert.name, href: localePath(lang, "/data") }, { label }]}
     />
   )
 }
@@ -65,7 +61,9 @@ export function DataReactionPage({ slug, lang }: { slug: string; lang: Lang }) {
         <h1 className="mt-3 font-serif text-[min(2.25rem,11vw)] font-semibold leading-tight tracking-tight sm:text-5xl">
           <Sci>{label}</Sci>
         </h1>
-        <p className="mt-3 max-w-prose text-pretty text-lg leading-snug text-muted-foreground">{fill(dx.reaction.intro, { n: idx.reactions.n[r] })}</p>
+        <p className="mt-3 max-w-prose text-pretty text-lg leading-snug text-muted-foreground">
+          {fill(dx.reaction.intro, { n: idx.reactions.n[r] })}
+        </p>
         <div className="mt-5 flex flex-wrap gap-2">
           {atlas.map((a) => (
             <PanelLink key={a!.id} href={to(`/atlas/${a!.id}`)}>
@@ -118,12 +116,18 @@ export function DataReactionAnyPage({ lang }: { lang: Lang }) {
   const dx = dict(lang).dataExpert
   return (
     <div className="mx-auto max-w-6xl px-5 py-14 [overflow-wrap:anywhere] sm:px-8 xl:max-w-7xl">
-      <Crumbs lang={lang} label={dx.reaction.eyebrow.split(" · ")[1] ?? dx.name} />
+      <Crumbs lang={lang} label={dx.reaction.crumb} />
       <GenericReaction
         strings={dx}
         lang={lang}
         prerendered={prerenderedSlugs()}
-        evaluations={evaluationLinks().map((e) => ({ id: e.id, reactions: e.reactions, entries: e.entries, subentries: e.subentries, dois: e.dois }))}
+        evaluations={evaluationLinks().map((e) => ({
+          id: e.id,
+          reactions: e.reactions,
+          entries: e.entries,
+          subentries: e.subentries,
+          dois: e.dois,
+        }))}
       />
       <Attribution lang={lang} className="mt-14" />
     </div>

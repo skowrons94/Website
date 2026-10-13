@@ -28,7 +28,9 @@ export function DataSearchPage({ lang }: { lang: Lang }) {
       />
       <header className="mt-8 border-b border-border/70 pb-8">
         <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">{dx.search.eyebrow}</p>
-        <h1 className="mt-3 font-serif text-[min(2.25rem,11vw)] font-semibold leading-tight tracking-tight sm:text-5xl">{dx.search.title}</h1>
+        <h1 className="mt-3 font-serif text-[min(2.25rem,11vw)] font-semibold leading-tight tracking-tight sm:text-5xl">
+          {dx.search.title}
+        </h1>
         <p className="mt-3 max-w-prose text-pretty text-lg leading-snug text-muted-foreground">{dx.search.intro}</p>
       </header>
       <SearchView strings={dx} lang={lang} prerendered={prerenderedSlugs()} levelsNoWg={levelsWithoutStrength(lang)} />

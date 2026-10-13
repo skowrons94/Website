@@ -19,15 +19,92 @@ export const AMU = 931.49410242
 const ALPHA = 1 / 137.035999084
 
 /** Standard atomic weights, Z = 1..83 (masses.STD_WEIGHT), for natural targets. */
-export const STD_WEIGHT: (number | null)[] = [null, 1.008, 4.0026, 6.94, 9.0122, 10.81, 12.011, 14.007, 15.999, 18.998, 20.18,
-  22.99, 24.305, 26.982, 28.085, 30.974, 32.06, 35.45, 39.95, 39.098, 40.078,
-  44.956, 47.867, 50.942, 51.996, 54.938, 55.845, 58.933, 58.693, 63.546, 65.38,
-  69.723, 72.63, 74.922, 78.971, 79.904, 83.798, 85.468, 87.62, 88.906, 91.224,
-  92.906, 95.95, 97.0, 101.07, 102.91, 106.42, 107.87, 112.41, 114.82, 118.71,
-  121.76, 127.6, 126.9, 131.29, 132.91, 137.33, 138.91, 140.12, 140.91, 144.24,
-  145.0, 150.36, 151.96, 157.25, 158.93, 162.5, 164.93, 167.26, 168.93, 173.05,
-  174.97, 178.49, 180.95, 183.84, 186.21, 190.23, 192.22, 195.08, 196.97, 200.59,
-  204.38, 207.2, 208.98]
+export const STD_WEIGHT: (number | null)[] = [
+  null,
+  1.008,
+  4.0026,
+  6.94,
+  9.0122,
+  10.81,
+  12.011,
+  14.007,
+  15.999,
+  18.998,
+  20.18,
+  22.99,
+  24.305,
+  26.982,
+  28.085,
+  30.974,
+  32.06,
+  35.45,
+  39.95,
+  39.098,
+  40.078,
+  44.956,
+  47.867,
+  50.942,
+  51.996,
+  54.938,
+  55.845,
+  58.933,
+  58.693,
+  63.546,
+  65.38,
+  69.723,
+  72.63,
+  74.922,
+  78.971,
+  79.904,
+  83.798,
+  85.468,
+  87.62,
+  88.906,
+  91.224,
+  92.906,
+  95.95,
+  97.0,
+  101.07,
+  102.91,
+  106.42,
+  107.87,
+  112.41,
+  114.82,
+  118.71,
+  121.76,
+  127.6,
+  126.9,
+  131.29,
+  132.91,
+  137.33,
+  138.91,
+  140.12,
+  140.91,
+  144.24,
+  145.0,
+  150.36,
+  151.96,
+  157.25,
+  158.93,
+  162.5,
+  164.93,
+  167.26,
+  168.93,
+  173.05,
+  174.97,
+  178.49,
+  180.95,
+  183.84,
+  186.21,
+  190.23,
+  192.22,
+  195.08,
+  196.97,
+  200.59,
+  204.38,
+  207.2,
+  208.98,
+]
 
 /** AME2020 mass excess (MeV) of (A, Z), or null: the atlas' table, as the pipeline reads it. */
 export type MassTable = (A: number, Z: number) => number | null
@@ -39,7 +116,14 @@ export function twoPiEta(z1: number, z2: number, muMeV: number, eCm: number): nu
 /* -- particles (nucdata/dataset.py) ---------------------------------------------- */
 
 const LIGHT: Record<string, [number, number]> = {
-  N: [1, 0], P: [1, 1], D: [2, 1], T: [3, 1], HE3: [3, 2], A: [4, 2], G: [0, 0], E: [0, -1],
+  N: [1, 0],
+  P: [1, 1],
+  D: [2, 1],
+  T: [3, 1],
+  HE3: [3, 2],
+  A: [4, 2],
+  G: [0, 0],
+  E: [0, -1],
 }
 const NUC = /^(\d+)-([A-Z]+)-(\d+)(?:-([A-Z0-9/]+))?$/
 
@@ -207,7 +291,12 @@ export interface Azure2Options {
   error?: "point" | "stat" | "total"
 }
 
-export function azure2(ds: FullDataset, snapshot: { date: string; commit: string }, table: MassTable, opts: Azure2Options = {}): Azure2Result[] {
+export function azure2(
+  ds: FullDataset,
+  snapshot: { date: string; commit: string },
+  table: MassTable,
+  opts: Azure2Options = {},
+): Azure2Result[] {
   const labParticle = opts.labParticle ?? "projectile"
   const massModel = opts.massModel ?? "ame"
   const errorMode = opts.error ?? "point"
@@ -284,8 +373,10 @@ export function azure2(ds: FullDataset, snapshot: { date: string; commit: string
       if (f === null) continue
       const v = (value[i] as number) * f
       const d = err[i] === null ? null : (err[i] as number) * f
-      const angle = isDiff ? (ang[i] || 0.0) : 0
-      dat.push(`${pyFormat(eLab[i] as number, ".6e")} ${pyFormat(angle, ".4f")} ${pyFormat(v, ".6e")} ${pyFormat(d !== null ? d : 0.0, ".6e")}`)
+      const angle = isDiff ? ang[i] || 0.0 : 0
+      dat.push(
+        `${pyFormat(eLab[i] as number, ".6e")} ${pyFormat(angle, ".4f")} ${pyFormat(v, ".6e")} ${pyFormat(d !== null ? d : 0.0, ".6e")}`,
+      )
       table2 += csvRow([
         fmt(eLab[i]),
         fmt(ecm[i]),
@@ -319,8 +410,20 @@ export function azure2(ds: FullDataset, snapshot: { date: string; commit: string
       ...convNote.map((c) => `Note: ${c}`),
     ]
     if (lv !== null) extra.push(`This file: final level E_x = ${pyFormat(lv, "g")} MeV`)
-    const cols = ["E_lab_azure2_MeV", "E_cm_MeV", "E_lab_projectile_MeV", "angle_deg", `value_${meta.value_unit || "nodim"}`,
-      "value_azure2", "d_stat", "d_sys", "d_tot", "d_azure2", "E_level_MeV", "flag"]
+    const cols = [
+      "E_lab_azure2_MeV",
+      "E_cm_MeV",
+      "E_lab_projectile_MeV",
+      "angle_deg",
+      `value_${meta.value_unit || "nodim"}`,
+      "value_azure2",
+      "d_stat",
+      "d_sys",
+      "d_tot",
+      "d_azure2",
+      "E_level_MeV",
+      "flag",
+    ]
     let csv = ""
     for (const h of header(meta, extra, snapshot)) csv += "# " + h + "\n"
     csv += csvRow(cols) + table2
@@ -331,8 +434,25 @@ export function azure2(ds: FullDataset, snapshot: { date: string; commit: string
 
 /** Every point of every dataset, one row each (export.csv_long). */
 export function csvLong(datasets: FullDataset[]): string {
-  let out = csvRow(["id", "reaction", "quantity", "E_frame_given", "E_lab_MeV", "E_cm_MeV", "angle_deg", "angle_frame",
-    "E_level_MeV", "value", "unit", "limit", "d_stat", "d_sys", "d_tot", "flag", "doi"])
+  let out = csvRow([
+    "id",
+    "reaction",
+    "quantity",
+    "E_frame_given",
+    "E_lab_MeV",
+    "E_cm_MeV",
+    "angle_deg",
+    "angle_frame",
+    "E_level_MeV",
+    "value",
+    "unit",
+    "limit",
+    "d_stat",
+    "d_sys",
+    "d_tot",
+    "flag",
+    "doi",
+  ])
   for (const ds of datasets) {
     const m = ds.meta
     const p = ds.points as unknown as Record<string, unknown[] | undefined>
@@ -341,12 +461,25 @@ export function csvLong(datasets: FullDataset[]): string {
     const ang = col("ang")
     const lev = col("E_level")
     for (let i = 0; i < n; i++) {
-      out += csvRow([m.id, m.reaction, m.quantity_class, m.E_frame, fmt(col("E_lab")[i] as number | null),
-        fmt(col("E_cm")[i] as number | null), ang[i] !== null ? pyStrAt(ang, i) : "", m.ang_frame || "",
-        lev[i] !== null ? pyStrAt(lev, i) : "", fmt(col("value")[i] as number | null),
-        m.value_unit, (col("limit")[i] as string | null) || "", fmt(col("d_stat")[i] as number | null), fmt(col("d_sys")[i] as number | null),
-        fmt(col("d_tot")[i] as number | null), col("flag")[i] === null ? "" : pyFormat(col("flag")[i] as number, "g"),
-        m.doi || ""])
+      out += csvRow([
+        m.id,
+        m.reaction,
+        m.quantity_class,
+        m.E_frame,
+        fmt(col("E_lab")[i] as number | null),
+        fmt(col("E_cm")[i] as number | null),
+        ang[i] !== null ? pyStrAt(ang, i) : "",
+        m.ang_frame || "",
+        lev[i] !== null ? pyStrAt(lev, i) : "",
+        fmt(col("value")[i] as number | null),
+        m.value_unit,
+        (col("limit")[i] as string | null) || "",
+        fmt(col("d_stat")[i] as number | null),
+        fmt(col("d_sys")[i] as number | null),
+        fmt(col("d_tot")[i] as number | null),
+        col("flag")[i] === null ? "" : pyFormat(col("flag")[i] as number, "g"),
+        m.doi || "",
+      ])
     }
   }
   return out
@@ -386,7 +519,10 @@ export function bibtex(datasets: FullDataset[], journals: Record<string, string>
     if (m.doi) fields.set("doi", m.doi)
     fields.set("note", `EXFOR ${v.ids.join(", ")} (${m.links.exfor})`)
     const cite = m.first_author.replace(/[^A-Za-z]/g, "") + s(m.year || "") + "_" + key
-    const body = [...fields.entries()].filter(([, x]) => x).map(([k, x]) => `  ${k} = {${bibEscape(s(x))}}`).join(",\n")
+    const body = [...fields.entries()]
+      .filter(([, x]) => x)
+      .map(([k, x]) => `  ${k} = {${bibEscape(s(x))}}`)
+      .join(",\n")
     out.push(`@${kind}{${cite},\n${body}\n}`)
   }
   return out.join("\n\n") + "\n"
@@ -427,7 +563,9 @@ export function azure2Files(
       files.set(`data/${f.stem}.dat`, f.dat)
       files.set(`data/${f.stem}.csv`, f.csv)
       segs.push(f.segment)
-      readme.push(`segment ${segs.length}: data/${f.stem}.dat  (${f.id}` + (f.level !== null ? `, E_x = ${pyFormat(f.level, "g")} MeV` : "") + ")")
+      readme.push(
+        `segment ${segs.length}: data/${f.stem}.dat  (${f.id}` + (f.level !== null ? `, E_x = ${pyFormat(f.level, "g")} MeV` : "") + ")",
+      )
       count++
     }
   }

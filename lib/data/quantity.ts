@@ -13,7 +13,21 @@ import type { Lang } from "../locale.ts"
 
 /** The pipeline's quantity classes, in index order (`q`). */
 export const QUANTITY_CLASSES = [
-  "sigma", "S", "dsigma", "legendre", "ddx", "pol", "yield", "strength", "width", "macs", "sacs", "rate", "ratio", "integral", "other",
+  "sigma",
+  "S",
+  "dsigma",
+  "legendre",
+  "ddx",
+  "pol",
+  "yield",
+  "strength",
+  "width",
+  "macs",
+  "sacs",
+  "rate",
+  "ratio",
+  "integral",
+  "other",
 ] as const
 export type QuantityClass = (typeof QUANTITY_CLASSES)[number]
 
@@ -88,8 +102,20 @@ export function groupName(g: Group, lang: Lang): string {
 
 /** The pipeline's flag bits (meta.json flags.bits), in index order (`f`). */
 export const FLAG_BITS = [
-  "has-extrapolated-rows", "digitised", "superseded", "deleted", "preliminary", "relative", "not-experimental",
-  "derived", "complex", "cm_approx", "outdated-normalisation", "renormalised-by-compiler", "dependent", "upper-limits",
+  "has-extrapolated-rows",
+  "digitised",
+  "superseded",
+  "deleted",
+  "preliminary",
+  "relative",
+  "not-experimental",
+  "derived",
+  "complex",
+  "cm_approx",
+  "outdated-normalisation",
+  "renormalised-by-compiler",
+  "dependent",
+  "upper-limits",
 ] as const
 export type Flag = (typeof FLAG_BITS)[number]
 
@@ -106,7 +132,10 @@ export const REPLACED = flagBit("superseded")
 
 const FLAG_TEXT: Record<Lang, Record<Flag, [string, string]>> = {
   en: {
-    "has-extrapolated-rows": ["extrapolated rows removed", "EXFOR lists extrapolated values (e.g. S(0)) in this dataset; they are kept apart and never plotted or counted."],
+    "has-extrapolated-rows": [
+      "extrapolated rows removed",
+      "EXFOR lists extrapolated values (e.g. S(0)) in this dataset; they are kept apart and never plotted or counted.",
+    ],
     digitised: ["digitised", "Read off a published figure (STATUS CURVE or a digitising error), not from a table of the authors."],
     superseded: ["superseded", "Replaced by a newer version of the same measurement (STATUS SPSDD)."],
     deleted: ["deleted", "Marked deleted in EXFOR's history, usually as a duplicate."],
@@ -122,8 +151,14 @@ const FLAG_TEXT: Record<Lang, Record<Flag, [string, string]>> = {
     "upper-limits": ["limits", "Contains upper or lower limits (DATA-MAX/MIN), which are not data points."],
   },
   it: {
-    "has-extrapolated-rows": ["righe estrapolate rimosse", "EXFOR riporta valori estrapolati (es. S(0)) in questo dataset; sono tenuti a parte e mai disegnati né contati."],
-    digitised: ["digitalizzato", "Letto da una figura pubblicata (STATUS CURVE o un errore di digitalizzazione), non da una tabella degli autori."],
+    "has-extrapolated-rows": [
+      "righe estrapolate rimosse",
+      "EXFOR riporta valori estrapolati (es. S(0)) in questo dataset; sono tenuti a parte e mai disegnati né contati.",
+    ],
+    digitised: [
+      "digitalizzato",
+      "Letto da una figura pubblicata (STATUS CURVE o un errore di digitalizzazione), non da una tabella degli autori.",
+    ],
     superseded: ["superato", "Sostituito da una versione più recente della stessa misura (STATUS SPSDD)."],
     deleted: ["cancellato", "Segnato come cancellato nella storia di EXFOR, di solito perché duplicato."],
     preliminary: ["preliminare", "Dati preliminari (STATUS PRELM)."],

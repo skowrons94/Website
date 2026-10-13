@@ -57,7 +57,17 @@ export function channelFromKey(key: string, masses: MassTable): ChannelLite | nu
  * reaction of the index has a shard), with the gap map at standard
  * temperatures, built here from the shard.
  */
-export function GenericReaction({ strings, lang, prerendered, evaluations }: { strings: DataExpertStrings; lang: Lang; prerendered: string[]; evaluations: EvalLink[] }) {
+export function GenericReaction({
+  strings,
+  lang,
+  prerendered,
+  evaluations,
+}: {
+  strings: DataExpertStrings
+  lang: Lang
+  prerendered: string[]
+  evaluations: EvalLink[]
+}) {
   const [slug, setSlug] = useState<string | null>(null)
   const [shard, setShard] = useState<Shard | null>(null)
   const [masses, setMasses] = useState<MassTable | null>(null)
@@ -78,9 +88,13 @@ export function GenericReaction({ strings, lang, prerendered, evaluations }: { s
     setSlug(r)
     loadShard(r).then(
       ({ shard }) => setShard(shard),
-      (e) => setError(e instanceof NotBuilt ? strings.reaction.notFound : strings.table.failed),
+      (e) => setError(e instanceof NotBuilt ? `${strings.reaction.notFound} ${strings.table.notBuilt}` : strings.table.failed),
     )
-    loadMasses().then(setMasses, () => setMasses(() => null))
+    // a mass table is a function: wrapped, or React would call it as an updater
+    loadMasses().then(
+      (m) => setMasses(() => m),
+      () => setError(strings.table.failed),
+    )
   }, [prerendered, lang, strings])
 
   const panel = useMemo(() => {
@@ -99,7 +113,13 @@ export function GenericReaction({ strings, lang, prerendered, evaluations }: { s
       rows: drawn,
       lowest: lowestMeasured(rows),
       counts: fill(strings.panel.counts, { n: rows.length, e: entries.size, years: years(rows.map((r) => r.y)) }),
-      macs: macs.length ? { n: macs.length, lo: Math.min(...macs.map((r) => r.k0 as number)) * 1000, hi: Math.max(...macs.map((r) => (r.k1 ?? r.k0) as number)) * 1000 } : null,
+      macs: macs.length
+        ? {
+            n: macs.length,
+            lo: Math.min(...macs.map((r) => r.k0 as number)) * 1000,
+            hi: Math.max(...macs.map((r) => (r.k1 ?? r.k0) as number)) * 1000,
+          }
+        : null,
     }
   }, [shard, masses, evaluations, strings])
 
@@ -119,7 +139,9 @@ export function GenericReaction({ strings, lang, prerendered, evaluations }: { s
         <h1 className="mt-3 font-serif text-[min(2.25rem,11vw)] font-semibold leading-tight tracking-tight sm:text-5xl">
           <Sci>{label}</Sci>
         </h1>
-        <p className="mt-3 max-w-prose text-pretty text-lg leading-snug text-muted-foreground">{fill(strings.reaction.intro, { n: shard.datasets.length })}</p>
+        <p className="mt-3 max-w-prose text-pretty text-lg leading-snug text-muted-foreground">
+          {fill(strings.reaction.intro, { n: shard.datasets.length })}
+        </p>
       </header>
       <div className="mt-10">
         <MeasurementsPanel

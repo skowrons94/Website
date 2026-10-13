@@ -131,6 +131,7 @@ const dataExpertEn = {
     levels: "{n} final levels",
     decimated: "{kept} of {total} points shown; the export uses all",
     none: "No dataset matches.",
+    more: "Show {n} more (of {total})",
     loading: "Loading the datasets…",
     failed: "The datasets could not be loaded.",
     notBuilt: "The data points of this reaction are not on this copy of the site (the per-reaction files are built with the site, see scripts/data/README.md).",
@@ -190,6 +191,7 @@ const dataExpertEn = {
   },
   reaction: {
     eyebrow: "Data explorer · reaction",
+    crumb: "Reaction",
     atlasLink: "Atlas page",
     nucleusLink: "Compound nucleus {cn}",
     searchLink: "Search the data",
@@ -389,6 +391,7 @@ const dataExpertIt: typeof dataExpertEn = {
     levels: "{n} livelli finali",
     decimated: "{kept} punti su {total} nel grafico; l'esportazione li usa tutti",
     none: "Nessun dataset corrisponde.",
+    more: "Mostra altri {n} (su {total})",
     loading: "Carico i dataset…",
     failed: "Non è stato possibile caricare i dataset.",
     notBuilt: "I punti sperimentali di questa reazione non sono in questa copia del sito (i file per reazione si generano con il sito, vedi scripts/data/README.md).",
@@ -448,6 +451,7 @@ const dataExpertIt: typeof dataExpertEn = {
   },
   reaction: {
     eyebrow: "Esplora i dati · reazione",
+    crumb: "Reazione",
     atlasLink: "Pagina dell'atlante",
     nucleusLink: "Nucleo composto {cn}",
     searchLink: "Cerca nei dati",

@@ -7,7 +7,16 @@ import type { MapRow } from "@/components/data/gap-map"
 export { mapRows }
 import type { PanelWindow } from "@/components/data/measurements-panel"
 import { getReaction } from "@/lib/atlas"
-import { atlasReactions, atlasWindows, channelOf, gapRows, genericWindows, readIndex, type Channel, type WindowMetrics } from "@/lib/data/build"
+import {
+  atlasReactions,
+  atlasWindows,
+  channelOf,
+  gapRows,
+  genericWindows,
+  readIndex,
+  type Channel,
+  type WindowMetrics,
+} from "@/lib/data/build"
 import { fill } from "@/lib/data/fill"
 import { years } from "@/lib/data/format"
 import { lowestMeasured, rowGroup, type GapRow } from "@/lib/data/gap"
@@ -30,7 +39,19 @@ export interface PanelData {
 }
 
 function toPanel(w: WindowMetrics): PanelWindow {
-  return { label: w.label, network: w.network, T9: w.T9, E0: w.E0, width: w.width, lo: w.lo, hi: w.hi, kT: w.kT, unmeasured: w.unmeasured, widths: w.widths, below: w.below }
+  return {
+    label: w.label,
+    network: w.network,
+    T9: w.T9,
+    E0: w.E0,
+    width: w.width,
+    lo: w.lo,
+    hi: w.hi,
+    kT: w.kT,
+    unmeasured: w.unmeasured,
+    widths: w.widths,
+    below: w.below,
+  }
 }
 
 function summarise(rows: GapRow[], windows: WindowMetrics[], channel: Channel | null, lang: Lang, slugs: PanelData["slugs"]): PanelData {
@@ -50,7 +71,11 @@ function summarise(rows: GapRow[], windows: WindowMetrics[], channel: Channel | 
     lowest: lowest ? { ...lowest, a: lowest.a } : null,
     counts,
     macs: macsRows.length
-      ? { n: macsRows.length, lo: Math.min(...macsRows.map((r) => r.k0 as number)) * 1000, hi: Math.max(...macsRows.map((r) => (r.k1 ?? r.k0) as number)) * 1000 }
+      ? {
+          n: macsRows.length,
+          lo: Math.min(...macsRows.map((r) => r.k0 as number)) * 1000,
+          hi: Math.max(...macsRows.map((r) => (r.k1 ?? r.k0) as number)) * 1000,
+        }
       : null,
     threshold: channel && channel.threshold > 0 ? channel.threshold : null,
     neutron,

@@ -17,4 +17,3 @@ export function mapRows(rows: GapRow[]): MapRow[] {
   }
   return out
 }
-

@@ -210,7 +210,15 @@ export function GapMap({
                 fill="url(#gap-hatch)"
               />
             )}
-            <line x1={x(w.E0)} x2={x(w.E0)} y1={top - 10} y2={plotBottom} stroke="var(--viz-text)" strokeWidth={1.2} strokeDasharray="5 3" />
+            <line
+              x1={x(w.E0)}
+              x2={x(w.E0)}
+              y1={top - 10}
+              y2={plotBottom}
+              stroke="var(--viz-text)"
+              strokeWidth={1.2}
+              strokeDasharray="5 3"
+            />
             <text
               x={x(w.E0)}
               y={top - 14}
@@ -247,7 +255,7 @@ export function GapMap({
               if (x0 > left + plotW) return null
               const onEnter = (ev: React.PointerEvent) => {
                 const box = ((ev.currentTarget as SVGGraphicsElement).ownerSVGElement as SVGSVGElement).getBoundingClientRect()
-                setHover({ row: r, x: (ev.clientX - box.left), y: (ev.clientY - box.top) })
+                setHover({ row: r, x: ev.clientX - box.left, y: ev.clientY - box.top })
               }
               return single ? (
                 <path
