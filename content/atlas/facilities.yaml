@@ -56,7 +56,7 @@ facilities:
     accelerator: 50 kV ion accelerator with a windowless gas target
     accelerator_it: acceleratore di ioni da 50 kV con bersaglio gassoso senza finestre
     years: described in 1994; first results on ³He(³He,2p)⁴He in 1996
-    years_it: descritto nel 1994; primi risultati su ³He(³He,2p)⁴He nel 1996
+    years_it: descritto nel 1994; primi risultati sulla ³He(³He,2p)⁴He nel 1996
     luna: true
     summary: >-
       The first accelerator built deep underground for nuclear astrophysics.
@@ -440,7 +440,7 @@ facilities:
       counting the product nuclei directly.
     summary_it: >-
       L'European Recoil separator for Nuclear Astrophysics, costruito per
-      misurare reazioni di cattura di elio come ¹²C(α,γ)¹⁶O in cinematica
+      misurare reazioni di cattura di elio come la ¹²C(α,γ)¹⁶O in cinematica
       inversa, contando direttamente i nuclei prodotti.
     details: >-
       ERNA was built at the 4 MV Dynamitron in Bochum to detect ¹⁶O recoils
@@ -451,7 +451,7 @@ facilities:
       the target.
     details_it: >-
       ERNA è stato costruito al Dynamitron da 4 MV di Bochum per rivelare i
-      nuclei di rinculo di ¹⁶O da ¹²C(α,γ)¹⁶O. Filtri di Wien prima e dopo il
+      nuclei di rinculo di ¹⁶O dalla ¹²C(α,γ)¹⁶O. Filtri di Wien prima e dopo il
       magnete di analisi riducevano la contaminazione di ¹⁶O nel fascio di ¹²C
       da circa 10⁻¹¹ a meno di 2 × 10⁻²⁹. Nel 2009 il separatore è stato
       trasferito al laboratorio CIRCE di Caserta, dove è stato aggiunto un
@@ -621,7 +621,7 @@ facilities:
       capture rates in use today were measured with them.
     summary_it: >-
       Un acceleratore Van de Graaff del centro di ricerca nucleare di Karlsruhe,
-      usato per misure di ¹²C(α,γ)¹⁶O e, per decenni, delle catture di neutroni
+      usato per misure della ¹²C(α,γ)¹⁶O e, per decenni, delle catture di neutroni
       del processo s. Lì i protoni su un bersaglio di litio producono neutroni
       con energie che imitano quelle di una stella, e molti dei tassi di
       cattura stellari usati oggi sono stati misurati con essi.
@@ -865,7 +865,7 @@ facilities:
       with a radioactive target.
     summary_it: >-
       Un laboratorio di fisica nucleare vicino a Bordeaux. Il suo acceleratore
-      Van de Graaff è stato usato per una delle misure dirette di ⁷Be(p,γ)⁸B
+      Van de Graaff è stato usato per una delle misure dirette della ⁷Be(p,γ)⁸B
       con un bersaglio radioattivo.
     refs: [hammache1998]
 

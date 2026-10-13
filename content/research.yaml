@@ -66,7 +66,7 @@ threads:
       - Calibration of the 3.5 MV Singletron; Geant4 tuning for the BGO and HPGe setups
       - R-matrix evaluations for ¹²C + p, ¹³C + p, ²⁰Ne + p and ²²Ne + p
     highlights_it:
-      - Sezioni d'urto di ¹²C(p,γ)¹³N e ¹³C(p,γ)¹⁴N e loro impatto sul rapporto ¹²C/¹³C
+      - Sezioni d'urto della ¹²C(p,γ)¹³N e della ¹³C(p,γ)¹⁴N e loro impatto sul rapporto ¹²C/¹³C
       - Coordinatore del gruppo di lavoro ¹⁹F + p all'acceleratore LUNA da 400 kV
       - Calibrazione del Singletron da 3,5 MV; messa a punto di Geant4 per i rivelatori BGO e HPGe
       - Valutazioni R-matrix per ¹²C + p, ¹³C + p, ²⁰Ne + p e ²²Ne + p
@@ -165,7 +165,7 @@ threads:
     body_it:
       - >-
         Lo stato a 6,79 MeV del ¹⁵O si trova circa 0,5 MeV sotto la soglia
-        protonica e domina il comportamento a bassa energia di ¹⁴N(p,γ)¹⁵O, il
+        protonica e domina il comportamento a bassa energia della ¹⁴N(p,γ)¹⁵O, il
         passo più lento del ciclo CNO e quindi la reazione che ne fissa il ritmo
         e il flusso di neutrini CNO. La sua vita media entra direttamente in
         quella estrapolazione. È inferiore al femtosecondo, e i valori pubblicati

@@ -89,7 +89,7 @@ open_questions:
   - The ratio to ¹⁹F(p,γ)²⁰Ne, which decides how much material leaks from the CNO cycles towards neon.
 open_questions_it:
   - "Il contributo delle risonanze a bassa energia ai singoli canali α."
-  - "Il rapporto con ¹⁹F(p,γ)²⁰Ne, che decide quanta materia sfugge dai cicli CNO verso il neon."
+  - "Il rapporto con la ¹⁹F(p,γ)²⁰Ne, che decide quanta materia sfugge dai cicli CNO verso il neon."
 related: [19F-pg-20Ne, 18O-pg-19F, 15N-pa-12C]
 details_it: >-
   La reazione procede attraverso stati del ²⁰Ne e ha diversi canali α: verso
