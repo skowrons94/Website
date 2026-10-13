@@ -38,7 +38,7 @@ news:
     link: /about
     text: >-
       About this site: how it was made and checked, where its data come from,
-      its licences, and how to cite it.
+      its licences and how to cite it.
     text_it: >-
       Informazioni sul sito: come è stato fatto e verificato, da dove vengono i
       dati, le licenze e come citarlo.
@@ -47,7 +47,7 @@ news:
     commit: 90727fb
     link: /atlas/rates
     text: >-
-      Reaction-rate explorer: the rates of the pp chains, the CNO cycles and
+      Rate explorer: the rates of the pp chains, the CNO cycles and
       the NeNa and MgAl cycles plotted against temperature, how long a nucleus
       waits before each reaction, and what a burn does when one rate is
       changed. It runs in the browser.
@@ -70,8 +70,8 @@ news:
     commit: 653e4f6
     link: /atlas/s-process
     text: >-
-      The s-process: how stars make about half of the elements heavier than
-      iron, one neutron capture at a time, with the path drawn on the chart of
+      The s-process: how stars make about half the nuclei heavier than iron,
+      one neutron capture at a time, with the path drawn on the chart of
       nuclides and its branch points.
     text_it: >-
       Il processo s: come le stelle producono circa metà degli elementi più
