@@ -25,7 +25,7 @@ page's origin. Design: `/tmp/claude-0/webdaq/design.md` (planning document).
 
 ```sh
 cd webdaq-demo
-npm ci
+npm ci --ignore-scripts                              # nothing here needs an install script
 node build.mjs                                       # → ../public/webdaq-demo, basePath /webdaq-demo
 DEMO_BASE_PATH=/Website/webdaq-demo node build.mjs   # GitHub Pages
 node build.mjs --out /some/dir                       # elsewhere
@@ -36,6 +36,7 @@ npm run test:physics                                 # physics suite
 npm run test:files                                   # run files: formats, metadata keys, .caendat read back
 python3 tests/shell/shell.py ../public/webdaq-demo /webdaq-demo --axe <axe.min.js>   # the demo frame
 npx tsc --noEmit                                     # handlers type-check against WebDAQ's own types
+python3 tests/e2e/tour.py ../public/webdaq-demo /webdaq-demo --start /   # the guided tour, a run, its files
 python3 tests/contract/runtime.py ../public/webdaq-demo /webdaq-demo   # every route and tab in Chromium, and the
                                                      # scan → add → start → stop flow: no unmocked request,
                                                      # nothing outside the origin, no page error
@@ -45,6 +46,28 @@ npm run surface                                      # after a bump: rewrite api
 None of these writes anything committed (except `npm run surface`, on purpose)
 and none uploads anything.
 
+**Updating WebDAQ.** Set `commit` in `pin.json`, run `node build.mjs`: it
+stops on every overridden upstream file that changed; compare it with the
+overlay's copy, update the overlay and the hash. Then `npm run surface` (and
+the hash it prints into `pin.json`), the tests above, and the size report.
+
+### Deployment
+
+* **GitHub Pages** (`.github/workflows/pages.yml`, the existing build job):
+  `DEMO_BASE_PATH="$BASE_PATH/webdaq-demo" node build.mjs` into
+  `public/webdaq-demo/` before the site's export, then the size report (fails
+  over budget). The fetched WebDAQ source is cached by its commit. The site's
+  `scripts/csp-static.mjs` gives the demo's pages the site's
+  Content-Security-Policy too (the demo needs no eval and no inline script
+  beyond Next's own, which are hashed); `scripts/seo-pages.mjs` leaves them
+  out of the sitemap, and they say `noindex`.
+* **Docker** (`deploy/Dockerfile.web`, stage `webdaq-demo`): built with
+  basePath `/webdaq-demo` and copied into the image's `public/webdaq-demo/`;
+  `deploy/Caddyfile` maps directory addresses to their `index.html` (Next's
+  server does not) and marks `_next/static` immutable.
+* **The companion page** (`/software/webdaq/`, `components/pages/webdaq.tsx`)
+  links to `${BASE_PATH}/webdaq-demo/` (`?lang=it` from the Italian page).
+
 ## What the overlay changes (design §2.3)
 
 | # | Upstream path | Overlay |
@@ -53,7 +76,7 @@ and none uploads anything.
 | 2 | `src/app/api/**`, `src/api/**` | deleted; their two endpoints are answered through the fetch shim |
 | 3 | `src/app/logbook/[run_number]/layout.tsx` | added: `generateStaticParams` for runs 1–30 |
 | 4 | `src/app/layout.tsx` | no `root.cern` script; storage shim inline in `<head>`; `<DemoBoot>` (the shell of P4 mounts here) |
-| 4b | `src/app/page.tsx` | start page (minimal in P1: detectors, source, distance; P4 designs it) |
+| 4b | `src/app/page.tsx` | empty: the start page is drawn by the demo frame (`shell/StartPage.tsx`) |
 | 6 | `src/lib/load-jsroot.ts` | re-exports `shim/load-jsroot.ts` (a webpack alias cannot win over tsconfig paths) |
 | 7 | `package.json` | dependencies live in this directory's `package.json` |
 
@@ -153,20 +176,41 @@ sizes) and the shell's `control({type:'files', run})` returns the bytes.
 * Look: `shim/tokens.css`, the site's surface tokens (checked against
   `app/globals.css` by `tests/shell/tokens.test.ts`), system fonts; light and
   dark follow the `theme` key the site and WebDAQ share.
-* The tour (phase P5) plugs in by defining `window.__webdaqTour(lang)` and
-  dispatching `webdaq-demo:tour-ready`; the banner's *Guide* and the start
-  page's *Take the guided tour* then appear. Its chunk should contain the
-  string `__webdaqTourBundle` so `scripts/size.mjs` can measure it.
+* The start page is drawn by `Shell.tsx` on `/` (the overlay's `page.tsx`
+  returns null), which keeps that route's first load small.
 * `tests/shell/shell.py` checks all of this in Chromium, including axe-core on
   the frame (pass `--axe` the path of an `axe.min.js`; nothing is installed).
 
+## The guided tour (tour/, phase P5)
+
+* `shell/tour-loader.ts` defines `window.__webdaqTour(lang, resume)` and
+  fires `webdaq-demo:tour-ready`; the tour itself (`tour/index.ts`, strings in
+  `tour/copy.ts`, EN and IT) is a separate chunk loaded on the first click of
+  *Take the guided tour* or the banner's *Guide*.
+* Nine steps: choose detectors, find the board (scan, add a V1730 as DPP-PHA
+  or DPP-PSD), the configuration, start a run, watch it fill, tune (HPGe:
+  trapezoid on `/tuner`; PSD: the gates on `/DAQ`), an ROI, the Scenario panel
+  (distance, source, faults), and the run files with what makes them FAIR-ready
+  (`metadata.json`, the Logbook) and what is still planned.
+* It is a non-modal card (a bottom sheet below 768 px) that highlights the
+  control it talks about and checks each step against the worker's state, so a
+  step done by hand counts too. *Do it for me* does the step. Live lines
+  (rates, FWHM at the main line from the model and the fit, gates, distance)
+  are announced politely. Progress is kept in sessionStorage
+  (`webdaq-demo:v1:tour`) and resumes after a reload.
+* Choosing ³He on the start page selects the ²⁵²Cf source, the only one it sees.
+* `tests/e2e/tour.py <out> <base> --start / [--lang it] [--width 390]
+  [--detectors he3]` runs it end to end in Chromium (with `--start
+  /software/webdaq/` on the site export it starts from the companion page).
+
 ## Sizes (gzip -9, this build)
 
-First-load JS: start page 119.8 kB (budget 120), `/dashboard` 376.6 kB (budget
-400), other routes 116–345 kB; demo shell 6.9 kB (budget 25); worker first chunk
+First-load JS: start page 116.5 kB (budget 120), `/dashboard` 377.3 kB (budget
+400), other routes 116–346 kB; demo shell 7.7 kB (budget 25); worker first chunk
 38.6 kB (budget 40), plus 11.8 kB of lazy chunks (Logbook and run files, ELOG and
 Grafana, notification settings); response table + line data 39 kB per detector;
-JSROOT needed to draw 297 kB (budget 360); zip 4.6 kB (budget 10).
+JSROOT needed to draw 297 kB (budget 360); zip 4.6 kB (budget 10);
+tour 9.3 kB (budget 20).
 `node scripts/size.mjs <export>` prints the table.
 
 ## Known upstream behaviour the demo shows as it is

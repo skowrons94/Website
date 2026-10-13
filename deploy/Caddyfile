@@ -40,6 +40,17 @@ www.{$SITE_DOMAIN} {
 		header Content-Security-Policy "default-src 'none'; frame-ancestors 'none'"
 	}
 
+	# The WebDAQ demo is static files in the site's public/webdaq-demo/.
+	# Next serves files there but not a directory's index.html, so a
+	# directory address is rewritten to it (after adding the trailing slash
+	# the demo's links use). Its build output is content-hashed.
+	redir /webdaq-demo /webdaq-demo/ 308
+	@demoNoSlash path_regexp ^/webdaq-demo/[^.]*[^/]$
+	redir @demoNoSlash {path}/ 308
+	@demoDir path_regexp ^/webdaq-demo(/.*)?/$
+	rewrite @demoDir {path}index.html
+	header /webdaq-demo/_next/static/* Cache-Control "public, max-age=31536000, immutable"
+
 	handle {
 		# The site's pages are GET; nothing it serves takes a body.
 		request_body {

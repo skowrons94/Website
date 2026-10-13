@@ -22,6 +22,6 @@
       "axios-real": ["node_modules/axios"]
     }
   },
-  "include": ["shim/**/*.ts", "shim/**/*.tsx", "shell/**/*.ts", "shell/**/*.tsx", "sim/**/*.ts", "tests/**/*.ts", "scripts/**/*.ts"],
+  "include": ["shim/**/*.ts", "shim/**/*.tsx", "shell/**/*.ts", "shell/**/*.tsx", "tour/**/*.ts", "sim/**/*.ts", "tests/**/*.ts", "scripts/**/*.ts"],
   "exclude": ["node_modules", ".work", "overlay"]
 }

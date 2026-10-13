@@ -9,6 +9,8 @@ import { usePathname } from 'next/navigation'
 import { setLang, aboutHref, BASE, type Lang, type Strings } from './strings'
 import { useStrings } from './use-strings'
 import { resetDemo } from '@/demo/shim/transport'
+import { tourActive } from './tour-loader'
+import StartPage from './StartPage'
 
 type Panel = 'files' | 'scenario' | null
 type PanelProps = { t: Strings; lang: Lang; onClose: () => void }
@@ -26,6 +28,7 @@ function noteFor(path: string): keyof Strings | null {
 }
 
 const DISMISSED = 'webdaq-demo:v1:notes'
+const currentLangGuess = (): Lang => { try { return sessionStorage.getItem('webdaq-demo:v1:lang') === 'it' ? 'it' : 'en' } catch { return 'en' } }
 function dismissed(): string[] {
   try { return JSON.parse(sessionStorage.getItem(DISMISSED) || '[]') } catch { return [] }
 }
@@ -42,6 +45,8 @@ export default function Shell() {
   useEffect(() => {
     setHidden(dismissed())
     setTour(typeof (window as any).__webdaqTour === 'function')
+    // Resume a tour this tab was following before a full page load.
+    if (tourActive()) (window as any).__webdaqTour?.(currentLangGuess(), true)
     const onTour = () => setTour(true)
     window.addEventListener('webdaq-demo:tour-ready', onTour)
     return () => window.removeEventListener('webdaq-demo:tour-ready', onTour)
@@ -99,6 +104,7 @@ export default function Shell() {
           }}>{t.dismiss}</button>
         </div>
       )}
+      {(path === '/' || path === '') && <StartPage />}
       {panel && (Comp ? <Comp t={t} lang={lang} onClose={() => setPanel(null)} /> : <div className="wd-frame wd-scrim" aria-busy="true" />)}
     </>
   )

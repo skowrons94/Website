@@ -18,6 +18,8 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "WebDAQ demo (simulated) — LUNA Control Panel",
   description: "The WebDAQ frontend running against a simulated DAQ in your browser. Simulated detectors; nothing here is real hardware.",
+  // The site's companion page (/software/webdaq/) is the page to find.
+  robots: { index: false, follow: false },
 };
 
 export default function RootLayout({

@@ -122,11 +122,11 @@ def flow(page, origin, base, a, seen, report, failures):
         page.get_by_role('button', name='Scan for boards').click()
         page.get_by_role('button', name='Use these settings').first.click(timeout=15000)
         page.get_by_role('button', name='Add Board').click()
-        page.wait_for_function('window.__webdaqDemo.state() && window.__webdaqDemo.state().boards.length === 1', timeout=10000)
+        page.wait_for_function('() => window.__webdaqDemo.state() && window.__webdaqDemo.state().boards.length === 1', timeout=10000)
         page.goto(origin + base + '/dashboard/')
         page.wait_for_timeout(1500)
         page.get_by_role('button', name='Start Run').click()
-        page.wait_for_function('window.__webdaqDemo.state() && window.__webdaqDemo.state().running === true', timeout=10000)
+        page.wait_for_function('() => window.__webdaqDemo.state() && window.__webdaqDemo.state().running === true', timeout=10000)
         page.wait_for_timeout(4000)
         counts = page.evaluate("""async () => {
             const h = await window.__webdaqDemo.request({method:'GET', path:'/histograms/0/0', query:{}, body:null});
@@ -142,7 +142,7 @@ def flow(page, origin, base, a, seen, report, failures):
         page.goto(origin + base + '/dashboard/?tab=overview')
         page.wait_for_timeout(2000)
         page.get_by_role('button', name='Stop Run').click()
-        page.wait_for_function('window.__webdaqDemo.state() && window.__webdaqDemo.state().running === false', timeout=10000)
+        page.wait_for_function('() => window.__webdaqDemo.state() && window.__webdaqDemo.state().running === false', timeout=10000)
         page.wait_for_timeout(1500)
         state = page.evaluate('window.__webdaqDemo.state()')
         report['after stop'] = {'runs': state['runs'], 'runNumber': state['runNumber']}

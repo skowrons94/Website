@@ -228,6 +228,7 @@ function prepareApp(upstream) {
   // Main-thread shims only; the worker side (router, handlers) is bundled separately.
   copyDir(path.join(HERE, 'shim'), path.join(APP, 'src', 'demo', 'shim'), f => !f.startsWith('handlers/'))
   copyDir(path.join(HERE, 'shell'), path.join(APP, 'src', 'demo', 'shell'))
+  copyDir(path.join(HERE, 'tour'), path.join(APP, 'src', 'demo', 'tour'))
 }
 
 // ── 4. checks on the export ─────────────────────────────────────────────────
