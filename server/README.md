@@ -105,11 +105,17 @@ is ignored rather than overwriting newer values; `seq` is echoed back.
   60: a visible page pings every 30 s), taken first from the address
   holding the most sessions. If there is none, and some address holds at
   least two more sessions than the newcomer's, its least recently seen one
-  goes anyway (fairness: one client cannot keep the others out); otherwise
-  503. The reaper rebuilds spares evicted this way once there is room.
+  goes anyway (fairness: one client cannot keep the others out). Addresses
+  are grouped here by network (an IPv6 /56, an IPv4 /24:
+  `AZURE2_V6_PREFIX`, `AZURE2_V4_PREFIX`), and the network's oldest
+  session goes. Failing that, the oldest session opened more than
+  `AZURE2_MAX_AGE` seconds ago (1800) and not mid-request goes, pinged or
+  not (its page reopens it, with the changes); otherwise 503. The reaper rebuilds spares evicted this way once there is room.
 - **Limits per client address** (`app/limits.py`; an IPv6 address counts by
   its /64): at most `AZURE2_MAX_PER_IP` sessions (2; past it the address's
-  own session unseen longest gives way if it may, else 429),
+  own session unseen longest gives way if it may, else 429), at most
+  `AZURE2_MAX_PER_PREFIX` per IPv6 /56 (3; the same, by network; IPv4 /24s
+  are never capped, see DEPLOY.md section 10),
   `AZURE2_OPEN_RATE` opens (`10/60`, a token bucket, burst
   `AZURE2_OPEN_BURST`), `AZURE2_EDIT_RATE` edits (`20/1`, burst
   `AZURE2_EDIT_BURST`, 60) and `AZURE2_MAX_INFLIGHT_PER_IP` slow requests

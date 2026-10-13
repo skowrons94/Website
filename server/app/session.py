@@ -37,6 +37,7 @@ import uuid
 from typing import Dict, List, Optional
 
 from app import cache
+from app.limits import prefix_key
 from app.engine import PREPARE_STEPS, ROLES, Engine, EngineError
 
 log = logging.getLogger(__name__)
@@ -138,6 +139,7 @@ class Session:
         # Who opened it: the client's address (``app.limits.client_key``),
         # for the per-address cap; None for spares and in-process callers.
         self.owner = None
+        self.prefix = None
         # Called with (key, seconds) when a step is measured (prepare_<step>),
         # so the manager keeps the last duration of each step on this server.
         self.on_measured = None
@@ -672,6 +674,12 @@ class SessionManager:
     heartbeats with no use; a session without heartbeats (an older page)
     after ``ttl`` seconds without a request.  The extrapolations' workers,
     the largest, are closed after ``role_ttl`` seconds unused.
+
+    Sharing (see :meth:`_evict_candidate`): an address (IPv6: its /64) holds
+    at most ``max_per_owner`` sessions and an IPv6 /56 at most
+    ``max_per_prefix``; when every slot is taken, a newcomer gets the slot of
+    an unseen session, else the oldest session of the network (/56 or IPv4
+    /24) holding the most, else the oldest session past ``max_age`` seconds.
     """
 
     def __init__(self, ttl=600, max_sessions=8, reaper_interval=60,
@@ -679,7 +687,8 @@ class SessionManager:
                  idle_ttl=3600, role_ttl=300, prepare_threads=None,
                  prepare_concurrency=None, auto_prepare=False, retry_after=15,
                  spares=None, spare_delay=3, evict_after=None, spare_wait=20,
-                 spare_quiet=2.0, max_per_owner=0):
+                 spare_quiet=2.0, max_per_owner=0, max_per_prefix=0,
+                 v4_prefix=24, v6_prefix=56, max_age=0):
         self.ttl = ttl
         self.max_sessions = max_sessions
         # At most this many sessions per owner (client address); 0: no cap.
@@ -687,6 +696,18 @@ class SessionManager:
         # (see _evict_candidate), so one client cannot keep everyone out.
         self.max_per_owner = max_per_owner
         self._owner_pending: Dict[str, int] = {}
+        # The wider network of an owner (app.limits.prefix_key): an IPv6 /56
+        # holds at most ``max_per_prefix`` sessions (0: no cap; IPv4 /24s are
+        # never capped -- one is often a whole campus or a carrier's NAT --
+        # only weighed by the fairness rule when the server is full).
+        self.max_per_prefix = max_per_prefix
+        self.v4_prefix = v4_prefix
+        self.v6_prefix = v6_prefix
+        self._prefix_pending: Dict[str, int] = {}
+        # A session older than this (seconds since it was opened or handed
+        # over) gives its slot to a newcomer when the server is full, even
+        # if its page is open (which then reopens it quietly).  0: never.
+        self.max_age = max_age
         self.reaper_interval = reaper_interval
         self.omp_threads = omp_threads
         self.timeout = timeout
@@ -857,29 +878,49 @@ class SessionManager:
         a 503) rather than starving the ones already running.
 
         ``owner`` (the client's address) is held to ``max_per_owner``
-        sessions: past it, that owner's own session unseen for longest is
-        closed if it may be (as for any eviction), else :class:`LimitError`
-        (a 429).
+        sessions, and its IPv6 /56 to ``max_per_prefix``: past either, that
+        owner's (or network's) own session unseen for longest is closed if it
+        may be (as for any eviction), else :class:`LimitError` (a 429).
         """
         self.reap()
-        if owner is not None and self.max_per_owner > 0:
-            own = self._reserve_owner(owner)
-            if own is not None:
-                log.info("closing %s (%s): its owner opened another past the "
-                         "cap of %d", own.id, own.evaluation.id, self.max_per_owner)
+        if owner is not None and (self.max_per_owner > 0 or self.max_per_prefix > 0):
+            prefix = self.prefix_of(owner)
+            for own in self._reserve_owner(owner):
+                log.info("closing %s (%s): its address opened another past the "
+                         "cap", own.id, own.evaluation.id)
                 own.close()
             try:
                 session = self._create(evaluation, owner)
                 session.owner = owner
+                session.prefix = prefix
                 return session
             finally:
                 with self._lock:
-                    left = self._owner_pending.get(owner, 0) - 1
-                    if left > 0:
-                        self._owner_pending[owner] = left
-                    else:
-                        self._owner_pending.pop(owner, None)
-        return self._create(evaluation, owner)
+                    for pending, key in ((self._owner_pending, owner),
+                                         (self._prefix_pending, prefix)):
+                        left = pending.get(key, 0) - 1
+                        if left > 0:
+                            pending[key] = left
+                        else:
+                            pending.pop(key, None)
+        session = self._create(evaluation, owner)
+        if owner is not None:
+            session.owner = owner
+            session.prefix = self.prefix_of(owner)
+        return session
+
+    def prefix_of(self, owner):
+        """The network ``owner`` is counted in (an IPv6 /56, an IPv4 /24)."""
+        return prefix_key(owner, self.v4_prefix, self.v6_prefix)
+
+    def _prefix_capped(self, prefix) -> bool:
+        # Only IPv6 networks are capped (see __init__).
+        return bool(self.max_per_prefix > 0 and prefix and ":" in prefix)
+
+    def _in_prefix(self, prefix) -> int:
+        return (sum(1 for s in self._sessions.values()
+                    if getattr(s, "prefix", None) == prefix)
+                + self._prefix_pending.get(prefix, 0))
 
     def owned(self, owner) -> int:
         """Sessions ``owner`` holds now (opening ones included)."""
@@ -890,13 +931,16 @@ class SessionManager:
         return (sum(1 for s in self._sessions.values() if getattr(s, "owner", None) == owner)
                 + self._owner_pending.get(owner, 0))
 
-    def _reserve_owner(self, owner) -> Optional[Session]:
-        """Count one more session for ``owner``, or raise LimitError; may
-        return one of its own sessions to close (unseen long enough to be
-        evicted anyway).  Caller decrements ``_owner_pending`` after."""
+    def _reserve_owner(self, owner) -> List[Session]:
+        """Count one more session for ``owner`` and its network, or raise
+        LimitError; may return sessions of its own (or of its network) to
+        close, unseen long enough to be evicted anyway.  Caller decrements
+        ``_owner_pending`` and ``_prefix_pending`` after."""
+        prefix = self.prefix_of(owner)
+        lru = lambda s: max(s.last_seen, s.last_used)  # noqa: E731
         with self._lock:
-            victim = None
-            if self._owned(owner) >= self.max_per_owner:
+            victims = []
+            if self.max_per_owner > 0 and self._owned(owner) >= self.max_per_owner:
                 mine = [s for s in self._sessions.values()
                         if getattr(s, "owner", None) == owner and self._evictable(s)]
                 if not mine:
@@ -904,10 +948,23 @@ class SessionManager:
                         f"Too many models are open from your address ({self.max_per_owner} "
                         "at most). Close an evaluation open in another tab, or wait "
                         "a moment and try again.", retry_after=self.retry_after)
-                victim = min(mine, key=lambda s: max(s.last_seen, s.last_used))
+                victims.append(min(mine, key=lru))
+            if (self._prefix_capped(prefix)
+                    and self._in_prefix(prefix) - len(victims) >= self.max_per_prefix):
+                ours = [s for s in self._sessions.values()
+                        if getattr(s, "prefix", None) == prefix and self._evictable(s)
+                        and s not in victims]
+                if not ours:
+                    raise LimitError(
+                        f"Too many models are open from your network ({self.max_per_prefix} "
+                        "at most). Close an evaluation open in another tab, or wait "
+                        "a moment and try again.", retry_after=self.retry_after)
+                victims.append(min(ours, key=lru))
+            for victim in victims:
                 self._sessions.pop(victim.id, None)
             self._owner_pending[owner] = self._owner_pending.get(owner, 0) + 1
-            return victim
+            self._prefix_pending[prefix] = self._prefix_pending.get(prefix, 0) + 1
+            return victims
 
     def _create(self, evaluation, owner=None) -> Session:
         if self.spare_policy is not None:
@@ -1216,40 +1273,63 @@ class SessionManager:
     def _evict_candidate(self, owner=None) -> Optional[Session]:
         """The session to close for a newcomer (``owner``), or None.
 
-        First the session seen least recently among the evictable ones
-        (:meth:`_evictable`: a page that is open and visible is never closed
-        under its reader), taken from the owner holding the most sessions.
-        Failing that, fairness: when one owner holds at least two more
-        sessions than the newcomer, its session seen least recently goes,
-        open page or not (one not mid-request if it has one), so a single
-        client cannot keep every slot from everyone else.  Caller holds
-        ``_lock``."""
-        def owner_of(s):
-            return getattr(s, "owner", None)
+        1. The session seen least recently among the evictable ones
+           (:meth:`_evictable`: a page that is open and visible is never
+           closed under its reader), taken from the network holding the most.
+        2. Fairness: the network (an IPv6 /56, an IPv4 /24:
+           :meth:`prefix_of`) holding the most sessions, if that is at least
+           two more than the newcomer's, gives up its oldest session, open
+           page or not (one not mid-request if it has one), so neither one
+           client nor a block of addresses can keep every slot from
+           everyone else.
+        3. Maximum age: the oldest session opened more than ``max_age``
+           seconds ago and not mid-request, open page or not, so nobody
+           waits much longer than ``max_age`` for a slot.
+
+        A page whose session is closed under it reopens it, with its
+        changes, on its next heartbeat or edit.  Caller holds ``_lock``."""
+        def prefix_of(s):
+            return getattr(s, "prefix", None)
 
         counts: Dict[object, int] = {}
         for s in self._sessions.values():
-            if owner_of(s) is not None:
-                counts[owner_of(s)] = counts.get(owner_of(s), 0) + 1
+            if prefix_of(s) is not None:
+                counts[prefix_of(s)] = counts.get(prefix_of(s), 0) + 1
 
         def lru(s):
             return max(s.last_seen, s.last_used)
 
         free = [s for s in self._sessions.values() if self._evictable(s)]
         if free:
-            return min(free, key=lambda s: (-counts.get(owner_of(s), 0), lru(s)))
-        if owner is None or not counts:
-            return None
-        heaviest = max(counts, key=lambda o: counts[o])
-        if counts[heaviest] < counts.get(owner, 0) + 2 or heaviest == owner:
-            return None
-        theirs = [s for s in self._sessions.values() if owner_of(s) == heaviest]
-        idle = [s for s in theirs if not s.busy()]
-        victim = min(idle or theirs, key=lru)
-        log.info("evicting %s (%s) of an address holding %d sessions, for a "
-                 "newcomer holding %d", victim.id, victim.evaluation.id,
-                 counts[heaviest], counts.get(owner, 0))
-        return victim
+            return min(free, key=lambda s: (-counts.get(prefix_of(s), 0), lru(s)))
+
+        mine = self.prefix_of(owner) if owner is not None else None
+        others = {p: n for p, n in counts.items() if p != mine}
+        if owner is not None and others:
+            top = max(others.values())
+            if top >= counts.get(mine, 0) + 2:
+                # Of the networks holding that many, the one with the oldest
+                # session gives it up.
+                theirs = [s for s in self._sessions.values()
+                          if others.get(prefix_of(s)) == top]
+                idle = [s for s in theirs if not s.busy()]
+                victim = min(idle or theirs, key=lambda s: s.created_at)
+                log.info("evicting %s (%s) of a network holding %d sessions, for a "
+                         "newcomer holding %d", victim.id, victim.evaluation.id,
+                         top, counts.get(mine, 0))
+                return victim
+
+        if self.max_age > 0:
+            now = time.time()
+            old = [s for s in self._sessions.values()
+                   if now - s.created_at >= self.max_age and not s.busy()]
+            if old:
+                victim = min(old, key=lambda s: s.created_at)
+                log.info("evicting %s (%s), open %.0f s (past AZURE2_MAX_AGE), "
+                         "for a newcomer", victim.id, victim.evaluation.id,
+                         now - victim.created_at)
+                return victim
+        return None
 
     def get(self, session_id) -> Session:
         with self._lock:

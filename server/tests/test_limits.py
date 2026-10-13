@@ -12,7 +12,7 @@ from flask import Flask
 from app import install_gzip, install_security
 from app import session as session_module
 from app.evaluations import Evaluation
-from app.limits import TokenBucket, client_key, masked, parse_rate
+from app.limits import TokenBucket, client_key, masked, parse_rate, prefix_key
 
 from test_session import FakeEngine
 
@@ -118,7 +118,7 @@ def test_one_client_cannot_starve_the_others(stack):
         c.post(f"/api/sessions/{sid}/ping", environ_base={"REMOTE_ADDR": attacker})
     # Two visitors fill the server.
     visitors = []
-    for ip in ("198.51.100.1", "198.51.100.2"):
+    for ip in ("198.51.100.1", "192.0.2.2"):     # two networks (/24s)
         vc, v_open = opener(app, ip)
         r = v_open()
         assert r.status_code == 201
@@ -126,7 +126,7 @@ def test_one_client_cannot_starve_the_others(stack):
         vc.post(f"/api/sessions/{visitors[-1][2]}/ping", environ_base={"REMOTE_ADDR": ip})
     # A third visitor: every session was seen just now, so before this change
     # the answer was 503; now the attacker gives one up.
-    _, v3 = opener(app, "198.51.100.3")
+    _, v3 = opener(app, "100.64.0.3")
     r = v3()
     assert r.status_code == 201
     alive = [sid for sid in held if not manager._sessions.get(sid) is None]
@@ -137,7 +137,7 @@ def test_one_client_cannot_starve_the_others(stack):
                       environ_base={"REMOTE_ADDR": ip}).status_code == 200
     # A fourth visitor: the attacker (1) holds no more than anyone else (1),
     # so nobody is evicted and the answer is the usual 503.
-    _, v4 = opener(app, "198.51.100.4")
+    _, v4 = opener(app, "100.65.0.4")
     assert v4().status_code == 503
 
 
@@ -149,6 +149,137 @@ def test_ipv6_counts_by_64(stack):
     assert b().status_code == 201
     _, c = opener(app, "2001:db8:1:2:abcd::9")
     assert c().status_code == 429
+
+
+# -- networks (r15 security #1): one /56, or a block of IPv4 addresses ----------
+
+def ping_all(app, held):
+    c = app.test_client()
+    return [c.post(f"/api/sessions/{sid}/ping", environ_base={"REMOTE_ADDR": ip}).status_code
+            for ip, sid in held]
+
+
+def test_prefix_keys():
+    assert prefix_key(client_key("2001:db8:1:2::1")) == "2001:db8:1::/56"
+    assert prefix_key(client_key("2001:db8:1:ff::1")) == "2001:db8:1::/56"
+    assert prefix_key(client_key("2001:db8:1:100::1")) == "2001:db8:1:100::/56"
+    assert prefix_key(client_key("203.0.113.5")) == "203.0.113.0/24"
+    assert prefix_key(client_key("::ffff:203.0.113.5")) == "203.0.113.0/24"
+    assert prefix_key("203.0.113.5", 32, 128) == "203.0.113.5/32"
+    assert prefix_key(None) is None and prefix_key("unix") == "unix"
+
+
+def test_one_ipv6_56_cannot_fill_the_server(stack):
+    """The reviewer's attack: eight /64s of one home /56, one pinged session
+    each.  Before: all eight slots taken, every newcomer 503 indefinitely.
+    Now the /56 holds three, and the other five are anyone's."""
+    app, manager = stack(max_sessions=8, per_ip=2)
+    manager.max_per_prefix = 3
+    held, codes = [], []
+    for i in range(8):
+        ip = f"2001:db8:1:{i:x}::1"
+        _, open_ = opener(app, ip)
+        r = open_()
+        codes.append(r.status_code)
+        if r.status_code == 201:
+            held.append((ip, r.get_json()["session_id"]))
+    assert codes == [201, 201, 201] + [429] * 5
+    assert "network" in r.get_json()["error"]
+    assert ping_all(app, held) == [200] * 3
+    for i in range(5):
+        _, open_ = opener(app, f"2001:db8:{i + 2}::1")
+        assert open_().status_code == 201
+    # Another /56 next door is a different network.
+    _, open_ = opener(app, "2001:db8:1:100::1")
+    assert open_().status_code != 429
+
+
+def test_own_network_stale_session_makes_room(stack):
+    """Past the /56 cap, a session of that network unseen for long enough
+    gives way (a tab closed without notice), as for the per-address cap."""
+    app, manager = stack(max_sessions=8, per_ip=2)
+    manager.max_per_prefix = 2
+    _, a = opener(app, "2001:db8:1:1::1")
+    _, b = opener(app, "2001:db8:1:2::1")
+    first = a().get_json()["session_id"]
+    b()
+    _, c = opener(app, "2001:db8:1:3::1")
+    assert c().status_code == 429
+    manager.evict_after = 0.1
+    time.sleep(0.2)
+    assert c().status_code == 201
+    assert first not in manager._sessions
+
+
+def test_ipv4_24_is_never_capped_only_weighed_when_full(stack):
+    """A /24 (a campus, a carrier NAT) may hold every free slot; when the
+    server is full a newcomer from elsewhere takes its oldest session."""
+    app, manager = stack(max_sessions=4, per_ip=2)
+    manager.max_per_prefix = 3
+    held = []
+    for i in range(4):
+        ip = f"203.0.113.{10 + i}"
+        _, open_ = opener(app, ip)
+        r = open_()
+        assert r.status_code == 201          # no cap on the /24
+        held.append((ip, r.get_json()["session_id"]))
+        time.sleep(0.01)
+    assert ping_all(app, held) == [200] * 4
+    _, newcomer = opener(app, "198.51.100.7")
+    assert newcomer().status_code == 201
+    # The /24's oldest session went; its page's next ping gets 409 (and the
+    # page reopens it), the others are untouched.
+    assert ping_all(app, held) == [409, 200, 200, 200]
+
+
+def test_eight_ipv4_addresses_yield_after_max_age(stack):
+    """Eight addresses in eight networks, one pinged session each: nobody
+    holds more than anyone else, so fairness does not apply; past
+    AZURE2_MAX_AGE the oldest gives way to a waiting newcomer."""
+    app, manager = stack(max_sessions=8, per_ip=2)
+    manager.max_age = 1800
+    held = []
+    for i in range(8):
+        ip = f"198.51.{i}.1"
+        _, open_ = opener(app, ip)
+        held.append((ip, open_().get_json()["session_id"]))
+    assert ping_all(app, held) == [200] * 8
+    _, newcomer = opener(app, "192.0.2.77")
+    assert newcomer().status_code == 503
+    # Half an hour later (pinged all along).
+    for k, (_, sid) in enumerate(held):
+        manager._sessions[sid].created_at -= 1801 + (8 - k)
+    assert ping_all(app, held) == [200] * 8
+    assert newcomer().status_code == 201
+    assert ping_all(app, held) == [409] + [200] * 7
+    # The page of the closed one reopens: the next oldest gives way to it.
+    _, back = opener(app, held[0][0])
+    assert back().status_code == 201
+    assert ping_all(app, held[1:]) == [409] + [200] * 6
+
+
+def test_max_age_spares_busy_sessions_and_young_ones(stack):
+    app, manager = stack(max_sessions=2, per_ip=2)
+    manager.max_age = 60
+    a = opener(app, "198.51.100.1")[1]().get_json()["session_id"]
+    b = opener(app, "192.0.2.1")[1]().get_json()["session_id"]
+    ping_all(app, [("198.51.100.1", a), ("192.0.2.1", b)])
+    manager._sessions[a].created_at -= 120
+    manager._sessions[a]._busy += 1           # mid-calculation
+    _, newcomer = opener(app, "100.64.0.1")
+    assert newcomer().status_code == 503       # b is young, a is busy
+    manager._sessions[a]._busy -= 1
+    assert newcomer().status_code == 201
+    assert a not in manager._sessions and b in manager._sessions
+
+
+def test_max_age_off_by_zero(stack):
+    app, manager = stack(max_sessions=1, per_ip=2)
+    manager.max_age = 0
+    sid = opener(app, "198.51.100.1")[1]().get_json()["session_id"]
+    ping_all(app, [("198.51.100.1", sid)])
+    manager._sessions[sid].created_at -= 10 ** 6
+    assert opener(app, "192.0.2.1")[1]().status_code == 503
 
 
 # -- rates --------------------------------------------------------------------------

@@ -7,7 +7,10 @@ and ping four sessions) or every thread (ten slow requests at once).  So, per
 client address (:func:`client_key`):
 
 * at most ``AZURE2_MAX_PER_IP`` sessions open at once (default 2; the
-  session manager enforces it, ``SessionManager.max_per_owner``);
+  session manager enforces it, ``SessionManager.max_per_owner``), and at
+  most ``AZURE2_MAX_PER_PREFIX`` (default 3) per IPv6 /56
+  (:func:`prefix_key`; IPv4 /24s are only weighed when the server is full,
+  see ``SessionManager._evict_candidate``);
 * a token bucket on ``/open`` (``AZURE2_OPEN_RATE``, default ``10/60``: ten a
   minute, in bursts of up to ``AZURE2_OPEN_BURST``) and another on edits
   (``AZURE2_EDIT_RATE``, default ``20/1``, burst ``AZURE2_EDIT_BURST``);
@@ -66,6 +69,24 @@ def client_key(address):
             return str(ip.ipv4_mapped)
         return str(ipaddress.ip_network(f"{ip}/64", strict=False))
     return str(ip)
+
+
+def prefix_key(key, v4_prefix=24, v6_prefix=56):
+    """The wider network ``key`` (a :func:`client_key`) belongs to, which
+    the session manager counts too: an IPv6 /64 by its /56 (a home line is
+    usually given a whole /56, i.e. 256 /64s, so the /64 alone limits little),
+    an IPv4 address by its /24.  A prefix of 128 (IPv6) or 32 (IPv4) makes it
+    the key itself.  None stays None; an unparsable key is its own prefix."""
+    if key is None:
+        return None
+    try:
+        net = ipaddress.ip_network(key, strict=False)
+    except ValueError:
+        return key
+    prefix = v6_prefix if net.version == 6 else v4_prefix
+    if prefix >= net.prefixlen:
+        return str(net)
+    return str(net.supernet(new_prefix=max(0, prefix)))
 
 
 def masked(address):

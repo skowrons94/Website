@@ -100,6 +100,17 @@ class Config:
     # -- abuse limits (app/limits.py; DEPLOY.md, "Security") --------------
     # Sessions one client address (an IPv6 /64) may hold at once; 0: no cap.
     MAX_PER_IP = _int("AZURE2_MAX_PER_IP", 2)
+    # Sessions one IPv6 /56 may hold at once (a home line usually gets a
+    # whole /56, i.e. 256 /64s); 0: no cap.  The prefixes below also group
+    # addresses for the fairness rule when the server is full; IPv4 /24s are
+    # never capped, only weighed then (a /24 can be a campus or a carrier NAT).
+    MAX_PER_PREFIX = _int("AZURE2_MAX_PER_PREFIX", 3)
+    V6_PREFIX = _int("AZURE2_V6_PREFIX", 56)
+    V4_PREFIX = _int("AZURE2_V4_PREFIX", 24)
+    # Seconds after which a session, even one whose page is open, gives its
+    # slot to a newcomer when every slot is taken (the page reopens it
+    # quietly, with its changes); 0: never.
+    MAX_AGE = _int("AZURE2_MAX_AGE", 1800)
     # /open and edits per address, as N/SECONDS token buckets (burst: N,
     # or the *_BURST value); "0" turns one off.
     OPEN_RATE = os.environ.get("AZURE2_OPEN_RATE", "10/60")
