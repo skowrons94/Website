@@ -524,17 +524,48 @@ export function csvLong(datasets: FullDataset[]): string {
   return out
 }
 
-export const bibEscape = (x: string) => x.replace(/\{/g, "\\{").replace(/\}/g, "\\}").replace(/&/g, "\\&")
+/** Braces, `&` and backslashes, escaped in one pass (`\` → `\textbackslash{}`, whose braces stay). */
+export const bibEscape = (x: string) => x.replace(/[\\{}&]/g, (c) => (c === "\\" ? "\\textbackslash{}" : `\\${c}`))
+
+const SUP: Record<string, string> = { "⁰": "0", "¹": "1", "²": "2", "³": "3", "⁴": "4", "⁵": "5", "⁶": "6", "⁷": "7", "⁸": "8", "⁹": "9", "⁺": "+", "⁻": "-" }
+const SUB: Record<string, string> = { "₀": "0", "₁": "1", "₂": "2", "₃": "3", "₄": "4", "₅": "5", "₆": "6", "₇": "7", "₈": "8", "₉": "9", "ₚ": "p", "ₙ": "n", "ₐ": "a", "ₑ": "e", "ₓ": "x" }
+const GREEK: Record<string, string> = {
+  α: "alpha", β: "beta", γ: "gamma", δ: "delta", ε: "epsilon", ζ: "zeta", η: "eta", θ: "theta", ι: "iota", κ: "kappa",
+  λ: "lambda", μ: "mu", µ: "mu", ν: "nu", ξ: "xi", π: "pi", ρ: "rho", σ: "sigma", τ: "tau", υ: "upsilon", φ: "phi",
+  χ: "chi", ψ: "psi", ω: "omega", Γ: "Gamma", Δ: "Delta", Θ: "Theta", Λ: "Lambda", Ξ: "Xi", Π: "Pi", Σ: "Sigma",
+  Φ: "Phi", Ψ: "Psi", Ω: "Omega",
+}
+
+/**
+ * A title for classic BibTeX (pdflatex): superscript and subscript runs and
+ * Greek letters become math, `¹⁴N(p,γ)¹⁵O` → `$^{14}$N(p,$\gamma$)$^{15}$O`;
+ * adjacent pieces share one `$…$` (`γ₀` → `$\gamma_{0}$`). Applied after
+ * bibEscape. scripts/data/nucdata/export.py `_bib_title` does the same.
+ */
+export function bibTitle(x: string): string {
+  const math = (body: string) => `\u0001${body}\u0002`
+  const run = (map: Record<string, string>, m: string) => [...m].map((c) => map[c]).join("")
+  return x
+    .replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻]+/g, (m) => math(`^{${run(SUP, m)}}`))
+    .replace(/[₀₁₂₃₄₅₆₇₈₉ₚₙₐₑₓ]+/g, (m) => math(`_{${run(SUB, m)}}`))
+    .replace(/[α-ωΓΔΘΛΞΠΣΦΨΩµ]/g, (c) => (GREEK[c] ? math(`\\${GREEK[c]}`) : c))
+    .replace(/\u0002\u0001/g, "")
+    .replace(/[\u0001\u0002]/g, "$")
+}
 
 /**
  * One BibTeX entry: `@kind{key,\n  field = {value},\n…}`. Empty values are
- * left out; values are escaped, except a `{ raw }` one, written as given (the
+ * left out; values are escaped (a title also gets bibTitle), except a `{ raw }` one, written as given (the
  * atlas uses it for a collaboration's name in braces).
  */
 export function bibEntry(kind: string, key: string, fields: Iterable<[string, unknown]>): string {
   const body = [...fields]
     .filter(([, x]) => x)
-    .map(([k, x]) => `  ${k} = {${typeof x === "object" && x !== null && "raw" in x ? String((x as { raw: string }).raw) : bibEscape(s(x))}}`)
+    .map(([k, x]) => {
+      if (typeof x === "object" && x !== null && "raw" in x) return `  ${k} = {${String((x as { raw: string }).raw)}}`
+      const v = bibEscape(s(x))
+      return `  ${k} = {${k === "title" ? bibTitle(v) : v}}`
+    })
     .join(",\n")
   return `@${kind}{${key},\n${body}\n}`
 }

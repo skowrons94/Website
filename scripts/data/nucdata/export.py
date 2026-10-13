@@ -322,7 +322,30 @@ def csv_long(datasets: List[dict]) -> str:
 
 
 def _bib_escape(s: str) -> str:
-    return s.replace("{", "\\{").replace("}", "\\}").replace("&", "\\&")
+    """Braces, `&` and backslashes, in one pass (a backslash becomes \\textbackslash{})."""
+    return re.sub(r"[\\{}&]", lambda m: "\\textbackslash{}" if m.group(0) == "\\" else "\\" + m.group(0), s)
+
+
+_SUP = dict(zip("⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻", "0123456789+-"))
+_SUB = dict(zip("₀₁₂₃₄₅₆₇₈₉ₚₙₐₑₓ", "0123456789pnaex"))
+_GREEK = {
+    "α": "alpha", "β": "beta", "γ": "gamma", "δ": "delta", "ε": "epsilon", "ζ": "zeta", "η": "eta", "θ": "theta",
+    "ι": "iota", "κ": "kappa", "λ": "lambda", "μ": "mu", "µ": "mu", "ν": "nu", "ξ": "xi", "π": "pi", "ρ": "rho",
+    "σ": "sigma", "τ": "tau", "υ": "upsilon", "φ": "phi", "χ": "chi", "ψ": "psi", "ω": "omega", "Γ": "Gamma",
+    "Δ": "Delta", "Θ": "Theta", "Λ": "Lambda", "Ξ": "Xi", "Π": "Pi", "Σ": "Sigma", "Φ": "Phi", "Ψ": "Psi",
+    "Ω": "Omega",
+}
+
+
+def _bib_title(s: str) -> str:
+    """Superscripts, subscripts and Greek letters as LaTeX math: ¹⁴N(p,γ)¹⁵O → $^{14}$N(p,$\\gamma$)$^{15}$O
+    (lib/data/export.ts bibTitle). Applied after _bib_escape."""
+    def math(body):
+        return "\x01" + body + "\x02"
+    s = re.sub("[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻]+", lambda m: math("^{" + "".join(_SUP[c] for c in m.group(0)) + "}"), s)
+    s = re.sub("[₀₁₂₃₄₅₆₇₈₉ₚₙₐₑₓ]+", lambda m: math("_{" + "".join(_SUB[c] for c in m.group(0)) + "}"), s)
+    s = re.sub("[α-ωΓΔΘΛΞΠΣΦΨΩµ]", lambda m: math("\\" + _GREEK[m.group(0)]) if m.group(0) in _GREEK else m.group(0), s)
+    return s.replace("\x02\x01", "").replace("\x01", "$").replace("\x02", "$")
 
 
 def bibtex(datasets: List[dict]) -> str:
@@ -357,7 +380,9 @@ def bibtex(datasets: List[dict]) -> str:
             fields["doi"] = m["doi"]
         fields["note"] = f"EXFOR {', '.join(v['ids'])} ({m['links']['exfor']})"
         cite = re.sub(r"[^A-Za-z]", "", m["first_author"]) + str(m["year"] or "") + "_" + key
-        body = ",\n".join(f"  {k} = {{{_bib_escape(str(x))}}}" for k, x in fields.items() if x)
+        body = ",\n".join(
+            f"  {k} = {{{_bib_title(_bib_escape(str(x))) if k == 'title' else _bib_escape(str(x))}}}"
+            for k, x in fields.items() if x)
         out.append(f"@{kind}{{{cite},\n{body}\n}}")
     return "\n\n".join(out) + "\n"
 

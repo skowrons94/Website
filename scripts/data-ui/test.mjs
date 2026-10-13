@@ -23,7 +23,7 @@ import os from "node:os"
 import path from "node:path"
 import zlib from "node:zlib"
 
-import { azure2, azure2Files, bibtex, csvLong, jsonExport } from "../../lib/data/export.ts"
+import { azure2, azure2Files, bibEscape, bibTitle, bibtex, csvLong, jsonExport } from "../../lib/data/export.ts"
 import { fullDataset } from "../../lib/data/dataset.ts"
 import { massTable, parseAme } from "../../lib/data/masses.ts"
 import { parsePy, pyFormat, pyRepr, pyRound } from "../../lib/data/pyfmt.ts"
@@ -118,6 +118,14 @@ same(csvLong(order), expected.all.csv, "all csv")
 same(bibtex(order, journals), expected.all.bibtex, "all bibtex")
 same(jsonExport(order, SNAP), expected.all.json, "all json")
 check(azureFiles >= 10, `AZURE2 files compared: ${azureFiles}`)
+// BibTeX titles: Unicode nuclides and Greek letters as LaTeX, backslashes escaped, as Python writes them.
+const titles = ["¹⁴N(p,γ)¹⁵O", "S factor at Eₚ = 330–740 keV", "γ₀ and Γγ", "a\\b {c} & d", "1⁻ state"]
+const pyTitles = JSON.parse(
+  py(["-c", "import json,sys; sys.path.insert(0, 'scripts/data'); from nucdata.export import _bib_title, _bib_escape; print(json.dumps([_bib_title(_bib_escape(t)) for t in json.load(sys.stdin)]))"], JSON.stringify(titles)),
+)
+titles.forEach((t, i) => same(bibTitle(bibEscape(t)), pyTitles[i], `bib title ${t}`))
+same(bibTitle(bibEscape("¹⁴N(p,γ)¹⁵O")), "$^{14}$N(p,$\\gamma$)$^{15}$O", "bib title of ¹⁴N(p,γ)¹⁵O")
+same(bibEscape("a\\b"), "a\\textbackslash{}b", "bib backslash")
 console.log(`exports: ${all.size} datasets, ${azureFiles} AZURE2 files (3 option sets), CSV, JSON, BibTeX: byte for byte`)
 
 /* -- 2. Python formatting --------------------------------------------------- */
