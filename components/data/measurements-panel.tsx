@@ -5,7 +5,7 @@ import { useState } from "react"
 import { ArrowRight, ChevronDown } from "lucide-react"
 
 import { GapMap, type MapRow, type MapWindow } from "@/components/data/gap-map"
-import { energy, kev, percent, temperature } from "@/lib/data/format"
+import { dec, energy, kev, percent, temperature } from "@/lib/data/format"
 import { fill } from "@/lib/data/fill"
 import { GROUPS, GROUP_SYMBOL } from "@/lib/data/quantity"
 import type { DataExpertStrings } from "@/lib/i18n"
@@ -122,7 +122,7 @@ export function MeasurementsPanel(p: PanelProps) {
           value={w ? percent(w.unmeasured, lang) : "–"}
           sub={
             w
-              ? `${fill(t.unmeasuredSub, { T: neutron && w.kT ? `kT = ${kev(w.kT, lang)} keV` : `T₉ = ${w.T9}` })}${
+              ? `${fill(t.unmeasuredSub, { T: neutron && w.kT ? `kT = ${kev(w.kT, lang)} keV` : `T₉ = ${dec(String(w.T9), lang)}` })}${
                   w.below !== null && w.below > 0.0001 && !neutron ? ` · ${fill(t.belowLowest, { share: percent(w.below, lang) })}` : ""
                 }`
               : ""

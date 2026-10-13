@@ -78,7 +78,8 @@ export function NucleusView({
   const t = strings.nucleus
   const [ei, setEi] = useState(0)
   const [wi, setWi] = useState(0)
-  const [zoom, setZoom] = useState<"threshold" | "all">("threshold")
+  // a short scheme reads best whole
+  const [zoom, setZoom] = useState<"threshold" | "all">(levels.length <= 30 ? "all" : "threshold")
   const ent = entrances[ei]
   const win = ent?.windows[Math.min(wi, Math.max(0, (ent?.windows.length ?? 1) - 1))] ?? null
   const [strengths, setStrengths] = useState<Strength[] | null>(null)
@@ -231,19 +232,19 @@ export function NucleusView({
               <caption className="sr-only">{t.resonances}</caption>
               <thead className="bg-card text-left text-xs text-muted-foreground">
                 <tr>
-                  <th scope="col" className="px-3 py-2 text-right font-medium">
+                  <th scope="col" className="whitespace-nowrap px-3 py-2 text-right font-medium">
                     {t.energy}
                   </th>
-                  <th scope="col" className="px-3 py-2 text-right font-medium">
+                  <th scope="col" className="whitespace-nowrap px-3 py-2 text-right font-medium">
                     {t.Er}
                   </th>
-                  <th scope="col" className="px-3 py-2 font-medium">
+                  <th scope="col" className="whitespace-nowrap px-3 py-2 font-medium">
                     {t.jpi}
                   </th>
-                  <th scope="col" className="px-3 py-2 font-medium">
+                  <th scope="col" className="whitespace-nowrap px-3 py-2 font-medium">
                     {t.halfLife}
                   </th>
-                  <th scope="col" className="px-3 py-2 font-medium">
+                  <th scope="col" className="whitespace-nowrap px-3 py-2 font-medium">
                     {t.wg}
                   </th>
                 </tr>
@@ -318,16 +319,16 @@ export function NucleusView({
             <caption className="sr-only">{fill(t.tableCaption, { cn })}</caption>
             <thead className="sticky top-0 bg-card text-left text-xs text-muted-foreground">
               <tr>
-                <th scope="col" className="px-3 py-2 text-right font-medium">
+                <th scope="col" className="whitespace-nowrap px-3 py-2 text-right font-medium">
                   {t.energy}
                 </th>
-                <th scope="col" className="px-3 py-2 font-medium">
+                <th scope="col" className="whitespace-nowrap px-3 py-2 font-medium">
                   {t.jpi}
                 </th>
-                <th scope="col" className="px-3 py-2 font-medium">
+                <th scope="col" className="whitespace-nowrap px-3 py-2 font-medium">
                   {t.halfLife}
                 </th>
-                <th scope="col" className="px-3 py-2 font-medium">
+                <th scope="col" className="whitespace-nowrap px-3 py-2 font-medium">
                   {t.gammas}
                 </th>
               </tr>
@@ -384,9 +385,12 @@ function LevelScheme({
   const [ref, width, k] = useWidth<HTMLDivElement>(720)
   const S = entrance?.S ?? 0
   const all = levels.map((l) => l.E_keV / 1000)
-  const lo = zoom === "all" ? 0 : Math.max(0, S - 0.4)
+  // near the threshold: at least the nearest level on either side of it
+  const below = Math.max(0, ...all.filter((E) => E < S))
+  const above = Math.min(...all.filter((E) => E > S), Infinity)
+  const lo = zoom === "all" ? 0 : Math.max(0, Math.min(S - 0.4, below - 0.05))
   const hiData = Math.max(...all, S + 1)
-  const hi = zoom === "all" ? hiData : Math.min(hiData, Math.max(S + 0.5, (w?.hi ?? S) + 0.25))
+  const hi = zoom === "all" ? hiData : Math.min(hiData, Math.max(S + 0.5, (w?.hi ?? S) + 0.25, Number.isFinite(above) ? above + 0.05 : 0))
   const shown = levels.filter((l) => l.E_keV / 1000 >= lo && l.E_keV / 1000 <= hi)
   const LABEL = 13
   const height = Math.max(380, Math.min(1400, shown.length * LABEL + 60))

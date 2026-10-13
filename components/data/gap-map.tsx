@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react"
 
 import { useWidth } from "@/components/rates/chart-kit"
-import { energy, kev } from "@/lib/data/format"
+import { dec, energy, kev } from "@/lib/data/format"
 import { fill } from "@/lib/data/fill"
 import { packLanes } from "@/lib/data/gap"
 import { GROUPS, GROUP_SYMBOL, type Group } from "@/lib/data/quantity"
@@ -143,7 +143,7 @@ export function GapMap({
     groups: groupsText,
     lo: w ? kev(w.lo, lang) : "–",
     hi: w ? kev(w.hi, lang) : "–",
-    T: w ? `T₉ = ${w.T9}` : "",
+    T: w ? `T₉ = ${dec(String(w.T9), lang)}` : "",
     lowest: lowest ? energy(lowest, lang) : "–",
   })
 
