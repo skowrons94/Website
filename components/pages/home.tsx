@@ -21,6 +21,7 @@ import { LUNA_RATES_PUBLIC } from "@/lib/rates/features"
 import { CURIOSITIES } from "@/lib/rates/curiosities"
 // --- find ---
 import { JsonLd } from "@/components/json-ld"
+import { NewsStrip } from "@/components/news-strip"
 import { personLd, websiteLd } from "@/lib/structured-data"
 
 /**
@@ -312,6 +313,9 @@ export function HomePage({ lang }: { lang: Lang }) {
           .
         </p>
       </section>
+
+      {/* --- find ---: the latest news, small */}
+      <NewsStrip lang={lang} />
 
       {/* -- roles and recognition ----------------------------------------- */}
       {/* Under the community resources, small: the responsibilities for a

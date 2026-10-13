@@ -83,6 +83,8 @@ const en = {
     // --- r13 final ---
     curiosities: "Rate curiosities",
     curiositiesDescription: "What a reaction twice as fast would change, in sixteen sentences",
+    // --- find ---
+    news: "News",
   },
   footer: {
     work: "Work",
@@ -103,6 +105,8 @@ const en = {
     // --- r11 site ---
     about: "About this site",
     code: "Source code",
+    // --- find ---
+    news: "News",
   },
   // --- r11 site ---
   // "Report an error · Suggest a reaction" (components/report-links.tsx): a new
@@ -714,6 +718,8 @@ const it: Dictionary = {
     // --- r13 final ---
     curiosities: "Curiosità sui tassi",
     curiositiesDescription: "Che cosa cambierebbe una reazione due volte più veloce, in sedici frasi",
+    // --- find ---
+    news: "Novità",
   },
   footer: {
     work: "Lavoro",
@@ -734,6 +740,8 @@ const it: Dictionary = {
     // --- r11 site ---
     about: "Informazioni sul sito",
     code: "Codice sorgente",
+    // --- find ---
+    news: "Novità",
   },
   // --- r11 site ---
   report: {

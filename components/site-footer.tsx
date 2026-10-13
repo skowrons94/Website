@@ -110,6 +110,10 @@ export function SiteFooter({ profile, lang }: { profile: Profile; lang: Lang }) 
           <a href={REPO} target="_blank" rel="noreferrer" className={LINK}>
             {t.code}
           </a>
+          {/* --- find --- */}
+          <Link href={localePath(lang, "/news")} className={LINK}>
+            {t.news}
+          </Link>
         </p>
       </div>
     </footer>
