@@ -21,6 +21,18 @@
 
 /* -- exact decimal expansion -------------------------------------------------- */
 
+/** 5^k as a BigInt, by squaring. */
+function pow5(k: number): bigint {
+  let result = BigInt(1)
+  let base = BigInt(5)
+  while (k > 0) {
+    if (k & 1) result *= base
+    base *= base
+    k >>= 1
+  }
+  return result
+}
+
 /** Digits D (no leading or trailing zeros) and decpt with |x| = 0.D × 10^decpt; x finite, non-zero. */
 function exactDigits(x: number): { d: string; decpt: number } {
   const view = new DataView(new ArrayBuffer(8))
@@ -42,7 +54,7 @@ function exactDigits(x: number): { d: string; decpt: number } {
     decpt = d.length
   } else {
     const k = -exp
-    d = (mant * BigInt(5) ** BigInt(k)).toString()
+    d = (mant * pow5(k)).toString()
     decpt = d.length - k
   }
   d = d.replace(/0+$/, "")

@@ -227,3 +227,74 @@ export function packLanes(spans: [number, number][], pad = 0): number[] {
   }
   return lane
 }
+
+/** The 1/e window of an integrand around its peak (keV): for a charged pair, the Gamow window. */
+export function windowOf(it: Integrand): { peak: number; lo: number; hi: number } {
+  const c = cumulative(it, 4000)
+  let peakE = c.E[0]
+  let peakF = -Infinity
+  for (const E of c.E) {
+    const v = logIntegrand(it, E)
+    if (v > peakF) {
+      peakF = v
+      peakE = E
+    }
+  }
+  let lo = peakE
+  let hi = peakE
+  for (const E of c.E) {
+    if (logIntegrand(it, E) >= peakF - 1) {
+      lo = Math.min(lo, E)
+      hi = Math.max(hi, E)
+    }
+  }
+  return { peak: peakE, lo, hi }
+}
+
+/** A temperature's window and the gap metrics there (keV). */
+export interface WindowMetrics {
+  label: string
+  network: string
+  T9: number
+  E0: number
+  width: number
+  lo: number
+  hi: number
+  /** kT, for a neutron */
+  kT: number | null
+  unmeasured: number
+  widths: number | null
+  below: number | null
+}
+
+export interface ChannelLite {
+  z1: number
+  z2: number
+  mu: number
+  threshold: number
+}
+
+/** Windows at chosen temperatures (any reaction), with the metrics. */
+export function windowsAt(ch: ChannelLite, rows: GapRow[], temps: { label: string; T9: number; network?: string }[]): WindowMetrics[] {
+  const ranges = measuredRanges(rows)
+  const lowest = lowestMeasured(rows)
+  const neutral = ch.z1 === 0 || ch.z2 === 0
+  return temps.map((t) => {
+    const it = integrandFor(ch.z1, ch.z2, ch.mu, t.T9, ch.threshold)
+    const w = windowOf(it)
+    const c = cumulative(it)
+    return {
+      label: t.label,
+      network: t.network ?? "",
+      T9: t.T9,
+      E0: w.peak,
+      width: w.hi - w.lo,
+      lo: w.lo,
+      hi: w.hi,
+      kT: neutral ? K_T9_KEV * t.T9 : null,
+      unmeasured: unmeasuredShare(it, ranges),
+      widths: lowest && !neutral ? (lowest.E - w.peak) / (w.hi - w.lo) : null,
+      below: lowest && !neutral ? shareBelow(c, lowest.E) : null,
+    }
+  })
+}

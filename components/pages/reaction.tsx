@@ -32,6 +32,13 @@ import {
 import { formatDate } from "@/lib/atlas-format"
 import { decimal, dict, localePath, withoutArticle, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
+// --- data expert ---
+import { Attribution } from "@/components/data/attribution"
+import { MeasurementsPanel, PanelLink } from "@/components/data/measurements-panel"
+import { compoundNuclei } from "@/lib/data/build"
+import { fill } from "@/lib/data/fill"
+import { compoundOf, displayNuc } from "@/lib/data/nuclide"
+import { atlasPanel } from "@/lib/data/panel"
 
 export const reactionParams = () => getReactionIds().map((id) => ({ id }))
 
@@ -402,10 +409,17 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
   const order = r.references
   const years = r.measurements.map((m) => m.year).filter((y): y is number => y !== null).sort((a, b) => a - b)
   const yearSpan = years.length === 0 ? "" : years[0] === years[years.length - 1] ? String(years[0]) : `${years[0]}–${years[years.length - 1]}`
+  // --- data expert --- the EXFOR measurements of this reaction (build time, from the index)
+  const dx = dict(lang).dataExpert
+  const exfor = atlasPanel(r.id, lang)
+  const compound = exfor ? compoundOf(exfor.slugs[0].key) : null
+  const compoundPage = compound && compoundNuclei(lang).has(compound) ? compound : null
   const toc = [
     r.hasFile && (r.summary || r.role) ? { id: "summary", label: t.summaryAnchor } : null,
     methods.length > 0 || r.measurements.length > 0 ? { id: "measured", label: t.howMeasured } : null,
     html || (r.statusPlain && r.statusNote) || r.gamow.length > 0 ? { id: "details", label: t.details } : null,
+    // --- data expert ---
+    exfor ? { id: "exfor", label: dx.panel.title } : null,
     r.evaluations.length > 0 ? { id: "evaluations", label: t.evaluationsTitle } : null,
     r.openQuestions.length > 0 ? { id: "open-questions", label: t.openQuestions } : null,
     order.length > 0 ? { id: "references", label: t.references } : null,
@@ -690,6 +704,40 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
                 </details>
               )}
             </section>
+          )}
+
+          {/* --- data expert --- measurements in EXFOR against the Gamow window */}
+          {exfor && (
+            <div className="mt-14">
+              <MeasurementsPanel
+                strings={dx}
+                lang={lang}
+                rows={exfor.rows}
+                windows={exfor.windows}
+                lowest={exfor.lowest}
+                counts={exfor.counts}
+                macs={exfor.macs}
+                threshold={exfor.threshold}
+                neutron={exfor.neutron}
+                links={
+                  <>
+                    {exfor.slugs.map((s) => (
+                      <PanelLink key={s.slug} href={to(`/data/reaction/${s.slug}`)}>
+                        {dx.panel.allMeasurements}
+                        {exfor.slugs.length > 1 ? ` · ${s.key}` : ""} <span className="font-normal text-muted-foreground tabular">({s.n})</span>
+                      </PanelLink>
+                    ))}
+                    {compoundPage && (
+                      <PanelLink href={to(`/data/nucleus/${compoundPage}`)}>
+                        <Sci>{fill(dx.panel.compound, { cn: displayNuc(compoundPage) })}</Sci>
+                      </PanelLink>
+                    )}
+                  </>
+                }
+              >
+                <Attribution lang={lang} entries={exfor.entries} className="mt-6" />
+              </MeasurementsPanel>
+            </div>
           )}
 
           {/* -- for a specialist -------------------------------------------- */}
