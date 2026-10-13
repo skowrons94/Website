@@ -30,6 +30,7 @@ function groups(lang: Lang): { title: string; links: { href: string; label: stri
         { href: "/atlas", label: t.atlas },
         { href: "/atlas/timeline", label: t.timeline },
         { href: "/atlas/rates", label: t.rates },
+        { href: "/data", label: t.data },
         { href: "/atlas/methods", label: t.methods },
         { href: "/glossary", label: t.glossary },
         { href: "/notes", label: t.notes },

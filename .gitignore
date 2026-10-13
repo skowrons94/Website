@@ -62,3 +62,6 @@ public/search/
 /public/data/exfor/r/
 /public/data/exfor/sets/
 /public/data/ensdf/*.json
+# The public page's summary of the index, written before every build by
+# scripts/data-summary.mjs.
+/public/data/summary.json

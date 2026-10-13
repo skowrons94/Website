@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "predev": "node scripts/atlas-export.mjs && node scripts/search-index.mjs",
+    "predev": "node scripts/atlas-export.mjs && node scripts/data-summary.mjs && node scripts/search-index.mjs",
     "dev": "next dev",
-    "prebuild": "node scripts/evaluations-check.mjs --quiet && node scripts/atlas-check.mjs && node scripts/atlas-export.mjs && node scripts/search-index.mjs",
+    "prebuild": "node scripts/evaluations-check.mjs --quiet && node scripts/atlas-check.mjs && node scripts/atlas-export.mjs && node scripts/data-summary.mjs && node scripts/search-index.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -16,6 +16,7 @@
     "test:rates": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/rates/test.mjs",
     "rates:baseline": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/rates/baseline.mjs",
     "test:data": "python3 -m pytest -q scripts/data/tests",
+    "data:summary": "node scripts/data-summary.mjs",
     "data": "make data"
   },
   "dependencies": {

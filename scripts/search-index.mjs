@@ -189,6 +189,11 @@ const PAGES = [
   { href: "/atlas/rates/s-process", en: ["The s-process, what if", "Neutron sources, poisons and seeds, from iron to bismuth"], it: ["Il processo s, e se…", "Sorgenti di neutroni, veleni e semi, dal ferro al bismuto"], k: "s-process processo s lead piombo bismuth bismuto iron ferro seed seme neutron poison veleno neutronico neutron source sorgente di neutroni 13C(a,n) 22Ne(a,n) 14N(n,p) exposure esposizione what if" },
   // --- r13 final ---
   { href: "/atlas/rates/curiosities", en: ["Rate curiosities", "What a reaction twice as fast would change, in sixteen sentences"], it: ["Curiosità sui tassi", "Che cosa cambierebbe una reazione due volte più veloce, in sedici frasi"], k: "curiosities curiosity curiosità what if e se twice as fast due volte più veloce ×2 neutrinos neutrini" },
+  // --- data public ---
+  { href: "/data", en: ["Nuclear data explorer", "What has been measured, and what nobody has measured yet"], it: ["Esploratore dei dati nucleari", "Che cosa è stato misurato, e che cosa nessuno ha ancora misurato"], k: "nuclear data dati nucleari EXFOR ENSDF measurements misure measured misurato unmeasured non misurato never measured mai misurato gap vuoto Gamow window finestra di Gamow lowest energy energia più bassa levels livelli nuclear levels livelli nucleari experiments esperimenti IAEA NRDC NNDC element elemento" },
+  { href: "/data/path/sun-shines-slowly", w: -6, en: ["Why does the Sun shine slowly?", "A guided path: the slowest reaction in the Sun"], it: ["Perché il Sole brilla lentamente?", "Un percorso guidato: la reazione più lenta del Sole"], k: "guided path percorso guidato proton-proton protone-protone slowest reaction reazione più lenta" },
+  { href: "/data/path/sodium-in-salt", w: -6, en: ["Where does the sodium in salt come from?", "A guided path: from neon-22 to sodium-23"], it: ["Da dove viene il sodio del sale?", "Un percorso guidato: dal neon-22 al sodio-23"], k: "guided path percorso guidato sodium sodio salt sale 22Ne(p,g) NeNa globular clusters ammassi globulari" },
+  { href: "/data/path/iron-to-lead", w: -6, en: ["From iron to lead", "A guided path: the neutrons of the s-process"], it: ["Dal ferro al piombo", "Un percorso guidato: i neutroni del processo s"], k: "guided path percorso guidato s-process processo s neutron source sorgente di neutroni 13C(a,n)" },
   { href: "/atlas/rates", en: ["Reaction rates", "How fast each reaction runs, and what if it were different"], it: ["Tassi di reazione", "Quanto è veloce ogni reazione, e se fosse diversa"], k: "reaction rates tassi di reazione rate tasso reaclib pynucastro what if sensitivity sensibilità bottleneck collo di bottiglia waiting time tempo di attesa lifetime network rete pp CNO NeNa MgAl" },
 ]
 
@@ -356,7 +361,15 @@ function build(lang) {
   for (const p of PAGES) {
     const [label, sub] = p[lang]
     const extra = p.href === "/atlas/s-process" ? sProcessNuclides().join(" · ") : ""
-    entries.push({ t: "page", l: label, s: sub, h: loc(lang, p.href), k: clean([p[other][0], p.k, extra].filter(Boolean).join(" · ")) })
+    entries.push({
+      t: "page",
+      l: label,
+      s: sub,
+      h: loc(lang, p.href),
+      k: clean([p[other][0], p.k, extra].filter(Boolean).join(" · ")),
+      // --- data public --- a guided path ranks after the page it is a path through
+      ...(p.w ? { w: p.w } : {}),
+    })
   }
 
   // The processes (CNO cycles, helium burning…): the map opened on them, or

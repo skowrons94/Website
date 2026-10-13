@@ -53,6 +53,12 @@ const CASES = [
   { lang: "en", q: "sun", first: "/atlas#pp", none: [/^https?:/] , nOnly: 3 },
   { lang: "it", q: "Sole", first: "/atlas#pp", none: [/s-only/] },
   { lang: "en", q: "supernova", top: ["/atlas#carbon"], n: 3 },
+  // --- data public ---
+  { lang: "en", q: "nuclear data", first: "/data" },
+  { lang: "it", q: "dati nucleari", first: "/data" },
+  { lang: "en", q: "EXFOR", top: ["/data"], n: 3 },
+  { lang: "en", q: "never measured", top: ["/data"], n: 3 },
+  { lang: "it", q: "sodio del sale", top: ["/data/path/sodium-in-salt"], n: 3 },
   // --- rates ---
   { lang: "en", q: "reaction rates", first: "/atlas/rates" },
   { lang: "it", q: "tassi di reazione", first: "/atlas/rates" },

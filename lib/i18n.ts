@@ -16,6 +16,8 @@
 export { LANGS, englishPath, langOf, localePath, type Lang } from "@/lib/locale"
 import type { Lang } from "@/lib/locale"
 import { evalEn, evalIt } from "@/lib/i18n-eval"
+// --- data public ---
+import { dataPublicEn, dataPublicIt } from "@/lib/data/i18n-public"
 
 /** `1.5` → `1,5` in Italian. */
 export function decimal(text: string | number, lang: Lang): string {
@@ -83,6 +85,9 @@ const en = {
     // --- r13 final ---
     curiosities: "Rate curiosities",
     curiositiesDescription: "What a reaction twice as fast would change, in sixteen sentences",
+    // --- data public ---
+    data: "Nuclear data",
+    dataDescription: "What has been measured, and what nobody has measured yet",
   },
   footer: {
     work: "Work",
@@ -103,6 +108,8 @@ const en = {
     // --- r11 site ---
     about: "About this site",
     code: "Source code",
+    // --- data public ---
+    data: "Nuclear data explorer",
   },
   // --- r11 site ---
   // "Report an error · Suggest a reaction" (components/report-links.tsx): a new
@@ -257,6 +264,11 @@ const en = {
     resourceRatesCuriosities: (n: number) => `${n} curiosities`,
     resourceRatesLink: "See where a rate ends up: the rate explorer",
     // --- r7 site ---
+    // --- data public ---
+    resourceData: "Nuclear data explorer",
+    resourceDataText: (datasets: string, reactions: number) =>
+      `What has been measured, and what nobody has measured yet: ${datasets} datasets of the world's nuclear-reaction logbook (EXFOR) and the levels of each nucleus (ENSDF), linked to the ${reactions} reactions of the atlas.`,
+    resourceDataMeta: "Levels: ENSDF (NNDC)",
     resourceEvaluationsSplit: (n: number, published: number) =>
       `${n} R-matrix evaluations running AZURE2 in the browser: ${published} from published papers, ${n - published} not yet published. Each comes with its input files, to download and run locally.`,
   },
@@ -367,6 +379,8 @@ const en = {
 
   // Evaluation pages: lib/i18n-eval.ts (kept apart for the client bundles).
   ...evalEn,
+  // --- data public --- (the explorer's public pages: lib/data/i18n-public.ts)
+  ...dataPublicEn,
 
   /* -- atlas -------------------------------------------------------------- */
   atlas: {
@@ -714,6 +728,9 @@ const it: Dictionary = {
     // --- r13 final ---
     curiosities: "Curiosità sui tassi",
     curiositiesDescription: "Che cosa cambierebbe una reazione due volte più veloce, in sedici frasi",
+    // --- data public ---
+    data: "Dati nucleari",
+    dataDescription: "Che cosa è stato misurato, e che cosa nessuno ha ancora misurato",
   },
   footer: {
     work: "Lavoro",
@@ -734,6 +751,8 @@ const it: Dictionary = {
     // --- r11 site ---
     about: "Informazioni sul sito",
     code: "Codice sorgente",
+    // --- data public ---
+    data: "Esploratore dei dati nucleari",
   },
   // --- r11 site ---
   report: {
@@ -882,6 +901,11 @@ const it: Dictionary = {
     resourceRatesCuriosities: (n: number) => `${n} curiosità`,
     resourceRatesLink: "Dove va a finire un tasso: l'esploratore dei tassi",
     // --- r7 site ---
+    // --- data public ---
+    resourceData: "Esploratore dei dati nucleari",
+    resourceDataText: (datasets: string, reactions: number) =>
+      `Che cosa è stato misurato, e che cosa nessuno ha ancora misurato: ${datasets} serie di dati del registro mondiale delle reazioni nucleari (EXFOR) e i livelli di ogni nucleo (ENSDF), collegati alle ${reactions} reazioni dell'atlante.`,
+    resourceDataMeta: "Livelli: ENSDF (NNDC)",
     resourceEvaluationsSplit: (n: number, published: number) =>
       `${n} valutazioni R-matrix calcolate con AZURE2 nel browser: ${published} da articoli pubblicati, ${n - published} non ancora pubblicate. Ognuna ha i suoi file di input, da scaricare ed eseguire in locale.`,
   },
@@ -992,6 +1016,8 @@ const it: Dictionary = {
 
   // Evaluation pages: lib/i18n-eval.ts.
   ...evalIt,
+  // --- data public ---
+  ...dataPublicIt,
 
   /* -- atlas -------------------------------------------------------------- */
   atlas: {

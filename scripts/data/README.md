@@ -222,3 +222,24 @@ and the cross-check, and on the committed outputs: regression counts
 ¹³C(α,n) 65/31, ²²Ne(α,n) 16/9, ¹⁹⁷Au(n,γ) 278/187), schemas, budgets and the
 attribution fields. The EXFOR fixtures (`tests/fixtures/exfor/*.x4`) are
 unmodified master files (CC BY 4.0), except `T0001.x4`, which is synthetic.
+
+## The public page's summary (`/data`)
+
+The public entry page (`components/pages/data-explorer.tsx`) never loads the
+index. `node scripts/data-summary.mjs` (run by `npm run prebuild` and
+`predev`; also `npm run data:summary`) writes `public/data/summary.json`
+(about 15 kB, not committed) from the committed index: per atlas reaction the
+number of datasets and entries, the years, the LUNA datasets (institute or
+facility `2ITYLGS`) and the **lowest centre-of-mass energy measured**. That
+counts σ, S, dσ/dΩ, yields and resonance strengths, and leaves out datasets
+flagged `not-experimental`, `derived`, `superseded`, `deleted`,
+`preliminary` or `upper-limits`, single S-factor values, indirect entries,
+and charged-particle energies under 1 keV (rules and reasons in
+`lib/data/public-summary.mjs`). The indirect entries (Trojan horse, Coulomb
+dissociation, ANC) are `lib/data/indirect-entries.json`, committed and
+regenerated from the atlas shards with `node scripts/data-summary.mjs
+--indirect` after `dx.py build-exfor --shards atlas`.
+
+Three subentries give MeV values under a `KEV` heading in EXFOR itself
+(C1825.002, D0468.004, O2207.006: 15N(p,γ), 17O(p,γ), 19F(p,α)); the 1 keV
+floor keeps them out of the summary, and they are worth reporting to the NRDC.
