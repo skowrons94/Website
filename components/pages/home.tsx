@@ -16,6 +16,7 @@ import {
   getSoftware,
 } from "@/lib/content"
 import { Sci } from "@/components/sci"
+import { getSummary, group } from "@/lib/data/public"
 import { dict, localePath, type Lang } from "@/lib/i18n"
 import { LUNA_RATES_PUBLIC } from "@/lib/rates/features"
 import { CURIOSITIES } from "@/lib/rates/curiosities"
@@ -120,6 +121,7 @@ function resources(lang: Lang): Resource[] {
   const pypi = lunasrim?.links?.find((l) => /pypi/i.test(l.href))
   const { total: evaluations, published: publishedEvaluations } = getEvaluationCounts()
   const notes = getAllNotes().length
+  const dataSummary = getSummary()
   const out: Resource[] = [
     {
       key: "atlas",
@@ -145,6 +147,22 @@ function resources(lang: Lang): Resource[] {
         { text: t.resourceRatesCuriosities(CURIOSITIES.length), href: "/atlas/rates/curiosities" },
       ],
     },
+    // --- data public ---
+    ...(dataSummary.counts.datasets > 0
+      ? [
+          {
+            key: "data",
+            title: t.resourceData,
+            text: t.resourceDataText(group(dataSummary.counts.datasets, lang), atlas.reactions.length),
+            href: "/data",
+            meta: [
+              { text: lang === "it" ? dataSummary.attribution.it : dataSummary.attribution.en },
+              { text: t.resourceDataMeta },
+              { text: t.howToCite, href: "/data#sources" },
+            ],
+          },
+        ]
+      : []),
     {
       key: "s-process",
       title: t.resourceSProcess,
