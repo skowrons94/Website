@@ -126,9 +126,17 @@ def main():
         try:
             if phone:
                 page.get_by_role('button', name=t['menu']).click()
+            # The last finished run, from the worker itself (not from any cached broadcast).
+            latest = page.evaluate("window.__webdaqDemo.control({type:'state'}).then(s => Math.max(...s.runs.filter(r => r.end_time).map(r => r.run_number)))")
+            report['last finished run'] = latest
             page.get_by_role('button', name=t['files']).first.click()
             drawer = page.get_by_role('dialog', name=t['files'])
-            drawer.get_by_role('button', name=t['show']).first.click()
+            rows = drawer.locator('.wd-list > li')
+            rows.first.get_by_role('button', name=t['show']).wait_for(timeout=10000)
+            first = rows.first.locator('strong').inner_text()
+            if not re.search(rf'\b{latest}\b', first):
+                failures.append(f'the Run files drawer lists {first!r} first, not run {latest}, the one just stopped')
+            rows.filter(has=page.locator('strong', has_text=re.compile(rf'\b{latest}$'))).get_by_role('button', name=t['show']).click()
             drawer.get_by_role('button', name=t['all']).wait_for(timeout=30000)
             names = drawer.locator('.wd-files li button').all_inner_texts()
             report['run files'] = names
@@ -169,6 +177,11 @@ def main():
             failures.append(f'requests left the origin: {sorted(set(outside))[:5]}')
         if errors:
             failures.append(f'page errors: {errors[:3]}')
+        if failures:
+            try:
+                report['request log (non-GET, ms since load)'] = page.evaluate('window.__webdaqDemo.log ? window.__webdaqDemo.log() : []')[-60:]
+            except Exception:
+                pass
         browser.close()
 
     print(json.dumps(report, indent=1, ensure_ascii=False))

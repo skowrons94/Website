@@ -116,7 +116,12 @@ fetch('/api/server-control' | '/api/cache') → shim/fetch-shim.ts ────�
   The Logbook (`/data/…`) and ELOG/Grafana families, `lines.json` and each
   detector's response table are chunks loaded when first needed.
 * `window.__webdaqDemo` exposes `misses()`, `state()`, `control(cmd)`,
-  `request(req)`, `onState(fn)` and `resetDemo()` to the shell and the tests.
+  `request(req)`, `onState(fn)`, `resetDemo()` and `log()` (the last 400
+  changing requests and commands, which `tests/e2e/tour.py` prints when it
+  fails) to the shell and the tests. The worker broadcasts its state summary
+  every second and before it acknowledges any change, so `state()` never lags
+  an acknowledged request; the Run files drawer still asks the worker
+  (`control({type:'state'})`) when it opens rather than trust a broadcast.
   `control` takes `{type:'scenario', scenario}`, `{type:'fault', board_fail_at_s,
   stall_at_s}`, `{type:'fwhm', channel, energy_keV}` and `{type:'state'}`.
 
