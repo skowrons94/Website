@@ -485,6 +485,27 @@ events:
     refs: [greife1994]
     reactions: [3He-3He2p-4He]
 
+  - year: 1996
+    title: A storage ring shows that bare rhenium-187 decays in years
+    title_it: Un anello di accumulazione mostra che il renio-187 nudo decade in pochi anni
+    category: experiment
+    text: >-
+      Rhenium-187 lives about 42 billion years as a neutral atom. Fully
+      stripped of its electrons in the GSI storage ring, it decayed with a
+      half-life of 32.9 years, because its electron can then be created in an
+      empty atomic orbit. Inside stars, where atoms are ionized, laboratory
+      half-lives can therefore change completely; the result also affects the
+      rhenium–osmium clock used to date the Galaxy.
+    text_it: >-
+      Il renio-187 vive circa 42 miliardi di anni come atomo neutro.
+      Privato di tutti i suoi elettroni nell'anello di accumulazione del GSI,
+      decadde con un tempo di dimezzamento di 32,9 anni, perché il suo
+      elettrone può allora nascere in un'orbita atomica vuota. Dentro le
+      stelle, dove gli atomi sono ionizzati, i tempi di dimezzamento di
+      laboratorio possono quindi cambiare del tutto; il risultato tocca anche
+      l'orologio renio–osmio usato per datare la Galassia.
+    refs: [bosch1996]
+
   - year: 1998
     title: Super-Kamiokande finds neutrino oscillations
     title_it: Super-Kamiokande scopre le oscillazioni dei neutrini
@@ -960,6 +981,26 @@ events:
       Sasso, che vi avviò la fisica con acceleratori sotto terra. È aperto a
       utenti esterni, con il tempo di fascio assegnato tramite bandi annuali.
     refs: [junker2023]
+
+  - year: 2024
+    month: 11
+    title: The stellar decay of thallium-205 is measured
+    title_it: Misurato il decadimento stellare del tallio-205
+    category: experiment
+    text: >-
+      Bare thallium-205 ions circulating in the GSI storage ring were seen
+      to decay into lead-205 by bound-state β decay, with a half-life of
+      291 days. In stars this decay makes lead-205, a radioactive nucleus
+      whose traces in meteorites help date the birth of the Sun; the
+      long-sought measurement fixes a key nuclear input of that clock.
+    text_it: >-
+      Ioni nudi di tallio-205, in circolazione nell'anello di accumulazione
+      del GSI, decaddero in piombo-205 per decadimento β in stato
+      legato, con un tempo di dimezzamento di 291 giorni. Nelle stelle questo
+      decadimento produce piombo-205, un nucleo radioattivo le cui tracce nei
+      meteoriti aiutano a datare la nascita del Sole; la misura, attesa da
+      tempo, fissa un dato nucleare chiave di quell'orologio.
+    refs: [leckenby2024]
 
   - year: 2025
     title: Solar Fusion III
