@@ -129,18 +129,15 @@ function BodyEn({ to, n }: { to: (p: string) => string; n: Counts }) {
         <div className={prose}>
           <p>
             Every round of changes was reviewed independently, by separate AI reviewers (also Claude) that had not
-            written the work, each asked to read the site in one role, from one point of view:
+            written the work, each asked to read the site from one point of view:
           </p>
         </div>
         <ul className={list}>
-          <li>in the role of a nuclear astrophysicist: the physics, the numbers and the references;</li>
-          <li>in the role of an R-matrix specialist: the evaluations and the notes;</li>
-          <li>
-            in the role of a user-interface and accessibility reviewer: phones and desktops, 200% text, the keyboard
-            alone;
-          </li>
-          <li>in the role of readers from the general public, one in English and one in Italian;</li>
-          <li>in the role of a senior referee, reading the whole site as a journal referee would.</li>
+          <li>a nuclear astrophysicist: the physics, the numbers and the references;</li>
+          <li>an R-matrix specialist: the evaluations and the notes;</li>
+          <li>a user-interface and accessibility reviewer: phones and desktops, 200% text, the keyboard alone;</li>
+          <li>two members of the public, one reading in English and one in Italian;</li>
+          <li>a senior referee, reading the whole site as a journal referee would.</li>
         </ul>
         <div className={prose}>
           <p>
@@ -165,7 +162,7 @@ function BodyEn({ to, n }: { to: (p: string) => string; n: Counts }) {
             the <L href="/evaluations">evaluations</L> that run in your browser are compared with native AZURE2 on every
             model, and the published fits are the native results;
           </li>
-          <li>the site search is tested on the queries people actually type, in English and in Italian.</li>
+          <li>the site search is tested on the queries people type, in English and in Italian.</li>
         </ul>
         <div className={prose}>
           <p>
@@ -182,7 +179,7 @@ function BodyEn({ to, n }: { to: (p: string) => string; n: Counts }) {
           <li>
             <span className="font-medium text-foreground">Masses and half-lives:</span> the Atomic Mass Evaluation
             AME2020 (M. Wang <i>et al.</i>, Chin. Phys. C 45, 030003 (2021)) and NUBASE2020 (F. G. Kondev{" "}
-            <i>et al.</i>, Chin. Phys. C 45, 030001 (2021)). The atlas&apos; Q-values and the half-lives come from them;
+            <i>et al.</i>, Chin. Phys. C 45, 030001 (2021)). The atlas&apos;s Q-values and half-lives come from them;
             the rate explorer shows REACLIB&apos;s own Q-values, those its rates were fitted with.
           </li>
           <li>
@@ -202,13 +199,13 @@ function BodyEn({ to, n }: { to: (p: string) => string; n: Counts }) {
             files can be downloaded and run locally.
           </li>
           <li>
-            <span className="font-medium text-foreground">Later:</span> links to EXFOR, the international database of
+            <span className="font-medium text-foreground">Planned:</span> links to EXFOR, the international database of
             experimental nuclear reaction data, for the measurements the atlas cites.
           </li>
         </ul>
         <div className={prose}>
           <p>
-            The atlas&apos; texts and its data file (<L href="/atlas#cite">data.json</L>) are released under the{" "}
+            The atlas text and its data file (<L href="/atlas#cite">data.json</L>) are released under the{" "}
             <Ext href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</Ext> licence: you may reuse them, with
             credit. The data of others (AME2020, NUBASE2020, REACLIB, the measurements) remain under their own terms;
             please cite the original publications.
@@ -230,7 +227,7 @@ function BodyEn({ to, n }: { to: (p: string) => string; n: Counts }) {
             </Ext>
             ; every reaction in the atlas, the s-process page and each glossary entry also has a &ldquo;Report an
             error&rdquo; link that fills in the report for you, and a &ldquo;Suggest a reaction&rdquo; link for what is
-            missing. You can also write to me by e-mail. Corrections and contributions (a reaction, a reference, a
+            missing. You can also write to me by email. Corrections and contributions (a reaction, a reference, a
             translation) are welcome as pull requests.
           </p>
         </div>
