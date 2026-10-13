@@ -90,7 +90,7 @@ const NAMES: Record<Lang, Record<Group, string>> = {
     dsigma: "Distribuzione angolare dσ/dΩ",
     pol: "Polarizzazione (A_y, VAP, TAP)",
     yield: "Resa",
-    strength: "Forza di risonanza ωγ, larghezze",
+    strength: "Intensità della risonanza ωγ, larghezze",
     macs: "Media maxwelliana (MACS)",
     other: "Altre grandezze",
   },
@@ -153,7 +153,7 @@ const FLAG_TEXT: Record<Lang, Record<Flag, [string, string]>> = {
   it: {
     "has-extrapolated-rows": [
       "righe estrapolate rimosse",
-      "EXFOR riporta valori estrapolati (es. S(0)) in questo dataset; sono tenuti a parte e mai disegnati né contati.",
+      "EXFOR riporta valori estrapolati (es. S(0)) in questa serie di dati; sono tenuti a parte, mai disegnati né contati.",
     ],
     digitised: [
       "digitalizzato",
@@ -169,7 +169,7 @@ const FLAG_TEXT: Record<Lang, Record<Flag, [string, string]>> = {
     cm_approx: ["bersaglio naturale", "Elemento naturale: le energie nel centro di massa usano il peso atomico standard."],
     "outdated-normalisation": ["normalizzazione superata", "Normalizzato a un valore standard o di monitor che nel frattempo è cambiato."],
     "renormalised-by-compiler": ["rinormalizzato dal compilatore", "Rinormalizzato dal compilatore di EXFOR, non dagli autori."],
-    dependent: ["dipendente", "Dipende da un altro dataset (es. ne condivide la normalizzazione)."],
+    dependent: ["dipendente", "Dipende da un'altra serie di dati (es. ne condivide la normalizzazione)."],
     "upper-limits": ["limiti", "Contiene limiti superiori o inferiori (DATA-MAX/MIN), che non sono punti sperimentali."],
   },
 }

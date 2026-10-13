@@ -14,6 +14,7 @@
  */
 
 import type { Lang } from "@/lib/locale"
+import { elideItalian } from "../localize.mjs"
 
 /** One step of a guided path, in words; the numbers are in the arguments. */
 export interface PathWords {
@@ -335,11 +336,11 @@ const it: typeof en = {
     ],
 
     cards: {
-      known: (n: string) => `${n} reazioni sulla carta dei nuclidi, ognuna segnata da quanto bene ne conosciamo il tasso.`,
+      known: (n: string) => `${n} reazioni sulla carta dei nuclidi, ognuna segnata secondo quanto è noto il suo tasso.`,
       gap: (n: string) =>
         `${n} reazioni, dall'energia che usa una stella alla più bassa mai misurata. Il tratto vuoto è la storia.`,
       stories: "La reazione più lenta del Sole, il passo che detta il ritmo del ciclo CNO, e perché i fisici vanno sotto terra.",
-      nucleus: "I livelli di energia di un nucleo, con la stretta fascia che usa una stella disegnata sopra.",
+      nucleus: "I livelli di energia di un nucleo, con sopra la stretta fascia di energie che usa una stella.",
       search: "Scrivi un elemento, in italiano o in inglese: i suoi isotopi, le loro reazioni e i loro tassi.",
       paths: "Tre brevi passeggiate nel sito, cinque passi ciascuna.",
       go: "Vai",
@@ -347,7 +348,7 @@ const it: typeof en = {
 
     knownTitle: "Quanto la conosciamo?",
     knownLead:
-      "Ogni freccia è una reazione dell'atlante, dal nucleo da cui parte a quello che produce. La sua linea dice quanto bene ne conosciamo il tasso. Scegli una freccia per aprire la reazione.",
+      "Ogni freccia è una reazione dell'atlante, dal nucleo da cui parte a quello che produce. Il tipo di linea indica quanto è noto il suo tasso. Scegli una freccia per aprire la reazione.",
     chartLabel: (n: string) =>
       `Carta dei nuclidi leggeri, protoni in verticale e neutroni in orizzontale, con ${n} reazioni disegnate come frecce; l'elenco qui sotto riporta le stesse reazioni divise per stato.`,
     axisZ: "Protoni (Z)",
@@ -379,7 +380,7 @@ const it: typeof en = {
     gapShowAll: (n: number) => `Mostra tutte le ${n} reazioni`,
     gapHide: "Mostra meno",
     gapRule:
-      "Energia più bassa misurata: la più bassa energia nel centro di massa di una serie di dati di EXFOR che misura la reazione stessa (sezione d'urto, fattore S, distribuzione angolare, resa o forza di una risonanza). Non contano: valori estrapolati, calcolati o derivati, dati superati o preliminari, limiti superiori, singoli valori del fattore S citati a una sola energia, dati indiretti (cavallo di Troia, dissociazione coulombiana, ANC) ed energie sotto 1 keV, che nessun fascio di particelle cariche ha raggiunto.",
+      "Energia più bassa misurata: la più bassa energia nel centro di massa di una serie di dati di EXFOR che misura la reazione stessa (sezione d'urto, fattore S, distribuzione angolare, resa o intensità di una risonanza). Non contano: valori estrapolati, calcolati o derivati, dati superati o preliminari, limiti superiori, singoli valori del fattore S citati a una sola energia, dati indiretti (cavallo di Troia, dissociazione coulombiana, ANC) ed energie sotto 1 keV, che nessun fascio di particelle cariche ha raggiunto.",
 
     storiesTitle: "Tre storie",
     stories: {
@@ -389,9 +390,9 @@ const it: typeof en = {
           `Due protoni si fondono solo se uno dei due si trasforma in neutrone nell'istante in cui si toccano. Nel modello del centro del Sole dell'esploratore dei tassi, un protone aspetta circa ${tau} prima che accada. È per questo che il Sole brilla ancora. È troppo rara per misurarla in qualunque laboratorio: il suo tasso viene dalla teoria.`,
       },
       cno: {
-        title: "Il passo che detta il ritmo del CNO",
+        title: "Il passo che detta il ritmo del ciclo CNO",
         text: (tau: string, low: string, e0: string) =>
-          `Nelle stelle più pesanti del Sole, carbonio, azoto e ossigeno aiutano a trasformare l'idrogeno in elio. Il passo lento è l'azoto-14 che cattura un protone: nel nucleo di una stella di 15 M☉ un nucleo di azoto-14 aspetta circa ${tau}. Le misure arrivano fino a ${low}; al centro del Sole servono circa ${e0}.`,
+          `Nelle stelle più pesanti del Sole, carbonio, azoto e ossigeno aiutano a trasformare l'idrogeno in elio. Il passo lento è l'azoto-14 che cattura un protone: nel cuore di una stella di 15 M☉ un nucleo di azoto-14 aspetta circa ${tau}. Le misure arrivano fino a ${low}; al centro del Sole servono circa ${e0}.`,
       },
       underground: {
         title: "Perché sotto terra",
@@ -454,7 +455,7 @@ const it: typeof en = {
     ensdfLine: (date: string) => `Livelli: ENSDF (NNDC e la rete NSDD), archivio del ${date}.`,
     physicists: "Per i fisici",
     physicistsSnapshot: (commit: string) => `File master di EXFOR al commit ${commit}.`,
-    physicistsCite: "Citare",
+    physicistsCite: "Come citare",
     physicistsPipeline: "Come sono stati elaborati i dati",
     citeEach: "e l'articolo di ogni serie di dati.",
 
@@ -508,7 +509,7 @@ const it: typeof en = {
           },
           {
             title: "Dentro il sodio-23",
-            text: `Per un istante il protone e il neon-22 diventano un solo nucleo, il sodio-23. Possono entrarci sopra ${c.sp}, l'energia che lega un protone nel sodio-23, e ogni livello del sodio-23 più in alto è una porta. ${c.levels}`,
+            text: `Per un istante il protone e il neon-22 diventano un solo nucleo, il sodio-23. Il protone può entrare a energie superiori a ${c.sp}, l'energia che lega un protone nel sodio-23, e ogni livello più in alto è una porta. ${c.levels}`,
             link: "Apri la scheda del sodio-23",
           },
           {
@@ -519,7 +520,7 @@ const it: typeof en = {
         ],
         unknownTitle: "Che cosa ancora non sappiamo",
         unknown: [
-          "Di alcune risonanze dentro la finestra conosciamo solo un limite superiore: la loro forza non è mai stata misurata.",
+          "Di alcune risonanze dentro la finestra conosciamo solo un limite superiore: la loro intensità non è mai stata misurata.",
           "Se il sodio che cambia da stella a stella negli ammassi antichi venga dalle stelle AGB, dalle stelle massicce o da entrambe è ancora discusso.",
           "L'inviluppo AGB dell'esploratore è una sola zona a temperatura fissa. Un inviluppo vero si rimescola e si raffredda.",
         ],
@@ -560,7 +561,7 @@ const it: typeof en = {
       }),
     },
     curiosityCaveatNote: "Dall'esploratore dei tassi:",
-    evaluationLink: (system: string) => `La valutazione R-matrix del ${system}`,
+    evaluationLink: (system: string) => elideItalian(`La valutazione R-matrix del ${system}`),
   },
 }
 
