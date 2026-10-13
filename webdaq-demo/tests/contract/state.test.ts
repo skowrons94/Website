@@ -152,4 +152,24 @@ describe('simulated DAQ', () => {
     expect((await call('GET', '/api/cache', null, { type: 'wave-config' })).data).toEqual({ success: true, data: { selectedWaveform: { a: 1 } } })
     expect((await call('GET', '/api/cache', null, { type: 'rois' })).status).toBe(410)
   })
+
+  it('a failed board stops sending data and rings the bell; a stalled one too', async () => {
+    const { b, call, advance } = await withBoard()
+    await call('POST', '/experiment/start_run')
+    await b.control({ type: 'fault', board_fail_at_s: 3 })
+    for (let i = 0; i < 6; i++) { advance(1); await call('GET', '/experiment/get_run_status') }
+    const ev1 = b.daq.runEvents[0]
+    for (let i = 0; i < 5; i++) { advance(1); await call('GET', '/experiment/get_run_status') }
+    expect(b.daq.runEvents[0]).toBe(ev1)                  // nothing after the FAIL flag
+    const events = (await call('GET', '/notifications/events')).data as any
+    const list = Array.isArray(events) ? events : events.events
+    expect(list.some((e: any) => e.rule_type === 'board_failure')).toBe(true)
+    await call('POST', '/experiment/stop_run')
+    // a stall: no FAIL flag, no data, an alert after the rule's 20 s
+    await call('POST', '/experiment/start_run')
+    await b.control({ type: 'fault', stall_at_s: 2 })
+    for (let i = 0; i < 30; i++) { advance(1); await call('GET', '/experiment/get_run_status') }
+    const ev2 = (await call('GET', '/notifications/events')).data as any
+    expect((Array.isArray(ev2) ? ev2 : ev2.events).some((e: any) => e.rule_type === 'stalled_buffers')).toBe(true)
+  })
 })

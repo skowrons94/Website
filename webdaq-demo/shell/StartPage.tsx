@@ -56,7 +56,7 @@ export default function StartPage() {
         <p className="wd-muted">{t.detectorsHint}</p>
         {DETECTORS.map(d => (
           <label key={d} className="wd-check">
-            <input type="radio" name="detectors" value={d} checked={detectors === d} onChange={() => { setDetectors(d); if (d === 'he3') setSource('cf252') }} />
+            <input type="radio" name="detectors" value={d} checked={detectors === d} onChange={() => { setDetectors(d); if (d === 'he3' || d === 'ej309') setSource('cf252') }} />
             {' '}{t[`det_${d}` as keyof Strings]}
           </label>
         ))}

@@ -16,6 +16,9 @@
 import type { Replay, ReplayEvent } from './replay'
 import { NS_PER_TICK } from './replay'
 
+/** events.csv's first line (read it with comment='#', e.g. pandas.read_csv(..., comment='#')). */
+export const SIMULATED_CSV = '# SIMULATED DATA — WebDAQ in-browser demo, not a measurement'
+
 export const XDAQ_KEY = 0xfa0201a0
 const TWO31 = 2 ** 31
 
@@ -74,7 +77,7 @@ export function writeCaendat(rep: Replay, epochStartS: number, channels = 16): U
 /** events.csv: RUReader's tree columns, without ROOT (Timestamp in ps, as RUReader's default unit). */
 export function writeEventsCsv(rep: Replay): string {
   const psd = rep.dpp === 'DPP-PSD'
-  const lines = [psd ? 'Board,Channel,Timestamp_ps,EnergyShort,EnergyLong,PU,SATU,LOST' : 'Board,Channel,Timestamp_ps,Energy,PU,SATU,LOST']
+  const lines = [SIMULATED_CSV, psd ? 'Board,Channel,Timestamp_ps,EnergyShort,EnergyLong,PU,SATU,LOST' : 'Board,Channel,Timestamp_ps,Energy,PU,SATU,LOST']
   for (const block of rep.blocks) {
     for (const e of block) {
       // ps from 2 ns ticks: exact in a double up to 2^53 ps (≈ 2.5 h).

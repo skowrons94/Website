@@ -33,6 +33,7 @@ export default function experiment(r: Router, d: Daq) {
     const run = d.runs.find(x => x.run_number === Number(b.run_number))
     if (!run) return fail(404, { message: 'Run not found' })
     run.notes = b.note
+    d.touchRun(run)
     return ok({ message: 'Note added successfully' })
   })
   r.post('/experiment/add_run_metadata', req => {
@@ -43,6 +44,7 @@ export default function experiment(r: Router, d: Daq) {
     run.terminal_voltage = b.terminal_voltage ?? null
     run.probe_voltage = b.probe_voltage ?? null
     run.run_type = b.run_type ?? null
+    d.touchRun(run)
     return ok({ message: 'Run metadata added successfully' })
   })
   r.get('/experiment/get_run_metadata/<run_number>', (_q, p) => {
@@ -59,6 +61,7 @@ export default function experiment(r: Router, d: Daq) {
     const run = d.runs.find(x => x.run_number === Number(b.run_number))
     if (!run) return fail(404, { message: 'Run not found' })
     run.flag = b.flag
+    d.touchRun(run)
     return ok({ message: 'Flag updated successfully', flag: b.flag })
   })
   r.post('/experiment/update_run_notes', req => {
@@ -67,6 +70,7 @@ export default function experiment(r: Router, d: Daq) {
     const run = d.runs.find(x => x.run_number === Number(b.run_number))
     if (!run) return fail(404, { message: 'Run not found' })
     run.notes = b.notes ?? ''
+    d.touchRun(run)
     return ok({ message: 'Notes updated successfully', notes: run.notes })
   })
 

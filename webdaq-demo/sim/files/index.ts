@@ -21,7 +21,7 @@ const caendatName = (run: RunRecord) => `run_${run.run_number}_0000.sim.caendat`
  * the last two runs are kept; the sizes of every finished run are kept, so the
  * Logbook's list does not regenerate anything twice.
  */
-const runKey = (run: RunRecord) => `${run.demo.seed}:${run.run_number}:${run.demo.sim_start_s}:${run.demo.sim_end_s}:${run.demo.timeline.length}`
+const runKey = (run: RunRecord) => `${run.demo.seed}:${run.run_number}:${run.demo.sim_start_s}:${run.demo.sim_end_s}:${run.demo.timeline.length}:${run.demo.current}`
 interface Heavy { rep: Replay | null; caendat: Uint8Array | null; events: string | null; current: string | null }
 const bytesCache = new Map<string, Heavy>()
 const sizeCache = new Map<string, { caendat: number | null; events: number | null; current: number | null; total: number; truncated: boolean }>()
@@ -30,7 +30,7 @@ function heavy(d: Daq, run: RunRecord): Heavy {
   let c = bytesCache.get(key)
   if (!c) {
     const rep = replayRun(run, run.demo.sim_end_s!)
-    const epoch = Math.floor(d.wallAt(run.demo.sim_start_s) / 1000)
+    const epoch = Math.floor(d.runWallAt(run, run.demo.sim_start_s) / 1000)
     const events = rep ? writeEventsCsv(rep) : null
     c = { rep, caendat: rep ? writeCaendat(rep, epoch) : null, events, current: currentTxt(d, run) }
     if (bytesCache.size >= 2) bytesCache.delete(bytesCache.keys().next().value as string)

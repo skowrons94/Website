@@ -7,7 +7,7 @@
  */
 import type { Daq, RunRecord } from '../state/daq'
 import { isoNaive } from '../state/daq'
-import { currentRows, duration } from '../state/runfiles'
+import { currentRows, duration, scenarioSegments } from '../state/runfiles'
 import { pyExp, pyG, pyIsoSeconds, pyJson, pyStamp } from './format'
 
 export const SIMULATED_LINE = '# SIMULATED DATA — WebDAQ in-browser demo, not a measurement'
@@ -36,9 +36,29 @@ export function metadataJson(d: Daq, run: RunRecord, others: { name: string; byt
   let dur: number | null = null
   if (run.start_time && run.end_time) dur = Math.round(Date.parse(run.end_time) - Date.parse(run.start_time)) / 1000
   const s = run.demo.scenario
+  const segs = scenarioSegments(run)
+  const beamSeg = segs.find(x => x.scenario.source === 'n14pg')
+  const scen = (x: typeof s) => ({
+    'detectors': x.detectors, 'source': x.source, 'distance_cm': x.distance_cm,
+    'activity_Bq': x.activity_Bq, 'background': x.background,
+    'yield_factor': x.source === 'n14pg' ? x.yield_factor : null,
+    'beam_I0_uA': x.beam_I0_uA,
+  })
+  // What changed during the run, in run time: the scenario (source, distance, beam…) and
+  // every register written to the running board. A real WebDAQ keeps only the start
+  // configuration; the demo needs the rest to regenerate the run, and says so.
+  const changes: Record<string, unknown>[] = []
+  for (const [t, key, value] of [...run.demo.timeline].sort((a, b) => a[0] - b[0])) {
+    if (changes.length >= 500) break
+    if (key === 'scenario') {
+      let sc: typeof s | null = null
+      try { sc = { ...s, ...JSON.parse(value) } } catch { /* skip */ }
+      if (sc) changes.push({ 'time_s': Math.round(t * 1000) / 1000, 'scenario': scen(sc) })
+    } else changes.push({ 'time_s': Math.round(t * 1000) / 1000, 'register': key, 'value': value })
+  }
   const doc = {
     'Schema Version': 1,
-    'Updated At': isoNaive(d.nowMs()),
+    'Updated At': isoNaive(run.demo.updated_ms ?? d.runWallAt(run, run.demo.sim_end_s ?? run.demo.sim_start_s)),
     'Run Number': run.run_number,
     'Start Time': run.start_time,
     'Stop Time': run.end_time,
@@ -71,12 +91,12 @@ export function metadataJson(d: Daq, run: RunRecord, others: { name: string; byt
       'simulated': true,
       'generator': `webdaq-demo ${DEMO_VERSION} (WebDAQ ${commit.slice(0, 7)})`,
       'seed': run.demo.seed,
-      'scenario': {
-        'detectors': s.detectors, 'source': s.source, 'distance_cm': s.distance_cm,
-        'activity_Bq': s.activity_Bq, 'background': s.background,
-        'yield_factor': s.source === 'n14pg' ? s.yield_factor : null,
-        'beam_I0_uA': s.beam_I0_uA,
-      },
+      'scenario': scen(s),
+      'changes during the run': changes,
+      'in-beam yield': beamSeg
+        ? `The simulated 14N(p,g)15O rate is the thick-target yield multiplied by yield_factor = ${beamSeg.scenario.yield_factor}, so that a short demo run fills its lines; a real target gives that many times fewer counts.`
+        : null,
+      'data file': 'The .caendat has the format CaenDAQ writes, which has no field to mark it simulated: ".sim" in its name, this block and README.txt say what it is.',
       'notice': NOTICE,
     },
   }
@@ -84,7 +104,7 @@ export function metadataJson(d: Daq, run: RunRecord, others: { name: string; byt
 }
 
 export function roiJson(run: RunRecord): string | null {
-  return run.demo.roi ? pyJson(run.demo.roi, 2) : null
+  return run.demo.roi ? pyJson({ ...run.demo.roi, simulated: true, notice: NOTICE }, 2) : null
 }
 
 /** stats_manager: '#' metadata lines, then CSV with the elapsed seconds first. */
@@ -96,7 +116,7 @@ export function statsCsv(d: Daq, run: RunRecord): string | null {
     '# LUNA DAQ statistics',
     SIMULATED_LINE,
     `# Run number: ${run.run_number}`,
-    `# Start time: ${pyIsoSeconds(d.wallAt(run.demo.sim_start_s))}`,
+    `# Start time: ${pyIsoSeconds(d.runWallAt(run, run.demo.sim_start_s))}`,
     '# Format: CSV. The first column is the elapsed acquisition time in seconds;',
     '# the rest are the metrics below, in this order. Missing samples are 0.',
     '#',
@@ -111,7 +131,7 @@ export function statsCsv(d: Daq, run: RunRecord): string | null {
 /** current.txt: '### Start time … ###', a '#' header, then f'{t:.8e}\t' + f'{v:.3e}\t' per channel. */
 export function currentTxt(d: Daq, run: RunRecord): string | null {
   if (!run.demo.current) return null
-  const out = [`### Start time: ${pyStamp(d.wallAt(run.demo.sim_start_s))} ###`, '# Time(s)\tCh0(uA)\tCh1(uA)\tCh2(uA)\tCh3(uA)']
+  const out = [`### Start time: ${pyStamp(d.runWallAt(run, run.demo.sim_start_s))} ###`, SIMULATED_LINE, '# Time(s)\tCh0(uA)\tCh1(uA)\tCh2(uA)\tCh3(uA)']
   for (const r of currentRows(d, run)) out.push(pyExp(r[0], 8) + '\t' + r.slice(1).map(v => pyExp(v, 3) + '\t').join(''))
   return out.join('\n') + '\n'
 }
@@ -129,6 +149,7 @@ export function readmeTxt(d: Daq, run: RunRecord, caendat: string, truncated: bo
     '',
     'SIMULATED DATA. NOT A MEASUREMENT. Nothing here came from a detector.',
     `Detectors: ${s.detectors}; source: ${s.source}; source–detector distance ${s.distance_cm} cm; seed ${run.demo.seed}.`,
+    ...scenarioSegments(run).slice(1).map(x => `From ${x.from_s.toFixed(1)} s: source ${x.scenario.source}, distance ${x.scenario.distance_cm} cm${x.scenario.source === 'n14pg' ? `, beam ${x.scenario.beam_I0_uA} µA, yield ×${x.scenario.yield_factor}` : ''}.`),
     `Duration: ${duration(d, run).toFixed(1)} s of simulated time.`,
     '',
     'What a real WebDAQ run leaves in data/run<N>/, and what each file is:',
@@ -137,8 +158,10 @@ export function readmeTxt(d: Daq, run: RunRecord, caendat: string, truncated: bo
     '      Raw data: the XDAQ file header and V1730 board aggregates, the format',
     `      CaenDAQ writes. ${truncated ? `Only the first ${nEvents} events are included.` : `${nEvents} events.`}`,
     '      No waveforms. Convert with RUReader:  RUReader -i <this directory> -o run.root',
+    '      The binary format has no field for it: ".sim" in the name marks it simulated.',
     '  events.csv',
-    '      The same events as RUReader\'s tree columns (time stamps in ps), readable without ROOT.',
+    '      The same events as RUReader\'s tree columns (time stamps in ps), readable without ROOT;',
+    '      its first line is a "# SIMULATED" comment.',
     '  V1730_0.json',
     '      The board\'s register configuration at run start (CAEN addresses and names).',
     '  current.txt',

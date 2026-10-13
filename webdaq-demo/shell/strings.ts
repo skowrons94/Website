@@ -5,8 +5,8 @@
 export type Lang = 'en' | 'it'
 
 export const en = {
-  banner: 'Demo — simulated detectors · runs in your browser · nothing here is real hardware',
-  bannerShort: 'Demo — simulated, in your browser',
+  banner: 'WebDAQ demo — simulated detectors · runs in your browser · nothing here is real hardware',
+  bannerShort: 'WebDAQ demo — simulated',
   bannerTitle: 'Everything in this demo is simulated inside this page. A new tab starts a fresh demo.',
   guide: 'Guide',
   runFiles: 'Run files',
@@ -29,13 +29,13 @@ export const en = {
   noteTroubleshoot: 'Alerts are raised by the simulated DAQ and never delivered: nothing leaves your browser.',
   // start page
   startTitle: 'WebDAQ, simulated',
-  startLead: 'The data acquisition software of the LUNA experiment, running here against a simulated DAQ server inside this page. The interface is the real one; the detectors, the board and the beam are simulated.',
+  startLead: 'WebDAQ, the browser-based data acquisition developed for LUNA, running here against a simulated DAQ server inside this page. The interface is the real one; the detectors, the board and the beam are simulated.',
   detectors: 'Detectors',
   detectorsHint: 'Two detectors on one simulated CAEN V1730 digitizer, channels 0 and 1.',
   det_hpge: '2 × HPGe — germanium, for resolution (DPP-PHA firmware)',
   det_bgo: '2 × BGO — scintillators, for efficiency (DPP-PSD)',
-  det_ej309: '2 × liquid scintillators, EJ-309-like — neutrons and γ rays apart (DPP-PSD)',
-  det_he3: '2 × ³He counters — thermal neutrons (DPP-PSD)',
+  det_ej309: '2 × liquid scintillators, EJ-309-like — neutrons and γ-rays apart (DPP-PSD)',
+  det_he3: '2 × ³He counters — thermal neutrons from a moderated source (DPP-PSD)',
   source: 'Source',
   src_co60: '⁶⁰Co calibration source',
   src_cs137: '¹³⁷Cs calibration source',

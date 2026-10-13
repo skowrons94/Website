@@ -79,6 +79,7 @@ the hash it prints into `pin.json`), the tests above, and the size report.
 | 4b | `src/app/page.tsx` | empty: the start page is drawn by the demo frame (`shell/StartPage.tsx`) |
 | 6 | `src/lib/load-jsroot.ts` | re-exports `shim/load-jsroot.ts` (a webpack alias cannot win over tsconfig paths) |
 | 7 | `package.json` | dependencies live in this directory's `package.json` |
+| 8 | `src/components/histo-dashboard.tsx` | patched in place by `build.mjs` (`PATCHES`, two edits, each found exactly once): a changed x axis (the in-beam HPGe gain) rebuilds the plot instead of refreshing only the bins |
 
 `pin.json.overrides` holds the upstream sha256 of each of these at the pin.
 
@@ -126,15 +127,21 @@ fetch('/api/server-control' | '/api/cache') → shim/fetch-shim.ts ────�
 * Starting registers are WebDAQ's test-mode defaults (`board_defaults.py`), plus:
   invert input for BGO, EJ-309 and ³He; a 4 µs long gate for ³He; for in-beam
   HPGe, trapezoid rescaling 6 and DC offset 10 %. Switching to or from the beam
-  only moves those two, so the visitor's tuning survives.
+  only moves those two, so the visitor's tuning survives; during a run it moves
+  nothing (the spectrum and its ROIs keep their meaning) and the new gain is set
+  at the next run start.
 * Saving is on by default (WebDAQ's default is off) so every run is recorded.
   Run numbers stay within 1–30 (the exported Logbook pages).
 * Refusals as upstream: start while running (404), start without boards (404),
   scan or refresh while running (409/400), duplicate board id (409), registers not
   safe online (saved, not written, with the reason).
-* Alerts: the in-beam scenario seeds one `beam_current` rule; it and
-  `board_failure` are evaluated locally, and every delivery is marked failed
-  ("nothing leaves your browser"). ELOG and Grafana answer "not configured".
+* Alerts: the demo starts with a `board_failure` and a `stalled_buffers` rule
+  (20 s), and the in-beam scenario seeds a `beam_current` rule; all three are
+  evaluated locally, and every delivery is marked failed ("nothing leaves your
+  browser"). ELOG and Grafana answer "not configured".
+* Faults (Scenario panel): a board that sets its FAIL flag sends no more data
+  until the run is restarted (by auto-restart, if on); a stalled board sends
+  none without the flag.
 * Rules, transports, the watcher and recovery (`shim/handlers/notify-settings.ts`)
   are a lazy family too; the bell's event routes stay in the first chunk.
 
@@ -142,7 +149,21 @@ fetch('/api/server-control' | '/api/cache') → shim/fetch-shim.ts ────�
 
 Nothing per event is stored. A finished run's directory is regenerated on demand
 from its record: seed, scenario, the register file at start, the timeline of
-register writes and scenario changes during the run, and its demo-time span.
+register writes and scenario changes during the run, its demo-time span and the
+wall-clock time it started. Everything in it follows that history (the beam in
+`current.txt` is on only while the run's scenario had it on), so the files of a
+finished run never change, whatever happens afterwards, reloads included; only
+editing the run's metadata (flag, notes, target) updates `metadata.json`, as on
+the real server. `metadata.json → Demo` gives the starting scenario, every change
+during the run (`changes during the run`: scenario or register, with its run
+time) and, for an in-beam run, the yield factor the rate was multiplied by.
+
+Every file says it is simulated: `stats.csv` and `current.txt` carry a
+`# SIMULATED DATA — …` comment line, `events.csv` starts with one (read it with
+`comment='#'`), `roi.json` and `metadata.json` have `simulated: true`. The
+`.caendat` keeps CaenDAQ's format, which has no free field we could use without
+risking RUReader: its name (`.sim.caendat`), `metadata.json` and `README.txt` mark
+it. A ROOT file converted from it carries no marker.
 
 | File | Written like |
 |---|---|
@@ -174,7 +195,8 @@ sizes) and the shell's `control({type:'files', run})` returns the bytes.
 * EN/IT: `?lang=it` or the banner switch; Italian strings load on demand
   (`strings-it.ts`), panel strings live with the panels.
 * Look: `shim/tokens.css`, the site's surface tokens (checked against
-  `app/globals.css` by `tests/shell/tokens.test.ts`), system fonts; light and
+  `app/globals.css` by `tests/shell/tokens.test.ts`); WebDAQ's own pages keep
+  their Inter font (a 48 kB woff2, self-hosted by Next); light and
   dark follow the `theme` key the site and WebDAQ share.
 * The start page is drawn by `Shell.tsx` on `/` (the overlay's `page.tsx`
   returns null), which keeps that route's first load small.
@@ -261,8 +283,26 @@ constant beam). The physics phase replaces them and keeps the signatures; a
 signature change is agreed in this section first. Rules: deterministic for a
 seed (no `Math.random`, no `Date.now`), no DOM, no imports from `shim/`.
 
+## Physics simplifications to know
+
+* ⁶⁰Co summing uses the 4→2→0 angular correlation with Legendre coefficients
+  a2 = 0.1020, a4 = 0.0091: W(0°) = 1 + a2 + a4 = 1.111 relative to the
+  average.
+* ³He: a constant intrinsic efficiency of 0.5 for the neutrons of a moderated
+  ²⁵²Cf source (no moderator is modelled; the counting rate follows the solid
+  angle), and the wall effect splits 50/50 between proton and triton escapes
+  (in a real tube the longer-range proton escapes more often, closer to 3:1).
+  Both are declared illustrative in `lines.json`.
+* In-beam ¹⁴N(p,γ)¹⁵O: the thick-target yield times `yield_factor` (20 by
+  default), declared in the Scenario panel and in `metadata.json → Demo`.
+* The tour's live FWHM fits a copy of channels 0 and 1 that counts only events
+  taken with the present settings (it restarts at every change of the filter
+  parameters) and stays silent below 400 counts in the peak, so a spectrum
+  filled before and after tuning is never fitted as one peak.
+
 ## Labelling
 
-Every page says it is a simulation; histogram titles start with
-`SIMULATED — `. The 3.5 MV accelerator is "the MV machine of the Bellotti Ion
+Every page says it is a simulation (the banner: "WebDAQ demo — simulated …").
+The histograms the server returns are titled `SIMULATED — …`; WebDAQ's
+dashboard shows its own label ("Board 0 - Channel 0") above them instead. The 3.5 MV accelerator is "the MV machine of the Bellotti Ion
 Beam Facility (BIBF)".

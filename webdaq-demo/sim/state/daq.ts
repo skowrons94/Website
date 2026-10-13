@@ -72,6 +72,14 @@ export interface RunRecord {
     roi: Record<string, unknown> | null
     /** Whether a current.txt was recorded (beam module recording during the run). */
     current: boolean
+    /**
+     * Wall-clock epoch (ms) of the run start, fixed once: every time stamp of the
+     * run's files derives from it, so the files never change after the run ends
+     * (demo time is remapped to the wall clock after a reload).
+     */
+    wall_start_ms?: number
+    /** When the run record last changed (stop, metadata, flag, notes): metadata.json's "Updated At". */
+    updated_ms?: number
   }
 }
 
@@ -180,6 +188,10 @@ export class Daq {
   autoRestart = { enabled: false, delay: 30, pending: false, last: null as Record<string, unknown> | null, at: 0 }
   boardFailures: Record<string, number> = {}
   faults: { board_fail_at_s: number | null; stall_at_s: number | null } = { board_fail_at_s: null, stall_at_s: null }
+  /** Sim time of the last readout that brought data (stalled_buffers). */
+  lastDataT = 0
+  /** The beam was switched on or off during a run: the HPGe gain for it is set at the next run start. */
+  pendingGain = false
 
   // ── caendaq counters for the run ──
   diag: Record<string, { buffers_read: number; bytes_read: number; bytes_written: number; blocks_dropped: number; comm_errors: number; events_decoded: number; board_failures: number }> = {}
@@ -257,6 +269,12 @@ export class Daq {
       { path: 'demo.beam.current', alias: 'Beam current (simulated)', unit: 'uA', enabled: true },
     ]
     this.seedBeamRule()
+    // A failed or silent board must show in the bell and on Troubleshoot: the demo
+    // starts with one rule of each kind (they deliver nothing; the visitor may edit them).
+    this.rules.push(
+      { id: 'demofail0001', type: 'board_failure', name: 'Board failure (demo)', enabled: true, transports: ['telegram'], params: {} },
+      { id: 'demostal0001', type: 'stalled_buffers', name: 'Board stopped producing data (demo)', enabled: true, transports: ['telegram'], params: { seconds: 20 } },
+    )
   }
 
   /**
@@ -345,7 +363,12 @@ export class Daq {
       if (recreate) for (const b of this.boards) this.recreateBoardFirmware(b)
       // Switching to or from the beam keeps the visitor's tuning and only moves the
       // gain and DC offset the in-beam lines need (both online-safe on DPP-PHA).
-      if (beamSwitch && next.detectors === 'hpge') for (const b of this.boards) this.seedInBeam(b, next.source === 'n14pg')
+      // During a run the gain stays (the spectrum and its ROIs keep their meaning): the
+      // in-beam gain then applies from the next run start.
+      if (beamSwitch && next.detectors === 'hpge') {
+        if (this.running) this.pendingGain = true
+        else { this.pendingGain = false; for (const b of this.boards) this.seedInBeam(b, next.source === 'n14pg') }
+      }
       const err = this.reconfigure()
       if (err) throw new Error(err)
     } catch (e) {
@@ -358,6 +381,9 @@ export class Daq {
     // A scenario change mid-run (the beam switched on) is part of the run's timeline.
     const rec = this.running && this.save ? this.runs.find(r => r.run_number === this.runNumber) : undefined
     if (rec && rec.demo.timeline.length < 5000) rec.demo.timeline.push([r6(this.simT - this.runSimStart), 'scenario', JSON.stringify(this.scenario)])
+    if (this.running && this.pendingGain && beamSwitch) {
+      return { ok: true, message: 'Scenario updated. The gain for the new lines is set when the next run starts; this run keeps its gain.' }
+    }
     return { ok: true, message: 'Scenario updated' }
   }
 
@@ -469,7 +495,9 @@ export class Daq {
     if (!b) return
     const tRun = t0 - this.runSimStart
     const stalled = this.faults.stall_at_s !== null && tRun >= this.faults.stall_at_s
-    const res: TickResult = stalled
+    // A board with its FAIL flag set sends nothing until the run is restarted.
+    const failed = !!this.boardFailures[String(b.id)]
+    const res: TickResult = stalled || failed
       ? { channels: Array.from({ length: b.chan }, () => ({ offered: 0, events: 0, pileup: 0, lost: 0, saturated: 0, dead_s: 0 })), bytes: 0, blocksDropped: 0 }
       : this.physics.tick({ t_s: tRun, dt_s: dt, beamCurrent_uA: this.current.latest[0] })
     const d = this.diag[String(b.id)]
@@ -482,6 +510,7 @@ export class Daq {
     })
     this.winBytes += res.bytes
     this.runBytes += res.bytes
+    if (res.bytes > 0) this.lastDataT = t0 + dt
     if (d) {
       if (res.bytes > 0) d.buffers_read += Math.max(1, Math.round(dt / 0.01))
       d.bytes_read += res.bytes
@@ -526,6 +555,12 @@ export class Daq {
 
   /** Wall-clock epoch (ms) of a demo instant. */
   wallAt(t: number) { return this.wall0 + (t - this.sim0) * 1000 }
+  /** Wall-clock epoch (ms) of a demo instant of a run, fixed by the run's own start. */
+  runWallAt(run: RunRecord, t: number) {
+    return run.demo.wall_start_ms !== undefined ? run.demo.wall_start_ms + (t - run.demo.sim_start_s) * 1000 : this.wallAt(t)
+  }
+  /** A finished run's record changed (metadata, flag, notes): metadata.json says when. */
+  touchRun(run: RunRecord) { run.demo.updated_ms = this.clock.now() }
 
   private everySecond(t: number) {
     const epoch = this.wallAt(t)
@@ -765,6 +800,8 @@ export class Daq {
     if (this.save && this.runNumber > DEMO_MAX_RUN) {
       return { status: 500, data: { message: `Failed to prepare run start (the demo keeps runs 1–${DEMO_MAX_RUN}; use Reset demo to start again).` } }
     }
+    if (this.pendingGain && this.scenario.detectors === 'hpge') for (const b of this.boards) this.seedInBeam(b, this.scenario.source === 'n14pg')
+    this.pendingGain = false
     const err = this.reconfigure()
     if (err) return { status: 500, data: { message: `Failed to configure acquisition (${err})` } }
     this.runBoards = this.boards.map(b => String(b.id))
@@ -772,6 +809,7 @@ export class Daq {
     this.lastTraces = {}
     this.running = true
     this.runSimStart = this.simT
+    this.lastDataT = this.simT
     this.startTime = isoLocal(this.clock.now())
     this.boardFailures = {}
     this.runEvents = []
@@ -801,6 +839,7 @@ export class Daq {
       seed: this.seed, scenario: { ...this.scenario }, sim_start_s: r6(this.simT), sim_end_s: null,
       config: b0 ? JSON.parse(JSON.stringify(this.configs[this.boardKey(b0)])) : null,
       timeline: [], events: [], bytes: 0, stats: null, roi: null, current: false,
+      wall_start_ms: now, updated_ms: now,
     }
     if (!rec) {
       rec = {
@@ -836,6 +875,7 @@ export class Daq {
         rec.demo.events = [...this.runEvents]
         rec.demo.bytes = this.runBytes
         rec.demo.roi = this.roiSnapshot(rec.run_number)
+        rec.demo.updated_ms = this.clock.now()
       }
       this.runNumber++
     }
@@ -888,6 +928,7 @@ export class Daq {
     this.stopRun()
     if (old) {
       old.flag = 'bad'
+      old.demo.updated_ms = this.clock.now()
       old.notes = `${old.notes ? old.notes + '\n' : ''}[AUTO-RESTART] Run stopped by a board failure (board ${this.runBoards?.[0] ?? '0'}, simulated) and restarted as run ${this.runNumber}.`
     }
     this.startRun()
@@ -918,7 +959,8 @@ export class Daq {
   stopCurrentRecording(): { message: string } {
     this.current.recording = false
     const rec = this.runs.find(r => r.run_number === this.current.recordingRun)
-    if (rec) rec.accumulated_charge = this.current.accumulated
+    // µC to 1 nC: the picoammeter's own resolution is far coarser than a float's digits.
+    if (rec) { rec.accumulated_charge = Math.round(this.current.accumulated * 1000) / 1000; rec.demo.updated_ms = this.clock.now() }
     return { message: 'Acquisition stopped' }
   }
 
@@ -935,6 +977,7 @@ export class Daq {
     if (!this.stats.collecting) return false
     const rec = this.runs.find(r => r.run_number === this.stats.current_run)
     if (rec) {
+      rec.demo.updated_ms = this.clock.now()
       rec.demo.stats = {
         metrics: this.stats.csvPaths.map(p => ({ name: p.alias || p.path, unit: p.unit, source: p.path })),
         rows: this.stats.csvRows,
@@ -1099,9 +1142,21 @@ export class Daq {
     }
   }
 
-  /** The two rule types the demo evaluates locally: beam_current and board_failure (design §1.10). */
+  /** The rule types the demo evaluates locally: beam_current, board_failure (at the fault) and stalled_buffers (design §1.10). */
   evaluateAlerts() {
     if (!this.watching) return
+    for (const rule of this.rules) {
+      if (!rule.enabled || rule.type !== 'stalled_buffers') continue
+      const b = this.boards.find(x => this.runBoards?.includes(String(x.id)))
+      // A failed board has its own alert; the verdicts are reset at the next run start.
+      if (!b || !this.running || this.boardFailures[String(b.id)]) continue
+      const quiet = this.simT - this.lastDataT
+      const limit = Number(rule.params.seconds ?? 60)
+      this.raiseRuleOne(rule, `board ${b.id}`, r6(quiet), quiet >= limit, () => ({
+        title: `Board ${b.id} stopped producing data`,
+        lines: [`Run ${this.runNumber}: no new data blocks for ${Math.round(quiet)} s (simulated fault).`],
+      }))
+    }
     const I = this.current.latest[Math.min(this.current.charge_channel, 3)]
     for (const rule of this.rules) {
       if (!rule.enabled || rule.type !== 'beam_current') continue
@@ -1143,6 +1198,7 @@ export class Daq {
       telegram: this.telegram, zulip: this.zulip, rules: this.rules, notifyRecovery: this.notifyRecovery,
       watching: this.watching, alertState: this.alertState, events: this.events.slice(0, 100),
       elog: this.elog, grafana: this.grafana, cache: this.cache, scan: this.scan, seededBeamRule: this.seededBeamRule,
+      lastDataT: this.lastDataT, pendingGain: this.pendingGain,
       physics: this.physics.snapshot(),
     }
   }
@@ -1153,7 +1209,7 @@ export class Daq {
       'running', 'startTime', 'runNumber', 'save', 'limitSize', 'fileSizeLimit', 'runBoards', 'runSimStart', 'runs',
       'autoRestart', 'boardFailures', 'faults', 'diag', 'win', 'winBytes', 'winStart', 'winEnd', 'rates', 'runEvents',
       'runBytes', 'rebinFactor', 'hist', 'current', 'stats', 'telegram', 'zulip', 'rules', 'notifyRecovery', 'watching',
-      'alertState', 'events', 'elog', 'grafana', 'cache', 'scan', 'seededBeamRule'] as const
+      'alertState', 'events', 'elog', 'grafana', 'cache', 'scan', 'seededBeamRule', 'lastDataT', 'pendingGain'] as const
     for (const k of keys) if (k in s) (this as any)[k] = s[k]
     for (const r of this.runs) if (r.demo?.config) r.demo.config = expandConfig(r.demo.config as any)
     this.metrics = new Map((s.metrics ?? []).map(([k, t, v]: [string, number[], number[]]) => [k, { t, v }]))

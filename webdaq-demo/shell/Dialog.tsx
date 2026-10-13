@@ -17,7 +17,12 @@ export default function Dialog({ title, onClose, closeLabel, children }: { title
       else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus() }
     }
     document.addEventListener('keydown', onKey)
-    return () => { document.removeEventListener('keydown', onKey); before?.focus?.() }
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      // Opened from the phone's Demo menu, the opener is gone with the menu: go back to the menu button.
+      const back = before && before.isConnected && before !== document.body ? before : document.getElementById('wd-menu-button')
+      back?.focus?.()
+    }
   }, [onClose])
   return (
     <div className="wd-frame wd-scrim" onMouseDown={e => { if (e.target === e.currentTarget) onClose() }}>

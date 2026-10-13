@@ -98,10 +98,11 @@ describe('run files', () => {
     expect(st.filter(l => /^\d+\.\d{3},/.test(l)).length).toBeGreaterThanOrEqual(2)
     const cu = text(get('current.txt')).split('\n')
     expect(cu[0]).toMatch(/^### Start time: \d{4}-\d\d-\d\d \d\d:\d\d:\d\d\.\d{6} ###$/)
-    expect(cu[1]).toBe('# Time(s)\tCh0(uA)\tCh1(uA)\tCh2(uA)\tCh3(uA)')
-    expect(cu[2]).toMatch(/^0\.00000000e\+00\t(\d\.\d{3}e[+-]\d\d\t){4}$/)
+    expect(cu[1]).toBe('# SIMULATED DATA — WebDAQ in-browser demo, not a measurement')
+    expect(cu[2]).toBe('# Time(s)\tCh0(uA)\tCh1(uA)\tCh2(uA)\tCh3(uA)')
+    expect(cu[3]).toMatch(/^0\.00000000e\+00\t(\d\.\d{3}e[+-]\d\d\t){4}$/)
     const roi = JSON.parse(text(get('roi.json')))
-    expect(Object.keys(roi)).toEqual(['run_number', 'written_at', 'rebin_factor', 'histograms'])
+    expect(Object.keys(roi)).toEqual(['run_number', 'written_at', 'rebin_factor', 'histograms', 'simulated', 'notice'])
     expect(roi.histograms[0].rois[0]).toMatchObject({ name: 'peak', low: 1300, high: 1360, background: null })
     expect(roi.histograms[0].rois[0].gross).toBeGreaterThan(0)
   })
@@ -116,6 +117,7 @@ describe('run files', () => {
       expect(dec.corrupted).toBe(0)
       expect(dec.events.length).toBeGreaterThan(1000)
       const csv = text(get('events.csv')).trim().split('\n')
+      expect(csv.shift()).toMatch(/^# SIMULATED/)
       expect(csv[0]).toBe(kind === 'hpge' ? 'Board,Channel,Timestamp_ps,Energy,PU,SATU,LOST' : 'Board,Channel,Timestamp_ps,EnergyShort,EnergyLong,PU,SATU,LOST')
       expect(csv.length - 1).toBe(dec.events.length)
       // Same events in the same order (block by block, couple by couple).
@@ -143,6 +145,61 @@ describe('run files', () => {
     expect(Buffer.from(c2).equals(Buffer.from(c1))).toBe(true)
     const b = await takeRun({ detectors: 'hpge', source: 'co60' }, 2, 5)
     expect(Buffer.from(b.get('run_1_0000.sim.caendat')!.bytes).equals(Buffer.from(c1))).toBe(true)
+  })
+
+  it('describes the run\'s own history: a mid-run beam switch, and nothing changes after the run', async () => {
+    let t = 1_700_000_000_000
+    const b = await Backend.create({ seed: 3, clock: { now: () => t }, scenario: { detectors: 'hpge', source: 'co60' } })
+    const call = (method: string, p: string, body: unknown = null) => b.handle({ method, path: p, query: {}, body })
+    const tick = (s: number) => { t += s * 1000 }
+    await call('POST', '/digitizer/scan', { optical: { enabled: true, links: 1, nodes: 1 } }); tick(1)
+    await call('POST', '/experiment/add_board', { id: '0', vme: '0', link_type: 'Optical', link_num: '0', dpp: 'DPP-PHA' })
+    const gain = async () => ((await call('GET', '/digitizer/0/registers')).data as any).reg_1080.value_dec & 0x3f
+    expect(await gain()).toBe(4)
+    await call('GET', '/current/start/1')
+    await call('POST', '/stats/run/1/start')
+    await call('POST', '/experiment/start_run')
+    tick(5)
+    const sw = await b.control({ type: 'scenario', scenario: { source: 'n14pg' } }) as any
+    expect(sw.ok).toBe(true)
+    expect(await gain()).toBe(4) // the gain stays for the rest of this run
+    tick(5)
+    await call('POST', '/experiment/stop_run')
+    await call('POST', '/current/stop')
+    await call('POST', '/stats/run/stop')
+    const files = async () => ((await b.control({ type: 'files', run: 1 })) as { files: F[] }).files
+    const first = await files()
+    const get = (fs: F[], n: string) => fs.find(f => f.name === n)
+    const rows = text(get(first, 'current.txt')).split('\n').filter(l => /^\d/.test(l)).map(l => l.split('\t').map(Number))
+    const before = rows.filter(r => r[0] < 4.9), after = rows.filter(r => r[0] > 5.3)
+    expect(before.length).toBeGreaterThan(40)
+    expect(Math.max(...before.map(r => r[1]))).toBe(0)
+    expect(Math.min(...after.map(r => r[1]))).toBeGreaterThan(10)
+    const meta = JSON.parse(text(get(first, 'metadata.json')))
+    expect(meta.Demo.scenario.source).toBe('co60')
+    const sc = meta.Demo['changes during the run'].find((c: any) => c.scenario)
+    expect(sc.time_s).toBeCloseTo(5, 0)
+    expect(sc.scenario).toMatchObject({ source: 'n14pg', yield_factor: 20, beam_I0_uA: 100 })
+    expect(meta.Demo['in-beam yield']).toMatch(/yield_factor = 20/)
+    // The charge on record agrees with current.txt, to 1 nC.
+    const q = rows.slice(1).reduce((s, r, i) => s + 0.5 * (r[1] + rows[i][1]) * 0.1, 0)
+    expect(meta['Accumulated Charge']).toBe(Math.round(meta['Accumulated Charge'] * 1000) / 1000)
+    expect(Math.abs(meta['Accumulated Charge'] - q) / q).toBeLessThan(0.02)
+    // Later: a new scenario, another run, a reload of the state — run 1's files stay the same.
+    tick(30)
+    await b.control({ type: 'scenario', scenario: { source: 'co60', distance_cm: 2 } })
+    expect(await gain()).toBe(4)
+    await call('POST', '/experiment/start_run'); tick(2); await call('POST', '/experiment/stop_run')
+    const again = await files()
+    for (const f of first) expect(Buffer.from(get(again, f.name)!.bytes).equals(Buffer.from(f.bytes)), f.name).toBe(true)
+    const snap = JSON.parse(JSON.stringify(await b.control({ type: 'snapshot' })))
+    t += 3600_000
+    const reloaded = await Backend.create({ seed: 3, clock: { now: () => t }, scenario: { detectors: 'hpge', source: 'co60' } }, snap)
+    const third = ((await reloaded.control({ type: 'files', run: 1 })) as { files: F[] }).files
+    for (const f of first) expect(Buffer.from(get(third, f.name)!.bytes).equals(Buffer.from(f.bytes)), f.name).toBe(true)
+    // The next in-beam run starts with the in-beam gain.
+    await b.control({ type: 'scenario', scenario: { source: 'n14pg' } })
+    expect(await gain()).toBe(6)
   })
 
   it('caps the sample at 50 000 events and says so', async () => {

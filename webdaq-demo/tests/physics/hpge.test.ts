@@ -113,7 +113,7 @@ describe('HPGe peak positions and FWHM vs energy', () => {
       for (const [source, lines] of [['co60', [1173.228, 1332.492]], ['cs137', [661.657]]] as const) {
         const b = makeBoard('DPP-PHA')
         if (tuned) tuneHpge(b)
-        const e = engine(11, { detectors: 'hpge', source, distance_cm: 10, activity_Bq: 50e3 }, b)
+        const e = engine(13, { detectors: 'hpge', source, distance_cm: 10, activity_Bq: 50e3 }, b)
         const r = run(e, tuned ? 200 : 1600)
         expect(r.tot[0].events).toBeGreaterThan(1e5)
         const rate = (r.tot[0].offered / (tuned ? 200 : 1600)) * 1e-6
@@ -233,7 +233,9 @@ describe('⁶⁰Co true-coincidence summing', () => {
     expect(Math.abs(p.centroid_keV - 2505.72)).toBeLessThan(0.3)
     const R = new Response(table('hpge'))
     const c = LINES.co60_correlation
-    const w0 = (1 + c.a2 + c.a4) / (1 + c.a2 / 3 + c.a4 / 5)
+    // Legendre coefficients: ⟨W⟩ = 1 and W(0°) = 1 + a2 + a4 = 1.111 for the 4→2→0 cascade
+    const w0 = 1 + c.a2 + c.a4
+    expect(w0).toBeCloseTo(1.111, 3)
     const live = 1 - r.tot[0].pileup / r.tot[0].events
     const want = A * T * R.line(1173.228, d).eFE * R.line(1332.492, d).eFE * w0 * live
     console.log(`sum peak ${p.counts} counts, expected ${want.toFixed(0)}`)
@@ -300,5 +302,30 @@ describe('trapezoid trace (Jordanov) and probes', () => {
     const f = fitPeak(s, 500, 60, 1)!
     expect(Math.abs(f.fwhm / (2.355 * 4) - 1)).toBeLessThan(0.02)
     expect(f.centroid).toBeCloseTo(500.5, 1)
+  })
+})
+
+describe('the live FWHM probe (tour step 6)', () => {
+  it('fits only events taken with the present settings, never below the detector width', () => {
+    const s = { detectors: 'hpge' as const, source: 'co60' as const, distance_cm: 10, activity_Bq: 50e3 }
+    const b = makeBoard('DPP-PHA')
+    const e = engine(21, s, b)
+    let t = 0
+    const go = (seconds: number) => { for (const end = t + seconds; t < end - 1e-9; t += 0.05) e.tick({ t_s: t, dt_s: 0.05, beamCurrent_uA: 0 }) }
+    go(1600)                                      // default trapezoid: broad peaks
+    expect(e.fwhmProbe(0, 1332.492)!.fwhm_keV).toBeGreaterThan(10)
+    tuneHpge(b)
+    e.configure(scenario(s), b)                   // a register write mid-run
+    expect(e.fwhmProbe(0, 1332.492)).toBeNull()   // nothing taken with these settings yet
+    let seen = 0
+    for (let k = 0; k < 8; k++) {
+      go(10)
+      const p = e.fwhmProbe(0, 1332.492)
+      if (p) { seen++; expect(p.fwhm_keV).toBeGreaterThan(0.85 * e.expectedFwhm(0, 1332.492)) }
+    }
+    expect(seen).toBeGreaterThan(4)
+    expect(e.fwhmProbe(0, 1332.492)!.fwhm_keV).toBeLessThan(2.2)
+    // the spectrum itself keeps everything
+    expect(e.spectrum(0).reduce((a, x) => a + x, 0)).toBeGreaterThan(10 * e.fwhmProbe(0, 1332.492)!.counts)
   })
 })

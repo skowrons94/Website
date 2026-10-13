@@ -91,8 +91,9 @@ SOURCES = {
         "doi": "10.1140/epja/i2008-10706-1",
     },
     "krane-co60": {
-        "ref": "Angular correlation of the ⁶⁰Co 1173–1332 keV cascade (4→2→0): a2 = 0.1020, a4 = 0.0091 (theory, pure E2-E2), "
-               "e.g. K. S. Krane, 'Introductory Nuclear Physics' (Wiley 1988) §10.4",
+        "ref": "Angular correlation of the ⁶⁰Co 1173–1332 keV cascade (4→2→0, pure E2-E2): Legendre coefficients "
+               "a2 = 0.1020, a4 = 0.0091 of W(θ) = 1 + a2 P2(cos θ) + a4 P4(cos θ), so ⟨W⟩ = 1 and W(0°) = 1 + a2 + a4 = 1.111 "
+               "(the cos-power form is 1 + cos²θ/8 + cos⁴θ/24); e.g. K. S. Krane, 'Introductory Nuclear Physics' (Wiley 1988) §10.4",
     },
     "watt-cf252": {
         "ref": "²⁵²Cf spontaneous-fission neutron spectrum as a Watt distribution a = 1.025 MeV, b = 2.926 MeV⁻¹ "

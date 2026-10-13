@@ -31,7 +31,7 @@ from playwright.sync_api import sync_playwright  # noqa: E402
 T = {
     'en': {'tour': 'Take the guided tour', 'do': 'Do it for me', 'next': 'Next', 'finish': 'Finish', 'files': 'Run files',
            'show': 'Show files', 'all': 'Download all (.zip)', 'menu': 'Demo menu', 'continue': 'Continue anyway', 'step': 'Step'},
-    'it': {'tour': 'Fai la visita guidata', 'do': 'Fallo tu', 'next': 'Avanti', 'finish': 'Fine', 'files': 'File del run',
+    'it': {'tour': 'Fai la visita guidata', 'do': 'Fallo per me', 'next': 'Avanti', 'finish': 'Fine', 'files': 'File del run',
            'show': 'Mostra i file', 'all': 'Scarica tutto (.zip)', 'menu': 'Menu della demo', 'continue': 'Continua comunque', 'step': 'Passo'},
 }
 DET = {'hpge': 'HPGe', 'bgo': 'BGO', 'ej309': 'EJ-309', 'he3': '³He'}
@@ -139,7 +139,20 @@ def main():
             meta = json.loads(Path(dl.value.path()).read_text())
             if meta.get('Demo', {}).get('simulated') is not True or meta.get('Run Number') is None:
                 failures.append('metadata.json is not the simulated run record')
-            report['metadata scenario'] = meta.get('Demo', {}).get('scenario')
+            demo = meta.get('Demo', {})
+            report['metadata scenario'] = demo.get('scenario')
+            report['metadata run'] = {k: meta.get(k) for k in ('Run Number', 'Run Type', 'Target Name', 'Terminal Voltage', 'Accumulated Charge')}
+            # Step 8 starts a new run for the new condition: the files describe one scenario.
+            if any('scenario' in c for c in demo.get('changes during the run', [])):
+                failures.append('the last run changed scenario mid-run (step 8 should start a new run)')
+            want_src = {'hpge': 'n14pg', 'ej309': 'cf252', 'he3': 'cf252'}.get(a.detectors)
+            if want_src and (demo.get('scenario') or {}).get('source') != want_src:
+                failures.append(f"last run's source is {(demo.get('scenario') or {}).get('source')}, expected {want_src}")
+            if a.detectors == 'hpge' and (meta.get('Run Type') != 'in-beam' or not demo.get('in-beam yield')):
+                failures.append('the in-beam run is not declared as such (run type, yield factor)')
+            q = meta.get('Accumulated Charge')
+            if isinstance(q, float) and round(q, 3) != q:
+                failures.append(f'accumulated charge not rounded: {q}')
             page.keyboard.press('Escape')
 
 

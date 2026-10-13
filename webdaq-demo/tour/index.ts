@@ -45,6 +45,14 @@ function mainLine(s: any): number {
   return src === 'cs137' ? 662 : src === 'background' ? 1461 : src === 'n14pg' ? 6792 : src === 'cf252' ? 1000 : 1332
 }
 
+/** What the Dashboard's run form would hold for the scenario: a source run, or the beam on a TiN target. */
+function runMeta(s: any) {
+  const sc = s.scenario
+  if (sc.source === 'n14pg') return { target_name: 'TiN on Ta backing (simulated)', terminal_voltage: 300, probe_voltage: null, run_type: 'in-beam' }
+  const names: Record<string, string> = { co60: '60Co source', cs137: '137Cs source', cf252: '252Cf source', background: 'no source (background)' }
+  return { target_name: `${names[sc.source] ?? sc.source} at ${sc.distance_cm} cm (simulated)`, terminal_voltage: null, probe_voltage: null, run_type: sc.source === 'background' ? 'background' : 'calibration' }
+}
+
 async function startRun() {
   const n = await req('GET', '/experiment/get_run_number')
   await req('POST', '/experiment/set_run_number', { value: n })
@@ -52,7 +60,7 @@ async function startRun() {
   await req('GET', `/current/start/${n}`)
   await req('POST', `/stats/run/${n}/start`)
   await req('POST', '/experiment/start_run')
-  await req('POST', '/experiment/add_run_metadata', { run_number: n, target_name: 'demo source', terminal_voltage: 0, probe_voltage: 0, run_type: 'calibration' })
+  await req('POST', '/experiment/add_run_metadata', { run_number: n, ...runMeta(await ctl({ type: 'state' })) })
 }
 async function stopRun() {
   await req('POST', '/experiment/stop_run')
@@ -97,7 +105,8 @@ const STEPS: Step[] = [
   {
     id: 'fill', route: '/dashboard', query: '?tab=histograms',
     target: k => ({ role: 'tab', name: k === 'ej309' || k === 'bgo' ? /^PSD$/ : /^Histograms$/ }),
-    done: async c => ((await req('GET', '/histograms/0/0')).fEntries ?? 0) > (c.kind === 'he3' ? 50 : 2000),
+    // Neutron counting is slow (²⁵²Cf at 10 cm: tens of events a second): fewer counts will do.
+    done: async c => ((await req('GET', '/histograms/0/0')).fEntries ?? 0) > (({ he3: 50, ej309: 500 } as Record<string, number>)[c.kind] ?? 2000),
     live: async (c, t) => {
       const st = await req('GET', '/experiment/stats')
       const ch = st?.[0]?.channels?.[0]
@@ -137,7 +146,9 @@ const STEPS: Step[] = [
       const cfg = await req('GET', '/histograms/config')
       const h = cfg.histograms[0]
       if (!h) return
-      const e = mainLine(c.s), w = isPha(c.kind) ? 15 : c.kind === 'ej309' ? e * 0.8 : e * 0.12
+      // EJ-309 has no full-energy peak: a range of light (keV electron-equivalent) instead.
+      if (c.kind === 'ej309') { await req('POST', `/histograms/config/histograms/${h.id}/rois`, { name: '200–1800 keVee', low: 200, high: 1800 }); return }
+      const e = mainLine(c.s), w = isPha(c.kind) ? 15 : e * 0.12
       await req('POST', `/histograms/config/histograms/${h.id}/rois`, { name: `${e} keV`, low: Math.max(0, e - w), high: e + w })
     },
     live: async (c, t) => {
@@ -151,9 +162,14 @@ const STEPS: Step[] = [
       const sv = saved()
       return !!sv && (c.s.scenario.distance_cm !== sv.distance || c.s.scenario.source !== sv.source)
     },
+    // A new condition is a new run: stop this one, change the scenario, start the next
+    // (its files then describe one set of conditions; a change mid-run is recorded too).
     doIt: async c => {
       const sc = c.kind === 'hpge' && c.s.scenario.source !== 'n14pg' ? { source: 'n14pg' } : { distance_cm: Math.max(1, Math.round(c.s.scenario.distance_cm / 2)) }
+      const wasRunning = c.s.running
+      if (wasRunning) await stopRun()
       await ctl({ type: 'scenario', scenario: sc })
+      if (wasRunning) await startRun()
     },
     live: async (c, t) => {
       if (c.s.scenario.source === 'n14pg') return t.live.beam(await req('GET', '/current/data'), await req('GET', '/current/accumulated'))
@@ -216,6 +232,8 @@ let index = 0
 let highlighted: HTMLElement | null = null
 let returnFocus: HTMLElement | null = null
 let wasDone = false
+/** "Do it for me" is under way: its steps (stop, change, start) are not judged half-way. */
+let busy = false
 
 const copy = () => (lang === 'it' ? it : en)
 
@@ -272,7 +290,8 @@ async function render(focus: boolean) {
     b.onclick = async () => {
       b.disabled = true
       if (!onPage && route !== '/') go(route, step.query)
-      try { await step.doIt!(await state()) } finally { b.disabled = false }
+      busy = true
+      try { await step.doIt!(await state()) } finally { b.disabled = false; busy = false }
       tick()
     }
     actions.append(b)
@@ -293,7 +312,7 @@ async function render(focus: boolean) {
 }
 
 async function tick() {
-  if (!root) return
+  if (!root || busy) return
   const t = copy()
   const step = STEPS[index]
   let c: Ctx

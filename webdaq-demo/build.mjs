@@ -218,6 +218,39 @@ function copyDir(src, dst, filter = () => true) {
   }
 }
 
+/**
+ * Small edits to upstream files, each found exactly once (the file's hash is pinned in
+ * pin.json.overrides as well): less to keep in step than a whole copy in overlay/.
+ */
+const PATCHES = [
+  {
+    // #8: the dashboard's fast refresh copies the bin contents only. In the demo the
+    // calibration changes with the scenario (in-beam HPGe gain), so a changed x axis
+    // rebuilds the plot, without the zoom of the old axis.
+    file: 'src/components/histo-dashboard.tsx',
+    edits: [
+      ['    const needsRebuild =\n      isFirstTime || forceRebuild || binCountChanged || roiCountChanged || logChanged',
+        '    const axisChanged =\n      !!existingHist?.fXaxis && !!histogram.fXaxis &&\n      (existingHist.fXaxis.fXmin !== histogram.fXaxis.fXmin || existingHist.fXaxis.fXmax !== histogram.fXaxis.fXmax)\n' +
+        '    const needsRebuild =\n      isFirstTime || forceRebuild || binCountChanged || roiCountChanged || logChanged || axisChanged'],
+      ['      let preservedZoom: { xmin: number; xmax: number } | null = null\n      if (!isFirstTime) {',
+        '      let preservedZoom: { xmin: number; xmax: number } | null = null\n      if (!isFirstTime && !axisChanged) {'],
+    ],
+  },
+]
+
+function applyPatches() {
+  for (const p of PATCHES) {
+    const f = path.join(APP, p.file)
+    let s = fs.readFileSync(f, 'utf8')
+    for (const [find, replace] of p.edits) {
+      const n = s.split(find).length - 1
+      if (n !== 1) fail(`patch for ${p.file}: expected the text once, found it ${n} times:\n${find}`)
+      s = s.replace(find, replace)
+    }
+    fs.writeFileSync(f, s)
+  }
+}
+
 function prepareApp(upstream) {
   fs.rmSync(APP, { recursive: true, force: true })
   copyDir(path.join(upstream, pin.frontend), APP)
@@ -229,6 +262,7 @@ function prepareApp(upstream) {
   copyDir(path.join(HERE, 'shim'), path.join(APP, 'src', 'demo', 'shim'), f => !f.startsWith('handlers/'))
   copyDir(path.join(HERE, 'shell'), path.join(APP, 'src', 'demo', 'shell'))
   copyDir(path.join(HERE, 'tour'), path.join(APP, 'src', 'demo', 'tour'))
+  applyPatches()
 }
 
 // ── 4. checks on the export ─────────────────────────────────────────────────

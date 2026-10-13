@@ -157,6 +157,13 @@ class Engine implements PhysicsEngine, PhysicsExtras {
   private pha: PhaParams[] = []
   private psdp: PsdParams[] = []
   private spectra: Uint32Array[] = []
+  /**
+   * Channels 0 and 1 again, counting only events taken with the present settings: the
+   * tour's live FWHM fits these, so a peak filled before and after a register change
+   * is never fitted as one (it could look narrower than the detector can be).
+   */
+  private probe: (Uint32Array | null)[] = []
+  private probeKey = ''
   private psds: (Uint32Array | null)[] = []
   private chans: ChanState[] = []
   private rSrc: Rng
@@ -202,11 +209,14 @@ class Engine implements PhysicsEngine, PhysicsExtras {
       else this.psdp.push(psdParams(board, c, kind, this.scint!.qPerKeV, this.L))
     }
     this.gf = this.psdp.map((p) => Float64Array.from([...gateFractions(this.scint!, p, 0), ...gateFractions(this.scint!, p, 1)]))
+    const pk = this.key + JSON.stringify(this.dpp === 'DPP-PHA' ? this.pha.slice(0, 2) : this.psdp.slice(0, 2))
+    if (pk !== this.probeKey) { this.probeKey = pk; for (const p of this.probe) p?.fill(0) }
   }
 
   private alloc(): void {
     const bins = this.dpp === 'DPP-PSD' ? QLONG_BINS : ENERGY_BINS
     this.spectra = Array.from({ length: this.nCh }, () => new Uint32Array(bins))
+    this.probe = Array.from({ length: this.nCh }, (_, c) => (c < 2 ? new Uint32Array(bins) : null))
     this.psds = Array.from({ length: this.nCh }, () => (this.dpp === 'DPP-PSD' ? new Uint32Array(PSD_XBINS * PSD_YBINS) : null))
     this.chans = Array.from({ length: this.nCh }, newChan)
     this.rCh = Array.from({ length: this.nCh }, (_, c) => new Rng(this.seed, `ch${c}`))
@@ -220,8 +230,8 @@ class Engine implements PhysicsEngine, PhysicsExtras {
     if (resp) {
       if (s.source === 'co60') {
         const c = L.co60_correlation
-        // W(0°)/⟨W⟩ for a 4→2→0 cascade: both γs entering the same small detector
-        const w0 = (1 + c.a2 + c.a4) / (1 + c.a2 / 3 + c.a4 / 5)
+        // W(0°)/⟨W⟩ for a 4→2→0 cascade (Legendre a2, a4, so ⟨W⟩ = 1): both γs entering the same small detector
+        const w0 = 1 + c.a2 + c.a4
         out.push({ e: new CascadeEmitter(enumeratePaths(L.nuclides.Co60), A, resp, d, w0), beam: false })
       } else if (s.source === 'cs137') {
         out.push({ e: new CascadeEmitter(enumeratePaths(L.nuclides.Cs137), A, resp, d), beam: false })
@@ -284,6 +294,7 @@ class Engine implements PhysicsEngine, PhysicsExtras {
   clear(): void {
     for (const s of this.spectra) s.fill(0)
     for (const p of this.psds) p?.fill(0)
+    for (const p of this.probe) p?.fill(0)
     this.chans = Array.from({ length: this.nCh }, newChan)
     this.blocksFrac = 0
   }
@@ -443,7 +454,7 @@ class Engine implements PhysicsEngine, PhysicsExtras {
       Em = E * (1 - delta) + (Math.sqrt(f2) / 2.355) * r.normal()
     }
     const ch = Math.floor(Em * p.gain)
-    if (ch > 0 && ch < ENERGY_BINS) { this.spectra[c][ch]++; return ch }
+    if (ch > 0 && ch < ENERGY_BINS) { this.spectra[c][ch]++; const pr = this.probe[c]; if (pr) pr[ch]++; return ch }
     return 0
   }
 
@@ -461,6 +472,8 @@ class Engine implements PhysicsEngine, PhysicsExtras {
     const qL = Math.min(QLONG_BINS - 1, Math.floor(ql))
     const qS = Math.floor(qs)
     this.spectra[c][qL]++
+    const pr = this.probe[c]
+    if (pr) pr[qL]++
     const psd = this.psds[c]
     if (psd && qL > 0) {
       // caendaq HistogramStore::fill, but stored x fastest (api.ts convention)
@@ -602,14 +615,15 @@ class Engine implements PhysicsEngine, PhysicsExtras {
   }
 
   fwhmProbe(ch: number, energy_keV: number): FwhmProbe | null {
-    const spec = this.spectra[ch]
+    const spec = this.probe[ch]
     if (!spec || !this.board) return null
     const g = this.gain(ch)
     const exp = this.expectedFwhm(ch, energy_keV)
     const fb = Math.max(1, exp * g)
     const half = Math.max(4 * fb, 12 * g, 20)
     const fit = fitPeak(spec, energy_keV * g, half, Math.max(1, fb / 8))
-    if (!fit || fit.net < 20) return null
+    // Too few counts for a width that means anything: say nothing yet.
+    if (!fit || fit.net < 400) return null
     return {
       energy_keV,
       centroid_keV: (fit.centroid + 0.5) / g,

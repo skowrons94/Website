@@ -53,6 +53,18 @@ export default function Shell() {
   }, [])
   useEffect(() => { document.documentElement.lang = lang }, [lang])
   useEffect(() => { setMenu(false) }, [path])
+  // Escape closes the Demo menu and puts the focus back on its button.
+  useEffect(() => {
+    if (!menu) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return
+      e.preventDefault()
+      setMenu(false)
+      document.getElementById('wd-menu-button')?.focus()
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [menu])
 
   const open = useCallback((p: Panel) => {
     setMenu(false)
@@ -91,7 +103,7 @@ export default function Shell() {
           <span className="wd-narrow">{t.bannerShort}</span>
         </p>
         <div className="wd-actions wd-wide">{actions}</div>
-        <button type="button" className="wd-btn wd-narrow" aria-expanded={menu} aria-controls="wd-menu" onClick={() => setMenu(m => !m)}>{t.menu}</button>
+        <button type="button" id="wd-menu-button" className="wd-btn wd-narrow" aria-expanded={menu} aria-controls="wd-menu" onClick={() => setMenu(m => !m)}>{t.menu}</button>
       </div>
       {menu && <div id="wd-menu" className="wd-frame wd-menu">{actions}</div>}
       {showNote && (

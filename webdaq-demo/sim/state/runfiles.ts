@@ -8,6 +8,8 @@
  * the real byte counts through `setRunFileProvider`.
  */
 import type { Daq, RunRecord } from './daq'
+import type { Scenario } from '../physics/api'
+import { beamSample } from '../physics/beam'
 
 export interface RunFileEntry { name: string; bytes: number }
 
@@ -66,16 +68,37 @@ export function pyStamp(ms: number) {
   return `${t.getFullYear()}-${pad(t.getMonth() + 1)}-${pad(t.getDate())} ${pad(t.getHours())}:${pad(t.getMinutes())}:${pad(t.getSeconds())}.${pad(t.getMilliseconds(), 3)}000`
 }
 
-/** The rows current.txt would hold: [relative time, ch0..ch3] at 10 Hz. */
+/**
+ * The scenario in force at each moment of the run: the one it started with, then
+ * every change recorded in its timeline ([run time, 'scenario', JSON]).
+ */
+export function scenarioSegments(run: RunRecord): { from_s: number; scenario: Scenario }[] {
+  const out = [{ from_s: 0, scenario: { ...run.demo.scenario } }]
+  for (const [t, key, value] of [...run.demo.timeline].sort((a, b) => a[0] - b[0])) {
+    if (key !== 'scenario') continue
+    try { out.push({ from_s: t, scenario: { ...out[out.length - 1].scenario, ...JSON.parse(value) } }) } catch { /* skip */ }
+  }
+  return out
+}
+
+/**
+ * The rows current.txt holds: [relative time, ch0..ch3] at 10 Hz, from the run's own
+ * history (the beam was on only while its scenario said so), never from the present.
+ */
 export function currentRows(d: Daq, run: RunRecord): number[][] {
   const t0 = run.demo.sim_start_s
   const n = Math.floor(duration(d, run) * 10)
+  const segs = scenarioSegments(run)
   const rows: number[][] = []
-  const prev = d.physics
+  let k = 0
   for (let i = 0; i <= n; i++) {
-    const t = Math.round((t0 + i * 0.1) * 10) / 10
-    const s = prev.beamSample(t)
-    rows.push([i * 0.1, ...s.map(v => Math.max(0, v))])
+    const rel = i * 0.1
+    while (k + 1 < segs.length && segs[k + 1].from_s <= rel + 1e-9) k++
+    const sc = segs[k].scenario
+    const I0 = sc.source === 'n14pg' ? sc.beam_I0_uA : 0
+    const t = Math.round((t0 + rel) * 10) / 10
+    const s = beamSample(t, I0, run.demo.seed)
+    rows.push([rel, ...s.map(v => Math.max(0, v))])
   }
   return rows
 }
@@ -88,7 +111,7 @@ export function readCurrent(d: Daq, run: RunRecord, maxPoints: number) {
   if (!rows.length) return result
   const columns = ['Time(s)', 'Ch0(uA)', 'Ch1(uA)', 'Ch2(uA)', 'Ch3(uA)']
   result.available = true
-  result.start_time = pyStamp(d.wallAt(run.demo.sim_start_s))
+  result.start_time = pyStamp(d.runWallAt(run, run.demo.sim_start_s))
   result.columns = columns
   result.n_samples = rows.length
   result.integration = integrate(rows, columns.slice(1))
@@ -120,7 +143,7 @@ export function readStats(d: Daq, run: RunRecord, maxPoints: number) {
   const s = run.demo.stats
   if (!s || !s.rows.length) return result
   result.available = true
-  const t = new Date(d.wallAt(run.demo.sim_start_s))
+  const t = new Date(d.runWallAt(run, run.demo.sim_start_s))
   result.start_time = `${t.getFullYear()}-${pad(t.getMonth() + 1)}-${pad(t.getDate())}T${pad(t.getHours())}:${pad(t.getMinutes())}:${pad(t.getSeconds())}`
   result.columns = ['Time [s]', ...s.metrics.map(m => (m.unit ? `${m.name} [${m.unit}]` : m.name))]
   result.metrics = s.metrics.map(m => ({ ...m }))

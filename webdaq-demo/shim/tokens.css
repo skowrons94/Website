@@ -61,6 +61,15 @@ body:has(.wd-banner) header.sticky.top-0 { top: var(--wd-banner-h); }
   .wd-banner-text .wd-narrow { display: inline !important; }
 }
 .wd-menu .wd-link { display: flex; align-items: center; min-height: 44px; }
+/* 44 px targets for the banner's link too, without making the banner taller */
+.wd-banner .wd-link { display: inline-flex; align-items: center; min-height: 44px; margin-block: -6px; white-space: nowrap; }
+/* phones: room for the 44 px menu button, and the short notice wraps instead of being cut */
+@media (max-width: 767px) {
+  :root { --wd-banner-h: 52px; }
+  .wd-banner { gap: 8px; }
+  .wd-banner-text { white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.25; font-size: 0.9375rem; }
+  .wd-banner .wd-btn { flex: 0 0 auto; }
+}
 
 .wd-btn {
   display: inline-flex; align-items: center; justify-content: center; min-height: 32px; padding: 4px 10px;

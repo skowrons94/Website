@@ -14,7 +14,8 @@
     "src/app/api": "c72a6584abe3aa1b7f09312db0280ed9c8e8a200fcf16ebc4ccb179acc0996e0",
     "src/api": "8ad80ca1ee19f6f540b90d110337a73453f50c4dae890d2cb0e63124e5b786bf",
     "src/lib/load-jsroot.ts": "b8f867afb8b39d67512c8774949aa9aaf2bc5c3500d66f379c65f77d0bb137db",
-    "src/app/logbook/[run_number]/layout.tsx": "absent"
+    "src/app/logbook/[run_number]/layout.tsx": "absent",
+    "src/components/histo-dashboard.tsx": "02f2ad3d9d2e29e7a9014bd804863bddc256d9d2cd186c529d7da7cda15bf8c0"
   },
   "apiSurfaceHash": "c798634afb31ab75afbb6673aa8ff3a63c8bfe9bd8e98dee173caf88f5bcb385"
 }
