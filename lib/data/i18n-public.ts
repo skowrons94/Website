@@ -415,7 +415,7 @@ const it: typeof en = {
       `Livelli di energia dell'ossigeno-15 da ENSDF. Il protone può entrare sopra ${sp}, l'energia che serve per strappare un protone al nucleo; la fascia indica le energie che usa il Sole (circa ${e0} più in alto).`,
     nucleusThreshold: "azoto-14 + protone",
     nucleusWindow: "finestra del Sole",
-    nucleusSub: "sotto la soglia: decisivo",
+    nucleusSub: "appena sotto: conta per il tasso",
     nucleusRes: "prima porta sopra",
     nucleusOpen: "Apri la scheda dell'ossigeno-15",
     nucleusOthers: "Altri nuclei",

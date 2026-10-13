@@ -393,11 +393,11 @@ export function ReactionExplorer({
             strings={strings}
             lang={lang}
             svgRef={svgRef}
+            empty={view === "total" ? undefined : strings.plot.noneOfView}
           />
         </div>
         {notInView.length > 0 && (
           <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
-            {strings.plot.noneOfView}
             <button type="button" className={btnLink} onClick={() => setSelected(new Set([...sel, ...notInView.map((r) => r.id)]))}>
               {fill(strings.plot.addView, { n: notInView.length })}
             </button>

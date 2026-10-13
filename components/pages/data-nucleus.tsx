@@ -111,7 +111,7 @@ export function DataNucleusPage({ nuclide, lang }: { nuclide: string; lang: Lang
 
   function MatrixTable({ rows, caption }: { rows: typeof matrix; caption: string }) {
     return (
-      <div className="mt-5 overflow-x-auto rounded-lg border border-border" tabIndex={0} role="region" aria-label={caption}>
+      <div className="relative mt-5 overflow-x-auto rounded-lg border border-border" tabIndex={0} role="region" aria-label={caption}>
         <table className="w-full border-collapse text-sm">
           <caption className="sr-only">{caption}</caption>
           <thead className="bg-card text-left text-xs text-muted-foreground">

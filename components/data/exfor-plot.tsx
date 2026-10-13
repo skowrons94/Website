@@ -46,6 +46,7 @@ export function ExforPlot({
   strings,
   lang,
   svgRef,
+  empty,
 }: {
   series: PlotSeries[]
   curves: PlotCurve[]
@@ -58,6 +59,8 @@ export function ExforPlot({
   strings: DataExpertStrings
   lang: Lang
   svgRef?: React.Ref<SVGSVGElement>
+  /** what to say when nothing is selected for this view */
+  empty?: string
 }) {
   const t = strings.plot
   const [ref, width, k] = useWidth<HTMLDivElement>(760)
@@ -104,7 +107,7 @@ export function ExforPlot({
         ref={ref}
         className="flex min-h-[12rem] items-center justify-center rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground"
       >
-        {t.nothing}
+        {empty ?? t.nothing}
       </div>
     )
   }
