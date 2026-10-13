@@ -22,10 +22,17 @@ interface TransportState {
   listeners: Set<(state: any) => void>
   lastState: any
   resetting: boolean
+  /** The last requests and commands, oldest first: [ms since load, what, status] (tests print it on failure). */
+  log: [number, string, number | string][]
 }
 const G: TransportState = ((globalThis as any).__webdaqTransport ??= {
-  worker: null, seq: 0, pending: new Map(), misses: [], listeners: new Set(), lastState: null, resetting: false,
+  worker: null, seq: 0, pending: new Map(), misses: [], listeners: new Set(), lastState: null, resetting: false, log: [],
 })
+G.log ??= []
+function note(what: string, status: number | string) {
+  G.log.push([Math.round(performance.now()), what, status])
+  if (G.log.length > 400) G.log.splice(0, G.log.length - 400)
+}
 
 function ss(): Storage | null {
   try { return window.sessionStorage } catch { return null }
@@ -89,6 +96,7 @@ export function request(req: Req): Promise<Res & { miss?: boolean }> {
     G.pending.set(id, {
       resolve: (res: Res & { miss?: boolean }) => {
         if (res.miss) G.misses.push({ method: req.method, path: req.path, status: res.status })
+        if (req.method !== 'GET' || /\/(start|stop)\b/.test(req.path)) note(`${req.method} ${req.path}`, res.status)
         resolve(res)
       },
       reject,
@@ -103,7 +111,7 @@ export function control(cmd: Record<string, unknown>): Promise<any> {
   const id = ++G.seq
   if (cmd.type === 'scenario') writeJSON('scenario', { ...(readJSON('scenario') ?? {}), ...(cmd.scenario as object) })
   return new Promise((resolve, reject) => {
-    G.pending.set(id, { resolve, reject })
+    G.pending.set(id, { resolve: (v: any) => { if (cmd.type !== 'state' && cmd.type !== 'fwhm') note(`ctl ${JSON.stringify(cmd)}`, v?.ok === false ? 'refused' : 'ok'); resolve(v) }, reject })
     w.postMessage({ type: 'ctl', id, cmd })
   })
 }
@@ -133,6 +141,7 @@ export function resetDemo() {
 if (typeof window !== 'undefined') {
   ;(window as any).__webdaqDemo = {
     misses: () => G.misses.slice(),
+    log: () => G.log.slice(),
     control, request, onState, resetDemo,
     state: () => G.lastState,
   }

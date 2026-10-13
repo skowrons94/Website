@@ -29,7 +29,15 @@ export default function RunFiles({ t, lang, onClose }: { t: Strings; lang: Lang;
   const [open, setOpen] = useState<number | null>(null)
   const [files, setFiles] = useState<DemoFile[] | null>(null)
   const [msg, setMsg] = useState('')
-  useEffect(() => onState(s => setRuns((s?.runs ?? []).filter((r: RunRow) => r.end_time).sort((a: RunRow, b: RunRow) => b.run_number - a.run_number))), [])
+  useEffect(() => {
+    const take = (s: any) => setRuns((s?.runs ?? []).filter((r: RunRow) => r.end_time).sort((a: RunRow, b: RunRow) => b.run_number - a.run_number))
+    // Ask the worker on open rather than trust the last broadcast: a run stopped a
+    // moment ago must already be listed.
+    let live = true
+    control({ type: 'state' }).then(s => { if (live) take(s) })
+    const off = onState(take)
+    return () => { live = false; off() }
+  }, [])
 
   async function show(n: number) {
     setOpen(n); setFiles(null); setMsg(p.preparing)
