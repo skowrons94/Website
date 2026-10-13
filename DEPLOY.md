@@ -73,7 +73,9 @@ and it is baked in at build time:
 - the social-preview image (`og:image`, Twitter card) appears only with it:
   Open Graph needs an absolute address, and the build cannot guess the domain;
   without it a shared link previews with a title and text but no picture;
-- the language alternates (`hreflang`) become absolute;
+- the language alternates (`hreflang`), the canonical address of every page,
+  the structured data (JSON-LD), `sitemap.xml`, `robots.txt` and the news
+  feeds use absolute addresses, as search engines and feed readers need;
 - the atlas' "how to cite" box cites the public address rather than whatever
   address the page is being viewed at (`127.0.0.1` on a local build), and the
   printed CV shows it next to the name and email.

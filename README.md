@@ -22,6 +22,9 @@ CORS configuration anywhere and nothing to point at anything else.
 /software
 /publications
 /cv
+/news                what is new on the site (content/news.yaml); /news/feed.xml, Atom
+/learn/exercises     three exercises with worked solutions
+/sitemap.xml         every page, EN and IT as alternates (written after the build)
 /it/…                the same pages in Italian (every route above, under /it)
 ```
 
@@ -412,7 +415,59 @@ and violet/brown are "more"/"less" and the result of a change. A dash means
 ### Software
 
 `content/software.yaml`, one entry per program; the comment at the top of the
-file lists the fields.
+file lists the fields. Each entry is also described to search engines as
+`SoftwareSourceCode` (its licence, and its repository from the "Source on
+GitHub" link), so an entry added here appears there too.
+
+### News
+
+`content/news.yaml` feeds `/news`, the "What's new" strip on the home page
+(the latest three) and the Atom feeds `/news/feed.xml` and
+`/it/news/feed.xml`. Add an item at the top of the list:
+
+```yaml
+  - date: 2026-11-03            # the day it went on the site
+    text: >-                    # one or two sentences; the first is the feed title
+      The data explorer: every measurement of a reaction in EXFOR, plotted.
+    text_it: >-
+      L'esploratore dei dati: tutte le misure di una reazione in EXFOR, in un grafico.
+    link: /data                 # optional: a page of the site, or https://…
+    commit: abc1234             # optional: where the date comes from
+```
+
+Only what is on the site, dated by when it arrived (`git log` gives the
+date). The build stops on an item without a valid date or text, and
+`npm run test:seo` checks that each link leads to a page that exists in
+both languages.
+
+### Exercises
+
+`/learn/exercises` (`components/pages/exercises.tsx`, the words in English
+and Italian). The numbers of the first two exercises are computed at build
+time (`lib/exercises.ts`, from the AME2020 masses and the Gamow-window
+formulas the atlas and the rates explorer use); those of the third are
+AZURE2 results on the ¹³N evaluation, kept in `THIRTEEN_N` with how they were
+obtained. If the ¹³N model changes, `npm run test:seo` says so; rerun
+`python3 scripts/exercises/thirteen-n.py http://localhost:5001` against a
+running API and copy its numbers into `THIRTEEN_N`.
+
+### Publications against ORCID
+
+```sh
+npm run pubs:check     # writes pubs-proposal.md (and .json); never edits the YAML
+```
+
+asks the ORCID public API and Crossref for the works of the profile's ORCID
+iD and lists what differs from `content/publications.yaml`: new DOIs (with a
+YAML entry to check and paste), years and titles that differ, submitted
+papers that now have a DOI, and DOIs missing from the ORCID record. It needs
+the network; `npm run test:pubs` runs it on recorded answers
+(`scripts/pubs/fixtures/`). `.github/workflows/pubs-check.yml` can run it
+monthly and open an issue with the proposal: set the repository variable
+`PUBS_CHECK` to `true` (Settings → Secrets and variables → Actions →
+Variables) to turn it on, or start it by hand from the Actions tab. It may
+only read the code and write issues. An optional `PUBS_MAILTO` variable puts
+an address in the requests to Crossref (its "polite pool").
 
 ### A new evaluation
 
@@ -511,6 +566,33 @@ selection: AZURE2 data files with a stub `<segmentsData>`, CSV, JSON, BibTeX
 (`python scripts/data/dx.py export ...`). Tests: `npm run test:data`.
 Everything else — scope, rules, schemas, the AZURE2 column layout, licences —
 is in `scripts/data/README.md`.
+
+## Findability
+
+What search engines, citation tools and link previews read, all from the
+content, nothing typed twice:
+
+- a canonical address and `og:url` on every page (each language canonical
+  for itself), `hreflang` pairs, Open Graph and Twitter cards whose type
+  follows the page (a note is an article, the CV a profile);
+- JSON-LD (`lib/structured-data.ts`): the Person (from profile.yaml and the
+  CV: role, affiliation, ORCID, ORCID/GitHub/INSPIRE as `sameAs` once the
+  INSPIRE address is filled in), the WebSite with a SearchAction (`/?q=…`
+  opens the site search with the query), a BreadcrumbList on every page, a
+  ScholarlyArticle per paper with a DOI, SoftwareSourceCode per program,
+  the atlas and each evaluation as a Dataset (CC BY 4.0, the site DOI once
+  `site_doi` is set);
+- `sitemap.xml` and `robots.txt`, written after every build from the pages
+  the build produced (`scripts/sitemap.mjs`), so new atlas entries,
+  evaluations, notes or data pages are in it without a list to update.
+
+All of it needs **`SITE_URL`** at build time for absolute addresses (Docker
+Compose sets it from `SITE_DOMAIN`; the Pages workflow from GitHub's
+answer). After a build, `npm run test:seo` with the same `SITE_URL`,
+`BASE_PATH` and `STATIC_EXPORT` checks every page's head and JSON-LD, the
+sitemap and the feeds. On GitHub Pages under `<user>.github.io/<repo>/`,
+crawlers read `robots.txt` only at the host's root, so submit
+`…/<repo>/sitemap.xml` in Search Console instead.
 
 ## Development
 
