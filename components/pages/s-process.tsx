@@ -29,9 +29,9 @@ const TEXT = {
     eyebrow: "Reaction atlas",
     title: "The s-process: from iron to lead",
     description:
-      "How slow neutron captures in giant stars build about half of the nuclei between iron and bismuth: the path on the chart of nuclides, its branch points, and how the captures are measured.",
+      "How slow neutron captures in giant stars build about half the nuclei between iron and bismuth: the path on the chart of nuclides, its branch points, and how the captures are measured.",
     lead:
-      "About half of the nuclei heavier than iron were built one neutron at a time, inside giant stars, over the hundred thousand years or so of their last bright phase. Most of the strontium and barium in the Solar System, and much of its lead, were made this way. This page follows that path across the chart of nuclides, from iron to lead and bismuth.",
+      "About half the nuclei heavier than iron were built one neutron at a time, inside giant stars, over the hundred thousand years or so of their last bright phase. Most of the strontium and barium in the Solar System, and much of its lead, were made this way. This page follows that path across the chart of nuclides, from iron to lead and bismuth.",
     back: "Reaction atlas",
     overviewTitle: "The path on the chart of nuclides",
     overviewLabel:
@@ -473,7 +473,7 @@ function BodyEn({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
           <P>
             Fusion stops at iron: building heavier nuclei from lighter ones no longer releases energy, and the
             growing electric charge of the nuclei keeps charged particles out. Neutrons have no charge, so
-            the heavy elements were built instead by neutron captures. About half of the nuclei between iron and
+            the heavy elements were built instead by neutron captures. About half the nuclei between iron and
             bismuth come from the <i>slow</i> neutron-capture process, the {term("s-process", "s-process")}; most of the rest from
             the rapid {term("r-process", "r-process")} {c("kaeppeler2011")}. Both were named, with the other processes of
             element building, in the review of Burbidge, Burbidge, Fowler and Hoyle {c("b2fh1957")}.

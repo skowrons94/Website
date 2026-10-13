@@ -475,45 +475,6 @@ export function HomePage({ lang }: { lang: Lang }) {
         </section>
       )}
 
-      {/* -- the two things to open: the atlas and the evaluations ------- */}
-      {/* Side by side from lg, so neither sits at the very bottom of the page
-          and the outreach half of the site is as close to the top as the
-          specialist half. */}
-      <section className="grid gap-6 border-t border-border/70 py-14 lg:grid-cols-2">
-        <div className="flex min-w-0 flex-col rounded-lg border border-border bg-card p-6 sm:p-8 lg:p-10">
-          <h2 className="hyphens-auto break-words font-serif text-2xl font-semibold tracking-tight">
-            {t.atlasTitle}
-          </h2>
-          <p className="mt-4 max-w-2xl text-pretty leading-relaxed text-muted-foreground">
-            {t.atlasText}
-          </p>
-          <Link
-            prefetch={false}
-            href={to("/atlas")}
-            className="group mt-auto inline-flex min-h-10 items-center gap-2 self-start pt-6 text-sm font-medium text-link underline-offset-4 hover:underline"
-          >
-            {t.openAtlas}
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-          </Link>
-        </div>
-        <div className="flex min-w-0 flex-col rounded-lg border border-border bg-card p-6 sm:p-8 lg:p-10">
-          <h2 className="hyphens-auto break-words font-serif text-2xl font-semibold tracking-tight">
-            {t.evaluationsTitle}
-          </h2>
-          <p className="mt-4 max-w-2xl text-pretty leading-relaxed text-muted-foreground">
-            {t.evaluationsText}
-          </p>
-          <Link
-            prefetch={false}
-            href={to("/evaluations")}
-            className="group mt-auto inline-flex min-h-10 items-center gap-2 self-start pt-6 text-sm font-medium text-link underline-offset-4 hover:underline"
-          >
-            {t.browseEvaluations}
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-          </Link>
-        </div>
-      </section>
-
       {/* -- notes --------------------------------------------------------- */}
       <section className="border-t border-border/70 py-14">
         <div className="mb-10 flex break-after-avoid flex-wrap items-baseline justify-between gap-x-4">

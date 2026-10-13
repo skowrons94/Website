@@ -8,8 +8,8 @@
 software:
   - id: azure2
     name: AZURE2
-    tagline: The R-matrix code for nuclear astrophysics
-    tagline_it: Il codice R-matrix per l'astrofisica nucleare
+    tagline: A widely used R-matrix code for nuclear astrophysics
+    tagline_it: Un codice R-matrix molto usato in astrofisica nucleare
     role: Maintainer and Lead Developer since June 2025
     role_it: Responsabile e sviluppatore principale da giugno 2025
     summary:

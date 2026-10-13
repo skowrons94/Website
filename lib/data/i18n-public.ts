@@ -30,9 +30,9 @@ const en = {
   dataPublic: {
     name: "Nuclear data explorer",
     metaTitle: "Nuclear data explorer",
-    promise: "Every nucleus has a file. See what has been measured, and what nobody has measured yet.",
+    promise: "Every nucleus has a file. See what has been measured, and where the measurements stop.",
     description:
-      "What has been measured for the reactions that power stars, and what nobody has measured yet: the world's nuclear-reaction data (EXFOR) and nuclear levels (ENSDF), in plain language.",
+      "What has been measured for the reactions that power stars, and where the measurements stop: the world's nuclear-reaction data (EXFOR) and nuclear levels (ENSDF), in plain language.",
     lead: (datasets: string, entries: string, reactions: string) =>
       `${datasets} measured datasets from ${entries} experiments in the world's nuclear-data logbook, linked to the ${reactions} reactions of the atlas, to the energy levels of each nucleus and to the rates that stars run on.`,
     jump: "On this page",
@@ -50,13 +50,13 @@ const en = {
     words: [
       {
         term: "EXFOR",
-        text: "The world's logbook of nuclear experiments: every published measurement, with who, where and when.",
+        text: "The world's logbook of nuclear experiments: most published measurements, with who, where and when.",
       },
       {
         term: "ENSDF",
         text: "The reference book of each nucleus: its energy levels, how long they live, which γ-rays they emit.",
       },
-      { term: "Evaluation", text: "The best curve through all the measurements, with an honest error band." },
+      { term: "Evaluation", text: "The best curve through all the measurements, with its uncertainty band." },
       { term: "Rate", text: "How often a reaction happens in a star at a given temperature." },
     ],
 
@@ -64,11 +64,11 @@ const en = {
     cards: {
       known: (n: string) => `${n} reactions on the chart of nuclides, each marked by how well its rate is known.`,
       gap: (n: string) =>
-        `${n} reactions, from the energy a star uses to the lowest energy anyone has measured. The empty stretch is the story.`,
+        `${n} reactions, from the energy a star uses to the lowest energy in EXFOR. The empty stretch is the story.`,
       stories: "The slowest reaction in the Sun, the step that sets the pace of the CNO cycle, and why physicists go underground.",
       nucleus: "The energy levels of a nucleus, with the narrow band a star uses drawn across them.",
       search: "Type an element, in English or Italian: its isotopes, their reactions and their rates.",
-      paths: "Three short walks through the site, five steps each.",
+      paths: "Short walks through the site, from a question to what we still don't know.",
       go: "Go",
     },
 
@@ -90,7 +90,7 @@ const en = {
     measurementsAria: (reaction: string) => `Measurements of ${reaction}`,
 
     /* -- the gap --------------------------------------------------------- */
-    gapTitle: "The gap: what nobody has measured yet",
+    gapTitle: "The gap: what EXFOR has no measurement of yet",
     gapLead:
       "A star uses each reaction in a narrow band of energies, its Gamow window. Laboratories measure from high energies downwards, and the counting rate falls steeply as they go. For each reaction: the window a star needs and the lowest energy ever measured. The empty stretch between them is filled by extrapolation.",
     gapLegendWindow: "Energies the star uses (Gamow window)",
@@ -169,7 +169,7 @@ const en = {
 
     /* -- guided paths ---------------------------------------------------- */
     pathsTitle: "Guided paths",
-    pathsLead: "Five steps each, from a question to what we still don't know.",
+    pathsLead: "From a question to what we still don't know, a few steps at a time.",
     pathSteps: (n: number) => `${n} steps`,
     stepOf: (i: number, n: number) => `Step ${i} of ${n}`,
     next: "Next",
@@ -206,7 +206,7 @@ const en = {
           },
           {
             title: "Nobody has ever measured it",
-            text: `The Sun runs this reaction at about ${c.e0}. No experiment has measured it at any energy: EXFOR, the world's logbook of nuclear experiments, has no dataset for it. Its rate comes from theory, and the neutrinos it gives off, counted on Earth, agree with it. The next fusion in the chain, helium-3 + helium-3, has been measured down to ${c.he3low} (${c.he3who}), inside the Sun's window.`,
+            text: `The Sun runs this reaction at about ${c.e0}. No experiment has measured it at any energy: EXFOR, the world's logbook of nuclear experiments, has no dataset for it. Its rate comes from theory, and the neutrinos it gives off, counted on Earth, agree with it. The next fusion in the chain, helium-3 + helium-3, has been measured inside the Sun's window: the lowest energy in EXFOR is ${c.he3low} (${c.he3who}), and later LUNA data go down to 16.5 keV (Bonetti et al., 1999).`,
             link: "See the gap for every reaction",
           },
           {
@@ -267,17 +267,17 @@ const en = {
         steps: [
           {
             title: "One neutron at a time",
-            text: "About half of the nuclei heavier than iron are made by slow neutron captures in red giants: a nucleus captures a neutron, waits, often decays, and captures again, step by step from iron to lead.",
+            text: "About half the nuclei heavier than iron are made by slow neutron captures in red giants: a nucleus captures a neutron, waits, often decays, and captures again, step by step from iron to lead.",
             link: "The s-process in the atlas",
           },
           {
             title: "Where the neutrons come from",
-            text: `In red giants most neutrons come from carbon-13 + helium-4 → oxygen-16 + a neutron. EXFOR lists ${c.datasets} datasets for it, from ${c.y0} to ${c.y1}. The lowest energy measured is ${c.low} (${c.who}); the star needs about ${c.e0} (${c.site}).${c.inside ? " The measurements have reached the window." : " The last stretch is extrapolated."}`,
+            text: `In red giants most neutrons come from carbon-13 + helium-4 → oxygen-16 + a neutron. EXFOR lists ${c.datasets} datasets for it, from ${c.y0} to ${c.y1}. Deep underground at Gran Sasso, LUNA measured it down to 230 keV (Ciani et al., 2021), the upper edge of the star's window; the star needs about ${c.e0} (${c.site}), and below 230 keV the rate is still extrapolated.`,
             link: "See every measurement",
           },
           {
             title: "The best curve",
-            text: `An evaluation draws the best curve through all those measurements, with an honest error band, and turns it into a rate a star model can use. The atlas lists ${c.evaluations} evaluations of this reaction.`,
+            text: `An evaluation draws the best curve through all those measurements, with its uncertainty band, and turns it into a rate a star model can use. The atlas lists ${c.evaluations} evaluations of this reaction.`,
             link: "The evaluations, in the atlas",
           },
           {
@@ -288,7 +288,7 @@ const en = {
         ],
         unknownTitle: "What we still don't know",
         unknown: [
-          `The second neutron source, neon-22 + helium-4, has been measured down to ${c.ne22low} only; a thermal pulse needs about ${c.ne22e0}.`,
+          `The second neutron source, neon-22 + helium-4, has been seen directly only down to its resonance at 830 keV (α energy in the laboratory); below it there are only upper limits, and a thermal pulse needs about ${c.ne22e0}.`,
           "How much carbon-13 a star's pocket holds is set by mixing inside the star, which models cannot yet predict.",
           "At some branch points of the path the nucleus is radioactive, and its neutron capture is hard or impossible to measure.",
         ],
@@ -306,9 +306,9 @@ const it: typeof en = {
   dataPublic: {
     name: "Esploratore dei dati nucleari",
     metaTitle: "Esploratore dei dati nucleari",
-    promise: "Ogni nucleo ha una scheda. Guarda che cosa è stato misurato, e che cosa nessuno ha ancora misurato.",
+    promise: "Ogni nucleo ha una scheda. Guarda che cosa è stato misurato, e dove si fermano le misure.",
     description:
-      "Che cosa è stato misurato per le reazioni che fanno brillare le stelle, e che cosa nessuno ha ancora misurato: i dati mondiali sulle reazioni nucleari (EXFOR) e sui livelli dei nuclei (ENSDF), in parole semplici.",
+      "Che cosa è stato misurato per le reazioni che fanno brillare le stelle, e dove si fermano le misure: i dati mondiali sulle reazioni nucleari (EXFOR) e sui livelli dei nuclei (ENSDF), in parole semplici.",
     lead: (datasets: string, entries: string, reactions: string) =>
       `${datasets} serie di misure da ${entries} esperimenti del registro mondiale dei dati nucleari, collegate alle ${reactions} reazioni dell'atlante, ai livelli di energia di ogni nucleo e ai tassi con cui bruciano le stelle.`,
     jump: "In questa pagina",
@@ -325,24 +325,24 @@ const it: typeof en = {
     words: [
       {
         term: "EXFOR",
-        text: "Il registro mondiale degli esperimenti nucleari: ogni misura pubblicata, con chi, dove e quando.",
+        text: "Il registro mondiale degli esperimenti nucleari: la maggior parte delle misure pubblicate, con chi, dove e quando.",
       },
       {
         term: "ENSDF",
         text: "La carta d'identità di ogni nucleo: i suoi livelli di energia, quanto vivono, quali raggi γ emettono.",
       },
-      { term: "Valutazione", text: "La curva migliore attraverso tutte le misure, con una fascia d'errore onesta." },
+      { term: "Valutazione", text: "La curva che meglio riproduce tutte le misure, con la sua fascia d'incertezza." },
       { term: "Tasso", text: "Quante volte avviene una reazione in una stella, a una data temperatura." },
     ],
 
     cards: {
       known: (n: string) => `${n} reazioni sulla carta dei nuclidi, ognuna segnata secondo quanto è noto il suo tasso.`,
       gap: (n: string) =>
-        `${n} reazioni, dall'energia che usa una stella alla più bassa mai misurata. Il tratto vuoto è la storia.`,
+        `${n} reazioni, dall'energia che usa una stella alla più bassa presente in EXFOR. Il tratto vuoto è la storia.`,
       stories: "La reazione più lenta del Sole, il passo che detta il ritmo del ciclo CNO, e perché i fisici vanno sotto terra.",
       nucleus: "I livelli di energia di un nucleo, con sopra la stretta fascia di energie che usa una stella.",
       search: "Scrivi un elemento, in italiano o in inglese: i suoi isotopi, le loro reazioni e i loro tassi.",
-      paths: "Tre brevi passeggiate nel sito, cinque passi ciascuna.",
+      paths: "Brevi passeggiate nel sito, da una domanda a ciò che ancora non sappiamo.",
       go: "Vai",
     },
 
@@ -361,7 +361,7 @@ const it: typeof en = {
     measurements: "misure",
     measurementsAria: (reaction: string) => `Misure della ${reaction}`,
 
-    gapTitle: "Il vuoto: che cosa nessuno ha ancora misurato",
+    gapTitle: "Il vuoto: dove EXFOR non ha ancora misure",
     gapLead:
       "Una stella usa ogni reazione in una stretta banda di energie, la sua finestra di Gamow. I laboratori misurano dalle energie alte verso il basso, e il numero di conteggi crolla man mano che scendono. Per ogni reazione: la finestra che serve alla stella e l'energia più bassa mai misurata. Il tratto vuoto in mezzo si riempie con un'estrapolazione.",
     gapLegendWindow: "Energie che usa la stella (finestra di Gamow)",
@@ -436,7 +436,7 @@ const it: typeof en = {
     searchMore: "Cerca in tutto il sito",
 
     pathsTitle: "Percorsi guidati",
-    pathsLead: "Cinque passi ciascuno, da una domanda a ciò che ancora non sappiamo.",
+    pathsLead: "Da una domanda a ciò che ancora non sappiamo, pochi passi alla volta.",
     pathSteps: (n: number) => `${n} passi`,
     stepOf: (i: number, n: number) => `Passo ${i} di ${n}`,
     next: "Avanti",
@@ -471,7 +471,7 @@ const it: typeof en = {
           },
           {
             title: "Nessuno l'ha mai misurata",
-            text: `Il Sole fa avvenire questa reazione intorno a ${c.e0}. Nessun esperimento l'ha misurata, a nessuna energia: EXFOR, il registro mondiale degli esperimenti nucleari, non ne contiene nemmeno una serie di dati. Il suo tasso viene dalla teoria, e i neutrini che emette, contati sulla Terra, le danno ragione. La fusione successiva della catena, elio-3 + elio-3, è stata misurata fino a ${c.he3low} (${c.he3who}), dentro la finestra del Sole.`,
+            text: `Il Sole fa avvenire questa reazione intorno a ${c.e0}. Nessun esperimento l'ha misurata, a nessuna energia: EXFOR, il registro mondiale degli esperimenti nucleari, non ne contiene nemmeno una serie di dati. Il suo tasso viene dalla teoria, e i neutrini che emette, contati sulla Terra, le danno ragione. La fusione successiva della catena, elio-3 + elio-3, è stata misurata dentro la finestra del Sole: l'energia più bassa in EXFOR è ${c.he3low} (${c.he3who}), e dati di LUNA successivi scendono fino a 16,5 keV (Bonetti et al., 1999).`,
             link: "Guarda il vuoto per ogni reazione",
           },
           {
@@ -532,17 +532,17 @@ const it: typeof en = {
         steps: [
           {
             title: "Un neutrone alla volta",
-            text: "Circa metà degli elementi più pesanti del ferro nasce da catture lente di neutroni nelle giganti rosse: un nucleo cattura un neutrone, aspetta, spesso decade, e ne cattura un altro, passo dopo passo dal ferro al piombo.",
+            text: "Circa metà dei nuclei più pesanti del ferro nasce da catture lente di neutroni nelle giganti rosse: un nucleo cattura un neutrone, aspetta, spesso decade, e ne cattura un altro, passo dopo passo dal ferro al piombo.",
             link: "Il processo s nell'atlante",
           },
           {
             title: "Da dove vengono i neutroni",
-            text: `Nelle giganti rosse quasi tutti i neutroni vengono da carbonio-13 + elio-4 → ossigeno-16 + un neutrone. EXFOR elenca ${c.datasets} serie di dati per questa reazione, dal ${c.y0} al ${c.y1}. L'energia più bassa misurata è ${c.low} (${c.who}); alla stella servono circa ${c.e0} (${c.site}).${c.inside ? " Le misure hanno raggiunto la finestra." : " L'ultimo tratto è estrapolato."}`,
+            text: `Nelle giganti rosse quasi tutti i neutroni vengono da carbonio-13 + elio-4 → ossigeno-16 + un neutrone. EXFOR elenca ${c.datasets} serie di dati per questa reazione, dal ${c.y0} al ${c.y1}. Sotto il Gran Sasso, LUNA l'ha misurata fino a 230 keV (Ciani et al., 2021), il bordo alto della finestra della stella; alla stella servono circa ${c.e0} (${c.site}), e sotto i 230 keV il tasso è ancora estrapolato.`,
             link: "Guarda tutte le misure",
           },
           {
             title: "La curva migliore",
-            text: `Una valutazione traccia la curva migliore attraverso tutte queste misure, con una fascia d'errore onesta, e la trasforma in un tasso che un modello di stella può usare. L'atlante elenca ${c.evaluations} valutazioni di questa reazione.`,
+            text: `Una valutazione traccia la curva che meglio riproduce tutte queste misure, con la sua fascia d'incertezza, e la trasforma in un tasso che un modello di stella può usare. L'atlante elenca ${c.evaluations} valutazioni di questa reazione.`,
             link: "Le valutazioni, nell'atlante",
           },
           {
@@ -553,7 +553,7 @@ const it: typeof en = {
         ],
         unknownTitle: "Che cosa ancora non sappiamo",
         unknown: [
-          `La seconda sorgente di neutroni, neon-22 + elio-4, è stata misurata solo fino a ${c.ne22low}; un impulso termico richiede circa ${c.ne22e0}.`,
+          `La seconda sorgente di neutroni, neon-22 + elio-4, è stata osservata direttamente solo fino alla risonanza a 830 keV (energia dell'α nel laboratorio); più in basso ci sono solo limiti superiori, e un impulso termico richiede circa ${c.ne22e0}.`,
           "Quanto carbonio-13 contenga la tasca di una stella dipende dal rimescolamento al suo interno, che i modelli non sanno ancora prevedere.",
           "In alcuni punti di diramazione del percorso il nucleo è radioattivo, e la sua cattura di neutroni è difficile o impossibile da misurare.",
         ],

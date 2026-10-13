@@ -32,8 +32,8 @@ where the division by the beam polarization normalizes to a perfectly polarized
 beam. It runs from $-1$ to $+1$.
 
 Why should there be an asymmetry at all? Because the nuclear force depends on
-spin. A projectile whose spin points "up" relative to its orbital motion feels a
-different potential than one pointing "down" — this is the spin–orbit force, the
+spin. A projectile whose spin points “up” relative to its orbital motion feels a
+different potential than one pointing “down” — this is the spin–orbit force, the
 same one that splits nuclear shells. Left and right correspond to opposite
 relative orientations, so they scatter differently.
 
@@ -62,7 +62,7 @@ matrix.
 | $m_1, m_2$ | spin projections | which way each spin points along the chosen axis | $-I$ to $+I$ in steps of 1 |
 | $s$ | **channel spin** | the two intrinsic spins added together as vectors | $\lvert I_1-I_2\rvert$ to $I_1+I_2$ |
 | $\nu$ | its projection | which way the combined spin points | $-s$ to $+s$ |
-| $l$ | orbital angular momentum | how much the pair is "swinging around" each other on the way in | $0, 1, 2, \ldots$ |
+| $l$ | orbital angular momentum | how much the pair is “swinging around” each other on the way in | $0, 1, 2, \ldots$ |
 | $l'$ | the same, on the way out | | |
 | $\mu = \nu - \nu'$ | orbital projection, outgoing | the angular momentum the *motion* must absorb if the spins flipped | $-l'$ to $+l'$ |
 | $J$ | total angular momentum | orbital plus channel spin; conserved, so it labels resonances | $\lvert l-s\rvert$ to $l+s$ |
@@ -75,7 +75,7 @@ matrix.
 | $k$ | wave number | momentum of relative motion | $1/\mathrm{fm}$ |
 | $\hat{n}$ | normal to the scattering plane | the only direction a polarization can point | unit vector |
 
-A prime always means "on the way out". So $M_{s'\nu' s\nu}$ reads: *the amplitude
+A prime always means “on the way out”. So $M_{s'\nu' s\nu}$ reads: *the amplitude
 to enter with combined spin $s$ pointing $\nu$, and leave with combined spin $s'$
 pointing $\nu'$*.
 
@@ -87,7 +87,7 @@ parity**, and $J$ is built from the orbital motion plus the *combined* spin:
 
 $$\mathbf{J} = \mathbf{l} + \mathbf{s}, \qquad \mathbf{s} = \mathbf{I}_1 + \mathbf{I}_2 .$$
 
-Resonances have definite $J$ and parity. So if one organizes the calculation by
+Resonances have definite $J$ and parity. So if we organize the calculation by
 $(l, s)$, each resonance couples to a small, definite set of channels, and the
 whole problem block-diagonalizes. Organized by $(m_1, m_2)$ instead, every
 resonance would smear across everything. The channel spin is the basis in which
@@ -148,7 +148,7 @@ If the spins do not flip, $\nu = \nu'$, so $\mu = 0$, and $Y_l^{0}$ is just a
 Legendre polynomial $P_l(\cos\theta)$ — the familiar angular distributions of
 ordinary cross sections.
 
-If the spins **do** flip, $\mu \neq 0$, and one needs the *associated* Legendre
+If the spins **do** flip, $\mu \neq 0$, and we need the *associated* Legendre
 functions, which describe angular patterns that are not symmetric about the beam
 axis in the same way.
 
@@ -160,7 +160,7 @@ basis. Spin flip is inseparable from sideways angular momentum.
 ## From amplitudes to what is measured
 
 Describe the beam by a spin density matrix $\rho_{\mathrm{in}}$ — a compact way of
-saying "this fraction of the beam has its spin here, that fraction there". Then
+saying “this fraction of the beam has its spin here, that fraction there”. Then
 the outgoing spin state is
 
 $$\rho_{\mathrm{out}} = M\,\rho_{\mathrm{in}}\,M^{\dagger},$$
@@ -198,8 +198,8 @@ $$
 
 So a vector polarization can only point along the normal to the scattering plane.
 The components in the plane vanish identically, which is why there is one vector
-analyzing power and not three. Writing $\sigma_y$ above is shorthand for "the
-Pauli matrix along $\hat n$".
+analyzing power and not three. Writing $\sigma_y$ above is shorthand for “the
+Pauli matrix along $\hat n$”.
 
 ### What the numerator is really doing
 
@@ -331,9 +331,9 @@ $$
 
 **This is the physical heart of the general case.** The polarized beam prepares a
 *coherent superposition of singlet and triplet channels*, and the analyzing power
-is sensitive to the relative phase between them. To compute it one must first
-translate the amplitudes out of the channel-spin language and back into "which way
-is the proton pointing", which for each outgoing configuration reads
+is sensitive to the relative phase between them. To compute it, we first
+translate the amplitudes out of the channel-spin language and back into “which way
+is the proton pointing”, which for each outgoing configuration reads
 
 $$
 \begin{aligned}
@@ -351,7 +351,7 @@ so they are averaged over rather than added as amplitudes.
 **Why a cross section could never substitute.** In an unpolarized cross section the
 entrance orientations are averaged, and that average destroys precisely the cross
 terms between $s=0$ and $s=1$. Their relative phase is invisible to *every* cross
-section one can measure on this system. It becomes observable only with a polarized
+section we can measure on this system. It becomes observable only with a polarized
 beam. That is why the measurement exists.
 
 Result at 3.0 MeV, elastic:
@@ -376,7 +376,7 @@ something one did not measure dilutes the asymmetry.
 | **inelastic or rearrangement**, $(\vec p, p')$ or $(\vec p, \alpha)$ | works | entrance and exit are independent throughout; only the Coulomb term is restricted to elastic scattering |
 | **spin-1 beam** (a polarized deuteron) | needs different observables | a spin-1 particle has a $3\times3$ density matrix, so besides a vector polarization it can be *aligned* — stretched along an axis without pointing. That carries tensor moments, which need rank-2 operators, not a Pauli matrix |
 | **capture**, $(\vec p, \gamma)$ | needs a separate treatment | the outgoing photon is described by multipole radiation rather than by orbital angular momentum in a channel |
-| **identical particles**, such as $p+p$ | needs symmetrization | one cannot tell "beam scattered by $\theta$" from "target recoiled at $180^\circ-\theta$", so the two possibilities must be added as amplitudes before squaring |
+| **identical particles**, such as $p+p$ | needs symmetrization | we cannot tell “beam scattered by $\theta$” from “target recoiled at $180^\circ-\theta$”, so the two possibilities must be added as amplitudes before squaring |
 
 ## Two practical consequences
 

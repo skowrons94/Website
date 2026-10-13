@@ -18,7 +18,7 @@ Take a single-level R-matrix description of a reaction, fit it to data, and obta
 an excellent $\chi^2$. Now try to put uncertainties on the resonance parameters by
 sampling the posterior. The sampler does not converge: the walkers drift away
 without bound, the transformation between parameter sets starts throwing warnings,
-and the marginal distributions come out in shapes no Gaussian would recognise.
+and the marginal distributions come out in shapes no Gaussian would recognize.
 
 Neither the sampler nor the data is at fault. One of the parameters has stopped
 being a physical quantity and become a redundant coordinate. Why that happens, how
@@ -39,8 +39,8 @@ two sides by completely different means:
 The essential point, and the one most often lost, is that **this surface is a
 choice of bookkeeping, not a physical boundary**. Nothing happens at $r = a$. A
 larger $a$ does not mean the fragments are more tightly bound, or more likely to
-fuse; it means one has drawn a larger box and declared more of the wave function
-to be "interior". If the model were complete, every observable would be
+fuse; it means we have drawn a larger box and declared more of the wave function
+to be “interior”. If the model were complete, every observable would be
 independent of where the surface is put. What *does* depend on $a$ is how the
 description divides its labour between the two sides.
 
@@ -87,12 +87,12 @@ $$
 
 $N = 1$ means the state is entirely inside the box and $\Gamma = 2\gamma^2 P$ is
 adequate. $N = 2$ means half in, half out. $N = 34$ means 97% of the state is
-outside the box one has drawn.
+outside the box we have drawn.
 
 > This identification is exact for a channel that is closed at $E_\lambda$, where
 > $\mathrm{d}S/\mathrm{d}E$ is literally the normalization integral of the
 > exterior Whittaker tail. Above threshold it is the analytic continuation of the
-> same object, and the "fraction outside" reading is the standard physical gloss
+> same object, and the “fraction outside” reading is the standard physical gloss
 > rather than a theorem. None of the algebra below depends on the
 > interpretation — only the intuition does.
 
@@ -140,7 +140,7 @@ $$
 The reduced width has disappeared from the answer. Physically: **a level cannot
 decay faster than its channel kinematics allow.** Once the state is essentially
 all outside, increasing the internal coupling adds nothing — there is no more
-"inside" left to couple to.
+“inside” left to couple to.
 
 The crossover sits at $\gamma_{\mathrm{knee}} = (\mathrm{d}S/\mathrm{d}E)^{-1/2}$,
 which for the deuteron channel of the example is $0.92\ \mathrm{MeV}^{1/2}$. Below
@@ -149,7 +149,7 @@ $\gamma$ is **unidentifiable** — not merely poorly determined, but absent from
 observables. The fitted $\gamma_d = 5.30$ sits 5.8 times past the knee, at 97% of
 its ceiling.
 
-For a $\chi^2$ minimisation this is a curiosity: the minimiser finds *some* point
+For a $\chi^2$ minimization this is a curiosity: the minimizer finds *some* point
 on the plateau and reports it. For an uncertainty analysis it is fatal, because
 the likelihood possesses an exactly flat direction of infinite extent. The
 signature is visible in the fit itself: the error matrix of the example returns
@@ -171,7 +171,7 @@ $$
 \;=\; 2\,\frac{N-1}{N} \;=\; 2 f_{\mathrm{ext}} .
 $$
 
-Since one cannot have more than all of a state outside a sphere,
+Since we cannot have more than all of a state outside a sphere,
 $f_{\mathrm{ext}} \le 1$, and therefore
 
 $$
@@ -179,8 +179,8 @@ $$
 $$
 
 This is a **hard ceiling on the observed widths themselves**, and it is the most
-practically useful form of everything above. Read $D_c$ as the "cost per unit
-width" of channel $c$, and 2 as the total budget. A set of widths violating the
+practically useful form of everything above. Read $D_c$ as the “cost per unit
+width” of channel $c$, and 2 as the total budget. A set of widths violating the
 ceiling does not correspond to any reduced width whatsoever: it is not improbable,
 it is *unrepresentable*.
 
@@ -236,8 +236,8 @@ quantities that make up the cost $D_c$ compete:
 $P$ wins, so $D_c$ falls (from 22.9 to 14.4), the ceiling $2/D_c$ rises, and
 $f_{\mathrm{ext}}$ falls. **That competition is the entire mechanism.** The
 physical reading is simply that a bigger box holds more of the state, so less of
-it is "outside", so the reduced width recovers its meaning. Nothing about the
-nuclear force has changed; one has stopped describing a large object with a small
+it is “outside”, so the reduced width recovers its meaning. Nothing about the
+nuclear force has changed; we have stopped describing a large object with a small
 box.
 
 The table below is the same data fitted at a ladder of channel radii, both
@@ -378,10 +378,10 @@ checked afterwards either way.
    proposal was rejected or silently replaced.
 5. **Bound the prior.** Even a well-conditioned radius leaves the folded branch
    somewhere. Either $\theta_c^2 \le 1$ or, most directly,
-   $\sum_c \Gamma_c D_c < 2$, which is the exact statement of "physically
-   representable".
+   $\sum_c \Gamma_c D_c < 2$, which is the exact statement of “physically
+   representable”.
 
-The broader lesson generalises beyond R-matrix theory. A model parameter is only a
+The broader lesson generalizes beyond R-matrix theory. A model parameter is only a
 measurement if the observables depend on it. Here the dependence is switched off
 smoothly, by a normalization that grows in step with the coupling, and the switch
 is thrown by a quantity the analyst chooses rather than measures. Any level whose

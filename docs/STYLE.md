@@ -127,8 +127,9 @@ Each claim has one canonical page; other pages state it briefly or link to it:
 - the AI rationale: About (Research keeps one sentence of outlook);
 - 1.4 km of rock and one muon in a million: the atlas primer (home and Research
   mention the rock once, without the factor);
-- "the reference R-matrix code": Research (elsewhere "the R-matrix code used
-  across the field" or "used worldwide");
+- AZURE2 is "a widely used R-matrix code" (or "used internationally"), never
+  "the reference" or "the R-matrix code": Research says it once, other pages
+  keep it shorter;
 - Eddington, 1920: the timeline;
 - "first direct evidence that stars build elements" (technetium, 1952): the
   timeline; the s-process page words it differently.

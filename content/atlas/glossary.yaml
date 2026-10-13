@@ -205,7 +205,7 @@ terms:
       When the energy of the two colliding nuclei matches an excited state of
       the nucleus they form together, the cross section rises sharply, often
       by orders of magnitude, over a narrow range of energy. A narrow
-      resonance is characterised by its energy and by its strength (ωγ). A
+      resonance is characterized by its energy and by its strength (ωγ). A
       single low-energy resonance can dominate the rate of a reaction in a
       star, so finding and measuring them is a large part of the work.
     text_it: >-
@@ -442,7 +442,7 @@ terms:
       A late stage in the life of stars of roughly 1 to 8 solar masses. The
       star has a core of carbon and oxygen, burns hydrogen and helium in thin
       shells around it, and swells into a cool giant that loses much of its
-      mass in a slow wind. AGB stars make about half of the elements heavier
+      mass in a slow wind. AGB stars make about half the nuclei heavier
       than iron, through the s-process, and enrich the Galaxy with carbon and
       nitrogen.
     text_it: >-
@@ -450,7 +450,7 @@ terms:
       La stella ha un nucleo di carbonio e ossigeno, brucia idrogeno ed elio in
       gusci sottili intorno a esso e si gonfia in una gigante fredda che perde
       gran parte della sua massa in un vento lento. Le stelle AGB producono
-      circa metà degli elementi più pesanti del ferro, con il processo s, e
+      circa metà dei nuclei più pesanti del ferro, con il processo s, e
       arricchiscono la Galassia di carbonio e azoto.
     see: [s-process, solar-mass]
 
@@ -467,7 +467,7 @@ terms:
       captures the next one, so the process climbs along the valley of stable
       nuclei. It runs mainly in AGB stars and in massive stars, with neutrons
       from the reactions ¹³C(α,n)¹⁶O and ²²Ne(α,n)²⁵Mg, and makes about half
-      of the nuclei heavier than iron.
+      the nuclei heavier than iron.
     text_it: >-
       Il processo di cattura lenta di neutroni. I nuclei catturano neutroni uno
       alla volta, abbastanza lentamente che un nucleo instabile di solito

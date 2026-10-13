@@ -31,7 +31,7 @@ it is worth building the decomposition first.
 
 ## How a reaction decomposes
 
-Everything is organised around the compound nucleus, and around the fact that
+Everything is organized around the compound nucleus, and around the fact that
 total angular momentum $J$ and parity are conserved.
 
 **A pair** is a two-body partition of the system: $\alpha + {}^{12}\mathrm{C}$,
@@ -170,7 +170,7 @@ radius.
 The sphere at $r = a$ was introduced so the interior could be replaced by poles. A
 photon emitted at $r < a$ is described by those poles; a photon emitted at $r > a$
 is not, and would simply be missing. Adding the external amplitude restores it. The
-division between "resonant" and "direct" capture is therefore not a physical
+division between “resonant” and “direct” capture is therefore not a physical
 distinction between two mechanisms so much as a consequence of where the
 bookkeeping surface was drawn — which is the same lesson as in
 [When a reduced width stops being measurable](/notes/channel-radius): move the

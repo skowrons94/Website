@@ -1,4 +1,4 @@
-# Research threads, rendered in order on /research and summarised on the landing
+# Research threads, rendered in order on /research and summarized on the landing
 # page. `body` paragraphs are plain text; `highlights` become a bulleted list.
 # `outlook` is the "What comes next" section at the end of /research
 # (#outlook); its `line` is the one-line version on the landing page.
@@ -29,14 +29,15 @@ threads:
         magnitude and makes the measurement possible.
       - >-
         I led the measurement and analysis of ¹²C + p and ¹³C + p radiative
-        capture at LUNA and at Felsenkeller, which fixed the proton-capture rates
-        on both carbon isotopes and with them the astrophysical ¹²C/¹³C ratio. I
+        capture at LUNA and at Felsenkeller, which substantially reduced the uncertainty of
+        the proton-capture rates on both carbon isotopes and of the astrophysical
+        ¹²C/¹³C ratio that depends on them. I
         now lead the ¹⁹F + p working group at LUNA's 400 kV accelerator,
         underground at Gran Sasso.
       - >-
         I am also the collaboration's DAQ Coordinator: I designed and run the
-        data-acquisition and slow-control infrastructure of every campaign and of
-        the 3.5 MV machine at the Bellotti Ion Beam Facility (BIBF). It lets
+        data-acquisition and slow-control infrastructure of LUNA's current campaigns
+        and of the 3.5 MV machine at the Bellotti Ion Beam Facility (BIBF). It lets
         shifts be taken remotely, which is no small thing for an experiment under
         1.4 km of rock.
     body_it:
@@ -49,15 +50,15 @@ threads:
         sei ordini di grandezza e rendono possibile la misura.
       - >-
         Ho guidato la misura e l'analisi delle catture radiative di protoni sul
-        ¹²C e sul ¹³C, a LUNA e al Felsenkeller: queste misure hanno fissato i tassi di cattura
-        protonica su entrambi gli isotopi del carbonio e, con essi, il rapporto
-        astrofisico ¹²C/¹³C. Oggi coordino il gruppo di lavoro ¹⁹F + p
+        ¹²C e sul ¹³C, a LUNA e al Felsenkeller: queste misure hanno ridotto sensibilmente
+        l'incertezza dei tassi di cattura protonica su entrambi gli isotopi del
+        carbonio e, con essi, quella del rapporto astrofisico ¹²C/¹³C. Oggi coordino il gruppo di lavoro ¹⁹F + p
         all'acceleratore da 400 kV di LUNA, nel laboratorio sotterraneo del Gran
         Sasso.
       - >-
         In parallelo sono il coordinatore DAQ della collaborazione: ho progettato
-        e gestisco l'infrastruttura di acquisizione e di slow control di ogni
-        campagna di misura e dell'acceleratore da 3,5 MV. È ciò che permette di
+        e gestisco l'infrastruttura di acquisizione e di slow control delle
+        campagne di misura in corso a LUNA e dell'acceleratore da 3,5 MV. È ciò che permette di
         fare i turni da remoto, il che per un esperimento sotto 1,4 km di roccia
         non è poco.
     highlights:
@@ -76,19 +77,19 @@ threads:
       href: /atlas
 
   - id: azure2
-    title: AZURE2 — the R-matrix code
-    title_it: AZURE2 — il codice R-matrix
-    venue: Open source · used worldwide
-    venue_it: Open source · usato in tutto il mondo
+    title: AZURE2 — R-matrix code
+    title_it: AZURE2 — codice R-matrix
+    venue: Open source · used internationally
+    venue_it: Open source · usato a livello internazionale
     period: Jun 2025 – present
     period_it: giu. 2025–oggi
     role: Maintainer and Lead Developer
     role_it: Responsabile e sviluppatore principale
     summary: >-
-      The reference R-matrix code for nuclear astrophysics, IAEA nuclear-data
+      A widely used R-matrix code for nuclear astrophysics, IAEA nuclear-data
       evaluation and materials analysis.
     summary_it: >-
-      Il codice R-matrix di riferimento per l'astrofisica nucleare, per la
+      Un codice R-matrix molto usato per l'astrofisica nucleare, per la
       valutazione dei dati nucleari dell'IAEA e per l'analisi dei materiali.
     body:
       - >-

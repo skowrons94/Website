@@ -45,7 +45,7 @@ $$
    = |f_{C}|^{2} + |f_{N}|^{2} + 2\,\mathrm{Re}\!\left[f_{C}^{*}f_{N}\right],
 $$
 
-three terms one can name: pure Coulomb, pure nuclear, and the Coulomb–nuclear
+three terms we can name: pure Coulomb, pure nuclear, and the Coulomb–nuclear
 interference that carries most of the sensitivity to the nuclear phase.
 
 ## What changes when the two particles are the same
@@ -91,7 +91,7 @@ This is a strong statement, and it is worth being clear about what it means for 
 level scheme. In $^{12}\mathrm{C} + {}^{12}\mathrm{C}$ elastic scattering, a
 $J^\pi = 1^-$ or $3^-$ resonance in $^{24}\mathrm{Mg}$ simply cannot be populated
 through that channel — not because its coupling is small, but because the
-symmetrised amplitude for odd $L$ is identically zero. Only natural-parity,
+symmetrized amplitude for odd $L$ is identically zero. Only natural-parity,
 even-$J$ states appear. A model that carries odd-$L$ channels in this pair is not
 slightly wrong; it is summing over pathways that do not exist.
 
@@ -126,7 +126,7 @@ way to distinguish forward from backward when the two particles are the same.
 
 ### Putting the two together
 
-Combining the symmetrised Coulomb and nuclear amplitudes,
+Combining the symmetrized Coulomb and nuclear amplitudes,
 
 $$
 \frac{d\sigma}{d\Omega} \;=\; |F_{C}+F_{N}|^{2}
@@ -153,7 +153,7 @@ amplitude that was replaced rather than scaled.
 
 $^{12}\mathrm{C}$ has $J^\pi = 0^+$ in its ground state, $Z = 6$, and is its own
 partner in the reaction that governs carbon burning in massive stars. It is the
-cleanest realisation of the case above: two identical spinless bosons, so
+cleanest realization of the case above: two identical spinless bosons, so
 $\varepsilon = +1$, only even $L$, and a Mott Coulomb cross section.
 
 Three consequences follow for an evaluation of this system.
@@ -181,11 +181,11 @@ the fact that it was observed at all.
 
 The scaling factors above are specific to $0^+ \otimes 0^+$. The general structure
 is not. For particles carrying spin, the exchange operation acts on the spin state
-as well as on the angle, and the symmetrisation must be done channel-spin by
+as well as on the angle, and the symmetrization must be done channel-spin by
 channel-spin: a symmetric spin state pairs with even $L$ and an antisymmetric one
 with odd $L$ (or the reverse, for fermions). Two protons, for instance, have a
 singlet that admits only even $L$ and a triplet that admits only odd $L$, and both
-contribute to the same cross section, so the neat "half the partial waves vanish"
-statement becomes "each spin state uses half the partial waves, and which half
-depends on the spin state". The Mott Coulomb term survives unchanged, since the
+contribute to the same cross section, so the neat “half the partial waves vanish”
+statement becomes “each spin state uses half the partial waves, and which half
+depends on the spin state”. The Mott Coulomb term survives unchanged, since the
 Coulomb interaction does not touch spin.

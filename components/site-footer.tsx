@@ -5,9 +5,10 @@ import { dict, localePath, type Lang } from "@/lib/i18n"
 import { REPO } from "@/lib/repo"
 
 /*
- * The footer is the site map: one column for the work (what someone evaluating
- * the researcher looks for), one for the explanations (what a curious reader
- * looks for), one for profiles elsewhere. Its strings are in lib/i18n.ts.
+ * The footer is the site map, in the header's groups: the work (what someone
+ * evaluating the researcher looks for), the tools to explore, the explanations
+ * (what a curious reader looks for), and profiles elsewhere. Its strings are in
+ * lib/i18n.ts.
  */
 function groups(lang: Lang): { title: string; links: { href: string; label: string }[] }[] {
   const t = dict(lang).footer
@@ -20,7 +21,6 @@ function groups(lang: Lang): { title: string; links: { href: string; label: stri
         { href: "/research", label: t.research },
         { href: "/publications", label: t.publications },
         { href: "/software", label: t.software },
-        { href: "/evaluations", label: t.evaluations },
         { href: "/cv", label: t.cv },
       ]),
     },
@@ -28,12 +28,19 @@ function groups(lang: Lang): { title: string; links: { href: string; label: stri
       title: t.explore,
       links: local([
         { href: "/atlas", label: t.atlas },
-        { href: "/atlas/timeline", label: t.timeline },
-        { href: "/atlas/rates", label: t.rates },
         { href: "/data", label: t.data },
-        { href: "/atlas/methods", label: t.methods },
-        { href: "/glossary", label: t.glossary },
+        { href: "/atlas/rates", label: t.rates },
+        { href: "/evaluations", label: t.evaluations },
+      ]),
+    },
+    {
+      title: t.learn,
+      links: local([
         { href: "/notes", label: t.notes },
+        { href: "/glossary", label: t.glossary },
+        { href: "/learn/exercises", label: t.exercises },
+        { href: "/atlas/methods", label: t.methods },
+        { href: "/atlas/timeline", label: t.timeline },
       ]),
     },
   ]
@@ -50,7 +57,7 @@ export function SiteFooter({ profile, lang }: { profile: Profile; lang: Lang }) 
   const t = dict(lang).footer
   return (
     <footer className="mt-24 border-t border-border/70 print:hidden">
-      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-x-8 gap-y-10 px-5 py-12 sm:px-8 xl:max-w-7xl [@media(min-width:20em)]:grid-cols-2 lg:!grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))]">
+      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-x-8 gap-y-10 px-5 py-12 sm:px-8 xl:max-w-7xl [@media(min-width:20em)]:grid-cols-2 lg:!grid-cols-[minmax(0,1.6fr)_repeat(4,minmax(0,1fr))]">
         <div className="space-y-1 text-sm text-muted-foreground [@media(min-width:20em)]:col-span-2 lg:!col-span-1">
           <p className="font-medium text-foreground">{profile.name}</p>
           <p>{profile.department}</p>

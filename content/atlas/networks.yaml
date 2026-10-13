@@ -106,7 +106,7 @@ families:
     page: /atlas/s-process
     map: false
     summary: >-
-      Slow neutron captures build about half of the nuclei between iron and
+      Slow neutron captures build about half the nuclei between iron and
       bismuth. Each capture adds one neutron; an unstable nucleus usually
       decays before the next arrives, so the path climbs along the valley of
       stable nuclei up to lead and bismuth.

@@ -617,11 +617,11 @@ const en = {
     curiositiesDescription: "What a reaction twice as fast would change, one sentence at a time",
     // --- data public ---
     data: "Nuclear data",
-    dataDescription: "What has been measured, and what nobody has measured yet",
+    dataDescription: "What has been measured, and where the measurements stop",
     // --- find ---
     news: "News",
     exercises: "Exercises",
-    exercisesDescription: "Three problems to solve with the atlas, the rates and an evaluation",
+    exercisesDescription: "Problems to solve with the atlas, the rates and an evaluation",
     // --- lit ---
     openQuestions: "Open questions",
     openQuestionsDescription: "What the field still argues about, and what would settle it",
@@ -629,6 +629,7 @@ const en = {
   footer: {
     work: "Work",
     explore: "Explore",
+    learn: "Learn",
     elsewhere: "Elsewhere",
     research: "Research",
     publications: "Publications",
@@ -774,14 +775,6 @@ const en = {
     cv: "CV",
     research: "Research",
     allResearch: "All research threads",
-    atlasTitle: "A reaction atlas",
-    atlasText:
-      "The reactions of the pp chains, the CNO, NeNa and MgAl cycles, helium and carbon burning and the Big Bang, drawn on the chart of nuclides. For each one: what it does in a star, how well its rate is known, and who measured it, where and how, with the references.",
-    openAtlas: "Open the atlas",
-    evaluationsTitle: "R-matrix evaluations, live",
-    evaluationsText:
-      "Evaluations from published and forthcoming work, running AZURE2 itself. Open a compound nucleus, look at its level scheme and the data it was fitted to, move a level energy or a reduced width, and see the cross section and the χ² change. There is nothing to install, and the input files can be downloaded and run locally.",
-    browseEvaluations: "Browse the evaluations",
     notes: "Notes",
     allNotes: "All notes",
     notesInEnglish: "",
@@ -841,7 +834,7 @@ const en = {
     // --- data public ---
     resourceData: "Nuclear data explorer",
     resourceDataText: (datasets: string, reactions: number) =>
-      `What has been measured, and what nobody has measured yet: ${datasets} datasets of the world's nuclear-reaction logbook (EXFOR) and the levels of each nucleus (ENSDF), linked to the ${reactions} reactions of the atlas.`,
+      `What has been measured, and where the measurements stop: ${datasets} datasets of the world's nuclear-reaction logbook (EXFOR) and the levels of each nucleus (ENSDF), linked to the ${reactions} reactions of the atlas.`,
     resourceDataMeta: "Levels: ENSDF (NNDC)",
     resourceEvaluationsSplit: (n: number, published: number) =>
       `${n} R-matrix evaluations running AZURE2 in the browser: ${published} from published papers, ${n - published} not yet published. Each comes with its input files, to download and run locally.`,
@@ -864,7 +857,7 @@ const en = {
   software: {
     title: "Software",
     description:
-      "AZURE2, the R-matrix code for nuclear astrophysics; LunaSRIM, SRIM-2013 in pure Python; and LUNA Skills, agent skills for experimental nuclear astrophysics.",
+      "AZURE2, a widely used R-matrix code for nuclear astrophysics; LunaSRIM, SRIM-2013 in pure Python; and LUNA Skills, agent skills for experimental nuclear astrophysics.",
     lead: "Code I maintain or have written for analysing low-energy nuclear reactions, all of it open source.",
     version: (v: string) => `version ${v}`,
     licence: (l: string) => `${l} licence`,
@@ -917,7 +910,7 @@ const en = {
     projects: "Projects",
     awards: "Awards and appointments",
     invited: "Invited contributions",
-    organisation: "Organisation and committees",
+    organisation: "Organization and committees",
     participation: "Selected participation",
     teaching: "Teaching",
     supervision: "Supervision",
@@ -1291,7 +1284,7 @@ const it: Dictionary = {
       glossary: "Le parole dell'atlante, in linguaggio semplice",
       methods: "Come si misurano le reazioni, e dove",
       timeline: "Un secolo di astrofisica nucleare",
-      sProcess: "Come le stelle producono metà degli elementi pesanti",
+      sProcess: "Come le stelle producono circa metà dei nuclei più pesanti del ferro",
     },
     breadcrumb: "Percorso",
     // --- rates ---
@@ -1302,14 +1295,14 @@ const it: Dictionary = {
     aboutDescription: "Come è stato fatto e verificato, i dati, come citarlo",
     // --- r13 final ---
     curiosities: "Curiosità sui tassi",
-    curiositiesDescription: "Che cosa cambierebbe una reazione due volte più veloce, in sedici frasi",
+    curiositiesDescription: "Che cosa cambierebbe una reazione due volte più veloce, una frase alla volta",
     // --- data public ---
     data: "Dati nucleari",
-    dataDescription: "Che cosa è stato misurato, e che cosa nessuno ha ancora misurato",
+    dataDescription: "Che cosa è stato misurato, e dove si fermano le misure",
     // --- find ---
     news: "Novità",
     exercises: "Esercizi",
-    exercisesDescription: "Tre problemi da risolvere con l'atlante, i tassi e una valutazione",
+    exercisesDescription: "Problemi da risolvere con l'atlante, i tassi e una valutazione",
     // --- lit ---
     openQuestions: "Questioni aperte",
     openQuestionsDescription: "Su che cosa si discute ancora, e che cosa lo risolverebbe",
@@ -1317,6 +1310,7 @@ const it: Dictionary = {
   footer: {
     work: "Lavoro",
     explore: "Esplora",
+    learn: "Approfondimenti",
     elsewhere: "Altrove",
     research: "Ricerca",
     publications: "Pubblicazioni",
@@ -1456,14 +1450,6 @@ const it: Dictionary = {
     cv: "CV",
     research: "Ricerca",
     allResearch: "Tutti i temi di ricerca",
-    atlasTitle: "Un atlante delle reazioni",
-    atlasText:
-      "Le reazioni delle catene protone-protone, dei cicli CNO, NeNa e MgAl, della combustione dell'elio e del carbonio e del Big Bang, disegnate sulla carta dei nuclidi. Per ciascuna: che cosa fa in una stella, quanto bene se ne conosce il tasso, e chi l'ha misurata, dove e come, con la bibliografia.",
-    openAtlas: "Apri l'atlante",
-    evaluationsTitle: "Valutazioni R-matrix, dal vivo",
-    evaluationsText:
-      "Valutazioni da lavori pubblicati e di prossima pubblicazione, calcolate con il vero codice AZURE2. Apri un nucleo composto, guarda il suo schema dei livelli e i dati su cui è stato fatto il fit, sposta l'energia di un livello o una larghezza ridotta e osserva come rispondono la sezione d'urto e il χ². Non serve installare nulla, e i file di input si possono scaricare ed eseguire in locale.",
-    browseEvaluations: "Sfoglia le valutazioni",
     notes: "Note",
     allNotes: "Tutte le note",
     notesInEnglish: "Le note sono scritte in inglese.",
@@ -1492,7 +1478,7 @@ const it: Dictionary = {
     resourceAtlas: "Atlante delle reazioni",
     resourceAtlasText: (n: number) => `${n} reazioni della combustione stellare e del Big Bang sulla carta dei nuclidi: che cosa fa ciascuna, quanto bene se ne conosce il tasso, chi l'ha misurata e come.`,
     resourceSProcess: "Il processo s",
-    resourceSProcessText: "Come le stelle producono metà degli elementi più pesanti del ferro, sulla carta dal ferro al bismuto.",
+    resourceSProcessText: "Come le stelle producono circa metà dei nuclei più pesanti del ferro, sulla carta dal ferro al bismuto.",
     resourceSProcessMeta: "Parte dell'atlante, si cita come l'atlante",
     resourceEvaluations: "Valutazioni R-matrix",
     resourceEvaluationsText: (n: number) => `${n} valutazioni R-matrix pubblicate, calcolate con AZURE2 nel browser, con i file di input da scaricare ed eseguire in locale.`,
@@ -1522,7 +1508,7 @@ const it: Dictionary = {
     // --- data public ---
     resourceData: "Esploratore dei dati nucleari",
     resourceDataText: (datasets: string, reactions: number) =>
-      `Che cosa è stato misurato, e che cosa nessuno ha ancora misurato: ${datasets} serie di dati del registro mondiale delle reazioni nucleari (EXFOR) e i livelli di ogni nucleo (ENSDF), collegati alle ${reactions} reazioni dell'atlante.`,
+      `Che cosa è stato misurato, e dove si fermano le misure: ${datasets} serie di dati del registro mondiale delle reazioni nucleari (EXFOR) e i livelli di ogni nucleo (ENSDF), collegati alle ${reactions} reazioni dell'atlante.`,
     resourceDataMeta: "Livelli: ENSDF (NNDC)",
     resourceEvaluationsSplit: (n: number, published: number) =>
       `${n} valutazioni R-matrix calcolate con AZURE2 nel browser: ${published} da articoli pubblicati, ${n - published} non ancora pubblicate. Ognuna ha i suoi file di input, da scaricare ed eseguire in locale.`,
@@ -1545,7 +1531,7 @@ const it: Dictionary = {
   software: {
     title: "Software",
     description:
-      "AZURE2, il codice R-matrix per l'astrofisica nucleare; LunaSRIM, SRIM-2013 in puro Python; e LUNA Skills, skill per agenti dedicate all'astrofisica nucleare sperimentale.",
+      "AZURE2, un codice R-matrix molto usato in astrofisica nucleare; LunaSRIM, SRIM-2013 in puro Python; e LUNA Skills, skill per agenti dedicate all'astrofisica nucleare sperimentale.",
     lead: "Codice che mantengo o che ho scritto per l'analisi delle reazioni nucleari a bassa energia. È tutto open source.",
     version: (v: string) => `versione ${v}`,
     licence: (l: string) => `licenza ${l}`,
@@ -1562,7 +1548,7 @@ const it: Dictionary = {
       "Articoli su riviste con revisione paritaria e atti di convegni di Jakub Skowronski in astrofisica nucleare sperimentale.",
     lead: (articles: number, proceedings: number, review: number) =>
       `${articles} articoli su riviste con revisione paritaria e ${proceedings} contributi ad atti di convegni${review ? `, più ${review} inviati o in revisione` : ""}. Una linea scura segna gli articoli di cui sono primo autore; una linea chiara gli altri miei articoli principali: quelli in cui sono tra i primi autori o autore corrispondente, e quelli in cui il mio ruolo è indicato accanto agli autori. I titoli sono riportati come pubblicati.`,
-    sections: { article: "Articoli di ricerca", proceedings: "Atti di conferenze" },
+    sections: { article: "Articoli di ricerca", proceedings: "Atti di convegni" },
     // --- site ---
     profiles: "Elenchi completi e aggiornati, con le citazioni:",
     filter: "Mostra",
@@ -1785,7 +1771,7 @@ const it: Dictionary = {
     closeDetails: "Chiudi i dettagli",
     close: "Chiudi",
     selectArrow:
-      "Seleziona una freccia per vedere che cosa fa la reazione, quanta energia libera e quanto bene è nota.",
+      "Seleziona una freccia per vedere che cosa fa la reazione, quanta energia rilascia e quanto bene è nota.",
     decay: "decadimento",
     panelPending:
       "La scheda di questa reazione è in preparazione. Qui sotto trovi la sua posizione nella rete, l'energia liberata e la finestra di Gamow.",
