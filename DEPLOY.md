@@ -331,9 +331,11 @@ build`. The GitHub Pages build can only enforce or have none.)
 - [ ] **Docker and image updates, monthly:** `sudo apt upgrade` updates Docker
   itself; then `git pull && docker compose pull caddy && docker compose build
   --pull && docker compose up -d` takes the patched base images (Caddy 2.11.x,
-  node 22, Ubuntu 22.04). Bump Caddy's minor version in `docker-compose.yml`
-  deliberately. Merge the Dependabot pull requests (pinned GitHub Actions,
-  npm) after their checks pass.
+  node 22; Ubuntu 22.04 is pinned by digest in `deploy/Dockerfile.azure2`, so
+  it moves when you merge Dependabot's pull request for it). Bump Caddy's
+  minor version in `docker-compose.yml` deliberately. Merge the Dependabot
+  pull requests (pinned GitHub Actions, npm, the WebDAQ demo's npm, the
+  hash-pinned pip files, the Docker base images) after their checks pass.
 - [ ] **Backups**, off the machine and encrypted (e.g. `restic` to another
   provider's storage): `.env`, the `caddy_data` volume (section 8; it holds
   the TLS key) and any evaluation edited on the server and not committed.
@@ -351,7 +353,13 @@ build`. The GitHub Pages build can only enforce or have none.)
   413; opening a third evaluation in a third tab says "busy, retrying".
 
 **Changing the pinned downloads in CI** (`.github/workflows/pages.yml`): a new
-Pyodide or Emscripten version needs its checksums too. Download the file,
+Pyodide or Emscripten version needs its checksums too (Pyodide's also in
+`XBUILDENV_SHA256` in `browser/azure2/build.sh`). The other pinned inputs:
+GSL's commit (`GSL_COMMIT`, same file); the browser's Python packages, by
+URL and SHA-256 from PyPI's JSON API (`PURE` in `browser/assemble.py`);
+and the pip files `.github/requirements-*.txt` and
+`deploy/requirements-azure2.txt`, regenerated with the `uv pip compile`
+command at the top of each. Download the file,
 `sha256sum` it, compare with a second source where there is one (GitHub's
 release page shows a digest; nodejs.org publishes SHASUMS256.txt), and update
 the `*_SHA256` values with the version; for emsdk, `git ls-remote

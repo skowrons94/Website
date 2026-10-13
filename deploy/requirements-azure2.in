@@ -1,0 +1,10 @@
+# Everything Python in the API image (deploy/Dockerfile.azure2), installed
+# with --require-hashes: the server's packages, AZURE2's build backend and
+# pybind11, and pyazr's runtime dependencies (AZURE2 itself is then installed
+# with --no-deps --no-build-isolation). Python 3.10, Ubuntu 22.04's, on any
+# architecture. Regenerate the .txt with the command at its top.
+-r ../server/requirements.txt
+setuptools
+pybind11
+mpmath
+scipy

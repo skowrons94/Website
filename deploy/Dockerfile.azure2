@@ -13,7 +13,10 @@
 
 # --- build ------------------------------------------------------------------
 
-FROM ubuntu:22.04 AS build
+# Both stages pin ubuntu:22.04 by the digest of its multi-architecture index
+# (Docker Hub, 2026-10-13), so a rebuild uses the image that was checked;
+# Dependabot (docker, /deploy) proposes the new digest each month.
+FROM ubuntu:22.04@sha256:5ec03bb3441e8b0bf3b4f9cd4629a1ae763010dc3035bb8da3ae6cf026486401 AS build
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Etc/UTC
@@ -33,7 +36,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # and carries no build toolchain.
 RUN python3 -m venv /opt/venv
 ENV PATH=/opt/venv/bin:$PATH
-RUN pip install --no-cache-dir --upgrade pip setuptools wheel pybind11
+# Every Python package at an exact version and hash (deploy/requirements-azure2.in
+# says what is in it and how to refresh it): the server's, setuptools and
+# pybind11 for the build below, and pyazr's own dependencies.
+COPY deploy/requirements-azure2.txt /tmp/requirements-azure2.txt
+RUN pip install --no-cache-dir --require-hashes -r /tmp/requirements-azure2.txt
 
 # Pinned to a commit, not a branch: a rebuild of the site must not silently
 # change the physics the published evaluations are calculated with.  To take a
@@ -59,15 +66,14 @@ RUN cmake -S /src/AZURE2 -B /src/build \
 RUN test -n "$(ls /src/AZURE2/pyazr/_azure2*.so 2>/dev/null)" \
     || (echo "the _azure2 module was not built; check the pybind11 discovery above" && false)
 
-RUN pip install --no-cache-dir /src/AZURE2 \
+# --no-build-isolation: build with the pinned setuptools above, not the latest
+# from PyPI; --no-deps: its dependencies are already installed, hashed.
+RUN pip install --no-cache-dir --no-deps --no-build-isolation /src/AZURE2 \
  && python -c "import pyazr, pyazr._azure2; print('pyazr', pyazr.__version__)"
-
-COPY server/requirements.txt /tmp/requirements.txt
-RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
 # --- runtime ----------------------------------------------------------------
 
-FROM ubuntu:22.04 AS runtime
+FROM ubuntu:22.04@sha256:5ec03bb3441e8b0bf3b4f9cd4629a1ae763010dc3035bb8da3ae6cf026486401 AS runtime
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Etc/UTC
