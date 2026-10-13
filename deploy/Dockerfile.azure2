@@ -44,10 +44,18 @@ RUN pip install --no-cache-dir --require-hashes -r /tmp/requirements-azure2.txt
 
 # Pinned to a commit, not a branch: a rebuild of the site must not silently
 # change the physics the published evaluations are calculated with.  To take a
-# newer AZURE2, bump this and re-run the evaluations before deploying.
-ARG AZURE2_REF=7e533b729c74fcbc61de96f04769f2dc60439795
+# newer AZURE2, bump this and re-run the evaluations before deploying; bump
+# REVISION in server/app/cache.py too, so results cached by the old engine are
+# recalculated.
+ARG AZURE2_REF=bc3bd57b87d83693d4ede332ec040af04dcde7f2
 RUN git clone https://github.com/rdeboer1/AZURE2.git /src/AZURE2 \
  && git -C /src/AZURE2 checkout --detach ${AZURE2_REF}
+# The patches every build of the pinned commit gets -- this one, CI's and the
+# WebAssembly one (deploy/azure2-patches/README.md).  None changes what is
+# calculated.  `git apply` fails if one does not fit: a new pin needs them
+# reviewed.
+COPY deploy/azure2-patches/ /tmp/azure2-patches/
+RUN for p in /tmp/azure2-patches/*.patch; do git -C /src/AZURE2 apply "$p" || exit 1; done
 
 # BUILD_GUI=OFF drops Qt entirely; USE_API=ON is what produces the _azure2
 # module, which CMake writes into /src/AZURE2/pyazr/ for the install below.

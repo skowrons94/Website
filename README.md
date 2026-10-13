@@ -546,30 +546,65 @@ and the first one answers with the new curve in about two seconds.
 
 #### Total capture and `split_total_capture`
 
-AZURE2 at the pinned revision (`7e533b7`) calculates a total capture over
-several capture pairs (a data segment with exit `-1`) as the first pair plus one
-*component segment* per further pair, and mishandles the components'
-external-capture integrals whenever `output/intEC.*` already exists: if the
-file holds only the regular segments' integrals (as the shipped ones do) the
-components read zeros, so the total is the first transition alone; if it holds
-both, the count check fails and the components read the wrong numbers
-(`EData::CountECAmplitudes` counts regular segments only, while
-`InitializeComponentSegments` reuses the file whatever that check decided). A
-fresh calculation is right. 17F's total capture came out ~15x low, 7Be's
-³He(α,γ) ~20% low.
+AZURE2 calculates a total capture over several capture pairs (a data segment
+with exit `-1`) as the first pair plus one *component segment* per further
+pair. Up to `7e533b7` (the previous pin) it mishandled the components'
+external-capture integrals whenever `output/intEC.*` already existed: if the
+file held only the regular segments' integrals the components read zeros; if
+it held both, the count check failed and the components read the wrong
+numbers (`EData::CountECAmplitudes` counted regular segments only, while
+`InitializeComponentSegments` reused the file whatever that check decided).
+17F's total capture came out ~15x low, 7Be's ³He(α,γ) ~20% low. The pinned
+revision (`bc3bd57`, fix `886cdf7`) counts the components, and reuses a stored
+file only if the signature beside it (`intEC.*.sig`, committed with the
+integrals) matches the energies and inputs of the calculation.
+`deploy/azure2-patches/` makes that signature the same for every build of a
+model in one process.
 
-An evaluation opts in to the workaround with `"split_total_capture": true` in
-its `info.json`: the server then calculates the data through a copy of the model
-in which each total capture is one angle-integrated segment per capture pair
-(appended, with fixed normalisations, so no key or free parameter moves) and
-sums them back (`server/app/fine.py` `split_data_model`, `server/app/engine.py`);
-the extrapolations and the fine-grid curves likewise. Those integrals can be
-reused, and live in `datamodel/` and `extrapolations/` (not committed). Without the
-flag a total capture is calculated as AZURE2 does as shipped, so a published
-fit looks exactly as published. It is set for 17F, 7Be and 23Na, where the
-corrected total reproduces the data; 14N is left off (corrected, its LUNA total
-capture is 20% above the data, χ²/N 0.9 → 95: the fit needs checking). The flag
-is part of the results-cache key, so toggling it recalculates.
+An evaluation can opt in to the workaround the site used until then, with
+`"split_total_capture": true` in its `info.json`: the server then calculates
+the data through a copy of the model in which each total capture is one
+angle-integrated segment per capture pair (appended, with fixed
+normalisations, so no key or free parameter moves) and sums them back
+(`server/app/fine.py` `split_data_model`, `server/app/engine.py`); the
+extrapolations and the fine-grid curves likewise. Those integrals live in
+`datamodel/` and `extrapolations/` (not committed). At the pinned revision the
+two calculations agree (17F's total 7.40 keV b at the first Hester point
+either way, `server/tests/test_fine.py`). The flag is set for 17F, 7Be and
+23Na, and is part of the results-cache key, so toggling it recalculates.
+
+#### Frozen integrals
+
+An evaluation can keep the external-capture integrals its published fit was
+calculated with: `output/FROZEN` lists them with their SHA-256, and a file
+`output/<dir>-intEC.*` seeds the derived model the server builds in `<dir>/`
+(14N: its own `intEC.dat` and `intEC.extrap`, and `fine-intEC.extrap` for the
+plots' extended grid). The server, the precompute and the in-browser engine
+refuse to calculate with other files, and put them back and stop if AZURE2
+rewrites one (`server/app/integrals.py`); `app.check` and
+`scripts/add-evaluation.py` guard them too, and `evaluated_rates.py` keeps such
+an evaluation's committed table. Do not regenerate them. Each `.sig` is the one
+the pinned AZURE2 (with `deploy/azure2-patches`) computes for the model: a new
+pin may need new `.sig` files for the same integrals, and a change to a derived
+model's grid (`server/app/fine.py`) a new seed. `server/tests/test_integrals.py`
+checks the curves against the published values; it needs pyazr, so it runs in
+the Pages workflow, not in the pull-request checks.
+
+**Regenerating frozen integrals (maintainers).**
+
+1. Build the pinned AZURE2 with the patches, as `deploy/Dockerfile.azure2` does.
+2. Copy the evaluation to a scratch directory without `output/FROZEN` and run
+   `python browser/precompute.py <scratch> <scratch-out>` on it: AZURE2
+   writes every model's integrals and their `.sig`.
+3. Keep the `.sig` files it wrote, next to the frozen integrals. Where only
+   the `.sig` changed (a new pin), the integrals stay as they are. A derived
+   model with a new grid needs a new seed, built the way the committed one
+   was: the regular segments' amplitudes as AZURE2 writes them (the file it
+   writes for a copy of the derived model whose total-capture lines name the
+   first capture pair instead of `-1`), followed by `(0,0)` for every
+   component amplitude, as many as the new file has beyond that.
+4. Update the hashes in `output/FROZEN` (`sha256sum`, keeping its comment),
+   and run `test_integrals.py` and the precompute with the pinned engine.
 
 ### The data explorer's data
 

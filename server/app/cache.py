@@ -48,7 +48,12 @@ CACHE_FILE = "precomputed.json"
 # 4: an energy × angle extrapolation grid is calculated on request ("grid"),
 #    not with the other extrapolations; a total capture on a much shorter
 #    grid than its partial captures is extended (app.fine.extrap_model).
-REVISION = "4"
+# 5: AZURE2 pinned at bc3bd57 (from 7e533b7): a total capture over several
+#    capture pairs is calculated right without the split, a data file's last
+#    line is read without a trailing newline, and the external-capture
+#    integrals carry a signature.  Bump this with every new pin
+#    (deploy/Dockerfile.azure2): the fingerprint does not cover the engine.
+REVISION = "5"
 
 # Parameters closer than this (relative) are the same vector.
 TOLERANCE = 1e-9

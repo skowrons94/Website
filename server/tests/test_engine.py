@@ -37,6 +37,34 @@ def _copy(name, tmp_path, tests=None):
     return str(target)
 
 
+def test_extrapolation_model_takes_the_data_vector(tmp_path):
+    """engine.evaluate on a model in extrapolation mode, given the session's
+    data-mode vector (R-matrix parameters, then the segments' norms): the
+    same as with the model's own, shorter vector -- AZURE2 since bc3bd57
+    refuses a vector of the wrong length, so the engine cuts it.  A vector
+    that is not the data model's is still refused."""
+    pyazr = pytest.importorskip("pyazr")
+    from app.engine import evaluate
+
+    directory = _copy("17F", tmp_path)
+    path = os.path.join(directory, "17F.azr")
+    data = pyazr.azure2(path, cwd=directory)
+    params = np.asarray(data.params, dtype=np.float64) * 1.001
+    data.close()
+    extrap = pyazr.azure2(path, cwd=directory, data_mode=False)
+    try:
+        own = np.asarray(extrap.params, dtype=np.float64)
+        assert len(own) < len(params)
+        cut = evaluate(extrap, params, grid=False)
+        mine = evaluate(extrap, params[:len(own)], grid=False)
+        for a, b in zip(cut[0], mine[0]):
+            np.testing.assert_array_equal(a, b)
+        with pytest.raises(ValueError):
+            evaluate(extrap, params[:len(own) - 1], grid=False)
+    finally:
+        extrap.close()
+
+
 @pytest.mark.parametrize("data_mode", [True, False])
 def test_single_pass_equals_the_four_calls(tmp_path, data_mode):
     """engine.evaluate: one update_segments, the same numbers as pyazr's

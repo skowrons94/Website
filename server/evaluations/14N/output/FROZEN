@@ -1,0 +1,16 @@
+# Frozen external-capture integrals: these are the integrals the published fit
+# was calculated with; do not regenerate them.  They hold the regular segments'
+# amplitudes as AZURE2 wrote them for that fit, and zeros for the component
+# segments of the total capture, which is what AZURE2 read for those before
+# 886cdf7 (from a file without them).  Each .sig is the one the pinned AZURE2
+# (with deploy/azure2-patches) computes for this model, so AZURE2 reads the file
+# rather than recalculating it.  fine-intEC.extrap seeds the plots' extended
+# grid model (fine/output/intEC.extrap).  The server, the precompute and the
+# in-browser engine check these hashes and stop rather than calculate with other
+# integrals (server/app/integrals.py).
+222eed98526f5f7a1a185079f3f93ee4d529a7f07d60be94ceb3b761de69b248  output/intEC.dat
+bff0b5e11f9cc93e05d1659d76aac5f45ae10abc262090a5451c932fd8102790  output/intEC.dat.sig
+7219e2e950e8945f4f78ff7c3186776d424f8d7d7871c7701c1cfb29bbd54788  output/intEC.extrap
+265ce432b446df0cc5fc632d28f35dba115adb21418451e1e243d75d09a80703  output/intEC.extrap.sig
+853d4338ffeac40d645e86e74ba2177f74e86472f2cbf6b4370c4238fcac82d8  output/fine-intEC.extrap
+456a017ccbedbc072acd5bfd699bc9e2d9c35f4f8dbb69967d8700fc41c19dcc  output/fine-intEC.extrap.sig

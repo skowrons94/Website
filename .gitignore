@@ -17,6 +17,16 @@ server/access.log
 server/evaluations/*/output/*
 !server/evaluations/*/output/intEC.dat
 !server/evaluations/*/output/intEC.extrap
+# ... with the signature AZURE2 checks them against before reusing them.
+!server/evaluations/*/output/intEC.dat.sig
+!server/evaluations/*/output/intEC.extrap.sig
+# ... and, for an evaluation whose integrals are frozen, their list and the
+# derived models' seeds (server/app/integrals.py).
+!server/evaluations/*/output/FROZEN
+!server/evaluations/*/output/*-intEC.dat
+!server/evaluations/*/output/*-intEC.extrap
+!server/evaluations/*/output/*-intEC.dat.sig
+!server/evaluations/*/output/*-intEC.extrap.sig
 server/evaluations/*/checks/
 server/evaluations/*/.azure_history
 

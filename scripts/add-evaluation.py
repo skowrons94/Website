@@ -12,7 +12,11 @@ It creates server/evaluations/<ID>/ with
 * data/ -- every data file the model reads, found where the .azr says, or in
   --data, or next to the .azr;
 * output/intEC.dat, output/intEC.extrap -- AZURE2's external-capture
-  integrals from your run, when there are any (they are slow to recompute);
+  integrals from your run, when there are any (they are slow to recompute),
+  each with its .sig, the record of what it was computed for (AZURE2
+  recomputes a file that has none, or one whose .sig another AZURE2 build
+  wrote: a .sig from stock AZURE2 never matches for a total capture over
+  several capture pairs, see deploy/azure2-patches);
 * info.json -- filled in as far as the file allows (reactions, a label for
   every data file, the atlas pages that match), with TODO where only you
   know the answer;
@@ -243,6 +247,10 @@ def main(argv=None):
         raise Failure(f"server/evaluations/{existing[0]} already exists. Pick another id "
                       f"(a second evaluation of the same nucleus: {eid}-2025, say), or pass "
                       "--force (FORCE=1 with make) to replace its model and data, keeping its info.json")
+    if existing and os.path.isfile(os.path.join(a.root, existing[0], "output", "FROZEN")):
+        raise Failure(f"server/evaluations/{existing[0]} has frozen external-capture integrals "
+                      "(output/FROZEN: the ones its published fit was calculated with), which "
+                      "replacing it would discard. Remove output/FROZEN first if that is meant.")
     if existing:
         info_path = os.path.join(a.root, existing[0], "info.json")
         if os.path.isfile(info_path):
@@ -278,6 +286,12 @@ def main(argv=None):
                 real = os.path.realpath(src)
                 shutil.copy2(real, os.path.join(dest, "output", name))
                 say(f"  {real} -> output/{name}")
+                # The signature AZURE2 checks the file against before reusing
+                # it (since AZURE2 886cdf7); without it the file is recomputed.
+                sig = src + ".sig"
+                if os.path.isfile(sig) and inside(sig, roots):
+                    shutil.copy2(os.path.realpath(sig), os.path.join(dest, "output", name + ".sig"))
+                    say(f"  {os.path.realpath(sig)} -> output/{name}.sig")
                 break
 
         files = check.segment_files(new_text)
