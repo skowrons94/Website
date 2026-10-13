@@ -211,6 +211,8 @@ export function SearchView({
         <p className="text-xs text-muted-foreground">{t.noRanking}</p>
       </div>
 
+      {/* until the index arrives, hold the table's place so the footer does not jump (layout shift) */}
+      {!data && !error && <div aria-hidden className="mt-3 h-[70vh] rounded-lg border border-dashed border-border" />}
       {data && (
         <div
           className="mt-3 overflow-x-auto rounded-lg border border-border"

@@ -338,13 +338,17 @@ export async function ExercisesPage({ lang }: { lang: Lang }) {
               <span className="font-medium text-foreground/80">{c.needsLabel}</span>
               <span dangerouslySetInnerHTML={{ __html: s.needsHtml }} />
             </div>
-            <div className="prose-note mt-6" dangerouslySetInnerHTML={{ __html: s.problemHtml }} />
+            {/* an inline formula wider than a phone's column at large text scrolls here, not the page */}
+            <div className="prose-note mt-6 overflow-x-auto overflow-y-hidden" dangerouslySetInnerHTML={{ __html: s.problemHtml }} />
             <details className="group mt-8 rounded-lg border border-border bg-card">
               <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
                 <ChevronRight aria-hidden className="h-4 w-4 shrink-0 transition-transform group-open:rotate-90 motion-reduce:transition-none" />
                 {c.solution}
               </summary>
-              <div className="prose-note border-t border-border px-4 pb-6 pt-2 sm:px-6 [&_table]:text-[0.9em]" dangerouslySetInnerHTML={{ __html: s.solutionHtml }} />
+              <div
+                className="prose-note overflow-x-auto overflow-y-hidden border-t border-border px-4 pb-6 pt-2 sm:px-6 [&_table]:text-[0.9em]"
+                dangerouslySetInnerHTML={{ __html: s.solutionHtml }}
+              />
             </details>
           </section>
         ))}

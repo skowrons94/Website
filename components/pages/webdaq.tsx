@@ -601,7 +601,7 @@ export function WebdaqPage({ lang }: { lang: Lang }) {
               href="https://skowrons94.github.io/WebDAQ/"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex min-h-11 items-center gap-1.5 rounded-md border border-input-strong px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
+              className="inline-flex min-h-11 max-w-full items-center gap-1.5 whitespace-normal rounded-md border border-input-strong px-4 py-2.5 text-left text-sm font-medium transition-colors hover:bg-accent"
             >
               {t.readDocs}
               <ArrowUpRight className="h-4 w-4 opacity-70" aria-hidden />

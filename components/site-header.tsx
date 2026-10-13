@@ -439,7 +439,8 @@ function NavMenu({
       <div
         id={id}
         hidden={!open}
-        className="absolute right-0 top-full z-50 mt-2 w-[21rem] rounded-lg border border-border bg-popover p-2 text-popover-foreground shadow-lg"
+        // a short window (under ~600 px) scrolls the panel: it sits inside the sticky header, so the page cannot
+        className="absolute right-0 top-full z-50 mt-2 max-h-[calc(100dvh-var(--header-h,4rem)-1.5rem)] w-[21rem] overflow-y-auto overscroll-contain rounded-lg border border-border bg-popover p-2 text-popover-foreground shadow-lg"
       >
         <ul>
           {items.map((entry) => (
