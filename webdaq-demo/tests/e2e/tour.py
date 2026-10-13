@@ -14,8 +14,7 @@ For the demo alone: out = the demo export, base = its base path, --start /.
 With --start pointing at the companion page the out dir is the site's export
 (served under the site base path) and the demo is reached through its link.
 Fails on: a step that does not complete, an unmocked request, a request that
-leaves the origin, a Content-Security-Policy violation, a page error (React hydration #418/#423 aside, see
-tests/contract/runtime.py), horizontal scroll of the page at phone width.
+leaves the origin, a Content-Security-Policy violation, a page error, horizontal scroll of the page at phone width.
 Writes nothing.
 """
 import argparse
@@ -61,7 +60,7 @@ def main():
         page = ctx.new_page()
         outside, errors = [], []
         page.on('request', lambda r: outside.append(r.url) if not r.url.startswith(origin) and not r.url.startswith(('data:', 'blob:')) else None)
-        page.on('pageerror', lambda e: errors.append(str(e)) if '#418' not in str(e) and '#423' not in str(e) else None)
+        page.on('pageerror', lambda e: errors.append(str(e)))
         # the site's static export puts a Content-Security-Policy into every page
         page.on('console', lambda m: errors.append(m.text) if 'Content Security Policy' in m.text else None)
 
@@ -105,6 +104,15 @@ def main():
                 report['tuned FWHM at 1332 keV (model)'] = fw
                 if fw is None or fw > 2.0:
                     failures.append(f'tuned FWHM at 1332 keV is {fw}, expected <= 2.0 keV')
+            if phone:
+                # The sheet must not cover WebDAQ's run bar (Start… / Stop…) at the bottom.
+                over = page.evaluate("""() => { const b = document.querySelector('[role="region"][aria-label="Run status"]'), t = document.querySelector('.wd-tour')
+                  if (!b || !t || getComputedStyle(b).position !== 'fixed') return 0
+                  return Math.max(0, t.getBoundingClientRect().bottom - b.getBoundingClientRect().top) }""")
+                if over > 1:
+                    failures.append(f'the tour covers the run bar by {over:.0f} px ({title})')
+            hl = page.evaluate("() => { const e = document.querySelector('.wd-tour-target'); return e ? (e.getAttribute('role') || e.tagName.toLowerCase()) + ': ' + (e.getAttribute('aria-label') || e.textContent || e.id || '').trim().slice(0, 40) : null }")
+            report.setdefault('highlighted', {})[title] = hl
             live = dialog.locator('[data-tour="live"]').inner_text()
             if live:
                 report.setdefault('live lines', []).append(live)

@@ -232,19 +232,19 @@ sizes) and the shell's `control({type:'files', run})` returns the bytes.
 
 ## Sizes (gzip -9, this build)
 
-First-load JS: start page 116.5 kB (budget 120), `/dashboard` 377.3 kB (budget
-400), other routes 116–346 kB; demo shell 7.7 kB (budget 25); worker first chunk
-38.6 kB (budget 40), plus 11.8 kB of lazy chunks (Logbook and run files, ELOG and
-Grafana, notification settings); response table + line data 39 kB per detector;
-JSROOT needed to draw 297 kB (budget 360); zip 4.6 kB (budget 10);
-tour 9.3 kB (budget 20).
+First-load JS at WebDAQ 6929e28 (ui-refresh, "LUNADAQ"): start page 116.8 kB
+(budget 120), `/dashboard` 249.8 kB (budget 400; the refreshed dashboard loads its
+tabs lazily), other routes 117–267 kB; demo shell 8.0 kB (budget 25); worker first
+chunk 39.1 kB (budget 40), plus 12.4 kB of lazy chunks (Logbook and run files,
+ELOG and Grafana, notification settings); response table + line data 39 kB per
+detector; JSROOT needed to draw 297 kB (budget 360); zip 4.6 kB (budget 10);
+tour 11.2 kB (budget 20).
 `node scripts/size.mjs <export>` prints the table.
 
 ## Known upstream behaviour the demo shows as it is
 
-* React hydration errors #418/#423 on a full page load of most pages: they render
-  `null` without a token (the static HTML) and the page with one (the browser).
-  The dashboard avoids it with a `mounted` flag. Recoverable; `runtime.py` allows it.
+* No React hydration errors since the ui-refresh pin (an AuthGate per page);
+  `runtime.py`, `shell.py` and `tour.py` now fail on any page error.
 * `GET /histograms/rebin` (405), `/qlong/…`, `/qshort/…`, `/faraday/…` (404) fail
   in the demo exactly as they would against the server.
 

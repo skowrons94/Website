@@ -1,22 +1,22 @@
 {
   "repo": "https://github.com/skowrons94/webdaq",
-  "commit": "a1cc18f86daee0345b2001e663086555105202a3",
+  "commit": "6929e28b5ef199a22730725ec0f558b764ba94a2",
   "frontend": "frontend",
-  "treeHash": "0ac266a6dc69f078091b01dde18e25d7cd403a2f6bfb5cd19909601094f8e696",
+  "treeHash": "c9e0a73f3ad0f0d1f8c75cb0ad729ce6e79eb33fc30cbc9d91a9ec9300f91fbb",
   "jsroot": {
     "version": "7.11.2",
     "integrity": "sha512-Pria+SspD6+BmGNg4C8UOtP5y7GiODS/FXgQMiCSgGxpbm9icezifQLcVTJF7RaMnCot6ko7CoZozudM1a204g=="
   },
   "overrides": {
     "next.config.mjs": "1e3206cb200e264fdddb4dbb2e4772daebc839fdbc94b78316d74892a0de6fa2",
-    "package.json": "4b5c81353734e4e9dae6aa7ff45437b91bf1e53eb63aacdbcebbb6f246cb9333",
-    "src/app/layout.tsx": "da249a7221544f9ed68369e2021bfe0834d08c5ae080a71c1e03e558d520a5df",
+    "package.json": "e491e660ce4e8c49a854eef815b7cbc74287ad26fb372574678bc9aef02c8268",
+    "src/app/layout.tsx": "f2dd7cdb9c530bf4791e16c309424923c5da4a45d456cd1c99b0eb50ba258e55",
     "src/app/page.tsx": "e7811960814bab5fb2b9cc33e3964f9bc1ea8270abcfaa2830905bede70d512e",
     "src/app/api": "c72a6584abe3aa1b7f09312db0280ed9c8e8a200fcf16ebc4ccb179acc0996e0",
     "src/api": "8ad80ca1ee19f6f540b90d110337a73453f50c4dae890d2cb0e63124e5b786bf",
     "src/lib/load-jsroot.ts": "b8f867afb8b39d67512c8774949aa9aaf2bc5c3500d66f379c65f77d0bb137db",
     "src/app/logbook/[run_number]/layout.tsx": "absent",
-    "src/components/histo-dashboard.tsx": "02f2ad3d9d2e29e7a9014bd804863bddc256d9d2cd186c529d7da7cda15bf8c0"
+    "src/components/histo-dashboard.tsx": "2cb080f5584a3928f8bee4f0aa94eec23277e5c3aa7d01d21b2996e346ad59ac"
   },
   "apiSurfaceHash": "c798634afb31ab75afbb6673aa8ff3a63c8bfe9bd8e98dee173caf88f5bcb385"
 }

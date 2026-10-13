@@ -211,13 +211,24 @@ function go(route: string, query = '') {
   else location.href = BASE + href
 }
 
-/** A target by role and accessible name (aria-label, labelled-by, or text). */
+/** The accessible name, roughly: aria-label, aria-labelledby, a <label for>, else the text. */
+function accessibleName(el: HTMLElement): string {
+  const aria = el.getAttribute('aria-label')
+  if (aria) return aria.trim()
+  const by = el.getAttribute('aria-labelledby')
+  if (by) return by.split(/\s+/).map(id => document.getElementById(id)?.textContent ?? '').join(' ').trim()
+  const labels = (el as HTMLButtonElement).labels
+  if (labels && labels.length) return [...labels].map(l => l.textContent ?? '').join(' ').trim()
+  return (el.textContent || '').trim()
+}
+
+/** A target by role and accessible name (aria-label, labelled-by, a label, or text). */
 function findTarget(t: Target | null): HTMLElement | null {
   if (!t) return null
   const sel = t.role === 'button' ? 'button,[role="button"]' : `[role="${t.role}"]`
   for (const el of document.querySelectorAll<HTMLElement>(sel)) {
     if (el.closest('.wd-tour')) continue
-    const name = (el.getAttribute('aria-label') || el.textContent || '').trim()
+    const name = accessibleName(el)
     if (t.name.test(name) && el.offsetParent !== null) return el
   }
   return null
@@ -306,12 +317,26 @@ async function render(focus: boolean) {
   nx.onclick = () => (last ? stop() : show(index + 1))
   actions.append(nx)
   root.append(head, h, p, status, live, actions)
+  clearRunBar()
   if (focus) h.focus()
   wasDone = false
   tick()
 }
 
+/**
+ * On a phone WebDAQ keeps a run bar (Start… / Stop…) fixed at the bottom of the
+ * screen; the tour's sheet sits just above it, so the controls it talks about stay visible.
+ */
+function clearRunBar() {
+  if (!root) return
+  const bar = document.querySelector<HTMLElement>('[role="region"][aria-label="Run status"]')
+  const h = bar && getComputedStyle(bar).position === 'fixed' ? bar.getBoundingClientRect().height : 0
+  const want = h > 0 && matchMedia('(max-width: 767px)').matches ? `${Math.ceil(h)}px` : ''
+  if (root.style.bottom !== want) root.style.bottom = want
+}
+
 async function tick() {
+  clearRunBar()
   if (!root || busy) return
   const t = copy()
   const step = STEPS[index]

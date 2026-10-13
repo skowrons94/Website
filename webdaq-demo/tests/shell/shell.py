@@ -78,7 +78,7 @@ def main():
         page = ctx.new_page()
         page.on('dialog', lambda d: d.accept())
         errors = []
-        page.on('pageerror', lambda e: errors.append(str(e)) if '#418' not in str(e) and '#423' not in str(e) else None)
+        page.on('pageerror', lambda e: errors.append(str(e)))
         for path in PAGES:
             page.goto(url(path, 'seed=21'))
             banner = page.get_by_role('region', name='Demo notice')

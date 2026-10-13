@@ -16,7 +16,7 @@ import { STORAGE_SHIM_JS } from "@/demo/generated"
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "WebDAQ demo (simulated) — LUNA Control Panel",
+  title: "WebDAQ demo (simulated) — LUNADAQ",
   description: "The WebDAQ frontend running against a simulated DAQ in your browser. Simulated detectors; nothing here is real hardware.",
   // The site's companion page (/software/webdaq/) is the page to find.
   robots: { index: false, follow: false },

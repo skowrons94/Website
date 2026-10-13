@@ -28,12 +28,10 @@ ROUTES = [
     '/logbook/1/', '/settings/', '/settings/?view=current', '/settings/?view=notifications', '/settings/?view=elog',
     '/settings/?view=grafana', '/settings/?view=appearance', '/alerts/', '/troubleshoot/', '/activity/', '/auth/login/',
 ]
-# Errors the upstream frontend raises on its own, with or without the demo:
-# React #418/#423 are recoverable hydration mismatches. Pages such as /tuner and
-# /board render `null` when there is no token (the static HTML) and the page when
-# there is one (the browser), so every full page load of a signed-in session
-# mismatches; React re-renders on the client. Reported upstream as a finding.
-ALLOWED_CONSOLE = ('Minified React error #418', 'Minified React error #423')
+# Errors the upstream frontend raises on its own, with or without the demo. None
+# at the pin: the ui-refresh frontend fixed the React #418/#423 hydration
+# mismatches the earlier pin raised on every full load of /tuner and /board.
+ALLOWED_CONSOLE: tuple[str, ...] = ()
 
 
 def main():
