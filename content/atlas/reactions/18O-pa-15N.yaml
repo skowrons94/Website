@@ -55,7 +55,7 @@ measurements:
     energy_it: "risonanze a 20 e 90 keV"
     note: >-
       First experimental evaluation of the 20 keV resonance, whose
-      contribution came out about 35 % larger than previously estimated; the
+      contribution came out about 35% larger than previously estimated; the
       90 keV resonance appeared negligible. The rate accuracy improved by a
       factor of 8.5 because it rests on a measured strength.
     refs: [lacognata2008]

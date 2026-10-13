@@ -44,7 +44,7 @@ details: >-
   underground data, and an activation measurement at Atomki gives the total
   cross section at 0.55–1.4 MeV independently of γ-ray spectroscopy. A new
   LUNA campaign with solid nitrogen targets and a 4π BGO detector aims at the
-  total and partial cross sections at about 100–370 keV, for a rate with 5 %
+  total and partial cross sections at about 100–370 keV, for a rate with 5%
   precision (Gosta et al. 2025; Compagnucci et al. 2025).
 status: improving
 status_note: >-
@@ -71,7 +71,7 @@ measurements:
     energy: "259 keV resonance (Doppler-shift attenuation)"
     energy_it: "risonanza a 259 keV (attenuazione dello spostamento Doppler)"
     note: >-
-      Mean lifetime of the 6793 keV state of ¹⁵O, τ ≈ 1.6 fs (90 % C.L.), from
+      Mean lifetime of the 6793 keV state of ¹⁵O, τ ≈ 1.6 fs (90% C.L.), from
       the Doppler-shift attenuation method. The value implies a much smaller
       contribution of the subthreshold state than inferred from the (p,γ)
       data.
@@ -152,7 +152,7 @@ measurements:
     note: >-
       S-factors at twelve energies for capture to the 6.79 MeV state, the
       strongest transition, and at ten energies between 0.479 and 1.202 MeV for
-      the second strongest; the total rate uncertainty remained about 8 %.
+      the second strongest; the total rate uncertainty remained about 8%.
     refs: [wagner2018]
   - year: 2021
     facility: notre-dame
@@ -169,7 +169,7 @@ measurements:
     energy: "550–1400 keV"
     note: >-
       Total cross section from the ¹⁵O activity, counted through the
-      annihilation radiation of its β⁺ decay, with about 10 % uncertainty and
+      annihilation radiation of its β⁺ decay, with about 10% uncertainty and
       no dependence on γ-ray angular distributions or summing.
     refs: [gyurky2022]
   - year: 2022
@@ -191,7 +191,7 @@ measurements:
     note: >-
       Description of a new LUNA campaign with solid nitrogen targets and a 4π
       BGO detector, which aims at total and partial cross sections for a rate
-      with 5 % precision; no cross sections published yet.
+      with 5% precision; no cross sections published yet.
     refs: [gosta2025, compagnucci2025]
 evaluations: [adelberger2011, acharya2025]
 open_questions:

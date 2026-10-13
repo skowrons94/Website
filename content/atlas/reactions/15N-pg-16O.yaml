@@ -40,10 +40,10 @@ details: >-
   reactions constrain the direct-capture component. The LUNA data, from 70 to
   370 keV, and the Notre Dame data, from 130 keV to 1.8 MeV, give a rate about
   a factor of 2 below the NACRE and CF88 compilations, with an uncertainty
-  near 10 %.
+  near 10%.
 status: improving
 status_note: >-
-  Measurements deep underground reach 70 keV and fix the rate to about 10 %.
+  Measurements deep underground reach 70 keV and fix the rate to about 10%.
   The remaining uncertainty is in extending the data to lower energies, where
   several contributions to the reaction interfere with each other.
 status_note_it: >-
@@ -86,7 +86,7 @@ measurements:
     energy: "70–370 keV"
     note: >-
       Extends the LUNA data and confirms the earlier R-matrix extrapolation. The rate is about a
-      factor of 2 below NACRE and CF88, with a 10 % uncertainty.
+      factor of 2 below NACRE and CF88, with a 10% uncertainty.
     refs: [caciolli2011]
   - year: 2012
     facility: notre-dame

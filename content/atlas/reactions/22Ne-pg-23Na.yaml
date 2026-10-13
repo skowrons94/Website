@@ -47,7 +47,7 @@ details: >-
   2014) and then measured the resonances at Eₚ = 156.2, 189.5 and 259.7 keV
   directly for the first time with a windowless ²²Ne gas target and two HPGe
   detectors (Cavanna et al. 2015; Depalo et al. 2016). The original strengths
-  were later raised by 18–19 % because the energy straggling of the beam had been
+  were later raised by 18–19% because the energy straggling of the beam had been
   neglected (erratum, 2018). A second LUNA campaign set upper limits of 6 × 10⁻¹¹ eV and 7 × 10⁻¹¹ eV on the 71 and 105 keV
   resonances and measured the off-resonance S-factor (Ferraro et al. 2018); a
   further analysis of direct capture and resonances at low energy followed
@@ -106,9 +106,9 @@ measurements:
     energy_it: "Eₚ = 156,2; 189,5 e 259,7 keV"
     note: >-
       First direct observation of the three resonances, with strengths known to
-      2–7 %, and much lower upper limits on three tentative resonances; the full
+      2–7%, and much lower upper limits on three tentative resonances; the full
       account is in Depalo et al. (2016). An erratum raised the strengths by
-      18–19 % after including the beam energy straggling, with unchanged
+      18–19% after including the beam energy straggling, with unchanged
       astrophysical conclusions.
     refs: [cavanna2015, depalo2016, cavanna2018]
   - year: 2017
@@ -126,7 +126,7 @@ measurements:
     energy: "Eₚ = 71 and 105 keV, and off-resonance"
     energy_it: "Eₚ = 71 e 105 keV, e fuori risonanza"
     note: >-
-      Upper limits of 6 × 10⁻¹¹ and 7 × 10⁻¹¹ eV (90 % CL)
+      Upper limits of 6 × 10⁻¹¹ and 7 × 10⁻¹¹ eV (90% CL)
       on the two suggested resonances, and the off-resonance S-factor at very low
       energy, which constrains direct capture and a subthreshold resonance. The
       rate uncertainty at 0.1 GK was reduced by three orders of magnitude.

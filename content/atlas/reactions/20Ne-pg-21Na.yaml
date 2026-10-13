@@ -45,7 +45,7 @@ details: >-
 status: improving
 status_note: >-
   Underground data now reach below E_cm = 352 keV and the 368 keV resonance
-  strength is known to about 5 %; the low-energy extrapolation still rests on the
+  strength is known to about 5%; the low-energy extrapolation still rests on the
   separation of direct capture from the subthreshold state.
 status_note_it: >-
   I dati sotterranei arrivano ora sotto E_cm = 352 keV e la forza della
@@ -53,7 +53,7 @@ status_note_it: >-
   basa ancora sulla separazione della cattura diretta dallo stato sotto soglia.
 status_plain: >-
   Measured underground at low energies, and its main resonance is known to
-  about 5 %; the extension to the lowest energies still depends on a model.
+  about 5%; the extension to the lowest energies still depends on a model.
 status_plain_it: >-
   Misurata sotto terra a basse energie, e la sua risonanza principale è nota
   a circa il 5 %; il prolungamento alle energie più basse dipende ancora da
@@ -68,7 +68,7 @@ measurements:
       Cross sections for the primary transitions to the bound states of ²¹Na. An
       R-matrix fit separated direct capture from the subthreshold resonance; the
       resulting rate is lower than those in the libraries of the time by up to
-      20 % in the temperature range of interest.
+      20% in the temperature range of interest.
     refs: [lyons2018]
   - year: 2023
     facility: luna-400
@@ -79,7 +79,7 @@ measurements:
       First measurement of direct capture below E_cm = 352 keV, with a windowless
       gas target and two HPGe detectors. Resonance strength
       ωγ = 0.112 ± 0.002 (stat) ± 0.005 (sys) meV, three times more precise than
-      before; the rate is 20 % lower than previously adopted below 0.1 GK and
+      before; the rate is 20% lower than previously adopted below 0.1 GK and
       unchanged above.
     refs: [masha2023]
   - year: 2025

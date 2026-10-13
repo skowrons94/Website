@@ -86,7 +86,7 @@ $$
 $$
 
 $N = 1$ means the state is entirely inside the box and $\Gamma = 2\gamma^2 P$ is
-adequate. $N = 2$ means half in, half out. $N = 34$ means 97 % of the state is
+adequate. $N = 2$ means half in, half out. $N = 34$ means 97% of the state is
 outside the box one has drawn.
 
 > This identification is exact for a channel that is closed at $E_\lambda$, where
@@ -122,7 +122,7 @@ N = 34.1, \qquad f_{\mathrm{ext}} = 97.1\ \%, \qquad
 \theta_d^{2} \equiv \frac{\gamma_d^{2}\,\mu a^{2}}{\hbar^{2}} = 9.95 .
 $$
 
-The dimensionless reduced width is ten times the single-particle limit, and 97 %
+The dimensionless reduced width is ten times the single-particle limit, and 97%
 of the level is outside the box. Both are symptoms of the same thing.
 
 ## Why the width saturates
@@ -146,14 +146,14 @@ The crossover sits at $\gamma_{\mathrm{knee}} = (\mathrm{d}S/\mathrm{d}E)^{-1/2}
 which for the deuteron channel of the example is $0.92\ \mathrm{MeV}^{1/2}$. Below
 the knee, $\Gamma \propto \gamma^2$ as expected; above it, $\Gamma$ is flat and
 $\gamma$ is **unidentifiable** — not merely poorly determined, but absent from the
-observables. The fitted $\gamma_d = 5.30$ sits 5.8 times past the knee, at 97 % of
+observables. The fitted $\gamma_d = 5.30$ sits 5.8 times past the knee, at 97% of
 its ceiling.
 
 For a $\chi^2$ minimisation this is a curiosity: the minimiser finds *some* point
 on the plateau and reports it. For an uncertainty analysis it is fatal, because
 the likelihood possesses an exactly flat direction of infinite extent. The
 signature is visible in the fit itself: the error matrix of the example returns
-$\gamma_d = 5.90 \pm 12.41$ (a 210 % error) and $\gamma_n = 0.867 \pm 1.780$,
+$\gamma_d = 5.90 \pm 12.41$ (a 210% error) and $\gamma_n = 0.867 \pm 1.780$,
 errors whose *ratio*, 6.97, reproduces the ratio of the values themselves, 6.81.
 Almost all the uncertainty lies along the direction that scales both couplings
 together, and almost none across it: the data fix the branching ratio and let the
@@ -185,14 +185,14 @@ ceiling does not correspond to any reduced width whatsoever: it is not improbabl
 it is *unrepresentable*.
 
 Two features of the budget are worth noting. First, the cost is dominated by the
-barely-open channel: in the example the $d+t$ channel spends 97 % of the budget
-and the wide-open $n+\alpha$ channel spends 0.03 %, because a large $P$ makes $D$
+barely-open channel: in the example the $d+t$ channel spends 97% of the budget
+and the wide-open $n+\alpha$ channel spends 0.03%, because a large $P$ makes $D$
 small. Sub-threshold and near-threshold charged channels are where this pathology
 lives. Second, the budget consumed falls steadily as the channel radius grows:
 
 | $a$ [fm] | 3.5 | 4.0 | 4.5 | 5.0 | 6.0 | 7.0 |
 |---|---|---|---|---|---|---|
-| $\sum_c \Gamma_c D_c$ at the measured widths | 1.94 (97 %) | 1.80 (90 %) | 1.68 (84 %) | 1.58 (79 %) | 1.38 (69 %) | 1.22 (61 %) |
+| $\sum_c \Gamma_c D_c$ at the measured widths | 1.94 (97%) | 1.80 (90%) | 1.68 (84%) | 1.58 (79%) | 1.38 (69%) | 1.22 (61%) |
 
 ### What the ceiling does to the inverse transformation
 
@@ -210,11 +210,11 @@ follow immediately, and they are the operational heart of the matter.
 
 **The inverse map has a pole at the ceiling.** As $\sum_c \Gamma_c D_c \to 2$,
 $\mathcal{D} \to 0$ and the reduced width required to produce the requested
-observed width diverges. A model sitting at 97 % of its budget is sitting next to
+observed width diverges. A model sitting at 97% of its budget is sitting next to
 a singularity.
 
 **Past the ceiling, $\mathcal{D}$ turns negative.** A negative $\mathcal{D}$ means
-the requested widths would need more than 100 % of the level outside the surface.
+the requested widths would need more than 100% of the level outside the surface.
 Implementations that take the absolute value at this point do not fail — they
 return a valid-looking but *different* model, and the map folds back on itself:
 requesting a larger width returns a smaller one. At $a_d = 3.5$ fm in the example
@@ -245,15 +245,15 @@ channels moved together, each row an independent converged refit.
 
 | $a$ [fm] | $\chi^2$ | $\gamma_d$ [MeV$^{1/2}$] | $\sigma(\gamma_d)/\gamma_d$ | $\theta_d^2$ | $f_{\mathrm{ext}}$ | headroom in $\Gamma_d$ |
 |---|---|---|---|---|---|---|
-| 3.00 | 97.9 | 42.58 | 45 % | 471 | 99.95 % | 0.1 % |
-| 3.25 | 97.8 | 11.58 | 42 % | 40.9 | 99.33 % | 0.7 % |
-| 3.50 | 97.7 | 6.654 | 40 % | 15.7 | 98.11 % | 1.9 % |
-| 4.00 | 97.6 | 2.241 | 25 % | 2.32 | 87.23 % | 14.7 % |
-| 4.50 | 97.3 | 1.379 | 14 % | 1.11 | 74.82 % | 33.7 % |
-| 5.00 | 96.8 | 1.072 | 12 % | 0.83 | 66.78 % | 49.8 % |
-| 5.50 | 96.4 | 0.903 | 10 % | 0.71 | 60.99 % | 64.0 % |
-| 6.00 | 96.4 | 0.794 | 9 % | 0.66 | 56.58 % | 76.8 % |
-| 7.00 | 97.9 | 0.667 | 8 % | 0.63 | 50.68 % | 97.3 % |
+| 3.00 | 97.9 | 42.58 | 45% | 471 | 99.95% | 0.1% |
+| 3.25 | 97.8 | 11.58 | 42% | 40.9 | 99.33% | 0.7% |
+| 3.50 | 97.7 | 6.654 | 40% | 15.7 | 98.11% | 1.9% |
+| 4.00 | 97.6 | 2.241 | 25% | 2.32 | 87.23% | 14.7% |
+| 4.50 | 97.3 | 1.379 | 14% | 1.11 | 74.82% | 33.7% |
+| 5.00 | 96.8 | 1.072 | 12% | 0.83 | 66.78% | 49.8% |
+| 5.50 | 96.4 | 0.903 | 10% | 0.71 | 60.99% | 64.0% |
+| 6.00 | 96.4 | 0.794 | 9% | 0.66 | 56.58% | 76.8% |
+| 7.00 | 97.9 | 0.667 | 8% | 0.63 | 50.68% | 97.3% |
 
 Three columns deserve attention.
 
@@ -263,14 +263,14 @@ exactly as the theory says they should be. *Goodness of fit cannot be used to
 choose $a$.*
 
 **The reduced width becomes identified.** Its fractional error falls monotonically
-from 45 % to 8 %, and $\theta_d^2$ falls from 471 to below unity. The same data,
+from 45% to 8%, and $\theta_d^2$ falls from 471 to below unity. The same data,
 the same physics, a different coordinate — and a parameter that was invisible
 becomes measurable.
 
-**The headroom opens up.** From 0.1 % at 3 fm to 97 % at 7 fm. This column
+**The headroom opens up.** From 0.1% at 3 fm to 97% at 7 fm. This column
 predicts, quantitatively, how badly a width-space fit or sampler will misbehave:
-at 3.5 fm a proposal only 2 % away is already unrepresentable, while at 6 fm it
-takes a 77 % excursion.
+at 3.5 fm a proposal only 2% away is already unrepresentable, while at 6 fm it
+takes a 77% excursion.
 
 None of this makes $a$ a free parameter to be pushed as far as convenient. Too
 small, and a genuinely extended cluster state is mostly external — the pathology
@@ -332,20 +332,20 @@ fm, at the original $a_d = 3.5$ fm:
 | $D_d$ | 22.88 | 19.51 | × 0.85 |
 
 Both move by nearly an order of magnitude, but they move *together*, so the
-ceiling — which depends only on their ratio — shifts by just 15 %. The real gain
+ceiling — which depends only on their ratio — shifts by just 15%. The real gain
 appears on refitting: because $P_d$ is eight times larger, a far smaller
 $\gamma_d$ reproduces the same cross section, and the model leaves the saturated
 regime altogether:
 
 | configuration | $\chi^2$ | $\gamma_d$ | $\theta_d^2$ | $f_{\mathrm{ext}}$ | headroom |
 |---|---|---|---|---|---|
-| $a = (3.5, 4.0)$, pure Coulomb | 97.7 | 5.303 | 9.95 | 97.07 % | 3.0 % |
-| $a = (3.5, 4.0)$, with the potential | 96.5 | 0.478 | 0.08 | 66.79 % | 49.7 % |
-| $a = 5.0$ fm, pure Coulomb | 96.8 | 1.072 | 0.83 | 66.78 % | 49.8 % |
-| $a = 6.0$ fm, pure Coulomb | 96.4 | 0.794 | 0.66 | 56.58 % | 76.8 % |
+| $a = (3.5, 4.0)$, pure Coulomb | 97.7 | 5.303 | 9.95 | 97.07% | 3.0% |
+| $a = (3.5, 4.0)$, with the potential | 96.5 | 0.478 | 0.08 | 66.79% | 49.7% |
+| $a = 5.0$ fm, pure Coulomb | 96.8 | 1.072 | 0.83 | 66.78% | 49.8% |
+| $a = 6.0$ fm, pure Coulomb | 96.4 | 0.794 | 0.66 | 56.58% | 76.8% |
 
 The second and third rows are numerically indistinguishable: $N = 3.011$ against
-3.010, $f_{\mathrm{ext}} = 66.79$ % against 66.78 %. **Adding an attractive tail at
+3.010, $f_{\mathrm{ext}} = 66.79$ % against 66.78%. **Adding an attractive tail at
 3.5 fm does the same job as moving the surface to 5 fm**, and for the same reason —
 both get the description to where the state actually is.
 
@@ -366,8 +366,8 @@ checked afterwards either way.
 1. **Compute $f_{\mathrm{ext}} = 1 - 1/N$ before doing anything statistical.** It
    costs nothing — $N$ is already formed inside the width transformation — and it
    is the single number that predicts whether a fit is well conditioned. Above
-   roughly 90 %, the reduced width of that level is not a measurement. Below
-   roughly 70 %, the model is in good shape.
+   roughly 90%, the reduced width of that level is not a measurement. Below
+   roughly 70%, the model is in good shape.
 2. **Check $\theta_c^2$ as well.** A dimensionless reduced width far above unity is
    the same warning in different units.
 3. **Do not use $\chi^2$ to choose the channel radius.** It is flat against $a$ by

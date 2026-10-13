@@ -36,10 +36,10 @@ details: >-
   effective field theory, with the M1 amplitude to next-to-next-to-leading
   order and the E1 amplitude to N4LO; one counterterm is fixed by the cold
   neutron capture rate and another by deuteron photodisintegration data. The
-  stated accuracy is 1 % for centre-of-mass energies up to about 1 MeV.
+  stated accuracy is 1% for centre-of-mass energies up to about 1 MeV.
 status: well-known
 status_note: >-
-  Calculated to about 1 % at the energies of the Big Bang, with a theory tied
+  Calculated to about 1% at the energies of the Big Bang, with a theory tied
   to measurements of slow-neutron capture and of deuterons broken up by
   γ-rays.
 status_note_it: >-
@@ -47,7 +47,7 @@ status_note_it: >-
   una teoria vincolata dalle misure di cattura di neutroni lenti e di deutoni
   spezzati da raggi γ.
 status_plain: >-
-  Calculated to about 1 % at the energies of the Big Bang, with a theory
+  Calculated to about 1% at the energies of the Big Bang, with a theory
   checked against laboratory measurements.
 status_plain_it: >-
   Calcolata a circa l'1 % alle energie della nucleosintesi primordiale, con
@@ -61,7 +61,7 @@ measurements:
     note: >-
       Pionless effective field theory calculation with M1 to NNLO and E1 to
       N4LO, constrained by the cold-neutron capture rate and by deuteron
-      photodisintegration; 1 % accuracy over the BBN range.
+      photodisintegration; 1% accuracy over the BBN range.
     refs: [rupak2000]
 evaluations: [fields2020]
 open_questions: []

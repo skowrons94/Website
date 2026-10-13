@@ -146,7 +146,7 @@ The size of the effect is not marginal. For the ground-state transition, doublin
 the channel-capture contribution moves the cross section at
 $E_{\mathrm{c.m.}} \approx 4.9$ MeV from $2.61 \times 10^{-7}$ to
 $6.56 \times 10^{-7}$ barn — a factor 2.5 — and shifts the total-capture excitation
-function by up to 108 %. The dominant single term in that coherent sum has a
+function by up to 108%. The dominant single term in that coherent sum has a
 collision-matrix element of order $10^{-4}$ against an external normalization of
 about 14; it is the product that matters, and it is comparable to everything else
 combined.

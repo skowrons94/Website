@@ -42,7 +42,7 @@ details: >-
   extrapolated S(0). The LUNA campaign at the 400 kV accelerator used a
   windowless ³He gas target and measured both observables at the same time,
   down to 93 keV, with agreement between them; the activation results reached
-  a 4 % total uncertainty. Surface experiments at the Weizmann Institute,
+  a 4% total uncertainty. Surface experiments at the Weizmann Institute,
   Seattle and Notre Dame, and the ERNA recoil separator, then covered the
   energies from about 0.3 MeV upwards and constrained the energy dependence needed to extrapolate to the
   solar Gamow window. Above 1 MeV the ERNA data differ from earlier results in
@@ -77,7 +77,7 @@ measurements:
     energy_it: "127, 148 e 169 keV"
     note: >-
       Windowless gas target, high beam intensity and low-background γ counting
-      of the ⁷Be produced; cross sections with 4 % total uncertainty.
+      of the ⁷Be produced; cross sections with 4% total uncertainty.
     refs: [bemmerer2006]
   - year: 2007
     facility: luna-400
@@ -94,7 +94,7 @@ measurements:
     energy_it: "93, 106 e 170 keV"
     note: >-
       Prompt γ-rays and ⁷Be activity measured simultaneously; the two methods
-      agree, branching ratios between the two γ transitions measured to 5–8 %,
+      agree, branching ratios between the two γ transitions measured to 5–8%,
       extrapolated S(0) = 0.560 ± 0.017 keV b.
     refs: [confortola2007]
   - year: 2007

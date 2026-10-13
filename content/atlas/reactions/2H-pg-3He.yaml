@@ -40,24 +40,24 @@ role_it: >-
   idrogeno.
 details: >-
   Two energy ranges matter. The solar Gamow window lies at a few keV, where the
-  LUNA 50 kV accelerator measured the cross section with about 10 % accuracy
+  LUNA 50 kV accelerator measured the cross section with about 10% accuracy
   well below the solar Gamow peak. For Big Bang nucleosynthesis (BBN) the
   relevant centre-of-mass energies range from tens to a few hundred keV, where
   before 2020 the data had large uncertainties and an ab initio calculation
-  (Marcucci et al. 2016) predicted an S-factor about 10 % above the adopted
+  (Marcucci et al. 2016) predicted an S-factor about 10% above the adopted
   fits. The capture is dominated by E1 and M1 transitions to the ³He ground
   state; polarization observables measured at TUNL below 80 keV are sensitive
   to meson-exchange currents. The LUNA 400 kV measurement with a windowless
-  D₂ gas target and a HPGe detector reached a systematic uncertainty below 3 %
+  D₂ gas target and a HPGe detector reached a systematic uncertainty below 3%
   and settled the rate in the BBN range. With it the BBN-derived baryon density
-  has a 1.6 % uncertainty and agrees with the value from the cosmic microwave
+  has a 1.6% uncertainty and agrees with the value from the cosmic microwave
   background (CMB). Measurements at
   higher energy, with TiD targets, constrain the energy dependence above the
   BBN window.
 status: well-known
 status_note: >-
   Since the LUNA measurement of 2020 the rate at the energies of the Big Bang
-  is known to about 3 %. Small differences remain with theoretical
+  is known to about 3%. Small differences remain with theoretical
   calculations and with the data at higher energies.
 status_note_it: >-
   Dalla misura di LUNA del 2020 il tasso alle energie della nucleosintesi
@@ -73,7 +73,7 @@ measurements:
     energy_it: "sotto 80 keV"
     note: >-
       Cross sections, S-factors and analyzing powers with polarized and
-      unpolarized beams; the extracted S(0) was about 25 % below the value then
+      unpolarized beams; the extracted S(0) was about 25% below the value then
       used in astrophysics, and the vector analyzing power proved sensitive to
       meson-exchange currents.
     refs: [ma1997, schmid1997]
@@ -84,7 +84,7 @@ measurements:
     energy_it: "fino a 2,5 keV"
     note: >-
       Windowless gas target and segmented 4π BGO detector; first data inside and
-      below the solar Gamow peak, with about 10 % accuracy.
+      below the solar Gamow peak, with about 10% accuracy.
     refs: [casella2002]
   - year: 2016
     method: theory
@@ -92,7 +92,7 @@ measurements:
     energy_it: "intervallo della BBN"
     note: >-
       Ab initio calculation with the AV18 and Urbana IX interactions and
-      relativistic corrections to the one-body current; S-factor about 10 %
+      relativistic corrections to the one-body current; S-factor about 10%
       above the adopted fits.
     refs: [marcucci2016]
   - year: 2019
@@ -111,8 +111,8 @@ measurements:
     energy_it: "intervallo della BBN"
     note: >-
       High-purity D₂ gas target, intense proton beam and a HPGe detector, after a
-      commissioning campaign that brought the systematic uncertainty below 3 %.
-      The new rate gives the baryon density to 1.6 %, in agreement with the CMB.
+      commissioning campaign that brought the systematic uncertainty below 3%.
+      The new rate gives the baryon density to 1.6%, in agreement with the CMB.
     refs: [mossa2020b, mossa2020]
   - year: 2021
     facility: hzdr

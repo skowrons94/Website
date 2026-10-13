@@ -43,7 +43,7 @@ details: >-
 status: improving
 status_note: >-
   The two key resonances were measured directly at LUNA, which limits the rate
-  uncertainty at 0.07 GK to −35 %/+50 %; the strength of the lowest resonance is
+  uncertainty at 0.07 GK to −35%/+50%; the strength of the lowest resonance is
   still in tension between direct and transfer data.
 status_note_it: >-
   Le due risonanze chiave sono state misurate direttamente a LUNA, il che limita
@@ -66,7 +66,7 @@ measurements:
     energy_it: "risonanza a E_cm = 138 keV"
     note: >-
       Search for the 138 keV resonance with the 200 kV accelerator and its ECR ion
-      source; only an upper limit on the strength could be set, 5.17 neV at 95 %
+      source; only an upper limit on the strength could be set, 5.17 neV at 95%
       confidence.
     refs: [cesaratto2013]
   - year: 2019
@@ -77,7 +77,7 @@ measurements:
     note: >-
       First direct observation of the 140 keV resonance (4π BGO), ωγ = 1.46
       (+0.58/−0.53) neV, and the 251 keV resonance (HPGe), ωγ = 482(82) μeV. The
-      rate uncertainty at 0.07 GK is reduced to at most −35 %/+50 %.
+      rate uncertainty at 0.07 GK is reduced to at most −35%/+50%.
     refs: [boeltzig2019]
   - year: 2022
     facility: notre-dame
