@@ -13,12 +13,12 @@
 # Beam Facility (BIBF)".
 
 lead: >-
-  WebDAQ runs the data acquisition of the LUNA experiment from a web browser.
-  It configures the CAEN digitizers, tunes them against a live spectrum, takes
+  WebDAQ is the browser-based data acquisition developed for LUNA. It
+  configures the CAEN digitizers, tunes them against a live spectrum, takes
   the runs, watches the rates and the beam, and keeps with every run a record
   meant to outlive the shift.
 lead_it: >-
-  WebDAQ gestisce l'acquisizione dati dell'esperimento LUNA da un browser.
+  WebDAQ è il sistema di acquisizione dati via browser sviluppato per LUNA.
   Configura i digitizzatori CAEN, li regola guardando uno spettro in tempo
   reale, avvia i run, sorveglia i rate e il fascio, e accompagna ogni run con
   una documentazione pensata per durare più del turno.
@@ -208,7 +208,7 @@ capabilities:
       name_it: Acquisizione
       text: >-
         One .caendat file per run for all the boards together, with the boards
-        started in step by their own synchronised start.
+        started in step by their own synchronized start.
       text_it: >-
         Un solo file .caendat per run per tutte le schede insieme, avviate in
         sincronia dal loro stesso meccanismo di partenza.
@@ -325,7 +325,7 @@ shift:
     The demo's guided tour walks through the same steps.
   intro_it: >-
     In breve, dal capitolo "una sessione completa" della documentazione di
-    WebDAQ. Il tour guidato della demo percorre gli stessi passi.
+    WebDAQ. La visita guidata della demo percorre gli stessi passi.
   steps:
     - lead: Open the experiment.
       text: >-
@@ -408,7 +408,7 @@ fair:
     (findable, accessible, interoperable, reusable). Per un esperimento tutto
     comincia dall'acquisizione: ciò che non viene annotato mentre il run è in
     corso è difficile da ricostruire dopo. WebDAQ è progettato perché ogni run
-    lasci una documentazione pronta per il FAIR, che ruota attorno al suo
+    lasci una documentazione predisposta per i principi FAIR, che ruota attorno al suo
     metadata.json. Ecco su cosa poggia oggi ciascuna lettera, nel codice, e
     quali sono i prossimi passi.
   rows:
@@ -444,7 +444,7 @@ fair:
           Il registro cerca i run per numero, bersaglio, note e tensioni, li
           filtra per tipo e valutazione ed esporta la selezione in CSV.
       later_it:
-        - Un identificativo persistente (DOI o simile) per ogni run o insieme di dati, oltre al numero di run della cartella di lavoro.
+        - Un identificativo persistente (DOI o simile) per ogni run o serie di dati, oltre al numero di run della cartella di lavoro.
         - La voce ELOG del run registrata nei suoi metadati.
     - letter: A
       name: Accessible
@@ -474,7 +474,7 @@ fair:
           Tutto ciò che l'interfaccia mostra viene dall'API HTTP del server, con
           accesso autenticato, che può usare anche uno script.
       later_it:
-        - Il deposito degli insiemi di dati pubblicati in un archivio a lungo termine, con le loro condizioni di accesso.
+        - Il deposito delle serie di dati pubblicate in un archivio a lungo termine, con le loro condizioni di accesso.
     - letter: I
       name: Interoperable
       name_it: Interoperabili
@@ -505,7 +505,7 @@ fair:
           manuali CAEN; stats.csv dà a ogni colonna nome, unità e provenienza.
       later_it:
         - I metadati del run riportati anche nel file ROOT convertito; oggi RUReader prende solo ciò che contiene l'intestazione del .caendat.
-        - Uno JSON Schema pubblicato per metadata.json.
+        - Uno schema JSON pubblicato per metadata.json.
     - letter: R
       name: Reusable
       name_it: Riutilizzabili
@@ -586,7 +586,7 @@ demo:
     The real WebDAQ interface, built from its code and connected to a simulated
     acquisition that runs in your browser. Choose the detectors: germanium
     (HPGe) for resolution, BGO scintillators for efficiency, or neutron
-    detectors, liquid scintillators like EJ-309 that tell neutrons from γ rays
+    detectors, liquid scintillators like EJ-309 that tell neutrons from γ-rays
     by the shape of the pulse. Then pick a source, tune a channel while the run
     goes, mark a peak, and download the files a real run would leave,
     metadata.json included.
@@ -606,12 +606,12 @@ demo:
     funziona, ma le sue tabelle scorrono di lato.
 
 outlook: >-
-  Keeping data alive starts with recording them well. I keep developing the
-  LUNA data acquisition with that aim, and the demo is kept in step with WebDAQ
+  Keeping data alive starts with recording them well. I keep developing
+  WebDAQ with that aim, and the demo is kept in step with WebDAQ
   by a test that checks every call the interface makes against the simulation.
 outlook_it: >-
   Tenere vivi i dati comincia dal registrarli bene. È con questo obiettivo che
-  continuo a sviluppare l'acquisizione dati di LUNA, e la demo resta allineata
+  continuo a sviluppare WebDAQ, e la demo resta allineata
   a WebDAQ grazie a un test che confronta ogni chiamata dell'interfaccia con la
   simulazione.
 

@@ -82,8 +82,8 @@ software:
         shift's logbook entry. The acquisition itself runs in process, through
         the C++ library CaenDAQ, so closing the browser never stops a run.
       - >-
-        It is the data acquisition of the LUNA experiment, and what lets its
-        shifts be taken remotely. Every run leaves its data beside a
+        It is the browser-based data acquisition developed for LUNA, and it
+        lets shifts be taken remotely. Every run leaves its data beside a
         FAIR-ready metadata.json, the board configuration, the beam current and
         the monitored values. I wrote it with A. Compagnucci and R. Gesue.
     summary_it:
@@ -95,8 +95,8 @@ software:
         processo del server, tramite la libreria C++ CaenDAQ, quindi chiudere
         il browser non ferma mai un run.
       - >-
-        È l'acquisizione dati dell'esperimento LUNA, ed è ciò che permette di
-        fare i turni da remoto. Ogni run lascia i suoi dati accanto a un
+        È il sistema di acquisizione dati via browser sviluppato per LUNA, e
+        permette di fare i turni da remoto. Ogni run lascia i suoi dati accanto a un
         metadata.json pronto per il FAIR, alla configurazione delle schede,
         alla corrente del fascio e ai valori monitorati. L'ho scritto con
         A. Compagnucci e R. Gesue.
