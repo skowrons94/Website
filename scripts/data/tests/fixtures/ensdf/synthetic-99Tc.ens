@@ -1,0 +1,16 @@
+ 99TC    ADOPTED LEVELS, GAMMAS        2026TE01                  26NDS    202601
+ 99TC  H TYP=FUL$AUT=A. Tester$CIT=NDS 999, 1 (2026)$
+ 99TC2 H CUT=1-Jan-2026$
+ 99TC  Q -1234     5 7000.5  3 6500    10-2000   20    2026WA01
+ 99TC cL SYNTHETIC TEST FIXTURE: these values are invented.
+ 99TC  G 50.0      5 10      LT
+ 99TC  L 0.0         9/2+              2.1E5 Y   3
+ 99TC  L 140.5     2 (5/2,7/2)+        6.0 H
+ 99TC2 L ISPIN=1/2$%IT=100
+ 99TC  G 140.5     2 100       M1+E2     -0.10   +5-3
+ 99TC  L 1234.5    3 3/2-,T=1/2        2.6 KEV   +3-2
+ 99TC  G 1094.0    3 40      4 E1
+ 99TC  G 1234.4    3 60      6 [E1]                                            ?
+ 99TC  L X
+ 99TC  L 1000+X      (1)               1.5 PS    LT
+
