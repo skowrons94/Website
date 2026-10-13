@@ -1304,6 +1304,11 @@ const en = {
     citeTitle: "How to cite this atlas",
     citeVersion: "version",
     citeAccessed: "Cite the version you used; the date is the last change to the content.",
+    citePageTitle: "How to cite this page",
+    citeIn: "in",
+    citePageNote: "Cite the date you used; it is the last change to this page.",
+    bibtex: "BibTeX",
+    bibtexHint: (n: number) => `this page and its ${n} ${n === 1 ? "reference" : "references"}`,
     licence: (name: string) =>
       `The text and the data, including data.json, are released under the ${name} licence: you may reuse them, with credit.`,
     licenceLink: "Licence",
@@ -1982,6 +1987,11 @@ const it: Dictionary = {
     citeTitle: "Come citare questo atlante",
     citeVersion: "versione",
     citeAccessed: "Cita la versione che hai usato; la data è quella dell'ultima modifica dei contenuti.",
+    citePageTitle: "Come citare questa pagina",
+    citeIn: "in",
+    citePageNote: "Cita la data che hai usato: è quella dell'ultima modifica di questa pagina.",
+    bibtex: "BibTeX",
+    bibtexHint: (n: number) => `questa pagina e ${n === 1 ? "il suo riferimento" : `i suoi ${n} riferimenti`}`,
     licence: (name: string) =>
       `I testi e i dati, compreso data.json, sono distribuiti con licenza ${name}: puoi riutilizzarli citando la fonte.`,
     licenceLink: "Licenza",

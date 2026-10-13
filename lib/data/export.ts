@@ -524,7 +524,20 @@ export function csvLong(datasets: FullDataset[]): string {
   return out
 }
 
-const bibEscape = (x: string) => x.replace(/\{/g, "\\{").replace(/\}/g, "\\}").replace(/&/g, "\\&")
+export const bibEscape = (x: string) => x.replace(/\{/g, "\\{").replace(/\}/g, "\\}").replace(/&/g, "\\&")
+
+/**
+ * One BibTeX entry: `@kind{key,\n  field = {value},\n…}`. Empty values are
+ * left out; values are escaped, except a `{ raw }` one, written as given (the
+ * atlas uses it for a collaboration's name in braces).
+ */
+export function bibEntry(kind: string, key: string, fields: Iterable<[string, unknown]>): string {
+  const body = [...fields]
+    .filter(([, x]) => x)
+    .map(([k, x]) => `  ${k} = {${typeof x === "object" && x !== null && "raw" in x ? String((x as { raw: string }).raw) : bibEscape(s(x))}}`)
+    .join(",\n")
+  return `@${kind}{${key},\n${body}\n}`
+}
 
 /** One BibTeX entry per EXFOR entry, the dataset ids in `note` (export.bibtex). */
 export function bibtex(datasets: FullDataset[], journals: Record<string, string>): string {
@@ -558,11 +571,7 @@ export function bibtex(datasets: FullDataset[], journals: Record<string, string>
     if (m.doi) fields.set("doi", m.doi)
     fields.set("note", `EXFOR ${v.ids.join(", ")} (${m.links.exfor})`)
     const cite = m.first_author.replace(/[^A-Za-z]/g, "") + s(m.year || "") + "_" + key
-    const body = [...fields.entries()]
-      .filter(([, x]) => x)
-      .map(([k, x]) => `  ${k} = {${bibEscape(s(x))}}`)
-      .join(",\n")
-    out.push(`@${kind}{${cite},\n${body}\n}`)
+    out.push(bibEntry(kind, cite, fields))
   }
   return out.join("\n\n") + "\n"
 }

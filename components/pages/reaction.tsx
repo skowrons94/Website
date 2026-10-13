@@ -9,6 +9,10 @@ import { notFound } from "next/navigation"
 import { ArrowLeft, ArrowRight, ChevronDown, SlidersHorizontal } from "lucide-react"
 
 import { Cite, ReferenceList } from "@/components/atlas/reference-list"
+import { BibtexDownload } from "@/components/atlas/bibtex-download"
+import { SiteUrl } from "@/components/atlas/site-url"
+import { SiteDoiLine } from "@/components/site-doi"
+import { pageBib } from "@/lib/atlas-bibtex"
 import { ReportLinks } from "@/components/report-links"
 import { LunaBadge, StatusBadge } from "@/components/atlas/status-badge"
 import { linkTerms } from "@/components/atlas/linked-text"
@@ -424,6 +428,19 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
   const related = r.related.map((rid) => getReaction(rid, lang)).filter((x): x is Reaction => Boolean(x))
   const methods = r.methods.map((mid) => getMethod(mid, lang) ?? { id: mid, name: mid })
   const order = r.references
+  // The citation box: the page's last change, else the atlas version.
+  const citeDate = r.updated ?? atlas.meta.version ?? ""
+  const bib = pageBib(
+    {
+      key: `skowronski-atlas-${r.id}`,
+      author: atlas.meta.author,
+      title: r.label,
+      container: atlas.meta.title,
+      version: citeDate || undefined,
+    },
+    order,
+    atlas.references,
+  )
   const years = r.measurements.map((m) => m.year).filter((y): y is number => y !== null).sort((a, b) => a - b)
   const yearSpan = years.length === 0 ? "" : years[0] === years[years.length - 1] ? String(years[0]) : `${years[0]}–${years[years.length - 1]}`
   // --- data expert --- the EXFOR measurements of this reaction (build time, from the index)
@@ -440,6 +457,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
     r.evaluations.length > 0 ? { id: "evaluations", label: t.evaluationsTitle } : null,
     r.openQuestions.length > 0 || debates.length > 0 ? { id: "open-questions", label: t.openQuestions } : null,
     order.length > 0 ? { id: "references", label: t.references } : null,
+    { id: "cite", label: t.citePageTitle },
   ].filter((x): x is { id: string; label: string } => x !== null)
   // Glossary links in the running text, once each, in reading order.
   const seen = new Set<string>()
@@ -941,6 +959,27 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
               <ReferenceList keys={order} references={atlas.references} lang={lang} />
             </section>
           )}
+
+          {/* -- how to cite this page (About promises one on every page) --- */}
+          <section id="cite" className="mt-12 scroll-mt-24 rounded-lg border border-border p-4 sm:p-6" aria-labelledby="cite-heading">
+            <h2 id="cite-heading" className="font-serif text-lg font-semibold tracking-tight">
+              {t.citePageTitle}
+            </h2>
+            <p className="mt-3 break-words rounded-md bg-secondary/60 px-4 py-3 font-mono text-[0.8125rem] leading-relaxed">
+              {atlas.meta.author}, <i><Sci>{r.label}</Sci></i>, {t.citeIn} <i>{atlas.meta.title}</i>
+              {citeDate && `, ${citeDate}`}, <SiteUrl path={`/atlas/${r.id}`} lang={lang} />.
+            </p>
+            <p className="mt-2 text-xs text-muted-foreground">{t.citePageNote}</p>
+            <SiteDoiLine lang={lang} />
+            <BibtexDownload
+              text={bib}
+              filename={`${r.id}.bib`}
+              path={`/atlas/${r.id}`}
+              lang={lang}
+              label={t.bibtex}
+              hint={t.bibtexHint(order.filter((k) => atlas.references[k]).length)}
+            />
+          </section>
 
           {/* --- r11 site --- */}
           <ReportLinks
