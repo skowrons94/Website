@@ -66,3 +66,6 @@ public/search/
 # Written by scripts/sitemap.mjs after every server build (npm's postbuild).
 /public/sitemap.xml
 /public/robots.txt
+# The proposal written by npm run pubs:check (scripts/pubs/), for review.
+/pubs-proposal.md
+/pubs-proposal.json

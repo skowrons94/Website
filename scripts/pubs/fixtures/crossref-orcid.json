@@ -1,0 +1,45 @@
+{
+  "_fixture": "Synthetic answer in the shape of the Crossref REST API GET /works?filter=orcid:{orcid} (message-type work-list), written by hand for scripts/pubs/test.mjs. 10.5555 is Crossref's test prefix; the year of 10.1103/PhysRevC.111.035802 is deliberately wrong.",
+  "status": "ok",
+  "message-type": "work-list",
+  "message-version": "1.0.0",
+  "message": {
+    "total-results": 3,
+    "items": [
+      {
+        "DOI": "10.1103/PhysRevLett.131.162701",
+        "type": "journal-article",
+        "title": ["Proton-Capture Rates on Carbon Isotopes and Their Impact on the Astrophysical <mml:math xmlns:mml=\"http://www.w3.org/1998/Math/MathML\"><mml:msup><mml:mrow /><mml:mn>12</mml:mn></mml:msup></mml:math>C/<sup>13</sup>C Ratio"],
+        "container-title": ["Physical Review Letters"],
+        "short-container-title": ["Phys. Rev. Lett."],
+        "volume": "131", "issue": "16", "article-number": "162701",
+        "issued": { "date-parts": [[2023, 10, 16]] },
+        "author": [ { "given": "J.", "family": "Skowronski", "ORCID": "https://orcid.org/0000-0001-7292-6353", "sequence": "first" } ]
+      },
+      {
+        "DOI": "10.1103/PhysRevC.111.035802",
+        "type": "journal-article",
+        "title": ["A comparative analysis of R-matrix fitting: <sup>12</sup>C(p,γ)<sup>13</sup>N as test case"],
+        "container-title": ["Physical Review C"],
+        "short-container-title": ["Phys. Rev. C"],
+        "volume": "111", "issue": "3", "article-number": "035802",
+        "issued": { "date-parts": [[2024, 12, 30]] },
+        "author": [ { "given": "J.", "family": "Skowronski", "ORCID": "https://orcid.org/0000-0001-7292-6353", "sequence": "first" } ]
+      },
+      {
+        "DOI": "10.5555/test.7be",
+        "type": "journal-article",
+        "title": ["Complete <sup>7</sup>Be evaluation"],
+        "container-title": ["Physical Review C"],
+        "short-container-title": ["Phys. Rev. C"],
+        "volume": "999", "article-number": "015801",
+        "issued": { "date-parts": [[2026, 9, 1]] },
+        "author": [
+          { "given": "J.", "family": "Skowronski", "ORCID": "https://orcid.org/0000-0001-7292-6353", "sequence": "first" },
+          { "given": "R. J.", "family": "deBoer", "sequence": "additional" },
+          { "given": "T.", "family": "Szücs", "sequence": "additional" }
+        ]
+      }
+    ]
+  }
+}

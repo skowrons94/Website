@@ -16,6 +16,8 @@
     "test:search": "node scripts/search-index.mjs && node scripts/search-test.mjs",
     "test:rates": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/rates/test.mjs",
     "test:seo": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --disable-warning=ExperimentalWarning scripts/seo-test.mjs",
+    "test:pubs": "node scripts/pubs/test.mjs",
+    "pubs:check": "node scripts/pubs/check.mjs",
     "rates:baseline": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/rates/baseline.mjs",
     "test:data": "python3 -m pytest -q scripts/data/tests",
     "data": "make data"

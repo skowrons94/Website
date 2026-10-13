@@ -1,0 +1,36 @@
+# Test input for scripts/pubs/test.mjs: a few entries of content/publications.yaml
+# as they stood on 2026-10-13, so the test does not change when the real file does.
+publications:
+  - kind: article
+    authors: J. Skowronski, R. J. deBoer, T. Szücs
+    title: Complete ⁷Be evaluation
+    status: submitted to Physical Review C
+    year: 2026
+
+  - kind: article
+    authors: L. Barbieri, et al.
+    title: A new detection array for underground charged particle spectroscopy at LUNA-400
+    journal: Nucl. Instrum. Methods Phys. Res. A 1092, 171767
+    doi: 10.1016/j.nima.2026.171767
+    year: 2026
+
+  - kind: article
+    authors: J. Skowronski, et al.
+    title: "A comparative analysis of R-matrix fitting: ¹²C(p,γ)¹³N as test case"
+    journal: Phys. Rev. C 111, 035802
+    doi: 10.1103/PhysRevC.111.035802
+    year: 2025
+
+  - kind: article
+    authors: J. Skowronski, et al.
+    title: Proton-capture rates on carbon isotopes and their impact on the astrophysical ¹²C/¹³C ratio
+    journal: Phys. Rev. Lett. 131, 162701
+    doi: 10.1103/PhysRevLett.131.162701
+    year: 2023
+
+  - kind: article
+    authors: J. Skowronski, et al.
+    title: Improved S-factor of the ¹²C(p,γ)¹³N reaction at E = 320–620 keV and the 422 keV resonance
+    journal: Phys. Rev. C 107, L062801
+    doi: 10.1103/PhysRevC.107.L062801
+    year: 2023

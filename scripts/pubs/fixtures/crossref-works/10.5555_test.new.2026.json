@@ -1,0 +1,18 @@
+{
+  "_fixture": "Synthetic answer in the shape of the Crossref REST API GET /works/{doi} (message-type work), for scripts/pubs/test.mjs. 10.5555 is Crossref's test prefix.",
+  "status": "ok",
+  "message-type": "work",
+  "message": {
+    "DOI": "10.5555/test.new.2026",
+    "type": "journal-article",
+    "title": ["A fixture paper that publications.yaml does not have"],
+    "container-title": ["Journal of Test Fixtures"],
+    "short-container-title": ["J. Test Fixt."],
+    "volume": "12", "page": "100-110",
+    "issued": { "date-parts": [[2026, 3]] },
+    "author": [
+      { "given": "Anna", "family": "Rossi" }, { "given": "Jakub", "family": "Skowronski", "ORCID": "http://orcid.org/0000-0001-7292-6353" },
+      { "given": "Marco", "family": "Bianchi" }, { "given": "Luca", "family": "Verdi" }, { "given": "Sara", "family": "Neri" }, { "given": "Paolo", "family": "Gialli" }
+    ]
+  }
+}
