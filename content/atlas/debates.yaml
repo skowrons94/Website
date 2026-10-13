@@ -486,24 +486,24 @@ questions:
       The oldest stars known contain a little calcium. One proposed source is
       a massive first-generation star whose hydrogen burning leaks out of the
       CNO cycle into neon and beyond. The leak goes through fluorine-19
-      capturing a proton, and it works only if that capture is fast enough
-      compared with its competitor, which sends the material back into the
-      cycle.
+      capturing a proton. It works only if that capture is fast enough
+      compared with a competing reaction, which sends the material back into
+      the cycle.
     summary_it: >-
       Le stelle più antiche che si conoscano contengono un po' di calcio. Una
       delle origini proposte è una stella massiccia della prima generazione,
       la cui combustione dell'idrogeno sfugge dal ciclo CNO verso il neon e
       oltre. La fuga passa per la cattura di un protone da parte del
-      fluoro-19, e funziona solo se questa cattura è abbastanza veloce
-      rispetto alla concorrente, che riporta la materia nel ciclo.
+      fluoro-19. Funziona solo se questa cattura è abbastanza veloce rispetto
+      alla reazione concorrente, che riporta la materia nel ciclo.
     positions:
       - who: Direct underground measurement
         who_it: Misura diretta sotterranea
         text: >-
           JUNA measured ¹⁹F(p,γ)²⁰Ne down to 186 keV and found a resonance at
           225 keV that raises the rate near 0.1 GK by up to a factor of 7.4;
-          with it, stellar models give a breakout strong enough to be a
-          possible source of the calcium (Zhang et al. 2022).
+          with it, stellar models give a leak strong enough to be a possible
+          source of the calcium (Zhang et al. 2022).
         text_it: >-
           JUNA ha misurato la ¹⁹F(p,γ)²⁰Ne fino a 186 keV e ha trovato una
           risonanza a 225 keV che aumenta il tasso vicino a 0,1 GK fino a un
@@ -514,42 +514,40 @@ questions:
       - who: R-matrix evaluation
         who_it: Valutazione R-matrix
         text: >-
-          A combined fit of the (p,γ), (p,α) and (p,p) data found the (p,γ)
-          rate uncertainty considerably larger than reported, from unresolved
-          interferences, possible threshold and subthreshold states and direct
-          capture, and concluded that more experiments are needed before the
-          calcium question can be answered (deBoer et al. 2021, before the JUNA
-          result).
+          Before the JUNA result, a combined fit of the (p,γ), (p,α) and (p,p)
+          data found the (p,γ) rate uncertainty considerably larger than
+          previously reported. It traced this to unresolved interferences,
+          possible threshold and subthreshold states and direct capture, and
+          concluded that more experiments are needed to answer the calcium
+          question (deBoer et al. 2021).
         text_it: >-
-          Un fit congiunto dei dati (p,γ), (p,α) e (p,p) ha trovato
-          un'incertezza sul tasso (p,γ) molto più grande di quella riportata,
-          dovuta a interferenze non risolte, a possibili stati di soglia e sotto
-          soglia e alla cattura diretta, e ha concluso che servono altri
-          esperimenti per rispondere alla questione del calcio (deBoer et al.
-          2021, prima del risultato di JUNA).
+          Prima del risultato di JUNA, un fit congiunto dei dati (p,γ), (p,α) e
+          (p,p) ha trovato un'incertezza sul tasso (p,γ) molto più grande di
+          quella riportata in precedenza. La causa sono interferenze non
+          risolte, possibili stati di soglia e sotto soglia e la cattura
+          diretta; servono altri esperimenti per rispondere alla questione del
+          calcio (deBoer et al. 2021).
         refs: [deboer2021]
       - who: Nuclear theory
         who_it: Teoria nucleare
         text: >-
           A Gamow shell model calculation in the coupled-channel representation
-          gives a rate near 0.1 GK close to the JUNA one (Dong et al. 2024,
+          gives, near 0.1 GK, a rate close to the JUNA one (Dong et al. 2024,
           preprint).
         text_it: >-
           Un calcolo con il modello a gusci di Gamow nella rappresentazione a
-          canali accoppiati dà un tasso vicino a 0,1 GK prossimo a quello di
+          canali accoppiati dà, a circa 0,1 GK, un tasso simile a quello di
           JUNA (Dong et al. 2024, preprint).
         refs: [dong2024]
     settle: >-
-      Independent direct measurements of the 213 and 225 keV resonances and
-      of the γ branchings, such as the campaign at the LUNA 400 kV
-      accelerator, together with the competing ¹⁹F(p,α)¹⁶O rate at the same
-      temperatures.
+      Independent direct measurements of the low-energy resonances and of
+      their γ branchings, together with the competing ¹⁹F(p,α)¹⁶O rate at the
+      same temperatures.
     settle_it: >-
-      Misure dirette indipendenti delle risonanze a 213 e 225 keV e dei
-      rapporti di diramazione γ, come la campagna all'acceleratore da 400 kV di
-      LUNA, insieme al tasso della concorrente ¹⁹F(p,α)¹⁶O alle stesse
-      temperature.
-    refs: [couture2008, skowronski2025inpc]
+      Misure dirette indipendenti delle risonanze a bassa energia e dei loro
+      rapporti di diramazione γ, insieme al tasso della concorrente
+      ¹⁹F(p,α)¹⁶O alle stesse temperature.
+    refs: [couture2008]
 
   - id: electron-screening
     title: Why do electrons screen more in the laboratory than theory allows?

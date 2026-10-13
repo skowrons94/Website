@@ -126,7 +126,8 @@ measurements:
   - year: 2024
     facility: luna-400
     method: direct-underground
-    energy: "30–280 keV"
+    energy: "energies from 30 to 280 keV"
+    energy_it: "energie da 30 a 280 keV"
     note: >-
       Angular distribution of the capture γ-rays inferred from the shape of
       the γ spectrum of a single HPGe detector facing an extended D₂ gas

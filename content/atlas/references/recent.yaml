@@ -277,7 +277,7 @@ rapagnani2025:
   year: 2025
   doi: 10.1103/PhysRevC.111.025805
   luna: true
-  checked: University of Edinburgh Research Explorer, Genova and Padova IRIS records, by web search (Phys. Rev. C 111, issue 2, 2025; R-matrix fits with Monte Carlo uncertainties for ¹⁷O(p,γ)¹⁸F and ¹⁷O(p,α)¹⁴N; below about 100 MK the median rates are up to a factor of 2 above the rate libraries used in stellar models; ¹⁷O is destroyed mainly by (p,α), whose rate is known within ±20% at 95% C.L.); first author, article number and DOI from content/publications.yaml, not shown by a search record, 2026-10-13
+  checked: University of Edinburgh Research Explorer, Genova and Padova IRIS records, by web search (Phys. Rev. C 111, issue 2, 2025; R-matrix fits with Monte Carlo uncertainties for ¹⁷O(p,γ)¹⁸F and ¹⁷O(p,α)¹⁴N; below about 100 MK the median rates are up to a factor of 2 above the rate libraries used in stellar models; ¹⁷O is destroyed mainly by (p,α), whose rate is known within ±20% at 95% C.L.); article number and DOI from content/publications.yaml; first author D. Rapagnani (then Straniero, Imbriani, Aliotta) confirmed by the INSPIRE record 2893094 in the lit2 fact-check, 2026-10-13
 
 skowronski2025b:
   authors: J. Skowronski et al. (LUNA Collaboration)
@@ -313,7 +313,7 @@ wang2023:
   journal: Phys. Rev. Lett. 130, 092701 (2023)
   year: 2023
   doi: 10.1103/PhysRevLett.130.092701
-  checked: APS abstract page, JINA Virtual Journal listing and NSR entry 2023WA05, by web search (E_α = 470–787 keV; key resonance at E_α = 474.0 ± 1.1 keV, measured this precisely for the first time; J^π = 1⁻ from the primary γ branchings, removing the discrepancies between earlier strengths; rate up to about 10 times more precise at 0.1–0.3 GK), 2026-10-13
+  checked: APS abstract page, JINA Virtual Journal listing and NSR entry 2023WA05, by web search (E_α = 470–787 keV; key resonance at E_α = 474.0 ± 1.1 keV, measured this precisely for the first time; Jπ = 1⁻ from the primary γ branchings, removing the discrepancies between earlier strengths; rate up to about 10 times more precise at 0.1–0.3 GK), 2026-10-13
 
 kajino2023:
   authors: T. Kajino
@@ -322,7 +322,7 @@ kajino2023:
   year: 2023
   doi: 10.1007/s41365-023-01196-1
   arxiv: "2306.00572"
-  checked: arXiv 2306.00572 and the JINA Virtual Journal listing of 2 June 2023, by web search (summarizes Wang et al. 2023, E_lab = 474.0 ± 1.1 keV, J^π = 1⁻ and ωγ = 0.25 ± 0.03 µeV for the resonance that dominates the rate); DOI from the Springer link in the same results; volume and article number not seen, 2026-10-13
+  checked: arXiv 2306.00572 and the JINA Virtual Journal listing of 2 June 2023, by web search (summarizes Wang et al. 2023, E_lab = 474.0 ± 1.1 keV, Jπ = 1⁻ and ωγ = 0.25 ± 0.03 µeV for the resonance that dominates the rate; the strength is not in the PRL abstract, so the site attributes it to this review); DOI from the Springer link in the same results; volume and article number not seen, 2026-10-13
 
 li2026:
   authors: C. Li, H. Jia, Q. Wen, C. Lin et al.
@@ -330,7 +330,7 @@ li2026:
   journal: Phys. Lett. B 879, 140675 (2026)
   year: 2026
   arxiv: "2609.08819"
-  checked: arXiv 2609.08819 (journal reference given there), by web search (HI-13 tandem, CIAE; ¹⁶O as the Trojan horse nucleus; spectator α detected near 0° for the first time in a THM experiment; DWBA analysis; resonances near 1.5 MeV in the α₀ and α₁ channels); DOI not seen, 2026-10-13
+  checked: arXiv 2609.08819 (journal reference given there), by web search (HI-13 tandem, CIAE; ¹⁶O as the Trojan horse nucleus; spectator α detected near 0°, described by the authors as a first in a THM experiment; S*(E) extracted with a DWBA-based analysis, as the authors describe it; resonances near 1.5 MeV in the α₀ and α₁ channels); DOI not seen, 2026-10-13
 
 li2026b:
   authors: C. Li, H. Jia et al.
@@ -371,7 +371,7 @@ balibreacorrea2026:
   year: 2026
   doi: 10.1103/538w-rhqb
   arxiv: "2603.17646"
-  checked: APS abstract page, arXiv 2603.17646, the CERN and CERN EP newsletter news items and phys.org, by web search (published 18 August 2026; first measurement of the capture cross section of the radioactive branching point ⁹⁴Nb; (1167 ± 93) mb at 5 keV, about 26% above theoretical estimates, and up to 13% lower at higher energies; presolar SiC grains show an excess of ⁹⁴Mo that models fail to reproduce), 2026-10-13
+  checked: APS abstract page, arXiv 2603.17646, the CERN and CERN EP newsletter news items and phys.org, by web search (published 18 August 2026; first measurement of the capture cross section of the radioactive branching point ⁹⁴Nb, where capture competes with β decay; presolar SiC grains show an excess of ⁹⁴Mo that models failed to reproduce; with the new Maxwellian-averaged cross section, fully coupled models of low-mass AGB stars agree with the grain data); CERN EP News calls the result an experimental validation of the general scale of earlier theoretical estimates (per the lit2 fact-check); no cross-section value is quoted on the site because none could be confirmed by search, 2026-10-13
 
 deboer2021:
   authors: R. J. deBoer et al.
@@ -388,14 +388,6 @@ dong2024:
   arxiv: "2411.17243"
   checked: arXiv 2411.17243 abstract, November 2024, by web search (Gamow shell model in the coupled-channel representation; near 0.1 GK the predicted rate is close to the JUNA rate); no journal reference seen, 2026-10-13
 
-skowronski2025inpc:
-  authors: J. Skowronski (LUNA Collaboration)
-  title: Preliminary study of the ¹⁹F(p,γ)²⁰Ne at LUNA
-  journal: Conference talk, INPC 2025, Daejeon, 25–30 May 2025
-  year: 2025
-  url: https://indico.ibs.re.kr/event/701/contributions/6640/
-  luna: true
-  checked: Indico contribution page and abstract, and a 2025 Padova conference abstract by R. Biasissi, by web search (LUNA 400 kV accelerator; E_cm = 190–390 keV, covering the resonances at 213, 225 and 323 keV; several fluorine targets, among them a new chemically fluorinated one; nearly 4π BGO array; preliminary results only), 2026-10-13
 
 # --- History -------------------------------------------------------------------
 
@@ -404,15 +396,15 @@ konopinski1946:
   title: Ignition of the atmosphere with nuclear bombs
   journal: Los Alamos report LA-602 (1946)
   year: 1946
-  checked: Physics Today article of Wiescher and Langanke (2024) and the report's citations in the IF PAN seminar listing and Wikipedia, by web search (fusion of two ¹⁴N nuclei treated as the key reaction; radiation losses always exceed the nuclear energy gained, so no self-propagating burn); declassification year given as 1973 or 1979 by different sources, so not quoted, 2026-10-13
+  checked: Physics Today article of Wiescher and Langanke (2024) and the report's citations in the IF PAN seminar listing and Wikipedia, by web search (fusion of two ¹⁴N nuclei treated as the key reaction; radiation losses always exceed the nuclear energy gained under the report's assumptions, so no self-propagating burn is likely; the report still called further work highly desirable, per the NSF PAR copy of the Physics Today article); declassification year given as 1973 or 1979 by different sources, so not quoted, 2026-10-13
 
 wiescher2024pt:
   authors: M. Wiescher, K. Langanke
   title: Manhattan Project astrophysics
-  journal: Phys. Today 77(3), 34 (2024)
+  journal: Phys. Today 77(3) (March 2024)
   year: 2024
-  doi: 10.1063/pt.jksg.hage
-  checked: Physics Today feature page and the NSF PAR copy, by web search (Teller raised the fear of igniting the atmosphere at a 1942 meeting in Berkeley; Bethe estimated the probability as very low; the 1946 report of Teller, Konopinski and Marvin found no self-propagating chain likely; also ¹⁴N fusion with the hydrogen of water vapour; the wartime experience fed post-war nuclear astrophysics), 2026-10-13
+  url: https://physicstoday.aip.org/features/manhattan-project-astrophysics
+  checked: Physics Today feature page, the AAS notice of the March 2024 issue and the NSF PAR copy, by web search; page number and DOI not confirmed, so not given (Teller raised the fear of igniting the atmosphere at a 1942 meeting in Berkeley; Bethe estimated the probability as very low; the 1946 report of Teller, Konopinski and Marvin found no self-propagating chain likely; also ¹⁴N fusion with the hydrogen of water vapour; the wartime experience fed post-war nuclear astrophysics), 2026-10-13
 
 wiescher2024cool:
   authors: P. Wiescher, M. Wiescher

@@ -101,12 +101,12 @@ open_questions:
 facts:
   - text: >-
       The same reaction that steals neutrons in giant stars also matters on
-      Earth: it enters the estimates of the fission yields of the atmospheric
-      nuclear-weapons tests.
+      Earth: knowing it well helps to estimate the yields of the nuclear
+      weapons tested in the atmosphere.
     text_it: >-
       La stessa reazione che sottrae neutroni nelle stelle giganti conta anche
-      sulla Terra: entra nelle stime delle rese di fissione dei test nucleari
-      in atmosfera.
+      sulla Terra: conoscerla bene aiuta a stimare la potenza delle armi
+      nucleari provate in atmosfera.
     refs: [deboer2025]
 related: [13C-an-16O, 22Ne-ng-23Ne, 16O-ng-17O]
 open_questions_it:

@@ -211,11 +211,12 @@ measurements:
     energy_it: "finestra di Gamow, risonanze vicino a 1,5 MeV"
     note: >-
       An independent Trojan Horse measurement with ¹⁶O, not ¹⁴N, as the
-      Trojan horse nucleus and the spectator α detected near 0°, a first for
-      the method; a DWBA analysis gives resonances near 1.5 MeV in both the
-      α₀ and α₁ channels. A preprint argues that the plane-wave
-      approximation behind the analysis breaks down once Coulomb distortions
-      are included (Mukhamedzhanov 2026).
+      Trojan horse nucleus and the spectator α detected near 0°, which the
+      authors describe as a first for the method; their analysis, DWBA-based
+      as they describe it, gives resonances near 1.5 MeV in both the α₀ and
+      α₁ channels. A preprint argues that the plane-wave approximation
+      behind the analysis breaks down once Coulomb distortions are included
+      (Mukhamedzhanov 2026); no reply has appeared yet.
     refs: [li2026, mukhamedzhanov2026]
 evaluations: [caughlan1988, jiang2018, monpribat2022]
 refs: [jiang2007, uzawa2025, gesue2025, cooper2009, adsley2022]

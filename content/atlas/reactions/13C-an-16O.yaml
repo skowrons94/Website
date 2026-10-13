@@ -168,12 +168,14 @@ facts:
   - text: >-
       The neutron source of the s-process also matters for dark-matter and
       neutrino detectors, whose neutron backgrounds are estimated from its
-      yields. Above 6 MeV the yields measured in 2023 are noticeably higher
-      than those used so far.
+      yields. For alpha particles above 6 MeV, the neutron yields inferred
+      from the 2023 data are noticeably higher than those used in
+      detector-background estimates.
     text_it: >-
       La sorgente di neutroni del processo s conta anche per i rivelatori di
       materia oscura e di neutrini, il cui fondo di neutroni si stima dalle sue
-      rese. Sopra 6 MeV le rese misurate nel 2023 sono sensibilmente più alte
-      di quelle usate finora.
+      rese. Per particelle alfa sopra 6 MeV, le rese di neutroni ricavate dai
+      dati del 2023 sono sensibilmente più alte di quelle usate nelle stime
+      del fondo dei rivelatori.
     refs: [brandenburg2023]
 related: [13C-pg-14N, 22Ne-an-25Mg, 17O-an-20Ne]
