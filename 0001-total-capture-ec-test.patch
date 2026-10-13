@@ -1,0 +1,455 @@
+From af23f7e15be4bf098a706046763bbc848245bed4 Mon Sep 17 00:00:00 2001
+From: Jakub Skowronski <jakub.skowronski@protonmail.com>
+Date: Tue, 13 Oct 2026 12:16:07 +0000
+Subject: [PATCH] test(ec): total capture equals the sum of its final states
+ with external capture on
+
+A total-capture segment is an incoherent sum over the capture pairs, so with
+external capture on it must still equal the sum of the single-pair segments of
+the same model, whatever other segments the project holds.  On 13C(p,g)14N at
+E_cm = 46 keV, AZURE2 7e533b7 (the version the website pins) gave a total of
+6.59 or 7.225 keV b against a sum of 8.494, depending on which other segments
+were present.
+
+Cause, fixed on dev by 886cdf7: CountECAmplitudes left out the component
+amplitudes that InitializeComponentSegments appends to intEC.dat/.extrap, so
+every reuse of a file was rejected and the data-segment part rewritten.  The
+component pass then re-read USE_PREVIOUS_INTEGRALS and read the rewritten file
+from its start as if it were the component part.  pyazr asks for reuse
+whenever output/intEC.dat exists, so every run after the first in a project
+directory was affected.  On dev the total equals the sum (8.4942 with and
+without the single-pair segments, fresh and reused).
+
+tests/total_capture_ec locks this in: a 13C+p model with three capture pairs
+(gamma0, gamma 2.313, gamma 3.948, ANCs on all three final states), in data
+and extrapolation mode, fresh, with a rejected file, and with its own file
+reused; the total alone, the total listed first and point mapping off must all
+give the same total.  It fails on 7e533b7 (8 of 22 checks, the total off by
+3-17 %) and passes on dev.
+
+Also: the component-segment pass in InitializeComponentSegments skipped mapped
+points and carried a mapped-point copy loop whose condition
+(mappedPoint < GetMappedPoints().begin()) never held.  Component points are
+never mapped (MapData skips segments with components and the components are
+not in GetSegments()), so neither had any effect, but WalkECAmplitudes counts
+every component point.  The pass now computes, writes and reads every point,
+as CalculateECAmplitudes does for data segments, and the dead loop is gone.
+Output of all eight website evaluations (data and extrapolation, fresh and
+reused) is byte-identical to dev.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01TkWK4BAGQtHwuzdXYr3xtP
+---
+ src/EData.cpp                                 |  64 ++++----
+ tests/total_capture_ec/README.md              |  37 +++++
+ tests/total_capture_ec/check.sh               | 150 ++++++++++++++++++
+ tests/total_capture_ec/data/capture.dat       |  16 ++
+ .../total_capture_ec/expected/chiSquared.out  |   7 +
+ tests/total_capture_ec/total_capture_ec.azr   |  72 +++++++++
+ 6 files changed, 310 insertions(+), 36 deletions(-)
+ create mode 100644 tests/total_capture_ec/README.md
+ create mode 100755 tests/total_capture_ec/check.sh
+ create mode 100644 tests/total_capture_ec/data/capture.dat
+ create mode 100644 tests/total_capture_ec/expected/chiSquared.out
+ create mode 100644 tests/total_capture_ec/total_capture_ec.azr
+
+diff --git a/src/EData.cpp b/src/EData.cpp
+index 09f52a1..dbd901c 100644
+--- a/src/EData.cpp
++++ b/src/EData.cpp
+@@ -2335,20 +2335,21 @@ int EData::InitializeComponentSegments(CNuc *theCNuc, const Config &configure) {
+                   for (int i = 1; i <= numPoints; i++) {
+                     if (configure.stopFlag || localStop) continue;
+                     EPoint *point = componentSegment.GetPoint(i);
+-                    if (!(point->IsMapped())) {
+-                      try {
+-                        point->CalculateECAmplitudes(theCNuc, configure);
+-                      } catch (GSLException e) {
++                    // Every point computes its own amplitudes, mapped or not, as in
++                    // CalculateECAmplitudes: WalkECAmplitudes counts them all and the
++                    // loop below writes or reads them all.
++                    try {
++                      point->CalculateECAmplitudes(theCNuc, configure);
++                    } catch (GSLException e) {
+ #pragma omp critical
+-                        {
+-                          configure.outStream << e.what() << std::endl;
+-                          localStop = true;
+-                        }
+-                      } catch (...) {
++                      {
++                        configure.outStream << e.what() << std::endl;
++                        localStop = true;
++                      }
++                    } catch (...) {
+ #pragma omp critical
+-                        {
+-                          configure.outStream << "Warning: EC amplitude calculation failed for component segment point" << std::endl;
+-                        }
++                      {
++                        configure.outStream << "Warning: EC amplitude calculation failed for component segment point" << std::endl;
+                       }
+                     }
+                     ++pointIndex;
+@@ -2384,31 +2385,22 @@ int EData::InitializeComponentSegments(CNuc *theCNuc, const Config &configure) {
+                 // regular-segment loop in CalculateECAmplitudes exactly.
+                 for (EPointIterator point = componentSegment.GetPoints().begin();
+                      point < componentSegment.GetPoints().end(); point++) {
+-                  if (!(point->IsMapped())) {
+-                    for (int k = 1; k <= entrancePair->GetDecay(ir)->NumKGroups(); k++) {
+-                      for (int ecm = 1; ecm <= entrancePair->GetDecay(ir)->GetKGroup(k)->NumECMGroups(); ecm++) {
+-                        if (!usePrevious) {
+-                          if (out.is_open()) out << point->GetECAmplitude(k, ecm) << std::endl;
+-                          for (EPointIterator subPoint = point->GetSubPoints().begin();
+-                               subPoint < point->GetSubPoints().end(); subPoint++)
+-                            if (out.is_open()) out << subPoint->GetECAmplitude(k, ecm) << std::endl;
+-                        } else {
+-                          complex ecAmplitude(0.0, 0.0);
++                  for (int k = 1; k <= entrancePair->GetDecay(ir)->NumKGroups(); k++) {
++                    for (int ecm = 1; ecm <= entrancePair->GetDecay(ir)->GetKGroup(k)->NumECMGroups(); ecm++) {
++                      if (!usePrevious) {
++                        if (out.is_open()) out << point->GetECAmplitude(k, ecm) << std::endl;
++                        for (EPointIterator subPoint = point->GetSubPoints().begin();
++                             subPoint < point->GetSubPoints().end(); subPoint++)
++                          if (out.is_open()) out << subPoint->GetECAmplitude(k, ecm) << std::endl;
++                      } else {
++                        complex ecAmplitude(0.0, 0.0);
++                        in >> ecAmplitude;
++                        point->AddECAmplitude(k, ecm, ecAmplitude);
++                        for (EPointIterator subPoint = point->GetSubPoints().begin();
++                             subPoint < point->GetSubPoints().end(); subPoint++) {
++                          ecAmplitude = complex(0.0, 0.0);
+                           in >> ecAmplitude;
+-                          point->AddECAmplitude(k, ecm, ecAmplitude);
+-                          for (EPointIterator subPoint = point->GetSubPoints().begin();
+-                               subPoint < point->GetSubPoints().end(); subPoint++) {
+-                            ecAmplitude = complex(0.0, 0.0);
+-                            in >> ecAmplitude;
+-                            subPoint->AddECAmplitude(k, ecm, ecAmplitude);
+-                          }
+-                        }
+-                        for (EPointMapIterator mappedPoint = point->GetMappedPoints().begin();
+-                             mappedPoint < point->GetMappedPoints().begin(); mappedPoint++) {
+-                          (*mappedPoint)->AddECAmplitude(k, ecm, point->GetECAmplitude(k, ecm));
+-                          for (int i = 1; i <= point->NumSubPoints(); i++) {
+-                            (*mappedPoint)->GetSubPoint(i)->AddECAmplitude(k, ecm, point->GetSubPoint(i)->GetECAmplitude(k, ecm));
+-                          }
++                          subPoint->AddECAmplitude(k, ecm, ecAmplitude);
+                         }
+                       }
+                     }
+diff --git a/tests/total_capture_ec/README.md b/tests/total_capture_ec/README.md
+new file mode 100644
+index 0000000..5b1e2ba
+--- /dev/null
++++ b/tests/total_capture_ec/README.md
+@@ -0,0 +1,37 @@
++# total_capture_ec — total capture is the sum of its final states, with external capture
++
++A total-capture segment (`isDiff 3` in `<segmentsData>`, `isDiff 4` in
++`<segmentsTest>`, exit key `-1`) is an incoherent sum over the capture pairs,
++so for one model it must equal the sum of the single-pair capture segments at
++the same energies, and must not depend on which other segments the project
++holds. With external capture on, the total's component segments
++(`EData::CreateComponentSegment`) get their EC amplitudes in a separate pass
++(`EData::InitializeComponentSegments`) that appends to, or reads back from,
++the same `intEC.dat` / `intEC.extrap` as the data segments.
++
++Before 886cdf7 the amplitude count left the component part out, so every
++reuse of a file was rejected and the data-segment part rewritten, and the
++component pass, which re-read the `USE_PREVIOUS_INTEGRALS` flag, then read the
++rewritten file from its start as if it were the component part. pyazr asks for
++reuse whenever `output/intEC.dat` exists, so from the second run in a project
++directory on, 13C(p,g)14N gave a total 15-25 % low at 46 keV, different with
++and without the single-pair segments beside it.
++
++The model is 13C+p with three capture pairs (gamma to 0, 2.313 and 3.948 MeV
++in 14N, with ANCs on the three final states), cut down from the 14N
++evaluation: one 1- resonance (8.06 MeV) and the three bound states. Segments
++1-3 are the single-pair segments, segment 4 the total; every energy appears
++twice in the data file, so the single-pair segments also carry mapped points.
++
++`check.sh`, in data mode (1) and extrapolation mode (3), checks that
++
++- the total equals the sum of the single-pair segments point by point;
++- the total alone, and the total listed before the single-pair segments, give
++  the same total (and so does `AZURE_NO_POINT_MAPPING=1`, in data mode);
++- a file built for the full model is rejected for the total alone, and the
++  recomputed total is unchanged;
++- the model's own file is reused, for the full model and for the total alone,
++  and gives the same total to the file's six significant digits.
++
++The directory is also an ordinary `run_tests.sh` project:
++`expected/chiSquared.out` locks the chi-squared of the four segments.
+diff --git a/tests/total_capture_ec/check.sh b/tests/total_capture_ec/check.sh
+new file mode 100755
+index 0000000..5f3f809
+--- /dev/null
++++ b/tests/total_capture_ec/check.sh
+@@ -0,0 +1,150 @@
++#!/usr/bin/env bash
++#
++# A total-capture segment equals the sum of its single-pair capture segments,
++# with external (direct) capture on, and does not depend on which other
++# segments the model holds.
++#
++# A total over final states is an incoherent sum, so for the same model and
++# the same energies sigma_total = sum_f sigma(p,gamma_f) exactly.  With
++# external capture the total's components (EData::CreateComponentSegment) get
++# their EC amplitudes from their own pass, InitializeComponentSegments, which
++# appends to -- or reads back from -- the same intEC file as the data
++# segments.  Before 886cdf7 a reused file that was rejected (wrong count) was
++# rewritten for the data segments only, and the component pass then read it
++# from the start as if it were the component part: on 13C(p,g)14N the total
++# came out 15-25 % low, and different depending on which single-pair segments
++# sat beside it.
++#
++# Model: 13C+p with three capture pairs (gamma to 0, 2.313 and 3.948 MeV in
++# 14N; ANCs on the three final states, so external capture feeds all three).
++# Segments 1-3 are the single-pair segments, segment 4 the total (isDiff 3);
++# the extrapolation grid has the same four (isDiff 4 for the total).  Every
++# energy in the data file appears twice, so the single-pair segments also
++# carry mapped points (EData::MapData).
++#
++#   ./tests/total_capture_ec/check.sh path/to/AZURE2
++#
++# Exit status 0 when every check passes.
++
++set -uo pipefail
++export LC_ALL=C
++
++HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
++AZURE2_BIN="${1:?usage: check.sh path/to/AZURE2}"
++AZURE2_BIN="$(cd "$(dirname "$AZURE2_BIN")" && pwd)/$(basename "$AZURE2_BIN")"
++export OMP_NUM_THREADS="${OMP_NUM_THREADS:-2}"
++
++WORK="$(mktemp -d "${TMPDIR:-/tmp}/total_capture_ec.XXXXXX")"
++trap 'rm -rf "$WORK"' EXIT
++
++failures=0
++ok() { echo "  ok    $1"; }
++bad() { echo "  FAIL  $1"; failures=$((failures + 1)); }
++
++# make_variant NAME ACTIVE: a copy of the model whose data and test segments
++# are switched on according to ACTIVE, a string of four 0/1 flags in segment
++# order; "reversed" puts the total first instead.
++make_variant() {
++  local dir="$WORK/$1"
++  mkdir -p "$dir/output" "$dir/checks"
++  cp -R "$HERE/data" "$dir/data"
++  awk -v active="$2" '
++    /<segmentsData>|<segmentsTest>/ { inseg = 1; n = 0; m = 0; print; next }
++    /<\/segmentsData>|<\/segmentsTest>/ { inseg = 0
++      if (active == "reversed") { print held[m]; for (i = 1; i < m; i++) print held[i] }
++    }
++    inseg && NF {
++      n++
++      if (active == "reversed") { held[++m] = $0; next }
++      $1 = substr(active, n, 1)
++    }
++    { print }' "$HERE/total_capture_ec.azr" > "$dir/model.azr"
++}
++
++# run NAME MODE [EC_FILE]: MODE 1 (data) or 3 (extrapolation), optionally
++# reusing a saved EC file, passed relative to the run directory.
++run() {
++  local dir="$WORK/$1" mode="$2" ec="${3:-}" input
++  if [ "$mode" = 1 ]; then input="1\n\n$ec\n7\n"; else input="3\nn\n\n$ec\n7\n"; fi
++  (cd "$dir" && printf "$input" | "$AZURE2_BIN" --no-gui --no-readline model.azr > run.log 2>&1)
++}
++
++# Column 4 of an output file is the calculated cross section (blank lines,
++# which separate angles, are skipped).
++col() { awk 'NF { printf "%.10e\n", $4 }' "$1"; }
++
++# sum_matches NAME EXT: the total equals the sum of the single-pair files,
++# point by point, to 1e-6 (the files print 11 significant digits).
++sum_matches() {
++  local o="$WORK/$1/output"
++  paste <(col "$o/AZUREOut_aa=1_R=2.$2") <(col "$o/AZUREOut_aa=1_R=3.$2") \
++        <(col "$o/AZUREOut_aa=1_R=4.$2") <(col "$o/AZUREOut_aa=1_TOTAL_CAPTURE.$2") |
++    awk 'NF != 4 { bad = 1; exit }
++         { s = $1 + $2 + $3; d = ($4 - s) / s; if (d < 0) d = -d; if (d > worst) worst = d; n++ }
++         END { if (bad || n == 0) { print "no rows"; exit 1 }
++               printf "%d points, worst relative difference %.2g\n", n, worst; exit !(worst < 1e-6) }'
++}
++
++# same_total A B EXT TOL: the total-capture files of two runs agree to TOL.
++same_total() {
++  paste <(col "$WORK/$1/output/AZUREOut_aa=1_TOTAL_CAPTURE.$3") \
++        <(col "$WORK/$2/output/AZUREOut_aa=1_TOTAL_CAPTURE.$3") |
++    awk -v tol="$4" 'NF != 2 { bad = 1; exit }
++         { d = ($1 - $2) / $2; if (d < 0) d = -d; if (d > worst) worst = d; n++ }
++         END { if (bad || n == 0) { print "no rows"; exit 1 }
++               printf "worst relative difference %.2g\n", worst; exit !(worst <= tol) }'
++}
++
++# Reading a file back is not bit-exact: intEC stores each amplitude to six
++# significant digits.  A recomputed file is compared to 1e-9, a reused one to
++# 1e-4.
++FRESH=1e-9
++REUSED=1e-4
++
++make_variant all 1111
++make_variant totonly 0001
++make_variant reversed reversed
++make_variant nomap 1111
++
++for mode in 1 3; do
++  if [ "$mode" = 1 ]; then ext=out; ecf=intEC.dat; label="data mode"; else ext=extrap; ecf=intEC.extrap; label="extrapolation mode"; fi
++  echo "$label"
++  rm -rf "$WORK"/*/output/* "$WORK"/intEC.*
++
++  run all "$mode"
++  r="$(sum_matches all $ext)" && ok "fresh: total = sum of the single-pair segments ($r)" || bad "fresh: total != sum ($r)"
++
++  run totonly "$mode"
++  r="$(same_total totonly all $ext $FRESH)" && ok "fresh: the total alone gives the same total ($r)" || bad "fresh: the total alone differs ($r)"
++
++  run reversed "$mode"
++  r="$(same_total reversed all $ext $FRESH)" && ok "fresh: listing the total first gives the same total ($r)" || bad "fresh: total first differs ($r)"
++
++  if [ "$mode" = 1 ]; then
++    (cd "$WORK/nomap" && printf "1\n\n\n7\n" | AZURE_NO_POINT_MAPPING=1 "$AZURE2_BIN" --no-gui --no-readline model.azr > run.log 2>&1)
++    r="$(same_total nomap all $ext $FRESH)" && ok "fresh: point mapping off gives the same total ($r)" || bad "point mapping changes the total ($r)"
++  fi
++
++  cp "$WORK/all/output/$ecf" "$WORK/all/output/$ecf.sig" "$WORK/"
++
++  # The file written beside them is the right size only for the full model:
++  # here it is rejected and the integrals recomputed.  This is the case that
++  # used to read the data-segment part back as the component part.
++  run totonly "$mode" "../$ecf"
++  grep -q "WARNING: .*$ecf" "$WORK/totonly/run.log" && ok "a file built for other segments is rejected" || bad "the full model's file was not rejected for the total alone"
++  r="$(same_total totonly all $ext $FRESH)" && ok "and the total is unchanged ($r)" || bad "rejected-file run: total differs ($r)"
++
++  # A file on its own model is reused, data and component parts alike.
++  run all "$mode" "../$ecf"
++  grep -q "WARNING: .*$ecf\|Could not open external capture file" "$WORK/all/run.log" && bad "the model's own file was not reused" || ok "the model's own file is reused"
++  r="$(sum_matches all $ext)" && ok "reused: total = sum of the single-pair segments ($r)" || bad "reused: total != sum ($r)"
++  r="$(same_total all totonly $ext $REUSED)" && ok "reused: total equals the fresh one to the file's precision ($r)" || bad "reused: total differs from the fresh one ($r)"
++
++  # And the total alone, reusing a file written for the total alone.
++  cp "$WORK/totonly/output/$ecf" "$WORK/totonly/output/$ecf.sig" "$WORK/"
++  run totonly "$mode" "../$ecf"
++  grep -q "WARNING: .*$ecf\|Could not open external capture file" "$WORK/totonly/run.log" && bad "the total-only file was not reused" || ok "the total-only model's own file is reused"
++  r="$(same_total totonly reversed $ext $REUSED)" && ok "reused: the total alone gives the same total ($r)" || bad "reused: the total alone differs ($r)"
++done
++
++[ "$failures" -eq 0 ] && echo "  PASS" || { echo "  FAIL ($failures)"; exit 1; }
+diff --git a/tests/total_capture_ec/data/capture.dat b/tests/total_capture_ec/data/capture.dat
+new file mode 100644
+index 0000000..7d6e3e2
+--- /dev/null
++++ b/tests/total_capture_ec/data/capture.dat
+@@ -0,0 +1,16 @@
++0.100	0	4.1659e-10	4.3851e-11
++0.100	0	4.6044e-10	4.3851e-11
++0.150	0	1.0143e-08	1.0677e-09
++0.150	0	1.1211e-08	1.0677e-09
++0.200	0	7.0737e-08	7.4460e-09
++0.200	0	7.8182e-08	7.4460e-09
++0.250	0	2.8411e-07	2.9907e-08
++0.250	0	3.1402e-07	2.9907e-08
++0.300	0	8.6726e-07	9.1290e-08
++0.300	0	9.5855e-07	9.1290e-08
++0.350	0	2.3335e-06	2.4563e-07
++0.350	0	2.5791e-06	2.4563e-07
++0.400	0	6.1809e-06	6.5062e-07
++0.400	0	6.8315e-06	6.5062e-07
++0.450	0	1.8378e-05	1.9346e-06
++0.450	0	2.0313e-05	1.9346e-06
+diff --git a/tests/total_capture_ec/expected/chiSquared.out b/tests/total_capture_ec/expected/chiSquared.out
+new file mode 100644
+index 0000000..cc95ade
+--- /dev/null
++++ b/tests/total_capture_ec/expected/chiSquared.out
+@@ -0,0 +1,7 @@
++Segment#, Chi-Squared,  N,  Norm,  Norm-Chi-Squared 
++1,54.655,16,1,0
++2,1500.7,16,1,0
++3,1174.16,16,1,0
++4,4.00028,16,1,0
++Total-Chi-Squared: 2733.52 Total-Norm-Chi-Squared: 0 Total-N: 64
++
+diff --git a/tests/total_capture_ec/total_capture_ec.azr b/tests/total_capture_ec/total_capture_ec.azr
+new file mode 100644
+index 0000000..0f19740
+--- /dev/null
++++ b/tests/total_capture_ec/total_capture_ec.azr
+@@ -0,0 +1,72 @@
++<config>
++true                                                                                                #Perform A-Matrix Calculation
++output/                                                                                             #Full Path to Output Directory
++checks/                                                                                             #Full Path to Checks Directory
++file                                                                                                #Compond Nucleus Check
++file                                                                                                #Boundary Condition Check
++file                                                                                                #Data Check
++file                                                                                                #Lo-Matrix and Penetrability Check
++file                                                                                                #Legendre Polynomial Check
++file                                                                                                #Coulomb Amplitudes Check
++file                                                                                                #Reaction Pathway Check
++file                                                                                                #Angular Distributions Check
++</config>
++<levels>
++0 1 2.3128 1 1 1 2 2 1 1 0 2.98 0.5 1 0.5 -1 0 1.00728 13.0034 1 6 7.55056 7.55056 0 0 0.0 0 4.3 0 0 0
++0 1 2.3128 1 1 2 2 2 1 1 0 0 1 1 1 1 0 0 14.0031 0 7 7.55056 0 0 0 0.0 10 0 0 0 5
++0 1 2.3128 1 1 4 2 2 1 1 0 0 1 1 1 1 3.9481 0 14.0031 0 7 7.55056 0 0 0 0.0 10 0 0 0 5
++
++1 -1 8.067 0 1 1 2 0 2 1 0 34900 0.5 1 0.5 -1 0 1.00728 13.0034 1 6 7.55056 7.55056 0 0 0.0 0 4.3 0 0 0
++1 -1 8.067 0 1 1 2 4 2 1 0 0 0.5 1 0.5 -1 0 1.00728 13.0034 1 6 7.55056 7.55056 0 0 0.0 0 4.3 0 0 0
++1 -1 8.067 0 1 2 2 2 2 1 0 7.3 1 1 1 1 0 0 14.0031 0 7 7.55056 0 0 0 0.0 10 0 0 0 5
++1 -1 8.067 0 1 3 0 2 2 1 0 0.12 1 1 0 1 2.3128 0 14.0031 0 7 7.55056 0 0 0 0.0 10 0 0 0 5
++1 -1 8.067 0 1 4 2 2 2 1 0 1.2 1 1 1 1 3.9481 0 14.0031 0 7 7.55056 0 0 0 0.0 10 0 0 0 5
++
++1 1 0 1 1 1 0 2 3 1 0 1.68 0.5 1 0.5 -1 0 1.00728 13.0034 1 6 7.55056 7.55056 0 0 0.0 0 4.3 0 0 0
++1 1 0 1 1 1 2 2 3 1 0 -4.03 0.5 1 0.5 -1 0 1.00728 13.0034 1 6 7.55056 7.55056 0 0 0.0 0 4.3 0 0 0
++1 1 0 1 1 2 2 2 3 1 0 0 1 1 1 1 0 0 14.0031 0 7 7.55056 0 0 0 0.0 10 0 0 0 5
++1 1 0 1 1 3 0 2 3 1 0 0 1 1 0 1 2.3128 0 14.0031 0 7 7.55056 0 0 0 0.0 10 0 0 0 5
++1 1 0 1 1 4 2 2 3 1 0 0 1 1 1 1 3.9481 0 14.0031 0 7 7.55056 0 0 0 0.0 10 0 0 0 5
++
++1 1 3.9481 1 1 1 0 2 4 1 0 0.98 0.5 1 0.5 -1 0 1.00728 13.0034 1 6 7.55056 7.55056 0 0 0.0 0 4.3 0 0 0
++1 1 3.9481 1 1 1 2 2 4 1 0 -1.39 0.5 1 0.5 -1 0 1.00728 13.0034 1 6 7.55056 7.55056 0 0 0.0 0 4.3 0 0 0
++1 1 3.9481 1 1 2 2 2 4 1 0 0 1 1 1 1 0 0 14.0031 0 7 7.55056 0 0 0 0.0 10 0 0 0 5
++1 1 3.9481 1 1 3 0 2 4 1 0 0 1 1 0 1 2.3128 0 14.0031 0 7 7.55056 0 0 0 0.0 10 0 0 0 5
++1 1 3.9481 1 1 4 2 2 4 1 0 0 1 1 1 1 3.9481 0 14.0031 0 7 7.55056 0 0 0 0.0 10 0 0 0 5
++
++</levels>
++<segmentsData>
++1 1 2 0 5 0 180 0 1 1 10 0 0 0 data/capture.dat 0
++1 1 3 0 5 0 180 0 1 1 10 0 0 0 data/capture.dat 0
++1 1 4 0 5 0 180 0 1 1 10 0 0 0 data/capture.dat 0
++1 1 -1 0 5 0 180 3 1 1 10 0 0 0 data/capture.dat 0
++</segmentsData>
++<segmentsTest>
++1 1 2 0.05 0.6 0.05 0 0 0 0 0
++1 1 3 0.05 0.6 0.05 0 0 0 0 0
++1 1 4 0.05 0.6 0.05 0 0 0 0 0
++1 1 -1 0.05 0.6 0.05 0 0 0 4 0
++</segmentsTest>
++<targetInt>
++</targetInt>
++<parameterSettings>
++# Fitting parameter settings (only non-fixed parameters shown)
++# Format: name value lower_limit upper_limit error fit_error nuisance category minuit_index
++</parameterSettings>
++<lastRun>
++9993
++""
++""
++0 0
++0 ""
++-1. -1. -1.
++</lastRun>
++<mcmc>
++nwalkers 50
++nsteps 10000
++chainspread 5
++nthreads 4
++usereducedwidths 0
++<parameters>
++</parameters>
++</mcmc>
+-- 
+2.43.0
+
