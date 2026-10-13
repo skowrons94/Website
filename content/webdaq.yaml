@@ -634,8 +634,8 @@ licence:
     J. Skowronski, A. Compagnucci, R. Gesue, WebDAQ: data acquisition for the
     LUNA experiment, https://github.com/skowrons94/WebDAQ
   pending: >-
-    A citable release with a DOI (for instance on Zenodo) is to confirm by
-    Jakub; until then, cite the repository and the commit you used.
+    Until there is a citable release with a DOI, cite the repository and the
+    commit you used.
   pending_it: >-
-    Una versione citabile con un DOI (per esempio su Zenodo) è da confermare da
-    parte di Jakub; nel frattempo si citano il repository e il commit usato.
+    Finché non ci sarà una versione citabile con un DOI, si citano il
+    repository e il commit usato.
