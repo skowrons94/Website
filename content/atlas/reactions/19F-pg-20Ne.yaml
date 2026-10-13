@@ -86,6 +86,7 @@ measurements:
       first stars, a possible source of the calcium seen in the most
       iron-poor stars.
     refs: [zhang2022]
+    lowest_keV: 186  # centre of mass; not yet in EXFOR (lowest there: 277 keV)
 evaluations: [acharya2025]
 refs: [deboer2021, dong2024]
 open_questions:

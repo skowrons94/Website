@@ -136,8 +136,8 @@ function BodyEn({ to, n }: { to: (p: string) => string; n: Counts }) {
             it was checked;
           </li>
           <li>
-            the <L href="/atlas/rates">reaction rates</L> and the network calculations are compared with pynucastro, the
-            reference implementation of the same REACLIB rates, and every number in the{" "}
+            the <L href="/atlas/rates">reaction rates</L> and the network calculations are compared with pynucastro, a
+            widely used Python implementation of the same REACLIB rates, and every number in the{" "}
             <L href="/atlas/rates/curiosities">curiosities</L> is checked against the explorer&apos;s own solver;
           </li>
           <li>
@@ -185,9 +185,11 @@ function BodyEn({ to, n }: { to: (p: string) => string; n: Counts }) {
             files can be downloaded and run locally.
           </li>
           <li>
-            <span className="font-medium text-foreground">The data explorer:</span> measurements from EXFOR, the
-            international database of experimental nuclear reaction data (IAEA/NRDC, CC BY 4.0), and nuclear levels
-            from ENSDF, read from a dated snapshot and linked back to every entry (<L href="/data">/data</L>).
+            <span className="font-medium text-foreground">
+              The <L href="/data">data explorer</L>:
+            </span>{" "}
+            measurements from EXFOR, the international database of experimental nuclear reaction data (IAEA/NRDC, CC
+            BY 4.0), and nuclear levels from ENSDF, read from a dated snapshot and linked back to every entry.
           </li>
         </ul>
         <div className={prose}>
@@ -270,7 +272,7 @@ function BodyIt({ to, n }: { to: (p: string) => string; n: Counts }) {
           </li>
           <li>
             i <L href="/atlas/rates">tassi di reazione</L> e i calcoli di rete sono confrontati con pynucastro,
-            l&apos;implementazione di riferimento degli stessi tassi REACLIB, e ogni numero delle{" "}
+            un&apos;implementazione Python molto usata degli stessi tassi REACLIB, e ogni numero delle{" "}
             <L href="/atlas/rates/curiosities">curiosità</L> è verificato con il risolutore dell&apos;esploratore;
           </li>
           <li>
@@ -320,9 +322,11 @@ function BodyIt({ to, n }: { to: (p: string) => string; n: Counts }) {
             file di input si possono scaricare ed eseguire in locale.
           </li>
           <li>
-            <span className="font-medium text-foreground">L&apos;esploratore dei dati:</span> le misure di EXFOR, la
-            banca dati internazionale dei dati sperimentali sulle reazioni nucleari (IAEA/NRDC, CC BY 4.0), e i livelli
-            nucleari di ENSDF, letti da un&apos;istantanea datata e collegati a ogni voce (<L href="/data">/data</L>).
+            <span className="font-medium text-foreground">
+              L&apos;<L href="/data">esploratore dei dati</L>:
+            </span>{" "}
+            le misure di EXFOR, la banca dati internazionale dei dati sperimentali sulle reazioni nucleari (IAEA/NRDC,
+            CC BY 4.0), e i livelli nucleari di ENSDF, letti da un&apos;istantanea datata e collegati a ogni voce.
           </li>
         </ul>
         <div className={prose}>

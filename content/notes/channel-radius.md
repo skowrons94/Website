@@ -99,11 +99,12 @@ outside the box we have drawn.
 ## The worked example
 
 The $^3\mathrm{H}(d,n)^4\mathrm{He}$ cross section at astrophysical energies is
-carried by a single level: the $J^\pi = 3/2^+$ state of $^5\mathrm{He}$, 80 keV
-above the $d+t$ threshold, with an $\ell = 0$ deuteron channel
+carried by a single level: the $J^\pi = 3/2^+$ state of $^5\mathrm{He}$, an
+unbound resonance about 50 keV above the $d+t$ threshold (80 keV is the fit's
+formal level energy $E_\lambda$), with an $\ell = 0$ deuteron channel
 ($a_d = 3.5\ \mathrm{fm}$) and an $\ell = 2$ neutron channel
-($a_n = 4.0\ \mathrm{fm}$). It is a large, loosely bound $d+t$ cluster state: a
-state that barely exists as a bound object has a wave function that extends far.
+($a_n = 4.0\ \mathrm{fm}$). It is a large $d+t$ cluster state: a resonance this
+close to its threshold has a wave function that extends far.
 
 | channel | $\ell$ | $a$ [fm] | $P_c$ | $\mathrm{d}S_c/\mathrm{d}E$ [MeV⁻¹] | $D_c \equiv (\mathrm{d}S_c/\mathrm{d}E)/P_c$ |
 |---|---|---|---|---|---|

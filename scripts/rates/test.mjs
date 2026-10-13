@@ -226,8 +226,12 @@ for (const id of ["pp", "cno", "nena", "mgal", "sprocess"]) {
   if (RX.suggestReaction(base.suggest[s.id], Object.keys(scale))?.id !== "N14_p_to_O15_reaclib") fail("cno massive-15: ¹⁴N(p,γ) is not the best-reaching reaction")
   for (const lang of ["en", "it"]) {
     const t = RATES_DICT[lang]
-    const text = t.quietSelf("¹²C", t.cycleOf.cno) + t.trySuggest("slowest", "cycle").join("¹⁴N(p,γ)")
+    const text = t.quietSelf(["¹²C"], t.cycleOf.cno) + t.trySuggest("slowest", "cycle", "¹⁴N(p,γ)¹⁵O").join("¹⁴N(p,γ)¹⁵O")
     if (!/CN/.test(text) || !text.includes("¹²C") || !text.includes("¹⁴N(p,γ)")) fail(`what if (${lang}): ${text}`)
+    // Italian: the article before a nuclide and a reaction (docs/STYLE.md)
+    if (lang === "it" && !(text.includes("solo il ¹²C cambia") && text.includes("Prova la ¹⁴N(p,γ)¹⁵O"))) fail(`what if (it): articles: ${text}`)
+    if (lang === "it" && t.selfLine("¹¹C", "") !== "L'¹¹C stesso: ") fail(`what if (it): ${t.selfLine("¹¹C", "")}`)
+    if (lang === "it" && t.quietSelf(["¹²C", "¹³C"]) !== "Solo il ¹²C e il ¹³C cambiano più dell'1%: il resto della combustione assorbe il cambiamento.") fail(`what if (it): ${t.quietSelf(["¹²C", "¹³C"])}`)
     for (const net of ["pp", "cno", "nena", "mgal"]) if (!t.cycleOf[net]) fail(`what if (${lang}): no name for ${net}`)
   }
   console.log(`what if: cno ¹²C(p,γ) ×5 moves ¹²C ÷${(1 / c12.ratio).toFixed(1)} and ${split.small.length} nuclei by under 1%; the explorer explains and suggests ¹⁴N(p,γ)`)

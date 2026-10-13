@@ -12,7 +12,9 @@
  * Exercise 3's numbers cannot be computed here (they are AZURE2 runs); they
  * are in THIRTEEN_N below with how they were obtained.
  *
- * scripts/exercises-test.mjs (run by npm run test:seo) checks them.
+ * scripts/seo-test.mjs ("the exercises' numbers", npm run test:seo, after a
+ * build) checks them against the built page; scripts/exercises/thirteen-n.py
+ * is how exercise 3's AZURE2 numbers were obtained.
  */
 
 import { AMU, K_T9, atomicMass, gamowWindow, parseParticle } from "./atlas-core.mjs"

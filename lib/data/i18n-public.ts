@@ -103,8 +103,12 @@ const en = {
     gapAbove: (low: string, site: string, e0: string) => `Data down to ${low}. Needed: about ${e0} (${site}).`,
     gapInside: (low: string, site: string, e0: string) =>
       `Data down to ${low}, inside the window (about ${e0}, ${site}).`,
-    gapFactor: (x: string) => `${x}× above the window`,
+    gapFactor: (x: string) => `${x} × the peak energy (above the window)`,
     gapReached: "Window reached",
+    gapEdge: (low: string, site: string, e0: string) =>
+      `Data down to ${low}: only the upper edge of the window (about ${e0}, ${site}); below it, extrapolation.`,
+    gapEdgeOnly: "Upper edge only",
+    gapNewer: (text: string) => `A lower measurement is not yet in EXFOR: ${text}.`,
     gapNone: "No direct data",
     gapBy: (who: string) => `Lowest: ${who}`,
     gapUnderground: "underground (LUNA)",
@@ -212,7 +216,7 @@ const en = {
           },
           {
             title: `A proton waits ${c.tau}`,
-            text: `In the rate explorer's model of the Sun's centre (${c.T} million kelvin, ${c.rho} g/cm³), a proton waits on average ${c.tau} before it fuses with another.${c.bottleneck ? ` It is the slowest step on the way to helium: the next-slowest waits ${c.next}.` : ""} Slow fuel, long life.`,
+            text: `In the rate explorer's model of the Sun's centre (${c.T} million kelvin, ${c.rho} g/cm³), a proton waits on average ${c.tau} before it fuses with another.${c.bottleneck ? ` It is the slowest step on the way to helium. The next-slowest is a ${c.nextName} nucleus, which waits about ${c.next}, all its reactions together; the rate explorer lists each reaction on its own.` : ""} Slow fuel, long life.`,
             link: "Open the rate explorer",
           },
           {
@@ -240,7 +244,7 @@ const en = {
           },
           {
             title: "Who measured it, and how low",
-            text: `EXFOR lists ${c.datasets} datasets for neon-22 + proton, from ${c.y0} to ${c.y1}; ${c.luna} of them come from LUNA, under the Gran Sasso mountain. The lowest energy measured is ${c.low} (${c.who}). The star needs about ${c.e0} (${c.site}).${c.inside ? " The measurements have reached the window." : " The last stretch is extrapolated."}`,
+            text: `EXFOR lists ${c.datasets} datasets for neon-22 + proton, from ${c.y0} to ${c.y1}; ${c.luna} of them come from LUNA, under the Gran Sasso mountain. The lowest energy measured is ${c.low} (${c.who}). The star needs about ${c.e0} (${c.site}).${c.inside ? " The measurements have reached the window." : c.edge ? " The measurements reach only the upper edge of the window; the rest is extrapolated." : " The last stretch is extrapolated."}`,
             link: "See every measurement",
           },
           {
@@ -256,7 +260,7 @@ const en = {
         ],
         unknownTitle: "What we still don't know",
         unknown: [
-          "Some resonances inside the window are known only as upper limits: their strength has never been measured.",
+          "A resonance inside the window is known only as an upper limit: its strength has never been measured.",
           "Whether the sodium that changes from star to star in old clusters comes from AGB stars, from massive stars or from both is still debated.",
           "The explorer's AGB envelope is one zone at a fixed temperature. A real envelope mixes and cools.",
         ],
@@ -289,7 +293,7 @@ const en = {
         ],
         unknownTitle: "What we still don't know",
         unknown: [
-          `The second neutron source, neon-22 + helium-4, has been seen directly only down to its resonance at 830 keV (α energy in the laboratory); below it there are only upper limits, and a thermal pulse needs about ${c.ne22e0}.`,
+          `The second neutron source, neon-22 + helium-4, has been seen directly only down to its resonance at 830 keV (E_α,lab; E_cm ≈ 702 keV); below it there are only upper limits, and a thermal pulse needs about ${c.ne22e0}.`,
           "How much carbon-13 a star's pocket holds is set by mixing inside the star, which models cannot yet predict.",
           "At some branch points of the path the nucleus is radioactive, and its neutron capture is hard or impossible to measure.",
         ],
@@ -311,7 +315,7 @@ const it: typeof en = {
     description:
       "Che cosa è stato misurato per le reazioni che fanno brillare le stelle, e dove si fermano le misure: i dati mondiali sulle reazioni nucleari (EXFOR) e sui livelli dei nuclei (ENSDF), in parole semplici.",
     lead: (datasets: string, entries: string, reactions: string) =>
-      `${datasets} serie di misure da ${entries} esperimenti del registro mondiale dei dati nucleari, collegate alle ${reactions} reazioni dell'atlante, ai livelli di energia di ogni nucleo e ai tassi con cui bruciano le stelle.`,
+      `${datasets} serie di dati da ${entries} esperimenti del registro mondiale dei dati nucleari, collegate alle ${reactions} reazioni dell'atlante, ai livelli di energia di ogni nucleo e ai tassi con cui bruciano le stelle.`,
     jump: "In questa pagina",
     jumps: {
       known: "Quanto la conosciamo?",
@@ -322,7 +326,7 @@ const it: typeof en = {
       paths: "Percorsi guidati",
     },
 
-    wordsTitle: "Quattro parole, in parole semplici",
+    wordsTitle: "Quattro termini, in parole semplici",
     words: [
       {
         term: "EXFOR",
@@ -339,7 +343,7 @@ const it: typeof en = {
     cards: {
       known: (n: string) => `${n} reazioni sulla carta dei nuclidi, ognuna segnata secondo quanto è noto il suo tasso.`,
       gap: (n: string) =>
-        `${n} reazioni, dall'energia che usa una stella alla più bassa presente in EXFOR. Il tratto vuoto è la storia.`,
+        `${n} reazioni, dall'energia che usa una stella alla più bassa presente in EXFOR. Il punto è proprio quel tratto vuoto.`,
       stories: "La reazione più lenta del Sole, il passo che detta il ritmo del ciclo CNO, e perché i fisici vanno sotto terra.",
       nucleus: "I livelli di energia di un nucleo, con sopra la stretta fascia di energie che usa una stella.",
       search: "Scrivi un elemento, in italiano o in inglese: i suoi isotopi, le loro reazioni e i loro tassi.",
@@ -373,8 +377,12 @@ const it: typeof en = {
     gapAbove: (low: string, site: string, e0: string) => `Dati fino a ${low}. Serve: circa ${e0} (${site}).`,
     gapInside: (low: string, site: string, e0: string) =>
       `Dati fino a ${low}, dentro la finestra (circa ${e0}, ${site}).`,
-    gapFactor: (x: string) => `${x} volte sopra la finestra`,
+    gapFactor: (x: string) => `${x} volte l'energia del picco (sopra la finestra)`,
     gapReached: "Finestra raggiunta",
+    gapEdge: (low: string, site: string, e0: string) =>
+      `Dati fino a ${low}: solo il bordo superiore della finestra (circa ${e0}, ${site}); più in basso, estrapolazione.`,
+    gapEdgeOnly: "Solo il bordo superiore",
+    gapNewer: (text: string) => `Una misura più bassa non è ancora in EXFOR: ${text}.`,
     gapNone: "Nessun dato diretto",
     gapBy: (who: string) => `La più bassa: ${who}`,
     gapUnderground: "sotto terra (LUNA)",
@@ -397,7 +405,7 @@ const it: typeof en = {
       underground: {
         title: "Perché sotto terra",
         text: (datasets: string, reactions: string, lowest: string) =>
-          `Alle energie che usano le stelle, un bersaglio può vedere poche reazioni al giorno, meno dei conteggi che i raggi cosmici lasciano in un rivelatore in superficie. Sotto 1400 m di roccia, al Gran Sasso, LUNA misura quasi nel silenzio. In EXFOR, ${datasets} serie di dati su ${reactions} reazioni dell'atlante vengono da lì, e per ${lowest} di queste sono ancora le energie più basse mai misurate.`,
+          `Alle energie che usano le stelle, un bersaglio può vedere poche reazioni al giorno, meno dei conteggi che i raggi cosmici lasciano in un rivelatore in superficie. Sotto 1,4 km di roccia, al Gran Sasso, LUNA misura quasi nel silenzio. In EXFOR, ${datasets} serie di dati su ${reactions} reazioni dell'atlante vengono da lì, e per ${lowest} di queste sono ancora le energie più basse mai misurate.`,
       },
       atlas: "Nell'atlante",
       rates: "Nell'esploratore dei tassi",
@@ -476,7 +484,7 @@ const it: typeof en = {
           },
           {
             title: `Un protone aspetta ${c.tau}`,
-            text: `Nel modello del centro del Sole dell'esploratore dei tassi (${c.T} milioni di kelvin, ${c.rho} g/cm³), un protone aspetta in media ${c.tau} prima di fondersi con un altro.${c.bottleneck ? ` È il passo più lento sulla strada verso l'elio: il secondo più lento aspetta ${c.next}.` : ""} Combustibile lento, vita lunga.`,
+            text: `Nel modello del centro del Sole dell'esploratore dei tassi (${c.T} milioni di kelvin, ${c.rho} g/cm³), un protone aspetta in media ${c.tau} prima di fondersi con un altro.${c.bottleneck ? ` È il passo più lento sulla strada verso l'elio. Il secondo più lento è quello di un nucleo di ${c.nextName}, che, sommando tutte le sue reazioni, aspetta circa ${c.next}; l'esploratore dei tassi elenca ogni reazione per conto suo.` : ""} Combustibile lento, vita lunga.`,
             link: "Apri l'esploratore dei tassi",
           },
           {
@@ -504,7 +512,7 @@ const it: typeof en = {
           },
           {
             title: "Chi l'ha misurata, e fin dove",
-            text: `EXFOR elenca ${c.datasets} serie di dati per neon-22 + protone, dal ${c.y0} al ${c.y1}; ${c.luna} vengono da LUNA, sotto il Gran Sasso. L'energia più bassa misurata è ${c.low} (${c.who}). Alla stella servono circa ${c.e0} (${c.site}).${c.inside ? " Le misure hanno raggiunto la finestra." : " L'ultimo tratto è estrapolato."}`,
+            text: `EXFOR elenca ${c.datasets} serie di dati per neon-22 + protone, dal ${c.y0} al ${c.y1}; ${c.luna} vengono da LUNA, sotto il Gran Sasso. L'energia più bassa misurata è ${c.low} (${c.who}). Alla stella servono circa ${c.e0} (${c.site}).${c.inside ? " Le misure hanno raggiunto la finestra." : c.edge ? " Le misure raggiungono solo il bordo superiore della finestra; il resto è estrapolato." : " L'ultimo tratto è estrapolato."}`,
             link: "Guarda tutte le misure",
           },
           {
@@ -520,7 +528,7 @@ const it: typeof en = {
         ],
         unknownTitle: "Che cosa ancora non sappiamo",
         unknown: [
-          "Di alcune risonanze dentro la finestra conosciamo solo un limite superiore: la loro intensità non è mai stata misurata.",
+          "Di una risonanza dentro la finestra si conosce solo un limite superiore: la sua intensità non è mai stata misurata.",
           "Se il sodio che cambia da stella a stella negli ammassi antichi venga dalle stelle AGB, dalle stelle massicce o da entrambe è ancora discusso.",
           "L'inviluppo AGB dell'esploratore è una sola zona a temperatura fissa. Un inviluppo vero si rimescola e si raffredda.",
         ],
@@ -553,7 +561,7 @@ const it: typeof en = {
         ],
         unknownTitle: "Che cosa ancora non sappiamo",
         unknown: [
-          `La seconda sorgente di neutroni, neon-22 + elio-4, è stata osservata direttamente solo fino alla risonanza a 830 keV (energia dell'α nel laboratorio); più in basso ci sono solo limiti superiori, e un impulso termico richiede circa ${c.ne22e0}.`,
+          `La seconda sorgente di neutroni, neon-22 + elio-4, è stata osservata direttamente solo fino alla risonanza a 830 keV (E_α,lab; E_cm ≈ 702 keV); più in basso ci sono solo limiti superiori, e un impulso termico richiede circa ${c.ne22e0}.`,
           "Quanto carbonio-13 contenga la tasca di una stella dipende dal rimescolamento al suo interno, che i modelli non sanno ancora prevedere.",
           "In alcuni punti di diramazione del percorso il nucleo è radioattivo, e la sua cattura di neutroni è difficile o impossibile da misurare.",
         ],

@@ -24,6 +24,8 @@ import { compiled } from "@/lib/rates/run"
 import type { Network } from "@/lib/rates/schema"
 import { lifetimes } from "@/lib/rates/solver"
 import { duration } from "@/components/rates/format"
+import { windowReach } from "@/lib/data/gap"
+import { newerThanExfor, type Newer } from "@/lib/data/newer"
 
 /* -- the summary ------------------------------------------------------------ */
 
@@ -207,10 +209,13 @@ export interface GapRow {
   lo: number
   hi: number
   low: ReactionSummary["lowest"]
-  kind: "never" | "above" | "inside"
+  /** "edge": the lowest point is only in the top of the window (windowReach) */
+  kind: "never" | "above" | "edge" | "inside"
   /** lowest / E0, for "above" */
   factor: number
   datasets: number
+  /** an atlas measurement below EXFOR's lowest point, not yet in EXFOR */
+  newer: Newer | null
 }
 
 /** keV range of a window: E0 ± width/2, or the threshold-limited range. */
@@ -219,13 +224,13 @@ export function windowRange(w: GamowWindow): [number, number] {
   return [Math.max(w.E0 - w.width / 2, 0.01), w.E0 + w.width / 2]
 }
 
-function gapRow(r: Reaction, summary: PublicSummary): GapRow | null {
+function gapRow(r: Reaction, summary: PublicSummary, lang: Lang): GapRow | null {
   const w = r.gamow[0]
   if (!w || r.kind === "decay") return null
   const s = summary.reactions[r.id]
   const [lo, hi] = windowRange(w)
   const low = s?.lowest ?? null
-  const kind: GapRow["kind"] = !low ? "never" : low.keV <= hi ? "inside" : "above"
+  const kind: GapRow["kind"] = !low ? "never" : windowReach(low.keV, lo, hi)
   return {
     id: r.id,
     label: r.label,
@@ -240,22 +245,23 @@ function gapRow(r: Reaction, summary: PublicSummary): GapRow | null {
     kind,
     factor: low ? low.keV / w.E0 : Infinity,
     datasets: s?.datasets ?? 0,
+    newer: newerThanExfor(r.id, low?.keV ?? null, lang),
   }
 }
 
 /** The atlas reactions with a Gamow window, the widest gap first. */
 export function gapRows(lang: Lang): GapRow[] {
   const summary = getSummary()
-  const order = { never: 0, above: 1, inside: 2 }
+  const order = { never: 0, above: 1, edge: 2, inside: 3 }
   return getAtlas(lang)
-    .reactions.map((r) => gapRow(r, summary))
+    .reactions.map((r) => gapRow(r, summary, lang))
     .filter((x): x is GapRow => x !== null)
     .sort((a, b) => order[a.kind] - order[b.kind] || b.factor - a.factor || a.E0 - b.E0)
 }
 
 export function gapRowOf(id: string, lang: Lang): GapRow | null {
   const r = getAtlas(lang).reactions.find((x) => x.id === id)
-  return r ? gapRow(r, getSummary()) : null
+  return r ? gapRow(r, getSummary(), lang) : null
 }
 
 /* -- waiting times, from the rates explorer's networks ------------------------ */
@@ -275,8 +281,10 @@ export interface Waiting {
   tau: number
   /** the reaction that is the bottleneck of the scenario, by its label */
   bottleneck: string | null
-  /** the next-slowest step on the same path, s */
+  /** the next-slowest step on the same path: its nucleus's mean life against all the reactions that destroy it, s */
   nextTau: number | null
+  /** that nucleus */
+  nextNucleus: { Z: number; A: number; symbol: string } | null
   T9: number
   rho: number
 }
@@ -296,6 +304,7 @@ export function waitingTime(net: string, site: string, atlasId: string): Waiting
   const taus = lifetimes(c, { history: { kind: "constant", T9: s.T9, rho: s.rho }, screening: true }, s.X)
   let bn: string | null = null
   let nextTau: number | null = null
+  let nextNucleus: Waiting["nextNucleus"] = null
   try {
     const base = JSON.parse(fs.readFileSync(path.join(RATES, `${net}.baseline.json`), "utf8"))
     const tBurn = base.runs[site].tFinal as number
@@ -307,14 +316,17 @@ export function waitingTime(net: string, site: string, atlasId: string): Waiting
       const b = bottleneck(p, taus, closes(c, p), cycle, tBurn, fuel)
       if (b.step) {
         bn = n.reactions[b.step.reaction].label
-        const others = b.path.filter((x) => x.reaction !== b.step!.reaction).map((x) => x.tau)
-        nextTau = others.length ? Math.max(...others) : null
+        const others = b.path.filter((x) => x.reaction !== b.step!.reaction)
+        const next = others.length ? others.reduce((a, x) => (x.tau > a.tau ? x : a)) : null
+        nextTau = next ? next.tau : null
+        const nuc = next ? n.nuclei[next.nucleus] : null
+        nextNucleus = nuc ? { Z: nuc.Z, A: nuc.A, symbol: nuc.label } : null
       }
     }
   } catch {
     // no baseline: the waiting time alone
   }
-  return { tau: taus[k], bottleneck: bn, nextTau, T9: s.T9, rho: s.rho }
+  return { tau: taus[k], bottleneck: bn, nextTau, nextNucleus, T9: s.T9, rho: s.rho }
 }
 
 /* -- inside the nucleus: a level scheme with the Gamow window --------------- */

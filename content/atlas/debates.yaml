@@ -827,13 +827,13 @@ questions:
           et al. 2024).
         refs: [shahina2024, massimi2017]
     settle: >-
-      A direct (α,n) measurement in the Gamow window, the aim of the SHADES
-      project at the Bellotti Ion Beam Facility, and direct (α,γ) data below
-      the 830 keV resonance.
+      A direct (α,n) measurement below the 830 keV resonance (E_α,lab;
+      E_cm ≈ 702 keV), the aim of the SHADES project at the Bellotti Ion Beam
+      Facility, and direct (α,γ) data below the same resonance.
     settle_it: >-
-      Una misura diretta della (α,n) nella finestra di Gamow, l'obiettivo del
-      progetto SHADES alla Bellotti Ion Beam Facility, e dati diretti della
-      (α,γ) sotto la risonanza a 830 keV.
+      Una misura diretta della (α,n) sotto la risonanza a 830 keV (E_α,lab;
+      E_cm ≈ 702 keV), l'obiettivo del progetto SHADES alla Bellotti Ion Beam
+      Facility, e dati diretti della (α,γ) sotto la stessa risonanza.
     refs: [rapagnani2022]
 
   - id: carbon-13-pocket
@@ -882,12 +882,13 @@ questions:
     settle: >-
       Multidimensional simulations of the convective boundaries of giant
       stars, tested against grain and spectroscopic data; on the nuclear side,
-      the ¹³C(α,n)¹⁶O rate is now measured in the Gamow window.
+      the ¹³C(α,n)¹⁶O rate is now measured directly down to the upper edge of
+      the Gamow window (230 keV).
     settle_it: >-
       Simulazioni multidimensionali dei confini convettivi delle stelle
       giganti, verificate sui dati dei grani e spettroscopici; sul fronte
-      nucleare, il tasso della ¹³C(α,n)¹⁶O è ora misurato nella finestra di
-      Gamow.
+      nucleare, la ¹³C(α,n)¹⁶O è ora misurata direttamente fino al bordo
+      superiore della finestra di Gamow (230 keV).
     refs: [lugaro2023, straniero2006, ciani2021, gao2022]
 
   - id: stellar-beta-decay

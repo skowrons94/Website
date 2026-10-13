@@ -203,6 +203,23 @@ export function unmeasuredShare(it: Integrand, measured: [number, number][]): nu
   return Math.min(1, Math.max(0, 1 - covered))
 }
 
+/**
+ * The top share of a window that counts only as its upper edge: data whose
+ * lowest point lies there leave most of the window to extrapolation.
+ */
+export const EDGE_SHARE = 0.25
+
+/**
+ * Where the lowest measured energy E sits against a window [lo, hi] (keV):
+ * "above" past hi; "edge" in the top EDGE_SHARE of the window (it reaches
+ * only the upper edge, as ²²Ne(α,n)²⁵Mg does at its 830 keV resonance);
+ * "inside" lower down, or below the window.
+ */
+export function windowReach(E: number, lo: number, hi: number): "inside" | "edge" | "above" {
+  if (E > hi) return "above"
+  return E > hi - EDGE_SHARE * (hi - lo) ? "edge" : "inside"
+}
+
 /** How far E lies above the window, in Gamow widths: (E − E₀)/Δ. */
 export function gamowWidths(E: number, E0: number, width: number): number {
   return (E - E0) / width

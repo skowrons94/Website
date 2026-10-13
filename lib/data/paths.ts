@@ -6,6 +6,7 @@
  */
 
 import { getAtlas } from "@/lib/atlas"
+import { particleName } from "@/lib/atlas-core.mjs"
 import { dataPublicDict, type PathWords } from "@/lib/data/i18n-public"
 import {
   credit,
@@ -78,6 +79,7 @@ function reactionContext(id: string, lang: Lang): Record<string, string> {
     e0: row ? energy(row.E0, lang) : "",
     site: row?.site ?? "",
     inside: row?.kind === "inside" ? "1" : "",
+    edge: row?.kind === "edge" ? "1" : "",
   }
 }
 
@@ -104,6 +106,7 @@ export function guidedPath(id: PathId, lang: Lang): GuidedPathData {
       rho: w ? String(Math.round(w.rho)) : "",
       bottleneck: w && w.bottleneck === label("1H-pp-2H") && w.nextTau ? "1" : "",
       next: w?.nextTau ? waiting(w.nextTau, lang) : "",
+      nextName: w?.nextNucleus ? particleName(w.nextNucleus, lang) : "",
       curiosity: curiosityText(cur),
     }
     const v = words(id, lang, c)
@@ -141,10 +144,10 @@ export function guidedPath(id: PathId, lang: Lang): GuidedPathData {
       levels = t
         ? n === 0
           ? "Nessun livello noto cade dentro la finestra della stella: decidono quelli ai suoi bordi."
-          : `ENSDF elenca ${n === 1 ? "un livello" : `${n} livelli`} dentro la finestra della stella (${list}): ${n === 1 ? "è lui a decidere" : "sono loro a decidere"} il tasso.`
+          : `ENSDF elenca ${n === 1 ? "un livello" : `${n} livelli`} dentro la finestra della stella (${list}): ${n === 1 ? "può decidere il tasso, ma della sua intensità si conosce solo un limite superiore" : "possono decidere il tasso, ma di alcune intensità si conosce solo un limite superiore"}.`
         : n === 0
           ? "No known level falls inside the star's window: the ones at its edges decide the rate."
-          : `ENSDF lists ${n === 1 ? "one level" : `${n} levels`} inside the star's window (${list}): ${n === 1 ? "it decides" : "they decide"} the rate.`
+          : `ENSDF lists ${n === 1 ? "one level" : `${n} levels`} inside the star's window (${list}): ${n === 1 ? "it may decide the rate; its strength is only an upper limit" : "they may decide the rate; some of their strengths are only upper limits"}.`
     }
     const c: Record<string, string> = {
       ...reactionContext(rid, lang),

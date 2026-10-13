@@ -59,7 +59,10 @@ function wrap(parts, size, width) {
 
 function svg(spec, c, lang, ratio) {
   const it = lang === "it"
-  const extras = [c.knockLine, c.energyLine].filter(Boolean)
+  // a long extra line (the Sun's CNO energy line) wraps
+  const extras = [c.knockLine, c.energyLine]
+    .filter(Boolean)
+    .flatMap((l) => wrap([{ text: l, bold: true }], 23, 1040).map((ws) => ws.map((t) => t.w).join("").trimEnd()))
   const notes = [c.shortCaveat, c.shortEnergy].filter(Boolean)
   // room below the sentence: two bars, the extra lines, the notes, the address
   const below = 62 + extras.length * 32 + 30 + notes.length * 30 + 34

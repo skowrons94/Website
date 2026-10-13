@@ -7,7 +7,7 @@ import { ArrowRight, ChevronDown } from "lucide-react"
 import { GapMap, type MapRow, type MapWindow } from "@/components/data/gap-map"
 import { dec, energy, kev, percent, temperature } from "@/lib/data/format"
 import { fill } from "@/lib/data/fill"
-import type { Lowest } from "@/lib/data/gap"
+import { windowReach, type Lowest } from "@/lib/data/gap"
 import { GROUPS, GROUP_SYMBOL, groupOf } from "@/lib/data/quantity"
 import type { DataExpertStrings } from "@/lib/i18n"
 import type { Lang } from "@/lib/locale"
@@ -30,6 +30,8 @@ export interface PanelProps {
   macs: { n: number; lo: number; hi: number } | null
   threshold: number | null
   neutron: boolean
+  /** an atlas measurement below EXFOR's lowest point, not yet in EXFOR (lib/data/newer.ts) */
+  newer?: { text: string } | null
   /** the first window shown */
   initial?: number
   /** heading level and id, for the atlas page or the data page */
@@ -102,7 +104,9 @@ export function MeasurementsPanel(p: PanelProps) {
         <Tile
           label={t.lowest}
           value={lowest ? energy(lowest.E, lang) : t.noLowest}
-          sub={lowest ? lowestCredit(lowest, t.lowestSub) : t.noLowestSub}
+          sub={
+            (lowest ? lowestCredit(lowest, t.lowestSub) : t.noLowestSub) + (p.newer ? ` ${fill(t.newer, { text: p.newer.text })}` : "")
+          }
         />
         {!neutron ? (
           <Tile
@@ -111,7 +115,9 @@ export function MeasurementsPanel(p: PanelProps) {
               !w || w.widths === null
                 ? "–"
                 : lowest && lowest.E >= w.lo && lowest.E <= w.hi
-                  ? t.inside
+                  ? windowReach(lowest.E, w.lo, w.hi) === "edge"
+                    ? t.upperEdge
+                    : t.inside
                   : fill(w.widths >= 0 ? t.widthsAbove : t.widthsBelow, { n: kev(Math.abs(w.widths), lang, 2) })
             }
             sub={w ? fill(t.distanceSub, { E0: kev(w.E0, lang), lo: kev(w.lo, lang), hi: kev(w.hi, lang) }) : ""}

@@ -43,7 +43,7 @@ role_it: >-
 details: >-
   The reaction opens just above the neutron threshold, and the rate at
   T₉ ≈ 0.2–0.3 is dominated by resonances in ²⁶Mg above it, in particular the
-  well-known resonance at E(α,lab) ≈ 830 keV. Below it, direct experiments give
+  well-known resonance at 830 keV (E_α,lab; E_cm ≈ 702 keV). Below it, direct experiments give
   only upper limits, because the cross section is small and the neutron
   background in surface laboratories is large. The rate therefore rests on the properties of
   near-threshold ²⁶Mg states obtained indirectly: neutron resonances in
@@ -57,19 +57,21 @@ details: >-
   (α,n) strength about three times the (α,γ) strength.
 
 
-  A direct measurement in the Gamow window is the aim of the SHADES project,
+  A direct measurement below the 830 keV resonance is the aim of the SHADES project,
   with a hybrid array of EJ-309 scintillators and ³He counters and a
   recirculating gas target at the MV machine of the Bellotti Ion Beam
   Facility (BIBF); the expected sensitivity gain is more than two orders of magnitude
   (Rapagnani et al. 2022).
 status: uncertain
 status_note: >-
-  Below the 830 keV resonance only upper limits exist from direct experiments,
+  Below the 830 keV resonance (E_α,lab; E_cm ≈ 702 keV) only upper limits exist
+  from direct experiments,
   and the indirect constraints on the near-threshold ²⁶Mg states do not yet
   agree. A new direct measurement is under way at LUNA within the SHADES
   project.
 status_note_it: >-
-  Sotto la risonanza a 830 keV esistono solo limiti superiori da esperimenti
+  Sotto la risonanza a 830 keV (E_α,lab; E_cm ≈ 702 keV) esistono solo limiti
+  superiori da esperimenti
   diretti, e i vincoli indiretti sugli stati del ²⁶Mg vicini alla soglia non
   sono ancora in accordo. Una nuova misura diretta è in corso a LUNA
   nell'ambito del progetto SHADES.
@@ -130,8 +132,8 @@ measurements:
   - year: 2024
     facility: notre-dame
     method: direct-surface
-    energy: "E(α,lab) = 830 keV resonance"
-    energy_it: "risonanza a E(α,lab) = 830 keV"
+    energy: "830 keV resonance (E_α,lab; E_cm ≈ 702 keV)"
+    energy_it: "risonanza a 830 keV (E_α,lab; E_cm ≈ 702 keV)"
     note: >-
       Strength of the key resonance remeasured with a stilbene detector;
       similar to the earlier direct results and about three times the

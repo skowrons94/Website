@@ -756,6 +756,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
                 macs={exfor.macs}
                 threshold={exfor.threshold}
                 neutron={exfor.neutron}
+                newer={exfor.newer}
                 links={
                   <>
                     {exfor.slugs.map((s) => (

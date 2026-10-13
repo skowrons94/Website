@@ -90,6 +90,7 @@ export function DataReactionPage({ slug, lang }: { slug: string; lang: Lang }) {
           macs={panel.macs}
           threshold={panel.threshold}
           neutron={panel.neutron}
+          newer={panel.newer}
           id="gap"
           title={dx.reaction.windowsTitle}
         />

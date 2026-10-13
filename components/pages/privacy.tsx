@@ -16,8 +16,10 @@ import { pageMetadata } from "@/lib/metadata"
  * version, cipher_suite, proto, server_name}; bytes_read, duration, size,
  * status, resp_headers), the API's log in server/app/routes/api.py and
  * app/limits.py, the browser storage in components/search/command-palette.tsx
- * (recent searches), next-themes (the theme), lib/api.ts (sessionStorage) and
- * browser/worker.js (Cache Storage, static build).
+ * (recent searches), next-themes (the theme), lib/api.ts (sessionStorage),
+ * the WebDAQ demo's sessionStorage keys (webdaq-demo/shim/transport.ts,
+ * storage-shim.ts, shell/strings.ts, shell/Shell.tsx, tour/index.ts: prefix
+ * webdaq-demo:v1:) and browser/worker.js (Cache Storage, static build).
  */
 
 // deploy/Caddyfile: roll_keep_for 336h.
@@ -144,6 +146,11 @@ function BodyEn({ email, name, to }: { email: string; name: string; to: (p: stri
           for the open tab only, which optional calculation-server features are missing (<Code>azure2-api-absent</Code>,
           session storage);
         </li>
+        <li>
+          for the open tab only, the WebDAQ demo&apos;s simulated state, the progress of its guided tour, its language and
+          the notes you closed (keys starting with <Code>webdaq-demo:v1:</Code>, session storage; the demo&apos;s “Reset demo”
+          clears them);
+        </li>
         {STATIC_BUILD && (
           <li>
             the calculation engine&apos;s files, so that they are downloaded once rather than on every visit (Cache Storage).
@@ -263,6 +270,11 @@ function BodyIt({ email, name, to }: { email: string; name: string; to: (p: stri
         <li>
           solo per la scheda aperta, quali funzioni facoltative del server di calcolo mancano (
           <Code>azure2-api-absent</Code>, archiviazione di sessione);
+        </li>
+        <li>
+          solo per la scheda aperta, lo stato simulato della demo di WebDAQ, il punto della visita guidata, la lingua e
+          gli avvisi che hai chiuso (chiavi che iniziano con <Code>webdaq-demo:v1:</Code>, archiviazione di sessione; il
+          pulsante «Ricomincia» della demo le cancella);
         </li>
         {STATIC_BUILD && (
           <li>i file del motore di calcolo, scaricati una volta sola anziché a ogni visita (Cache Storage).</li>

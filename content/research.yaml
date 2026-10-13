@@ -113,7 +113,7 @@ threads:
         published and unpublished.
     body_it:
       - >-
-        In AZURE2 un insieme di dati misurati diventa una sezione
+        In AZURE2 una serie di dati misurati diventa una sezione
         d'urto: un modello R-matrix a più livelli e più canali, adattato ai dati
         di tutti i canali che condividono un nucleo composto, e poi estrapolato
         alle energie a cui avviene davvero la combustione stellare. È usato in

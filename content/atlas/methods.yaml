@@ -399,7 +399,7 @@ methods:
       a 1 ps. La larghezza radiativa che ne segue entra in un fit R-matrix
       della cattura, per esempio per uno stato sotto soglia la cui coda
       raggiunge la finestra di Gamow. I limiti sistematici sono i poteri
-      frenanti, noti al massimo a pochi percento, e la sensibilità alle vite
+      frenanti, noti al massimo a qualche per cento, e la sensibilità alle vite
       medie più brevi, dove l'attenuazione è quasi completa.
     strengths:
       - Constrains the width of a state that cannot be reached directly at low energy.

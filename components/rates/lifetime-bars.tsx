@@ -155,7 +155,10 @@ export const LifetimeBars = memo(function LifetimeBars({
             <span
               key={t}
               data-tick
-              className="tabular absolute bottom-0 -translate-x-1/2 whitespace-nowrap text-[0.7rem] text-muted-foreground"
+              // the end ticks stay inside the axis: one at the very edge is anchored by its own edge
+              className={`tabular absolute bottom-0 whitespace-nowrap text-[0.7rem] text-muted-foreground ${
+                frac(t) < 0.08 ? "translate-x-0" : frac(t) > 0.92 ? "-translate-x-full" : "-translate-x-1/2"
+              }`}
               style={{ left: pct(t) }}
             >
               {shortTime(t, lang)}

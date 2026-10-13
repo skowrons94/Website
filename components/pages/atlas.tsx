@@ -357,7 +357,7 @@ function IntroIt() {
         Anche un fascio intenso produce allora solo una manciata di reazioni, e sulla superficie della Terra
         i raggi cosmici lasciano in qualunque rivelatore di raggi γ molti più conteggi di queste. All'inizio
         degli anni Novanta la collaborazione LUNA ha quindi portato il suo acceleratore nei Laboratori
-        Nazionali del Gran Sasso, dove 1400 m di roccia riducono i muoni cosmici di circa un milione di
+        Nazionali del Gran Sasso, dove 1,4 km di roccia riducono i muoni cosmici di circa un milione di
         volte. Da allora diverse reazioni delle catene protone-protone e dei cicli CNO sono state misurate in
         questo laboratorio sotterraneo alle energie a cui avvengono nel Sole, o molto vicino.
       </p>

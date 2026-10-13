@@ -47,7 +47,7 @@ status_note: >-
 status_note_it: >-
   I dati diretti arrivano ora a 60 keV con incertezze sistematiche del 7–8%; la
   questione aperta è la differenza di normalizzazione di circa il 25% rispetto
-  agli insiemi di dati più vecchi.
+  alle serie di dati più vecchie.
 status_plain: >-
   Measured underground down to low energies with an uncertainty under 10%;
   the older measurements differ from the new ones by about a quarter
@@ -112,7 +112,7 @@ open_questions:
   - The 25% normalization difference between the measurements since 2023 and the older data sets.
   - The radiative width of the 422 keV resonance, which dominates the rate at higher temperatures.
 open_questions_it:
-  - "La differenza di normalizzazione del 25% tra le misure dal 2023 in poi e gli insiemi di dati più vecchi."
+  - "La differenza di normalizzazione del 25% tra le misure dal 2023 in poi e le serie di dati più vecchie."
   - "La larghezza radiativa della risonanza a 422 keV, che domina il tasso alle temperature più alte."
 facts:
   - text: >-

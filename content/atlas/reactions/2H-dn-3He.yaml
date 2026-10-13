@@ -42,7 +42,7 @@ status_note: >-
   Several data sets exist, but the choice of evaluation changes the predicted
   primordial deuterium abundance noticeably.
 status_note_it: >-
-  Esistono diversi insiemi di dati, ma la scelta della valutazione cambia
+  Esistono diverse serie di dati, ma la scelta della valutazione cambia
   sensibilmente l'abbondanza primordiale di deuterio prevista.
 methods: [direct-surface, thm]
 measurements:
@@ -87,6 +87,6 @@ details_it: >-
   tutto l'intervallo di energie della BBN e fino a pochi keV, dove diventa
   visibile lo schermaggio elettronico nei bersagli di laboratorio, e con il
   metodo del Cavallo di Troia. Le valutazioni differiscono nel modo in cui
-  pesano e normalizzano questi insiemi di dati, e le analisi successive al
+  pesano e normalizzano queste serie di dati, e le analisi successive al
   risultato di LUNA sulla d(p,γ)³He esaminano l'effetto dei tassi d+d e
   della loro valutazione sull'abbondanza primordiale di deuterio prevista.

@@ -552,7 +552,8 @@ function BodyEn({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
           <P>
             The <b>weak component</b> comes from massive stars. There, <Sci>²²Ne</Sci> releases neutrons near the end of
             core helium burning (kT ≈ 26 keV) and again in the carbon-burning shell (kT ≈ 90 keV){" "}
-            {c("mohr2016")}. There are too few neutrons per iron seed to go far, and the weak component makes mostly
+            {c("mohr2016")}. The rate explorer starts its model of this phase earlier, at 250 million kelvin (kT ≈ 22
+            keV), when <Sci>²²Ne</Sci> begins to release neutrons. There are too few neutrons per iron seed to go far, and the weak component makes mostly
             nuclei lighter than mass 90, from copper to strontium {c("kaeppeler2011")}. Abundant light nuclei,{" "}
             <Sci>¹⁶O</Sci> and <Sci>²²Ne</Sci> themselves, compete for the neutrons ({r("16O-ng-17O")}, {r("22Ne-ng-23Ne")}){" "}
             {c("mohr2016")}.
@@ -837,7 +838,8 @@ function BodyIt({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
           <P>
             La <b>componente debole</b> viene dalle stelle massicce. Lì il <Sci>²²Ne</Sci> libera neutroni verso la
             fine della combustione centrale dell&apos;elio (kT ≈ 26 keV) e di nuovo nel guscio in cui brucia il
-            carbonio (kT ≈ 90 keV) {c("mohr2016")}. I neutroni per seme di ferro sono troppo pochi per andare lontano,
+            carbonio (kT ≈ 90 keV) {c("mohr2016")}. L&apos;esploratore dei tassi fa partire il suo modello di questa
+            fase prima, a 250 milioni di kelvin (kT ≈ 22 keV), quando il <Sci>²²Ne</Sci> comincia a liberare neutroni. I neutroni per seme di ferro sono troppo pochi per andare lontano,
             e la componente debole produce soprattutto nuclei con numero di massa inferiore a 90, dal rame allo stronzio{" "}
             {c("kaeppeler2011")}. Nuclei leggeri abbondanti, lo stesso <Sci>²²Ne</Sci> e il <Sci>¹⁶O</Sci>,
             competono per i neutroni ({r("16O-ng-17O")}, {r("22Ne-ng-23Ne")}) {c("mohr2016")}.
