@@ -99,9 +99,11 @@ def validate(value, schema: Dict, path: str = "") -> List[str]:
         options = [validate(value, s, path) for s in schema["anyOf"]]
         if any(not o for o in options):
             return []
-        # The option of the value's own type explains best.
-        best = min(options, key=len)
-        return best
+        # The option for the value's own type explains best ({"doi": ...}
+        # is an object with a bad DOI, not "text expected").
+        own = [o for o, sub in zip(options, schema["anyOf"])
+               if "type" in sub and _TYPES[sub["type"]](value)]
+        return own[0] if own else min(options, key=len)
     out = []
     types = schema.get("type")
     if types is not None:
@@ -146,7 +148,8 @@ def validate(value, schema: Dict, path: str = "") -> List[str]:
             if key in props:
                 out += validate(item, props[key], sub)
             elif extra is False:
-                guess = difflib.get_close_matches(key, list(props), 1)
+                lower = {k.lower(): k for k in props}
+                guess = [lower[g] for g in difflib.get_close_matches(key.lower(), list(lower), 1)]
                 hint = f"; did you mean `{guess[0]}`?" if guess else \
                     f"; the known fields are {', '.join(k for k in props if k != '$schema')}"
                 out.append(f"`{sub}` is not a known field{hint}")

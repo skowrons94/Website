@@ -91,6 +91,10 @@ evaluations: [adelberger2011, acharya2025]   # compilations / evaluations used f
 open_questions:
   - ...
 related: [15N-pa-12C]            # other reaction ids worth a link
+rmatrix: [13N]                   # optional: this site's interactive R-matrix evaluations
+                                 # of the reaction (server/evaluations/<id>); an
+                                 # evaluation can instead list this page in its
+                                 # info.json `atlas`, which links both ways
 summary_it: >-                   # optional Italian versions, beside or after the English
   Il passo più lento del ciclo CNO. ...
 role_it: >-
@@ -98,6 +102,12 @@ role_it: >-
 status_note_it: >-
   ...
 ```
+
+An R-matrix evaluation is linked from its own `info.json` (`"atlas":
+["12C-pg-13N"]`, docs/ADDING-AN-EVALUATION.md), or by `rmatrix:` here; either
+way the reaction page links to the evaluation and the evaluation back.
+`npm run check:evaluations` checks both directions: every `rmatrix:` id is an
+evaluation, every `atlas` entry is a reaction file.
 
 A decay needs only `id`, `label`, `kind: decay`, `target`, `product`,
 `ejectile` (`e+ nu`, `e- nubar`), `networks` and a one-sentence `summary`; its

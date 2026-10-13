@@ -79,7 +79,10 @@ export function validate(value, schema, where = "") {
   if (schema.anyOf) {
     const options = schema.anyOf.map((s) => validate(value, s, where))
     if (options.some((o) => o.length === 0)) return []
-    return options.reduce((a, b) => (b.length < a.length ? b : a))
+    // The option for the value's own type explains best ({"doi": …} is an
+    // object with a bad DOI, not "text expected").
+    const own = schema.anyOf.findIndex((sub) => sub.type && TYPES[sub.type](value))
+    return own >= 0 ? options[own] : options.reduce((a, b) => (b.length < a.length ? b : a))
   }
   const out = []
   if (schema.type) {

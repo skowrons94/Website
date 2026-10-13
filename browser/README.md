@@ -156,7 +156,7 @@ and `flask-cors`, and Node.
 ```sh
 source /path/to/emsdk/emsdk_env.sh
 browser/azure2/build.sh build/wasm                     # about 4 minutes
-python browser/precompute.py server/evaluations build/azure2/evaluations
+python browser/precompute.py --timings server/evaluations build/azure2/evaluations   # --timings as CI does
 
 mkdir -p build/pyodide
 curl -sSL https://github.com/pyodide/pyodide/releases/download/0.28.3/pyodide-core-0.28.3.tar.bz2 \

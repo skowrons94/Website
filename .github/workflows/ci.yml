@@ -1,0 +1,55 @@
+# Checks on every push and pull request, in a couple of minutes: the
+# evaluations (docs/ADDING-AN-EVALUATION.md), the atlas, the search index, the
+# rates, the types and the Python tests that need no AZURE2. The tests that run
+# AZURE2 itself are in the GitHub Pages workflow, which builds it.
+name: Checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # the pages' "last changed" dates come from git
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: npm ci --ignore-scripts
+      - run: pip install --quiet pytest pyyaml jsonschema
+
+      - name: Evaluations (info.json, .azr paths, data labels, atlas links)
+        run: |
+          npm run check:evaluations
+          (cd server && python -m app.check)
+      - name: Atlas
+        run: npm run check:atlas -- --quiet
+      - name: Types
+        run: npx tsc --noEmit
+      - name: Search index
+        run: npm run test:search
+      - name: Reaction rates
+        run: npm run test:rates
+      - name: Evaluation checks and add-evaluation (pytest)
+        run: cd server && python -m pytest -q tests/test_check.py
+      - name: Data explorer pipeline (pytest)
+        run: python -m pytest -q scripts/data/tests
