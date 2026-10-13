@@ -14,8 +14,10 @@ name: GitHub Pages
 # emsdk and every downloaded tool, holds a read-only token and nothing else;
 # only the small deploy job can write to Pages (pages, id-token). Every action
 # is pinned to a commit (the tag in the comment; Dependabot proposes updates),
-# emsdk to the tag's commit, and every download is checked against a recorded
-# SHA-256. Caches are written by main alone and restored without fallback
+# emsdk to the tag's commit, GSL and AZURE2 to commits, and every download is
+# checked against a recorded SHA-256: emsdk's archives and Pyodide here, the
+# xbuildenv in browser/azure2/build.sh, the browser's Python packages in
+# browser/assemble.py, and pip installs with --require-hashes. Caches are written by main alone and restored without fallback
 # keys, so a branch build can read main's caches but never plant one that
 # main, and so the deployed site, would use.
 on:
@@ -105,7 +107,10 @@ jobs:
             -DUSE_API=ON -DBUILD_GUI=OFF -DUSE_QWT=OFF \
             -Dpybind11_DIR="$(python -m pybind11 --cmakedir)" > /dev/null
           cmake --build /tmp/AZURE2-build --target _azure2 -j "$(nproc)" > /dev/null
-          pip install --quiet /tmp/AZURE2
+          # No build isolation: the build backend (setuptools) and pybind11 are
+          # the hash-pinned ones installed above, not the latest from PyPI.
+          # No deps: numpy, mpmath and scipy are pinned in that file already.
+          pip install --quiet --no-deps --no-build-isolation /tmp/AZURE2
           python -c "import pyazr, pyazr._azure2; print('pyazr', pyazr.__version__)"
 
       - name: Check the evaluations, and the server's tests
