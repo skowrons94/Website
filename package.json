@@ -7,6 +7,7 @@
     "dev": "next dev",
     "prebuild": "node scripts/evaluations-check.mjs --quiet && node scripts/atlas-check.mjs && node scripts/atlas-export.mjs && node scripts/search-index.mjs",
     "build": "next build",
+    "postbuild": "node scripts/csp-static.mjs",
     "start": "next start",
     "lint": "next lint",
     "check:atlas": "node scripts/atlas-check.mjs",

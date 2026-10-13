@@ -103,6 +103,8 @@ const en = {
     // --- r11 site ---
     about: "About this site",
     code: "Source code",
+    // --- r11 sec ---
+    privacy: "Privacy",
   },
   // --- r11 site ---
   // "Report an error · Suggest a reaction" (components/report-links.tsx): a new
@@ -734,6 +736,8 @@ const it: Dictionary = {
     // --- r11 site ---
     about: "Informazioni sul sito",
     code: "Codice sorgente",
+    // --- r11 sec ---
+    privacy: "Privacy",
   },
   // --- r11 site ---
   report: {

@@ -24,6 +24,81 @@ function evaluationIds() {
   }
 }
 
+/*
+ * Security headers (DEPLOY.md, "Security"). The server build sends them with
+ * every page; the static export cannot send headers at all, so
+ * scripts/csp-static.mjs writes the same policy into each page as a <meta>
+ * tag after the build, with the hash of every inline script instead of
+ * 'unsafe-inline'.
+ *
+ * The server build allows inline scripts ('unsafe-inline'): Next's prerendered
+ * pages carry inline bootstrap scripts that differ per page, and a nonce would
+ * make every page dynamic. Nothing on the site renders visitors' HTML (pages
+ * are built from the author's Markdown, raw HTML dropped), so the policy's
+ * value is in what it forbids: scripts and connections to other origins,
+ * plugins, framing, <base> and form targets elsewhere.
+ *
+ * CSP_MODE (build time): "enforce" (default), "report-only" (the browser
+ * reports violations in its console and blocks nothing) or "off".
+ */
+const CSP_MODE = process.env.CSP_MODE ?? "enforce"
+const DEV = process.env.NODE_ENV === "development"
+
+function apiOrigin() {
+  try {
+    const base = process.env.API_BASE
+    return base && /^https?:/.test(base) ? new URL(base).origin : ""
+  } catch {
+    return ""
+  }
+}
+
+export function contentSecurityPolicy({ scripts = ["'unsafe-inline'"], meta = false } = {}) {
+  const api = STATIC ? "" : apiOrigin()
+  return [
+    "default-src 'self'",
+    // 'wasm-unsafe-eval': WebAssembly (the static build's AZURE2 engine).
+    // Next's development server needs eval for its hot reloading.
+    `script-src 'self' ${scripts.join(" ")} 'wasm-unsafe-eval'${DEV ? " 'unsafe-eval'" : ""}`,
+    // Inline style attributes (charts, KaTeX's positioning) are everywhere.
+    "style-src 'self' 'unsafe-inline'",
+    // data: and blob: for plot exports and inline icons.
+    "img-src 'self' data: blob:",
+    "font-src 'self' data:",
+    `connect-src 'self'${api ? ` ${api}` : ""}${DEV ? " ws:" : ""}`,
+    // The rates explorer's worker and the static build's AZURE2 workers.
+    "worker-src 'self' blob:",
+    "manifest-src 'self'",
+    "media-src 'self'",
+    "frame-src 'none'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    // Ignored in a <meta> policy (browsers warn about it there).
+    ...(meta ? [] : ["frame-ancestors 'none'"]),
+  ].join("; ")
+}
+
+// Features the site never uses, switched off for it and anything it embeds.
+const PERMISSIONS_POLICY =
+  "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+
+function securityHeaders() {
+  const headers = [
+    { key: "Permissions-Policy", value: PERMISSIONS_POLICY },
+    { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+    { key: "X-Content-Type-Options", value: "nosniff" },
+    { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  ]
+  if (CSP_MODE !== "off") {
+    headers.push({
+      key: CSP_MODE === "report-only" ? "Content-Security-Policy-Report-Only" : "Content-Security-Policy",
+      value: contentSecurityPolicy(),
+    })
+  }
+  return headers
+}
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: { ignoreDuringBuilds: true },
@@ -40,7 +115,12 @@ const nextConfig = {
   // served from <user>.github.io/<repo>.
   ...(STATIC
     ? { output: "export", trailingSlash: true, basePath: BASE_PATH || undefined }
-    : { output: "standalone", pageExtensions: ["tsx", "ts", "jsx", "js", "server.ts"] }),
+    : {
+        output: "standalone",
+        pageExtensions: ["tsx", "ts", "jsx", "js", "server.ts"],
+        // The static export cannot send headers (scripts/csp-static.mjs).
+        headers: async () => [{ source: "/:path*", headers: securityHeaders() }],
+      }),
   // Inlined at build time, so it must be set before `next build` runs.
   // An empty string is a valid, meaningful value: it makes every API call
   // same-origin and relative, which is what the compose stack wants. Only an

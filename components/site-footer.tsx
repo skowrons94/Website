@@ -110,6 +110,10 @@ export function SiteFooter({ profile, lang }: { profile: Profile; lang: Lang }) 
           <a href={REPO} target="_blank" rel="noreferrer" className={LINK}>
             {t.code}
           </a>
+          {/* --- r11 sec --- */}
+          <Link href={localePath(lang, "/privacy")} className={LINK}>
+            {t.privacy}
+          </Link>
         </p>
       </div>
     </footer>

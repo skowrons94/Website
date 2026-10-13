@@ -185,6 +185,8 @@ const PAGES = [
   { href: "/atlas/s-process", en: ["The s-process", "How stars make half the heavy elements"], it: ["Il processo s", "Come le stelle producono metà degli elementi pesanti"], k: "s-process processo s slow neutron capture cattura neutronica lenta lead piombo bismuth bismuto barium bario strontium stronzio heavy elements elementi pesanti from iron to lead dal ferro al piombo" },
   // --- r11 site ---
   { href: "/about", en: ["About this site", "How it was made and checked, its data, and how to cite it"], it: ["Informazioni sul sito", "Come è stato fatto e verificato, i dati e come citarlo"], k: "about informazioni colophon AI artificial intelligence intelligenza artificiale Claude Anthropic verification verifica sources fonti licence licenza cite citare citation citazione DOI Zenodo github open source codice aperto report error segnala errore contribute contribuire" },
+  // --- r11 sec ---
+  { href: "/privacy", en: ["Privacy", "What is logged and for how long; no cookies or trackers"], it: ["Privacy", "Che cosa viene registrato e per quanto; niente cookie né tracciamento"], k: "privacy GDPR RGPD cookie cookies tracking tracciamento analytics statistiche log registro dati personali personal data IP" },
   // --- rates ---
   { href: "/atlas/rates/s-process", en: ["The s-process, what if", "Neutron sources, poisons and seeds, from iron to bismuth"], it: ["Il processo s, e se…", "Sorgenti di neutroni, veleni e semi, dal ferro al bismuto"], k: "s-process processo s lead piombo bismuth bismuto iron ferro seed seme neutron poison veleno neutronico neutron source sorgente di neutroni 13C(a,n) 22Ne(a,n) 14N(n,p) exposure esposizione what if" },
   // --- r13 final ---

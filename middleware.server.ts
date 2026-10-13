@@ -12,7 +12,13 @@ const IDS = (process.env.EVALUATION_IDS ?? "").split(",").filter(Boolean)
 export function middleware(request: NextRequest) {
   const match = /^(\/it)?\/evaluations\/([^/]+)(\/?)$/.exec(request.nextUrl.pathname)
   if (!match) return NextResponse.next()
-  const asked = decodeURIComponent(match[2])
+  let asked: string
+  try {
+    asked = decodeURIComponent(match[2])
+  } catch {
+    // A malformed escape (/evaluations/%E0): no evaluation has that name.
+    return NextResponse.next()
+  }
   const id = IDS.find((e) => e.toLowerCase() === asked.toLowerCase())
   if (!id || id === asked) return NextResponse.next()
   const url = request.nextUrl.clone()
