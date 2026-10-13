@@ -293,7 +293,7 @@ const en = {
         ],
         unknownTitle: "What we still don't know",
         unknown: [
-          `The second neutron source, neon-22 + helium-4, has been seen directly only down to its resonance at 830 keV (E_α,lab; E_cm ≈ 702 keV); below it there are only upper limits, and a thermal pulse needs about ${c.ne22e0}.`,
+          `The second neutron source, neon-22 + helium-4, has been seen directly only down to about 700 keV, where it has a resonance; below that there are only upper limits, and a thermal pulse needs about ${c.ne22e0}.`,
           "How much carbon-13 a star's pocket holds is set by mixing inside the star, which models cannot yet predict.",
           "At some branch points of the path the nucleus is radioactive, and its neutron capture is hard or impossible to measure.",
         ],
@@ -561,7 +561,7 @@ const it: typeof en = {
         ],
         unknownTitle: "Che cosa ancora non sappiamo",
         unknown: [
-          `La seconda sorgente di neutroni, neon-22 + elio-4, è stata osservata direttamente solo fino alla risonanza a 830 keV (E_α,lab; E_cm ≈ 702 keV); più in basso ci sono solo limiti superiori, e un impulso termico richiede circa ${c.ne22e0}.`,
+          `La seconda sorgente di neutroni, neon-22 + elio-4, è stata osservata direttamente solo fino a circa 700 keV, dove ha una risonanza; più in basso ci sono solo limiti superiori, e un impulso termico richiede circa ${c.ne22e0}.`,
           "Quanto carbonio-13 contenga la tasca di una stella dipende dal rimescolamento al suo interno, che i modelli non sanno ancora prevedere.",
           "In alcuni punti di diramazione del percorso il nucleo è radioattivo, e la sua cattura di neutroni è difficile o impossibile da misurare.",
         ],

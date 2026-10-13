@@ -615,8 +615,8 @@ const webdaqEn = {
   title: "WebDAQ",
   metaTitle: "WebDAQ: data acquisition in a browser",
   description:
-    "WebDAQ runs the LUNA data acquisition from a browser: architecture, capabilities, a shift step by step, what it records for FAIR data, and a demo with simulated detectors.",
-  tagline: "Data acquisition for the LUNA experiment, in a browser",
+    "WebDAQ, the browser-based data acquisition developed for LUNA: architecture, capabilities, a shift step by step, what it records for FAIR data, and a demo with simulated detectors.",
+  tagline: "Browser-based data acquisition, developed for LUNA",
   tryDemo: "Try the demo",
   readDocs: "Read the documentation",
   onThisPage: "On this page",
@@ -664,8 +664,8 @@ const webdaqIt: typeof webdaqEn = {
   title: "WebDAQ",
   metaTitle: "WebDAQ: acquisizione dati nel browser",
   description:
-    "WebDAQ gestisce l'acquisizione dati di LUNA da un browser: architettura, funzioni, un turno passo per passo, cosa registra per avere dati FAIR, e una demo con rivelatori simulati.",
-  tagline: "L'acquisizione dati dell'esperimento LUNA, nel browser",
+    "WebDAQ, il sistema di acquisizione dati via browser sviluppato per LUNA: architettura, funzioni, un turno passo per passo, cosa registra per avere dati FAIR, e una demo con rivelatori simulati.",
+  tagline: "Acquisizione dati via browser, sviluppata per LUNA",
   tryDemo: "Prova la demo",
   readDocs: "Leggi la documentazione",
   onThisPage: "In questa pagina",
@@ -1004,7 +1004,7 @@ const en = {
   software: {
     title: "Software",
     description:
-      "AZURE2, a widely used R-matrix code for nuclear astrophysics; WebDAQ, the LUNA data acquisition in a browser; LunaSRIM, SRIM-2013 in pure Python; and LUNA Skills, agent skills for experimental nuclear astrophysics.",
+      "AZURE2, a widely used R-matrix code for nuclear astrophysics; WebDAQ, browser-based data acquisition developed for LUNA; LunaSRIM, SRIM-2013 in pure Python; and LUNA Skills, agent skills for experimental nuclear astrophysics.",
     lead: "Code I maintain or wrote for measuring and analysing low-energy nuclear reactions. All of it is open source.",
     version: (v: string) => `version ${v}`,
     licence: (l: string) => `${l} licence`,
@@ -1680,7 +1680,7 @@ const it: Dictionary = {
   software: {
     title: "Software",
     description:
-      "AZURE2, un codice R-matrix molto usato in astrofisica nucleare; WebDAQ, l'acquisizione dati di LUNA nel browser; LunaSRIM, SRIM-2013 in puro Python; e LUNA Skills, skill per agenti dedicate all'astrofisica nucleare sperimentale.",
+      "AZURE2, un codice R-matrix molto usato in astrofisica nucleare; WebDAQ, l'acquisizione dati via browser sviluppata per LUNA; LunaSRIM, SRIM-2013 in puro Python; e LUNA Skills, skill per agenti dedicate all'astrofisica nucleare sperimentale.",
     lead: "Codice che mantengo o che ho scritto per misurare e analizzare le reazioni nucleari a bassa energia. È tutto open source.",
     version: (v: string) => `versione ${v}`,
     licence: (l: string) => `licenza ${l}`,

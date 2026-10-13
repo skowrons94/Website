@@ -324,7 +324,7 @@ shift:
     Condensed from the "complete session" chapter of the WebDAQ documentation.
     The demo's guided tour walks through the same steps.
   intro_it: >-
-    In breve, dal capitolo "una sessione completa" della documentazione di
+    In breve, dal capitolo «una sessione completa» della documentazione di
     WebDAQ. La visita guidata della demo percorre gli stessi passi.
   steps:
     - lead: Open the experiment.

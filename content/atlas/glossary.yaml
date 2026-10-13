@@ -739,7 +739,7 @@ terms:
       detector than the few reactions of a measurement at stellar energies. A
       laboratory deep underground is shielded by the rock above it. LUNA, at
       the Gran Sasso National Laboratories of INFN in Italy, has run
-      accelerators under about 1400 m of rock since the early 1990s; the rock
+      accelerators under about 1.4 km of rock since the early 1990s; the rock
       reduces the cosmic-ray muons by about a factor of a million. Besides
       LUNA's 400 kV accelerator, the Bellotti Ion Beam Facility (BIBF),
       inaugurated there in 2023, hosts a 3.5 MV machine for helium and carbon
@@ -751,7 +751,7 @@ terms:
       più segnali delle poche reazioni di una misura alle energie stellari. Un
       laboratorio in profondità è schermato dalla roccia che lo sovrasta. LUNA,
       ai Laboratori Nazionali del Gran Sasso dell'INFN, usa acceleratori sotto
-      circa 1400 m di roccia dall'inizio degli anni Novanta; la roccia riduce i
+      circa 1,4 km di roccia dall'inizio degli anni Novanta; la roccia riduce i
       muoni cosmici di circa un milione di volte. Oltre all'acceleratore da
       400 kV di LUNA, la Bellotti Ion Beam Facility (BIBF), inaugurata nel 2023,
       ospita una macchina da 3,5 MV per la combustione dell'elio e del
@@ -768,13 +768,13 @@ terms:
     text: >-
       A way of comparing the depth of underground laboratories under different
       rock: the thickness of water that would stop cosmic rays as well as the
-      rock does. The 1400 m of rock above the Gran Sasso laboratories
-      correspond to about 3800 m w.e.
+      rock does. The roughly 1.4 km of rock above the Gran Sasso laboratories
+      corresponds to about 3800 m w.e.
     text_it: >-
       Un modo di confrontare la profondità di laboratori sotterranei sotto
       rocce diverse: lo spessore d'acqua che fermerebbe i raggi cosmici quanto
-      la roccia. I 1400 m di roccia sopra i Laboratori del Gran Sasso
-      corrispondono a circa 3800 m di acqua equivalente (m w.e.).
+      la roccia. Sopra i Laboratori del Gran Sasso ci sono circa 1,4 km di
+      roccia, pari a circa 3800 m di acqua equivalente (m w.e.).
     see: [luna]
 
   - id: electron-screening
