@@ -115,3 +115,26 @@ body:has(.wd-banner) header.sticky.top-0 { top: var(--wd-banner-h); }
 .wd-start-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 20px; }
 
 @media (prefers-reduced-motion: reduce) { .wd-frame * { transition: none !important; animation: none !important; } }
+
+/* the guided tour (tour/): a non-modal card; a bottom sheet on phones */
+.wd-tour {
+  position: fixed; right: 16px; bottom: 16px; z-index: 75; width: min(380px, calc(100vw - 32px));
+  max-height: calc(100vh - var(--wd-banner-h) - 32px); overflow-y: auto; box-sizing: border-box; padding: 14px 16px;
+  background: hsl(var(--wd-card)); border: 1px solid hsl(var(--wd-border)); border-radius: 8px;
+  box-shadow: 0 6px 24px rgb(0 0 0 / .18);
+}
+.wd-tour h2 { font-size: 17px; margin: 2px 0 6px; }
+.wd-tour h2:focus { outline: none; }
+.wd-tour p { margin: 6px 0; }
+.wd-tour-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.wd-tour-head p { margin: 0; }
+.wd-tour-status { font-weight: 600; }
+.wd-tour-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.wd-tour-target { outline: 3px solid hsl(var(--wd-ring)) !important; outline-offset: 3px !important; border-radius: 4px; }
+@media (max-width: 767px) {
+  .wd-tour { left: 0; right: 0; bottom: 0; width: auto; max-height: 45vh; border-radius: 12px 12px 0 0; }
+  .wd-tour .wd-btn { min-height: 44px; }
+  /* WebDAQ's wide rows (the dashboard's tab bar, tables) would widen the layout
+     viewport on a phone and shrink the frame with it; they are clipped instead. */
+  html, body { overflow-x: hidden; }
+}

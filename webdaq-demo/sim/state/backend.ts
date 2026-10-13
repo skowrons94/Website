@@ -91,7 +91,12 @@ export class Backend {
         if (cmd.board_fail_at_s !== undefined) d.faults.board_fail_at_s = cmd.board_fail_at_s
         if (cmd.stall_at_s !== undefined) d.faults.stall_at_s = cmd.stall_at_s
         return { ok: true }
-      case 'fwhm': return d.physics.fwhmProbe(cmd.channel, cmd.energy_keV)
+      case 'fwhm': {
+        // The fit on the spectrum so far, and what the detector model predicts at the current settings.
+        const fit = d.physics.fwhmProbe(cmd.channel, cmd.energy_keV)
+        const model = (d.physics as unknown as { expectedFwhm?: (ch: number, e: number) => number }).expectedFwhm?.(cmd.channel, cmd.energy_keV)
+        return { energy_keV: cmd.energy_keV, fit, expected_fwhm_keV: Number.isFinite(model) ? model : null }
+      }
       case 'snapshot': return d.snapshot()
       case 'files': {
         // The run's directory, regenerated (sim/files, a lazy chunk): [{name, type, bytes}].
