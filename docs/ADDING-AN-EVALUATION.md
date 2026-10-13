@@ -3,7 +3,8 @@
 An evaluation is one directory, `server/evaluations/<id>/`. Everything the
 site shows about it comes from that directory: the AZURE2 model, its data,
 and a file called `info.json` with what the model cannot say (the paper, a
-name for each data set, one sentence on what the reaction is for). There is
+name and a reference for each data set, one sentence on what the reaction is
+for). There is
 nothing to register anywhere else.
 
 ## The short version
@@ -84,14 +85,23 @@ An annotated example (the `//` comments are only here; JSON has none):
   "purpose": "The first step of the CN cycle, which burns hydrogen in stars.",   // on the card, English
   "purpose_it": "Il primo passo del ciclo CN, che brucia idrogeno nelle stelle.", // the same, Italian
   "reactions": ["¹²C(p,γ)¹³N", "¹²C(p,p)¹²C"],// what was fitted, the headline reaction first
-  "datasets": {                              // a name for EVERY data file, by file name without .dat
-    "kettner_0": "Kettner 2023",             //   just a name...
-    "rolfs_0": {                             //   ...or a name and the source (shown in the data table)
-      "label": "Rolfs 1974",
-      "ref": "Nucl. Phys. A 227, 291 (1974)",
-      "doi": "10.1016/0375-9474(74)90798-2"
+  "datasets": {                              // EVERY data file, by file name without .dat, with its publication
+    "rolfs_0": {
+      "label": "Rolfs 1974",                 //   short name: plot legend and table
+      "authors": "C. Rolfs and R. E. Azuma", //   as cited
+      "ref": "Nucl. Phys. A 227, 291 (1974)",//   journal reference, with the year
+      "doi": "10.1016/0375-9474(74)90798-2"  //   bare DOI; null when the paper has none or none could be confirmed
+    },
+    "lamb": {
+      "label": "Lamb 1957",
+      "authors": "W. A. S. Lamb and R. E. Hester",
+      "ref": "Phys. Rev. 107, 550 (1957)",
+      "doi": null
     }
   },
+  "notes": [                                 // optional: caveats shown on the page, both languages
+    { "text": "…", "text_it": "…" }
+  ],
   "atlas": ["12C-pg-13N"]                    // reaction-atlas pages that link here (file names in content/atlas/reactions/)
 }
 ```
@@ -101,13 +111,15 @@ Required: `status`, `analysis`, `purpose`, `purpose_it`, `reactions`,
 
 | field | what it is |
 |---|---|
-| `status` | `published` (in a journal: give `reference`), `submitted` (sent to a journal), `in-progress` (still being fitted), `unpublished` (finished, no paper yet). Without a paper the page says "Not yet published". |
+| `status` | `published` (in a journal: give `reference`), `submitted` (sent to a journal), `in-progress` (still being fitted), `unpublished` (finished, no paper yet). Without a paper the page says "Not yet published", or "Work in progress" for `in-progress`. |
 | `reference` | the paper's DOI, e.g. `10.1103/PhysRevC.111.035802`, or `null` |
 | `paper` | `authors` (required), `title`, `journal`, `year` |
+| `preliminary` | `true` when the model file is a preliminary version that does not yet reproduce the published best fit of `paper`. The page then says so and points to the paper for the published results. Remove it when the converged model replaces the file |
 | `analysis` | who did the R-matrix analysis (need not be the paper's authors) |
 | `purpose`, `purpose_it` | one plain sentence for a non-specialist, on what the reaction does in stars; shown on the evaluation's card |
 | `reactions` | written like `¹²C(p,γ)¹³N`: target(in,out)product, no spaces. Copy the superscripts from another `info.json` |
-| `datasets` | a label for every data file the model reads; the check lists any you missed |
+| `datasets` | every data file the model reads, with `label`, `authors`, `ref` (with the year) and `doi` (or `null`). A data set whose publication you do not know yet takes `"pending": "why"` instead of `ref`: the check warns about it, and fails on a data set with neither. Map EXFOR-keyed files to their entry's reference (the EXFOR entry's `REFERENCE` line); never guess a DOI |
+| `notes` | caveats shown on the page, as `[{"text": …, "text_it": …}]`: a fit that does not reproduce a data set, a fixed normalization and why, work still to do |
 | `atlas` | the atlas pages that should link to this evaluation, and that it links back to. `[]` for none |
 | `summary`, `summary_it` | optional: one paragraph on what was fitted (used by the site search) |
 | `citation` | optional: the full "how to cite" text, if the default is not right |
@@ -153,8 +165,8 @@ changed. Without the flag the model is calculated as AZURE2 does as shipped.
    total-capture data, with χ²/N close to the published value (or better),
    and every other data set should be unchanged. Keep the flag.
 4. If the corrected total misses the data (¹⁴N: χ²/N 0.9 → 95), the fit
-   itself relied on the wrong numbers. Leave the flag off, so the page shows
-   the fit as published, and have the fit checked.
+   itself relied on the wrong numbers. Leave the flag off, say so on the page
+   with a `notes` entry (as ¹⁴N does), and have the fit checked.
 
 ## 3. Check it
 
@@ -167,7 +179,8 @@ Each problem names the file, the line or field, and what to change, e.g.
 
 ```
 • 12C/info.json: `status` is "publised"; it must be one of "published", … (did you mean "published"?)
-• 12C/info.json: data file "kettner_55" has no label: add "kettner_55": "Author year" … to `datasets`
+• 12C/info.json: data file "kettner_55" has no label: add "kettner_55": {"label": "Author year", …} to `datasets`
+• 12C/info.json: dataset "kettner_0" has no reference: write it as {"label": "Author year", "authors": …, "ref": …, "doi": …} …
 • 12C/12C.azr:53: the data path "/home/you/azure/12C/data/kettner_0.dat" is absolute … ("data/kettner_0.dat")
 ```
 
@@ -175,7 +188,9 @@ Errors stop the build (so a broken evaluation never goes online); warnings do
 not. What is checked: `info.json` parses and has the fields above with sensible
 values (status, DOIs, reactions, true/false, no misspelt field names, no TODO
 left); the `.azr` has relative paths and every data file is there; every data
-file has a label and every label is a data file; the `atlas` pages exist, and
+file has a label and every label is a data file; every data set has
+`authors` and a `ref` with its year (a missing `doi` key, and a `pending`
+reference, are warnings); the `atlas` pages exist, and
 every `rmatrix:` in an atlas page is an evaluation. The server runs the same
 check when it starts and writes problems to its log.
 
@@ -188,8 +203,10 @@ make warm ID=12C                                         # on the server (Docker
 
 This runs the model once at its fitted parameters and stores the curves, so
 the first visitor does not wait, and measures how long opening and editing
-take. The timings go to `server/evaluations/<id>/timings.json`: **commit that
-file**, it is what the page shows as "opens in about N s". Never edit it by
+take. The curves it stores (`initial.json`, `initial-extrapolations.json`,
+`precomputed.json`) are rebuilt by the server and are git-ignored, so
+`git add server/evaluations/<id>` does not pick them up. The timings go to
+`server/evaluations/<id>/timings.json`: **commit that file**, it is what the page shows as "opens in about N s". Never edit it by
 hand; run `python -m app.warm --force <id>` to measure again. (Its `browser`
 part, the timings of the GitHub Pages version, is estimated from the server's
 unless someone measured it in a browser.)
@@ -234,9 +251,10 @@ If the evaluation feeds the reaction rates (¹²C(p,γ), ¹³C(p,γ)), rerun
 - [ ] `make add-evaluation ID=<id> AZR=<file.azr>` ran without errors
 - [ ] `info.json`: no TODO left; `status`, `reference`, `paper`, `analysis` right
 - [ ] total capture over two or more capture pairs: `split_total_capture` checked against the published fit (section 2)
+- [ ] the model reproduces the published fit, or `preliminary` and `notes` say what it does not
 - [ ] `purpose` and `purpose_it` read well to a non-physicist
 - [ ] `reactions`: headline reaction first
-- [ ] every data file has a real label ("Author year"), with `ref` and `doi` where known
+- [ ] every data file has a real label ("Author year"), `authors`, `ref` with the year, and `doi` (or `null`); EXFOR-keyed files mapped to their entry's reference
 - [ ] `atlas` lists the atlas pages it belongs on
 - [ ] `npm run check:evaluations` passes
 - [ ] `python -m app.warm <id>` (or `make warm ID=<id>`) says `ok`; `timings.json` exists

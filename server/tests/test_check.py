@@ -54,6 +54,24 @@ class Shipped(unittest.TestCase):
         problems = check.check_root(ROOT)
         self.assertEqual(errors(problems), [])
 
+    def test_every_shipped_dataset_names_its_publication(self):
+        # authors, a ref with its year and a doi (or null), or a pending reason.
+        for eid in sorted(os.listdir(ROOT)):
+            path = os.path.join(ROOT, eid, "info.json")
+            if not os.path.isfile(path):
+                continue
+            with open(path, encoding="utf-8") as f:
+                datasets = json.load(f)["datasets"]
+            for key, entry in datasets.items():
+                with self.subTest(evaluation=eid, dataset=key):
+                    self.assertIsInstance(entry, dict)
+                    if "ref" not in entry:
+                        self.assertTrue(entry.get("pending"))
+                        continue
+                    self.assertTrue(entry.get("authors"))
+                    self.assertRegex(entry["ref"], check.YEAR)
+                    self.assertIn("doi", entry)
+
     def test_schema_is_valid_json_with_the_status_values(self):
         schema = check.load_schema()
         self.assertEqual(schema["properties"]["status"]["enum"],
@@ -217,6 +235,33 @@ class BrokenCopies(unittest.TestCase):
         [m] = self.problems()
         self.assertIn("still says", m)
 
+    def test_dataset_without_reference_is_an_error(self):
+        info = self.info()
+        info["datasets"]["tombrello_aa_ang1"] = "Tombrello"
+        self.write_info(info)
+        [m] = self.problems()
+        self.assertIn('dataset "tombrello_aa_ang1" has no reference', m)
+
+    def test_dataset_reference_needs_authors_and_a_year(self):
+        info = self.info()
+        info["datasets"]["tombrello_aa_ang2"] = {"label": "Tombrello", "ref": "Phys. Rev. 129, 2252", "doi": None}
+        self.write_info(info)
+        msgs = self.problems()
+        self.assertEqual(len(msgs), 2, msgs)
+        self.assertIn("has no `authors`", msgs[0])
+        self.assertIn("has no year", msgs[1])
+
+    def test_pending_reference_and_missing_doi_are_warnings(self):
+        info = self.info()
+        info["datasets"]["tombrello_aa_ang3"] = {"label": "Tombrello", "pending": "the analyst is checking which paper"}
+        del info["datasets"]["tombrello_aa_ang4"]["doi"]
+        self.write_info(info)
+        self.assertEqual(self.problems(), [])
+        warnings = [p.message for p in check.check_root(self.root, ["8Be-test"], atlas_dir=self.atlas)
+                    if p.level == "warning"]
+        self.assertTrue(any('"tombrello_aa_ang3": reference pending' in m for m in warnings), warnings)
+        self.assertTrue(any('"tombrello_aa_ang4" has no `doi`' in m for m in warnings), warnings)
+
     def test_missing_timings_is_a_warning(self):
         os.remove(os.path.join(self.root, "8Be-test", "timings.json"))
         problems = check.check_root(self.root, ["8Be-test"], atlas_dir=self.atlas)
@@ -279,6 +324,10 @@ class AddEvaluation(unittest.TestCase):
             info = json.load(f)
         self.assertEqual(sorted(info["datasets"]), [f"tombrello_aa_ang{i}" for i in range(1, 6)])
         self.assertIn("TODO", info["purpose"])
+        # Each dataset's publication is left for them to fill in, never guessed.
+        for entry in info["datasets"].values():
+            self.assertIn("TODO", entry["ref"])
+            self.assertIn("TODO", entry["authors"])
         # Nobody's name is filled in for them: the analyst is a TODO too.
         self.assertIn("TODO", info["analysis"])
         self.assertNotIn("Skowronski", info["analysis"])

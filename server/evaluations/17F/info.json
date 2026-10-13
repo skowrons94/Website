@@ -12,18 +12,40 @@
   "datasets": {
     "Morlock_GS": {
       "label": "Morlock 1997 (g.s.)",
+      "authors": "R. Morlock, R. Kunz, A. Mayer, M. Jaeger et al.",
       "ref": "Phys. Rev. Lett. 79, 3837 (1997)",
       "doi": "10.1103/PhysRevLett.79.3837"
     },
     "Morlock_FES": {
       "label": "Morlock 1997 (1st exc.)",
+      "authors": "R. Morlock, R. Kunz, A. Mayer, M. Jaeger et al.",
       "ref": "Phys. Rev. Lett. 79, 3837 (1997)",
       "doi": "10.1103/PhysRevLett.79.3837"
     },
-    "Hester_total": "Hester (total)",
-    "Chow_GS": "Chow (g.s.)",
-    "Chow_FES": "Chow (1st exc.)",
-    "Becker_FES": "Becker (1st exc.)"
+    "Hester_total": {
+      "label": "Hester 1958 (total)",
+      "authors": "R. E. Hester, R. E. Pixley and W. A. S. Lamb",
+      "ref": "Phys. Rev. 111, 1604 (1958)",
+      "doi": "10.1103/PhysRev.111.1604"
+    },
+    "Chow_GS": {
+      "label": "Chow 1975 (g.s.)",
+      "authors": "H. C. Chow, G. M. Griffiths and T. H. Hall",
+      "ref": "Can. J. Phys. 53, 1672 (1975)",
+      "doi": null
+    },
+    "Chow_FES": {
+      "label": "Chow 1975 (1st exc.)",
+      "authors": "H. C. Chow, G. M. Griffiths and T. H. Hall",
+      "ref": "Can. J. Phys. 53, 1672 (1975)",
+      "doi": null
+    },
+    "Becker_FES": {
+      "label": "Becker 1982 (1st exc.)",
+      "authors": "H. W. Becker, W. E. Kieser, C. Rolfs, H. P. Trautvetter and M. Wiescher",
+      "ref": "Z. Phys. A 305, 319 (1982)",
+      "doi": null
+    }
   },
   "split_total_capture": true,
   "atlas": [

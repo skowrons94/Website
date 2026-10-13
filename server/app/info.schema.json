@@ -37,6 +37,10 @@
         "year": { "type": "integer", "minimum": 1900 }
       }
     },
+    "preliminary": {
+      "type": "boolean",
+      "description": "true: the model file is a preliminary version that does not yet reproduce the published best fit of `paper`; the page says so."
+    },
     "analysis": {
       "type": "string",
       "minLength": 1,
@@ -69,7 +73,7 @@
     },
     "datasets": {
       "type": "object",
-      "description": "A readable name for every data file the .azr reads, keyed by the file name without .dat.",
+      "description": "Every data file the .azr reads, keyed by the file name without .dat, with its publication: {\"label\": \"Author year\", \"authors\", \"ref\" (journal reference with the year), \"doi\" (bare, or null when the paper has none or none could be confirmed)}. A dataset whose publication is not yet known has \"pending\" (why) instead of \"ref\", which the check reports as a warning; a dataset with neither is an error.",
       "additionalProperties": {
         "anyOf": [
           { "type": "string", "minLength": 1 },
@@ -79,12 +83,27 @@
             "additionalProperties": false,
             "properties": {
               "label": { "type": "string", "minLength": 1 },
-              "ref": { "type": "string" },
-              "doi": { "type": "string", "pattern": "^10\\.\\d{4,9}/[^\\s]+[^\\s.,;]$" }
+              "authors": { "type": "string", "minLength": 1 },
+              "ref": { "type": "string", "minLength": 1 },
+              "doi": { "type": ["string", "null"], "pattern": "^10\\.\\d{4,9}/[^\\s]+[^\\s.,;]$" },
+              "pending": { "type": "string", "minLength": 10 }
             }
           }
         ]
       }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["text", "text_it"],
+        "additionalProperties": false,
+        "properties": {
+          "text": { "type": "string", "minLength": 10 },
+          "text_it": { "type": "string", "minLength": 10 }
+        }
+      },
+      "description": "Caveats shown on the evaluation page, in English and Italian: [{\"text\": \"…\", \"text_it\": \"…\"}]."
     },
     "atlas": {
       "type": "array",

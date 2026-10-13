@@ -8,7 +8,7 @@
     "journal": "submitted to Phys. Rev. C",
     "year": 2026
   },
-  "analysis": "J. Skowronski, R. J. deBoer",
+  "analysis": "J. Skowronski",
   "purpose": "Opens the branches of the pp chain that emit the ⁷Be and ⁸B solar neutrinos, and made most of the lithium after the Big Bang.",
   "purpose_it": "Apre i rami della catena pp che emettono i neutrini solari del ⁷Be e dell'⁸B, e dopo il Big Bang produsse la maggior parte del litio.",
   "channels": [
@@ -25,33 +25,144 @@
     "³He(α,α)³He"
   ],
   "datasets": {
-    "Mccray-A1410002": "McCray (EXFOR A1410.002)",
-    "Mccray-A1410003": "McCray (EXFOR A1410.003)",
+    "Mccray-A1410002": {
+      "label": "McCray 1963 (EXFOR A1410.002)",
+      "authors": "J. A. McCray",
+      "ref": "Phys. Rev. 130, 2034 (1963)",
+      "doi": null
+    },
+    "Mccray-A1410003": {
+      "label": "McCray 1963 (EXFOR A1410.003)",
+      "authors": "J. A. McCray",
+      "ref": "Phys. Rev. 130, 2034 (1963)",
+      "doi": null
+    },
     "DiLeva-C1729001": {
       "label": "Di Leva 2009 (EXFOR C1729.001)",
-      "ref": "Phys. Rev. Lett. 102, 232502 (2009)",
+      "authors": "A. Di Leva et al.",
+      "ref": "Phys. Rev. Lett. 102, 232502 (2009); erratum Phys. Rev. Lett. 103, 159903 (2009)",
       "doi": "10.1103/PhysRevLett.102.232502"
     },
-    "Abramovich-A0244002": "Abramovich (EXFOR A0244.002)",
-    "Elwyn-F0012002": "Elwyn (EXFOR F0012.002)",
-    "Elwyn-F0012003": "Elwyn (EXFOR F0012.003)",
-    "Elwyn-F0012005": "Elwyn (EXFOR F0012.005)",
-    "Fasoli-D0135002": "Fasoli (EXFOR D0135.002)",
-    "Harrison-C1003002": "Harrison (EXFOR C1003.002)",
-    "Ivanovich-A1014010": "Ivanovich (EXFOR A1014.010)",
-    "Paneru": "Paneru",
-    "Schenk-F0049002": "Schenk (EXFOR F0049.002)",
-    "Spiger-A1094004": "Spiger (EXFOR A1094.004)",
-    "Spiger-A1094007": "Spiger (EXFOR A1094.007)",
-    "Tumino-O1221002": "Tumino (EXFOR O1221.002)",
-    "Parker-A1088001": "Parker (EXFOR A1088.001)",
-    "Costantini-O1709001": "Costantini (EXFOR O1709.001)",
-    "Osborne-C0737001": "Osborne (EXFOR C0737.001)",
-    "Switkowski-F0032001": "Switkowski (EXFOR F0032.001)",
-    "Piatti-O2521001": "Piatti (EXFOR O2521.001)",
-    "He-S0083001": "He (EXFOR S0083.001)",
-    "Szucs-D4400001": "Szucs (EXFOR D4400.001)",
-    "Toth-D4430001": "Toth (EXFOR D4430.001)"
+    "Abramovich-A0244002": {
+      "label": "Abramovich 1984 (EXFOR A0244.002)",
+      "authors": "S. N. Abramovich, B. Ya. Guzhovskij, V. A. Zherebtsov and A. G. Zvenigorodskij",
+      "ref": "Vopr. At. Nauki i Tekh., Ser. Yad. Konstanty 4/58, 17 (1984); English translation INDC(CCP)-246 (1985)",
+      "doi": null
+    },
+    "Elwyn-F0012002": {
+      "label": "Elwyn 1979 (EXFOR F0012.002)",
+      "authors": "A. J. Elwyn, R. E. Holland, C. N. Davids, L. Meyer-Schützmeister, F. P. Mooring and W. Ray Jr.",
+      "ref": "Phys. Rev. C 20, 1984 (1979)",
+      "doi": null
+    },
+    "Elwyn-F0012003": {
+      "label": "Elwyn 1979 (EXFOR F0012.003)",
+      "authors": "A. J. Elwyn, R. E. Holland, C. N. Davids, L. Meyer-Schützmeister, F. P. Mooring and W. Ray Jr.",
+      "ref": "Phys. Rev. C 20, 1984 (1979)",
+      "doi": null
+    },
+    "Elwyn-F0012005": {
+      "label": "Elwyn 1979 (EXFOR F0012.005)",
+      "authors": "A. J. Elwyn, R. E. Holland, C. N. Davids, L. Meyer-Schützmeister, F. P. Mooring and W. Ray Jr.",
+      "ref": "Phys. Rev. C 20, 1984 (1979)",
+      "doi": null
+    },
+    "Fasoli-D0135002": {
+      "label": "Fasoli 1964 (EXFOR D0135.002)",
+      "authors": "U. Fasoli, E. A. Silverstein, D. Toniolo and G. Zago",
+      "ref": "Nuovo Cimento 34, 1832 (1964)",
+      "doi": null
+    },
+    "Harrison-C1003002": {
+      "label": "Harrison 1963 (EXFOR C1003.002)",
+      "authors": "W. D. Harrison and A. B. Whitehead",
+      "ref": "Phys. Rev. 132, 2607 (1963)",
+      "doi": null
+    },
+    "Ivanovich-A1014010": {
+      "label": "Ivanovich 1968 (EXFOR A1014.010)",
+      "authors": "M. Ivanovich, P. G. Young and G. G. Ohlsen",
+      "ref": "Nucl. Phys. A 110, 441 (1968)",
+      "doi": null
+    },
+    "Paneru": {
+      "label": "Paneru 2024, SONIK",
+      "authors": "S. N. Paneru, C. R. Brune, D. Connolly, D. Odell et al.",
+      "ref": "Phys. Rev. C 109, 015802 (2024)",
+      "doi": "10.1103/PhysRevC.109.015802"
+    },
+    "Schenk-F0049002": {
+      "label": "Schenk 1973 (EXFOR F0049.002)",
+      "authors": "K. Schenk, W. Buck, M. Morike, A. Stabler, C. Staudt, P. Turek and D. Clement",
+      "ref": "Proc. Int. Conf. on Nuclear Physics, Munich 1973, vol. 1, p. 450",
+      "doi": null
+    },
+    "Spiger-A1094004": {
+      "label": "Spiger 1967 (EXFOR A1094.004)",
+      "authors": "R. J. Spiger and T. A. Tombrello",
+      "ref": "Phys. Rev. 163, 964 (1967)",
+      "doi": null
+    },
+    "Spiger-A1094007": {
+      "label": "Spiger 1967 (EXFOR A1094.007)",
+      "authors": "R. J. Spiger and T. A. Tombrello",
+      "ref": "Phys. Rev. 163, 964 (1967)",
+      "doi": null
+    },
+    "Tumino-O1221002": {
+      "label": "Tumino 2003 (EXFOR O1221.002)",
+      "authors": "A. Tumino, C. Spitaleri, A. Di Pietro, P. Figuera et al.",
+      "ref": "Phys. Rev. C 67, 065803 (2003)",
+      "doi": null
+    },
+    "Parker-A1088001": {
+      "label": "Parker 1963 (EXFOR A1088.001)",
+      "authors": "P. D. Parker and R. W. Kavanagh",
+      "ref": "Phys. Rev. 131, 2578 (1963)",
+      "doi": null
+    },
+    "Costantini-O1709001": {
+      "label": "Costantini 2008, LUNA (EXFOR O1709.001)",
+      "authors": "H. Costantini et al. (LUNA Collaboration)",
+      "ref": "Nucl. Phys. A 814, 144 (2008)",
+      "doi": "10.1016/j.nuclphysa.2008.09.014"
+    },
+    "Osborne-C0737001": {
+      "label": "Osborne 1984 (EXFOR C0737.001)",
+      "authors": "J. L. Osborne, C. A. Barnes, R. W. Kavanagh, R. M. Kremer et al.",
+      "ref": "Nucl. Phys. A 419, 115 (1984)",
+      "doi": "10.1016/0375-9474(84)90288-4"
+    },
+    "Switkowski-F0032001": {
+      "label": "Switkowski 1979 (EXFOR F0032.001)",
+      "authors": "Z. E. Switkowski, J. C. P. Heggie, D. L. Kennedy, D. G. Sargood, F. C. Barker and R. H. Spear",
+      "ref": "Nucl. Phys. A 331, 50 (1979)",
+      "doi": null
+    },
+    "Piatti-O2521001": {
+      "label": "Piatti 2020, LUNA (EXFOR O2521.001)",
+      "authors": "D. Piatti et al. (LUNA Collaboration)",
+      "ref": "Phys. Rev. C 102, 052802(R) (2020)",
+      "doi": "10.1103/PhysRevC.102.052802"
+    },
+    "He-S0083001": {
+      "label": "He 2013 (EXFOR S0083.001)",
+      "authors": "J. J. He, S. Z. Chen, C. E. Rolfs, S. W. Xu et al.",
+      "ref": "Phys. Lett. B 725, 287 (2013)",
+      "doi": "10.1016/j.physletb.2013.07.044"
+    },
+    "Szucs-D4400001": {
+      "label": "Szücs 2019, Atomki (EXFOR D4400.001)",
+      "authors": "T. Szücs, G. G. Kiss, Gy. Gyürky, Z. Halász, T. N. Szegedi and Zs. Fülöp",
+      "ref": "Phys. Rev. C 99, 055804 (2019); erratum Phys. Rev. C 105, 069901 (2022)",
+      "doi": "10.1103/PhysRevC.99.055804"
+    },
+    "Toth-D4430001": {
+      "label": "Tóth 2023, Atomki (EXFOR D4430.001)",
+      "authors": "Á. Tóth, T. Szücs, T. N. Szegedi, Gy. Gyürky, Z. Halász, G. G. Kiss and Zs. Fülöp",
+      "ref": "Phys. Rev. C 108, 025802 (2023)",
+      "doi": "10.1103/PhysRevC.108.025802"
+    }
   },
   "split_total_capture": true,
   "atlas": [

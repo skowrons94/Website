@@ -16,8 +16,9 @@ What is checked (docs/ADDING-AN-EVALUATION.md explains each field):
 * the ``.azr`` file: exactly one, its paths relative (``data/x.dat``, not
   ``/home/...``, which only work on the machine that wrote them), every data
   file it reads present;
-* ``datasets``: every key is a data file the model reads, and every data file
-  has a label;
+* ``datasets``: every key is a data file the model reads, every data file
+  has a label, and every dataset names its publication (``authors``, ``ref``
+  with the year, ``doi`` or null), or says in ``pending`` why it cannot yet;
 * the atlas (when ``content/atlas/reactions`` is next to the server): the
   pages in ``atlas`` exist, and every ``rmatrix:`` id is an evaluation;
 * ``timings.json`` (written by ``python -m app.warm``) and
@@ -287,6 +288,42 @@ def atlas_links(reactions_dir: str = ATLAS_REACTIONS) -> Optional[Dict[str, List
     return out
 
 
+YEAR = re.compile(r"\b(1[89]|20)\d\d\b")
+
+
+def dataset_reference_problems(key: str, entry) -> List[tuple]:
+    """(level, message) for a ``datasets`` entry without a full reference.
+
+    Every dataset names its publication: ``authors``, ``ref`` (the journal
+    reference, with its year) and ``doi`` (null when there is none).  One
+    whose publication is not known yet says why in ``pending``: a warning,
+    so it stays visible, but not an error.
+    """
+    form = ('{"label": "Author year", "authors": "A. Author et al.", '
+            '"ref": "Phys. Rev. C 1, 1 (1970)", "doi": "10.xxxx/..." or null}')
+    if isinstance(entry, str):
+        return [("error", f"dataset {_shown(key)} has no reference: write it as {form}, "
+                          "or give \"pending\" with the reason when the publication is not known yet")]
+    if not isinstance(entry, dict):
+        return []  # the schema reports it
+    ref, pending = entry.get("ref"), entry.get("pending")
+    if not (isinstance(ref, str) and ref.strip()):
+        if isinstance(pending, str) and pending.strip():
+            return [("warning", f"dataset {_shown(key)}: reference pending ({pending.strip()})")]
+        return [("error", f"dataset {_shown(key)} has no `ref`: add the publication as {form}, "
+                          "or give \"pending\" with the reason")]
+    out = []
+    if not (isinstance(entry.get("authors"), str) and entry["authors"].strip()):
+        out.append(("error", f"dataset {_shown(key)} has no `authors` (as cited, e.g. \"C. Rolfs and R. E. Azuma\")"))
+    if not YEAR.search(ref) and "TODO" not in ref:  # a TODO is reported as such
+        out.append(("error", f"dataset {_shown(key)}: `ref` {_shown(ref)} has no year; "
+                             "write it as \"Nucl. Phys. A 227, 291 (1974)\""))
+    if "doi" not in entry:
+        out.append(("warning", f"dataset {_shown(key)} has no `doi`: add it, or write null "
+                               "when the paper has none or none could be confirmed"))
+    return out
+
+
 def check_evaluation(directory: str, schema: Optional[Dict] = None,
                      atlas: Optional[Dict[str, List[str]]] = None) -> List[Problem]:
     """Every problem with one evaluation directory."""
@@ -355,7 +392,10 @@ def check_evaluation(directory: str, schema: Optional[Dict] = None,
         for s in stems:
             if s not in datasets:
                 error("info.json", f"data file {_shown(s)} has no label: add "
-                      f"\"{s}\": \"Author year\" (or {{\"label\", \"ref\", \"doi\"}}) to `datasets`")
+                      f"\"{s}\": {{\"label\": \"Author year\", \"authors\", \"ref\", \"doi\"}} to `datasets`")
+        for key, entry in datasets.items():
+            for level, message in dataset_reference_problems(key, entry):
+                (error if level == "error" else warn)("info.json", message)
         if atlas is not None and isinstance(info.get("atlas"), list):
             for rid in info["atlas"]:
                 if isinstance(rid, str) and rid not in atlas:

@@ -9,6 +9,7 @@
     "journal": "Phys. Rev. C 111, 035802",
     "year": 2025
   },
+  "preliminary": true,
   "analysis": "J. Skowronski",
   "purpose": "The first step of the CN cycle, which burns hydrogen in stars; with the next proton capture it sets the carbon-12 to carbon-13 ratio seen in red giants.",
   "purpose_it": "Il primo passo del ciclo CN, che brucia idrogeno nelle stelle; con la cattura protonica successiva fissa il rapporto tra carbonio-12 e carbonio-13 osservato nelle giganti rosse.",
@@ -23,51 +24,94 @@
   "datasets": {
     "skowronski_luna_hpge": {
       "label": "Skowronski 2023, LUNA (HPGe)",
+      "authors": "J. Skowronski et al. (LUNA Collaboration)",
       "ref": "Phys. Rev. Lett. 131, 162701 (2023)",
       "doi": "10.1103/PhysRevLett.131.162701"
     },
     "skowronski_luna_bgo": {
       "label": "Skowronski 2023, LUNA (BGO)",
+      "authors": "J. Skowronski et al. (LUNA Collaboration)",
       "ref": "Phys. Rev. Lett. 131, 162701 (2023)",
       "doi": "10.1103/PhysRevLett.131.162701"
     },
     "skowronski_fels": {
       "label": "Skowronski 2023, Felsenkeller",
+      "authors": "J. Skowronski et al.",
       "ref": "Phys. Rev. C 107, L062801 (2023)",
       "doi": "10.1103/PhysRevC.107.L062801"
     },
     "gyurky": {
       "label": "Gyürky 2023",
+      "authors": "Gy. Gyürky, L. Csedreki, T. Szücs, G. G. Kiss, Z. Halász and Zs. Fülöp",
       "ref": "Eur. Phys. J. A 59, 59 (2023)",
       "doi": "10.1140/epja/s10050-023-00974-0"
     },
     "kettner_0": {
       "label": "Kettner 2023",
+      "authors": "K.-U. Kettner, R. J. deBoer, J. Görres, M. Wiescher et al.",
       "ref": "Phys. Rev. C 108, 035805 (2023)",
       "doi": "10.1103/PhysRevC.108.035805"
     },
     "kettner_55": {
       "label": "Kettner 2023",
+      "authors": "K.-U. Kettner, R. J. deBoer, J. Görres, M. Wiescher et al.",
       "ref": "Phys. Rev. C 108, 035805 (2023)",
       "doi": "10.1103/PhysRevC.108.035805"
     },
     "rolfs_0": {
       "label": "Rolfs 1974",
+      "authors": "C. Rolfs and R. E. Azuma",
       "ref": "Nucl. Phys. A 227, 291 (1974)",
       "doi": "10.1016/0375-9474(74)90798-2"
     },
     "rolfs_90": {
       "label": "Rolfs 1974",
+      "authors": "C. Rolfs and R. E. Azuma",
       "ref": "Nucl. Phys. A 227, 291 (1974)",
       "doi": "10.1016/0375-9474(74)90798-2"
     },
-    "meyer_84": "Meyer",
-    "meyer_114": "Meyer",
-    "meyer_144": "Meyer",
-    "burtebaev": "Burtebaev",
-    "lamb": "Lamb",
-    "bailey": "Bailey",
-    "vogl": "Vogl"
+    "meyer_84": {
+      "label": "Meyer 1976",
+      "authors": "H. O. Meyer, G. R. Plattner and I. Sick",
+      "ref": "Z. Phys. A 279, 41 (1976)",
+      "doi": "10.1007/BF01409090"
+    },
+    "meyer_114": {
+      "label": "Meyer 1976",
+      "authors": "H. O. Meyer, G. R. Plattner and I. Sick",
+      "ref": "Z. Phys. A 279, 41 (1976)",
+      "doi": "10.1007/BF01409090"
+    },
+    "meyer_144": {
+      "label": "Meyer 1976",
+      "authors": "H. O. Meyer, G. R. Plattner and I. Sick",
+      "ref": "Z. Phys. A 279, 41 (1976)",
+      "doi": "10.1007/BF01409090"
+    },
+    "burtebaev": {
+      "label": "Burtebaev 2008",
+      "authors": "N. Burtebaev, S. B. Igamov, R. J. Peterson, R. Yarmukhamedov and D. M. Zazulin",
+      "ref": "Phys. Rev. C 78, 035802 (2008)",
+      "doi": null
+    },
+    "lamb": {
+      "label": "Lamb 1957",
+      "authors": "W. A. S. Lamb and R. E. Hester",
+      "ref": "Phys. Rev. 107, 550 (1957)",
+      "doi": null
+    },
+    "bailey": {
+      "label": "Bailey 1950",
+      "authors": "C. L. Bailey and W. R. Stratton",
+      "ref": "Phys. Rev. 77, 194 (1950)",
+      "doi": null
+    },
+    "vogl": {
+      "label": "Vogl 1963",
+      "authors": "J. L. Vogl",
+      "ref": "PhD thesis, California Institute of Technology (1963)",
+      "doi": "10.7907/PTTG-5G83"
+    }
   },
   "atlas": [
     "12C-pg-13N"

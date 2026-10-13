@@ -25,38 +25,64 @@
   "datasets": {
     "lyons_0": {
       "label": "Lyons 2018",
+      "authors": "S. Lyons et al.",
       "ref": "Phys. Rev. C 97, 065802 (2018)",
       "doi": "10.1103/PhysRevC.97.065802"
     },
     "lyons_332": {
       "label": "Lyons 2018",
+      "authors": "S. Lyons et al.",
       "ref": "Phys. Rev. C 97, 065802 (2018)",
       "doi": "10.1103/PhysRevC.97.065802"
     },
     "lyons_2425": {
       "label": "Lyons 2018",
+      "authors": "S. Lyons et al.",
       "ref": "Phys. Rev. C 97, 065802 (2018)",
       "doi": "10.1103/PhysRevC.97.065802"
     },
     "luna_0": {
       "label": "Masha 2023, LUNA",
+      "authors": "E. Masha, L. Barbieri, J. Skowronski et al. (LUNA Collaboration)",
       "ref": "Phys. Rev. C 108, L052801 (2023)",
       "doi": "10.1103/PhysRevC.108.L052801"
     },
     "luna_332": {
       "label": "Masha 2023, LUNA",
+      "authors": "E. Masha, L. Barbieri, J. Skowronski et al. (LUNA Collaboration)",
       "ref": "Phys. Rev. C 108, L052801 (2023)",
       "doi": "10.1103/PhysRevC.108.L052801"
     },
     "luna_2425": {
       "label": "Masha 2023, LUNA",
+      "authors": "E. Masha, L. Barbieri, J. Skowronski et al. (LUNA Collaboration)",
       "ref": "Phys. Rev. C 108, L052801 (2023)",
       "doi": "10.1103/PhysRevC.108.L052801"
     },
-    "Lambert_pp": "Lambert",
-    "rolfs_0": "Rolfs",
-    "rolfs_332": "Rolfs",
-    "rolfs_2425": "Rolfs"
+    "Lambert_pp": {
+      "label": "Lambert 1972",
+      "authors": "M. Lambert, P. Midy, D. Drain, M. Amiel, H. Beaumevieille, A. Dauchy and C. Meynadier",
+      "ref": "J. Phys. (Paris) 33, 155 (1972)",
+      "doi": "10.1051/jphys:01972003302-3015500"
+    },
+    "rolfs_0": {
+      "label": "Rolfs 1975",
+      "authors": "C. Rolfs, W. S. Rodney, M. H. Shapiro and H. Winkler",
+      "ref": "Nucl. Phys. A 241, 460 (1975)",
+      "doi": "10.1016/0375-9474(75)90398-X"
+    },
+    "rolfs_332": {
+      "label": "Rolfs 1975",
+      "authors": "C. Rolfs, W. S. Rodney, M. H. Shapiro and H. Winkler",
+      "ref": "Nucl. Phys. A 241, 460 (1975)",
+      "doi": "10.1016/0375-9474(75)90398-X"
+    },
+    "rolfs_2425": {
+      "label": "Rolfs 1975",
+      "authors": "C. Rolfs, W. S. Rodney, M. H. Shapiro and H. Winkler",
+      "ref": "Nucl. Phys. A 241, 460 (1975)",
+      "doi": "10.1016/0375-9474(75)90398-X"
+    }
   },
   "atlas": [
     "20Ne-pg-21Na"

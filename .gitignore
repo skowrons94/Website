@@ -50,6 +50,9 @@ server/evaluations/*/extrapolations-grid/
 # What a page draws before its session starts (server/app/initial.py)
 server/evaluations/*/initial.json
 server/evaluations/*/.initial-*
+# The shipped-parameter extrapolations written next to initial.json by app.warm
+# and the first session (server/app/initial.py): large, and rebuilt when stale.
+server/evaluations/*/initial-extrapolations.json
 
 # Written by scripts/search-index.mjs before every build.
 public/search/

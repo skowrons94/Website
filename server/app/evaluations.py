@@ -18,8 +18,10 @@ server's start-up log and the build report it instead.
 ``analysis`` is who did the R-matrix analysis, which need not be the same
 person.  The older single ``author`` field is still read, as ``analysis``.
 ``title``, ``channels`` and ``reactions`` override the values derived from the
-model.  ``datasets`` names data files by stem, either as a string or as
-``{"label", "ref", "doi"}``; unlisted files are named by :func:`dataset_label`.
+model.  ``datasets`` names data files by stem, as
+``{"label", "authors", "ref", "doi"}`` (or ``"pending"`` instead of ``ref``;
+a bare string is still read, but the check refuses it); unlisted files are
+named by :func:`dataset_label`.
 """
 
 import json
@@ -73,11 +75,15 @@ class Evaluation:
         return dataset_label(stem)
 
     def dataset_source(self, data_file: str) -> Dict:
-        """``{"ref", "doi"}`` of a data file, where ``info.json`` gives them."""
+        """``{"authors", "ref", "doi", "pending"}`` of a data file, where
+        ``info.json`` gives them (``pending``: true when the publication is
+        not known yet)."""
         _, entry = self._dataset_entry(data_file)
         if not isinstance(entry, dict):
-            return {"ref": None, "doi": None}
-        return {"ref": _text(entry.get("ref")), "doi": _bare_doi(entry.get("doi"))}
+            return {"authors": None, "ref": None, "doi": None, "pending": False}
+        return {"authors": _text(entry.get("authors")), "ref": _text(entry.get("ref")),
+                "doi": _bare_doi(entry.get("doi")),
+                "pending": bool(_text(entry.get("pending"))) and not _text(entry.get("ref"))}
 
     @property
     def entrance_label(self) -> Optional[ChannelLabel]:
