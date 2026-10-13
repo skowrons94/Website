@@ -53,14 +53,14 @@ details: >-
   further analysis of direct capture and resonances at low energy followed
   (Takács et al. 2024). At TUNL, Kelly et al. (2017) measured the low-energy
   resonances with implanted targets. At higher energies, the resonances used to
-  normalise the low-energy data were remeasured at HZDR (Depalo et al. 2015) and,
+  normalize the low-energy data were remeasured at HZDR (Depalo et al. 2015) and,
   in inverse kinematics, at DRAGON (Lennarz et al. 2020; Williams et al. 2020),
   where the strength of the E_cm = 458 keV reference resonance came out
   0.467(14) eV, significantly lower than earlier values.
 status: improving
 status_note: >-
   The low-energy resonances are now measured or excluded and the rate uncertainty
-  at 0.1 GK fell by about three orders of magnitude; the normalisation to the
+  at 0.1 GK fell by about three orders of magnitude; the normalization to the
   higher-energy reference resonances and the non-resonant component remain under
   discussion.
 status_note_it: >-
@@ -157,7 +157,7 @@ measurements:
     refs: [takacs2024]
 evaluations: [angulo1999]
 open_questions:
-  - The strength of the E_cm = 458 keV reference resonance, where the DRAGON value is significantly lower than earlier forward-kinematics results; strengths normalised to it inherit the discrepancy.
+  - The strength of the E_cm = 458 keV reference resonance, where the DRAGON value is significantly lower than earlier forward-kinematics results; strengths normalized to it inherit the discrepancy.
   - The size of the non-resonant component (direct capture and subthreshold states) between the resonances.
   - Whether the updated rate is enough for AGB models to reproduce the sodium–oxygen anticorrelation in globular clusters.
 open_questions_it:

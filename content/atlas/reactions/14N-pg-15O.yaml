@@ -35,7 +35,7 @@ details: >-
   6.79 MeV excited state of ¹⁵O and to its ground state, which makes the
   extrapolation sensitive to the γ-ray summing and to the subthreshold state at
   6.79 MeV. The width of that state, and so its contribution at low energy,
-  has been probed through its lifetime and through asymptotic normalisation
+  has been probed through its lifetime and through asymptotic normalization
   coefficients from transfer reactions. The LUNA measurements at the 400 kV
   accelerator under Gran Sasso extended the data down to 70 keV, much closer
   to the solar energies than any surface experiment, and gave a total S(0)
@@ -82,8 +82,8 @@ measurements:
     energy: "proton-transfer reactions"
     energy_it: "reazioni di trasferimento di protoni"
     note: >-
-      Asymptotic normalisation coefficients for ¹⁴N + p → ¹⁵O from
-      proton-transfer reactions, which fix the normalisation of the direct
+      Asymptotic normalization coefficients for ¹⁴N + p → ¹⁵O from
+      proton-transfer reactions, which fix the normalization of the direct
       capture to the ¹⁵O states and constrain the S-factor at zero energy.
     refs: [mukhamedzhanov2003]
   - year: 2004

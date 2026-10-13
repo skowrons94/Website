@@ -57,7 +57,7 @@ measurements:
     energy_it: "80–810 keV (energia del protone)"
     note: >-
       Cross section of the α₀ channel measured with a 350 kV implanter and a
-      1 MV accelerator, normalised at Ep = 353.4 keV. For decades this was the
+      1 MV accelerator, normalized at Ep = 353.4 keV. For decades this was the
       main direct data set at low energy and the basis of the recommended
       S(0).
     refs: [redder1982]

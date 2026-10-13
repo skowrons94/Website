@@ -36,7 +36,7 @@ details: >-
   that also govern ¹⁵N(p,α)¹²C, interfering with each other and with direct
   capture to the ¹⁶O ground state. The non-resonant contribution and the
   interference sign between the resonances determine the S-factor below the
-  first resonance. Asymptotic normalisation coefficients (ANCs) from transfer
+  first resonance. Asymptotic normalization coefficients (ANCs) from transfer
   reactions constrain the direct-capture component. The LUNA data, from 70 to
   370 keV, and the Notre Dame data, from 130 keV to 1.8 MeV, give a rate about
   a factor of 2 below the NACRE and CF88 compilations, with an uncertainty
@@ -57,7 +57,7 @@ measurements:
     energy: "transfer reactions; R-matrix fit"
     energy_it: "reazioni di trasferimento; fit R-matrix"
     note: >-
-      Asymptotic normalisation coefficients for ¹⁵N + p → ¹⁶O fix the direct
+      Asymptotic normalization coefficients for ¹⁵N + p → ¹⁶O fix the direct
       capture to the ¹⁶O ground state. The R-matrix fit gives about one CN
       catalyst lost to the second cycle every 2200 ± 300 cycles, instead of
       about 1000 in the NACRE compilation.

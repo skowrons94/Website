@@ -424,7 +424,7 @@ terms:
       The time after which half of a sample of a radioactive nucleus has
       decayed. It ranges from fractions of a second to billions of years. The
       atlas takes half-lives from the NUBASE2020 evaluation; in a star, where
-      the atoms are ionised, a half-life that depends on electrons (electron
+      the atoms are ionized, a half-life that depends on electrons (electron
       capture) can be different.
     text_it: >-
       Il tempo dopo il quale metà di un campione di un nucleo radioattivo è
@@ -817,7 +817,7 @@ terms:
     see: [s-factor, resonance, anc]
 
   - id: anc
-    term: Asymptotic normalisation coefficient
+    term: Asymptotic normalization coefficient
     term_it: Coefficiente di normalizzazione asintotica
     also: ANC
     text: >-
@@ -912,7 +912,7 @@ terms:
     see: [cross-section]
 
   - id: normalisation
-    term: Normalisation
+    term: Normalization
     term_it: Normalizzazione
     also: scale factor, systematic uncertainty
     also_it: fattore di scala, incertezza sistematica
@@ -920,7 +920,7 @@ terms:
       Every measured data set carries an overall scale uncertainty, from the
       beam current, the number of target nuclei or the detector efficiency,
       which moves all its points up or down together. In a fit such as an
-      R-matrix evaluation each data set may be given a normalisation factor,
+      R-matrix evaluation each data set may be given a normalization factor,
       allowed to move only within its quoted scale uncertainty.
     text_it: >-
       Ogni insieme di dati misurati porta con sé un'incertezza di scala
@@ -963,7 +963,7 @@ terms:
       passes the Coulomb barrier easily. Selecting the events in which the
       rest of the carrier is only a spectator gives the energy dependence of
       the low-energy reaction, without Coulomb suppression or electron
-      screening. The result is normalised to direct data at higher energy.
+      screening. The result is normalized to direct data at higher energy.
     text_it: >-
       Un metodo indiretto. La reazione che interessa è nascosta dentro un'altra
       a energia più alta: il proiettile viene portato dentro da un nucleo più

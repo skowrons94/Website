@@ -146,7 +146,7 @@ methods:
       with no need for a γ-ray efficiency model, and it works with radioactive
       beams. Systematic limits are the separator acceptance and transmission,
       the charge-state distribution of the recoils, the beam suppression, and
-      the gas-target density and beam normalisation.
+      the gas-target density and beam normalization.
     details_it: >-
       In una cattura radiativa A(a,γ)B studiata come a(A,γ)B, il nucleo di
       rinculo B esce dal bersaglio in uno stretto cono in avanti. Un separatore
@@ -284,10 +284,10 @@ methods:
       the momentum distribution of x inside a, and the half-off-energy-shell
       two-body cross section. The method gives the energy dependence of the
       bare-nucleus cross section without Coulomb suppression or electron
-      screening; its absolute scale is normalised to direct data at higher
+      screening; its absolute scale is normalized to direct data at higher
       energies. Systematic limits are the validity of the quasi-free
       factorisation, the momentum distribution adopted, the off-shell
-      corrections and the normalisation.
+      corrections and the normalization.
     details_it: >-
       Una reazione a due corpi A + x → c + C a energia sotto la barriera
       coulombiana si studia attraverso una reazione a tre corpi A + a → c + C +
@@ -308,7 +308,7 @@ methods:
       - Raggiunge energie molto al di sotto di quelle accessibili direttamente, senza schermaggio elettronico.
       - Si applica alle reazioni indotte da particelle cariche e a quelle indotte da neutroni.
     limits:
-      - Requires normalisation to direct data.
+      - Requires normalization to direct data.
       - Depends on the quasi-free reaction model and its assumptions.
     limits_it:
       - Richiede una normalizzazione ai dati diretti.
@@ -330,7 +330,7 @@ methods:
       reazione di trasferimento a energia più alta può misurare l'ampiezza di
       quella coda, che dà poi il tasso di cattura a bassa energia.
     details: >-
-      The asymptotic normalisation coefficient (ANC) fixes the amplitude of
+      The asymptotic normalization coefficient (ANC) fixes the amplitude of
       the bound-state wave function outside the nuclear interior. For
       peripheral transfer reactions, measured at energies where the cross
       section is large, the ANC can be extracted with much smaller dependence
@@ -403,7 +403,7 @@ methods:
       medie più brevi, dove l'attenuazione è quasi completa.
     strengths:
       - Constrains the width of a state that cannot be reached directly at low energy.
-      - Independent of the capture cross section and its normalisation.
+      - Independent of the capture cross section and its normalization.
     strengths_it:
       - Vincola la larghezza di uno stato che non si raggiunge direttamente a bassa energia.
       - È indipendente dalla sezione d'urto di cattura e dalla sua normalizzazione.
@@ -526,7 +526,7 @@ methods:
       strappano un neutrone al nucleo prodotto, e quello che si impara sul
       nucleo serve a calcolare la cattura.
     details: >-
-      Monoenergetic, polarised photon beams from laser Compton backscattering,
+      Monoenergetic, polarized photon beams from laser Compton backscattering,
       such as HIγS at the Triangle Universities Nuclear Laboratory, measure the
       (γ,n) cross section of the capture product from the neutron separation
       energy upwards; with (γ,γ′) data below it they fix the γ-ray strength

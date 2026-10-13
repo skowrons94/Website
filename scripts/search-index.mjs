@@ -129,6 +129,8 @@ const SYNONYMS = {
   "/glossary#s-process": "gold · oro · heavy elements · elementi pesanti · slow neutron capture",
   "/glossary#branch-point": "isomer · isomero · bound-state beta decay · decadimento beta in stato legato · stellar half-life · thermometer · termometro",
   "/glossary#half-life": "bound-state beta decay · bound-state β decay · decadimento beta in stato legato · stellar half-life · tempo di dimezzamento stellare · ionised atoms · atomi ionizzati",
+  // the site writes -ize (docs/STYLE.md); British spellings still find the entry
+  "/glossary#normalisation": "normalisation · normalised · renormalised",
   "/glossary#s-only": "s-only · s only · solo s · r-only · solo r · shielded · schermati",
   "/glossary#r-process": "kilonova · kilonovae · neutron star merger · fusione di stelle di neutroni · GW170817 · rapid neutron capture · cattura rapida di neutroni · supernova",
   "/atlas#carbon": `${CARBON_FUSION} · supernova · type Ia supernova · supernova di tipo Ia · superburst`,

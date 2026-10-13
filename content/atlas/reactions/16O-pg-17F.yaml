@@ -32,13 +32,13 @@ details: >-
   energy dependence is therefore well described by direct-capture and
   microscopic models, and the rate rests on surface data scaled with such a
   model. Solar Fusion II adopts S(0) = 10.6 ± 0.8 keV b from model
-  calculations normalised to the data of 1973 and 1997. A 2008 evaluation,
+  calculations normalized to the data of 1973 and 1997. A 2008 evaluation,
   which corrected the data sets since 1958 for coincidence summing and
   stopping powers, gives the rate with an uncertainty of about 7 %.
 status: well-known
 status_note: >-
   A non-resonant direct-capture reaction whose energy dependence is fixed by
-  theory; the rate is known to about 7 %, limited by the normalisation of the
+  theory; the rate is known to about 7 %, limited by the normalization of the
   surface data.
 status_note_it: >-
   Una reazione di cattura diretta non risonante il cui andamento in energia è

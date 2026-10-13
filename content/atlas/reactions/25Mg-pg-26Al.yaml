@@ -99,7 +99,7 @@ measurements:
     energy_it: "risonanza a E_cm = 304 keV"
     note: >-
       Strength of the 304 keV resonance with higher accuracy than before, to
-      serve as a normalisation for the low-energy resonances.
+      serve as a normalization for the low-energy resonances.
     refs: [limata2010]
   - year: 2012
     facility: luna-400

@@ -83,7 +83,7 @@ Two features follow from that being an integral over the outside.
 
 It is **non-resonant**: a smooth function of energy, with no poles, contributing a
 slowly varying background to the S-factor. And it is controlled by the
-**asymptotic normalisation coefficient** of the final state, not by an interior
+**asymptotic normalization coefficient** of the final state, not by an interior
 property: what the integral samples is the tail of the bound-state wave function,
 so a loosely bound final state — a large ANC — gives a large direct-capture
 amplitude. This is why the low-energy capture cross section on light nuclei can be
@@ -147,7 +147,7 @@ the channel-capture contribution moves the cross section at
 $E_{\mathrm{c.m.}} \approx 4.9$ MeV from $2.61 \times 10^{-7}$ to
 $6.56 \times 10^{-7}$ barn — a factor 2.5 — and shifts the total-capture excitation
 function by up to 108 %. The dominant single term in that coherent sum has a
-collision-matrix element of order $10^{-4}$ against an external normalisation of
+collision-matrix element of order $10^{-4}$ against an external normalization of
 about 14; it is the product that matters, and it is comparable to everything else
 combined.
 

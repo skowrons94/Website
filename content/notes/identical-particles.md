@@ -162,7 +162,7 @@ Three consequences follow for an evaluation of this system.
 $90^\circ$, data at $\theta$ and at $180^\circ - \theta$ are the same measurement.
 Reporting both is double counting, and fitting both weights those angles twice.
 
-**The Coulomb baseline is not Rutherford.** Normalising elastic data to a
+**The Coulomb baseline is not Rutherford.** Normalizing elastic data to a
 Rutherford calculation — the standard way of removing the trivial energy and angle
 dependence — is wrong here by the exchange terms, which near $90^\circ$ amount to a
 factor of two and, away from it, to an oscillation. What the oscillation is

@@ -54,7 +54,7 @@ width** $\Gamma_c$, the decay rate into channel $c$.
 The textbook relation between the two is $\Gamma_c = 2\gamma_c^2 P_c$, with $P_c$
 the penetrability — the probability of getting out through the Coulomb and
 centrifugal barriers. That formula is incomplete. The correct one carries a
-normalisation,
+normalization,
 
 $$
 \Gamma_c \;=\; \frac{2\,\gamma_c^{2}\,P_c(E_\lambda)}{N},
@@ -65,8 +65,8 @@ $$
 where $S_c$ is the shift function of channel $c$. Everything in this note follows
 from reading $N$ correctly, so it is worth doing slowly.
 
-$N$ is a **normalisation**. A physical state must be normalised over all space,
-but the pole describes only the inside. Splitting the normalisation integral at
+$N$ is a **normalization**. A physical state must be normalized over all space,
+but the pole describes only the inside. Splitting the normalization integral at
 $r = a$,
 
 $$
@@ -90,7 +90,7 @@ adequate. $N = 2$ means half in, half out. $N = 34$ means 97 % of the state is
 outside the box one has drawn.
 
 > This identification is exact for a channel that is closed at $E_\lambda$, where
-> $\mathrm{d}S/\mathrm{d}E$ is literally the normalisation integral of the
+> $\mathrm{d}S/\mathrm{d}E$ is literally the normalization integral of the
 > exterior Whittaker tail. Above threshold it is the analytic continuation of the
 > same object, and the "fraction outside" reading is the standard physical gloss
 > rather than a theorem. None of the algebra below depends on the
@@ -197,7 +197,7 @@ lives. Second, the budget consumed falls steadily as the channel radius grows:
 ### What the ceiling does to the inverse transformation
 
 Analyses that fit *observed* widths rather than reduced ones must invert the width
-relation. Solving the budget identity for the normalisation and substituting gives
+relation. Solving the budget identity for the normalization and substituting gives
 
 $$
 \gamma_c^{2} \;=\; \frac{\Gamma_c}{P_c\,\mathcal{D}},
@@ -355,7 +355,7 @@ the level energy, $P$ and $\mathrm{d}S/\mathrm{d}E$ diverge and
 $\mathrm{d}S/\mathrm{d}E$ can change sign. In the example, a depth of 75 MeV drives
 $\mathrm{d}S/\mathrm{d}E$ to $-110$ and $N$ below unity, while 100 MeV gives
 $N = 54.6$ — worse than using no potential at all. A negative
-$\mathrm{d}S/\mathrm{d}E$ means the channel adds normalisation budget instead of
+$\mathrm{d}S/\mathrm{d}E$ means the channel adds normalization budget instead of
 spending it, and the interpretation of the split integral breaks down. Second, one
 has traded a single arbitrary choice, $a$, for four: $a$ and the three potential
 parameters, none of which the data meaningfully constrain. The diagnostics must be
@@ -383,7 +383,7 @@ checked afterwards either way.
 
 The broader lesson generalises beyond R-matrix theory. A model parameter is only a
 measurement if the observables depend on it. Here the dependence is switched off
-smoothly, by a normalisation that grows in step with the coupling, and the switch
+smoothly, by a normalization that grows in step with the coupling, and the switch
 is thrown by a quantity the analyst chooses rather than measures. Any level whose
-normalisation $N$ departs appreciably from unity should be treated as a candidate
+normalization $N$ departs appreciably from unity should be treated as a candidate
 for this behaviour before, not after, an uncertainty analysis is attempted.

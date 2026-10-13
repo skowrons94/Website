@@ -34,7 +34,7 @@ details: >-
   At low energy the capture proceeds by direct E1 capture to the ¹³N ground
   state, which interferes with the broad resonance at E = 422 keV formed by the
   first excited state of ¹³N. The S-factor at stellar energies is obtained from
-  R-matrix fits, so the result depends on the normalisation of the data and on
+  R-matrix fits, so the result depends on the normalization of the data and on
   the width of that resonance. Measurements since 2023, prompt-γ and
   activation, give S-factors about 25 % lower than most of the earlier
   literature. The LUNA data reach E = 60 keV, where the cross section enters the
@@ -42,7 +42,7 @@ details: >-
 status: improving
 status_note: >-
   Direct data now reach 60 keV with systematic uncertainties of 7–8 %; the
-  remaining question is the normalisation difference of about 25 % with
+  remaining question is the normalization difference of about 25 % with
   respect to the older data sets.
 status_note_it: >-
   I dati diretti arrivano ora a 60 keV con incertezze sistematiche del 7–8 %; la
@@ -94,7 +94,7 @@ measurements:
     energy_it: "1,0–2,5 MeV (energia del protone)"
     note: >-
       Absolute cross section over a wide energy range to fix the overall
-      normalisation and the interference between overlapping resonances; the
+      normalization and the interference between overlapping resonances; the
       extrapolation to low energy uses a Bayesian uncertainty analysis.
     refs: [kettner2023]
   - year: 2023
@@ -109,7 +109,7 @@ measurements:
     refs: [skowronski2023]
 evaluations: [acharya2025]
 open_questions:
-  - The 25 % normalisation difference between the measurements since 2023 and the older data sets.
+  - The 25 % normalization difference between the measurements since 2023 and the older data sets.
   - The radiative width of the 422 keV resonance, which dominates the rate at higher temperatures.
 open_questions_it:
   - "La differenza di normalizzazione del 25 % tra le misure dal 2023 in poi e gli insiemi di dati più vecchi."
