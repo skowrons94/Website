@@ -1,0 +1,22 @@
+{
+  "server": {
+    "open": 0.5,
+    "prepare_data": 0.01,
+    "prepare_fine": 0.7,
+    "prepare_extrap": 0.4,
+    "edit": 0.03,
+    "extrap_edit": 0.01,
+    "measured": "2026-10"
+  },
+  "browser": {
+    "open": 6,
+    "prepare_data": 0.1,
+    "prepare_fine": 2,
+    "prepare_extrap": 1,
+    "edit": 0.2,
+    "extrap_edit": 0.1,
+    "data": 0.1,
+    "fine": 0.2,
+    "measured": "2026-10"
+  }
+}

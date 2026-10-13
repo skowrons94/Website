@@ -25,6 +25,9 @@ CORS configuration anywhere and nothing to point at anything else.
 /it/…                the same pages in Italian (every route above, under /it)
 ```
 
+Adding an R-matrix evaluation: [docs/ADDING-AN-EVALUATION.md](docs/ADDING-AN-EVALUATION.md)
+(`make add-evaluation ID=… AZR=…`).
+
 ## Deploying
 
 Requires a host with Docker and Compose, and the domain's A/AAAA records
@@ -413,34 +416,23 @@ file lists the fields.
 
 ### A new evaluation
 
-Drop a directory containing a `.azr` file into `server/evaluations/`, with its
-`data/` beside it and an optional `info.json`:
+**[docs/ADDING-AN-EVALUATION.md](docs/ADDING-AN-EVALUATION.md)** is the guide,
+with a checklist. In short:
 
-```json
-{
-  "id": "13N",
-  "title": "^{13}\\text{N}",
-  "reference": "10.1103/PhysRevC.111.035802",
-  "paper": {"authors": "J. Skowronski et al.", "title": "…",
-            "journal": "Phys. Rev. C 111, 035802", "year": 2025},
-  "analysis": "J. Skowronski",
-  "channels": ["p", "\\gamma", "\\gamma_{1}"],
-  "datasets": {"kettner_0": {"label": "Kettner 2023",
-                             "ref": "Phys. Rev. C 108, 035805 (2023)",
-                             "doi": "10.1103/PhysRevC.108.035805"}}
-}
+```sh
+make add-evaluation ID=12C AZR=~/azure/12C/12C.azr   # copies the model and its data, makes the paths
+                                                    # relative, writes info.json with TODOs to fill in
+npm run check:evaluations                            # also runs before every build
+cd server && python -m app.warm 12C                  # caches its curves, writes timings.json
 ```
 
-`paper.authors` is the paper as cited (first author et al.); `analysis` is who
-did the R-matrix analysis — they need not be the same person. `datasets` names
-data files (by stem), as a plain string or with their source.
-
-`title` and `channels` are rendered as LaTeX, and both are optional: with no
-`info.json` at all the compound nucleus and the channel labels are derived from
-the model's own particle pairs. The directory is bind-mounted into the API
-container, so `make evaluations` serves it at once; its page, though, is
-generated when the site is built (an id the build has not seen is a 404), so
-run `make update` too.
+An evaluation is one directory, `server/evaluations/<id>/`: the `.azr`, its
+`data/`, `info.json` (paper, status, dataset labels, the one-line purpose on its
+card in English and Italian, its atlas pages; defined by
+`server/app/info.schema.json`) and `timings.json` (written by `app.warm`). The
+directory is bind-mounted into the API container, so `make evaluations` serves
+it at once; its page, though, is generated when the site is built (an id the
+build has not seen is a 404), so run `make update` too.
 
 Only the inputs are committed. `output/` and `checks/` are regenerated, with one
 exception: `output/intEC.dat` and `output/intEC.extrap` hold the external-capture

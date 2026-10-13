@@ -46,6 +46,13 @@ class SessionError(RuntimeError):
     """Raised when a session cannot be created or is no longer usable."""
 
 
+class ModelError(SessionError):
+    """AZURE2 could not start the evaluation's model at all (a broken or
+    missing data file, an absolute path from another machine...): reopening
+    will not help, so it is reported as such rather than as an expired session.
+    ``python -m app.check <id>`` says what is wrong with the files."""
+
+
 class CapacityError(SessionError):
     """Every model slot is busy: the client should retry after a while
     (HTTP 503 with ``Retry-After``), not reopen at once."""
@@ -870,8 +877,9 @@ class SessionManager:
         except Exception as err:
             with self._lock:
                 self._pending -= 1
-            raise SessionError(
-                f"could not start AZURE2 for {evaluation.id}: {err}") from err
+            raise ModelError(
+                f"could not start AZURE2 for {evaluation.id}: {err} "
+                f"(python -m app.check {evaluation.id} says what is wrong)") from err
         finally:
             self._visitor_working(-1)
         session.on_visitor_work = self._visitor_working

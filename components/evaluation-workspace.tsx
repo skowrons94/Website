@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Tex } from "@/components/tex"
 import { Sci } from "@/components/sci"
 import { SessionProvider, changedValues, useSession } from "@/contexts/session-context"
+import type { TypicalTimings } from "@/lib/eval-timings"
 import { IN_BROWSER } from "@/lib/api"
 import { onEngineProgress } from "@/lib/browser-engine"
 import { defaultSelection, type Quantity } from "@/lib/eval-plot"
@@ -111,11 +112,13 @@ export interface WorkspaceProps {
   scatteringOnly?: boolean
   /** Where the atlas places the headline reaction (T₉, label): the Gamow windows offered. */
   temperatures?: { T9: number; label: string }[]
+  /** The evaluation's timings.json (python -m app.warm): the clock's first estimate. */
+  typical?: TypicalTimings | null
 }
 
 export default function EvaluationWorkspace(props: WorkspaceProps) {
   return (
-    <SessionProvider>
+    <SessionProvider typical={props.typical}>
       <Workspace {...props} />
     </SessionProvider>
   )

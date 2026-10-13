@@ -2,6 +2,7 @@
   "id": "23Na",
   "title": "^{23}\\text{Na}",
   "reference": "10.1103/PhysRevC.109.064627",
+  "status": "published",
   "paper": {
     "authors": "M. P. Takács et al.",
     "title": "Direct capture cross section and resonances in the ²²Ne(p,γ)²³Na reaction at low energy",
@@ -9,6 +10,8 @@
     "year": 2024
   },
   "analysis": "J. Skowronski",
+  "purpose": "The main way stars make sodium-23, the only stable sodium isotope, while they burn hydrogen.",
+  "purpose_it": "Il modo principale in cui le stelle producono il sodio-23, l'unico isotopo stabile del sodio, mentre bruciano idrogeno.",
   "channels": [
     "p",
     "\\gamma_{0}",
@@ -62,7 +65,11 @@
       "label": "Ferraro 2018, LUNA",
       "ref": "Phys. Rev. Lett. 121, 172701 (2018)",
       "doi": "10.1103/PhysRevLett.121.172701"
-    }
+    },
+    "rolfs1975": "Rolfs (1975)"
   },
-  "split_total_capture": true
+  "split_total_capture": true,
+  "atlas": [
+    "22Ne-pg-23Na"
+  ]
 }

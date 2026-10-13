@@ -17,11 +17,18 @@ fresh session once the cache is full, as a visitor meets them: open, the
 background preparation of each derived model, an edit once prepared, the
 extrapolations after it (and an energy × angle grid, where there is one).
 They depend on the machine and on what else runs; run this when the server
-is quiet.
+is quiet.  They are also written to the evaluation's ``timings.json``
+(:func:`write_timings`), which is committed with it: the site ships those as
+the estimate it shows before the server answers ("opens in about N s"), so
+they are never typed by hand.
+
+It ends with one line per evaluation (ok / failed) and exits with status 1
+when any failed, so a script or a person running it cannot miss a failure.
 """
 
 import argparse
 import datetime
+import json
 import logging
 import os
 import sys
@@ -141,8 +148,52 @@ def write_initial(evaluation, timings, out):
           f"({', '.join(p for p in initial_module.PARTS if p in payload)})", file=out, flush=True)
 
 
+TIMINGS_FILE = "timings.json"
+
+
+def page_timings(measured):
+    """The measured timings under the names the page uses (lib/api.ts
+    ``Timings``): ``prepare.data`` -> ``prepare_data``, ``extrap`` (after an
+    edit) -> ``extrap_edit``; the bookkeeping fields are kept as they are."""
+    out = {}
+    for key, value in (measured or {}).items():
+        if key == "prepare" and isinstance(value, dict):
+            out.update({f"prepare_{step}": v for step, v in value.items()})
+        elif key == "extrap":
+            out["extrap_edit"] = value
+        else:
+            out[key] = value
+    return out
+
+
+def write_timings(evaluation, measured, side="server"):
+    """Store ``measured`` as the ``side`` part of the evaluation's
+    ``timings.json``, keeping the other part (the browser's, measured in a
+    browser: docs/ADDING-AN-EVALUATION.md)."""
+    path = os.path.join(evaluation.path, TIMINGS_FILE)
+    try:
+        with open(path, encoding="utf-8") as f:
+            stored = json.load(f)
+        if not isinstance(stored, dict):
+            stored = {}
+    except (OSError, ValueError):
+        stored = {}
+    stored[side] = page_timings(measured)
+    tmp = f"{path}.tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(stored, f, indent=2)
+        f.write("\n")
+    os.replace(tmp, path)
+
+
 def warm(root, out=sys.stdout, only=None, force=False, timings=True):
-    for evaluation in evaluations_module.discover(root):
+    """Warm every evaluation (or those in ``only``); returns {id: error or None}."""
+    results = {}
+    only = set(only or ())
+    found = evaluations_module.discover(root)
+    for missing in sorted(only - {e.id for e in found}):
+        results[missing] = "no such evaluation (or AZURE2 cannot read its .azr)"
+    for evaluation in found:
         if only and evaluation.id not in only:
             continue
         try:
@@ -152,11 +203,36 @@ def warm(root, out=sys.stdout, only=None, force=False, timings=True):
                     and (stored.get("timings") or not timings) \
                     and initial_module.has_extrapolations(evaluation.path):
                 print(f"{evaluation.id:6s} initial.json valid", file=out, flush=True)
+                if stored.get("timings") and not os.path.isfile(
+                        os.path.join(evaluation.path, TIMINGS_FILE)):
+                    write_timings(evaluation, stored["timings"])
+                results[evaluation.id] = None
                 continue
             measured = measure(evaluation, out) if timings else (stored or {}).get("timings")
             write_initial(evaluation, measured, out)
+            if timings and measured:
+                write_timings(evaluation, measured)
+            results[evaluation.id] = None
         except Exception as err:            # one bad model must not stop the rest
-            print(f"{evaluation.id:6s} failed: {type(err).__name__}: {err}", file=out, flush=True)
+            results[evaluation.id] = f"{type(err).__name__}: {err}"
+            print(f"{evaluation.id:6s} failed: {results[evaluation.id]}", file=out, flush=True)
+    return results
+
+
+def summary(results, out=sys.stdout):
+    """One line per evaluation; the exit status (1 when any failed)."""
+    print("\nsummary:", file=out)
+    for eid, err in results.items():
+        print(f"  {eid:8s} {'ok' if err is None else 'FAILED  ' + err}", file=out)
+    failed = [eid for eid, err in results.items() if err is not None]
+    if failed:
+        print(f"\n{len(failed)} of {len(results)} failed ({', '.join(failed)}). "
+              f"`python -m app.check {' '.join(failed)}` says what is wrong with the files.",
+              file=out)
+        return 1
+    if not results:
+        print("  (no evaluations)", file=out)
+    return 0
 
 
 if __name__ == "__main__":
@@ -167,4 +243,5 @@ if __name__ == "__main__":
     parser.add_argument("--no-timings", action="store_true", help="skip the timing session")
     parser.add_argument("--root", default=Config.EVALUATIONS_DIR)
     a = parser.parse_args()
-    warm(a.root, only=set(a.only), force=a.force, timings=not a.no_timings)
+    sys.exit(summary(warm(a.root, only=set(a.only), force=a.force,
+                          timings=not a.no_timings)))

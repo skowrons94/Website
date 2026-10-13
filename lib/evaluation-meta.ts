@@ -2,6 +2,8 @@ import { execFileSync } from "node:child_process"
 import fs from "node:fs"
 import path from "node:path"
 
+import { browserEstimate, timingsOf, type TypicalTimings } from "./eval-timings"
+
 /**
  * What the evaluation pages know about an evaluation *at build time*, read
  * from the repository rather than from the AZURE2 API: the `info.json` beside
@@ -51,6 +53,11 @@ export interface EvaluationMeta {
   citation: string | null
   summary: string | null
   summary_it: string | null
+  /** One plain sentence on what the reaction is for (info.json `purpose` / `purpose_it`). */
+  purpose: string | null
+  purpose_it: string | null
+  /** Typical timings (timings.json, written by `python -m app.warm`), or null. */
+  timings: TypicalTimings | null
   filename: string | null
   /** Data segments in the model, and how many are active. */
   segments: number
@@ -117,6 +124,16 @@ function datasetsOf(value: unknown): Record<string, DatasetSource> {
   return out
 }
 
+/** timings.json: its `server` part, and its `browser` part or an estimate from the server's. */
+function timingsFile(file: string): TypicalTimings | null {
+  if (!fs.existsSync(file)) return null
+  const raw = readJson(file)
+  const server = timingsOf(raw.server)
+  const browser = timingsOf(raw.browser)
+  if (Object.keys(server).length === 0 && Object.keys(browser).length === 0) return null
+  return { server, browser: Object.keys(browser).length ? browser : browserEstimate(server) }
+}
+
 /** The date (YYYY-MM-DD) of the last commit touching the evaluation, if git can tell. */
 function lastChange(id: string): string | null {
   try {
@@ -157,6 +174,9 @@ export function evaluationMeta(id: string): EvaluationMeta {
     citation: null,
     summary: null,
     summary_it: null,
+    purpose: null,
+    purpose_it: null,
+    timings: null,
     filename: null,
     segments: 0,
     active: 0,
@@ -182,6 +202,9 @@ export function evaluationMeta(id: string): EvaluationMeta {
     citation: text(info.citation),
     summary: text(info.summary),
     summary_it: text(info.summary_it),
+    purpose: text(info.purpose),
+    purpose_it: text(info.purpose_it),
+    timings: timingsFile(path.join(dir, "timings.json")),
     filename: azr,
     datasets: datasetsOf(info.datasets),
   }

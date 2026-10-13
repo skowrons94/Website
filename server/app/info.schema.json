@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "info.schema.json",
+  "title": "An R-matrix evaluation's info.json",
+  "description": "Everything the site shows about an evaluation that the .azr file cannot say. Checked by `npm run check:evaluations` and `python -m app.check`; explained in docs/ADDING-AN-EVALUATION.md. Only the subset of JSON Schema used here is understood by those checkers (type, required, enum, pattern, minLength, minItems, minimum, properties, additionalProperties, items, anyOf).",
+  "type": "object",
+  "required": ["status", "analysis", "reactions", "purpose", "purpose_it", "datasets"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "id": {
+      "type": "string",
+      "description": "Optional. The directory name is the id; when given here it must be the same."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "LaTeX title, e.g. ^{13}\\text{N}. Derived from the model when absent."
+    },
+    "status": {
+      "enum": ["published", "submitted", "in-progress", "unpublished"],
+      "description": "published: in a journal (give `reference`); submitted: sent to a journal; in-progress: still being fitted; unpublished: finished, not (yet) in a paper."
+    },
+    "reference": {
+      "type": ["string", "null"],
+      "pattern": "^10\\.\\d{4,9}/[^\\s]+[^\\s.,;]$",
+      "description": "The paper's DOI, bare: 10.1103/PhysRevC.111.035802 (no https://doi.org/, no doi:)."
+    },
+    "paper": {
+      "type": "object",
+      "required": ["authors"],
+      "additionalProperties": false,
+      "properties": {
+        "authors": { "type": "string", "minLength": 1 },
+        "title": { "type": "string" },
+        "journal": { "type": "string" },
+        "year": { "type": "integer", "minimum": 1900 }
+      }
+    },
+    "analysis": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Who did the R-matrix analysis."
+    },
+    "author": { "type": "string", "description": "Older name of `analysis`." },
+    "citation": { "type": "string", "minLength": 1 },
+    "summary": { "type": "string", "minLength": 1 },
+    "summary_it": { "type": "string", "minLength": 1 },
+    "purpose": {
+      "type": "string",
+      "minLength": 10,
+      "description": "One plain sentence, in English, on what the reaction does in stars: shown on the evaluation's card."
+    },
+    "purpose_it": {
+      "type": "string",
+      "minLength": 10,
+      "description": "The same sentence in Italian."
+    },
+    "reactions": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "pattern": "^\\S+\\([^,()\\s]+,[^,()\\s]+\\)\\S+$" },
+      "description": "Unicode reaction notation, the headline reaction first: [\"¹²C(p,γ)¹³N\", \"¹²C(p,p)¹²C\"]."
+    },
+    "channels": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "LaTeX names of the particle pairs, by pair number; derived when absent."
+    },
+    "datasets": {
+      "type": "object",
+      "description": "A readable name for every data file the .azr reads, keyed by the file name without .dat.",
+      "additionalProperties": {
+        "anyOf": [
+          { "type": "string", "minLength": 1 },
+          {
+            "type": "object",
+            "required": ["label"],
+            "additionalProperties": false,
+            "properties": {
+              "label": { "type": "string", "minLength": 1 },
+              "ref": { "type": "string" },
+              "doi": { "type": "string", "pattern": "^10\\.\\d{4,9}/[^\\s]+[^\\s.,;]$" }
+            }
+          }
+        ]
+      }
+    },
+    "atlas": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[0-9A-Za-z]+-[0-9A-Za-z+]+-[0-9A-Za-z]+$" },
+      "description": "Reaction-atlas pages that link to this evaluation, by file name: [\"12C-pg-13N\"]. [] for none."
+    },
+    "split_total_capture": {
+      "type": "boolean",
+      "description": "true: draw a total-capture segment as its separate transitions."
+    },
+    "version": { "type": "string" }
+  }
+}

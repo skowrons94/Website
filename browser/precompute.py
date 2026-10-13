@@ -60,6 +60,10 @@ def main(source, destination, timings=False):
         stored = initial_module.read(evaluation.path) or {}
         measured = warm.measure(copy, sys.stdout) if timings else stored.get("timings")
         warm.write_initial(copy, measured, sys.stdout)
+        if measured and not os.path.isfile(os.path.join(evaluation.path, warm.TIMINGS_FILE)):
+            # A new evaluation nobody has warmed yet: the page's estimate
+            # ("opens in about N s") comes from these until someone does.
+            warm.write_timings(evaluation, measured)
         print(f"{evaluation.id}: {time.time() - t:.1f} s", flush=True)
 
     with open(os.path.join(destination, "index.json"), "w") as f:

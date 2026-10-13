@@ -10,7 +10,7 @@ import { Tex, texPlain } from "@/components/tex"
 import { useLang } from "@/components/lang-context"
 import { useEvalDict } from "@/components/eval-dict"
 import { IN_BROWSER, evaluationDownloadUrl, listEvaluations, type Evaluation } from "@/lib/api"
-import { typicalTimings } from "@/lib/eval-timings"
+import { typicalTimings, type TypicalTimings } from "@/lib/eval-timings"
 import { localePath } from "@/lib/locale"
 import { decimal } from "@/lib/i18n-eval"
 
@@ -24,6 +24,10 @@ export interface CardMeta {
   reference: string | null
   status: string | null
   filename: string | null
+  /** What the reaction is for, in one plain sentence, in this page's language (info.json `purpose`). */
+  purpose?: string | null
+  /** timings.json (python -m app.warm), for "opens in about N s". */
+  timings?: TypicalTimings | null
 }
 
 function Intro() {
@@ -102,9 +106,10 @@ export function EvaluationsIndex({ initial = [] }: { initial?: CardMeta[] }) {
       status: known?.status ?? api?.status ?? null,
       filename: api?.filename ?? known?.filename ?? `${id}.azr`,
       channels: api?.channels ?? null,
+      purpose: known?.purpose ?? (lang === "it" ? (api?.purpose_it ?? api?.purpose) : api?.purpose) ?? null,
       // How long opening usually takes: the server's own timings (a newer
       // API), else those shipped with the site (the browser build's own).
-      opens: (IN_BROWSER ? null : api?.timings?.open) ?? typicalTimings(id, IN_BROWSER).open ?? null,
+      opens: (IN_BROWSER ? null : api?.timings?.open) ?? typicalTimings(known?.timings, IN_BROWSER).open ?? null,
     }
   })
 
@@ -183,10 +188,10 @@ export function EvaluationsIndex({ initial = [] }: { initial?: CardMeta[] }) {
                     <Sci>{t.compound(nucleus)}</Sci>
                   </p>
                 )}
-                {/* What the reaction is for, in one plain sentence (from the reaction atlas). */}
-                {words.purposes[card.id] && (
+                {/* What the reaction is for, in one plain sentence (info.json `purpose`). */}
+                {card.purpose && (
                   <p className="mt-2 text-pretty text-sm leading-snug text-foreground/85">
-                    <Sci>{words.purposes[card.id]}</Sci>
+                    <Sci>{card.purpose}</Sci>
                     {card.opens != null && (
                       <span className="text-muted-foreground"> · {words.opensIn(decimal(Math.max(1, Math.round(card.opens)), lang))}</span>
                     )}

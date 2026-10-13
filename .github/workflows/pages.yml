@@ -74,6 +74,14 @@ jobs:
           pip install --quiet /tmp/AZURE2
           python -c "import pyazr, pyazr._azure2; print('pyazr', pyazr.__version__)"
 
+      - name: Check the evaluations, and the server's tests
+        # Before the slow steps: a broken info.json or .azr stops the build
+        # here, with what to fix (docs/ADDING-AN-EVALUATION.md).
+        run: |
+          pip install --quiet pytest
+          (cd server && python -m app.check)
+          (cd server && python -m pytest -q tests)
+
       - name: Precompute the evaluations
         # --timings: measure the typical timings the page shows (initial.json).
         run: python browser/precompute.py --timings server/evaluations build/azure2/evaluations

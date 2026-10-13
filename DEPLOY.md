@@ -104,18 +104,19 @@ The first build takes about 4 minutes on 4 cores (2.5 of them compiling
 AZURE2) and needs about 2 GB of RAM at `BUILD_JOBS=4`. Then:
 
 - `make check`: all three containers `Up`, azure2 `(healthy)`, and
-  `azure2: {... 'evaluations': 8, 'status': 'ok'}`.
+  `azure2: {... 'evaluations': N, 'status': 'ok'}`, N the number of
+  directories in `server/evaluations/`.
 - `https://<domain>/` loads with a valid certificate; `http://` and
   `https://www.<domain>` redirect to it.
-- `https://<domain>/api/health` returns JSON with `"evaluations": 8`.
-- `https://<domain>/evaluations` lists 8 evaluations. Open ¹³N: the level
+- `https://<domain>/api/health` returns JSON with `"evaluations": N`.
+- `https://<domain>/evaluations` lists the N evaluations. Open ¹³N: the level
   scheme appears within a few seconds, and the Plot tab shows curves.
 - `https://<domain>/atlas` and `https://<domain>/it` load.
 
 Then fill the results cache, once:
 
 ```sh
-make warm                # about 10 minutes; prints one line per evaluation
+make warm                # about 10 minutes; ends with ok/FAILED per evaluation
 ```
 
 Each evaluation's data and extrapolation curves at its published parameters,
@@ -140,7 +141,11 @@ make update              # rebuilds the site only (content/, app/, components/, 
 safe; unchanged layers are reused.
 
 A new or corrected evaluation under `server/evaluations/` needs only
-`make evaluations` (restarts the API, no rebuild), then `make warm`.
+`make evaluations` (restarts the API, no rebuild), then `make warm`, and
+`make update` for its page. docs/ADDING-AN-EVALUATION.md has the whole recipe
+(`make add-evaluation` on your own machine first, then commit and pull here).
+`make warm` writes `timings.json` next to each evaluation it measures: commit
+those back from the server, or run it locally before committing.
 
 **The data explorer's files** (EXFOR per-reaction data and ENSDF summaries,
 `public/data/`) are not in git, apart from the index; build them on the host

@@ -5,6 +5,8 @@
 #   make update     publish content or site changes (rebuilds the site only)
 #   make check      is it up?
 #   make logs       follow everything
+#   make add-evaluation ID=12C AZR=~/azure/12C.azr   add an R-matrix evaluation
+#                   (docs/ADDING-AN-EVALUATION.md)
 #
 # `make` on its own prints this list.
 
@@ -12,7 +14,8 @@ COMPOSE ?= docker compose
 
 .DEFAULT_GOAL := help
 .PHONY: help env deploy update restart down logs logs-web logs-azure2 check \
-        evaluations warm dev-server dev-site data data-committed test-data
+        evaluations warm add-evaluation check-evaluations dev-server dev-site \
+        data data-committed test-data
 
 help:                       ## show this list
 	@grep -hE '^[a-z0-9-]+:.*?## ' $(MAKEFILE_LIST) \
@@ -62,15 +65,30 @@ evaluations:                ## pick up new or edited evaluations, without a rebu
 	$(COMPOSE) restart azure2
 	@$(MAKE) --no-print-directory check
 
-warm:                       ## precompute every evaluation's curves, so first visits are instant
-	$(COMPOSE) exec -T azure2 python3 -m app.warm
+warm:                       ## precompute every evaluation's curves and timings (fails if one fails)
+	$(COMPOSE) exec -T azure2 python3 -m app.warm $(ID)
+
+# -- R-matrix evaluations (docs/ADDING-AN-EVALUATION.md) ---------------------
+# add-evaluation reads the model with pyazr when it can (AZURE2_SRC, below, or
+# a pip-installed pyazr) to fill in the reactions; without it, it asks you to.
+
+PYTHON ?= python3
+
+add-evaluation:             ## add one: make add-evaluation ID=12C AZR=path/to/12C.azr [DATA=dir]
+	@test -n "$(ID)" -a -n "$(AZR)" || { \
+	  echo "usage: make add-evaluation ID=12C AZR=~/azure/12C/12C.azr [DATA=~/azure/12C/data] [FORCE=1]"; \
+	  echo "       (docs/ADDING-AN-EVALUATION.md)"; exit 2; }
+	PYTHONPATH="$(AZURE2_SRC)$${PYTHONPATH:+:$$PYTHONPATH}" $(PYTHON) scripts/add-evaluation.py \
+	  "$(ID)" "$(AZR)" $(if $(DATA),--data "$(DATA)") $(if $(FORCE),--force)
+
+check-evaluations:          ## check every evaluation's info.json, .azr and data files
+	cd server && $(PYTHON) -m app.check $(ID)
+	@if command -v node > /dev/null; then node scripts/evaluations-check.mjs --quiet $(ID); fi
 
 # -- the data explorer's data (scripts/data/README.md) ---------------------
 # Needs python3 (3.10+) with PyYAML, and git. Inputs are cached in build/dx/
 # (about 600 MB); the output goes to public/data/ (about 480 MB), which the
 # site image copies. Run before `make update`.
-
-PYTHON ?= python3
 
 data:                       ## build the explorer's EXFOR shards and ENSDF summaries (~8 min)
 	$(PYTHON) scripts/data/dx.py fetch-exfor

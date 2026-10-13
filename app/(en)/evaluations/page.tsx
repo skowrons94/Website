@@ -16,6 +16,8 @@ export default function Page() {
       reference: m.reference,
       status: m.status,
       filename: m.filename,
+      purpose: m.purpose,
+      timings: m.timings,
     }
   })
   return <EvaluationsIndex initial={initial} />
