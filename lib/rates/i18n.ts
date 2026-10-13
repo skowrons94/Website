@@ -5,6 +5,7 @@
  */
 
 import type { Lang } from "@/lib/locale"
+import { elideItalian } from "../localize.mjs"
 
 /** "all'1%", "allo 0,1%", "al 5%": the Italian article before a percentage, as it is read. */
 function alPercent(f: number): string {
@@ -426,7 +427,7 @@ const it: RatesDict = {
     `${site}: il passo più lento ${cycle ? "del ciclo" : "della catena"} è la reazione ${reaction}, in media ${time}. Tutti gli altri devono aspettarla.`,
   headlineIdle: (list: string) => `Più lente dell'intera combustione, quindi qui quasi non avvengono: ${list}.`,
   headlineLeak: (reaction: string) => `Il flusso esce dal ciclo con la ${reaction}.`,
-  headlineStall: (nucleus: string) => `Così il flusso si ferma e si accumula nel ${nucleus}.`,
+  headlineStall: (nucleus: string) => elideItalian(`Così il flusso si ferma e si accumula nel ${nucleus}.`),
   headlineShort: "Collo di bottiglia",
   tryIt: "E se fosse più veloce?",
   notation: {
@@ -488,7 +489,7 @@ const it: RatesDict = {
     mgal: "A 25 M☉ il ²⁶Al rimasto alla fine è quello che sopravvive al proprio decadimento dopo che il ²⁵Mg si è esaurito; in una stella vera i venti ne portano via una parte prima.",
   },
   pathEnd: (path: string, end: string) => `Il flusso va ${path} e finisce in ${end}.`,
-  pathStall: (path: string, end: string) => `Il flusso va ${path} → ${end} e, nel tempo della combustione, si accumula nel ${end}.`,
+  pathStall: (path: string, end: string) => elideItalian(`Il flusso va ${path} → ${end} e, nel tempo della combustione, si accumula nel ${end}.`),
   pathPp: "Quasi tutto il ³He si fonde con un altro ³He (ppI); una parte cattura ⁴He e prosegue attraverso il ⁷Be (ppII e ppIII).",
   bottleneck: "collo di bottiglia",
   waits: (nucleus: string) => `i nuclei di ${nucleus} aspettano`,

@@ -16,6 +16,7 @@
 export { LANGS, englishPath, langOf, localePath, type Lang } from "@/lib/locale"
 import type { Lang } from "@/lib/locale"
 import { evalEn, evalIt } from "@/lib/i18n-eval"
+import { elideItalian } from "@/lib/localize.mjs"
 // --- data public ---
 import { dataPublicEn, dataPublicIt } from "@/lib/data/i18n-public"
 
@@ -1850,11 +1851,11 @@ const it: Dictionary = {
     lunaMountain: "Gran Sasso",
     // --- atlas (round 4) ---
     plotData: "Mostra i dati",
-    plotDataOf: (system: string) => `Mostra i dati della valutazione del ${system}`,
+    plotDataOf: (system: string) => elideItalian(`Mostra i dati della valutazione del ${system}`),
     // --- r7 site ---
     relatedEvaluation: (reaction: string, system: string) => `Valutazione ${reaction} (${system})`,
     relatedEvaluationAria: (reaction: string, system: string) =>
-      `Apri la valutazione del ${system}, che descrive la ${reaction}, non questa reazione`,
+      elideItalian(`Apri la valutazione del ${system}, che descrive la ${reaction}, non questa reazione`),
     liveEvaluation: "Valutazione interattiva",
     noLiveEvaluation: "Nessuna valutazione interattiva per ora",
   },  // --- data expert ---
