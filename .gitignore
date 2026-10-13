@@ -62,3 +62,7 @@ public/search/
 /public/data/exfor/r/
 /public/data/exfor/sets/
 /public/data/ensdf/*.json
+
+# Written by scripts/sitemap.mjs after every server build (npm's postbuild).
+/public/sitemap.xml
+/public/robots.txt
