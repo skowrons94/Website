@@ -1,0 +1,148 @@
+{
+ "schema": "dx-meta",
+ "schema_version": 1,
+ "generated": "exfor_master d2af85eca4 (2026-09-28)",
+ "schemas": {
+  "meta": 1,
+  "index": 1,
+  "shard": 1,
+  "set": 1,
+  "ensdf": 1
+ },
+ "exfor": {
+  "name": "EXFOR (IAEA Nuclear Data Section and the NRDC network)",
+  "repository": "https://github.com/IAEA-NDS/exfor_master",
+  "commit": "d2af85eca4ce9b76529f096e7f9603da60654732",
+  "release_tag": "Backup-2026-09-28",
+  "snapshot_date": "2026-09-28",
+  "license": "CC BY 4.0",
+  "license_url": "https://creativecommons.org/licenses/by/4.0/",
+  "entry_url": "https://nds.iaea.org/EXFOR/{entry}",
+  "master_url": "https://github.com/IAEA-NDS/exfor_master/blob/{commit}/exforall/{dir}/{entry}.x4",
+  "line": "Data: EXFOR (IAEA/NRDC), snapshot 2026-09-28, CC BY 4.0",
+  "line_it": "Dati: EXFOR (IAEA/NRDC), versione del 2026-09-28, CC BY 4.0",
+  "changes": "Converted from the EXFOR exchange format to JSON: units normalised (MeV, b, b/sr, MeV b, deg), lab and c.m. energies both computed with AME2020 masses, rows flagged as extrapolated removed from the points and listed separately, large datasets decimated for display with the full set beside.",
+  "citation": "N. Otuka et al., \"Towards a More Complete and Accurate Experimental Nuclear Reaction Data Library (EXFOR): International Collaboration Between Nuclear Reaction Data Centres (NRDC)\", Nucl. Data Sheets 120, 272 (2014), doi:10.1016/j.nds.2014.07.065",
+  "dictionary": {
+   "repository": "https://github.com/IAEA-NDS/exfor_dictionary",
+   "commit": "3e06256f61d935dc737acd082b4590684c853ce8",
+   "license": "MIT"
+  },
+  "parser": "scripts/data (this site's own reader; exforparser is not used)"
+ },
+ "masses": {
+  "name": "AME2020",
+  "citation": "M. Wang et al., Chin. Phys. C 45, 030003 (2021)",
+  "file": "content/atlas/nuclear-data/ame2020-mass-excess.txt"
+ },
+ "scope": {
+  "A": "charged-particle reactions on Z <= 30",
+  "B": "neutron capture (n,g) on Z = 26-83 (s-process)",
+  "M": "Maxwellian- and spectrum-averaged neutron data (MXW, SPA), Z <= 83",
+  "N": "neutron-induced reactions on Z <= 30"
+ },
+ "counts": {
+  "entries_scanned": 27108,
+  "datasets": 89804,
+  "entries": 14422,
+  "points": 10059679,
+  "excluded_rows": 85057,
+  "reactions": 7668,
+  "per_slice": {
+   "A": 49133,
+   "B": 13671,
+   "M": 7442,
+   "N": 27218
+  },
+  "shards_written": 0,
+  "shards_decimated": 0,
+  "shards_paged": 0,
+  "full_sets": 0,
+  "index_bytes": 8416056,
+  "index_gz_bytes": 1148870,
+  "shard_gz_median": null,
+  "shard_gz_max": null,
+  "output_bytes": 8416056,
+  "parse_errors": 0
+ },
+ "files": {
+  "index": "exfor/index.json",
+  "shard": "exfor/r/{slug}.json",
+  "page": "exfor/r/{slug}/{n}.json",
+  "set": "exfor/sets/{entry}/{id}.json.gz",
+  "ensdf": "ensdf/{nuclide}.json",
+  "ensdf_list": "ensdf/index.json"
+ },
+ "flags": {
+  "bits": [
+   "has-extrapolated-rows",
+   "digitised",
+   "superseded",
+   "deleted",
+   "preliminary",
+   "relative",
+   "not-experimental",
+   "derived",
+   "complex",
+   "cm_approx",
+   "outdated-normalisation",
+   "renormalised-by-compiler",
+   "dependent",
+   "upper-limits"
+  ],
+  "err_bits": [
+   "stat",
+   "sys",
+   "total-given",
+   "total-combined",
+   "normalisation"
+  ],
+  "quantity_classes": {
+   "sigma": "cross section",
+   "S": "astrophysical S-factor",
+   "dsigma": "differential cross section dσ/dΩ",
+   "legendre": "Legendre coefficients of dσ/dΩ",
+   "ddx": "double-differential or energy-differential cross section",
+   "pol": "polarisation observable (analysing power, VAP, TAP, ...)",
+   "yield": "thick-target or product yield",
+   "strength": "resonance strength ωγ",
+   "width": "resonance width or other resonance parameter",
+   "macs": "Maxwellian-averaged cross section",
+   "sacs": "spectrum-averaged cross section",
+   "rate": "reaction rate or <σv>",
+   "ratio": "ratio or other combination of quantities",
+   "integral": "resonance integral",
+   "other": "other quantity"
+  },
+  "slices": [
+   "A",
+   "B",
+   "M",
+   "N"
+  ],
+  "frames": [
+   "lab",
+   "cm",
+   "lab-res",
+   "cm-res",
+   null
+  ]
+ },
+ "ensdf": {
+  "name": "ENSDF (Evaluated Nuclear Structure Data File), NNDC on behalf of the NSDD network",
+  "archive_date": "2025-12-01",
+  "source": {
+   "kind": "mirror",
+   "repo": "https://github.com/vzerkin/ENSDF-myjson-test.git",
+   "commit": "c55fc5d25510378f0a95802e23029b2e942aae3c",
+   "archive_date": "2025-12-01",
+   "provenance": "Original ENSDF files of the NNDC ENSDF archive dated 2025-12-01, split per nuclide by V. Zerkin (IAEA Nuclear Data Section), README of the repository; used when the NNDC archive cannot be fetched."
+  },
+  "set": "atlas",
+  "nuclides": 62,
+  "with_adopted_levels": 62,
+  "bytes": 1586325,
+  "citation": "Evaluated Nuclear Structure Data File (ENSDF), National Nuclear Data Center, Brookhaven National Laboratory, https://www.nndc.bnl.gov/ensdf/; cite also the Nuclear Data Sheets evaluation of each nuclide (its `evaluation.citation`).",
+  "xundl": "excluded"
+ }
+}

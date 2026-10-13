@@ -1,0 +1,106 @@
+ENTRY            A1088   20250912   20251107   20251107       A125
+SUBENT        A1088001   20250912   20251107   20251107       A125
+BIB                  9         14
+TITLE      3He(alpha,gamma)7Be reaction
+AUTHOR     (P.D.Parker,R.W.Kavanagh)
+REFERENCE  (J,PR,131,2578,1963)
+           (W,Parker,1968) - re-normalised data presented
+            by K.Nagatani (see REL-REF in Subent 003).
+INSTITUTE  (1USACAL)
+FACILITY   (VDGT,1USACAL)
+SAMPLE     A gas target
+METHOD     (PHD)
+DETECTOR   (NAICR) 3-in. x 3-in.
+HISTORY    (19810420C) Compilation produced by Arzamas RFNC-VNIIEF
+           (19990205U)CNPD: corrected 4-dig. year and lower cases.
+           (20240704A) SD: Corrections in all Subents.
+           (20250912A) SD: Data from A1312 added.
+ENDBIB              14
+NOCOMMON             0          0
+ENDSUBENT           17
+SUBENT        A1088002   20250912   20251107   20251107       A125
+BIB                  4          7
+REACTION   (2-HE-3(A,G)4-BE-7,,SIG)
+ERR-ANALYS (DATA-ERR) The error includes counting statistic,
+           uncertainties in the crystal efficiencies,
+           the target thickness and the beam integration.
+STATUS     (CURVE,,P.D.Parker+,J,PR,131,2578,1963) Fig. 6
+HISTORY    (20240704A) SD: SF9=EXP deleted from REACTION code.
+           EN-ERR -> EN-ERR-DIG.
+ENDBIB               7
+COMMON               1          3
+EN-ERR-DIG
+MEV
+ 0.008
+ENDCOMMON            3
+DATA                 3         43
+EN-CM      DATA       DATA-ERR
+MEV        MB         MB
+      0.187   1.82E-05   5.72E-06
+      0.282   9.38E-05   8.01E-06
+      0.282   9.91E-05   1.14E-05
+      0.375   1.91E-04   3.40E-05
+      0.391   2.51E-04   3.67E-05
+      0.407   3.12E-04   1.75E-05
+      0.423   3.21E-04   4.69E-05
+      0.485   4.21E-04   4.86E-05
+      0.516   5.53E-04   8.10E-05
+      0.516   5.69E-04   6.56E-05
+      0.547   6.01E-04   3.37E-05
+      0.594   7.08E-04   1.00E-04
+      0.602   7.68E-04   6.56E-05
+      0.625   8.11E-04   6.92E-05
+      0.687   9.30E-04   1.00E-04
+      0.718   1.00E-03   2.79E-05
+      0.827   1.30E-03   1.00E-04
+      0.874   1.30E-03   2.00E-04
+      0.897   1.50E-03   1.00E-04
+      0.920   1.40E-03   8.08E-05
+      0.951   1.40E-03   2.00E-04
+      1.029   1.70E-03   2.00E-04
+      1.045   1.70E-03   2.00E-04
+      1.091   1.60E-03   2.00E-04
+      1.130   1.90E-03   2.00E-04
+      1.145   1.80E-03   3.00E-04
+      1.238   1.80E-03   2.00E-04
+      1.246   1.90E-03   2.00E-04
+      1.246   2.10E-03   2.00E-04
+      1.254   2.20E-03   2.00E-04
+      1.332   1.90E-03   2.00E-04
+      1.339   2.10E-03   2.00E-04
+      1.340   2.30E-03   3.00E-04
+      1.347   2.70E-03   2.00E-04
+      1.378   2.60E-03   4.00E-04
+      1.557   3.30E-03   3.00E-04
+      1.619   2.90E-03   3.00E-04
+      1.634   3.00E-03   3.00E-04
+      2.084   4.00E-03   5.00E-04
+      2.115   3.60E-03   4.00E-04
+      2.115   4.10E-03   5.00E-04
+      2.139   4.10E-03   5.00E-04
+      2.495   4.10E-03   7.00E-04
+ENDDATA             45
+ENDSUBENT           61
+SUBENT        A1088003   20250912   20251107   20251107       A125
+BIB                  4          4
+REACTION   (2-HE-3(A,G)4-BE-7,,SIG)
+ERR-ANALYS (DATA-ERR) No information about source of uncertainty
+STATUS     (CURVE,,K.Nagatani+,J,NP/A,128,325,1969)) Fig. 2
+HISTORY    (20250912T) SD:
+ENDBIB               4
+COMMON               1          3
+EN-ERR-DIG
+MEV
+ 0.0012
+ENDCOMMON            3
+DATA                 3          5
+EN-CM      DATA       DATA-ERR
+MEV        MB         MB
+     0.1814 0.1755E-04 0.7508E-05
+     0.2818 0.9618E-04 0.1739E-04
+     0.2920 0.1082E-03 0.1656E-04
+     0.3744 0.2298E-03 0.2899E-04
+     0.3871 0.2775E-03 0.5021E-04
+ENDDATA              7
+ENDSUBENT           20
+ENDENTRY             3

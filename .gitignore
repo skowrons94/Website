@@ -53,3 +53,12 @@ server/evaluations/*/.initial-*
 
 # Written by scripts/search-index.mjs before every build.
 public/search/
+
+# The data explorer (scripts/data/README.md): the per-reaction shards, the
+# full-resolution sets and the ENSDF summaries beyond the atlas' nuclei are
+# built by `make data` and the Pages workflow. Committed: meta.json,
+# exfor/index.json and the atlas nuclei's ENSDF files (tracked, so they stay
+# tracked although the pattern below matches them).
+/public/data/exfor/r/
+/public/data/exfor/sets/
+/public/data/ensdf/*.json

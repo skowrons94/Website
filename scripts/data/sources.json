@@ -1,0 +1,40 @@
+{
+  "_comment": "Pinned inputs of the nuclear data explorer pipeline (scripts/data). Change a commit here, rerun `make data`, and commit the regenerated public/data/. The CI cache key is derived from this file.",
+  "exfor_master": {
+    "repo": "https://github.com/IAEA-NDS/exfor_master.git",
+    "commit": "d2af85eca4ce9b76529f096e7f9603da60654732",
+    "commit_date": "2026-09-28",
+    "release_tag": "Backup-2026-09-28",
+    "snapshot_date": "2026-09-28",
+    "license": "CC-BY-4.0",
+    "license_file": "LICENSE.txt",
+    "blob_url": "https://github.com/IAEA-NDS/exfor_master/blob/{commit}/exforall/{dir}/{entry}.x4",
+    "entry_url": "https://nds.iaea.org/EXFOR/{entry}"
+  },
+  "exfor_dictionary": {
+    "repo": "https://github.com/IAEA-NDS/exfor_dictionary.git",
+    "commit": "3e06256f61d935dc737acd082b4590684c853ce8",
+    "commit_date": "2026-08-17",
+    "path": "src/exfor_dictionary/latest.json",
+    "license": "MIT",
+    "vendored_subset": "scripts/data/vendor/exfor-dictionary-subset.json"
+  },
+  "ensdf": {
+    "archive_date": "2025-12-01",
+    "archive_page": "https://www.nndc.bnl.gov/ensdfarchivals/",
+    "nndc_urls": [
+      "https://www.nndc.bnl.gov/ensdfarchivals/distributions/dist25/ensdf_251201_099.zip",
+      "https://www.nndc.bnl.gov/ensdfarchivals/distributions/dist25/ensdf_251201_199.zip",
+      "https://www.nndc.bnl.gov/ensdfarchivals/distributions/dist25/ensdf_251201_299.zip"
+    ],
+    "nndc_sha256": {},
+    "_nndc_note": "The NNDC host is unreachable from the sandbox this pipeline was written in, so the URLs follow the archive page's naming and the checksums are recorded on the first successful fetch (`dx.py fetch-ensdf --record`); afterwards a mismatch fails the fetch.",
+    "mirror": {
+      "repo": "https://github.com/vzerkin/ENSDF-myjson-test.git",
+      "commit": "c55fc5d25510378f0a95802e23029b2e942aae3c",
+      "pattern": "nuclides/**/*.orig.ens",
+      "provenance": "Original ENSDF files of the NNDC ENSDF archive dated 2025-12-01, split per nuclide by V. Zerkin (IAEA Nuclear Data Section), README of the repository; used when the NNDC archive cannot be fetched."
+    },
+    "license": "ENSDF is distributed freely by the NNDC on behalf of the NSDD network; cite ENSDF and the Nuclear Data Sheets evaluation of each nuclide."
+  }
+}

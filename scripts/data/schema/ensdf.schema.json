@@ -1,0 +1,136 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "dx-ensdf",
+ "type": "object",
+ "required": [
+  "schema",
+  "schema_version",
+  "nuclide",
+  "Z",
+  "A",
+  "separation",
+  "xundl"
+ ],
+ "properties": {
+  "schema": {
+   "const": "dx-ensdf"
+  },
+  "separation": {
+   "type": "object",
+   "required": [
+    "S_n",
+    "S_p",
+    "S_a",
+    "unit",
+    "source"
+   ]
+  },
+  "ensdf": {
+   "type": "object",
+   "required": [
+    "nucid",
+    "dsid",
+    "evaluation",
+    "levels"
+   ],
+   "properties": {
+    "levels": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "required": [
+       "E_keV",
+       "gammas"
+      ],
+      "properties": {
+       "E_keV": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "dE_keV": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "J": {
+        "type": "string"
+       },
+       "firm": {
+        "type": "boolean"
+       },
+       "t_half_s": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "width_eV": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "T": {
+        "type": "string"
+       },
+       "gammas": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "required": [
+          "E_keV"
+         ],
+         "properties": {
+          "E_keV": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "I": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "BR": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "M": {
+           "type": "string"
+          },
+          "delta": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "E_final_keV": {
+           "type": [
+            "number",
+            "null"
+           ]
+          }
+         }
+        }
+       }
+      }
+     }
+    },
+    "evaluation": {
+     "type": "object",
+     "required": [
+      "citation",
+      "cutoff"
+     ]
+    }
+   }
+  }
+ }
+}
