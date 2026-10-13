@@ -117,7 +117,7 @@ jobs:
       # -- WebAssembly engine -------------------------------------------------
       - name: Restore the WebAssembly build
         id: wasm-cache
-        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             build/wasm/obj
@@ -195,7 +195,7 @@ jobs:
       # mismatch); until they are recorded, from the mirror pinned by commit.
       - name: Restore the data explorer's inputs
         id: dx-in
-        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             build/dx/exfor_master.git
@@ -204,7 +204,7 @@ jobs:
 
       - name: Restore the data explorer's output
         id: dx
-        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: public/data
           key: dx-out-${{ hashFiles('scripts/data/sources.json', 'scripts/data/nucdata/**', 'scripts/data/vendor/**', 'content/atlas/reactions/**', 'content/atlas/nuclear-data/**') }}
