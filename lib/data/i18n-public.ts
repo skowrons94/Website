@@ -105,6 +105,9 @@ const en = {
       `Data down to ${low}, inside the window (about ${e0}, ${site}).`,
     gapFactor: (x: string) => `${x}× above the window`,
     gapReached: "Window reached",
+    gapEdge: (low: string, site: string, e0: string) =>
+      `Data down to ${low}: only the upper edge of the window (about ${e0}, ${site}); below it, extrapolation.`,
+    gapEdgeOnly: "Upper edge only",
     gapNone: "No direct data",
     gapBy: (who: string) => `Lowest: ${who}`,
     gapUnderground: "underground (LUNA)",
@@ -240,7 +243,7 @@ const en = {
           },
           {
             title: "Who measured it, and how low",
-            text: `EXFOR lists ${c.datasets} datasets for neon-22 + proton, from ${c.y0} to ${c.y1}; ${c.luna} of them come from LUNA, under the Gran Sasso mountain. The lowest energy measured is ${c.low} (${c.who}). The star needs about ${c.e0} (${c.site}).${c.inside ? " The measurements have reached the window." : " The last stretch is extrapolated."}`,
+            text: `EXFOR lists ${c.datasets} datasets for neon-22 + proton, from ${c.y0} to ${c.y1}; ${c.luna} of them come from LUNA, under the Gran Sasso mountain. The lowest energy measured is ${c.low} (${c.who}). The star needs about ${c.e0} (${c.site}).${c.inside ? " The measurements have reached the window." : c.edge ? " The measurements reach only the upper edge of the window; the rest is extrapolated." : " The last stretch is extrapolated."}`,
             link: "See every measurement",
           },
           {
@@ -375,6 +378,9 @@ const it: typeof en = {
       `Dati fino a ${low}, dentro la finestra (circa ${e0}, ${site}).`,
     gapFactor: (x: string) => `${x} volte sopra la finestra`,
     gapReached: "Finestra raggiunta",
+    gapEdge: (low: string, site: string, e0: string) =>
+      `Dati fino a ${low}: solo il bordo superiore della finestra (circa ${e0}, ${site}); più in basso, estrapolazione.`,
+    gapEdgeOnly: "Solo il bordo superiore",
     gapNone: "Nessun dato diretto",
     gapBy: (who: string) => `La più bassa: ${who}`,
     gapUnderground: "sotto terra (LUNA)",
@@ -504,7 +510,7 @@ const it: typeof en = {
           },
           {
             title: "Chi l'ha misurata, e fin dove",
-            text: `EXFOR elenca ${c.datasets} serie di dati per neon-22 + protone, dal ${c.y0} al ${c.y1}; ${c.luna} vengono da LUNA, sotto il Gran Sasso. L'energia più bassa misurata è ${c.low} (${c.who}). Alla stella servono circa ${c.e0} (${c.site}).${c.inside ? " Le misure hanno raggiunto la finestra." : " L'ultimo tratto è estrapolato."}`,
+            text: `EXFOR elenca ${c.datasets} serie di dati per neon-22 + protone, dal ${c.y0} al ${c.y1}; ${c.luna} vengono da LUNA, sotto il Gran Sasso. L'energia più bassa misurata è ${c.low} (${c.who}). Alla stella servono circa ${c.e0} (${c.site}).${c.inside ? " Le misure hanno raggiunto la finestra." : c.edge ? " Le misure raggiungono solo il bordo superiore della finestra; il resto è estrapolato." : " L'ultimo tratto è estrapolato."}`,
             link: "Guarda tutte le misure",
           },
           {

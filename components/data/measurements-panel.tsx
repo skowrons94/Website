@@ -7,7 +7,7 @@ import { ArrowRight, ChevronDown } from "lucide-react"
 import { GapMap, type MapRow, type MapWindow } from "@/components/data/gap-map"
 import { dec, energy, kev, percent, temperature } from "@/lib/data/format"
 import { fill } from "@/lib/data/fill"
-import type { Lowest } from "@/lib/data/gap"
+import { windowReach, type Lowest } from "@/lib/data/gap"
 import { GROUPS, GROUP_SYMBOL, groupOf } from "@/lib/data/quantity"
 import type { DataExpertStrings } from "@/lib/i18n"
 import type { Lang } from "@/lib/locale"
@@ -111,7 +111,9 @@ export function MeasurementsPanel(p: PanelProps) {
               !w || w.widths === null
                 ? "–"
                 : lowest && lowest.E >= w.lo && lowest.E <= w.hi
-                  ? t.inside
+                  ? windowReach(lowest.E, w.lo, w.hi) === "edge"
+                    ? t.upperEdge
+                    : t.inside
                   : fill(w.widths >= 0 ? t.widthsAbove : t.widthsBelow, { n: kev(Math.abs(w.widths), lang, 2) })
             }
             sub={w ? fill(t.distanceSub, { E0: kev(w.E0, lang), lo: kev(w.lo, lang), hi: kev(w.hi, lang) }) : ""}

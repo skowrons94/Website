@@ -53,7 +53,8 @@ details: >-
 
   At the surface, the low event rate against the neutron background kept
   direct measurements above the Gamow window. The LUNA measurement under Gran Sasso reached
-  E = 230–300 keV, entering the s-process Gamow window for the first time,
+  E = 230–300 keV, reaching the upper edge of the s-process Gamow window
+  (230 keV) for the first time (the authors describe it as inside the Gamow peak),
   with much smaller uncertainties than earlier data (Ciani et al. 2021). The
   JUNA measurement in the China Jinping Underground Laboratory, combined with
   data taken at Sichuan University, covered 0.24–1.9 MeV in one consistent data
@@ -116,7 +117,8 @@ measurements:
     method: direct-underground
     energy: "E = 230–300 keV"
     note: >-
-      First direct data inside the s-process Gamow window, measured deep
+      First direct data reaching the upper edge of the s-process Gamow
+      window (230 keV), measured deep
       underground with much smaller uncertainties than previous data; stellar
       models with the revised rate change the yields of ⁶⁰Fe, ²⁰⁵Pb and ¹⁵²Gd
       in stars of near-solar composition.

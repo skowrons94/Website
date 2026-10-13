@@ -78,6 +78,7 @@ function reactionContext(id: string, lang: Lang): Record<string, string> {
     e0: row ? energy(row.E0, lang) : "",
     site: row?.site ?? "",
     inside: row?.kind === "inside" ? "1" : "",
+    edge: row?.kind === "edge" ? "1" : "",
   }
 }
 

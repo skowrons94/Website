@@ -38,7 +38,9 @@ import {
   packLanes,
   peakEnergy,
   unmeasuredShare,
+  windowReach,
 } from "../../lib/data/gap.ts"
+import { buildAtlas } from "../../lib/atlas-core.mjs"
 import { gapRows } from "../../lib/data/index-rows.ts"
 import * as L from "../../lib/data/lowest.mjs"
 import { buildPublicSummary } from "../../lib/data/public-summary.mjs"
@@ -282,6 +284,30 @@ const expect = {
 for (const [key, [E, id]] of Object.entries(expect)) {
   const s = Object.values(summary.reactions).find((x) => x.key === key)
   check(s?.lowest?.keV === E && s.lowest.id === id, `${key}: lowest ${s?.lowest?.keV} ${s?.lowest?.id}, expected ${E} ${id}`)
+}
+
+// where the lowest point sits against the window (lib/data/gap.ts windowReach):
+// the top quarter of the window is only its upper edge
+check(windowReach(100, 100, 200) === "inside", "reach: at the bottom of the window")
+check(windowReach(50, 100, 200) === "inside", "reach: below the window")
+check(windowReach(175, 100, 200) === "inside", "reach: at three quarters")
+check(windowReach(176, 100, 200) === "edge", "reach: in the top quarter")
+check(windowReach(200, 100, 200) === "edge", "reach: at the top")
+check(windowReach(201, 100, 200) === "above", "reach: above")
+{
+  // the /data gap rows (lib/data/public.ts gapRow): the atlas's first window, the summary's lowest point
+  const atlas = buildAtlas()
+  const reach = (id) => {
+    const r = atlas.reactions.find((x) => x.id === id)
+    const w = r.gamow[0]
+    const [lo, hi] = w.thresholdLimited && w.lo !== undefined ? [w.lo, w.hi] : [Math.max(w.E0 - w.width / 2, 0.01), w.E0 + w.width / 2]
+    return windowReach(summary.reactions[id].lowest.keV, lo, hi)
+  }
+  // 693 keV c.m. against a 478–710 keV window: the 830 keV (lab) resonance, not the window
+  check(reach("22Ne-an-25Mg") === "edge", `22Ne(a,n): ${reach("22Ne-an-25Mg")}, expected edge`)
+  check(reach("13C-an-16O") === "above", `13C(a,n): ${reach("13C-an-16O")}, expected above`)
+  check(reach("12C-12Ca-20Ne") === "inside", `12C(12C,a): ${reach("12C-12Ca-20Ne")}, expected inside`)
+  check(reach("18O-ag-22Ne") === "inside", `18O(a,g): ${reach("18O-ag-22Ne")}, expected inside`)
 }
 
 console.log(`test:data-ui: ${checks - failures}/${checks} checks passed`)

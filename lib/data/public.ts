@@ -24,6 +24,7 @@ import { compiled } from "@/lib/rates/run"
 import type { Network } from "@/lib/rates/schema"
 import { lifetimes } from "@/lib/rates/solver"
 import { duration } from "@/components/rates/format"
+import { windowReach } from "@/lib/data/gap"
 
 /* -- the summary ------------------------------------------------------------ */
 
@@ -207,7 +208,8 @@ export interface GapRow {
   lo: number
   hi: number
   low: ReactionSummary["lowest"]
-  kind: "never" | "above" | "inside"
+  /** "edge": the lowest point is only in the top of the window (windowReach) */
+  kind: "never" | "above" | "edge" | "inside"
   /** lowest / E0, for "above" */
   factor: number
   datasets: number
@@ -225,7 +227,7 @@ function gapRow(r: Reaction, summary: PublicSummary): GapRow | null {
   const s = summary.reactions[r.id]
   const [lo, hi] = windowRange(w)
   const low = s?.lowest ?? null
-  const kind: GapRow["kind"] = !low ? "never" : low.keV <= hi ? "inside" : "above"
+  const kind: GapRow["kind"] = !low ? "never" : windowReach(low.keV, lo, hi)
   return {
     id: r.id,
     label: r.label,
@@ -246,7 +248,7 @@ function gapRow(r: Reaction, summary: PublicSummary): GapRow | null {
 /** The atlas reactions with a Gamow window, the widest gap first. */
 export function gapRows(lang: Lang): GapRow[] {
   const summary = getSummary()
-  const order = { never: 0, above: 1, inside: 2 }
+  const order = { never: 0, above: 1, edge: 2, inside: 3 }
   return getAtlas(lang)
     .reactions.map((r) => gapRow(r, summary))
     .filter((x): x is GapRow => x !== null)

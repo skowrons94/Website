@@ -50,7 +50,7 @@ export function GapBar({ row, className }: { row: GapRow; className?: string }) 
         <div key={k} className="absolute inset-y-1 w-px bg-[var(--viz-grid)]" style={{ left: pos(k) }} />
       ))}
       {/* what nobody has measured: from the window to the lowest data (or on) */}
-      {row.kind !== "inside" && (
+      {(row.kind === "never" || row.kind === "above") && (
         <div
           className="absolute top-1/2 h-3 -translate-y-1/2 rounded-sm"
           style={{
@@ -85,13 +85,16 @@ export function gapCaption(row: GapRow, lang: Lang): string {
   const e0 = energy(row.E0, lang)
   if (row.kind === "never" || !row.low) return t.gapNever(row.site, e0)
   const low = energy(row.low.keV, lang)
-  return row.kind === "inside" ? t.gapInside(low, row.site, e0) : t.gapAbove(low, row.site, e0)
+  if (row.kind === "inside") return t.gapInside(low, row.site, e0)
+  if (row.kind === "edge") return t.gapEdge(low, row.site, e0)
+  return t.gapAbove(low, row.site, e0)
 }
 
 function factorText(row: GapRow, lang: Lang): string {
   const t = dataPublicDict(lang)
   if (row.kind === "never") return t.gapNone
   if (row.kind === "inside") return t.gapReached
+  if (row.kind === "edge") return t.gapEdgeOnly
   const f = row.factor
   const shown = f >= 10 ? String(Math.round(f)) : String(Number(f.toPrecision(2)))
   return t.gapFactor(lang === "it" ? shown.replace(".", ",") : shown)
