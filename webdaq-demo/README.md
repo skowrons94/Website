@@ -1,0 +1,177 @@
+# WebDAQ in-browser demo
+
+The real WebDAQ frontend, at the commit pinned in `pin.json`, built as a static
+site. Every server call is answered by a **simulated backend in a Web Worker**
+inside the page. Nothing here talks to real hardware, and no request leaves the
+page's origin. Design: `/tmp/claude-0/webdaq/design.md` (planning document).
+
+## Layout
+
+| Path | What |
+|---|---|
+| `pin.json` | WebDAQ repo + commit, sha256 of every upstream file the overlay replaces, JSROOT version and integrity, API-surface hash |
+| `package.json`, `package-lock.json` | WebDAQ's dependencies, pruned and pinned exactly, plus the demo's build and test tools |
+| `build.mjs` | fetch the pinned frontend → `.work/`, check the overridden hashes, apply `overlay/`, bundle the worker and JSROOT, `next build`, copy `out/` → `../public/webdaq-demo` |
+| `overlay/` | files copied over the WebDAQ tree (design §2.3) |
+| `shim/` | main thread: axios adapter (`axios-demo.ts`), fetch shim, storage shim, worker transport, JSROOT loader. Worker side: Werkzeug-like router and the handlers (`handlers/<family>.ts`) |
+| `sim/state/` | the simulated DAQ: boards, registers, run state machine, metadata, histogram config, current, stats, notifications; the worker entry |
+| `sim/physics/` | the physics engine (sources → detector → DPP → spectra), behind `sim/physics/api.ts` |
+| `jsroot/` | esbuild entry of the trimmed, self-hosted JSROOT |
+| `scripts/size.mjs`, `budgets.json` | gzip size report and budgets (design §6.4) |
+| `tests/contract/` | the API contract (design §2.4), the state-machine tests, and `runtime.py` (every page in Chromium) |
+| `api-surface.json` | every frontend → server call at the pin (186 method/path pairs), from `tests/contract/surface.ts` |
+
+## Build
+
+```sh
+cd webdaq-demo
+npm ci
+node build.mjs                                       # → ../public/webdaq-demo, basePath /webdaq-demo
+DEMO_BASE_PATH=/Website/webdaq-demo node build.mjs   # GitHub Pages
+node build.mjs --out /some/dir                       # elsewhere
+WEBDAQ_SRC=/path/to/webdaq node build.mjs            # use a local clone instead of GitHub
+node scripts/size.mjs ../public/webdaq-demo          # size report, fails over budget
+npm run test:contract                                # API contract + state machine (needs .work/webdaq: any build, or --fetch-only)
+npm run test:physics                                 # physics suite
+npx tsc --noEmit                                     # handlers type-check against WebDAQ's own types
+python3 tests/contract/runtime.py ../public/webdaq-demo /webdaq-demo   # every route and tab in Chromium, and the
+                                                     # scan → add → start → stop flow: no unmocked request,
+                                                     # nothing outside the origin, no page error
+npm run surface                                      # after a bump: rewrite api-surface.json, then copy its hash to pin.json
+```
+
+None of these writes anything committed (except `npm run surface`, on purpose)
+and none uploads anything.
+
+## What the overlay changes (design §2.3)
+
+| # | Upstream path | Overlay |
+|---|---|---|
+| 1 | `next.config.mjs` | static export, `basePath` from `DEMO_BASE_PATH`, `NEXT_PUBLIC_API_URL='demo:'`, `axios` → `shim/axios-demo.ts` |
+| 2 | `src/app/api/**`, `src/api/**` | deleted; their two endpoints are answered through the fetch shim |
+| 3 | `src/app/logbook/[run_number]/layout.tsx` | added: `generateStaticParams` for runs 1–30 |
+| 4 | `src/app/layout.tsx` | no `root.cern` script; storage shim inline in `<head>`; `<DemoBoot>` (the shell of P4 mounts here) |
+| 4b | `src/app/page.tsx` | start page (minimal in P1: detectors, source, distance; P4 designs it) |
+| 6 | `src/lib/load-jsroot.ts` | re-exports `shim/load-jsroot.ts` (a webpack alias cannot win over tsconfig paths) |
+| 7 | `package.json` | dependencies live in this directory's `package.json` |
+
+`pin.json.overrides` holds the upstream sha256 of each of these at the pin.
+
+JSROOT is self-hosted: `jsroot@7.11.2` from npm (integrity in `pin.json`), the
+seven functions WebDAQ uses (`jsroot/entry.mjs`), split by esbuild. three.js
+(reached by the 2-D painters through `base3d`) and jsPDF are replaced by inert
+stubs at bundle time: WebDAQ draws neither 3-D nor PDF.
+
+`build.mjs` stops if any upstream file the overlay replaces changed at the pin
+(`pin.json.overrides`); look at the diff, update the overlay, then the hash.
+
+## How a request flows
+
+```
+WebDAQ component → api.ts (unchanged) → axios ─(alias)→ shim/axios-demo.ts adapter ─┐
+fetch('/api/server-control' | '/api/cache') → shim/fetch-shim.ts ───────────────────┤ postMessage
+                                                                                    ▼
+                    Web Worker: sim/state/worker.ts → shim/router.ts → shim/handlers/*.ts
+                                                     → sim/state (DAQ state machine) → sim/physics
+```
+
+* The router compiles Flask rule syntax (`<x>`, `<int:x>`, `<path:x>`) and orders
+  rules as Werkzeug does: per segment, static before `int` before default before
+  `path`; a path that matches only under another method answers 405. Unknown
+  paths answer 404 `{message:'Not Found'}` and are recorded as misses
+  (`window.__webdaqDemo.misses()` in the page).
+* Only routes that exist in the registered Flask blueprints (or the two Next
+  route handlers) have mock handlers; `tests/contract` checks this both ways.
+* Simulated time advances in 50 ms ticks. The seed comes from `?seed=` or is
+  drawn once per tab; sessionStorage (`webdaq-demo:v1:*`) holds the snapshot,
+  written every 5 s and before any change is acknowledged.
+* The worker is an ES module, split by esbuild: the first chunk holds the router,
+  the DAQ state machine, the handler families every page polls, and the physics.
+  The Logbook (`/data/…`) and ELOG/Grafana families, `lines.json` and each
+  detector's response table are chunks loaded when first needed.
+* `window.__webdaqDemo` exposes `misses()`, `state()`, `control(cmd)`,
+  `request(req)`, `onState(fn)` and `resetDemo()` to the shell and the tests.
+  `control` takes `{type:'scenario', scenario}`, `{type:'fault', board_fail_at_s,
+  stall_at_s}`, `{type:'fwhm', channel, energy_keV}` and `{type:'state'}`.
+
+## The simulated DAQ (sim/state)
+
+* One V1730 answers a probe at Optical link 0, node 0, VME 0. Its firmware is the
+  scenario's (`dppFor`): adding it as the other DPP fails as a real board would.
+* Starting registers are WebDAQ's test-mode defaults (`board_defaults.py`), plus:
+  invert input for BGO, EJ-309 and ³He; a 4 µs long gate for ³He; for in-beam
+  HPGe, trapezoid rescaling 6 and DC offset 10 %. Switching to or from the beam
+  only moves those two, so the visitor's tuning survives.
+* Saving is on by default (WebDAQ's default is off) so every run is recorded.
+  Run numbers stay within 1–30 (the exported Logbook pages).
+* Refusals as upstream: start while running (404), start without boards (404),
+  scan or refresh while running (409/400), duplicate board id (409), registers not
+  safe online (saved, not written, with the reason).
+* Alerts: the in-beam scenario seeds one `beam_current` rule; it and
+  `board_failure` are evaluated locally, and every delivery is marked failed
+  ("nothing leaves your browser"). ELOG and Grafana answer "not configured".
+* Run files (phase P3): `sim/state/runfiles.ts` lists the files and sizes the
+  Logbook shows (estimates for now) and reads `current.txt`/`stats.csv` back from
+  the run record. P3 plugs the real writers in with `setRunFileProvider()`; they
+  belong in a lazily imported chunk (the worker's first chunk is at its budget).
+
+## Sizes (gzip -9, this build)
+
+First-load JS: start page 115 kB, `/dashboard` 373 kB (budget 400), other routes
+113–342 kB; demo shell 3.8 kB; worker first chunk 39.7 kB (budget 40) plus 3.9 kB
+of lazily loaded handlers; response table + line data 39 kB per detector; JSROOT
+needed to draw 297 kB (budget 360). `node scripts/size.mjs` prints the table.
+
+## Known upstream behaviour the demo shows as it is
+
+* React hydration errors #418/#423 on a full page load of most pages: they render
+  `null` without a token (the static HTML) and the page with one (the browser).
+  The dashboard avoids it with a `mounted` flag. Recoverable; `runtime.py` allows it.
+* `GET /histograms/rebin` (405), `/qlong/…`, `/qshort/…`, `/faraday/…` (404) fail
+  in the demo exactly as they would against the server.
+
+## Physics interface
+
+The state machine (`sim/state`) and the physics engine (`sim/physics`) meet only
+in **`sim/physics/api.ts`**. It declares the types and exports:
+
+| Export | Called by the state machine when | Returns |
+|---|---|---|
+| `createPhysics(seed)` | the worker boots or the demo is reset | a `PhysicsEngine` |
+| `engine.configure(scenario, board)` | run start, scenario change, every register write | — |
+| `engine.clear()` | run start, `POST /experiment/reset` | — |
+| `engine.tick({t_s, dt_s, beamCurrent_uA})` | every 50 ms tick while running | `TickResult`: per channel `{offered, events, pileup, lost, saturated, dead_s}`, board `bytes`, `blocksDropped` |
+| `engine.spectrum(ch)` | `GET /histograms/<b>/<ch>`, ROI integrals, `roi.json` | live `Uint32Array` (32768 PHA energy / 65536 PSD Q_long) |
+| `engine.psd(ch)` | `GET /psd/<b>/<ch>` | `Uint32Array` 2048 × 256, x fastest, or null |
+| `engine.waveform(ch)` | `GET /waveforms/1/<b>/<ch>` while running with waveforms on | `Int16Array` (probe of `0x8000[13:12]`), or null |
+| `engine.beamSample(t_s)` | 10 Hz beam sampling (current, charge, `current.txt`); `t_s` is demo time, and the result must be a pure function of (seed, scenario, t_s) | `[target, coll1, coll2, idle]` µA |
+| `engine.calibration(ch)` | once, when the board is added: seeds `calib/V1730_0.cal` | `[offset, slope]` keV per bin |
+| `engine.fwhmProbe(ch, E)` | the tour's live line | `{energy_keV, centroid_keV, fwhm_keV, counts}` or null |
+| `engine.snapshot()` / `restore()` | sessionStorage snapshots | JSON-serialisable |
+| `th1f`, `th2f`, `emptyTH1F`, `waveformTH1F` | every histogram/trace response | TBufferJSON-shaped objects for `JSROOT.parse` |
+
+`BoardView` is a read-only view of the register file (`chReg(0x10XX, ch)`,
+`reg(0x8000)`, `channelEnabled`, `waveformsEnabled`, `dpp`, `nChannels`,
+`nsPerSample`). `Scenario` is the visitor's choice: detectors
+(`hpge` → DPP-PHA; `bgo`, `ej309` liquid scintillator with n/γ PSD, `he3` →
+DPP-PSD, see `dppFor`), source (`co60`, `cs137`, `background`, `n14pg`,
+`ambe`, `cf252`), source–detector distance in cm (free, 1–50), activity,
+background level, yield factor, beam I0. The state machine stores it, puts it
+in `metadata.json → Demo.scenario`, re-creates the board with the right DPP
+when the detector kind changes, and passes it to `configure()` unchanged.
+
+What stays in the state machine: rebinning (`POST /histograms/rebin`), the
+calibration's axis limits, the "SIMULATED — …" titles, the "why is it empty"
+titles, ROI integration, charge integration (Σ I·Δt), rate windows
+(`/experiment/stats`), board-health counters, Graphite-like metrics.
+
+The bodies in `api.ts` are the P1 placeholder (flat spectra, flat trace,
+constant beam). The physics phase replaces them and keeps the signatures; a
+signature change is agreed in this section first. Rules: deterministic for a
+seed (no `Math.random`, no `Date.now`), no DOM, no imports from `shim/`.
+
+## Labelling
+
+Every page says it is a simulation; histogram titles start with
+`SIMULATED — `. The 3.5 MV accelerator is "the MV machine of the Bellotti Ion
+Beam Facility (BIBF)".
