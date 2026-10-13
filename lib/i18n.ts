@@ -1312,7 +1312,7 @@ const it: Dictionary = {
     errorTitle: "Errore in {section}",
     suggestTitle: "Proposta: una reazione da aggiungere",
     errorBody:
-      "Pagina: {page}\nSezione: {section}\n\nCosa è sbagliato:\n\n\nCome dovrebbe essere, con una fonte se ce l'hai (DOI, arXiv, EXFOR):\n\n",
+      "Pagina: {page}\nSezione: {section}\n\nChe cosa non va:\n\n\nCome dovrebbe essere, con una fonte se ce l'hai (DOI, arXiv, EXFOR):\n\n",
     suggestBody:
       "Proposta dalla pagina: {page}\n\nReazione (ad es. 22Ne(p,g)23Na):\n\nDove conta nelle stelle o nel Big Bang:\n\nMisure o valutazioni principali (DOI, arXiv, EXFOR):\n\n",
   },
