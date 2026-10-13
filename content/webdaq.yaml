@@ -16,12 +16,16 @@ lead: >-
   WebDAQ is the browser-based data acquisition developed for LUNA. It
   configures the CAEN digitizers, tunes them against a live spectrum, takes
   the runs, watches the rates and the beam, and keeps with every run a record
-  meant to outlive the shift.
+  meant to outlive the shift. It runs the measurements of ¹²C + ¹²C, of
+  SHADES (²²Ne(α,n)²⁵Mg), of EASY (²²Ne(α,γ)²⁶Mg), of ¹⁹F + p, of ¹⁰B + α (the
+  NUCLEAR project led by Marialuisa Aliotta) and of ²⁴Mg + p.
 lead_it: >-
   WebDAQ è il sistema di acquisizione dati via browser sviluppato per LUNA.
   Configura i digitizzatori CAEN, li regola guardando uno spettro in tempo
   reale, avvia i run, sorveglia i rate e il fascio, e accompagna ogni run con
-  una documentazione pensata per durare più del turno.
+  una documentazione pensata per durare più del turno. Gestisce le misure di
+  ¹²C + ¹²C, di SHADES (²²Ne(α,n)²⁵Mg), di EASY (²²Ne(α,γ)²⁶Mg), di ¹⁹F + p,
+  di ¹⁰B + α (il progetto NUCLEAR guidato da Marialuisa Aliotta) e di ²⁴Mg + p.
 
 demoNote: >-
   The demo runs in your browser with simulated detectors: nothing in it is real
