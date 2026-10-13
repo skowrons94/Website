@@ -407,12 +407,73 @@ for (const id of ["pp", "cno", "nena", "mgal", "sprocess"]) {
 }
 
 {
+  // the energy (lib/rates/energy.ts): ε against pynucastro's
+  // evaluate_energy_generation at every scenario's start and mid-burn
+  // (scripts/rates/energy_reference.py; pynucastro counts no neutrino losses
+  // for REACLIB rates, so it is compared with ε + ε_ν), and energy
+  // conservation: ∫ ε dt + ∫ ε_ν dt over each burn is the mass defect of
+  // what burnt, N_A Σ (Y₀ − Y) Δ
+  const { energyAt } = await import("../../lib/rates/solver.ts")
+  const ref = JSON.parse(fs.readFileSync(path.join(REF, "energy", "energy.json"), "utf8"))
+  for (const [id, states] of Object.entries(ref.networks)) {
+    if (only.length && !only.includes(id)) continue
+    const network = checkNetwork(JSON.parse(fs.readFileSync(path.join(DATA, `${id}.json`), "utf8")))
+    const c = compiled(network)
+    let worst = 0
+    let where = ""
+    for (const st of states) {
+      const e = energyAt(c, { history: { kind: "constant", T9: st.T9, rho: st.rho } }, Float64Array.from(st.Y))
+      const d = Math.abs(e.gross / st.eps - 1)
+      if (d > worst) {
+        worst = d
+        where = `${st.scenario} t = ${st.t.toPrecision(3)} s`
+      }
+      if (!(d <= 1e-6)) fail(`${id} ${st.scenario} t = ${st.t} s: ε ${e.gross} vs pynucastro ${st.eps}`)
+    }
+    console.log(`energy ${id}: ε vs pynucastro, max relative difference ${worst.toExponential(2)} (${where}; ${states.length} states)`)
+    for (const s of network.scenarios) {
+      const req = scenarioRequest(network, s)
+      for (const rtol of [1e-6, req.rtol ?? DEFAULT_TOLERANCES.rtol]) {
+        const r = run(c, { ...req, rtol })
+        const e = r.energy
+        const d = Math.abs((e.E + e.Enu) / e.defect - 1)
+        const tol = rtol <= 1e-6 ? 5e-5 : 2e-3
+        if (!(d <= tol)) fail(`${id} ${s.id} rtol ${rtol}: ∫ε dt + ∫ε_ν dt = ${e.E + e.Enu}, mass defect ${e.defect}`)
+        if (rtol <= 1e-6)
+          console.log(
+            `  ${s.id.padEnd(18)} ∫ε dt ${e.E.toExponential(3)} erg/g, neutrinos ${((100 * e.Enu) / e.defect).toFixed(2)}%, ` +
+              `(∫ε + ∫ε_ν)/defect − 1 = ${(((e.E + e.Enu) / e.defect) - 1).toExponential(1)}`,
+          )
+      }
+      // the shipped baseline carries the same energy
+      const base = JSON.parse(fs.readFileSync(path.join(DATA, `${id}.baseline.json`), "utf8")).runs[s.id]
+      if (!base?.energy || !base.eps || base.eps.length !== base.t.length) fail(`${id} ${s.id}: baseline without energy (npm run rates:baseline)`)
+    }
+  }
+  // the neutrinos take what the textbooks say: CNO 1.70 MeV of 26.73 (6.4%) once
+  // the cycle runs, the pp chain's own share in the Sun 2–4%
+  {
+    const network = checkNetwork(JSON.parse(fs.readFileSync(path.join(DATA, "cno.json"), "utf8")))
+    const e = run(compiled(network), scenarioRequest(network, network.scenarios.find((x) => x.id === "massive-15"))).energy
+    const f = e.Enu / e.defect
+    if (!(f > 0.062 && f < 0.066)) fail(`cno massive-15: neutrinos carry ${f} of the energy, CNO cycle 0.064`)
+    const pp = checkNetwork(JSON.parse(fs.readFileSync(path.join(DATA, "pp.json"), "utf8")))
+    const e2 = run(compiled(pp), scenarioRequest(pp, pp.scenarios.find((x) => x.id === "sun-core"))).energy
+    const f2 = e2.Enu / e2.defect
+    if (!(f2 > 0.02 && f2 < 0.045)) fail(`pp sun-core: neutrinos carry ${f2} of the energy`)
+    console.log(`neutrino share: CNO cycle (15 M☉ core) ${(100 * f).toFixed(2)}%, pp chain (Sun's centre) ${(100 * f2).toFixed(2)}%`)
+  }
+}
+
+{
   // the curiosities (lib/rates/curiosities.ts): every sentence is the one a
   // fresh run of the solver gives (×2 against the unchanged burn, after the
   // decays for the s-process), within its rounding; no headline that is a
   // self-cell by construction, no excluded nucleus, short hooks, the caveat
   const cur = await import("../../lib/rates/curiosities.ts")
+  const { energyChange } = await import("../../lib/rates/energy.ts")
   const { decayMap, decayed } = await import("../../lib/rates/analysis.ts")
+  const shown = []
   const nets = new Map()
   const cardsFile = path.join(DATA, "cards", "cards.json")
   const cards = fs.existsSync(cardsFile) ? JSON.parse(fs.readFileSync(cardsFile, "utf8")) : null
@@ -439,35 +500,67 @@ for (const id of ["pp", "cno", "nena", "mgal", "sprocess"]) {
     }
     const req = scenarioRequest(network, s)
     const fin = (res) => (dmap ? decayed(network, res.final, dmap) : res.final)
-    const X0 = fin(run(c, req))
-    const X2 = fin(run(c, { ...req, scale: { [spec.reaction]: 2 } }))
-    const idx = (name) => network.nuclei.findIndex((x) => x.name === name)
-    const i = idx(spec.nucleus)
-    const j = spec.per ? idx(spec.per) : -1
-    const solved = (X2[i] / X0[i]) / (j >= 0 ? X2[j] / X0[j] : 1)
+    const R0 = run(c, req)
+    const R2 = run(c, { ...req, scale: { [spec.reaction]: 2 } })
+    const X0 = fin(R0)
+    const X2 = fin(R2)
+    // the same table, one row, from these two fresh burns: every number of the
+    // card (main, knock-on, energy) then comes out of the same functions
+    const ch = energyChange(R0, R2)
+    const names = network.nuclei.map((x) => x.name).filter((_, i) => X0[i] > 1e-20)
+    const lg = (x) => Math.log(Math.max(x, 1e-300)) / Math.LN2
+    const solvedSens = {
+      scenarios: {
+        [spec.site]: {
+          nuclei: names,
+          reactions: [spec.reaction],
+          s: [names.map((name) => { const i = network.nuclei.findIndex((x) => x.name === name); return lg(X2[i] / X0[i]) })],
+          energy: [lg(ch.power)],
+          fuel: [ch.fuel === null ? null : lg(ch.fuel)],
+          nu: Object.fromEntries(Object.entries(ch.nu).map(([g, v]) => [g, [lg(v)]])),
+        },
+      },
+    }
+    if (dmap) solvedSens.scenarios[spec.site].nuclei = names.filter((name) => sens.scenarios[spec.site].nuclei.includes(name))
+    if (dmap) solvedSens.scenarios[spec.site].s = [solvedSens.scenarios[spec.site].nuclei.map((name) => { const i = network.nuclei.findIndex((x) => x.name === name); return lg(X2[i] / X0[i]) })]
+    const solved = cur.curiosityRatio(spec, solvedSens)
     const shipped = cur.curiosityRatio(spec, sens)
-    const ctx = { reaction: reaction.label, T9: s.T9, tFinal: base.runs[spec.site].tFinal, cooling: Boolean(s.profile) }
+    const ctxShipped = cur.curiosityContext(spec, sens, network, base)
+    const ctxSolved = cur.curiosityContext(spec, solvedSens, network, base)
     for (const lang of ["en", "it"]) {
-      const a = cur.curiosityText(spec, shipped, lang, ctx)
-      const b = cur.curiosityText(spec, solved, lang, ctx)
+      const a = cur.curiosityText(spec, shipped, lang, ctxShipped)
+      const b = cur.curiosityText(spec, solved, lang, ctxSolved)
       if (a.sentence !== b.sentence) fail(`curiosity ${spec.id} (${lang}): table says "${a.amount} (${a.percent})", the solver "${b.amount} (${b.percent})"`)
+      if (a.knockLine !== b.knockLine) fail(`curiosity ${spec.id} (${lang}): knock-on "${a.knockLine}", the solver "${b.knockLine}"`)
+      if (a.energyLine !== b.energyLine) fail(`curiosity ${spec.id} (${lang}): energy "${a.energyLine}", the solver "${b.energyLine}"`)
       if (!/One-zone model|Modello a zona singola/.test(a.caveat) || !/Real stars adjust|Una stella vera si riassesta/.test(a.caveat)) fail(`curiosity ${spec.id}: caveat`)
-      if (cards && cards[`${spec.id}.${lang}`] !== a.sentence)
+      if ((spec.kind === "energy" || spec.kind === "neutrino" || a.energyLine) && !/a real star would adjust its temperature to keep its luminosity|una stella vera regolerebbe la temperatura per mantenere la sua luminosità/.test(a.caveat))
+        fail(`curiosity ${spec.id} (${lang}): energy without its caveat`)
+      if (cards && cards[`${spec.id}.${lang}`] !== cur.cardText(a))
         fail(`curiosity ${spec.id} (${lang}): its social card is stale (node scripts/rates/curiosity-cards.mjs)`)
       if (a.hook.split(/\s+/).length > 15) fail(`curiosity ${spec.id} (${lang}): hook longer than 15 words`)
-      if (/[0-9]\.[0-9]{2,}%|[0-9]{3,}%/.test(a.percent)) fail(`curiosity ${spec.id}: ${a.percent} is more than two figures`)
+      for (const txt of [a.percent, a.knockLine ?? "", a.energyLine ?? "", a.sentence])
+        if (/[0-9][.,][0-9]{2,}%|[0-9]{3,}%|×[0-9]{3,}|×[0-9][.,][0-9]{2,}/.test(txt)) fail(`curiosity ${spec.id}: "${txt}" has more than two figures`)
+      if (lang === "en") shown.push(`${spec.id}: ${[a.percent, a.knockLine, a.energyLine].filter(Boolean).join(" ")}`)
     }
     if (Math.abs(solved / shipped - 1) > 0.01) fail(`curiosity ${spec.id}: solver ${solved} vs table ${shipped}`)
+    if (ctxShipped.knock) {
+      const k = ctxShipped.knock
+      const own = [...reaction.reactants, ...reaction.products].map((i) => network.nuclei[i].label)
+      if (own.includes(k.label) || Math.abs(k.ratio - 1) < 0.05) fail(`curiosity ${spec.id}: knock-on ${k.label} is the reaction's own or under 5%`)
+    }
     const self = network.nuclei[reaction.target]?.name === spec.nucleus
     const sv = cur.sensOf(sens, spec.site, spec.reaction, spec.nucleus)
     if (self && !spec.per && Math.abs(sv + 1) < 0.05) fail(`curiosity ${spec.id}: ${spec.nucleus} just halves with its own rate (a self-cell)`)
     if (cur.NEVER_HEADLINE.includes(spec.nucleus)) fail(`curiosity ${spec.id}: ${spec.nucleus} is excluded`)
+    if ((spec.kind === "energy" || spec.kind === "neutrino") && !cur.ENERGY_NETS.includes(spec.net)) fail(`curiosity ${spec.id}: energy of a network that does not make it`)
     if (spec.net === "nena" && spec.site === "nova-one" && spec.reaction === "Na23_p_to_Mg24_reaclib") fail(`curiosity ${spec.id}: the ONe-nova ²³Na(p,γ) edge case`)
     n++
   }
   const ids = cur.CURIOSITIES.map((x) => x.id)
   if (new Set(ids).size !== ids.length) fail("curiosities: duplicate ids")
-  console.log(`curiosities: ${n} sentences match the solver within rounding (EN, IT)`)
+  console.log(`curiosities: ${n} sentences, knock-on and energy lines match the solver within rounding (EN, IT)`)
+  for (const l of shown) console.log(`  ${l}`)
 }
 
 if (failures) {

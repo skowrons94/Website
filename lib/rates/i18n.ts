@@ -17,6 +17,12 @@ function alPercent(f: number): string {
   return vowel ? `all'${text}` : `al ${text}`
 }
 
+/** "il 6,4%", "l'8%": the Italian article before a percentage, as it is read. */
+function ilPercent(text: string): string {
+  const n = parseInt(text, 10)
+  return n === 1 || n === 8 || n === 11 || (n >= 80 && n <= 89) ? `l'${text}` : `il ${text}`
+}
+
 const en = {
   network: "Network",
   networks: "Choose a network",
@@ -166,6 +172,7 @@ const en = {
   selfLine: (nucleus: string, ratio: string) => `${nucleus} itself: ${ratio}`,
   selfNote: (decay: boolean): string =>
     decay ? "(expected: it is the nucleus that decays)" : "(expected: it is what this reaction burns)",
+  selfBarely: "(barely changes: it is made again about as fast as it burns)",
   knockTitle: "Knock-on effects on the other nuclei",
   smallFold: (n: number) => `${n} ${n === 1 ? "nucleus changes" : "nuclei change"} by less than 1%`,
   /** [name, "cycle" | "chain"] of each light network (the second stays English in both languages: a key) */
@@ -217,10 +224,40 @@ const en = {
   share: "Link to this setting",
   copied: "Link copied",
 
+  // --- r11 rates4: energy, neutrinos, indirect effects ---
+  energy: {
+    title: "Energy",
+    output: "Energy output, mean over the burn",
+    fuelUntil: (fuel: string, f: number) => `Time for ${fuel} to fall to ${+(f * 100).toPrecision(2)}%`,
+    fuelFirst: (fuel: string) => `Time to burn the first 1% of ${fuel}`,
+    fuelName: { p: ["the hydrogen", "the hydrogen"], he4: ["the helium", "the helium"], c13: ["the ¹³C", "the ¹³C"] } as Record<string, [string, string]>,
+    notReached: "not reached within the burn",
+    unchanged: (v: string) => `unchanged: ${v}`,
+    nu: {
+      pp: "pp neutrinos (¹H + ¹H)",
+      be7: "⁷Be neutrinos",
+      b8: "⁸B neutrinos",
+      cno: "CNO neutrinos (¹³N and ¹⁵O decays)",
+    } as Record<string, string>,
+    nuLead: "Neutrinos given off, per second on average:",
+    mean: (eps: string) => `${eps} erg g⁻¹ s⁻¹`,
+    share: (share: string) => `neutrinos carry away ${share} of the energy released`,
+    note: "The power of one gram of gas at the burn's temperature, neutrinos excluded: not the star's luminosity. A real star would adjust its temperature to keep its luminosity.",
+    noteNet: "Only the reactions of this network count here: in a star most of the energy comes from the pp chain or the CNO cycle.",
+    chartTitle: "Energy during the burn",
+    chartLead: "Energy generation rate ε (neutrinos excluded) against time.",
+    chartLabel: "Line chart of the energy generation rate against time, both on logarithmic scales.",
+    axis: "ε (erg g⁻¹ s⁻¹)",
+    sensEnergy: "Energy",
+    sensFuel: "Fuel time",
+    sensGroup: "Energy and neutrinos",
+  },
+  indirectTitle: "Largest indirect effects",
+  indirectHint: "on nuclei the changed reactions neither burn nor make",
   // sensitivity
   sensTitle: "Which rate matters most?",
   sensLead:
-    "Every rate doubled in turn, at the scenario's own conditions: the colour says how much each nucleus at the end of the burn follows it. +1: it doubles with the rate; −1: it halves.",
+    "Every rate doubled in turn, at the scenario's own conditions: the colour says how much each nucleus at the end of the burn follows it. +1: it doubles with the rate; −1: it halves. The last columns do the same for the energy: the mean power, the time the fuel lasts and the neutrinos.",
   sensButton: "Show the sensitivity map",
   sensHide: "Hide the sensitivity map",
   sensCustom: "Precomputed for the scenario's own conditions; back to the scenario to compare with them.",
@@ -298,7 +335,8 @@ const en = {
     title: "Curiosities: what if a rate were twice as fast?",
     titleShort: "Curiosities",
     eyebrow: "Curiosity",
-    lead: "One rate doubled, one burn, one nucleus. Every number comes from the explorer's own calculation.",
+    lead: "One rate doubled, one burn, one result: a nucleus, the energy or the neutrinos. Every number comes from the explorer's own calculation.",
+    extras: "More effects of the change",
     tryIt: "Try it",
     know: "How we know this rate",
     knowSource: "Where this rate comes from",
@@ -321,7 +359,7 @@ const en = {
     indexLead:
       "What a reaction twice as fast would change, one sentence at a time. Each one comes from a one-zone burn of the rate explorer (a simplified model: one parcel of gas at a set temperature and density, with no mixing), says what it leaves out, and opens the exact calculation with “Try it”.",
     indexHow:
-      "The numbers are read from the explorer's precomputed tables (every rate ×2 at each site's own conditions) and checked against a fresh run of the same solver. They are rounded to two significant figures. ×2 is a what-if: how well each rate is really known is given beside it, from the reaction atlas.",
+      "The numbers are read from the explorer's precomputed tables (every rate ×2 at each site's own conditions) and checked against a fresh run of the same solver. They are rounded to two significant figures. ×2 is a what-if: how well each rate is really known is given beside it, from the reaction atlas. Where a change reaches further, a card adds its biggest knock-on effect, on a nucleus the reaction neither burns nor makes, and what it does to the energy: the power of one gram of gas at the model's temperature, not the star's luminosity.",
     back: "Reaction rates",
     backAll: "All curiosities",
   },
@@ -534,6 +572,7 @@ const it: RatesDict = {
   selfLine: (nucleus: string, ratio: string) => `${nucleus} stesso: ${ratio}`,
   selfNote: (decay: boolean): string =>
     decay ? "(atteso: è il nucleo che decade)" : "(atteso: è ciò che questa reazione brucia)",
+  selfBarely: "(cambia appena: si riforma quasi alla stessa velocità con cui brucia)",
   knockTitle: "Effetti a catena sugli altri nuclei",
   smallFold: (n: number) => `${n} ${n === 1 ? "nucleo cambia" : "nuclei cambiano"} meno dell'1%`,
   cycleOf: {
@@ -585,9 +624,39 @@ const it: RatesDict = {
   share: "Link a questa configurazione",
   copied: "Link copiato",
 
+  // --- r11 rates4: energy, neutrinos, indirect effects ---
+  energy: {
+    title: "Energia",
+    output: "Energia prodotta, media sulla combustione",
+    fuelUntil: (fuel: string, f: number) => `Tempo perché ${fuel} scenda ${alPercent(f)}`,
+    fuelFirst: (fuel: string) => `Tempo per bruciare il primo 1% ${fuel}`,
+    fuelName: { p: ["l'idrogeno", "dell'idrogeno"], he4: ["l'elio", "dell'elio"], c13: ["il ¹³C", "del ¹³C"] } as Record<string, [string, string]>,
+    notReached: "non raggiunto entro la combustione",
+    unchanged: (v: string) => `originale: ${v}`,
+    nu: {
+      pp: "neutrini pp (¹H + ¹H)",
+      be7: "neutrini del ⁷Be",
+      b8: "neutrini dell'⁸B",
+      cno: "neutrini CNO (decadimenti di ¹³N e ¹⁵O)",
+    } as Record<string, string>,
+    nuLead: "Neutrini emessi, in media al secondo:",
+    mean: (eps: string) => `${eps} erg g⁻¹ s⁻¹`,
+    share: (share: string) => `i neutrini portano via ${ilPercent(share)} dell'energia liberata`,
+    note: "La potenza di un grammo di gas alla temperatura della combustione, neutrini esclusi: non è la luminosità della stella. Una stella vera regolerebbe la temperatura per mantenere la sua luminosità.",
+    noteNet: "Qui contano solo le reazioni di questa rete: in una stella quasi tutta l'energia viene dalla catena pp o dal ciclo CNO.",
+    chartTitle: "L'energia durante la combustione",
+    chartLead: "Tasso di produzione di energia ε (neutrini esclusi) in funzione del tempo.",
+    chartLabel: "Grafico a linee del tasso di produzione di energia in funzione del tempo, entrambi in scala logaritmica.",
+    axis: "ε (erg g⁻¹ s⁻¹)",
+    sensEnergy: "Energia",
+    sensFuel: "Durata del combustibile",
+    sensGroup: "Energia e neutrini",
+  },
+  indirectTitle: "Effetti indiretti più forti",
+  indirectHint: "su nuclei che le reazioni cambiate non bruciano né producono",
   sensTitle: "Quale tasso conta di più?",
   sensLead:
-    "Ogni tasso viene raddoppiato a turno, alle condizioni dello scenario; il colore indica quanto ne risente l'abbondanza finale di ciascun nucleo. +1: raddoppia insieme al tasso; −1: si dimezza.",
+    "Ogni tasso viene raddoppiato a turno, alle condizioni dello scenario; il colore indica quanto ne risente l'abbondanza finale di ciascun nucleo. +1: raddoppia insieme al tasso; −1: si dimezza. Le ultime colonne fanno lo stesso per l'energia: la potenza media, la durata del combustibile e i neutrini.",
   sensButton: "Mostra la mappa di sensibilità",
   sensHide: "Nascondi la mappa di sensibilità",
   sensCustom: "Precalcolata per le condizioni dello scenario; torna allo scenario per confrontarla.",
@@ -663,7 +732,8 @@ const it: RatesDict = {
     title: "Curiosità: e se un tasso fosse due volte più veloce?",
     titleShort: "Curiosità",
     eyebrow: "Curiosità",
-    lead: "Un tasso raddoppiato, una combustione, un nucleo. Ogni numero viene dal calcolo dell'esploratore.",
+    lead: "Un tasso raddoppiato, una combustione, un risultato: un nucleo, l'energia o i neutrini. Ogni numero viene dal calcolo dell'esploratore.",
+    extras: "Altri effetti del cambiamento",
     tryIt: "Provalo",
     know: "Come conosciamo questo tasso",
     knowSource: "Da dove viene questo tasso",
@@ -684,9 +754,9 @@ const it: RatesDict = {
     model: "Modello",
     indexTitle: "Curiosità sui tassi",
     indexLead:
-      "Che cosa cambierebbe una reazione due volte più veloce, in sedici frasi. Ognuna viene da un calcolo a zona singola dell'esploratore dei tassi (un modello semplificato: una sola porzione di gas a temperatura e densità date, senza rimescolamento), dice che cosa lascia fuori e con «Provalo» apre esattamente quel calcolo.",
+      "Che cosa cambierebbe una reazione due volte più veloce, una frase alla volta. Ognuna viene da un calcolo a zona singola dell'esploratore dei tassi (un modello semplificato: una sola porzione di gas a temperatura e densità date, senza rimescolamento), dice che cosa lascia fuori e con «Provalo» apre esattamente quel calcolo.",
     indexHow:
-      "I numeri sono letti dalle tabelle precalcolate dell'esploratore (ogni tasso ×2 alle condizioni di ciascun ambiente) e verificati con un nuovo calcolo dello stesso risolutore. Sono arrotondati a due cifre significative. ×2 è un'ipotesi: accanto è indicato quanto è noto davvero ogni tasso, dall'atlante delle reazioni.",
+      "I numeri sono letti dalle tabelle precalcolate dell'esploratore (ogni tasso ×2 alle condizioni di ciascun ambiente) e verificati con un nuovo calcolo dello stesso risolutore. Sono arrotondati a due cifre significative. ×2 è un'ipotesi: accanto è indicato quanto è noto davvero ogni tasso, dall'atlante delle reazioni. Quando un cambiamento arriva più lontano, la scheda aggiunge l'effetto a catena più forte, su un nucleo che la reazione non brucia né produce, e che cosa succede all'energia: la potenza di un grammo di gas alla temperatura del modello, non la luminosità della stella.",
     back: "Tassi di reazione",
     backAll: "Tutte le curiosità",
   },

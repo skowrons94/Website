@@ -13,10 +13,12 @@ Schema (schema_version 1) — CGS throughout; `units` in the file spells
 every unit out:
 
     schema, schema_version, id, family, title{en,it}, provenance{...}, units{...}
-    nuclei[]      {name, Z, A, label, code, halfLife_s}   (NUBASE2020, null when stable)
+    nuclei[]      {name, Z, A, label, code, halfLife_s, dm_MeV}   (NUBASE2020, null when stable;
+                   dm_MeV the AME2020 atomic mass excess)
     reactions[]   {id, label, atlas, target, reactants[idx], products[idx], prefactor,
                    densExp, ye, screen[[Z1,A1,Z2,A2]], Q_MeV, chapter, weak,
-                   weakType, rate{kind, ...}, sources[]}
+                   weakType, rate{kind, ...}, sources[], nu?{MeV, src}}
+                  nu: a weak reaction's mean neutrino energy (energy section below)
                   rate.kind "reaclib": {sets[{a[7], set, flag}], validity_T9}
                   (a later kind "table" would carry {T9[], log10[]} instead)
     ui            {key[], reference, fuel, cycle[], show[], groups, knobs, track, notes,
@@ -28,6 +30,7 @@ every unit out:
     solar         Lodders mass fractions of the network's nuclei
     solver        optional {rtol, atol} for the explorer's burns
     screening     constants of pynucastro's screen5 plasma factors
+    energy        {masses, MeV2erg, nu_sources{key: {en, it}}}
 
 The ydot term of a reaction is, exactly as in pynucastro's generated
 networks,
@@ -461,6 +464,112 @@ def _sig(x: float, n: int = 7) -> float:
     return float(f"{x:.{n}g}")
 
 
+# -- energy: masses and neutrinos -----------------------------------------------------
+#
+# The explorer's energy generation rate is Σ flux · Q · N_A (lib/rates/energy.ts)
+# with Q from the nuclei's atomic mass excesses (AME2020, as pynucastro holds
+# them: `Nucleus.dm`), which is exactly pynucastro's
+# RateCollection.evaluate_energy_generation (−N_A Σ Ẏ m c²) for these rates.
+# With atomic masses a β⁺ decay's Q includes the annihilation of its positron,
+# deposited in the gas. What the gas does not get is the neutrino's energy:
+# each weak reaction carries the mean energy of its neutrino, `nu`.
+
+# Mean neutrino energies of the solar neutrino sources: Bahcall, Neutrino
+# Astrophysics (Cambridge University Press 1989), Table 6.1. ⁷Be: the 0.8631
+# and 0.3855 MeV lines, 89.7% and 10.3%, averaged. The pep neutrino is a line
+# at the reaction's Q (1.442 MeV).
+NU_BAHCALL = {
+    "p_p_to_d_beta_pos_reaclib": 0.2668,
+    "p_p_to_d_electron_capture_reaclib": 1.442,
+    "He3_p_to_He4_beta_pos_reaclib": 9.628,
+    "Be7_to_Li7_electron_capture_reaclib": 0.897 * 0.8631 + 0.103 * 0.3855,
+    "B8_to_He4_He4_beta_pos_reaclib": 6.735,
+    "N13_to_C13_beta_pos_reaclib": 0.7063,
+    "O15_to_N15_beta_pos_reaclib": 0.9964,
+    "F17_to_O17_beta_pos_reaclib": 0.9977,
+}
+
+# The main laboratory branches (ENSDF, NNDC) of the other decays of the light
+# networks: (fraction, level of the daughter in MeV, "b+" or "ec"). The γ
+# rays of the level stay in the gas; only the neutrino leaves. A decay not
+# listed here (the s-process's) is taken as ground state to ground state, an
+# upper bound on its neutrino energy.
+NU_BRANCHES = {
+    "O14_to_N14_beta_pos_reaclib": [(0.9935, 2.3129, "b+"), (0.0054, 0.0, "b+")],
+    "F18_to_O18_beta_pos_reaclib": [(0.9686, 0.0, "b+"), (0.0314, 0.0, "ec")],
+    "Ne18_to_F18_beta_pos_reaclib": [(0.92, 0.0, "b+"), (0.077, 1.0416, "b+"), (0.003, 1.0807, "b+")],
+    "Ne19_to_F19_beta_pos_reaclib": [(0.9999, 0.0, "b+")],
+    "Na21_to_Ne21_beta_pos_reaclib": [(0.949, 0.0, "b+"), (0.051, 0.3507, "b+")],
+    "Na22_to_Ne22_beta_pos_reaclib": [(0.903, 1.2745, "b+"), (0.096, 1.2745, "ec"), (0.0006, 0.0, "b+")],
+    "Mg22_to_Na22_beta_pos_reaclib": [(0.532, 0.6573, "b+"), (0.457, 0.5830, "b+")],
+    "Mg23_to_Na23_beta_pos_reaclib": [(0.918, 0.0, "b+"), (0.080, 0.4400, "b+")],
+    "Al25_to_Mg25_beta_pos_reaclib": [(0.992, 0.0, "b+"), (0.008, 0.5847, "b+")],
+    "Al26_to_Mg26_beta_pos_reaclib": [(0.817, 1.8087, "b+"), (0.156, 1.8087, "ec"), (0.027, 2.9383, "b+")],
+    "Si26_to_Al26_beta_pos_reaclib": [(0.752, 0.2283, "b+"), (0.218, 1.0577, "b+"), (0.027, 1.8507, "b+")],
+    "Si27_to_Al27_beta_pos_reaclib": [(0.9975, 0.0, "b+")],
+}
+
+NU_SOURCES = {
+    "bahcall89": {"en": "Bahcall, Neutrino Astrophysics (1989), Table 6.1",
+                  "it": "Bahcall, Neutrino Astrophysics (1989), tabella 6.1"},
+    "ensdf": {"en": "allowed β spectrum over the main ENSDF branches",
+              "it": "spettro β permesso sui rami principali ENSDF"},
+    "gs": {"en": "allowed β spectrum, ground state to ground state (an upper bound)",
+           "it": "spettro β permesso, da stato fondamentale a stato fondamentale (un limite superiore)"},
+}
+
+_ME = 0.51099895  # MeV
+_ALPHA = 1 / 137.035999
+
+
+def mean_beta_nu(T0: float, Z_daughter: int, sign: int) -> float:
+    """Mean neutrino energy (MeV) of an allowed β decay of endpoint T0 (kinetic,
+    MeV): spectrum p W (W0 − W)² F(Z, W), F the non-relativistic Fermi function
+    (sign +1 for β⁻, −1 for β⁺). Reproduces Bahcall's ¹³N, ¹⁵O, ¹⁷F values to 0.1%."""
+    if T0 <= 0:
+        return 0.0
+    from scipy.integrate import quad
+    W0 = 1 + T0 / _ME
+
+    def n(W):
+        p = math.sqrt(max(W * W - 1, 1e-30))
+        eta = sign * _ALPHA * Z_daughter * W / p
+        x = 2 * math.pi * eta
+        F = x / (1 - math.exp(-x)) if abs(x) > 1e-12 else 1.0
+        return p * W * (W0 - W) ** 2 * F
+
+    num = quad(lambda W: n(W) * (W0 - W) * _ME, 1, W0, limit=200)[0]
+    den = quad(n, 1, W0, limit=200)[0]
+    return num / den
+
+
+def neutrino(r) -> dict | None:
+    """{MeV, src}: the mean energy a weak reaction's neutrino carries away."""
+    if not r.weak:
+        return None
+    if r.fname in NU_BAHCALL:
+        return {"MeV": round(NU_BAHCALL[r.fname], 4), "src": "bahcall89"}
+    parent = r.reactants[0]
+    daughter = max(r.products, key=lambda n: n.A)
+    Q = parent.dm - sum(n.dm for n in r.products)  # atomic masses: Q_EC (β⁺) or Q_β⁻
+    if r.weak_type == "beta_neg":
+        return {"MeV": round(mean_beta_nu(Q, daughter.Z, +1), 4), "src": "gs"}
+    if r.weak_type == "electron_capture":
+        return {"MeV": round(Q, 4), "src": "gs"}
+    branches = NU_BRANCHES.get(r.fname)
+    src = "ensdf"
+    if branches is None:
+        branches, src = [(1.0, 0.0, "b+")], "gs"
+    tot = sum(f for f, _, _ in branches)
+    e = 0.0
+    for f, level, mode in branches:
+        if mode == "ec" or Q - level - 2 * _ME <= 0:
+            e += f * (Q - level)
+        else:
+            e += f * mean_beta_nu(Q - level - 2 * _ME, daughter.Z, -1)
+    return {"MeV": round(e / tot, 4), "src": src}
+
+
 # -- export ----------------------------------------------------------------------------
 
 def rate_json(r, index: dict, sources: dict, atlas_ids) -> dict:
@@ -494,6 +603,7 @@ def rate_json(r, index: dict, sources: dict, atlas_ids) -> dict:
         # Cyburt et al. 2010 fit REACLIB rates for 10⁷–10¹⁰ K.
         "rate": {"kind": "reaclib", "sets": sets, "validity_T9": [0.01, 10.0]},
         "sources": rate_sources(r.fname, labels, sources),
+        **({"nu": neutrino(r)} if r.weak else {}),
     }
 
 
@@ -700,7 +810,9 @@ def export_network(spec: dict, scenarios: dict | None = None, *, atlas_ids=froze
         "units": UNITS,
         # NUBASE2020 half-lives (the atlas' table), pynucastro's where it has none
         "nuclei": [{"name": n.raw, "Z": n.Z, "A": n.A, "label": sci(n), "code": code(n),
-                    "halfLife_s": (None if not math.isfinite(half_life(n, hl)) else half_life(n, hl))} for n in nucs],
+                    "halfLife_s": (None if not math.isfinite(half_life(n, hl)) else half_life(n, hl)),
+                    # AME2020 atomic mass excess, as pynucastro has it (the energy's Q values)
+                    "dm_MeV": float(n.dm)} for n in nucs],
         "reactions": reactions,
         "ui": ui,
         "scenarios": [scenario_json(scenarios[s], nucs) for s in spec.get("scenarios", [])] if scenarios else [],
@@ -708,6 +820,8 @@ def export_network(spec: dict, scenarios: dict | None = None, *, atlas_ids=froze
         # tolerances the explorer runs this network with (optional)
         "solver": {k: float(v) for k, v in (spec.get("solver") or {}).items()},
         "screening": screening_constants(),
+        "energy": {"masses": "AME2020 atomic mass excesses (pynucastro Nucleus.dm)",
+                   "MeV2erg": float(constants.MeV2erg), "nu_sources": NU_SOURCES},
     }
 
 

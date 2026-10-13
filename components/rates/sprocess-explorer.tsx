@@ -22,6 +22,7 @@ import { changedTargets, defaultReaction, splitChanges, sprocessChangeRows, sugg
 import { ChangeResult } from "./change-bars"
 import { BusyLine, Download, Figure, Fold, Formula, RATES_TOKENS, Segmented } from "./chart-kit"
 import { DistributionChart, type DistPoint } from "./distribution-chart"
+import { EnergyChart, EnergyLines } from "./energy-panel"
 import { EvolutionChart } from "./evolution-chart"
 import { FactorSlider, factorText } from "./factor-slider"
 import { dec, density, duration, NB, sci, sig2, temperature, tShort } from "./format"
@@ -227,7 +228,8 @@ export function SProcessExplorer({
     const selfDecay = new Map(
       [...targets].map(([name, id]) => [name, network.reactions.find((r) => r.id === id)?.reactants.length === 1] as const),
     )
-    return { changes: splitChanges(results.rows, targets), selfDecay }
+    const selfFactor = new Map([...targets].map(([name, id]) => [name, scale[id] ?? 0] as const))
+    return { changes: splitChanges(results.rows, targets), selfDecay, selfFactor }
   }, [network, results, scale])
 
   if (error) return <p className="text-sm text-destructive">{error}</p>
@@ -245,7 +247,7 @@ export function SProcessExplorer({
   const custom = !sameConditions(cond, fromScenario(scenario))
   const altered = changed || custom
   const { X0, sOnlySet, notModelled, baseDec, modDec, points } = results
-  const { changes, selfDecay } = split
+  const { changes, selfDecay, selfFactor } = split
 
   const stat = (r: RunResult | null) =>
     r
@@ -562,10 +564,13 @@ export function SProcessExplorer({
                     split={changes}
                     changed={changed}
                     decays={selfDecay}
+                    factors={selfFactor}
                     lang={lang}
                     suggestion={suggestion}
                     limit={10}
-                  />
+                  >
+                    <EnergyLines base={base} mod={mod} changed={changed} net={network.id} lang={lang} />
+                  </ChangeResult>
                 </div>
               </div>
 
@@ -600,6 +605,7 @@ export function SProcessExplorer({
                   </div>
                 </div>
               )}
+              <EnergyChart base={base} mod={mod} changed={changed} lang={lang} />
             </div>
           </div>
         </div>

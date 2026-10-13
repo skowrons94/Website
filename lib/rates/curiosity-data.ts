@@ -6,6 +6,7 @@ import { statusHint, statusLabel } from "@/lib/atlas-format"
 import { localePath, type Lang } from "@/lib/locale"
 import {
   CURIOSITIES,
+  curiosityContext,
   curiosityPath,
   curiosityRatio,
   curiosityText,
@@ -32,6 +33,11 @@ export interface CuriosityCardData {
   reaction: string
   parts: { text: string; bold?: boolean }[]
   sentence: string
+  /** "Biggest knock-on effect: ²³Na (−21%)." and the energy line, when there are */
+  knockLine: string | null
+  energyLine: string | null
+  /** what the card is about: a nucleus, the energy, a neutrino source */
+  kind: "nucleus" | "energy" | "neutrino"
   hook: string
   caveat: string
   percent: string
@@ -67,12 +73,7 @@ function card(spec: CuriositySpec, lang: Lang): CuriosityCardData {
   const scenario = network.scenarios.find((s) => s.id === spec.site)!
   const reaction = network.reactions.find((r) => r.id === spec.reaction)!
   const ratio = curiosityRatio(spec, sens)
-  const text = curiosityText(spec, ratio, lang, {
-    reaction: reaction.label,
-    T9: scenario.T9,
-    tFinal: baseline.runs[spec.site].tFinal,
-    cooling: Boolean(scenario.profile),
-  })
+  const text = curiosityText(spec, ratio, lang, curiosityContext(spec, sens, network, baseline))
   const atlas = reaction.atlas ? getReaction(reaction.atlas, lang) : undefined
   const src = reaction.sources?.find((s) => s.author) ?? reaction.sources?.[0]
   const it = lang === "it"
@@ -86,6 +87,9 @@ function card(spec: CuriositySpec, lang: Lang): CuriosityCardData {
     reaction: reaction.label,
     parts: text.parts,
     sentence: text.sentence,
+    knockLine: text.knockLine,
+    energyLine: text.energyLine,
+    kind: spec.kind ?? "nucleus",
     hook: text.hook,
     caveat: text.caveat,
     percent: text.percent,

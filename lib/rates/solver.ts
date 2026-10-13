@@ -23,6 +23,7 @@
  * set by accuracy alone however stiff the network is.
  */
 
+import { energyOfFlux, energyTables } from "./energy.ts"
 import { networkProvider, type RateProvider } from "./rate-provider.ts"
 import type { Network } from "./schema.ts"
 import { plasmaState, screen5, screenFactors, type ScreenFactors } from "./screening.ts"
@@ -58,6 +59,8 @@ export interface IntegrateOptions {
   neutronExposure?: boolean
   /** the Rosenbrock method: "rodas3" (default) or "ode23s" */
   method?: "rodas3" | "ode23s"
+  /** record when this nucleus first falls to `fraction` of its initial abundance (the fuel time) */
+  mark?: { nucleus: string; fraction: number } | null
 }
 
 export interface IntegrateResult {
@@ -74,6 +77,19 @@ export interface IntegrateResult {
   ms: number
   /** ∫ n_n v_T dt in cm⁻² (×10⁻²⁷ for mb⁻¹), and the largest n_n in cm⁻³ */
   exposure?: { tau_cm2: number; peak_cm3: number }
+  /**
+   * the energy (lib/rates/energy.ts), from the fluxes at every accepted step:
+   * ε and ε_ν at each sample (erg g⁻¹ s⁻¹), their integrals over the burn by
+   * the trapezoid rule on the steps (erg g⁻¹), and ∫ flux dt of every
+   * reaction with a neutrino (mol g⁻¹)
+   */
+  eps: number[]
+  epsNu: number[]
+  E: number
+  Enu: number
+  counts: Float64Array
+  /** when `mark` was reached, s (null: not within the burn) */
+  tMark: number | null
 }
 
 export interface Compiled {
@@ -104,6 +120,8 @@ export interface Compiled {
   sStart: Int32Array
   sPair: Int32Array
   pairs: ScreenFactors[]
+  /** per reaction: Q and the neutrino's mean energy (MeV), and N_A · (MeV in erg) */
+  energy: { Q: Float64Array; nu: Float64Array; k: number }
 }
 
 /** Everything about a network that does not change from run to run. */
@@ -214,6 +232,7 @@ export function compile(network: Network): Compiled {
     sStart: Int32Array.from(sS),
     sPair: Int32Array.from(sP),
     pairs,
+    energy: energyTables(network),
   }
 }
 
@@ -418,6 +437,35 @@ export function integrate(c: Compiled, opts: IntegrateOptions): IntegrateResult 
   let tau = 0
   let peak = iN >= 0 ? nDensity(0, y[iN]).n : 0
   const tEnd = opts.tEnd_s
+  // the energy, from the fluxes at each accepted point (its start-of-step
+  // evaluation, which every method makes anyway): ε at the point, and the
+  // trapezoid rule between points
+  const epsAll: number[] = []
+  const nuAll: number[] = []
+  const counts = new Float64Array(c.nr)
+  const prevW = new Float64Array(c.nr)
+  const weak = Array.from({ length: c.nr }, (_, r) => r).filter((r) => c.energy.nu[r] !== 0)
+  let Eint = 0
+  let Enu = 0
+  let prevT = 0
+  const record = (tNow: number) => {
+    if (epsAll.length >= ts.length) return
+    const e = energyOfFlux(c.energy, sys.flux)
+    const net = e.gross - e.nu
+    if (epsAll.length) {
+      const dt = tNow - prevT
+      Eint += 0.5 * (epsAll[epsAll.length - 1] + net) * dt
+      Enu += 0.5 * (nuAll[nuAll.length - 1] + e.nu) * dt
+      for (const r of weak) counts[r] += 0.5 * (prevW[r] + sys.flux[r]) * dt
+    }
+    for (const r of weak) prevW[r] = sys.flux[r]
+    epsAll.push(net)
+    nuAll.push(e.nu)
+    prevT = tNow
+  }
+  const markIdx = opts.mark ? (c.index.get(opts.mark.nucleus) ?? -1) : -1
+  const markTarget = markIdx >= 0 ? y[markIdx] * opts.mark!.fraction : 0
+  let tMark: number | null = null
   sys.rhs(t, y, F0)
   // first step: a small fraction of the fastest change, at most 1e-6 tEnd
   let h = tEnd * 1e-6
@@ -445,6 +493,7 @@ export function integrate(c: Compiled, opts: IntegrateOptions): IntegrateResult 
     if (rodas) {
       // F(t, y) and the Jacobian from the same fluxes
       sys.rhs(t, y, F0)
+      record(t)
       val.fill(0)
       sys.addJacobian(y, -h * R3.gamma, val)
       for (let i = 0; i < n; i++) val[pattern.diag[i]] += 1
@@ -487,6 +536,7 @@ export function integrate(c: Compiled, opts: IntegrateOptions): IntegrateResult 
       fresh = true
       // Jacobian at (t, y): W = I − h d J
       sys.fluxes(t, y)
+      record(t)
       val.fill(0)
       sys.addJacobian(y, -h * D, val)
       for (let i = 0; i < n; i++) val[pattern.diag[i]] += 1
@@ -547,6 +597,11 @@ export function integrate(c: Compiled, opts: IntegrateOptions): IntegrateResult 
       tau += 0.5 * h * (a.n * a.v + b.n * b.v)
       if (b.n > peak) peak = b.n
     }
+    if (markIdx >= 0 && tMark === null && ynew[markIdx] <= markTarget && y[markIdx] > markTarget) {
+      const a = Math.log(y[markIdx] / markTarget)
+      const bb = Math.log(y[markIdx] / Math.max(ynew[markIdx], 1e-300))
+      tMark = t + h * Math.min(1, Math.max(0, bb > 0 ? a / bb : 1))
+    }
     t += h
     steps++
     y.set(ynew)
@@ -560,13 +615,25 @@ export function integrate(c: Compiled, opts: IntegrateOptions): IntegrateResult 
     h *= Math.min(5, 0.8 * Math.max(err, 1e-10) ** (-1 / 3))
   }
 
+  // a fuel time that is the stop condition itself
+  if (markIdx >= 0 && tMark === null && y[markIdx] <= markTarget * (1 + 1e-6)) tMark = t
+  // the last point's energy
+  if (epsAll.length < ts.length) {
+    sys.fluxes(t, y)
+    record(t)
+  }
+
   // samples, log-spaced in time
   const maxSamples = opts.maxSamples ?? 160
   let outT = ts
   let outY = Ys
+  let outE = epsAll
+  let outNu = nuAll
   if (ts.length > maxSamples) {
     outT = [ts[0]]
     outY = [Ys[0]]
+    outE = [epsAll[0]]
+    outNu = [nuAll[0]]
     const lo = Math.log(ts[1])
     const hi = Math.log(ts[ts.length - 1])
     let j = 1
@@ -576,6 +643,8 @@ export function integrate(c: Compiled, opts: IntegrateOptions): IntegrateResult 
       if (ts[j] !== outT[outT.length - 1]) {
         outT.push(ts[j])
         outY.push(Ys[j])
+        outE.push(epsAll[j])
+        outNu.push(nuAll[j])
       }
     }
   }
@@ -590,6 +659,12 @@ export function integrate(c: Compiled, opts: IntegrateOptions): IntegrateResult 
     rejected,
     ms,
     ...(iN >= 0 ? { exposure: { tau_cm2: tau, peak_cm3: peak } } : {}),
+    eps: outE,
+    epsNu: outNu,
+    E: Eint,
+    Enu,
+    counts,
+    tMark,
   }
 }
 
@@ -621,4 +696,20 @@ export function lifetimes(
     out[i] = rate > 0 ? 1 / rate : Infinity
   })
   return out
+}
+
+/**
+ * ε_gross and ε_ν (erg g⁻¹ s⁻¹, lib/rates/energy.ts) of a composition Y at
+ * time t of a history: the energy generation rate the burn has there.
+ */
+export function energyAt(
+  c: Compiled,
+  opts: Pick<IntegrateOptions, "scale" | "history" | "screening" | "provider">,
+  Y: Float64Array,
+  t = 0,
+): { gross: number; nu: number; eps: number } {
+  const sys = makeSystem(c, opts)
+  sys.fluxes(t, Y)
+  const e = energyOfFlux(c.energy, sys.flux)
+  return { ...e, eps: e.gross - e.nu }
 }

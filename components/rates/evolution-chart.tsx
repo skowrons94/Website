@@ -34,6 +34,7 @@ export const EvolutionChart = memo(function EvolutionChart({
   xLabel,
   yLabel,
   baseWord = "unchanged",
+  compact = false,
 }: {
   series: EvolutionSeries[]
   lang: Lang
@@ -42,10 +43,12 @@ export const EvolutionChart = memo(function EvolutionChart({
   yLabel: string
   /** the word for the unchanged burn in the readout */
   baseWord?: string
+  /** a lower chart (one series: the energy) */
+  compact?: boolean
 }) {
   const [box, width, k] = useWidth<HTMLDivElement>()
   const narrow = width < 520
-  const height = narrow ? 260 : 320
+  const height = compact ? (narrow ? 200 : 240) : narrow ? 260 : 320
   // The nuclide names are drawn at the right end of their lines on every
   // width, so a phone keeps room for them too ("²⁶Al", 12 px).
   const m = { l: narrow ? 44 : 56, r: narrow ? 40 : 70, t: 14, b: 42 }

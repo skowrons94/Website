@@ -13,6 +13,10 @@ export interface SensitivityTable {
   reactions: string[]
   /** s[reaction][nucleus] = ln(X_×2 / X) / ln 2 */
   s: number[][]
+  /** the same s for the burn's mean power, its fuel time (null: not reached) and each neutrino source */
+  energy?: number[]
+  fuel?: (number | null)[]
+  nu?: Record<string, (number | null)[]>
 }
 
 /**
@@ -25,6 +29,8 @@ export interface SensitivityTable {
  * that moves many nuclei comes before a decay that only sets its own parent.
  * A cell is a button: it tries that rate ×2. The grid is one tab stop (a
  * roving tabindex): the arrow keys, Home and End move between the cells.
+ * After the nuclei, set apart, the energy columns (lib/rates/energy.ts):
+ * the mean power, the fuel time and the neutrino sources a detector names.
  */
 export function SensitivityMap({
   network,
@@ -44,14 +50,22 @@ export function SensitivityMap({
   const [all, setAll] = useState(false)
   const label = (name: string) => network.nuclei.find((n) => n.name === name)?.label ?? name
   const rlabel = (id: string) => network.reactions.find((r) => r.id === id)?.label ?? id
-  const cols = (columns ?? table.nuclei).map((n) => table.nuclei.indexOf(n)).filter((j) => j >= 0)
+  const nucCols = (columns ?? table.nuclei).map((n) => table.nuclei.indexOf(n)).filter((j) => j >= 0)
+  // every column: the nuclei, then the energy's
+  type Col = { key: string; label: string; get: (i: number) => number | null; extra?: boolean }
+  const cols: Col[] = nucCols.map((j) => ({ key: table.nuclei[j], label: label(table.nuclei[j]), get: (i) => table.s[i][j] }))
+  const extra: Col[] = []
+  if (table.energy) extra.push({ key: "energy", label: t.energy.sensEnergy, get: (i) => table.energy![i], extra: true })
+  if (table.fuel?.some((v) => v !== null)) extra.push({ key: "fuel", label: t.energy.sensFuel, get: (i) => table.fuel![i], extra: true })
+  for (const [g, v] of Object.entries(table.nu ?? {})) extra.push({ key: `nu-${g}`, label: t.energy.nu[g] ?? g, get: (i) => v[i], extra: true })
+  cols.push(...extra)
   const rows = table.reactions
     .map((id, i) => ({
       id,
       i,
-      max: Math.max(0, ...cols.map((j) => Math.abs(table.s[i][j]))),
+      max: Math.max(0, ...nucCols.map((j) => Math.abs(table.s[i][j]))),
       // how much the rate moves across all the nuclei (capped per nucleus)
-      reach: cols.reduce((a, j) => a + Math.min(1, Math.abs(table.s[i][j])), 0),
+      reach: nucCols.reduce((a, j) => a + Math.min(1, Math.abs(table.s[i][j])), 0),
     }))
     .filter((r) => r.max >= 0.01)
     .sort((a, b) => b.reach - a.reach)
@@ -87,9 +101,18 @@ export function SensitivityMap({
           <thead>
             <tr>
               <th className="sticky left-0 z-10 bg-card px-2 py-1.5 text-left font-medium text-muted-foreground">×2</th>
-              {cols.map((j) => (
-                <th key={j} scope="col" className="min-w-[2.6rem] px-0.5 py-1.5 text-center font-serif font-semibold">
-                  <Sci>{label(table.nuclei[j])}</Sci>
+              {cols.map((c) => (
+                <th
+                  key={c.key}
+                  scope="col"
+                  title={c.extra ? t.energy.sensGroup : undefined}
+                  className={
+                    c.extra
+                      ? `min-w-[3.4rem] max-w-[5.5rem] px-1 py-1.5 text-center align-bottom text-[0.66rem] font-medium leading-tight ${c === extra[0] ? "border-l-2 border-border" : ""}`
+                      : "min-w-[2.6rem] px-0.5 py-1.5 text-center font-serif font-semibold"
+                  }
+                >
+                  <Sci>{c.label}</Sci>
                 </th>
               ))}
             </tr>
@@ -103,31 +126,32 @@ export function SensitivityMap({
                 >
                   <Sci>{rlabel(id)}</Sci>
                 </th>
-                {cols.map((j, ci) => {
-                  const v = table.s[i][j]
+                {cols.map((col, ci) => {
+                  const raw = col.get(i)
+                  const v = raw ?? 0
                   const a = Math.min(1, Math.abs(v)) ** 0.7
-                  const col = v > 0 ? "var(--rates-up)" : "var(--rates-down)"
+                  const hue = v > 0 ? "var(--rates-up)" : "var(--rates-down)"
                   const strong = a > 0.55
                   return (
-                    <td key={j} className="p-0.5">
+                    <td key={col.key} className={`p-0.5 ${col === extra[0] ? "border-l-2 border-border" : ""}`}>
                       <button
                         type="button"
                         data-cell={`${ri}-${ci}`}
                         tabIndex={ri === fr && ci === fc ? 0 : -1}
                         onFocus={() => setFocus([ri, ci])}
                         onClick={() => onTry?.(id)}
-                        title={t.sensCell(rlabel(id), label(table.nuclei[j]), fmt(v))}
-                        aria-label={t.sensCell(rlabel(id), label(table.nuclei[j]), fmt(v))}
+                        title={t.sensCell(rlabel(id), col.label, raw === null ? "–" : fmt(v))}
+                        aria-label={t.sensCell(rlabel(id), col.label, raw === null ? "–" : fmt(v))}
                         className="tabular flex h-7 w-full min-w-[2.4rem] items-center justify-center rounded-sm text-[0.68rem] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         style={{
                           background:
                             Math.abs(v) < 0.01
                               ? "transparent"
-                              : `color-mix(in srgb, ${col} ${(a * 100).toFixed(0)}%, transparent)`,
+                              : `color-mix(in srgb, ${hue} ${(a * 100).toFixed(0)}%, transparent)`,
                           color: strong ? "var(--viz-surface)" : "var(--viz-text-muted)",
                         }}
                       >
-                        {Math.abs(v) >= 0.1 ? fmt(v) : ""}
+                        {raw === null ? "–" : Math.abs(v) >= 0.1 ? fmt(v) : ""}
                       </button>
                     </td>
                   )

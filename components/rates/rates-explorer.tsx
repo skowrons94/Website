@@ -21,7 +21,16 @@ import { CuriosityStrip } from "./curiosity-card"
 import { parseRatesHash, ratesHash, showWhatIf } from "@/lib/rates/url"
 import { bottleneck, closes, dominantPath, heaviestProduct, integratedFlows, pathStart } from "@/lib/rates/flow"
 import { LUNA_RATES_PUBLIC } from "@/lib/rates/features"
-import { changedTargets, defaultReaction, lightChangeRows, splitChanges, suggestReaction, visible } from "@/lib/rates/changes"
+import {
+  changedTargets,
+  defaultReaction,
+  directNuclei,
+  indirectRows,
+  lightChangeRows,
+  splitChanges,
+  suggestReaction,
+  visible,
+} from "@/lib/rates/changes"
 import { ratesDict } from "@/lib/rates/i18n"
 import { compiled, historyOf, providerFor, requestKey, type RunResult } from "@/lib/rates/run"
 import type { Network, Reaction, Scenario } from "@/lib/rates/schema"
@@ -29,6 +38,7 @@ import { lifetimes } from "@/lib/rates/solver"
 import { ChangeResult } from "./change-bars"
 import { factorText } from "./factor-slider"
 import { BusyLine, C, Download, Figure, Fold, Formula, RATES_TOKENS, SERIES, Segmented, Swatch } from "./chart-kit"
+import { EnergyChart, EnergyLines } from "./energy-panel"
 import { EvolutionChart, type EvolutionSeries } from "./evolution-chart"
 import { FlowRing } from "./flow-ring"
 import { dec, duration, sci, sig2, temperature, YEAR_S } from "./format"
@@ -456,9 +466,12 @@ export function RatesExplorer({
     // the changed reactions' own targets (and the LUNA rates' when they are on) apart from the rest
     const targets = changedTargets(network, { ...scaleD, ...Object.fromEntries(alts.map((id) => [id, 0])) })
     const changes = splitChanges(rows, targets)
+    const indirect = indirectRows(changes.knock, directNuclei(network, scaleD))
     const selfDecay = new Map(
       [...targets].map(([name, id]) => [name, (byId.get(id)?.reactants.length ?? 2) === 1] as const),
     )
+    // the factor each target's reaction was changed by (0: a LUNA rate, direction unknown)
+    const selfFactor = new Map([...targets].map(([name, id]) => [name, scaleD[id] ?? 0] as const))
     const evo: EvolutionSeries[] = []
     if (mod) {
       shown.forEach((name, slot) => {
@@ -475,7 +488,7 @@ export function RatesExplorer({
         })
       })
     }
-    return { lifeRows, pathText, pathEnd, stalled, changes, selfDecay, evo }
+    return { lifeRows, pathText, pathEnd, stalled, changes, indirect, selfDecay, selfFactor, evo }
   }, [network, life, allSteps, slots, scaleD, alts, byId, changedD, base, mod, shown])
   const lifeRefs = useMemo(
     () => [
@@ -522,7 +535,7 @@ export function RatesExplorer({
     )
   }
 
-  const { lifeRows, pathText, pathEnd, stalled, changes, selfDecay, evo } = derived
+  const { lifeRows, pathText, pathEnd, stalled, changes, indirect, selfDecay, selfFactor, evo } = derived
   const sName = (s: Scenario) => (it ? s.name_it : s.name)
   const custom = !sameConditions(cond, fromScenario(scenario))
 
@@ -997,11 +1010,15 @@ export function RatesExplorer({
                     split={changes}
                     changed={changedD}
                     decays={selfDecay}
+                    factors={selfFactor}
                     lang={lang}
                     cycle={t.cycleOf[network.id]}
                     suggestion={suggestion}
                     limit={8}
-                  />
+                    indirect={indirect.length < changes.knock.length ? indirect : []}
+                  >
+                    <EnergyLines base={base} mod={mod} changed={changedD} net={network.id} lang={lang} />
+                  </ChangeResult>
                 </div>
               </div>
               <div>
@@ -1052,6 +1069,7 @@ export function RatesExplorer({
                   })}
                 </ul>
               </div>
+              <EnergyChart base={base} mod={mod} changed={changedD} lang={lang} />
             </div>
           </div>
         </div>

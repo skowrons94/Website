@@ -102,6 +102,26 @@ function Know({ c, lang }: { c: CuriosityCardData; lang: Lang }) {
   )
 }
 
+/** The most striking knock-on effect and the energy, when the change has them (lib/rates/curiosities.ts). */
+function Extras({ c, lang }: { c: CuriosityCardData; lang: Lang }) {
+  const t = ratesDict(lang).cur
+  if (!c.knockLine && !c.energyLine) return null
+  return (
+    <ul className="space-y-0.5 border-l-2 border-foreground/25 pl-2.5 text-sm leading-snug" aria-label={t.extras}>
+      {c.knockLine && (
+        <li>
+          <Sci>{c.knockLine}</Sci>
+        </li>
+      )}
+      {c.energyLine && (
+        <li>
+          <Sci>{c.energyLine}</Sci>
+        </li>
+      )}
+    </ul>
+  )
+}
+
 /** The caveat and the rate's real standing: never a card without them. */
 function Caveat({ c, lang }: { c: CuriosityCardData; lang: Lang }) {
   const t = ratesDict(lang).cur
@@ -131,6 +151,7 @@ export function CuriosityCard({ c, lang, headingLevel = 3 }: { c: CuriosityCardD
         <Sentence c={c} />
       </H>
       <Bars c={c} lang={lang} />
+      <Extras c={c} lang={lang} />
       <p className="text-pretty text-sm leading-relaxed">
         <Sci>{c.hook}</Sci>
       </p>
@@ -161,7 +182,7 @@ export function CuriosityCopy({ c, lang }: { c: CuriosityCardData; lang: Lang })
     const text =
       what === "link"
         ? url()
-        : `J. Skowronski, “${c.sentence}” ${c.caveat} Rate explorer (${c.model}). ${url()}. ${t.rate}: ${c.rateSource}.`
+        : `J. Skowronski, “${[c.sentence, c.knockLine, c.energyLine].filter(Boolean).join(" ")}” ${c.caveat} Rate explorer (${c.model}). ${url()}. ${t.rate}: ${c.rateSource}.`
     try {
       await navigator.clipboard.writeText(text)
     } catch {

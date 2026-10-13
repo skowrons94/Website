@@ -2,8 +2,9 @@
  * The social cards of the rate curiosities: public/rates/cards/<id>.<lang>.png,
  * 1200 × 630, one per curiosity and language, drawn from the same words and
  * numbers as the pages (lib/rates/curiosities.ts):
- * the reaction, the sentence, a before/after bar, the one-zone caveat and the
- * address. SVG rendered by sharp (Next.js' own image library) with the
+ * the reaction, the sentence, a before/after bar, the knock-on and energy
+ * lines when the card has them, the one-zone caveat (and the energy's) and
+ * the address. SVG rendered by sharp (Next.js' own image library) with the
  * system's fonts (DejaVu Serif, Inter).
  *
  * The cards are committed, like public/og.png: the Pages build runs Node 20
@@ -17,7 +18,7 @@
 import fs from "node:fs"
 import path from "node:path"
 
-import { CURIOSITIES, curiosityPath, curiosityRatio, curiosityText } from "../../lib/rates/curiosities.ts"
+import { CURIOSITIES, cardText, curiosityContext, curiosityPath, curiosityRatio, curiosityText } from "../../lib/rates/curiosities.ts"
 
 const ROOT = process.cwd()
 const DATA = path.join(ROOT, "public", "rates")
@@ -58,9 +59,14 @@ function wrap(parts, size, width) {
 
 function svg(spec, c, lang, ratio) {
   const it = lang === "it"
+  const extras = [c.knockLine, c.energyLine].filter(Boolean)
+  const notes = [c.shortCaveat, c.shortEnergy].filter(Boolean)
+  // room below the sentence: two bars, the extra lines, the notes, the address
+  const below = 62 + extras.length * 32 + 30 + notes.length * 30 + 34
   let size = 40
+  const fits = (n, sz) => 150 + n * sz * 1.28 + 20 + below <= 606
   let lines = wrap(c.parts, size, 1040)
-  while (lines.length > 5 && size > 30) lines = wrap(c.parts, (size -= 2), 1040)
+  while ((lines.length > 5 || !fits(lines.length, size)) && size > 26) lines = wrap(c.parts, (size -= 2), 1040)
   const lh = size * 1.28
   const y0 = 150
   const text = lines
@@ -71,7 +77,7 @@ function svg(spec, c, lang, ratio) {
           .join("")}</text>`,
     )
     .join("")
-  const by = Math.max(y0 + lines.length * lh + 20, 400)
+  const by = Math.max(y0 + lines.length * lh + 20, Math.min(400, 606 - below))
   const max = Math.max(1, ratio)
   const W = 640
   const bar = (y, label, v, color) =>
@@ -93,8 +99,9 @@ function svg(spec, c, lang, ratio) {
 ${text}
 ${bar(by, labels[0], 1, "#8b857d")}
 ${bar(by + 40, labels[1], ratio, ratio >= 1 ? "#6d4bb8" : "#8a5a2b")}
-<text x="80" y="${by + 112}" font-family="${SANS}" font-size="21" fill="${MUTED}">${esc(c.shortCaveat)}</text>
-<text x="80" y="${by + 146}" font-family="${SANS}" font-size="21" fill="${ACCENT}">${esc(url.replace(/^https?:\/\//, ""))}</text>
+${extras.map((l, i) => `<text x="80" y="${by + 96 + i * 32}" font-family="${SANS}" font-size="23" font-weight="600" fill="${INK}">${esc(l)}</text>`).join("")}
+${notes.map((l, i) => `<text x="80" y="${by + 96 + extras.length * 32 + 16 + i * 30}" font-family="${SANS}" font-size="21" fill="${MUTED}">${esc(l)}</text>`).join("")}
+<text x="80" y="${by + 96 + extras.length * 32 + 16 + notes.length * 30 + 4}" font-family="${SANS}" font-size="21" fill="${ACCENT}">${esc(url.replace(/^https?:\/\//, ""))}</text>
 </svg>`
 }
 
@@ -109,17 +116,10 @@ for (const spec of CURIOSITIES) {
   const sens = JSON.parse(fs.readFileSync(file("sensitivity.json"), "utf8"))
   const network = JSON.parse(fs.readFileSync(path.join(DATA, `${spec.net}.json`), "utf8"))
   const base = JSON.parse(fs.readFileSync(file("baseline.json"), "utf8"))
-  const s = network.scenarios.find((x) => x.id === spec.site)
-  const r = network.reactions.find((x) => x.id === spec.reaction)
   const ratio = curiosityRatio(spec, sens)
   for (const lang of ["en", "it"]) {
-    const c = curiosityText(spec, ratio, lang, {
-      reaction: r.label,
-      T9: s.T9,
-      tFinal: base.runs[spec.site].tFinal,
-      cooling: Boolean(s.profile),
-    })
-    manifest[`${spec.id}.${lang}`] = c.sentence
+    const c = curiosityText(spec, ratio, lang, curiosityContext(spec, sens, network, base))
+    manifest[`${spec.id}.${lang}`] = cardText(c)
     jobs.push(
       sharp(Buffer.from(svg(spec, c, lang, ratio)))
         .png({ compressionLevel: 9, palette: true })

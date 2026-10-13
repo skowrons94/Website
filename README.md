@@ -285,8 +285,11 @@ scripts/rates/evaluated/        their N_A⟨σv⟩ tables, read by build.py
 scripts/rates/baseline.mjs      the precomputed first view           (Node, the browser's solver)
 scripts/rates/sensitivity.mjs   every rate ×2 in turn, per scenario   (written by baseline.mjs)
 scripts/rates/test.mjs          npm run test:rates: browser vs pynucastro
+scripts/rates/energy-states.mjs, energy_reference.py
+                                pynucastro's ε at every scenario's start and mid-burn (reference/energy/)
 scripts/rates/curiosity-cards.mjs  the curiosities' 1200×630 social cards (sharp; committed)
 lib/rates/curiosities.ts        the "what if a rate were twice as fast" sentences (words only)
+lib/rates/energy.ts             ε = N_A Σ flux·Q − neutrino losses, fuel time, neutrino sources
 lib/rates/                      schema, rate providers, screening, sparse LU, solver, worker
 components/rates/               the explorer's charts and controls
 ```
@@ -299,6 +302,7 @@ pip install pynucastro numpy scipy pyyaml numba
 python scripts/rates/build.py          # public/rates/<id>.json
 python scripts/rates/reference.py      # scripts/rates/reference/<id>.json
 npm run rates:baseline                 # public/rates/<id>.baseline.json, <id>.sensitivity.json
+node scripts/rates/energy-states.mjs && python scripts/rates/energy_reference.py   # pynucastro's ε
 npm run test:rates                     # must pass
 ```
 
@@ -336,6 +340,19 @@ sensitivity tables; `test:rates` reruns the solver for each and fails when a
 sentence would read differently, or when a social card in
 `public/rates/cards/` is stale (rerun `node scripts/rates/curiosity-cards.mjs`
 with `SITE_URL` set, so the cards print the site's address).
+
+Energy (`lib/rates/energy.ts`): ε = N_A Σ flux · Q with Q from the AME2020
+atomic mass excesses in the network file, which is pynucastro's
+`evaluate_energy_generation` term for term (test:rates: agreement to ≤ 3e-12
+at every scenario's start and mid-burn), less the neutrino losses: each weak
+reaction's mean neutrino energy is Bahcall (1989, Table 6.1) for pp, pep,
+hep, ⁷Be, ⁸B, ¹³N, ¹⁵O and ¹⁷F, and an allowed β spectrum over the main ENSDF
+branches otherwise (ground state to ground state, an upper bound, in the
+s-process). The solver integrates ε over its steps; ∫(ε + ε_ν) dt equals the
+mass defect of what burnt to ≤ 2e-5 at rtol 1e-6. The sensitivity tables
+carry the mean power, the fuel time and the neutrino sources beside the
+nuclei. ε is the power of one gram of gas at the model's temperature, not a
+star's luminosity.
 
 Accuracy (`npm run test:rates`): rates agree with pynucastro's `Rate.eval`
 to 1e-11; burns at rtol 1e-6 agree with pynucastro's own network integrated

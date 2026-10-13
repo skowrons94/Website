@@ -5,6 +5,7 @@
  * worker share it.
  */
 
+import { NEUTRINO_GROUPS, fuelMark, fuelOf, massEnergy, type BurnEnergy } from "./energy.ts"
 import { evalSpec, networkProvider, overrideProvider, type RateProvider } from "./rate-provider.ts"
 import { compile, integrate, type Compiled, type History } from "./solver.ts"
 import type { Network, Scenario } from "./schema.ts"
@@ -53,6 +54,11 @@ export interface RunResult {
   steps: number
   ms: number
   exposure?: { tau_cm2: number; peak_cm3: number }
+  /** the energy generation rate ε (neutrinos excluded) and the neutrino losses ε_ν per sample, erg g⁻¹ s⁻¹ */
+  eps?: number[]
+  epsNu?: number[]
+  /** the burn's energy, fuel time and neutrinos (lib/rates/energy.ts) */
+  energy?: BurnEnergy
 }
 
 /**
@@ -90,6 +96,8 @@ export function trackOf(network: Network): string[] {
 const round = (x: number) => (x === 0 ? 0 : Number(x.toPrecision(7)))
 
 export function run(c: Compiled, req: RunRequest, maxSamples = 120): RunResult {
+  const fuel = fuelOf(c.network, req.until)
+  const mark = fuelMark(req.until)
   const res = integrate(c, {
     history: req.history,
     X0: req.X0,
@@ -101,8 +109,23 @@ export function run(c: Compiled, req: RunRequest, maxSamples = 120): RunResult {
     atol: req.atol,
     maxSamples,
     neutronExposure: c.index.has("n"),
+    mark: fuel ? { nucleus: fuel, fraction: mark } : null,
     ...(req.alternatives?.length ? { provider: providerFor(c.network, req.alternatives) } : {}),
   })
+  const Y0 = res.Y[0]
+  const nu: Record<string, number> = {}
+  for (const g of NEUTRINO_GROUPS[c.network.id] ?? []) {
+    nu[g.id] = round(g.reactions.reduce((a, id) => a + (res.counts[c.network.reactions.findIndex((r) => r.id === id)] ?? 0), 0))
+  }
+  const energy: BurnEnergy = {
+    E: round(res.E),
+    Enu: round(res.Enu),
+    defect: round(massEnergy(c.network, Y0) - massEnergy(c.network, res.final)),
+    fuel,
+    mark,
+    tFuel: res.tMark === null ? null : round(res.tMark),
+    nu,
+  }
   const A = c.A
   const toX = (Y: Float64Array) => Array.from(Y, (y, i) => round(Math.max(0, y * A[i])))
   const cols = req.track?.map((name) => c.index.get(name)).filter((i): i is number => i !== undefined)
@@ -111,6 +134,9 @@ export function run(c: Compiled, req: RunRequest, maxSamples = 120): RunResult {
     X: cols ? res.Y.map((Y) => cols.map((i) => round(Math.max(0, Y[i] * A[i])))) : res.Y.map(toX),
     ...(cols ? { track: cols.map((i) => c.network.nuclei[i].name) } : {}),
     ...(res.exposure ? { exposure: res.exposure } : {}),
+    eps: res.eps.map(round),
+    epsNu: res.epsNu.map(round),
+    energy,
     final: toX(res.final),
     tFinal: res.tFinal,
     stopped: res.stopped,
