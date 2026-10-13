@@ -1061,15 +1061,16 @@ events:
       predict. Its production depends on niobium-94, a radioactive branch
       point of the s-process, where neutron capture competes with decay. At
       CERN's n_TOF its capture cross section was measured for the first time.
-      The result confirms the general scale of the theoretical estimates, and
-      models of low-mass giant stars that use it agree with the grain data.
+      The result confirms the general scale of the theoretical estimates;
+      used in fully coupled models of low-mass giant stars, together with
+      their improved physics, it brings them into agreement with the grains.
     text_it: >-
       I grani di polvere stellare più antichi del Sole contengono più
       molibdeno-94 di quanto prevedano i modelli. La sua produzione dipende
       dal niobio-94, un punto di diramazione radioattivo del processo s, dove
       la cattura neutronica compete con il decadimento. A n_TOF, al CERN, la
       sua sezione d'urto di cattura è stata misurata per la prima volta. Il
-      risultato conferma l'ordine di grandezza delle stime teoriche, e i
-      modelli di stelle giganti di piccola massa che lo usano concordano con i
-      dati dei grani.
+      risultato conferma la scala generale delle stime teoriche; usato in
+      modelli completamente accoppiati di stelle giganti di piccola massa,
+      insieme alla loro fisica migliorata, li mette d'accordo con i grani.
     refs: [balibreacorrea2026]
