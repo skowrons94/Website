@@ -58,3 +58,23 @@ export function years(ys: (number | null)[]): string {
   if (!v.length) return ""
   return v[0] === v[v.length - 1] ? String(v[0]) : `${v[0]}–${v[v.length - 1]}`
 }
+
+/**
+ * An Italian date after "di" or "a", with the article elided where the day
+ * starts with a vowel sound: `del 28 settembre 2026`, `dell'1 dicembre 2025`,
+ * `all'8 marzo 2020` (docs/STYLE.md).
+ */
+export function itDate(prep: "di" | "a", date: string): string {
+  const vowel = /^(1|8|11)\s/.test(date)
+  return prep === "di" ? (vowel ? `dell'${date}` : `del ${date}`) : vowel ? `all'${date}` : `al ${date}`
+}
+
+const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"]
+
+/** ENSDF's `1-Jun-2020` as ISO `2020-06-01`; anything else as it is. */
+export function ensdfDate(text: string | null | undefined): string {
+  const m = /^(\d{1,2})-([A-Za-z]{3})-(\d{4})$/.exec((text ?? "").trim())
+  if (!m) return text ?? ""
+  const k = MONTHS.indexOf(m[2].toLowerCase())
+  return k < 0 ? (text ?? "") : `${m[3]}-${String(k + 1).padStart(2, "0")}-${m[1].padStart(2, "0")}`
+}

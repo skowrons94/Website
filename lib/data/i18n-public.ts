@@ -13,6 +13,8 @@
  * atlas' `plain` field and `particleName`.
  */
 
+import { itDate } from "./format.ts"
+import { RULE_TEXT } from "./rule-text.ts"
 import type { Lang } from "@/lib/locale"
 import { elideItalian } from "../localize.mjs"
 
@@ -30,9 +32,9 @@ const en = {
   dataPublic: {
     name: "Nuclear data explorer",
     metaTitle: "Nuclear data explorer",
-    promise: "Every nucleus has a file. See what has been measured, and what nobody has measured yet.",
+    promise: "Every nucleus has a file. See what has been measured, and what EXFOR has no measurement of yet.",
     description:
-      "What has been measured for the reactions that power stars, and what nobody has measured yet: the world's nuclear-reaction data (EXFOR) and nuclear levels (ENSDF), in plain language.",
+      "What has been measured for the reactions that power stars, and what EXFOR has no measurement of yet: the world's nuclear-reaction data (EXFOR) and nuclear levels (ENSDF), in plain language.",
     lead: (datasets: string, entries: string, reactions: string) =>
       `${datasets} measured datasets from ${entries} experiments in the world's nuclear-data logbook, linked to the ${reactions} reactions of the atlas, to the energy levels of each nucleus and to the rates that stars run on.`,
     jump: "On this page",
@@ -50,13 +52,13 @@ const en = {
     words: [
       {
         term: "EXFOR",
-        text: "The world's logbook of nuclear experiments: every published measurement, with who, where and when.",
+        text: "The world's logbook of nuclear experiments: most published measurements, with who, where and when.",
       },
       {
         term: "ENSDF",
         text: "The reference book of each nucleus: its energy levels, how long they live, which γ-rays they emit.",
       },
-      { term: "Evaluation", text: "The best curve through all the measurements, with an honest error band." },
+      { term: "Evaluation", text: "The best curve through all the measurements, with its uncertainty band." },
       { term: "Rate", text: "How often a reaction happens in a star at a given temperature." },
     ],
 
@@ -64,7 +66,7 @@ const en = {
     cards: {
       known: (n: string) => `${n} reactions on the chart of nuclides, each marked by how well its rate is known.`,
       gap: (n: string) =>
-        `${n} reactions, from the energy a star uses to the lowest energy anyone has measured. The empty stretch is the story.`,
+        `${n} reactions, from the energy a star uses to the lowest energy in EXFOR. The empty stretch is the story.`,
       stories: "The slowest reaction in the Sun, the step that sets the pace of the CNO cycle, and why physicists go underground.",
       nucleus: "The energy levels of a nucleus, with the narrow band a star uses drawn across them.",
       search: "Type an element, in English or Italian: its isotopes, their reactions and their rates.",
@@ -90,7 +92,7 @@ const en = {
     measurementsAria: (reaction: string) => `Measurements of ${reaction}`,
 
     /* -- the gap --------------------------------------------------------- */
-    gapTitle: "The gap: what nobody has measured yet",
+    gapTitle: "The gap: what EXFOR has no measurement of yet",
     gapLead:
       "A star uses each reaction in a narrow band of energies, its Gamow window. Laboratories measure from high energies downwards, and the counting rate falls steeply as they go. For each reaction: the window a star needs and the lowest energy ever measured. The empty stretch between them is filled by extrapolation.",
     gapLegendWindow: "Energies the star uses (Gamow window)",
@@ -104,12 +106,11 @@ const en = {
     gapFactor: (x: string) => `${x}× above the window`,
     gapReached: "Window reached",
     gapNone: "No direct data",
-    gapBy: (who: string, year: string) => `Lowest: ${who}, ${year}`,
+    gapBy: (who: string) => `Lowest: ${who}`,
     gapUnderground: "underground (LUNA)",
     gapShowAll: (n: number) => `Show all ${n} reactions`,
     gapHide: "Show fewer",
-    gapRule:
-      "Lowest energy measured: the lowest centre-of-mass energy of any dataset in EXFOR that measures the reaction itself (cross section, S-factor, angular distribution, yield or resonance strength). Not counted: extrapolated, calculated or derived values, superseded or preliminary data, upper limits, single S-factor values quoted at one energy, indirect data (Trojan horse, Coulomb dissociation, ANC), and energies under 1 keV, which no charged-particle beam has reached.",
+    gapRule: RULE_TEXT.en,
 
     /* -- stories --------------------------------------------------------- */
     storiesTitle: "Three stories",
@@ -186,7 +187,7 @@ const en = {
 
     /* -- attribution ----------------------------------------------------- */
     sourcesTitle: "Where the data come from",
-    ensdfLine: (date: string) => `Levels: ENSDF (NNDC and the NSDD network), archive of ${date}.`,
+    ensdfLine: (date: string) => `Levels: ENSDF (NNDC for the NSDD network), archive of ${date}.`,
     physicists: "For physicists",
     physicistsSnapshot: (commit: string) => `EXFOR master files at commit ${commit}.`,
     physicistsCite: "Cite",
@@ -206,7 +207,7 @@ const en = {
           },
           {
             title: "Nobody has ever measured it",
-            text: `The Sun runs this reaction at about ${c.e0}. No experiment has measured it at any energy: EXFOR, the world's logbook of nuclear experiments, has no dataset for it. Its rate comes from theory, and the neutrinos it gives off, counted on Earth, agree with it. The next fusion in the chain, helium-3 + helium-3, has been measured down to ${c.he3low} (${c.he3who}), inside the Sun's window.`,
+            text: `The Sun runs this reaction at about ${c.e0}. No experiment has measured it at any energy: EXFOR, the world's logbook of nuclear experiments, has no dataset for it. Its rate comes from theory, and the neutrinos it gives off, counted on Earth, agree with it. Later in the chain, the fusion of two helium-3 nuclei has been measured down to ${c.he3low} (${c.he3who}), inside the Sun's window.`,
             link: "See the gap for every reaction",
           },
           {
@@ -277,7 +278,7 @@ const en = {
           },
           {
             title: "The best curve",
-            text: `An evaluation draws the best curve through all those measurements, with an honest error band, and turns it into a rate a star model can use. The atlas lists ${c.evaluations} evaluations of this reaction.`,
+            text: `An evaluation draws the best curve through all those measurements, with its uncertainty band, and turns it into a rate a star model can use. The atlas lists ${c.evaluations} evaluations of this reaction.`,
             link: "The evaluations, in the atlas",
           },
           {
@@ -288,7 +289,9 @@ const en = {
         ],
         unknownTitle: "What we still don't know",
         unknown: [
-          `The second neutron source, neon-22 + helium-4, has been measured down to ${c.ne22low} only; a thermal pulse needs about ${c.ne22e0}.`,
+          c.ne22inside
+            ? `The second neutron source, neon-22 + helium-4, has been measured down to ${c.ne22low}, the edge of what a thermal pulse needs (about ${c.ne22e0}).`
+            : `The second neutron source, neon-22 + helium-4, has been measured down to ${c.ne22low} only; a thermal pulse needs about ${c.ne22e0}.`,
           "How much carbon-13 a star's pocket holds is set by mixing inside the star, which models cannot yet predict.",
           "At some branch points of the path the nucleus is radioactive, and its neutron capture is hard or impossible to measure.",
         ],
@@ -306,9 +309,9 @@ const it: typeof en = {
   dataPublic: {
     name: "Esploratore dei dati nucleari",
     metaTitle: "Esploratore dei dati nucleari",
-    promise: "Ogni nucleo ha una scheda. Guarda che cosa è stato misurato, e che cosa nessuno ha ancora misurato.",
+    promise: "Ogni nucleo ha una scheda. Guarda che cosa è stato misurato, e di che cosa EXFOR non ha ancora misure.",
     description:
-      "Che cosa è stato misurato per le reazioni che fanno brillare le stelle, e che cosa nessuno ha ancora misurato: i dati mondiali sulle reazioni nucleari (EXFOR) e sui livelli dei nuclei (ENSDF), in parole semplici.",
+      "Che cosa è stato misurato per le reazioni che fanno brillare le stelle, e di che cosa EXFOR non ha ancora misure: i dati mondiali sulle reazioni nucleari (EXFOR) e sui livelli dei nuclei (ENSDF), in parole semplici.",
     lead: (datasets: string, entries: string, reactions: string) =>
       `${datasets} serie di misure da ${entries} esperimenti del registro mondiale dei dati nucleari, collegate alle ${reactions} reazioni dell'atlante, ai livelli di energia di ogni nucleo e ai tassi con cui bruciano le stelle.`,
     jump: "In questa pagina",
@@ -325,20 +328,20 @@ const it: typeof en = {
     words: [
       {
         term: "EXFOR",
-        text: "Il registro mondiale degli esperimenti nucleari: ogni misura pubblicata, con chi, dove e quando.",
+        text: "Il registro mondiale degli esperimenti nucleari: gran parte delle misure pubblicate, con chi, dove e quando.",
       },
       {
         term: "ENSDF",
         text: "La carta d'identità di ogni nucleo: i suoi livelli di energia, quanto vivono, quali raggi γ emettono.",
       },
-      { term: "Valutazione", text: "La curva migliore attraverso tutte le misure, con una fascia d'errore onesta." },
+      { term: "Valutazione", text: "La curva migliore attraverso tutte le misure, con la sua fascia d'incertezza." },
       { term: "Tasso", text: "Quante volte avviene una reazione in una stella, a una data temperatura." },
     ],
 
     cards: {
       known: (n: string) => `${n} reazioni sulla carta dei nuclidi, ognuna segnata secondo quanto è noto il suo tasso.`,
       gap: (n: string) =>
-        `${n} reazioni, dall'energia che usa una stella alla più bassa mai misurata. Il tratto vuoto è la storia.`,
+        `${n} reazioni, dall'energia che usa una stella alla più bassa in EXFOR. Il tratto vuoto è la storia.`,
       stories: "La reazione più lenta del Sole, il passo che detta il ritmo del ciclo CNO, e perché i fisici vanno sotto terra.",
       nucleus: "I livelli di energia di un nucleo, con sopra la stretta fascia di energie che usa una stella.",
       search: "Scrivi un elemento, in italiano o in inglese: i suoi isotopi, le loro reazioni e i loro tassi.",
@@ -361,7 +364,7 @@ const it: typeof en = {
     measurements: "misure",
     measurementsAria: (reaction: string) => `Misure della ${reaction}`,
 
-    gapTitle: "Il vuoto: che cosa nessuno ha ancora misurato",
+    gapTitle: "Il vuoto: di che cosa EXFOR non ha ancora misure",
     gapLead:
       "Una stella usa ogni reazione in una stretta banda di energie, la sua finestra di Gamow. I laboratori misurano dalle energie alte verso il basso, e il numero di conteggi crolla man mano che scendono. Per ogni reazione: la finestra che serve alla stella e l'energia più bassa mai misurata. Il tratto vuoto in mezzo si riempie con un'estrapolazione.",
     gapLegendWindow: "Energie che usa la stella (finestra di Gamow)",
@@ -375,12 +378,11 @@ const it: typeof en = {
     gapFactor: (x: string) => `${x} volte sopra la finestra`,
     gapReached: "Finestra raggiunta",
     gapNone: "Nessun dato diretto",
-    gapBy: (who: string, year: string) => `La più bassa: ${who}, ${year}`,
+    gapBy: (who: string) => `La più bassa: ${who}`,
     gapUnderground: "sotto terra (LUNA)",
     gapShowAll: (n: number) => `Mostra tutte le ${n} reazioni`,
     gapHide: "Mostra meno",
-    gapRule:
-      "Energia più bassa misurata: la più bassa energia nel centro di massa di una serie di dati di EXFOR che misura la reazione stessa (sezione d'urto, fattore S, distribuzione angolare, resa o intensità di una risonanza). Non contano: valori estrapolati, calcolati o derivati, dati superati o preliminari, limiti superiori, singoli valori del fattore S citati a una sola energia, dati indiretti (cavallo di Troia, dissociazione coulombiana, ANC) ed energie sotto 1 keV, che nessun fascio di particelle cariche ha raggiunto.",
+    gapRule: RULE_TEXT.it,
 
     storiesTitle: "Tre storie",
     stories: {
@@ -452,7 +454,7 @@ const it: typeof en = {
     caveat: "Modello a zona singola del centro di una stella, a temperatura e densità costanti. Una stella vera si riassesta.",
 
     sourcesTitle: "Da dove vengono i dati",
-    ensdfLine: (date: string) => `Livelli: ENSDF (NNDC e la rete NSDD), archivio del ${date}.`,
+    ensdfLine: (date: string) => `Livelli: ENSDF (NNDC per la rete NSDD), archivio ${itDate("di", date)}.`,
     physicists: "Per i fisici",
     physicistsSnapshot: (commit: string) => `File master di EXFOR al commit ${commit}.`,
     physicistsCite: "Come citare",
@@ -471,7 +473,7 @@ const it: typeof en = {
           },
           {
             title: "Nessuno l'ha mai misurata",
-            text: `Il Sole fa avvenire questa reazione intorno a ${c.e0}. Nessun esperimento l'ha misurata, a nessuna energia: EXFOR, il registro mondiale degli esperimenti nucleari, non ne contiene nemmeno una serie di dati. Il suo tasso viene dalla teoria, e i neutrini che emette, contati sulla Terra, le danno ragione. La fusione successiva della catena, elio-3 + elio-3, è stata misurata fino a ${c.he3low} (${c.he3who}), dentro la finestra del Sole.`,
+            text: `Il Sole fa avvenire questa reazione intorno a ${c.e0}. Nessun esperimento l'ha misurata, a nessuna energia: EXFOR, il registro mondiale degli esperimenti nucleari, non ne contiene nemmeno una serie di dati. Il suo tasso viene dalla teoria, e i neutrini che emette, contati sulla Terra, le danno ragione. Più avanti nella catena, la fusione di due nuclei di elio-3 è stata misurata fino a ${c.he3low} (${c.he3who}), dentro la finestra del Sole.`,
             link: "Guarda il vuoto per ogni reazione",
           },
           {
@@ -542,7 +544,7 @@ const it: typeof en = {
           },
           {
             title: "La curva migliore",
-            text: `Una valutazione traccia la curva migliore attraverso tutte queste misure, con una fascia d'errore onesta, e la trasforma in un tasso che un modello di stella può usare. L'atlante elenca ${c.evaluations} valutazioni di questa reazione.`,
+            text: `Una valutazione traccia la curva migliore attraverso tutte queste misure, con la sua fascia d'incertezza, e la trasforma in un tasso che un modello di stella può usare. L'atlante elenca ${c.evaluations} valutazioni di questa reazione.`,
             link: "Le valutazioni, nell'atlante",
           },
           {
@@ -553,7 +555,9 @@ const it: typeof en = {
         ],
         unknownTitle: "Che cosa ancora non sappiamo",
         unknown: [
-          `La seconda sorgente di neutroni, neon-22 + elio-4, è stata misurata solo fino a ${c.ne22low}; un impulso termico richiede circa ${c.ne22e0}.`,
+          c.ne22inside
+            ? `La seconda sorgente di neutroni, neon-22 + elio-4, è stata misurata fino a ${c.ne22low}, al margine di ciò che serve a un impulso termico (circa ${c.ne22e0}).`
+            : `La seconda sorgente di neutroni, neon-22 + elio-4, è stata misurata solo fino a ${c.ne22low}; un impulso termico richiede circa ${c.ne22e0}.`,
           "Quanto carbonio-13 contenga la tasca di una stella dipende dal rimescolamento al suo interno, che i modelli non sanno ancora prevedere.",
           "In alcuni punti di diramazione del percorso il nucleo è radioattivo, e la sua cattura di neutroni è difficile o impossibile da misurare.",
         ],

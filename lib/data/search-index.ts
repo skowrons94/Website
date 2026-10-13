@@ -5,6 +5,7 @@
  */
 
 import { countsForRate, rowGroup } from "./gap.ts"
+import { measuredColumns, measuredMin } from "./lowest.mjs"
 import { GROUPS } from "./quantity.ts"
 import { parseKey, parseNuc } from "./nuclide.ts"
 import { QUANTITY_CLASSES } from "./quantity.ts"
@@ -74,6 +75,7 @@ export function summarise(index: DxIndex): ReactionSummary[] {
       y: d.y[i],
       a: "",
       i: "",
+      ...measuredColumns(d, i),
       f: d.f[i],
       lv: d.lv[i],
       fr: d.fr[i],
@@ -87,7 +89,7 @@ export function summarise(index: DxIndex): ReactionSummary[] {
     const inst = S.institutes[d.i[i]]
     if (inst) labs[d.r[i]].add(inst)
     if (countsForRate(row)) {
-      const E = (row.e0 as number) * 1000
+      const E = (measuredMin(row) as number) * 1000
       if (s.lowest === null || E < s.lowest) s.lowest = E
     }
   }

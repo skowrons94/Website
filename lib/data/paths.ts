@@ -8,6 +8,7 @@
 import { getAtlas } from "@/lib/atlas"
 import { dataPublicDict, type PathWords } from "@/lib/data/i18n-public"
 import {
+  credit,
   energy,
   gapRowOf,
   getSummary,
@@ -54,11 +55,9 @@ export interface GuidedPathData {
 const dec = (s: string, lang: Lang) => (lang === "it" ? s.replace(".", ",") : s)
 const mev = (x: number, lang: Lang) => `${dec(x.toFixed(3), lang)} MeV`
 
-/** `Junker et al., 1998, LUNA` */
+/** `Junker et al., 1998, LUNA`; ties within rounding, earliest first: `Cavanna et al., 2015, LUNA; Depalo et al., 2016, LUNA and 3 more` */
 function whoText(row: GapRow | null, lang: Lang): string {
-  const low = row?.low
-  if (!low) return ""
-  return [low.author, low.year, low.luna ? (lang === "it" ? "LUNA, sotto terra" : "LUNA, underground") : ""].filter(Boolean).join(", ")
+  return row?.low ? credit(row.low, lang) : ""
 }
 
 function words(id: PathId, lang: Lang, c: Record<string, string>): PathWords {
@@ -202,6 +201,7 @@ export function guidedPath(id: PathId, lang: Lang): GuidedPathData {
     evaluations: String(reaction?.evaluations.length ?? 0),
     ne22low: ne22?.low ? energy(ne22.low.keV, lang) : "",
     ne22e0: ne22 ? energy(ne22.E0, lang) : "",
+    ne22inside: ne22?.kind === "inside" ? "1" : "",
     curiosity: curiosityText(cur),
     curiositySentence: cur?.sentence ?? "",
   }

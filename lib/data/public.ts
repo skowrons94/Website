@@ -36,7 +36,17 @@ export interface ReactionSummary {
   luna: number
   lunaEntries: number
   measured: number
-  lowest: { keV: number; id: string; author: string; year: number | null; luna: boolean } | null
+  lowest: {
+    keV: number
+    id: string
+    author: string
+    year: number | null
+    luna: boolean
+    /** quantity class of the first dataset (lib/data/lowest.mjs) */
+    q?: string
+    /** every dataset that reaches it within rounding, one per entry, earliest first */
+    ties?: { id: string; author: string; year: number | null; luna: boolean }[]
+  } | null
 }
 
 export interface PublicSummary {
@@ -67,11 +77,15 @@ export function getSummary(): PublicSummary {
 
 /* -- formatting ------------------------------------------------------------- */
 
-/** `89,804` / `89.804`; Italian groups from 10 000, as lib/rates does. */
+/**
+ * docs/STYLE.md: no separator under five digits, then a thin space in English
+ * (`4900`, `89 804`, a narrow no-break space); the Italian output stays as it
+ * was (`89.804`, groups from 10 000).
+ */
 export function group(n: number, lang: Lang): string {
   const v = String(Math.round(n))
-  if (v.length < (lang === "it" ? 5 : 4)) return v
-  return v.replace(/\B(?=(\d{3})+(?!\d))/g, lang === "it" ? "." : ",")
+  if (v.replace("-", "").length < 5) return v
+  return v.replace(/\B(?=(\d{3})+(?!\d))/g, lang === "it" ? "." : "\u202f")
 }
 
 const comma = (s: string, lang: Lang) => (lang === "it" ? s.replace(".", ",") : s)
@@ -493,4 +507,16 @@ export function lunaReactionIds(): string[] {
 /** `Bemmerer et al., 2006` */
 export function who(low: NonNullable<ReactionSummary["lowest"]>): { name: string; year: string } {
   return { name: low.author, year: low.year ? String(low.year) : "" }
+}
+
+/**
+ * Who reached the lowest measured energy, earliest first, up to `max` names:
+ * `Cavanna et al., 2015, LUNA; Depalo et al., 2016, LUNA and 3 more`.
+ */
+export function credit(low: NonNullable<ReactionSummary["lowest"]>, lang: Lang, max = 2): string {
+  const all = low.ties?.length ? low.ties : [low]
+  const luna = lang === "it" ? "LUNA, sotto terra" : "LUNA, underground"
+  const names = all.slice(0, max).map((x) => [x.author, x.year, x.luna ? luna : ""].filter(Boolean).join(", "))
+  const more = all.length - max
+  return names.join("; ") + (more > 0 ? (lang === "it" ? ` e altre ${more}` : ` and ${more} more`) : "")
 }
