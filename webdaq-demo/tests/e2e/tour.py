@@ -83,11 +83,35 @@ def main():
         dialog = page.locator('.wd-tour')
         dialog.wait_for(timeout=15000)
         seen = []
+        online_checked = False
         for _ in range(40):
             label = dialog.locator('#wd-tour-step').inner_text()
             title = dialog.locator('h2').inner_text()
             if not seen or seen[-1][1] != title:
                 seen.append((label, title))
+            if title in ('Tune while the run goes', 'Regola durante il run') and not online_checked:
+                # By hand first: Online during a production run asks for confirmation
+                # (LUNADAQ's AlertDialog); the tour must stay usable around it.
+                online_checked = True
+                go_btn = dialog.get_by_role('button', name=re.compile(r'^(Go to|Vai) '))
+                if go_btn.count():
+                    go_btn.click()
+                # as a visitor would: the tour highlights the switch and scrolls it clear of its card
+                switch = page.get_by_role('switch', name='Online')
+                page.locator('.wd-tour-target[role="switch"]').wait_for(timeout=15000)
+                page.wait_for_timeout(800)
+                covered = page.evaluate("""() => { const s = document.querySelector('.wd-tour-target'); const r = s.getBoundingClientRect()
+                  const e = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return !(e && (e === s || s.contains(e))) }""")
+                if covered:
+                    failures.append('the highlighted Online switch is covered (tour card, banner or header)')
+                switch.click(timeout=15000)
+                confirm = page.get_by_role('alertdialog')
+                confirm.wait_for(timeout=5000)
+                report['Online confirmation'] = confirm.locator('h2').inner_text()
+                confirm.get_by_role('button', name='Online for this run').click()
+                confirm.wait_for(state='hidden', timeout=5000)
+                if page.get_by_role('switch', name='Online').get_attribute('aria-checked') != 'true':
+                    failures.append('Online did not stay on after the confirmation')
             do = dialog.get_by_role('button', name=t['do'])
             if do.count() and do.is_enabled():
                 do.click()

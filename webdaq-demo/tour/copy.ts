@@ -58,7 +58,7 @@ export const en: TourCopy = {
     },
     board: {
       title: 'Find the board',
-      body: 'WebDAQ probes the optical and USB links and lists the boards that answer, as CAEN’s own program, CoMPASS, does. Press “Scan for boards”, then “Use these settings” and “Add Board”. WebDAQ then writes the register file, the list of every setting of the board: from now on it is the board’s configuration, the dashboard edits it, and every run copies it into its directory.',
+      body: 'WebDAQ probes the optical and USB links and lists the boards that answer, as CAEN’s own program, CoMPASS, does. Press “Scan for boards”, then “Add this board” (or “Use these settings” and “Add Board”, to check the form first). WebDAQ then writes the register file, the list of every setting of the board: from now on it is the board’s configuration, the dashboard edits it, and every run copies it into its directory.',
     },
     config: {
       title: 'Look at the configuration',
@@ -83,10 +83,10 @@ export const en: TourCopy = {
     tune: {
       title: 'Tune while the run goes',
       body: pick(
-        'In the Tuner, turn “Online” on and set Decay Time to 50 µs (the preamplifier’s), Rise Time to 4 µs and Flat Top to 1 µs. The registers are written to the running board, the trapezoid’s flat top flattens and the 1332 keV peak narrows. A register that is not safe to change mid-run is saved and applied at the next start, and WebDAQ says so.',
-        'In DAQ → Configuration → Channel settings, lengthen the Long Gate of channels 0 and 1 to about 1 µs (500 samples of 2 ns), so it covers the 300 ns BGO light: more photoelectrons (the electrons the light frees in the photomultiplier) are counted and the peak narrows. Gate registers are safe to change while acquiring.',
-        'In DAQ → Configuration → Channel settings, set a Long Gate of about 500 ns and keep the Short Gate near 30–40 ns: the two bands on the PSD plot separate further. Gate registers are safe to change while acquiring.',
-        'The ³He gate is already long (4 µs): shorten it in DAQ → Configuration → Channel settings and watch the peak move down and widen as charge is cut off, then set it back. “Do it for me” sets 4 µs.'),
+        'In the Tuner, turn “Online” on (during a production run WebDAQ asks first: answer “Online for this run”), set Decay time (pole-zero) to 50 µs (the preamplifier’s), Trapezoid rise time to 4 µs and Trapezoid flat top to 1 µs, and press “Save all”. The registers are written to the running board, the trapezoid’s flat top flattens and the 1332 keV peak narrows: “Since last change” in the spectrum panel fits only the events taken with the new settings. A register that is not safe to change mid-run is saved and applied at the next start, and WebDAQ says so.',
+        'In the Tuner, turn “Online” on (during a production run WebDAQ asks first: answer “Online for this run”), lengthen the Long gate to about 1 µs (500 samples of 2 ns), so it covers the 300 ns BGO light, and press “Save all”: more photoelectrons (the electrons the light frees in the photomultiplier) are counted and the peak narrows. Gate registers are safe to change while acquiring.',
+        'In the Tuner, turn “Online” on (during a production run WebDAQ asks first: answer “Online for this run”), set a Long gate of about 500 ns, keep the Short gate near 30–40 ns and press “Save all”: the two bands on the PSD plot separate further. Gate registers are safe to change while acquiring.',
+        'The ³He gate is already long (4 µs): in the Tuner, turn “Online” on (during a production run WebDAQ asks first: answer “Online for this run”), shorten the Long gate and watch the peak move down and widen as charge is cut off, then set it back. “Do it for me” sets 4 µs.'),
     },
     roi: {
       title: 'Mark a region',
@@ -117,10 +117,11 @@ export const it: TourCopy = {
   label: 'Visita guidata della demo di WebDAQ',
   step: (i, n) => `Passo ${i} di ${n}`,
   next: 'Avanti', back: 'Indietro', finish: 'Fine', close: 'Chiudi la visita', doIt: 'Fallo per me',
-  goTo: p => `Vai a ${p}`,
+  // the pages carry their preposition ("alla Dashboard", "al Tuner")
+  goTo: p => `Vai ${p}`,
   done: '✓ Fatto.',
   waiting: 'In attesa che tu lo faccia, oppure usa «Fallo per me».',
-  pages: { '/': 'la pagina iniziale', '/board': 'Boards', '/DAQ': 'DAQ', '/dashboard': 'la Dashboard', '/tuner': 'il Tuner', '/logbook': 'il Logbook' },
+  pages: { '/': 'alla pagina iniziale', '/board': 'a Boards', '/DAQ': 'a DAQ', '/dashboard': 'alla Dashboard', '/tuner': 'al Tuner', '/logbook': 'al Logbook' },
   live: {
     rate: (ch, r, pu) => `Canale ${ch}: ${r.toFixed(0)} eventi/s, pile-up ${pu.toFixed(1).replace('.', ',')}/s (simulati).`,
     fwhm: (e, m, f, rel) => {
@@ -141,7 +142,7 @@ export const it: TourCopy = {
     },
     board: {
       title: 'Trova la scheda',
-      body: 'WebDAQ interroga i collegamenti ottici e USB ed elenca le schede che rispondono, come fa CoMPASS, il programma di CAEN. Premi «Scan for boards», poi «Use these settings» e «Add Board». WebDAQ scrive allora il file dei registri, l’elenco di tutte le impostazioni della scheda: da ora è la sua configurazione, la dashboard lo modifica, e ogni run lo copia nella propria cartella.',
+      body: 'WebDAQ interroga i collegamenti ottici e USB ed elenca le schede che rispondono, come fa CoMPASS, il programma di CAEN. Premi «Scan for boards», poi «Add this board» (oppure «Use these settings» e «Add Board», per controllare prima il modulo). WebDAQ scrive allora il file dei registri, l’elenco di tutte le impostazioni della scheda: da ora è la sua configurazione, la dashboard lo modifica, e ogni run lo copia nella propria cartella.',
     },
     config: {
       title: 'Guarda la configurazione',
@@ -166,10 +167,10 @@ export const it: TourCopy = {
     tune: {
       title: 'Regola durante il run',
       body: pickIt(
-        'Nel Tuner attiva «Online» e porta Decay Time a 50 µs (quello del preamplificatore), Rise Time a 4 µs e Flat Top a 1 µs. I registri vengono scritti sulla scheda in acquisizione, il trapezio diventa piatto e il picco a 1332 keV si stringe. Un registro che non si può cambiare durante il run viene salvato e applicato al prossimo avvio, e WebDAQ lo dice.',
-        'In DAQ → Configuration → Channel settings allunga la Long Gate dei canali 0 e 1 fino a circa 1 µs (500 campioni da 2 ns), in modo che copra la luce del BGO da 300 ns: si contano più fotoelettroni (gli elettroni che la luce libera nel fotomoltiplicatore) e il picco si stringe. I registri delle finestre si possono cambiare durante l’acquisizione.',
-        'In DAQ → Configuration → Channel settings imposta una Long Gate di circa 500 ns e tieni la Short Gate attorno a 30–40 ns: le due bande del grafico PSD si separano di più. I registri delle finestre si possono cambiare durante l’acquisizione.',
-        'La finestra del ³He è già lunga (4 µs): accorciala in DAQ → Configuration → Channel settings e guarda il picco scendere e allargarsi man mano che la carica viene tagliata, poi rimettila com’era. «Fallo per me» imposta 4 µs.'),
+        'Nel Tuner attiva «Online» (durante un run di produzione WebDAQ chiede conferma: rispondi «Online for this run»), porta «Decay time (pole-zero)» a 50 µs (quello del preamplificatore), «Trapezoid rise time» a 4 µs e «Trapezoid flat top» a 1 µs, e premi «Save all». I registri vengono scritti sulla scheda in acquisizione, il trapezio diventa piatto e il picco a 1332 keV si stringe: «Since last change», nel pannello dello spettro, adatta solo gli eventi presi con le nuove impostazioni. Un registro che non si può cambiare durante il run viene salvato e applicato al prossimo avvio, e WebDAQ lo dice.',
+        'Nel Tuner attiva «Online» (durante un run di produzione WebDAQ chiede conferma: rispondi «Online for this run»), allunga la «Long gate» fino a circa 1 µs (500 campioni da 2 ns), in modo che copra la luce del BGO da 300 ns, e premi «Save all»: si contano più fotoelettroni (gli elettroni che la luce libera nel fotomoltiplicatore) e il picco si stringe. I registri delle finestre si possono cambiare durante l’acquisizione.',
+        'Nel Tuner attiva «Online» (durante un run di produzione WebDAQ chiede conferma: rispondi «Online for this run»), imposta una «Long gate» di circa 500 ns, tieni la «Short gate» attorno a 30–40 ns e premi «Save all»: le due bande del grafico PSD si separano di più. I registri delle finestre si possono cambiare durante l’acquisizione.',
+        'La finestra del ³He è già lunga (4 µs): nel Tuner attiva «Online» (durante un run di produzione WebDAQ chiede conferma: rispondi «Online for this run»), accorcia la «Long gate» e guarda il picco scendere e allargarsi man mano che la carica viene tagliata, poi rimettila com’era. «Fallo per me» imposta 4 µs.'),
     },
     roi: {
       title: 'Segna una regione',

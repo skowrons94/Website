@@ -1,8 +1,8 @@
 {
   "repo": "https://github.com/skowrons94/webdaq",
-  "commit": "6929e28b5ef199a22730725ec0f558b764ba94a2",
+  "commit": "0ab65e153d42e9466d3f0f3de407e9efcbd3a387",
   "frontend": "frontend",
-  "treeHash": "c9e0a73f3ad0f0d1f8c75cb0ad729ce6e79eb33fc30cbc9d91a9ec9300f91fbb",
+  "treeHash": "c4d960161ca202d300fe4adbf5d3ccd548aed981bca52dd6a2f84757adf00635",
   "jsroot": {
     "version": "7.11.2",
     "integrity": "sha512-Pria+SspD6+BmGNg4C8UOtP5y7GiODS/FXgQMiCSgGxpbm9icezifQLcVTJF7RaMnCot6ko7CoZozudM1a204g=="
@@ -16,7 +16,7 @@
     "src/api": "8ad80ca1ee19f6f540b90d110337a73453f50c4dae890d2cb0e63124e5b786bf",
     "src/lib/load-jsroot.ts": "b8f867afb8b39d67512c8774949aa9aaf2bc5c3500d66f379c65f77d0bb137db",
     "src/app/logbook/[run_number]/layout.tsx": "absent",
-    "src/components/histo-dashboard.tsx": "2cb080f5584a3928f8bee4f0aa94eec23277e5c3aa7d01d21b2996e346ad59ac"
+    "src/components/histo-dashboard.tsx": "5860fb238931031a5d8472e84ad9b83161ecc30439a4bfbdfb2d6423feb81c29"
   },
   "apiSurfaceHash": "c798634afb31ab75afbb6673aa8ff3a63c8bfe9bd8e98dee173caf88f5bcb385"
 }

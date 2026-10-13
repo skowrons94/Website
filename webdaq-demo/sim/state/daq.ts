@@ -1047,9 +1047,8 @@ export class Daq {
     const raw = (b.dpp === 'DPP-PSD' && Number.isFinite(ch) ? this.physics.psd(ch) : null) ?? new Uint32Array(PSD_XBINS * PSD_YBINS)
     const [off, slope] = this.calibration(b, ch)
     // The x axis spans Q_long 0…QLONG_MAX in PSD_XBINS bins, so the calibrated axis is
-    // off + slope·QLONG_MAX, the same keV range as the 1-D Q_long spectrum. (WebDAQ's
-    // spy_manager at the pin uses slope·NbinsX = slope·2048 here, design Appendix B,
-    // finding 6; the demo draws the axis the data have.)
+    // off + slope·QLONG_MAX, the same keV range as the 1-D Q_long spectrum, as
+    // spy_manager.calibrate_x_axis does since WebDAQ e3c6385 (design Appendix B, finding 6).
     const cal = off !== 0 || slope !== 1
     return th2f(raw, PSD_XBINS, PSD_YBINS, {
       name: `psd_b${idx}_ch${ch}`, title: this.spectrumTitle('psd', b, ch),

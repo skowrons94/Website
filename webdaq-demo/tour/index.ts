@@ -81,7 +81,7 @@ const STEPS: Step[] = [
   },
   {
     id: 'board', route: '/board',
-    target: byRole('button', /Scan for boards|Use these settings|Add Board/),
+    target: byRole('button', /Scan for boards|Add this board|Use these settings|Add Board/),
     done: async c => c.s.boards.length > 0,
     doIt: async c => {
       await req('POST', '/digitizer/scan', { optical: { enabled: true, links: 1, nodes: 1 } })
@@ -114,8 +114,9 @@ const STEPS: Step[] = [
     },
   },
   {
-    id: 'tune', route: k => (isPha(k) ? '/tuner' : '/DAQ'), stay: true,
-    target: k => (isPha(k) ? { role: 'switch', name: /Online/ } : { role: 'tab', name: /^Configuration$/ }),
+    // Every firmware is tuned in the Tuner since WebDAQ 0ab65e1 (PSD gates included).
+    id: 'tune', route: '/tuner', stay: true,
+    target: () => ({ role: 'switch', name: /^Online$/ }),
     done: async c => {
       if (isPha(c.kind)) return (await reg('reg_1068')) >= 5000 && (await reg('reg_105C')) >= 375 && (await reg('reg_1060')) >= 100
       const g = await reg('reg_1058')
@@ -266,7 +267,24 @@ function highlight(target: HTMLElement | null) {
   if (target && !target.classList.contains('wd-tour-target')) {
     target.classList.add('wd-tour-target')
     const smooth = !matchMedia('(prefers-reduced-motion: reduce)').matches
-    target.scrollIntoView({ block: 'nearest', behavior: smooth ? 'smooth' : 'auto' })
+    // Into the part of the screen nothing covers: below the demo banner and WebDAQ's
+    // sticky header, above the tour's own card (a bottom sheet on a phone).
+    const r = target.getBoundingClientRect()
+    let top = 0
+    for (const sel of ['.wd-banner', 'header']) {
+      const e = document.querySelector<HTMLElement>(sel)
+      const pos = e ? getComputedStyle(e).position : ''
+      if (e && (pos === 'sticky' || pos === 'fixed')) top = Math.max(top, e.getBoundingClientRect().bottom)
+    }
+    const card = root?.getBoundingClientRect()
+    const overlaps = !!card && card.left < r.right && card.right > r.left
+    const bottom = card && overlaps ? Math.min(window.innerHeight, card.top) : window.innerHeight
+    const covered = r.top < top + 8 || r.bottom > bottom - 8
+    if (covered && bottom - top > r.height + 16) {
+      window.scrollBy({ top: r.top - top - Math.max(16, (bottom - top - r.height) / 3), behavior: smooth ? 'smooth' : 'auto' })
+    } else if (covered) {
+      target.scrollIntoView({ block: 'nearest', behavior: smooth ? 'smooth' : 'auto' })
+    }
   }
 }
 

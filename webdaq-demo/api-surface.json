@@ -1,5 +1,5 @@
 {
- "commit": "6929e28b5ef199a22730725ec0f558b764ba94a2",
+ "commit": "0ab65e153d42e9466d3f0f3de407e9efcbd3a387",
  "hash": "c798634afb31ab75afbb6673aa8ff3a63c8bfe9bd8e98dee173caf88f5bcb385",
  "calls": [
   {
@@ -49,6 +49,7 @@
    "template": "/api/server-control",
    "via": "fetch",
    "files": [
+    "components/data-dashboard.tsx",
     "components/server-status.tsx"
    ]
   },
