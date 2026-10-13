@@ -459,7 +459,7 @@ const dataExpertIt: typeof dataExpertEn = {
     },
     evaluation: "Fit R-matrix, valutazione {id}",
     evaluationPreliminary:
-      "La valutazione {id} mostra un modello preliminare che non riproduce ancora il best fit pubblicato; vedi la sua pagina.",
+      "La valutazione {id} mostra un modello preliminare che non riproduce ancora il fit migliore pubblicato; vedi la sua pagina.",
     evaluationLoading: "Caricamento del fit della valutazione {id}…",
     window: "Finestra di Gamow, {T}",
     extrapolatedNever: "Le righe estrapolate e i limiti superiori non vengono mai disegnati.",
