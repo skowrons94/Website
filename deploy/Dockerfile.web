@@ -18,6 +18,9 @@ ENV API_BASE=${API_BASE}
 # Optional absolute origin (https://example.com): hreflang and og:image.
 ARG SITE_URL=""
 ENV SITE_URL=${SITE_URL}
+# Content-Security-Policy: enforce, report-only or off (next.config.mjs).
+ARG CSP_MODE=enforce
+ENV CSP_MODE=${CSP_MODE}
 COPY . .
 RUN npm run build
 

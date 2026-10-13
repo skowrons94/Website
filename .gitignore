@@ -62,3 +62,6 @@ public/search/
 /public/data/exfor/r/
 /public/data/exfor/sets/
 /public/data/ensdf/*.json
+
+# Backups (DEPLOY.md, section 8): they hold the TLS key and access logs.
+*.tgz

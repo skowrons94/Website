@@ -42,7 +42,8 @@ The whole site runs as three containers from `docker-compose.yml`: Caddy
   ```
 
 - Open TCP 80 and 443, and UDP 443 (HTTP/3), in the OVH Network Firewall if it
-  is on, and in `ufw` if you use it. Nothing else needs to be reachable.
+  is on, and in `ufw` if you use it. Nothing else needs to be reachable
+  (SSH aside; section 10 has the whole firewall and SSH setup).
 
 ## 2. DNS (do this first)
 
@@ -90,6 +91,8 @@ After changing it, rebuild the site (`make deploy`); a restart is not enough.
 | `AZURE2_MAX_SESSIONS` | how many evaluations may be open at once, spares included (default 8); see the memory table in section 1 |
 | `AZURE2_SPARES` | `auto` (default) keeps one prepared ⁷Be and ²⁴Mg session ready (1.3 GB); `0` on a box under 4 GB |
 | `AZURE2_EVICT_AFTER` | seconds a session must have been unseen (no request, no heartbeat) before a newcomer may evict it; `0` (default): 2 heartbeat intervals, at least 60 |
+| `AZURE2_MAX_PER_IP`, `AZURE2_OPEN_RATE`, `AZURE2_EDIT_RATE`, `AZURE2_MAX_INFLIGHT_PER_IP` | per-visitor limits (section 10) |
+| `AZURE2_MEM_LIMIT`, `AZURE2_CPUS`, `WEB_*`, `CADDY_*` | container caps (section 10); `make env` sizes AZURE2's to the machine |
 
 Clone as the user that will run `make`, not as root, so the evaluations
 directory belongs to that user and `make env` picks the right ID.
@@ -190,11 +193,15 @@ copy of `.env`. The certificates can be issued again, but a backup avoids
 Let's Encrypt rate limits after a rebuild of the VPS:
 
 ```sh
-docker run --rm -v website_caddy_data:/d -v "$PWD":/b alpine \
-  tar czf /b/caddy_data.tgz -C /d .
+mkdir -p ~/backups && chmod 700 ~/backups
+docker run --rm -v website_caddy_data:/d:ro -v ~/backups:/b alpine \
+  sh -c 'umask 077 && tar czf /b/caddy_data.tgz -C /d .'
 ```
 
 (`website_` is the clone's directory name; check with `docker volume ls`.)
+The archive holds the TLS private key and the access log, so it goes outside
+the clone, readable by you alone, and off the machine (section 10) -- never
+into git (`*.tgz` is ignored anyway).
 
 ## 9. When something fails
 
@@ -209,3 +216,110 @@ docker run --rm -v website_caddy_data:/d -v "$PWD":/b alpine \
 | After a deploy the first visitor of ⁷Be waits ~20 s | The caches are cold: `make warm` (it also measures the timings the page shows, and writes `initial.json`). |
 | `git pull` refuses: local changes to `server/evaluations/.../output/intEC.*` | AZURE2 rewrote a cached integral file. `git checkout -- server/evaluations` and pull again. |
 | Started on the wrong domain | Fix `SITE_DOMAIN` in `.env`, then `docker compose up -d caddy`. |
+| `/evaluations` says "the server is busy" for one visitor while others work | That visitor's address is over a per-visitor limit (429 in `make logs-azure2`, "rate limit" / "Too many"): usually several people behind one office NAT. Raise `AZURE2_MAX_PER_IP` (section 10). If *everyone* is limited together, `AZURE2_TRUSTED_PROXIES` is not `1` (the API logs a warning). |
+
+## 10. Security
+
+What the stack does on its own, and the checklist for the VPS around it.
+
+**Built in.** Every container drops all Linux capabilities (Caddy keeps the
+one to bind ports 80/443), cannot gain privileges, runs as a non-root user
+(site and API) on a read-only root filesystem, and is capped in memory, CPU and
+processes; Docker keeps at most 3 x 10 MB of each container's log. Caddy
+refuses request bodies over 64 KB, and the API does again. The API sends no
+CORS headers (everything is same-origin) and limits each client address
+(an IPv6 address counts by its /64):
+
+| Variable (`.env`) | Default | What it limits |
+|---|---|---|
+| `AZURE2_MAX_PER_IP` | `2` | evaluations open at once; past it, that address's own stale session gives way, else "busy, retrying" (HTTP 429) |
+| `AZURE2_OPEN_RATE` | `10/60` | opening evaluations: 10 per 60 s |
+| `AZURE2_EDIT_RATE` | `20/1` | level edits: 20 per second, bursts of 60 |
+| `AZURE2_MAX_INFLIGHT_PER_IP` | `8` | slow requests (calculations) under way at once; keep it below `AZURE2_THREADS` (16) |
+
+`0` turns one off. When the server is full, a newcomer also takes a slot from
+the address holding the most sessions, so no single client can keep others
+out. These need the visitor's real address, which Caddy passes on and the API
+believes because compose sets `AZURE2_TRUSTED_PROXIES=1`; never set that on an
+API reachable without Caddy. Raise `AZURE2_MAX_PER_IP` to 4 if a whole
+institute behind one address uses the site at once (a workshop).
+
+**Container caps.** `make env` writes `AZURE2_MEM_LIMIT` (RAM - 1 GB) and
+`AZURE2_CPUS` (vCPUs - 0.5) into a new `.env`; with an existing `.env`, add
+them yourself (defaults: 3g and 2). A CPU cap above the machine's vCPUs stops
+the container from starting. If `make logs-azure2` shows sessions dying and
+`docker inspect --format '{{.State.OOMKilled}}' $(docker compose ps -q azure2)`
+says `true`, the cap is below what `AZURE2_MAX_SESSIONS` needs (section 1):
+lower that, or raise the cap. Apply a change with `docker compose up -d`.
+
+**Logs and retention.** Caddy's access log (`/data/access.log` in the
+`caddy_data` volume) stores addresses cut to /24 (IPv4) or /48 (IPv6), drops
+cookies and credentials, rolls daily and deletes files older than 14 days
+(`roll_keep_for 336h` in `deploy/Caddyfile`). The API's log, through Docker,
+holds the same cut addresses and is rotated at 3 x 10 MB (`logging` in
+`docker-compose.yml`). To change the retention, edit `roll_keep_for` (and the
+14 in `components/pages/privacy.tsx`, which states it on /privacy), then
+`docker compose up -d caddy`. Read the log with
+`docker compose exec caddy tail -f /data/access.log`.
+
+**Content-Security-Policy.** Set by the site itself (`next.config.mjs`;
+`scripts/csp-static.mjs` writes it into the GitHub Pages build), enforced.
+If a page ever breaks with a "Refused to ..." error in the browser console,
+set `CSP_MODE=report-only` in `.env` and `make update`: violations are then
+only reported in the console, nothing is blocked. `CSP_MODE=enforce` (the
+default) switches it back. (Without Docker: `CSP_MODE=report-only npm run
+build`. The GitHub Pages build can only enforce or have none.)
+
+**The VPS checklist** (once, then monthly):
+
+- [ ] **SSH keys only.** In `/etc/ssh/sshd_config`: `PasswordAuthentication no`,
+  `PermitRootLogin no`, then `sudo systemctl reload ssh`, keeping a second
+  session open until a new login works. Restrict port 22 to your own
+  addresses in the OVH Network Firewall, or `sudo apt install fail2ban`.
+- [ ] **Firewall: 80 and 443 only** (plus SSH):
+  ```sh
+  sudo ufw default deny incoming && sudo ufw default allow outgoing
+  sudo ufw allow 22/tcp && sudo ufw allow 80/tcp && sudo ufw allow 443/tcp && sudo ufw allow 443/udp
+  sudo ufw enable
+  ```
+  Docker publishes only Caddy's ports (the site and API are `expose`d to the
+  stack alone), but Docker's own rules bypass `ufw`: never add `ports:` to
+  `web` or `azure2`. Check from another machine: `nmap -Pn <vps>` shows 22,
+  80, 443 only.
+- [ ] **Unattended upgrades:** `sudo apt install unattended-upgrades &&
+  sudo dpkg-reconfigure -plow unattended-upgrades` (security updates daily;
+  reboots when `/var/run/reboot-required` appears, or set
+  `Unattended-Upgrade::Automatic-Reboot "true";` with a night-time
+  `Automatic-Reboot-Time`). The containers restart by themselves.
+- [ ] **Docker and image updates, monthly:** `sudo apt upgrade` updates Docker
+  itself; then `git pull && docker compose pull caddy && docker compose build
+  --pull && docker compose up -d` takes the patched base images (Caddy 2.11.x,
+  node 22, Ubuntu 22.04). Bump Caddy's minor version in `docker-compose.yml`
+  deliberately. Merge the Dependabot pull requests (pinned GitHub Actions,
+  npm) after their checks pass.
+- [ ] **Backups**, off the machine and encrypted (e.g. `restic` to another
+  provider's storage): `.env`, the `caddy_data` volume (section 8; it holds
+  the TLS key) and any evaluation edited on the server and not committed.
+  Restore once to check that it works.
+- [ ] **Monitoring:** an external uptime check on `https://<domain>/` and
+  `https://<domain>/api/health` (any free uptime service, alerting by email),
+  and a disk alert (`df -h /` under 80%; the Docker build cache is the usual
+  culprit: `docker builder prune`). `make check` shows the containers'
+  health.
+- [ ] **The `docker` group is root-equivalent:** only your own account in it,
+  and that account with keys only.
+- [ ] **After each deploy:** from another machine,
+  `curl -sI -H 'Origin: https://evil.example' https://<domain>/api/health`
+  has no `Access-Control-Allow-Origin`; a 100 KB POST to `/api/...` answers
+  413; opening a third evaluation in a third tab says "busy, retrying".
+
+**Changing the pinned downloads in CI** (`.github/workflows/pages.yml`): a new
+Pyodide or Emscripten version needs its checksums too. Download the file,
+`sha256sum` it, compare with a second source where there is one (GitHub's
+release page shows a digest; nodejs.org publishes SHASUMS256.txt), and update
+the `*_SHA256` values with the version; for emsdk, `git ls-remote
+https://github.com/emscripten-core/emsdk refs/tags/<version>` gives
+`EMSDK_COMMIT`, and `emscripten-releases-tags.json` at that commit gives
+`EMSDK_RELEASE`. Record the NNDC ENSDF checksums once with
+`python scripts/data/dx.py fetch-ensdf --source nndc --record` and commit
+`scripts/data/sources.json`; CI then uses NNDC instead of the mirror.
