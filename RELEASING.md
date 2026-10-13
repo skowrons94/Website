@@ -49,7 +49,6 @@ as `date-released`.
        description: Concept DOI (all versions)
    ```
 
-5. Licence: the repository has no LICENSE file yet. Zenodo asks for one; add
-   it to the repository (and as `license:` in CITATION.cff and .zenodo.json)
-   before the first archived release. The atlas' texts and data are already
-   CC BY 4.0 (`content/atlas/atlas.yaml`).
+5. Licence: the code is MIT (LICENSE, and `license:` in CITATION.cff and
+   .zenodo.json); the atlas' texts and data and the evaluations are CC BY 4.0
+   (`content/atlas/atlas.yaml`, each evaluation's info.json).

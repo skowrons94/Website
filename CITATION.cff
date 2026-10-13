@@ -26,6 +26,7 @@ authors:
 version: 1.0.0
 date-released: "2026-10-13"
 repository-code: "https://github.com/skowrons94/Website"
+license: MIT
 keywords:
   - nuclear astrophysics
   - nuclear reactions

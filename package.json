@@ -2,6 +2,7 @@
   "name": "skowronski-site",
   "version": "1.0.0",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "predev": "node scripts/atlas-export.mjs && node scripts/data-summary.mjs && node scripts/search-index.mjs",
     "dev": "next dev",
