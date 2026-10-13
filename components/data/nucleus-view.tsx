@@ -359,6 +359,40 @@ export function NucleusView({
   )
 }
 
+/**
+ * Label positions for lines at heights `ys` (SVG y, down): in order, at least
+ * `gap` apart, inside [top, bottom], and as close to their lines as that
+ * allows (least squares: a crowded run of labels is centred on its lines
+ * rather than pushed to one side). A label moved off its line is joined to it
+ * by a leader. Needs bottom − top ≥ (n − 1)·gap; the caller sizes the picture
+ * for that.
+ */
+function spread(ys: number[], top: number, bottom: number, gap: number): number[] {
+  const n = ys.length
+  const order = ys.map((_, i) => i).sort((a, b) => ys[a] - ys[b] || a - b)
+  // l_j = r_j + j·gap with r non-decreasing: isotonic regression of y_j − j·gap (pool adjacent violators)
+  const blocks: { sum: number; count: number }[] = []
+  order.forEach((i, j) => {
+    blocks.push({ sum: ys[i] - j * gap, count: 1 })
+    while (blocks.length > 1) {
+      const b = blocks[blocks.length - 1]
+      const a = blocks[blocks.length - 2]
+      if (a.sum / a.count <= b.sum / b.count) break
+      a.sum += b.sum
+      a.count += b.count
+      blocks.pop()
+    }
+  })
+  const hiR = Math.max(top, bottom - (n - 1) * gap)
+  const out = Array<number>(n)
+  let j = 0
+  for (const b of blocks) {
+    const r = Math.min(hiR, Math.max(top, b.sum / b.count))
+    for (let c = 0; c < b.count; c++, j++) out[order[j]] = r + j * gap
+  }
+  return out
+}
+
 /** The level scheme: energy up, a line per level, thresholds dashed, the window shaded. */
 function LevelScheme({
   levels,
@@ -392,22 +426,40 @@ function LevelScheme({
   const hi = zoom === "all" ? hiData : Math.min(hiData, Math.max(S + 0.5, (w?.hi ?? S) + 0.25, Number.isFinite(above) ? above + 0.05 : 0))
   const shown = levels.filter((l) => l.E_keV / 1000 >= lo && l.E_keV / 1000 <= hi)
   const LABEL = 13
-  // tall enough for one label per level: dense nuclei (²⁰Ne, ²⁶Mg, ²⁷Al) scroll in their box rather than
-  // pushing labels off their lines or out of the picture
-  const height = Math.max(380, shown.length * LABEL + 60)
-  const m = { t: 18, b: 18 }
-  const ph = height - m.t - m.b
-  const y = (E: number) => m.t + ph - ((E - lo) / (hi - lo)) * ph
   const narrow = width < 520
   const x0 = narrow ? 92 : 150
   const x1 = width - (narrow ? 100 : 200)
-  // labels pushed apart, keeping order
-  const ys = shown.map((l) => y(l.E_keV / 1000))
-  const lab = [...ys]
-  for (let i = lab.length - 2; i >= 0; i--) if (lab[i] - lab[i + 1] < LABEL) lab[i] = lab[i + 1] + LABEL
-  for (let i = 1; i < lab.length; i++) if (lab[i - 1] - lab[i] < LABEL) lab[i] = lab[i - 1] - LABEL
-  // and kept inside the picture
-  for (let i = 0; i < lab.length; i++) lab[i] = Math.min(height - 4, Math.max(m.t, lab[i]))
+  // the leaders' horizontal run: wider where there is room, so a label moved off its line is easy to follow
+  const lead = narrow ? 8 : 20
+  const thresholdText = (t: { x: string; S: number }) => fill(strings.nucleus.thresholdLabel, { x: t.x, S: dec(t.S.toFixed(3), lang) })
+  const thresholdsShown = thresholds.filter((t) => t.S >= lo && t.S <= hi)
+  // On a narrow chart the lines are too short to write on: the thresholds are labelled in the right-hand
+  // column with the spins, and the window's name goes in a key above the picture.
+  const rightThresholds = narrow ? thresholdsShown : []
+  const m = { t: narrow && w && w.hi > lo ? 40 : 18, b: 18 }
+  // tall enough for one label per level: dense nuclei (²⁰Ne, ²⁶Mg, ²⁷Al) scroll in their box rather than
+  // pushing labels off their lines or out of the picture
+  let height = Math.max(380, (shown.length + rightThresholds.length) * LABEL + m.t + m.b + 24)
+  const layout = (h: number) => {
+    const ph = h - m.t - m.b
+    const y = (E: number) => m.t + ph - ((E - lo) / (hi - lo)) * ph
+    const ys = shown.map((l) => y(l.E_keV / 1000))
+    const rightYs = [...ys, ...rightThresholds.map((t) => y(t.S))]
+    return { y, ys, left: spread(ys, m.t, h - 8, LABEL), right: spread(rightYs, m.t, h - 8, LABEL) }
+  }
+  let L = layout(height)
+  // the stacks fit by construction (one label per LABEL of height); grow the picture if they ever do not
+  for (let n = 0; n < 3; n++) {
+    const over = m.t - Math.min(m.t, ...L.left, ...L.right)
+    if (over <= 0) break
+    height += Math.ceil(over)
+    L = layout(height)
+  }
+  const { y, ys } = L
+  const lab = L.left
+  const rlab = L.right
+  // a text that would run past the right edge ends at it instead
+  const fits = (text: string, x: number, size: number) => x + text.length * size * 0.6 <= width - 2
   const summary = `${cn}: ${fill(shown.length === 1 ? strings.nucleus.levelsOne : strings.nucleus.levelsMany, { n: shown.length })}; ${thresholds.map((t) => `S(${t.x}) = ${dec(t.S.toFixed(3), lang)} MeV`).join(", ")}${w ? `; ${w.label}` : ""}`
 
   return (
@@ -432,21 +484,19 @@ function LevelScheme({
             />
           </g>
         )}
-        {thresholds.map((t) =>
-          t.S >= lo && t.S <= hi ? (
-            <g key={t.x}>
-              <line
-                x1={x0 - 10}
-                x2={x1 + 10}
-                y1={y(t.S)}
-                y2={y(t.S)}
-                stroke="var(--viz-text)"
-                strokeDasharray="6 4"
-                strokeWidth={entrance && t.x === entrance.x ? 1.6 : 1}
-              />
-            </g>
-          ) : null,
-        )}
+        {thresholdsShown.map((t) => (
+          <g key={t.x}>
+            <line
+              x1={x0 - 10}
+              x2={x1 + 10}
+              y1={y(t.S)}
+              y2={y(t.S)}
+              stroke="var(--viz-text)"
+              strokeDasharray="6 4"
+              strokeWidth={entrance && t.x === entrance.x ? 1.6 : 1}
+            />
+          </g>
+        ))}
         {shown.map((l, i) => {
           const E = l.E_keV / 1000
           const yy = ys[i]
@@ -462,14 +512,14 @@ function LevelScheme({
                 stroke={inWin ? (has ? "var(--viz-series-1)" : "var(--viz-series-2)") : "var(--viz-text-muted)"}
                 strokeWidth={inWin ? 2 : 1}
               />
-              <path d={`M${x0} ${yy}L${x0 - 8} ${lab[i]}H${x0 - 12}`} fill="none" stroke="var(--viz-axis)" />
-              <text x={x0 - 14} y={lab[i] + 4} textAnchor="end" fontSize={10.5} fill="var(--viz-text)" className="tabular-nums">
+              <path d={`M${x0} ${yy}L${x0 - lead} ${lab[i]}H${x0 - lead - 4}`} fill="none" stroke="var(--viz-axis)" />
+              <text x={x0 - lead - 6} y={lab[i] + 4} textAnchor="end" fontSize={10.5} fill="var(--viz-text)" className="tabular-nums">
                 {dec(E.toFixed(E < 10 ? 3 : 2), lang)}
               </text>
-              <path d={`M${x1} ${yy}L${x1 + 8} ${lab[i]}`} fill="none" stroke="var(--viz-axis)" />
+              <path d={`M${x1} ${yy}L${x1 + lead} ${rlab[i]}`} fill="none" stroke="var(--viz-axis)" />
               <text
-                  x={x1 + 10}
-                  y={lab[i] + 4}
+                  x={x1 + lead + 2}
+                  y={rlab[i] + 4}
                   fontSize={10.5}
                   fill="var(--viz-text)"
                   fontStyle={l.firm === false ? "italic" : "normal"}
@@ -480,8 +530,40 @@ function LevelScheme({
             </g>
           )
         })}
+        {rightThresholds.map((t, j) => {
+          const yy = y(t.S)
+          const ly = rlab[shown.length + j]
+          const text = thresholdText(t)
+          const end = !fits(text, x1 + 18, 10.5)
+          return (
+            <g key={`label-${t.x}`}>
+              <path d={`M${x1 + 10} ${yy}L${x1 + 16} ${ly}`} fill="none" stroke="var(--viz-axis)" />
+              <text
+                x={end ? width - 2 : x1 + 18}
+                y={ly + 4}
+                textAnchor={end ? "end" : "start"}
+                fontSize={10.5}
+                fontWeight={entrance && t.x === entrance.x ? 700 : 500}
+                fill="var(--viz-text)"
+                paintOrder="stroke"
+                stroke="var(--viz-surface)"
+                strokeWidth={3}
+              >
+                {text}
+              </text>
+            </g>
+          )
+        })}
         {/* labels of the window and the thresholds last, over the level lines */}
-        {w && w.hi > lo && (
+        {w && w.hi > lo && narrow && (
+          <g>
+            <rect x={width - 14} y={m.t - 19} width={10} height={10} fill="var(--viz-series-2)" fillOpacity={0.35} />
+            <text x={width - 18} y={m.t - 10} textAnchor="end" fontSize={11} fontWeight={600} fill="var(--viz-text)">
+              {w.label}
+            </text>
+          </g>
+        )}
+        {w && w.hi > lo && !narrow && (
           <text
             x={(x0 + x1) / 2}
             y={y(Math.min(w.hi, hi)) - 4}
@@ -496,8 +578,8 @@ function LevelScheme({
             {w.label}
           </text>
         )}
-        {thresholds.map((t) =>
-          t.S >= lo && t.S <= hi ? (
+        {!narrow &&
+          thresholdsShown.map((t) => (
             <text
               key={t.x}
               x={x0 + 4}
@@ -509,10 +591,9 @@ function LevelScheme({
               stroke="var(--viz-surface)"
               strokeWidth={4}
             >
-              {fill(strings.nucleus.thresholdLabel, { x: t.x, S: dec(t.S.toFixed(3), lang) })}
+              {thresholdText(t)}
             </text>
-          ) : null,
-        )}
+          ))}
         <text x={4} y={12} fontSize={11} fill="var(--viz-text-muted)">
           E (MeV)
         </text>
