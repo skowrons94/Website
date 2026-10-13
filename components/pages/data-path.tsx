@@ -3,7 +3,7 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 
 import { Breadcrumbs } from "@/components/breadcrumbs"
-import { GapAxis, GapLegend, GapRowView } from "@/components/data/gap-map"
+import { GapAxis, GapLegend, GapRowView } from "@/components/data/gap-overview"
 import { GuidedPath } from "@/components/data/guided-path"
 import { Sci } from "@/components/sci"
 import { dataPublicDict } from "@/lib/data/i18n-public"

@@ -17,6 +17,7 @@
     "rates:baseline": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/rates/baseline.mjs",
     "test:data": "python3 -m pytest -q scripts/data/tests",
     "data:summary": "node scripts/data-summary.mjs",
+    "test:data-ui": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/data-ui/test.mjs",
     "data": "make data"
   },
   "dependencies": {

@@ -1,206 +1,329 @@
-import Link from "next/link"
-import { ChevronRight } from "lucide-react"
+"use client"
 
-import { StatusBadge } from "@/components/atlas/status-badge"
-import { Said } from "@/components/data/said"
-import { dataPublicDict } from "@/lib/data/i18n-public"
-import { energy, type GapRow } from "@/lib/data/public"
-import { localePath, type Lang } from "@/lib/locale"
-import { cn } from "@/lib/utils"
+import { useMemo, useState } from "react"
+
+import { useWidth } from "@/components/rates/chart-kit"
+import { dec, energy, kev } from "@/lib/data/format"
+import { fill } from "@/lib/data/fill"
+import { packLanes } from "@/lib/data/gap"
+import { GROUPS, GROUP_SYMBOL, type Group } from "@/lib/data/quantity"
+import type { DataExpertStrings } from "@/lib/i18n"
+import type { Lang } from "@/lib/locale"
+
+/** One dataset on the gap map; energies in keV (kT for a Maxwellian average). */
+export interface MapRow {
+  id: string
+  g: Group
+  e0: number
+  e1: number
+  /** counted as a measurement (gap.ts countsForRate), else drawn outlined */
+  counted: boolean
+  a: string
+  y: number | null
+  n: number
+}
+
+export interface MapWindow {
+  label: string
+  T9: number
+  E0: number
+  lo: number
+  hi: number
+  kT: number | null
+}
+
+/** Colour family of a quantity group: cross sections, angular data, integral quantities. */
+const FAMILY: Record<Group, string> = {
+  sigma: "var(--viz-series-1)",
+  S: "var(--viz-series-1)",
+  partial: "var(--viz-series-1)",
+  dsigma: "var(--viz-series-3)",
+  pol: "var(--viz-series-3)",
+  yield: "var(--viz-series-2)",
+  strength: "var(--viz-series-2)",
+  macs: "var(--viz-series-2)",
+  other: "var(--viz-axis)",
+}
+
+const LANE = 7
+const LANE_GAP = 3
+const GROUP_GAP = 9
+const MAX_LANES = 14
 
 /**
- * "The gap": one row per reaction, on a shared logarithmic energy axis, from
- * the Gamow window a star uses (a box) to the lowest energy anyone has
- * measured (a tick, with the measured range to its right). The empty stretch
- * between them is hatched. Plain HTML positioned in per cent, so it reflows
- * from 320 px to a wide screen with no JavaScript; every row says the same in
- * a sentence, so nothing depends on the picture or on colour.
+ * The gap map: every dataset's energy span as a bar, rows grouped by what
+ * was measured (σ, S, partial, dσ/dΩ, polarisation, yield, ωγ, MACS), on a
+ * log energy axis, with the Gamow window of the chosen temperature drawn
+ * across all of them and the part of it below the lowest measurement
+ * hatched. The picture is one image for a screen reader (its summary in
+ * aria-label); the table under it holds the same numbers.
  */
+export function GapMap({
+  rows,
+  window: w,
+  others = [],
+  lowest,
+  threshold,
+  strings,
+  lang,
+  title,
+}: {
+  rows: MapRow[]
+  window: MapWindow | null
+  /** the E₀ of the other temperatures, drawn as ticks */
+  others?: MapWindow[]
+  lowest: number | null
+  threshold?: number | null
+  strings: DataExpertStrings
+  lang: Lang
+  title?: string
+}) {
+  const t = strings.gap
+  const [ref, width, k] = useWidth<HTMLDivElement>(720)
+  const [hover, setHover] = useState<{ row: MapRow; x: number; y: number } | null>(null)
+  const neutron = w?.kT !== null && w?.kT !== undefined
 
-const LO = 1 // keV
-const HI = 5000 // keV
-const pos = (keV: number) => {
-  const x = (Math.log10(Math.min(Math.max(keV, LO), HI)) - Math.log10(LO)) / (Math.log10(HI) - Math.log10(LO))
-  return `${(x * 100).toFixed(2)}%`
-}
-const TICKS = [1, 10, 100, 1000]
+  const layout = useMemo(() => {
+    const positive = rows.filter((r) => r.e0 > 0 && r.e1 > 0)
+    const lows = positive.map((r) => r.e0)
+    const highs = positive.map((r) => r.e1)
+    const marks = [...(w ? [w.lo, w.hi] : []), ...others.map((o) => o.E0), ...(lowest ? [lowest] : [])]
+    let min = Math.min(...lows, ...marks)
+    let max = Math.max(...highs, ...marks)
+    if (!Number.isFinite(min) || !Number.isFinite(max)) {
+      min = 1
+      max = 1e4
+    }
+    const cap = neutron ? 2e4 : Math.max(2e4, (w?.hi ?? 0) * 4)
+    const lo = Math.pow(10, Math.floor(Math.log10(min / 1.3)))
+    const hi = Math.min(Math.pow(10, Math.ceil(Math.log10(max * 1.3))), Math.pow(10, Math.ceil(Math.log10(cap))))
+    const groups = GROUPS.map((g) => {
+      const members = positive.filter((r) => r.g === g)
+      const lx = members.map((r) => [Math.log10(r.e0), Math.log10(Math.max(r.e1, r.e0 * 1.0001))] as [number, number])
+      const lanes = packLanes(lx, (Math.log10(hi) - Math.log10(lo)) / 120)
+      const nLanes = members.length ? Math.max(...lanes) + 1 : 0
+      return { g, members, lanes, nLanes }
+    }).filter((x) => x.members.length > 0)
+    return { lo, hi, groups }
+  }, [rows, w, others, lowest, neutron])
 
-const HATCH =
-  "repeating-linear-gradient(135deg, color-mix(in srgb, var(--viz-series-2) 70%, transparent) 0 2px, transparent 2px 6px)"
+  const narrow = width < 520
+  const left = narrow ? 46 : 64
+  const right = 12
+  const top = 30
+  const plotW = Math.max(120, width - left - right)
+  const x = (E: number) => left + ((Math.log10(E) - Math.log10(layout.lo)) / (Math.log10(layout.hi) - Math.log10(layout.lo))) * plotW
+  const clampX = (E: number) => Math.min(left + plotW, Math.max(left, x(E)))
+  // lanes: compressed when a group has very many
+  let y = top
+  const bands = layout.groups.map((grp) => {
+    const lanes = Math.min(grp.nLanes, MAX_LANES)
+    const step = grp.nLanes > MAX_LANES ? (MAX_LANES * (LANE + LANE_GAP)) / grp.nLanes : LANE + LANE_GAP
+    const band = { ...grp, y0: y, step, h: Math.max(lanes * (LANE + LANE_GAP), 14) }
+    y += band.h + GROUP_GAP
+    return band
+  })
+  const plotBottom = y - GROUP_GAP + 6
+  const height = plotBottom + 36
+  const decades: number[] = []
+  for (let d = Math.round(Math.log10(layout.lo)); d <= Math.round(Math.log10(layout.hi)); d++) decades.push(d)
+  const every = decades.length > 9 ? 2 : 1
 
-export function GapAxis({ lang, className }: { lang: Lang; className?: string }) {
+  const groupsText = layout.groups
+    .map((grp) =>
+      fill(t.groupSummary, {
+        name: strings.quantityShort[grp.g],
+        n: grp.members.length,
+        lo: kev(Math.min(...grp.members.map((r) => r.e0)), lang),
+        hi: kev(Math.max(...grp.members.map((r) => r.e1)), lang),
+      }),
+    )
+    .join("; ")
+  const summary = fill(t.summary, {
+    groups: groupsText,
+    lo: w ? kev(w.lo, lang) : "–",
+    hi: w ? kev(w.hi, lang) : "–",
+    T: w ? `T₉ = ${dec(String(w.T9), lang)}` : "",
+    lowest: lowest ? energy(lowest, lang) : "–",
+  })
+
+  const tick = (d: number) => {
+    const unit = (p: number, name: string) => (p <= 2 ? `${10 ** p} ${name}` : `10${sup(p)} ${name}`)
+    if (d >= 3) return unit(d - 3, "MeV")
+    if (d >= 0) return unit(d, "keV")
+    if (d >= -3) return unit(d + 3, "eV")
+    if (d >= -6) return unit(d + 6, "meV")
+    return `10${sup(d)} keV`
+  }
+
   return (
-    <div className={cn("relative h-5 text-[0.7rem] text-muted-foreground", className)} aria-hidden>
-      {TICKS.map((k) => (
-        <span key={k} className="tabular absolute top-0 -translate-x-1/2 whitespace-nowrap" style={{ left: pos(k) }}>
-          {energy(k, lang)}
-        </span>
-      ))}
-    </div>
-  )
-}
-
-export function GapBar({ row, className }: { row: GapRow; className?: string }) {
-  const low = row.low?.keV
-  return (
-    <div className={cn("relative h-7", className)} aria-hidden>
-      {/* the axis, with its decades */}
-      <div className="absolute inset-x-0 top-1/2 h-px bg-[var(--viz-grid)]" />
-      {TICKS.map((k) => (
-        <div key={k} className="absolute inset-y-1 w-px bg-[var(--viz-grid)]" style={{ left: pos(k) }} />
-      ))}
-      {/* what nobody has measured: from the window to the lowest data (or on) */}
-      {row.kind !== "inside" && (
-        <div
-          className="absolute top-1/2 h-3 -translate-y-1/2 rounded-sm"
-          style={{
-            left: pos(row.hi),
-            right: row.kind === "never" ? 0 : `calc(100% - ${pos(low!)})`,
-            backgroundImage: HATCH,
-          }}
-        />
-      )}
-      {/* what has been measured */}
-      {low !== undefined && (
-        <div
-          className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-foreground/70"
-          style={{ left: pos(low), right: 0 }}
-        />
-      )}
-      {low !== undefined && (
-        <div className="absolute inset-y-0.5 w-[3px] -translate-x-1/2 rounded-full bg-foreground" style={{ left: pos(low) }} />
-      )}
-      {/* the window the star uses */}
-      <div
-        className="absolute inset-y-0 min-w-[6px] rounded-[3px] border-2 border-[var(--viz-series-1)] bg-[color-mix(in_srgb,var(--viz-series-1)_22%,transparent)]"
-        style={{ left: pos(row.lo), width: `max(6px, calc(${pos(row.hi)} - ${pos(row.lo)}))` }}
-      />
-    </div>
-  )
-}
-
-/** The row's sentence, the same story as the bar. */
-export function gapCaption(row: GapRow, lang: Lang): string {
-  const t = dataPublicDict(lang)
-  const e0 = energy(row.E0, lang)
-  if (row.kind === "never" || !row.low) return t.gapNever(row.site, e0)
-  const low = energy(row.low.keV, lang)
-  return row.kind === "inside" ? t.gapInside(low, row.site, e0) : t.gapAbove(low, row.site, e0)
-}
-
-function factorText(row: GapRow, lang: Lang): string {
-  const t = dataPublicDict(lang)
-  if (row.kind === "never") return t.gapNone
-  if (row.kind === "inside") return t.gapReached
-  const f = row.factor
-  const shown = f >= 10 ? String(Math.round(f)) : String(Number(f.toPrecision(2)))
-  return t.gapFactor(lang === "it" ? shown.replace(".", ",") : shown)
-}
-
-export function GapRowView({ row, lang, compact = false }: { row: GapRow; lang: Lang; compact?: boolean }) {
-  const t = dataPublicDict(lang)
-  const to = (p: string) => localePath(lang, p)
-  return (
-    <div className="min-w-0">
-      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-        <Link href={to(`/atlas/${row.id}`)} className="font-serif text-[1.05rem] font-semibold hover:text-link">
-          <Said label={row.label} plain={row.plain} />
-        </Link>
-        <span
-          className={cn(
-            "text-xs font-medium",
-            row.kind === "inside" ? "text-muted-foreground" : "text-foreground",
-          )}
-        >
-          {factorText(row, lang)}
-        </span>
-      </div>
-      <p className="mt-0.5 text-pretty text-sm leading-snug text-muted-foreground">
-        {gapCaption(row, lang)}
-        {!compact && row.low && (
-          <>
-            {" "}
-            {t.gapBy(row.low.author, String(row.low.year ?? ""))}
-            {row.low.luna ? `, ${t.gapUnderground}` : ""}.
-          </>
-        )}
-      </p>
-      <GapBar row={row} className="mt-1.5" />
-      {!compact && (
-        <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
-          {row.status && <StatusBadge status={row.status} lang={lang} />}
-          {row.data && (
-            <Link
-              href={to(`/data/reaction/${row.data}`)}
-              aria-label={t.measurementsAria(row.plain)}
-              className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline"
+    <div ref={ref} className="relative w-full">
+      {title && <p className="mb-1 text-sm font-medium">{title}</p>}
+      <svg
+        role="img"
+        aria-label={summary}
+        width={width * k}
+        height={height * k}
+        viewBox={`0 0 ${width} ${height}`}
+        className="block max-w-full select-none overflow-visible"
+        onPointerLeave={() => setHover(null)}
+      >
+        <defs>
+          <pattern id="gap-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <line x1="0" y1="0" x2="0" y2="6" stroke="var(--viz-series-2)" strokeWidth="1.6" strokeOpacity="0.55" />
+          </pattern>
+        </defs>
+        {/* decades */}
+        {decades.map((d, i) => (
+          <g key={d}>
+            <line x1={x(10 ** d)} x2={x(10 ** d)} y1={top - 4} y2={plotBottom} stroke="var(--viz-grid)" />
+            {i % every === 0 && (
+              <text x={x(10 ** d)} y={plotBottom + 14} textAnchor="middle" fontSize={11} fill="var(--viz-text-muted)">
+                {tick(d)}
+              </text>
+            )}
+          </g>
+        ))}
+        <text x={left + plotW / 2} y={plotBottom + 30} textAnchor="middle" fontSize={11} fill="var(--viz-text-muted)">
+          {layout.groups.some((g) => g.g === "macs") ? t.axisKT : t.axis}
+        </text>
+        {/* the window */}
+        {w && (
+          <g>
+            <rect
+              x={clampX(w.lo)}
+              y={top - 4}
+              width={Math.max(2, clampX(w.hi) - clampX(w.lo))}
+              height={plotBottom - top + 4}
+              fill="var(--viz-text)"
+              fillOpacity={0.07}
+              stroke="var(--viz-text-muted)"
+              strokeDasharray="3 3"
+              strokeWidth={0.8}
+            />
+            {!neutron && lowest !== null && lowest > w.lo && (
+              <rect
+                x={clampX(w.lo)}
+                y={top - 4}
+                width={Math.max(0, clampX(Math.min(lowest, w.hi)) - clampX(w.lo))}
+                height={plotBottom - top + 4}
+                fill="url(#gap-hatch)"
+              />
+            )}
+            <line
+              x1={x(w.E0)}
+              x2={x(w.E0)}
+              y1={top - 10}
+              y2={plotBottom}
+              stroke="var(--viz-text)"
+              strokeWidth={1.2}
+              strokeDasharray="5 3"
+            />
+            <text
+              x={x(w.E0)}
+              y={top - 14}
+              textAnchor={x(w.E0) > left + plotW * 0.7 ? "end" : "start"}
+              fontSize={11}
+              fontWeight={600}
+              fill="var(--viz-text)"
             >
-              {t.measurements} ({row.datasets})
-            </Link>
-          )}
+              {neutron ? `kT = ${kev(w.kT as number, lang)} keV` : `${t.peak} = ${kev(w.E0, lang)} keV`}
+            </text>
+          </g>
+        )}
+        {others.map((o, i) => (
+          <line key={i} x1={x(o.E0)} x2={x(o.E0)} y1={top - 8} y2={top - 2} stroke="var(--viz-text-muted)" strokeWidth={1.2} />
+        ))}
+        {threshold ? (
+          <line x1={x(threshold)} x2={x(threshold)} y1={top - 4} y2={plotBottom} stroke="var(--viz-text-muted)" strokeWidth={1} />
+        ) : null}
+        {/* bars */}
+        {bands.map((b) => (
+          <g key={b.g}>
+            <text x={left - 8} y={b.y0 + Math.min(b.h, 14) / 2 + 4} textAnchor="end" fontSize={11} fontWeight={600} fill="var(--viz-text)">
+              {b.g === "other" ? strings.quantityShort.other : GROUP_SYMBOL[b.g]}
+            </text>
+            {b.members.map((r, j) => {
+              const lane = b.lanes[j]
+              const yy = b.y0 + lane * b.step
+              const h = Math.max(2, Math.min(LANE, b.step - 1))
+              const colour = FAMILY[r.g]
+              const single = r.e1 <= r.e0 * 1.001
+              const x0 = x(r.e0)
+              const over = x(r.e1) > left + plotW + 0.5
+              const x1 = clampX(r.e1)
+              if (x0 > left + plotW) return null
+              const onEnter = (ev: React.PointerEvent) => {
+                const box = ((ev.currentTarget as SVGGraphicsElement).ownerSVGElement as SVGSVGElement).getBoundingClientRect()
+                setHover({ row: r, x: ev.clientX - box.left, y: ev.clientY - box.top })
+              }
+              return single ? (
+                <path
+                  key={r.id}
+                  d={`M${x0} ${yy} l${h / 2 + 0.5} ${h / 2} l${-(h / 2 + 0.5)} ${h / 2} l${-(h / 2 + 0.5)} ${-h / 2} z`}
+                  fill={r.counted ? colour : "var(--viz-surface)"}
+                  stroke={colour}
+                  strokeWidth={1}
+                  onPointerEnter={onEnter}
+                />
+              ) : (
+                <g key={r.id} onPointerEnter={onEnter}>
+                  <rect
+                    x={x0}
+                    y={yy}
+                    width={Math.max(2, x1 - x0)}
+                    height={h}
+                    rx={1.5}
+                    fill={r.counted ? colour : "var(--viz-surface)"}
+                    fillOpacity={r.counted ? 0.85 : 1}
+                    stroke={colour}
+                    strokeWidth={r.counted ? 0 : 1}
+                  />
+                  {over && <path d={`M${x1 - 1} ${yy - 1} l4 ${h / 2 + 1} l-4 ${h / 2 + 1}z`} fill={colour} />}
+                </g>
+              )
+            })}
+          </g>
+        ))}
+        {/* the lowest measurement */}
+        {!neutron && lowest !== null && (
+          <g>
+            <line x1={x(lowest)} x2={x(lowest)} y1={top - 4} y2={plotBottom} stroke="var(--viz-series-2)" strokeWidth={1.6} />
+            <text
+              x={x(lowest) + 4}
+              y={plotBottom - 3}
+              fontSize={11}
+              fontWeight={600}
+              fill="var(--viz-text)"
+              paintOrder="stroke"
+              stroke="var(--viz-surface)"
+              strokeWidth={3}
+            >
+              {t.lowest} {energy(lowest, lang)}
+            </text>
+          </g>
+        )}
+      </svg>
+      {hover && (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute z-10 max-w-[16rem] rounded-md border border-border bg-popover px-2.5 py-1.5 text-xs shadow-md"
+          style={{ left: Math.max(0, Math.min(hover.x + 8, width * k - 220)), top: hover.y + 14 }}
+        >
+          <p className="font-medium">
+            {hover.row.a} {hover.row.y ?? ""} · <span className="tabular">{hover.row.id}</span>
+          </p>
+          <p className="text-muted-foreground">
+            {strings.quantityShort[hover.row.g]} · {energy(hover.row.e0, lang)}
+            {hover.row.e1 > hover.row.e0 * 1.001 ? `–${energy(hover.row.e1, lang)}` : ""} · {hover.row.n} pt
+          </p>
         </div>
       )}
     </div>
   )
 }
 
-export function GapLegend({ lang }: { lang: Lang }) {
-  const t = dataPublicDict(lang)
-  return (
-    <ul className="flex flex-wrap gap-x-6 gap-y-2 text-xs text-muted-foreground">
-      <li className="flex items-center gap-2">
-        <span className="inline-block h-4 w-6 rounded-[3px] border-2 border-[var(--viz-series-1)] bg-[color-mix(in_srgb,var(--viz-series-1)_22%,transparent)]" aria-hidden />
-        {t.gapLegendWindow}
-      </li>
-      <li className="flex items-center gap-2">
-        <span className="inline-block h-3 w-8 rounded-sm" style={{ backgroundImage: HATCH }} aria-hidden />
-        {t.gapLegendGap}
-      </li>
-      <li className="flex items-center gap-2">
-        <span className="relative inline-block h-4 w-8" aria-hidden>
-          <span className="absolute inset-y-0 left-0 w-[3px] rounded-full bg-foreground" />
-          <span className="absolute left-0 right-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-foreground/70" />
-        </span>
-        {t.gapLegendData}
-      </li>
-    </ul>
-  )
-}
-
-export function GapMap({ rows, lang, first = 8 }: { rows: GapRow[]; lang: Lang; first?: number }) {
-  const t = dataPublicDict(lang)
-  const head = rows.slice(0, first)
-  const rest = rows.slice(first)
-  const list = (items: GapRow[]) => (
-    <ol className="divide-y divide-border/70">
-      {items.map((row) => (
-        <li key={row.id} className="py-4">
-          <GapRowView row={row} lang={lang} />
-        </li>
-      ))}
-    </ol>
-  )
-  return (
-    <div>
-      <GapLegend lang={lang} />
-      <div className="mt-5 rounded-lg border border-border bg-card px-4 py-2 sm:px-6">
-        <div className="sticky top-[var(--header-h,0px)] z-10 -mx-4 border-b border-border/70 bg-card/95 px-4 pb-1 pt-3 backdrop-blur sm:-mx-6 sm:px-6">
-          <p className="text-[0.7rem] uppercase tracking-[0.12em] text-muted-foreground">{t.gapAxis}</p>
-          <GapAxis lang={lang} className="mt-1" />
-        </div>
-        {list(head)}
-        {rest.length > 0 && (
-          <details className="group border-t border-border/70">
-            <summary className="flex min-h-12 cursor-pointer list-none items-center gap-2 py-3 text-sm font-medium text-link focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
-              <ChevronRight className="h-4 w-4 transition-transform group-open:rotate-90" aria-hidden />
-              <span className="group-open:hidden">{t.gapShowAll(rows.length)}</span>
-              <span className="hidden group-open:inline">{t.gapHide}</span>
-            </summary>
-            {list(rest)}
-          </details>
-        )}
-      </div>
-      <p className="mt-4 max-w-3xl text-pretty text-xs leading-relaxed text-muted-foreground">{t.gapRule}</p>
-    </div>
-  )
+const SUP = "⁰¹²³⁴⁵⁶⁷⁸⁹"
+function sup(n: number): string {
+  return (n < 0 ? "⁻" : "") + String(Math.abs(n)).replace(/\d/g, (d) => SUP[Number(d)])
 }

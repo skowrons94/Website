@@ -4,7 +4,7 @@ import { ArrowRight, ChevronRight } from "lucide-react"
 
 import { Said } from "@/components/data/said"
 import { ElementSearch } from "@/components/data/element-search"
-import { GapMap } from "@/components/data/gap-map"
+import { GapMap } from "@/components/data/gap-overview"
 import { NucleusTeaser } from "@/components/data/nucleus-teaser"
 import { StatusChart } from "@/components/data/status-chart"
 import { Sci } from "@/components/sci"
