@@ -1,0 +1,117 @@
+/*
+ * The demo frame (banner, notes, drawers, start page) in the website's look:
+ * its surface tokens, copied from the site's app/globals.css (tests/shell checks
+ * they still match), the system font stack, one link blue. WebDAQ itself keeps
+ * its own look; only the sticky header moves down by the banner's height.
+ * Light and dark follow the `dark` class next-themes puts on <html>, which
+ * shares the site's `theme` key.
+ */
+:root {
+  --wd-background: 40 20% 99%;
+  --wd-foreground: 30 8% 12%;
+  --wd-card: 0 0% 100%;
+  --wd-muted: 40 12% 95.5%;
+  --wd-muted-foreground: 35 6% 42%;
+  --wd-border: 38 12% 89%;
+  --wd-input-strong: 35 6% 54%;
+  --wd-link: 213 68% 40%;
+  --wd-ring: 213 68% 44%;
+  --wd-destructive: 0 72% 46%;
+  --wd-banner-h: 40px;
+}
+.dark {
+  --wd-background: 40 5% 8%;
+  --wd-foreground: 40 12% 94%;
+  --wd-card: 40 5% 10.5%;
+  --wd-muted: 40 4% 15%;
+  --wd-muted-foreground: 40 6% 64%;
+  --wd-border: 40 4% 19%;
+  --wd-input-strong: 40 5% 42%;
+  --wd-link: 213 76% 68%;
+  --wd-ring: 213 70% 62%;
+  --wd-destructive: 0 70% 60%;
+}
+
+.wd-frame {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: hsl(var(--wd-foreground));
+  font-size: 14px;
+  line-height: 1.4;
+}
+.wd-frame :focus-visible { outline: 2px solid hsl(var(--wd-ring)); outline-offset: 2px; }
+
+/* the banner: persistent, 40 px, on every page */
+.wd-banner {
+  position: sticky; top: 0; z-index: 70;
+  display: flex; align-items: center; gap: 12px;
+  min-height: var(--wd-banner-h); box-sizing: border-box; padding: 4px 16px;
+  background: hsl(var(--wd-muted)); border-bottom: 1px solid hsl(var(--wd-border));
+}
+.wd-banner-text { margin: 0; flex: 1 1 auto; min-width: 0; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+body:has(.wd-banner) header.sticky.top-0 { top: var(--wd-banner-h); }
+.wd-actions { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; }
+.wd-menu {
+  position: sticky; top: var(--wd-banner-h); z-index: 70; display: flex; flex-direction: column; align-items: stretch; gap: 6px;
+  padding: 8px 16px; background: hsl(var(--wd-card)); border-bottom: 1px solid hsl(var(--wd-border));
+}
+.wd-narrow { display: none !important; }
+@media (max-width: 767px) {
+  .wd-wide { display: none !important; }
+  .wd-narrow { display: inline-flex !important; }
+  .wd-banner-text .wd-narrow { display: inline !important; }
+}
+.wd-menu .wd-link { display: flex; align-items: center; min-height: 44px; }
+
+.wd-btn {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 32px; padding: 4px 10px;
+  border: 1px solid hsl(var(--wd-input-strong)); border-radius: 6px; background: hsl(var(--wd-card));
+  color: hsl(var(--wd-foreground)); font: inherit; cursor: pointer; text-decoration: none; white-space: nowrap;
+}
+.wd-btn:hover { background: hsl(var(--wd-muted)); }
+.wd-btn:disabled { opacity: .6; cursor: default; }
+.wd-primary { background: hsl(var(--wd-foreground)); color: hsl(var(--wd-background)); border-color: hsl(var(--wd-foreground)); }
+.wd-primary:hover { background: hsl(var(--wd-foreground) / .85); }
+.wd-link, .wd-linkbtn { color: hsl(var(--wd-link)); text-decoration: underline; text-underline-offset: 2px; }
+.wd-linkbtn { background: none; border: 0; padding: 0; font: inherit; cursor: pointer; text-align: left; }
+.wd-muted { color: hsl(var(--wd-muted-foreground)); }
+.wd-error { color: hsl(var(--wd-destructive)); }
+@media (pointer: coarse) { .wd-btn { min-height: 44px; } }
+
+/* not-in-demo notes */
+.wd-note {
+  display: flex; align-items: center; gap: 12px; padding: 6px 16px;
+  background: hsl(var(--wd-card)); border-bottom: 1px solid hsl(var(--wd-border));
+}
+.wd-note p { margin: 0; flex: 1; }
+
+/* drawers */
+.wd-scrim { position: fixed; inset: 0; z-index: 80; background: rgb(0 0 0 / .35); display: flex; justify-content: flex-end; }
+.wd-drawer {
+  width: min(480px, 100vw); height: 100%; overflow-y: auto; box-sizing: border-box; padding: 16px;
+  background: hsl(var(--wd-background)); border-left: 1px solid hsl(var(--wd-border));
+}
+.wd-drawer-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.wd-drawer h2 { font-size: 18px; margin: 0; }
+.wd-list, .wd-files { list-style: none; padding: 0; margin: 12px 0; }
+.wd-list > li { border-top: 1px solid hsl(var(--wd-border)); padding: 8px 0; }
+.wd-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.wd-row .wd-btn { margin-left: auto; }
+.wd-files li { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; }
+
+/* forms */
+.wd-field { display: flex; flex-direction: column; gap: 4px; margin: 14px 0; border: 0; padding: 0; }
+.wd-field legend { font-weight: 600; margin-bottom: 4px; padding: 0; }
+.wd-field select, .wd-field input[type="range"] { max-width: 100%; }
+.wd-field select {
+  font: inherit; color: hsl(var(--wd-foreground)); background: hsl(var(--wd-card));
+  border: 1px solid hsl(var(--wd-input-strong)); border-radius: 6px; padding: 4px 6px; min-height: 32px;
+}
+.wd-check { display: flex; gap: 8px; align-items: baseline; padding: 2px 0; }
+
+/* the start page */
+.wd-start { max-width: 640px; margin: 0 auto; padding: 32px 16px 48px; box-sizing: border-box; }
+.wd-start h1 { font-size: 28px; margin: 0 0 12px; }
+.wd-lead { font-size: 16px; }
+.wd-start-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 20px; }
+
+@media (prefers-reduced-motion: reduce) { .wd-frame * { transition: none !important; animation: none !important; } }

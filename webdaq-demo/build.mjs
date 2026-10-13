@@ -227,6 +227,7 @@ function prepareApp(upstream) {
   copyDir(path.join(HERE, 'overlay'), APP)
   // Main-thread shims only; the worker side (router, handlers) is bundled separately.
   copyDir(path.join(HERE, 'shim'), path.join(APP, 'src', 'demo', 'shim'), f => !f.startsWith('handlers/'))
+  copyDir(path.join(HERE, 'shell'), path.join(APP, 'src', 'demo', 'shell'))
 }
 
 // ── 4. checks on the export ─────────────────────────────────────────────────
@@ -246,7 +247,8 @@ function checkExport(out) {
   const logbook = pages.filter(f => /^logbook\/\d+\/index\.html$/.test(f))
   for (const p of pages) {
     const s = fs.readFileSync(path.join(out, p), 'utf8')
-    const bad = [...s.matchAll(/(?:src|href)="(\/[^"]*)"/g)].map(m => m[1]).filter(u => BASE && !u.startsWith(BASE + '/') && u !== BASE)
+    // Assets only: links out to the hosting site (the banner's "Back to the site") leave the base on purpose.
+    const bad = [...s.matchAll(/<(?:script|img|link)\b[^>]*?\s(?:src|href)="(\/[^"]*)"/g)].map(m => m[1]).filter(u => BASE && !u.startsWith(BASE + '/') && u !== BASE)
     if (bad.length) fail(`${p} has asset URLs outside the base path ${BASE}: ${bad.slice(0, 3).join(', ')}`)
   }
   log(`export: ${pages.length} pages (${logbook.length} logbook run pages), ${files.length} files, no root.cern, every URL under ${BASE || '/'}`)

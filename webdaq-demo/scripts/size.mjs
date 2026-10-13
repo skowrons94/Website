@@ -94,16 +94,21 @@ for (const p of pages.sort()) {
 // ── demo shell (main-thread demo code, bundled alone from the sources) ──
 try {
   const esbuild = await import('esbuild')
-  const entries = ['shim/boot.tsx', 'shim/axios-demo.ts', 'shim/load-jsroot.ts', 'shell/index.tsx']
+  const entries = ['shim/boot.tsx', 'shim/axios-demo.ts', 'shim/load-jsroot.ts', 'shell/Shell.tsx']
     .filter(f => fs.existsSync(path.join(HERE, f)))
+  // Split like the app: what loads on demand (drawers, Italian strings, zip) is not counted.
   const r = await esbuild.build({
-    stdin: { contents: entries.map((f, i) => `export * as m${i} from './${f}'`).join('\n'), resolveDir: HERE, loader: 'ts' },
-    bundle: true, minify: true, write: false, format: 'esm', platform: 'browser', target: 'es2020', logLevel: 'silent',
-    external: ['react', 'react/*', 'react-dom', 'axios-real', 'next', 'next/*'],
+    entryPoints: entries.map(f => path.join(HERE, f)), bundle: true, splitting: true, minify: true, write: false,
+    format: 'esm', platform: 'browser', target: 'es2020', logLevel: 'silent', outdir: path.join(HERE, '.work', 'size-tmp'), metafile: true,
+    external: ['react', 'react/*', 'react-dom', 'axios-real', 'next', 'next/*', '*.css'],
     define: { 'process.env.NEXT_PUBLIC_DEMO_WORKER': '""', 'process.env.NEXT_PUBLIC_DEMO_JSROOT': '""', 'process.env.NEXT_PUBLIC_DEMO_WEBDAQ_COMMIT': '""', 'process.env.NEXT_PUBLIC_DEMO_BASE_PATH': '""' },
     tsconfig: path.join(HERE, 'tsconfig.json'),
   })
-  const bytes = zlib.gzipSync(Buffer.from(r.outputFiles[0].contents), { level: 9 }).length + shellInline
+  const outs = r.metafile.outputs
+  const keep = new Set()
+  const walkOut = f => { if (keep.has(f)) return; keep.add(f); for (const i of outs[f].imports) if (i.kind === 'import-statement' && outs[i.path]) walkOut(i.path) }
+  for (const [f, o] of Object.entries(outs)) if (o.entryPoint && entries.includes(o.entryPoint)) walkOut(f)
+  const bytes = r.outputFiles.filter(f => [...keep].some(k => f.path.endsWith(k.replace(/^.*\.work\//, '')))).reduce((n, f) => n + zlib.gzipSync(Buffer.from(f.contents), { level: 9 }).length, 0) + shellInline
   check('demo shell + adapter + shims', bytes, 'demo_shell_every_route', entries.join(', ') + ' + inline storage shim')
 } catch (e) {
   rows.push(['demo shell + adapter + shims', 'error', budgets.pieces.demo_shell_every_route, 'FAIL', String(e?.message ?? e).slice(0, 80)])
@@ -126,7 +131,7 @@ const staticGraph = (file, seen = new Set()) => {
 const wFirst = worker ? staticGraph(worker) : new Set()
 check('worker first load (DAQ state + physics)', worker && fs.existsSync(worker) ? [...wFirst].reduce((n, f) => n + gz(f), 0) : null, 'worker')
 const lazyCode = wChunks.filter(([f, k]) => k === 'code' && !wFirst.has(path.join(OUT, 'demo', f)))
-if (lazyCode.length) rows.push(['worker, lazy handler chunks (logbook, ELOG/Grafana)', kB(lazyCode.reduce((n, [f]) => n + gz(path.join(OUT, 'demo', f)), 0)).toFixed(1), '', '', 'loaded when a page needs them'])
+if (lazyCode.length) rows.push(['worker, lazy chunks (Logbook + run files, ELOG/Grafana, notification settings)', kB(lazyCode.reduce((n, [f]) => n + gz(path.join(OUT, 'demo', f)), 0)).toFixed(1), '', '', 'loaded when a page needs them'])
 const jsDraw = info?.jsroot?.draw ?? []
 const jsTotal = walk(path.join(OUT, 'jsroot')).reduce((n, f) => n + gz(path.join(OUT, 'jsroot', f)), 0)
 check('JSROOT draw set (entry + TH1/TH2/TCanvas painters)', jsDraw.length ? jsDraw.reduce((n, f) => n + gz(path.join(OUT, 'jsroot', f)), 0) : null,
@@ -140,9 +145,9 @@ if (!tableGroups.size) check('response tables per detector', null, 'tables_per_d
 for (const [k, n] of tableGroups) check(`response tables: ${k}`, n, 'tables_per_detector')
 const allJs = walk(OUT).filter(f => f.endsWith('.js') && !f.startsWith('jsroot/'))
 const findMarker = m => allJs.filter(f => fs.readFileSync(path.join(OUT, f), 'utf8').includes(m))
-const tour = findMarker('__webdaqTour')
+const tour = findMarker('__webdaqTourBundle')
 check('tour (UI + strings)', tour.length ? tour.reduce((n, f) => n + gz(path.join(OUT, f)), 0) : null, 'tour')
-const zip = findMarker('fflate')
+const zip = [...new Set([...findMarker('__webdaqZip'), ...findMarker('extra field too long')])]
 check('fflate (zip, on demand)', zip.length ? zip.reduce((n, f) => n + gz(path.join(OUT, f)), 0) : null, 'fflate')
 
 // ── report ──

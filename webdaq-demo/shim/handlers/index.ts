@@ -27,4 +27,5 @@ export function buildRouter(d: Daq): Router {
 export const LAZY_FAMILIES: { prefix: RegExp; load: () => Promise<{ default: Family }> }[] = [
   { prefix: /^\/data\//, load: () => import('./data') },
   { prefix: /^\/(elog|grafana)\//, load: () => import('./elog') },
+  { prefix: /^\/(recovery\/|notifications\/(transports|rules|settings|status|watcher))/, load: () => import('./notify-settings') },
 ]
