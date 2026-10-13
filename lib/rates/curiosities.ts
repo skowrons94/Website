@@ -424,7 +424,7 @@ export function temperatureWords(T9: number, lang: CLang): string {
 const SITE_NOTES: Record<string, Words> = {
   "massive-he-core": {
     en: "For this site the sizes are upper limits: read the direction of the change.",
-    it: "Per questo sito l'entità delle variazioni è un limite superiore: conta soprattutto la direzione.",
+    it: "Per questo ambiente stellare le variazioni indicate sono un limite superiore: conta soprattutto il segno.",
   },
 }
 

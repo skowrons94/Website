@@ -749,7 +749,7 @@ terms:
       ai Laboratori Nazionali del Gran Sasso dell'INFN, usa acceleratori sotto
       circa 1400 m di roccia dall'inizio degli anni Novanta; la roccia riduce i
       muoni cosmici di circa un milione di volte. Oltre all'acceleratore da
-      400 kV di LUNA, il Bellotti Ion Beam Facility (BIBF), inaugurato nel 2023,
+      400 kV di LUNA, la Bellotti Ion Beam Facility (BIBF), inaugurata nel 2023,
       ospita una macchina da 3,5 MV per la combustione dell'elio e del
       carbonio. Altri acceleratori in profondità sono in funzione in Cina
       (JUNA) e negli Stati Uniti (CASPAR); il Felsenkeller di Dresda, sotto
@@ -946,8 +946,8 @@ terms:
     text_it: >-
       Una misura di quanto un modello descrive bene i dati: per ogni punto, la
       differenza tra modello e misura divisa per l'incertezza della misura,
-      elevata al quadrato e sommata su tutti i punti. Diviso per il numero di
-      punti, un χ²/N vicino a 1 significa che il modello è in accordo con i
+      elevata al quadrato e sommata su tutti i punti. Dividendolo per il numero
+      di punti si ottiene χ²/N: un valore vicino a 1 significa che il modello è in accordo con i
       dati entro le loro incertezze; valori molto più grandi indicano che non
       lo è, o che le incertezze sono sottostimate.
     see: [r-matrix, normalisation]
@@ -1021,7 +1021,7 @@ terms:
     text_it: >-
       Una diminuzione della probabilità di fusione di due nuclei pesanti, a
       energie molto sotto la barriera coulombiana, più rapida di quanto
-      prevedono i modelli usuali. Se avviene per due nuclei di carbonio, il
+      prevedano i modelli usuali. Se avviene per due nuclei di carbonio, il
       fattore S raggiunge un massimo e poi cala verso le energie stellari, e il
       carbonio brucia più lentamente di quanto dica il tasso standard. Se
       avvenga davvero è ancora discusso.

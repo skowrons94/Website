@@ -172,7 +172,7 @@ threads:
         tracciamento di raggi γ è ciò che rende precisa una sua misura per
         effetto Doppler.
       - >-
-        Sono spokesperson della misura eseguita con AGATA a Legnaro e ho guidato
+        Sono il portavoce della misura eseguita con AGATA a Legnaro e ho guidato
         l'intera catena di analisi: correzione Doppler, ricostruzione cinematica,
         simulazione Geant4 ed estrazione bayesiana della vita media. L'analisi è
         conclusa e il manoscritto è in revisione presso Nature Physics.
@@ -189,7 +189,7 @@ threads:
       Testing how atomic electrons distort a nuclear cross section measured in the
       laboratory, in a regime where the effect is largest.
     summary_it: >-
-      Verificare come gli elettroni atomici alterano una sezione d'urto nucleare
+      Verificare come gli elettroni atomici alterino una sezione d'urto nucleare
       misurata in laboratorio, nel regime in cui l'effetto è più grande.
     body:
       - >-

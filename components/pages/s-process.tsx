@@ -65,7 +65,7 @@ const TEXT = {
     description:
       "Come le catture lente di neutroni nelle stelle giganti costruiscono circa metà dei nuclei tra il ferro e il bismuto: il percorso sulla carta dei nuclidi, i suoi punti di diramazione e come si misurano le catture.",
     lead:
-      "Circa metà dei nuclei più pesanti del ferro è stata costruita un neutrone alla volta, dentro stelle giganti, nel corso dei centomila anni circa della loro ultima fase luminosa. Così sono nati la maggior parte dello stronzio e del bario del Sistema Solare, e buona parte del suo piombo. Questa pagina segue quel percorso sulla carta dei nuclidi, dal ferro fino al piombo e al bismuto.",
+      "Circa metà dei nuclei più pesanti del ferro è stata costruita un neutrone alla volta, dentro stelle giganti, nel corso dei centomila anni circa della loro ultima fase luminosa. Così è nata la maggior parte dello stronzio e del bario del Sistema Solare, e buona parte del suo piombo. Questa pagina segue quel percorso sulla carta dei nuclidi, dal ferro fino al piombo e al bismuto.",
     back: "Atlante delle reazioni",
     overviewTitle: "Il percorso sulla carta dei nuclidi",
     overviewLabel:
@@ -840,7 +840,7 @@ function BodyIt({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
           <P>
             Nel processo r, in una fusione di stelle di neutroni o in un&apos;esplosione simile, i nuclei catturano
             neutroni molto più in fretta di quanto decadano, e vengono spinti lontano verso il lato della carta
-            ricco di neutroni. Quando i neutroni finiscono decadono all&apos;indietro, lungo linee di numero di massa
+            ricco di neutroni. Quando i neutroni si esauriscono, i nuclei decadono all&apos;indietro, lungo linee di numero di massa
             costante, finché ogni catena incontra il primo nucleo stabile sulla sua strada. Un nucleo stabile che
             ha un vicino stabile con la stessa massa e carica minore è quindi schermato: i decadimenti del processo
             r si fermano al vicino. Se il percorso del processo s lo attraversa, è un nucleo{" "}
@@ -945,7 +945,7 @@ function BodyIt({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
           <P>
             Oggi i punti di diramazione radioattivi si possono misurare direttamente, su campioni prodotti nei
             reattori. La {r("171Tm-ng-172Tm")}, sul tulio che vive due anni, è stata misurata a n_TOF e a SARAF: il
-            tulio-171 cattura 2,6 volte meno facilmente di quanto dicevano le librerie generali JEFF-3.3 ed
+            tulio-171 cattura 2,6 volte meno facilmente di quanto indicassero le librerie generali JEFF-3.3 ed
             ENDF/B-VIII {c("guerrero2020")}.
             La {r("204Tl-ng-205Tl")}, su nove milligrammi di tallio che vive quasi quattro anni, decide quanto
             piombo-204, prodotto solo dal processo s, si forma, ed è stata misurata per la prima volta nel 2024{" "}

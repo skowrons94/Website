@@ -52,7 +52,7 @@ facilities:
     country_it: Italia
     underground: true
     depth: about 1400 m of rock, 3800 metres water equivalent
-    depth_it: circa 1400 m di roccia, 3800 metri di acqua equivalente
+    depth_it: circa 1400 m di roccia, pari a 3800 m di acqua equivalente
     accelerator: 50 kV ion accelerator with a windowless gas target
     accelerator_it: acceleratore di ioni da 50 kV con bersaglio gassoso senza finestre
     years: described in 1994; first results on ³He(³He,2p)⁴He in 1996
@@ -91,7 +91,7 @@ facilities:
     country_it: Italia
     underground: true
     depth: about 1400 m of rock, 3800 metres water equivalent
-    depth_it: circa 1400 m di roccia, 3800 metri di acqua equivalente
+    depth_it: circa 1400 m di roccia, pari a 3800 m di acqua equivalente
     accelerator: 400 kV electrostatic accelerator (LUNA II)
     accelerator_it: acceleratore elettrostatico da 400 kV (LUNA II)
     years: in operation from the early 2000s (facility paper 2003)
@@ -128,7 +128,7 @@ facilities:
     country_it: Italia
     underground: true
     depth: about 1400 m of rock, 3800 metres water equivalent
-    depth_it: circa 1400 m di roccia, 3800 metri di acqua equivalente
+    depth_it: circa 1400 m di roccia, pari a 3800 m di acqua equivalente
     accelerator: 3.5 MV Singletron (High Voltage Engineering Europa), terminal voltage 0.3–3.5 MV, ECR ion source
     accelerator_it: >-
       Singletron da 3,5 MV (High Voltage Engineering Europa), tensione di

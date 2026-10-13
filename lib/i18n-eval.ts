@@ -928,7 +928,7 @@ const it: EvalDictionary = {
     chi2Settled: (v: string) => `χ²/N degli insiemi di dati mostrati: ${v}.`,
     chi2AllDiffers: "su tutti i dati:",
     chi2Published: "il fit pubblicato: perché è sopra 1",
-    sLowest: "S all'energia minima",
+    sLowest: "S all'energia più bassa",
   },
   // --- r13 final ---
   r13: {

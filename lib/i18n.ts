@@ -1516,7 +1516,7 @@ const it: Dictionary = {
 
   /* -- CV ----------------------------------------------------------------- */
   cv: {
-    title: "Curriculum Vitae",
+    title: "Curriculum vitae",
     metaTitle: "CV",
     description:
       "Curriculum vitae di Jakub Skowronski, astrofisico nucleare sperimentale: impieghi, formazione, esperienze di ricerca, premi, seminari e didattica.",
@@ -1828,7 +1828,7 @@ const it: Dictionary = {
     cellNone: "Nessuna reazione dell'atlante parte o arriva qui.",
     lunaFigureTitle: "Perché sotto terra",
     lunaFigure: {
-      alt: "Sezione schematica del Gran Sasso. I muoni dei raggi cosmici che arrivano dall'alto si fermano nella roccia; solo circa uno su un milione raggiunge le sale sotterranee, circa 1400 m sotto la vetta, dove l'acceleratore LUNA da 400 kV e la macchina da 3,5 MV del Bellotti Ion Beam Facility (BIBF) mandano i loro fasci su bersagli circondati da rivelatori.",
+      alt: "Sezione schematica del Gran Sasso. I muoni dei raggi cosmici che arrivano dall'alto si fermano nella roccia; solo circa uno su un milione raggiunge le sale sotterranee, circa 1400 m sotto la vetta, dove l'acceleratore LUNA da 400 kV e la macchina da 3,5 MV della Bellotti Ion Beam Facility (BIBF) mandano i loro fasci su bersagli circondati da rivelatori.",
       rock: "roccia",
       tunnel: "galleria autostradale",
       tunnelShort: "galleria",
@@ -1836,7 +1836,7 @@ const it: Dictionary = {
         "In superficie i raggi cosmici producono una pioggia continua di muoni, che lasciano segnali in qualunque rivelatore di raggi γ.",
         "Circa 1400 m di roccia (3800 m di acqua equivalente) fermano tutti i muoni tranne circa uno su un milione.",
         "LUNA 400 kV: fasci di protoni e di elio per la combustione dell'idrogeno, dai primi anni 2000.",
-        "La macchina da 3,5 MV del Bellotti Ion Beam Facility (BIBF), inaugurato nel 2023: fasci di protoni, elio e carbonio per la combustione dell'elio e del carbonio.",
+        "La macchina da 3,5 MV della Bellotti Ion Beam Facility (BIBF), inaugurata nel 2023: fasci di protoni, elio e carbonio per la combustione dell'elio e del carbonio.",
         "Il fascio colpisce un bersaglio; un rivelatore intorno conta i raggi γ o le particelle delle poche reazioni.",
       ],
       note: "Schema, non in scala.",
@@ -1844,7 +1844,7 @@ const it: Dictionary = {
     // --- atlas (round 3) ---
     englishSections: (sections: string[]) =>
       `${sections.length === 1 ? "Questa parte tecnica della pagina" : "Le parti tecniche di questa pagina"} (${sections.join(", ")}) ${sections.length === 1 ? "è" : "sono"} in inglese.`,
-    sectionNames: { measurements: "l'elenco delle misure", details: "i dettagli", openQuestions: "le domande aperte" },
+    sectionNames: { measurements: "l'elenco delle misure", details: "i dettagli", openQuestions: "le questioni aperte" },
     thermalPlain: (kT: string, mk: string) => `circa ${kT} keV, l'energia di un gas a ${mk} milioni di gradi`,
     thermalBySite: "Per ambiente stellare",
     skipToMap: "Vai alla mappa",

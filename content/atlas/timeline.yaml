@@ -916,7 +916,7 @@ events:
     text_it: >-
       Un acceleratore Singletron da 3,5 MV, costruito da High Voltage
       Engineering Europa, fu installato nel laboratorio sotterraneo del Gran
-      Sasso: è la macchina MV del Bellotti Ion Beam Facility (BIBF). Fornisce fasci di protoni, elio e carbonio,
+      Sasso: è la macchina MV della Bellotti Ion Beam Facility (BIBF). Fornisce fasci di protoni, elio e carbonio,
       così che la combustione dell'elio e del carbonio si possa studiare sotto
       terra.
     refs: [sen2019, junker2023]
@@ -946,7 +946,7 @@ events:
   - year: 2023
     month: 10
     title: The Bellotti Ion Beam Facility is inaugurated
-    title_it: Inaugurazione del Bellotti Ion Beam Facility
+    title_it: Inaugurazione della Bellotti Ion Beam Facility
     category: luna
     text: >-
       The underground accelerator laboratory was inaugurated and named after

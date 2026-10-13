@@ -201,7 +201,7 @@ methods:
       rapporto di diramazione del decadimento. Il metodo dà la sezione d'urto
       totale, sommata su tutte le cascate γ e integrata sugli angoli, ed evita
       così le correzioni per somma e per distribuzione angolare della
-      spettroscopia γ prompta. I prodotti a vita lunga si possono anche contare
+      spettroscopia γ in linea (prompt). I prodotti a vita lunga si possono anche contare
       atomo per atomo con la spettrometria di massa con acceleratore. I limiti
       sistematici sono i dati di decadimento, l'efficienza di conteggio, la
       storia dell'irraggiamento e la perdita di nuclei prodotti dal bersaglio.
@@ -294,7 +294,7 @@ methods:
       s, in cui a ha una marcata struttura a cluster x + s e s fa da spettatore.
       In cinematica quasi libera la sezione d'urto a tre corpi misurata si
       fattorizza in un fattore cinematico, nella distribuzione dei momenti di x
-      dentro a e nella sezione d'urto a due corpi "half-off-energy- shell". Il
+      dentro a e nella sezione d'urto a due corpi «half-off-energy-shell». Il
       metodo dà l'andamento in energia della sezione d'urto del nucleo nudo,
       senza soppressione coulombiana né schermaggio elettronico; la sua scala
       assoluta è normalizzata ai dati diretti a energie più alte. I limiti
