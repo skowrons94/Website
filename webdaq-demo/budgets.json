@@ -1,0 +1,15 @@
+{
+  "comment": "Gzip (level 9) budgets in kB, design §6.4. CI fails a piece over budget by more than tolerance_pct. Pieces absent from the build (tour, fflate, tables before their phases land) are reported as absent, not failed.",
+  "tolerance_pct": 3,
+  "pieces": {
+    "start_page_first_load": 120,
+    "demo_shell_every_route": 25,
+    "heaviest_route_dashboard": 400,
+    "any_other_route": 380,
+    "worker": 40,
+    "tables_per_detector": 60,
+    "jsroot_draw": 360,
+    "tour": 20,
+    "fflate": 10
+  }
+}
