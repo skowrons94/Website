@@ -46,7 +46,7 @@ function fmt(lang: Lang) {
   /** A percentage change, signed. */
   const pct = (before: number, after: number) => {
     const p = ((after - before) / before) * 100
-    return `${p >= 0 ? "+" : "−"}${comma(Math.abs(p).toFixed(0))}${lang === "it" ? " " : ""}%`
+    return `${p >= 0 ? "+" : "−"}${comma(Math.abs(p).toFixed(0))}%`
   }
   return { f, n, e, pct }
 }

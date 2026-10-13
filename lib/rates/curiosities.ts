@@ -129,7 +129,7 @@ export const CURIOSITIES: CuriositySpec[] = [
     where: W.m15,
     hook: {
       en: "Stardust grains in meteorites preserve this oxygen ratio; LUNA measured this rate in 2016.",
-      it: "I granelli di polvere di stelle nei meteoriti conservano questo rapporto; LUNA ha misurato il tasso nel 2016.",
+      it: "I grani presolari dei meteoriti conservano questo rapporto; LUNA ha misurato il tasso nel 2016.",
     },
   },
   {
@@ -198,7 +198,7 @@ export const CURIOSITIES: CuriositySpec[] = [
     where: W.one,
     hook: {
       en: "Sodium‑22's 1.275 MeV gamma-ray line has not yet been seen from a nova.",
-      it: "La riga gamma a 1,275 MeV del sodio‑22 non è ancora mai stata vista in una nova.",
+      it: "Nessuno ha ancora visto in una nova la riga γ a 1275 keV del sodio‑22.",
     },
   },
   {
@@ -460,7 +460,7 @@ export function curiosityText(
   const d = durationWords(ctx.tFinal, lang)
   const extra = [SITE_NOTES[spec.site]?.[lang], spec.note?.[lang]].filter(Boolean).map((x) => ` ${x}`).join("")
   const shortCaveat = it
-    ? `Modello a una zona${ctx.cooling ? ` che si raffredda da ${T}` : `, ${T}`}, ${d}. Le stelle vere si adattano.`
+    ? `Modello a zona singola${ctx.cooling ? ` che si raffredda da ${T}` : `, ${T}`}, ${d}. Una stella vera si riassesta.`
     : `One-zone model ${ctx.cooling ? `cooling from ${T}` : `at ${T}`} over ${d}. Real stars adjust.`
   const caveat = shortCaveat + extra
   return { parts, sentence: parts.map((p) => p.text).join(""), hook: spec.hook[lang], caveat, shortCaveat, amount, percent }
