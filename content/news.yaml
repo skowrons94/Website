@@ -40,7 +40,7 @@ news:
       About this site: how it was made and checked, where its data come from,
       its licences and how to cite it.
     text_it: >-
-      Informazioni sul sito: come è stato fatto e verificato, da dove vengono i
+      Informazioni sul sito: come è stato realizzato e verificato, da dove vengono i
       dati, le licenze e come citarlo.
 
   - date: 2026-10-12
@@ -85,7 +85,7 @@ news:
       A glossary of the words the atlas uses, from Gamow window to reduced
       width, in plain language.
     text_it: >-
-      Un glossario delle parole usate nell'atlante, dalla finestra di Gamow
+      Un glossario dei termini usati nell'atlante, dalla finestra di Gamow
       alla larghezza ridotta, in linguaggio semplice.
 
   - date: 2026-10-11
@@ -120,4 +120,4 @@ news:
     text_it: >-
       L'atlante delle reazioni: le reazioni nucleari che alimentano le stelle e
       producono gli elementi, sulla carta dei nuclidi, ognuna con il modo in cui
-      è stata misurata e che cosa resta incerto.
+      è stata misurata e ciò che resta incerto.
