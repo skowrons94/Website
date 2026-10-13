@@ -89,13 +89,15 @@ facts:
   - text: >-
       Two underground laboratories, one in a former gold mine in South Dakota
       and one under a Chinese mountain, have measured the key resonance. The
-      South Dakota strength, 0.26 ± 0.05 µeV, matches the 0.25 ± 0.03 µeV that
-      a review quotes for the Chinese measurement.
+      resonance strength measured in South Dakota, 0.26 ± 0.05 µeV, agrees
+      within its uncertainty with the 0.25 ± 0.03 µeV that a review quotes for
+      the Chinese measurement.
     text_it: >-
       Due laboratori sotterranei, uno in un'ex miniera d'oro del South Dakota
       e uno sotto una montagna cinese, hanno misurato la risonanza chiave.
-      L'intensità del South Dakota, 0,26 ± 0,05 µeV, coincide con gli
-      0,25 ± 0,03 µeV che una rassegna riporta per la misura cinese.
+      L'intensità della risonanza misurata nel South Dakota, 0,26 ± 0,05 µeV,
+      è in accordo, entro l'incertezza, con gli 0,25 ± 0,03 µeV che una
+      rassegna riporta per la misura cinese.
     refs: [dombos2022, kajino2023]
 related: [14N-ag-18F, 18F-bp-18O, 22Ne-an-25Mg, 22Ne-ag-26Mg]
 details_it: >-

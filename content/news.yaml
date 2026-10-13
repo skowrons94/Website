@@ -22,6 +22,29 @@
 
 news:
   - date: 2026-10-13
+    commit: 86cb99e
+    link: /software/webdaq
+    text: >-
+      WebDAQ: the LUNA data acquisition, with an in-browser demo and a guided
+      tour.
+    text_it: >-
+      WebDAQ: l'acquisizione dati di LUNA, con una demo nel browser e una
+      visita guidata.
+
+  - date: 2026-10-13
+    commit: 40e17c2
+    link: /atlas/open-questions
+    text: >-
+      Reaction atlas: results from 2023 to 2026, among them a second Trojan
+      Horse experiment on carbon fusion and neutron capture on niobium-94 at
+      n_TOF, and a new open question on the calcium of the first stars.
+    text_it: >-
+      Atlante delle reazioni: risultati dal 2023 al 2026, tra cui un secondo
+      esperimento con il metodo del cavallo di Troia sulla fusione del
+      carbonio e la cattura neutronica sul niobio-94 a n_TOF, e una nuova
+      questione aperta sul calcio delle prime stelle.
+
+  - date: 2026-10-13
     commit: a33321c
     link: /data
     text: >-
@@ -30,7 +53,7 @@ news:
       gap between the energies stars need and the lowest ones measured, and
       the levels of each nucleus.
     text_it: >-
-      Esploratore dei dati nucleari: le misure di EXFOR, la libreria
+      Esploratore dei dati nucleari: le misure di EXFOR, la banca dati
       internazionale degli esperimenti nucleari, collegate all'atlante delle
       reazioni, con il vuoto tra le energie che servono alle stelle e le più
       basse misurate, e i livelli di ogni nucleo.

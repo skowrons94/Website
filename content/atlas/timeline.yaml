@@ -1057,8 +1057,8 @@ events:
     category: experiment
     facility: n-tof
     text: >-
-      Stardust grains older than the Sun hold more molybdenum-94 than models
-      predict. Its production depends on niobium-94, a radioactive branch
+      Stardust grains older than the Sun hold more molybdenum-94 than earlier
+      models predicted. Its production depends on niobium-94, a radioactive branch
       point of the s-process, where neutron capture competes with decay. At
       CERN's n_TOF its capture cross section was measured for the first time.
       The result confirms the general scale of the theoretical estimates;
@@ -1066,7 +1066,7 @@ events:
       their improved physics, it brings them into agreement with the grains.
     text_it: >-
       I grani di polvere stellare più antichi del Sole contengono più
-      molibdeno-94 di quanto prevedano i modelli. La sua produzione dipende
+      molibdeno-94 di quanto prevedessero i modelli precedenti. La sua produzione dipende
       dal niobio-94, un punto di diramazione radioattivo del processo s, dove
       la cattura neutronica compete con il decadimento. A n_TOF, al CERN, la
       sua sezione d'urto di cattura è stata misurata per la prima volta. Il

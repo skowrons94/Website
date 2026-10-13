@@ -59,6 +59,8 @@ function content(lang: Lang) {
   const x1 = exercise1()
   const x2 = exercise2()
   const t = THIRTEEN_N
+  // how far each LUNA point moves, on average, in standard deviations: √(Δχ²/N)
+  const sigmas = Math.round(Math.sqrt((t.chi2.lunaHpge.after - t.chi2.lunaHpge.before) / t.chi2.lunaHpge.points))
   const { f, n, e, pct } = fmt(lang)
   const to = (p: string) => localePath(lang, p)
   const ratio = x2.sigmaPeak_b / x2.sigma_b
@@ -78,7 +80,7 @@ function content(lang: Lang) {
       description:
         "Tre esercizi di astrofisica nucleare con soluzione svolta: il picco di Gamow di ¹⁴N + p, perché LUNA è sotto terra, e un livello R-matrix del ¹³N da modificare.",
       lead:
-        "Tre problemi brevi per studenti, da un primo corso di fisica nucleare a un corso di dottorato in astrofisica nucleare. Ognuno si risolve con carta, penna e gli strumenti di questo sito, e ha una soluzione svolta da aprire alla fine.",
+        "Problemi brevi per studenti, da un primo corso di fisica nucleare a un corso di dottorato in astrofisica nucleare. Ognuno si risolve con carta, penna e gli strumenti di questo sito, e ha una soluzione svolta da aprire alla fine.",
       howTo:
         "I numeri delle soluzioni non sono scritti a mano: sono calcolati quando il sito viene generato, con le masse AME2020 e le formule dell'atlante e dell'esploratore dei tassi, oppure sono risultati di AZURE2 sulla valutazione del ¹³N, oppure sono citati. Arrotondali pure: è il ragionamento che conta.",
       contents: "Gli esercizi",
@@ -152,7 +154,7 @@ Prendi:
 | χ², LUNA HPGe (${t.chi2.lunaHpge.points} punti) | ${n(t.chi2.lunaHpge.before)} | ${n(t.chi2.lunaHpge.after)} | |
 
 Il picco e la larghezza si comportano come prevede la formula a un livello. Il χ²/N del fit pubblicato è già molto sopra 1 su questa pagina, che non include nel fit le normalizzazioni dei dati (la pagina spiega perché): conta la variazione, non il valore assoluto. E la variazione è enorme: i dati fissano $\\Gamma_p$ molto meglio dei 6 keV di cui l'hai spostata.
-4. I dati LUNA stanno sul fianco di bassa energia della risonanza, dove il fattore $S$ sale del 10–14% circa (a 300 keV da 6,72 a 7,64 keV b), e hanno incertezze intorno all'1%: ogni punto si sposta di una decina di deviazioni standard, e il χ² cresce col quadrato dello scarto. Alle energie stellari, invece, il fattore $S$ cresce solo del ${pct(t.sfactor.at24keV.before, t.sfactor.at24keV.after).replace(/[+ %]/g, "")}%, non del 18%: lì non c'è solo la coda della risonanza ma anche la cattura diretta, che non dipende da $\\Gamma_p$, e le due ampiezze si sommano (interferiscono) prima di elevare al quadrato. Cresce solo la parte risonante.
+4. I dati LUNA stanno sul fianco di bassa energia della risonanza, dove il fattore $S$ sale del 10–14% circa (a 300 keV da 6,72 a 7,64 keV b), e hanno incertezze intorno all'1%: in media ogni punto si sposta di circa ${sigmas} deviazioni standard (la radice di Δχ²/N), e il χ² cresce col quadrato dello scarto. Alle energie stellari, invece, il fattore $S$ cresce solo del ${pct(t.sfactor.at24keV.before, t.sfactor.at24keV.after).replace(/[+ %]/g, "")}%, non del 18%: lì non c'è solo la coda della risonanza ma anche la cattura diretta, che non dipende da $\\Gamma_p$, e le due ampiezze si sommano (interferiscono) prima di elevare al quadrato. Cresce solo la parte risonante.
 5. Con l'energia spostata di 5 keV il χ² di tutti i dati arriva a ${n(t.energyShift.chi2All)}, più che cambiando la larghezza: sui fianchi ripidi di una risonanza larga ${t.level.gammaP_keV} keV, spostarla di 5 keV cambia il fattore $S$ di molte volte l'incertezza dei dati misurati lì. Per questo l'energia di una risonanza ben misurata è il parametro più vincolato di un fit R-matrix.`,
         },
       ] satisfies Section[],
@@ -171,7 +173,7 @@ Il picco e la larghezza si comportano come prevede la formula a un livello. Il �
     description:
       "Three nuclear-astrophysics exercises with worked solutions: the Gamow peak of ¹⁴N + p, why LUNA is underground, and an R-matrix level of ¹³N to change.",
     lead:
-      "Three short problems for students, from a first course in nuclear physics to a PhD course in nuclear astrophysics. Each is solved with pen, paper and the tools of this site, and has a worked solution to open at the end.",
+      "Short problems for students, from a first course in nuclear physics to a PhD course in nuclear astrophysics. Each is solved with pen, paper and the tools of this site, and has a worked solution to open at the end.",
     howTo:
       "The numbers in the solutions are not typed in: they are computed when the site is built, from the AME2020 masses and the formulas the atlas and the rate explorer use, or they are AZURE2 results on the ¹³N evaluation, or they are cited. Round them as you like: the reasoning is what counts.",
     contents: "The exercises",
@@ -245,7 +247,7 @@ Take:
 | χ², LUNA HPGe (${t.chi2.lunaHpge.points} points) | ${n(t.chi2.lunaHpge.before)} | ${n(t.chi2.lunaHpge.after)} | |
 
 The peak and the width do what the one-level formula says. The published fit's χ²/N is already far above 1 on this page, which does not refit the data's normalizations (the page explains why): what counts is the change, not the absolute value. And the change is huge: the data fix $\\Gamma_p$ far more tightly than the 6 keV you moved it by.
-4. The LUNA data sit on the low-energy flank of the resonance, where the $S$-factor rises by some 10–14% (at 300 keV from 6.72 to 7.64 keV b), and their uncertainties are around 1%: every point moves by about ten standard deviations, and the χ² grows with the square of the shift. At stellar energies, though, the $S$-factor grows by only ${pct(t.sfactor.at24keV.before, t.sfactor.at24keV.after).replace(/[+ %]/g, "")}%, not 18%: there it is not only the resonance's tail but also direct capture, which does not depend on $\\Gamma_p$, and the two amplitudes add (interfere) before they are squared. Only the resonant part grows.
+4. The LUNA data sit on the low-energy flank of the resonance, where the $S$-factor rises by some 10–14% (at 300 keV from 6.72 to 7.64 keV b), and their uncertainties are around 1%: on average every point moves by about ${sigmas} standard deviations (the square root of Δχ²/N), and the χ² grows with the square of the shift. At stellar energies, though, the $S$-factor grows by only ${pct(t.sfactor.at24keV.before, t.sfactor.at24keV.after).replace(/[+ %]/g, "")}%, not 18%: there it is not only the resonance's tail but also direct capture, which does not depend on $\\Gamma_p$, and the two amplitudes add (interfere) before they are squared. Only the resonant part grows.
 5. With the energy moved by 5 keV the χ² of all the data reaches ${n(t.energyShift.chi2All)}, more than for the change of width: on the steep flanks of a resonance ${t.level.gammaP_keV} keV wide, moving it by 5 keV changes the $S$-factor by many times the uncertainty of the data measured there. That is why the energy of a well-measured resonance is the most tightly constrained parameter of an R-matrix fit.`,
       },
     ] satisfies Section[],
