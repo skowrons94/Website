@@ -38,7 +38,12 @@ details: >-
   ⁷Be target implanted at ISOLDE, covered neutron energies from thermal up to about
   325 keV. Its cross section is higher than the evaluations at low energy and
   agrees with values inferred from the time-reversed ⁷Li(p,n)⁷Be reaction, but
-  the change reduces the predicted primordial lithium only slightly.
+  the change reduces the predicted primordial lithium only slightly. A Trojan
+  Horse measurement with a ⁷Be beam (Hayakawa et al. 2021) separated the
+  (n,p₀) and (n,p₁) channels and quantified the transition to the first
+  excited state of ⁷Li at BBN energies for the first time; including it lowers
+  the predicted ⁷Li by about a tenth, still far from the factor of about three
+  that the lithium problem needs.
 status: improving
 status_note: >-
   Time-of-flight data now cover the BBN energies; the higher cross section they
@@ -47,7 +52,7 @@ status_note_it: >-
   I dati a tempo di volo coprono ora le energie della nucleosintesi primordiale;
   la sezione d'urto più alta che danno è ben lontana dal bastare a risolvere il
   problema del litio.
-methods: [neutron-beams]
+methods: [neutron-beams, thm]
 measurements:
   - year: 1988
     facility: other
@@ -71,9 +76,21 @@ measurements:
       low energy and agrees with ⁷Li(p,n)⁷Be data. The effect on the lithium
       problem is minor.
     refs: [damone2018]
+  - year: 2021
+    facility: other
+    lab: "CRIB radioactive-beam separator, Japan"
+    method: thm
+    energy: "BBN energies (via ⁷Be(d,⁷Li p)¹H and ⁷Be(d,αα)¹H)"
+    energy_it: "energie della nucleosintesi primordiale (tramite ⁷Be(d,⁷Li p)¹H e ⁷Be(d,αα)¹H)"
+    note: >-
+      Trojan Horse measurement of ⁷Be(n,p)⁷Li and ⁷Be(n,α)⁴He at the same time;
+      an improved (n,p₀) cross section and the first quantification of the
+      (n,p₁) channel in the BBN energy region, which in the PRIMAT code lowers
+      the predicted ⁷Li by about a tenth.
+    refs: [hayakawa2021]
 evaluations: [descouvemont2004, iliadis2020]
 open_questions:
-  - The contribution of transitions to the first excited state of ⁷Li at BBN energies, which the total cross-section measurements of 1988 and 2018 do not separate.
+  - The contribution of transitions to the first excited state of ⁷Li at BBN energies, which the total cross-section measurements of 1988 and 2018 do not separate; the 2021 Trojan Horse data give a first value, still to be confirmed by a direct measurement.
 open_questions_it:
-  - "Il contributo delle transizioni al primo stato eccitato del ⁷Li alle energie della nucleosintesi primordiale, che le misure della sezione d'urto totale del 1988 e del 2018 non separano."
+  - "Il contributo delle transizioni al primo stato eccitato del ⁷Li alle energie della nucleosintesi primordiale, che le misure della sezione d'urto totale del 1988 e del 2018 non separano; i dati del cavallo di Troia del 2021 ne danno un primo valore, ancora da confermare con una misura diretta."
 related: [3He-ag-7Be, 7Be-ec-7Li, 7Li-pa-4He]
