@@ -1,10 +1,10 @@
 ---
-title: Where radiative capture actually happens
+title: Where radiative capture happens
 summary: >-
   Not every capture γ-ray is emitted by a compound nucleus. Two amplitudes —
   one from inside the channel radius, one from outside it — add coherently, and
   keeping them straight requires knowing exactly how a reaction is decomposed into
-  pathways. Carbon-12(α,γ)oxygen-16 as the example.
+  pathways. With ¹²C(α,γ)¹⁶O as the example.
 date: 2026-06-15
 topic: R-matrix theory
 references:
@@ -55,7 +55,7 @@ collected separately before they are weighted and summed.
 **Pathways.** Within a fixed $(s, s')$, one concrete route is a triple
 $(J, \text{entrance channel}, \text{exit channel})$: a definite total angular
 momentum, a definite entrance orbital angular momentum, and a definite exit one.
-This is the level at which the collision matrix is actually computed — each such
+This is the level at which the collision matrix is computed — each such
 route contributes one element, and the observable is a coherent sum over routes
 followed by an incoherent sum over the things that were not measured.
 
@@ -63,7 +63,7 @@ The hierarchy matters here because the external capture amplitude has to be
 enumerated over the same set of routes as the internal one. If a route is counted
 twice, the two amplitudes are added twice, coherently, and the capture cross
 section is inflated by an amount that depends on how much of the total that route
-carried — which is exactly the kind of error that a good $\chi^2$ will absorb into
+carried — the kind of error that a good $\chi^2$ will absorb into
 the fitted widths rather than reveal.
 
 ## The two flavours of external capture
@@ -83,7 +83,7 @@ Two features follow from that being an integral over the outside.
 
 It is **non-resonant**: a smooth function of energy, with no poles, contributing a
 slowly varying background to the S-factor. And it is controlled by the
-**asymptotic normalisation coefficient** of the final state, not by an interior
+**asymptotic normalization coefficient** of the final state, not by an interior
 property: what the integral samples is the tail of the bound-state wave function,
 so a loosely bound final state — a large ANC — gives a large direct-capture
 amplitude. This is why the low-energy capture cross section on light nuclei can be
@@ -146,8 +146,8 @@ The size of the effect is not marginal. For the ground-state transition, doublin
 the channel-capture contribution moves the cross section at
 $E_{\mathrm{c.m.}} \approx 4.9$ MeV from $2.61 \times 10^{-7}$ to
 $6.56 \times 10^{-7}$ barn — a factor 2.5 — and shifts the total-capture excitation
-function by up to 108 %. The dominant single term in that coherent sum has a
-collision-matrix element of order $10^{-4}$ against an external normalisation of
+function by up to 108%. The dominant single term in that coherent sum has a
+collision-matrix element of order $10^{-4}$ against an external normalization of
 about 14; it is the product that matters, and it is comparable to everything else
 combined.
 

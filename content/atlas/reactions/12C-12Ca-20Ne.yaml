@@ -86,7 +86,7 @@ details: >-
   rise is an artefact of the plane-wave approximation used in the analysis
   and disappears when Coulomb–nuclear distortions are included; the direct
   coincidence data of Tan et al. (2020) disagree strongly with the Trojan
-  Horse result. LUNA is preparing a direct measurement of the γ rays from
+  Horse result. LUNA is preparing a direct measurement of the γ-rays from
   the α and p channels at the underground Bellotti Ion Beam Facility, with an
   HPGe detector inside an active NaI(Tl) veto (Gesuè et al. 2025).
 status: uncertain
@@ -110,7 +110,7 @@ measurements:
     energy_it: "fino a E ≈ 2,5 MeV"
     note: >-
       Early measurements of the α and p channels, by charged-particle or
-      γ-ray spectroscopy (High and Čujec recorded the γ rays at 90° and
+      γ-ray spectroscopy (High and Čujec recorded the γ-rays at 90° and
       270°; Becker et al. detected the particles); together they covered
       the cross section down to about 2.5 MeV.
     refs: [patterson1969, mazarakis1973, high1977, becker1981]
@@ -169,7 +169,7 @@ measurements:
     energy_it: "¹²C + ¹³C fino a E = 2,32 MeV"
     note: >-
       Not ¹²C + ¹²C itself: ¹²C(¹³C,p)²⁴Na measured by counting the ²⁴Na
-      activity in an underground counting laboratory. Models normalised to
+      activity in an underground counting laboratory. Models normalized to
       these data give an upper limit on the non-resonant ¹²C + ¹²C cross
       section at stellar energies and argue against the S-factor maximum of
       the hindrance model.

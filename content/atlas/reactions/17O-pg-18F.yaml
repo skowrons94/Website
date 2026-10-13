@@ -42,7 +42,7 @@ details: >-
   value adopted from indirect data.
 status: improving
 status_note: >-
-  The nova-relevant resonance is measured directly to about 7 %; at lower
+  The nova-relevant resonance is measured directly to about 7%; at lower
   temperatures the 64.5 keV resonance, measured directly only once, and the
   direct-capture component dominate the uncertainty.
 status_note_it: >-
@@ -111,7 +111,7 @@ measurements:
     note: >-
       Full analysis of the LUNA campaign with prompt γ-ray detection and
       activation; recommended rate with which the oxygen and fluorine isotopes
-      ejected by novae are predicted to about 10 %.
+      ejected by novae are predicted to about 10%.
     refs: [dileva2014]
   - year: 2015
     facility: tunl-lena

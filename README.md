@@ -31,6 +31,8 @@ CORS configuration anywhere and nothing to point at anything else.
 Adding an R-matrix evaluation: [docs/ADDING-AN-EVALUATION.md](docs/ADDING-AN-EVALUATION.md)
 (`make add-evaluation ID=… AZR=…`).
 
+Writing text for the site: the house style is [docs/STYLE.md](docs/STYLE.md).
+
 ## Deploying
 
 Requires a host with Docker and Compose, and the domain's A/AAAA records

@@ -55,9 +55,9 @@ const TEXT = {
     // --- rates ---
     whatIf: "What if the sources and poisons were different?",
     whatIfText:
-      "Scale ¹³C(α,n), ²²Ne(α,n), the neutron poisons and the iron seed, and watch the neutron exposure and the isotopes from iron to bismuth change, in a network calculated in your browser.",
+      "Scale ¹³C(α,n), ²²Ne(α,n), the neutron poisons and the iron seed, and see the neutron exposure and the isotopes from iron to bismuth change, in a network calculated in your browser.",
     pathNote: (nodes: number, sOnly: number) =>
-      `The path is computed by this site from the NUBASE2020 half-lives and AME2020 masses with one simple rule: a nucleus that lives longer than a year captures a neutron, one that lives less decays (by β⁻ where the masses allow, by electron capture otherwise), and at the classic branch points it does both. Where a short-lived nucleus decays both ways (⁶⁴Cu, ¹²⁸I, ¹⁵²Eu, ¹⁶⁴Ho), both arms are drawn, a weak one dashed; ¹⁶³Dy, stable in the laboratory, decays to ¹⁶³Ho only in the hot, ionised star, and is drawn so. It visits ${nodes} nuclides; ${sOnly} stable nuclei on it are shielded from the r-process by a stable isobar of lower Z, among them ¹⁵²Gd and ¹⁶⁴Er. ¹⁴⁸Nd, ¹⁸⁶W and ⁹⁶Zr, usually counted as r-only, drop out of that class here only because the branches at ¹⁴⁷Nd, ¹⁸⁵W and ⁹⁵Zr are drawn. Real stellar half-lives and neutron densities move the branchings; the rule shows the shape, not the abundances.`,
+      `The path is computed by this site from the NUBASE2020 half-lives and AME2020 masses with one simple rule: a nucleus that lives longer than a year captures a neutron, one that lives less decays (by β⁻ where the masses allow, by electron capture otherwise), and at the classic branch points it does both. Where a short-lived nucleus decays both ways (⁶⁴Cu, ¹²⁸I, ¹⁵²Eu, ¹⁶⁴Ho), both arms are drawn, a weak one dashed; ¹⁶³Dy, stable in the laboratory, decays to ¹⁶³Ho only in the hot, ionized star, and is drawn so. It visits ${nodes} nuclides; ${sOnly} stable nuclei on it are shielded from the r-process by a stable isobar of lower Z, among them ¹⁵²Gd and ¹⁶⁴Er. ¹⁴⁸Nd, ¹⁸⁶W and ⁹⁶Zr, usually counted as r-only, drop out of that class here only because the branches at ¹⁴⁷Nd, ¹⁸⁵W and ⁹⁵Zr are drawn. Real stellar half-lives and neutron densities move the branchings; the rule shows the shape, not the abundances.`,
   },
   it: {
     eyebrow: "Atlante delle reazioni",
@@ -540,7 +540,7 @@ function BodyEn({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
             The <b>main component</b>, which makes most s-process nuclei heavier than strontium, comes from
             low-mass {term("agb-star", "AGB stars")}. After each {term("thermal-pulse", "thermal pulse")}, a helium flash
             in the shell around the core, some protons are mixed down into the helium-rich layer and form a thin{" "}
-            {term("c13-pocket", "¹³C pocket")}. Between pulses <Sci>¹³C</Sci> burns there quietly by {r("13C-an-16O")}, at a
+            {term("c13-pocket", "¹³C pocket")}. Between pulses <Sci>¹³C</Sci> burns there steadily by {r("13C-an-16O")}, at a
             thermal energy kT of about 8 keV; the next pulse, reaching about 270 million kelvin (kT ≈ 23 keV), briefly
             ignites {r("22Ne-an-25Mg")} as well, with a higher neutron density {c("straniero2006", "kaeppeler2011")}. Where
             the pocket also holds <Sci>¹⁴N</Sci>, the reaction {r("14N-np-14C")} steals neutrons from the iron: it is a strong{" "}
@@ -588,7 +588,7 @@ function BodyEn({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
             In 1952 Paul Merrill found lines of technetium in the spectra of red giants of class S{" "}
             {c("merrill1952")}. Technetium has no stable isotope, and even its longest-lived ones last a few million
             years, far less than the age of these stars: it had been made inside them, recently. It was the first
-            direct proof that stars build elements, and the s-process makes <Sci>⁹⁹Tc</Sci> on its way{" "}
+            direct sign that stars make elements, and the s-process makes <Sci>⁹⁹Tc</Sci> on its way{" "}
             {c("kaeppeler2011")}.
           </P>
           <P>
@@ -677,7 +677,7 @@ function BodyEn({ c, term, r, f, prose, P, insets, lang }: BodyProps) {
           <P>
             Everything on this page rests on laboratory measurements of how readily each nucleus captures a
             neutron at the energies neutrons have inside a star, around 30 keV, the energy of a gas at about 350
-            million degrees. Two kinds of experiment measure it: one times the flight of each neutron, the other
+            million kelvin. Two kinds of experiment measure it: one times the flight of each neutron, the other
             irradiates a sample and counts what it has become.
           </P>
         </div>

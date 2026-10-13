@@ -64,8 +64,8 @@ measurements:
     energy_it: "110–650 keV (laboratorio)"
     note: >-
       Total cross sections of both channels from a simultaneous fit of angular
-      distributions and normalization data, with about 2 % uncertainty and a
-      1 % scale error; the resulting rates are about 7 % above NACRE.
+      distributions and normalization data, with about 2% uncertainty and a
+      1% scale error; the resulting rates are about 7% above NACRE.
     refs: [leonard2006]
   - year: 2014
     method: thm

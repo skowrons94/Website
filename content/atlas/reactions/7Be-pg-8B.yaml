@@ -48,7 +48,7 @@ details: >-
 status: improving
 status_note: >-
   The best experiments, all with radioactive ⁷Be targets, differ by up to
-  about 15 %, and extending their data to solar energies adds an uncertainty
+  about 15%, and extending their data to solar energies adds an uncertainty
   of similar size.
 status_note_it: >-
   I migliori esperimenti, tutti con bersagli radioattivi di ⁷Be, differiscono
@@ -85,7 +85,7 @@ measurements:
     note: >-
       Two independent measurements with different beam conditions, targets and
       detectors, in agreement with each other; the extrapolated S(0) is
-      15–20 % below the value recommended at the time.
+      15–20% below the value recommended at the time.
     refs: [hammache1998]
   - year: 2001
     facility: csnsm-orsay
@@ -136,7 +136,7 @@ measurements:
 evaluations: [adelberger2011, acharya2025]
 open_questions:
   - The theoretical energy dependence used to extrapolate the direct data to solar energies.
-  - The spread of about 15 % between the S(0) values of the modern direct experiments.
+  - The spread of about 15% between the S(0) values of the modern direct experiments.
 open_questions_it:
   - "L'andamento in energia teorico usato per estrapolare i dati diretti alle energie solari."
   - "La dispersione di circa il 15 % tra i valori di S(0) degli esperimenti diretti moderni."

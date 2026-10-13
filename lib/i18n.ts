@@ -43,7 +43,7 @@ const dataExpertEn = {
   attribution: {
     exfor: "Data: EXFOR (IAEA/NRDC), snapshot {date}, CC BY 4.0",
     cite: "Cite the original papers and N. Otuka et al., Nucl. Data Sheets 120, 272 (2014).",
-    changes: "Converted from EXFOR by this site: units normalised, lab and c.m. energies both given (AME2020 masses), extrapolated rows set apart, large sets thinned for display.",
+    changes: "Converted from EXFOR by this site: units normalized, lab and c.m. energies both given (AME2020 masses), extrapolated rows set apart, large sets thinned for display.",
     entries: "EXFOR entries",
     ensdf: "Levels: ENSDF (NNDC for the NSDD network), archive of {date}; evaluation of {nuclide}: {citation}, literature cutoff {cutoff}.",
     licence: "licence",
@@ -51,7 +51,7 @@ const dataExpertEn = {
   },
   panel: {
     title: "Measurements (EXFOR)",
-    intro: "Every dataset EXFOR holds for this reaction, drawn by the energies it covers, against the energies a star actually uses.",
+    intro: "Every dataset EXFOR holds for this reaction, drawn by the energies it covers, against the energies a star uses.",
     counts: "{n} datasets in {e} EXFOR entries, {years}",
     noEnergy: "{n} without an energy range, not drawn",
     temperature: "Temperature",
@@ -101,7 +101,7 @@ const dataExpertEn = {
   },
   table: {
     title: "Who measured what, where, when",
-    caption: "Datasets of {reaction} in EXFOR. Select rows to plot and export them.",
+    caption: "Datasets of {reaction} in EXFOR. Choose rows to plot and export them.",
     filter: "Filter",
     search: "Author, laboratory or EXFOR id",
     quantity: "Quantity",
@@ -153,7 +153,7 @@ const dataExpertEn = {
     eAxis: "E_cm (MeV)",
     converted: "σ and S are converted into each other with 2πη from E_cm and the AME2020 reduced mass; the table says which one EXFOR gives.",
     hover: "Point at a dataset in the plot or the table to pick it out.",
-    nothing: "Select datasets with an angle-integrated cross section or S-factor to plot them.",
+    nothing: "Choose datasets with an angle-integrated cross section or S-factor to plot them.",
     evaluation: "R-matrix fit, evaluation {id}",
     evaluationLoading: "Loading the fit of evaluation {id}…",
     window: "Gamow window, {T}",
@@ -186,7 +186,7 @@ const dataExpertEn = {
     errPoint: "stat ⊕ point-wise sys",
     errStat: "statistical",
     errTotal: "total",
-    nothingSelected: "Select at least one dataset.",
+    nothingSelected: "Choose at least one dataset.",
     preparing: "Preparing…",
     done: "{n} files",
     skipped: "{n} datasets have no AZURE2 segment (see README.txt).",
@@ -594,7 +594,7 @@ const en = {
     descriptions: {
       research: "Underground measurements, R-matrix theory, γ\u2011ray tracking",
       atlas: "The reactions that power stars, on the chart of nuclides",
-      evaluations: "Live R-matrix fits you can adjust",
+      evaluations: "Live R-matrix fits you can change and rerun",
       publications: "Articles and conference proceedings",
       cv: "Employment, education, talks and teaching",
       software: "AZURE2, LunaSRIM and other code",
@@ -602,7 +602,7 @@ const en = {
       glossary: "The words the atlas uses, in plain language",
       methods: "How reactions are measured, and where",
       timeline: "A century of nuclear astrophysics",
-      sProcess: "How stars make half the heavy elements",
+      sProcess: "How stars make about half the nuclei heavier than iron",
     },
     breadcrumb: "Breadcrumb",
     // --- rates ---
@@ -613,7 +613,7 @@ const en = {
     aboutDescription: "How it was made and checked, its data, how to cite it",
     // --- r13 final ---
     curiosities: "Rate curiosities",
-    curiositiesDescription: "What a reaction twice as fast would change, in sixteen sentences",
+    curiositiesDescription: "What a reaction twice as fast would change, one sentence at a time",
     // --- data public ---
     data: "Nuclear data",
     dataDescription: "What has been measured, and what nobody has measured yet",
@@ -675,7 +675,7 @@ const en = {
     error: "The search index could not be loaded. Try again later.",
     // Plain strings with {q} and {n}, not functions: the search dialog is a
     // client component and gets these as props from the server.
-    none: "Nothing found for “{q}”.",
+    none: "No results for “{q}”. Try a reaction, a term or a laboratory.",
     countOne: "1 result",
     countMany: "{n} results",
     suggestions: "Go to",
@@ -722,12 +722,12 @@ const en = {
   },
   notFound: {
     title: "Page not found",
-    lead: "There is nothing at this address. It may have moved, or the link may be mistyped. One of these may be what you were looking for:",
+    lead: "There is nothing at this address: the page may have moved, or the link may be mistyped. Try one of these:",
     places: [
-      { href: "/", label: "Home", text: "Who I am and what I work on." },
-      { href: "/atlas", label: "Reaction atlas", text: "The nuclear reactions that power stars, on the chart of nuclides." },
-      { href: "/research", label: "Research", text: "Underground measurements, R-matrix theory and more." },
-      { href: "/publications", label: "Publications", text: "Articles and conference proceedings." },
+      { href: "/", label: "Home", text: "Who I am and what I work on" },
+      { href: "/atlas", label: "Reaction atlas", text: "The nuclear reactions that power stars, on the chart of nuclides" },
+      { href: "/research", label: "Research", text: "Underground measurements, R-matrix theory and more" },
+      { href: "/publications", label: "Publications", text: "Articles and conference proceedings" },
     ],
   },
 
@@ -744,7 +744,7 @@ const en = {
     openAtlas: "Open the atlas",
     evaluationsTitle: "R-matrix evaluations, live",
     evaluationsText:
-      "Evaluations from published and forthcoming work, running the real AZURE2 code. Open a compound nucleus, look at its level scheme and the data it was fitted to, move a level energy or a reduced width, and watch the cross section and the χ² respond. Nothing is installed, and the input files can be downloaded and run locally.",
+      "Evaluations from published and forthcoming work, running AZURE2 itself. Open a compound nucleus, look at its level scheme and the data it was fitted to, move a level energy or a reduced width, and see the cross section and the χ² change. There is nothing to install, and the input files can be downloaded and run locally.",
     browseEvaluations: "Browse the evaluations",
     notes: "Notes",
     allNotes: "All notes",
@@ -768,13 +768,13 @@ const en = {
     selectedPapers: "Selected papers",
     // --- site (round 4) ---
     rolesTitle: "Roles and recognition",
-    rolesMore: "All of it in the CV",
+    rolesMore: "Full CV",
     resourcesTitle: "Resources for the community",
-    resourcesLead: "Open, dated and citable: what this site offers anyone working on these reactions.",
+    resourcesLead: "Open, versioned and citable resources for anyone working on these reactions.",
     resourceAtlas: "Reaction atlas",
-    resourceAtlasText: (n: number) => `${n} reactions of stellar burning and the Big Bang on the chart of nuclides: what each does, how well its rate is known, who measured it and how.`,
+    resourceAtlasText: (n: number) => `${n} reactions of stellar burning and the Big Bang, every measurement referenced, and the whole atlas downloadable as one JSON file.`,
     resourceSProcess: "The s-process",
-    resourceSProcessText: "How stars make half the elements heavier than iron, on the chart from iron to bismuth.",
+    resourceSProcessText: "How stars make about half the nuclei heavier than iron, on the chart from iron to bismuth.",
     resourceSProcessMeta: "Part of the atlas, cited as the atlas",
     resourceEvaluations: "R-matrix evaluations",
     resourceEvaluationsText: (n: number) => `${n} published R-matrix evaluations running AZURE2 in the browser, with their input files to download and run locally.`,
@@ -790,17 +790,17 @@ const en = {
     impactBefore: "The atlas, the glossary and the evaluations are also in ",
     impactLink: "Italian",
     impactAfter:
-      ", for students and the public as well as specialists. Outreach so far includes Stelle sulla Terra, nuclear astrophysics for children with disabilities (2024), and courses on nuclear astrophysics for high-school students (PCTO, 2021–2022): ",
-    impactCv: "outreach in the CV",
+      ", for students and the public as well as specialists. Outreach has included Stelle sulla Terra, nuclear astrophysics for children with disabilities (2024), and courses on nuclear astrophysics for high-school students (PCTO, 2021–2022); see ",
+    impactCv: "Outreach in the CV",
     outlookMore: "What comes next →",
     // --- r9 rates ---
-    resourceRates: "Reaction-rate explorer",
+    resourceRates: "Rate explorer",
     resourceRatesText:
-      "The pp chains, CNO, NeNa, MgAl and the s-process. Find the slowest step at a stellar site, change a rate and watch the abundances respond, computed in your browser from JINA REACLIB.",
+      "The pp chains, CNO, NeNa, MgAl and the s-process. Find the slowest step at a stellar site, change a rate and see how the abundances change, computed in your browser from JINA REACLIB.",
     resourceRatesSources: "Sources",
     // --- r13 final ---
     resourceRatesCuriosities: (n: number) => `${n} curiosities`,
-    resourceRatesLink: "See where a rate ends up: the rate explorer",
+    resourceRatesLink: "Where these rates end up: the rate explorer",
     // --- r7 site ---
     // --- data public ---
     resourceData: "Nuclear data explorer",
@@ -829,7 +829,7 @@ const en = {
     title: "Software",
     description:
       "AZURE2, the R-matrix code for nuclear astrophysics; LunaSRIM, SRIM-2013 in pure Python; and LUNA Skills, agent skills for experimental nuclear astrophysics.",
-    lead: "Code I maintain or wrote for the analysis of low-energy nuclear reactions. All of it is open source.",
+    lead: "Code I maintain or have written for analysing low-energy nuclear reactions, all of it open source.",
     version: (v: string) => `version ${v}`,
     licence: (l: string) => `${l} licence`,
     uses: "What it is for",
@@ -844,7 +844,7 @@ const en = {
     description:
       "Peer-reviewed articles and conference proceedings by Jakub Skowronski in experimental nuclear astrophysics.",
     lead: (articles: number, proceedings: number, review: number) =>
-      `${articles} peer-reviewed articles and ${proceedings} conference proceedings${review ? `, and ${review} more submitted or under review` : ""}. A dark rule marks the papers I wrote as first author; a light rule marks my other key papers: those on which I am among the first authors or the corresponding author, and those where my role is given beside the authors.`,
+      `${articles} peer-reviewed articles and ${proceedings} conference proceedings${review ? `, with ${review} more submitted or under review` : ""}. A dark rule marks papers on which I am first author; a light rule marks my other key papers: those on which I am among the first authors or the corresponding author, or where my role is stated beside the author list.`,
     sections: { article: "Research articles", proceedings: "Conference proceedings" } as Record<string, string>,
     // --- site ---
     profiles: "Complete and current lists, with citations:",
@@ -863,7 +863,7 @@ const en = {
     // --- r7 site ---
     /** "First author: 5 articles (Phys. Rev. Lett., 3 × Phys. Rev. C, J. Phys. G), 2 conference proceedings and 1 submitted." */
     firstAuthorSummary: (articles: number, venues: string, proceedings: number, submitted: number) =>
-      `First author: ${articles} ${articles === 1 ? "article" : "articles"}${venues ? ` (${venues})` : ""}, ${proceedings} ${proceedings === 1 ? "conference proceeding" : "conference proceedings"}${submitted ? ` and ${submitted} submitted` : ""}.`,
+      `First author: ${articles} ${articles === 1 ? "article" : "articles"}${venues ? ` (${venues})` : ""}, ${proceedings} ${proceedings === 1 ? "conference paper" : "conference papers"}${submitted ? ` and ${submitted} submitted` : ""}.`,
     firstAuthorTag: "First author",
   },
 
@@ -894,7 +894,7 @@ const en = {
     title: "Notes",
     description:
       "Explanatory notes on R-matrix theory: polarization observables, identical particles, the channel radius, reaction pathways and stellar reaction rates.",
-    lead: "Pieces of R-matrix theory written out properly — the physics first, then a worked example on a real reaction. Written for someone who wants to understand the machinery, not just use it.",
+    lead: "R-matrix theory set out in full: the physics first, then a worked example on a real reaction. For readers who want to understand the machinery, not just use it.",
     seeBefore: "To see the machinery at work, open one of the ",
     seeEvaluations: "live R-matrix evaluations",
     seeMiddle: "; for what the reactions do in stars, see the ",
@@ -909,7 +909,7 @@ const en = {
     contents: "Contents",
     more: "More notes",
     tryTitle: "Try it on a real fit",
-    tryText: "Live AZURE2 evaluations: move a level and watch the cross section respond.",
+    tryText: "Live AZURE2 evaluations: move a level and see the cross section change.",
     reactionsTitle: "The reactions themselves",
     reactionsText: "The reaction atlas: what each reaction does in a star and how it was measured.",
     noteInEnglish: "",
@@ -924,7 +924,7 @@ const en = {
   atlas: {
     name: "Reaction atlas",
     description:
-      "The nuclear reactions that power stars and make the elements: where they sit on the chart of nuclides, how well each is known, and how it was measured.",
+      "Where each reaction that powers stars and makes the elements sits on the chart of nuclides, how well it is known, and how it was measured.",
     title: "The nuclear reactions that make stars shine",
     history: "A history of the field",
     methodsLink: "Methods and laboratories",
@@ -936,7 +936,7 @@ const en = {
       "Reactions in the atlas with at least one measurement published by the LUNA collaboration, with the years of those measurements.",
     timelineCard: "Timeline",
     timelineCardText:
-      "From Eddington's guess in 1920 to the latest underground measurements, with the observations and facilities in between.",
+      "Theory, experiments, observations and laboratories, from 1920 to today, each entry with its reference.",
     methodsCard: "Methods and laboratories",
     methodsCardText: "How a cross section at stellar energies is measured, directly or indirectly, and where.",
     dataCard: "The data",
@@ -959,9 +959,9 @@ const en = {
       " is shared by the positron and the neutrino.",
     ],
     halfLifeOf: "Half-life of",
-    halfLifeLab: "In the laboratory, as a neutral atom. In a star the electron density, and so the rate, differs.",
+    halfLifeLab: "Measured in the laboratory, as a neutral atom; in a star the electron density, and so the rate, differs.",
     halfLifeLabCapture:
-      "In the laboratory. In a star, thermally excited states and ionisation can change it; it decides how often this nucleus decays before it captures a neutron.",
+      "Measured in the laboratory; in a star, thermally excited states and ionization can change it. It decides how often this nucleus decays before it captures a neutron.",
     gamow: "Gamow window",
     gamowNote: ["Peak energy E", "0", " ± half the 1/e width, centre of mass, from the AME2020 masses."],
     thermal: "Thermal energy kT",
@@ -977,7 +977,7 @@ const en = {
     labNotGiven: "Laboratory not given",
     tryTitle: "Try it: an R-matrix evaluation",
     tryText:
-      "An AZURE2 model of this system runs on this site. Change the energies and widths of the levels and watch the fit to the data and the extrapolation to stellar energies follow.",
+      "This system has a live AZURE2 model on this site: change the energies and widths of its levels and see how the fit to the data and the extrapolation to stellar energies change.",
     openEvaluation: ["Open the ", " evaluation →"],
     details: "Details",
     evaluationsTitle: "Evaluations",
@@ -1066,7 +1066,7 @@ const en = {
       "Hover over an arrow for its name and click it for the details, or click a square for the reactions of that nucleus. With a keyboard, Tab reaches the map and the arrow keys move along the reactions of the process on show.",
     closeDetails: "Close details",
     close: "Close",
-    selectArrow: "Select an arrow to see what the reaction does, its energy release and how well it is known.",
+    selectArrow: "Choose an arrow to see what the reaction does, its energy release and how well it is known.",
     decay: "decay",
     panelPending:
       "The entry for this reaction is in preparation. Its place in the network, its energy release and its Gamow window are below.",
@@ -1196,7 +1196,7 @@ const en = {
     /** Said once per translated page, where its first English section begins. */
     englishSections: (_sections: string[]) => "",
     sectionNames: { measurements: "the list of measurements", details: "Details", openQuestions: "Open questions" },
-    thermalPlain: (kT: string, mk: string) => `about ${kT} keV, the energy of a gas at ${mk} million degrees`,
+    thermalPlain: (kT: string, mk: string) => `about ${kT} keV, the energy of a gas at ${mk} million kelvin`,
     thermalBySite: "By stellar site",
     skipToMap: "Skip to the map",
     lunaMountain: "Gran Sasso",

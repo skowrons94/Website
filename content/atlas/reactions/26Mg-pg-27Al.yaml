@@ -29,7 +29,7 @@ role_it: >-
 details: >-
   The rate at hydrogen-burning temperatures is given by narrow resonances. Limata
   et al. (2010) measured the strength of the E_cm = 326 keV resonance at LUNA with
-  a precision higher than previously achieved, as a normalisation reference for
+  a precision higher than previously achieved, as a normalization reference for
   the weaker resonances at lower energies, whose absolute measurement is limited
   by beam-induced background and target stoichiometry.
 status: uncertain
@@ -57,7 +57,7 @@ measurements:
     energy_it: "risonanza a E_cm = 326 keV"
     note: >-
       Resonance strength measured underground, more precise than earlier values,
-      for use as a normalisation reference.
+      for use as a normalization reference.
     refs: [limata2010]
 evaluations: [angulo1999]
 open_questions:

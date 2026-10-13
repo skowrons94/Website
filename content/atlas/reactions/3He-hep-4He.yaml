@@ -39,8 +39,8 @@ details: >-
   uncertainty than any other solar-neutrino flux. The calculation of Marcucci
   et al. (2000) with correlated hyperspherical-harmonics wave functions gave
   an S-factor about 4.5 times the value then used in the standard solar model,
-  with P-wave captures contributing about 40 %. On the observational side, the
-  first phase of SNO set an upper limit of 2.3 × 10⁴ cm⁻² s⁻¹ (90 % C.L.) on
+  with P-wave captures contributing about 40%. On the observational side, the
+  first phase of SNO set an upper limit of 2.3 × 10⁴ cm⁻² s⁻¹ (90% C.L.) on
   the total hep-neutrino flux (Aharmim et al., Astrophys. J. 653, 1545, 2006).
 status: unmeasured
 status_note: >-
@@ -67,7 +67,7 @@ measurements:
       Ab initio calculation with the AV18 two-nucleon and Urbana IX
       three-nucleon interactions; S(0) = 9.64 × 10⁻²⁰ keV b and
       10.1 × 10⁻²⁰ keV b at 10 keV, about 4.5 times the earlier standard value
-      of 2.3 × 10⁻²⁰ keV b. P-wave transitions give about 40 % of the result.
+      of 2.3 × 10⁻²⁰ keV b. P-wave transitions give about 40% of the result.
     refs: [marcucci2000]
 evaluations: [adelberger2011, acharya2025]
 open_questions:

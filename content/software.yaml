@@ -10,7 +10,7 @@ software:
     name: AZURE2
     tagline: The R-matrix code for nuclear astrophysics
     tagline_it: Il codice R-matrix per l'astrofisica nucleare
-    role: Maintainer and lead developer since June 2025
+    role: Maintainer and Lead Developer since June 2025
     role_it: Responsabile e sviluppatore principale da giugno 2025
     summary:
       - >-
@@ -21,8 +21,8 @@ software:
         computes the reaction rate.
       - >-
         It is used for nuclear astrophysics, for nuclear-data evaluation at the
-        IAEA and for ion-beam analysis of materials. Since June 2025 I maintain it and
-        lead its development: analytic gradients for fits and Markov chain Monte
+        IAEA and for ion-beam analysis of materials. I have maintained it and led
+        its development since June 2025: analytic gradients for fits and Markov chain Monte
         Carlo, a reaction-rate integrator, polarization observables,
         identical-particle scattering, the graphical interface and the
         documentation.
@@ -75,14 +75,15 @@ software:
     license: MIT
     summary:
       - >-
-        lunasrim is a re-implementation of SRIM-2013 in Python 3: TRIM, the Monte
+        LunaSRIM (the Python package lunasrim) is a re-implementation of
+        SRIM-2013 in Python 3: TRIM, the Monte
         Carlo transport of ions in matter, and the SR module, which tabulates
         stopping powers, ranges and straggling. Both were reverse engineered from
-        TRIM.exe and SRModule.exe, and lunasrim reproduces them digit for digit,
+        TRIM.exe and SRModule.exe, and LunaSRIM reproduces them digit for digit,
         with the same random numbers, the same arithmetic and the same output
         files.
       - >-
-        It needs no Windows, wine or docker, and has no required dependencies. A
+        It needs no Windows, Wine or Docker and has no required dependencies; a
         web application runs it in the browser.
     summary_it:
       - >-
@@ -139,13 +140,11 @@ software:
         Skills format, covering low-energy reaction measurements and γ-ray
         spectroscopy from the raw spectra to a published paper and a talk. Each
         skill is a folder with its instructions and, where needed, scripts and
-        reference material; the analysis skills ship an offline demo that must
-        print PASS.
+        reference material; each analysis skill ships an offline self-test that
+        must print PASS.
       - >-
-        I think AI will soon be part of how research is done: it lets a
-        researcher spend more time on physics and reach for tools well beyond
-        their own field. These skills are how I use it, shared so others can
-        too.
+        These are the skills I use in my own analyses, shared so that others can
+        use them too.
     summary_it:
       - >-
         Un insieme di skill per Claude Code e per gli altri agenti che usano il

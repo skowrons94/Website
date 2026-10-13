@@ -44,7 +44,7 @@ terms:
     text: >-
       Physicists write a reaction as target(in,out)product. ¹⁴N(p,γ)¹⁵O reads:
       a nitrogen‑14 nucleus (the target) captures a proton (p, what comes in)
-      and becomes oxygen‑15 (the product), giving off a γ-ray (γ, what comes
+      and becomes oxygen‑15 (the product), giving off a gamma ray (γ, what comes
       out). The small number before the symbol is the mass number, the count
       of protons and neutrons. Common particles have short names: p for a
       proton, n for a neutron, d for a deuteron (a proton and a neutron), α
@@ -180,7 +180,7 @@ terms:
     also: Gamow peak, E₀
     also_it: picco di Gamow, E₀
     text: >-
-      The narrow band of energies at which a reaction actually happens in a
+      The narrow band of energies at which a reaction happens in a
       star. Fast nuclei are rare in a hot gas, but slow ones almost never get
       through the electric repulsion; the product of the two is a peak, at an
       energy well above the typical thermal one. For ¹⁴N + p at the centre of
@@ -227,7 +227,7 @@ terms:
       A nucleus, like an atom, can exist only at certain energies. The lowest
       is the ground state; the others are excited states, which usually give
       up their extra energy within a tiny fraction of a second by emitting a
-      γ ray or a particle. Each nucleus has its own pattern of levels, and the
+      γ-ray or a particle. Each nucleus has its own pattern of levels, and the
       ones just above the energy at which two nuclei can merge decide where a
       reaction has resonances.
     text_it: >-
@@ -246,7 +246,7 @@ terms:
       The nucleus formed for a moment when two nuclei merge: a proton and
       nitrogen‑14 form oxygen‑15, two carbon nuclei form magnesium‑24. It is
       born in an excited state and at once gets rid of the extra energy, by
-      emitting a γ ray (a capture) or by breaking up into other particles.
+      emitting a γ-ray (a capture) or by breaking up into other particles.
       Which way it decays does not depend on how it was formed, only on its
       energy and its other properties.
     text_it: >-
@@ -424,7 +424,7 @@ terms:
       The time after which half of a sample of a radioactive nucleus has
       decayed. It ranges from fractions of a second to billions of years. The
       atlas takes half-lives from the NUBASE2020 evaluation; in a star, where
-      the atoms are ionised, a half-life that depends on electrons (electron
+      the atoms are ionized, a half-life that depends on electrons (electron
       capture) can be different.
     text_it: >-
       Il tempo dopo il quale metà di un campione di un nucleo radioattivo è
@@ -817,7 +817,7 @@ terms:
     see: [s-factor, resonance, anc]
 
   - id: anc
-    term: Asymptotic normalisation coefficient
+    term: Asymptotic normalization coefficient
     term_it: Coefficiente di normalizzazione asintotica
     also: ANC
     text: >-
@@ -875,7 +875,7 @@ terms:
     also_it: Γ, γ²
     text: >-
       How readily a level decays through one channel, for example by
-      emitting a proton or a γ ray. The partial width Γ is an energy (eV,
+      emitting a proton or a γ-ray. The partial width Γ is an energy (eV,
       keV): the larger it is, the faster that decay and the broader the
       resonance; the widths of all channels add up to the level's total
       width. The reduced width γ² is the same quantity with the
@@ -898,11 +898,11 @@ terms:
     term: Particle–γ coincidence
     term_it: Coincidenza particella–γ
     text: >-
-      Recording a particle and a γ ray only when they arrive together, within
+      Recording a particle and a γ-ray only when they arrive together, within
       a few billionths of a second. A real reaction often gives both, a
-      proton and the γ ray of the nucleus left behind, while most background
+      proton and the γ-ray of the nucleus left behind, while most background
       gives only one; requiring the two together removes most of the
-      background, at the cost of missing the decays that give no γ ray.
+      background, at the cost of missing the decays that give no γ-ray.
     text_it: >-
       Registrare una particella e un raggio γ solo quando arrivano insieme,
       entro pochi miliardesimi di secondo. Una reazione vera dà spesso
@@ -912,7 +912,7 @@ terms:
     see: [cross-section]
 
   - id: normalisation
-    term: Normalisation
+    term: Normalization
     term_it: Normalizzazione
     also: scale factor, systematic uncertainty
     also_it: fattore di scala, incertezza sistematica
@@ -920,7 +920,7 @@ terms:
       Every measured data set carries an overall scale uncertainty, from the
       beam current, the number of target nuclei or the detector efficiency,
       which moves all its points up or down together. In a fit such as an
-      R-matrix evaluation each data set may be given a normalisation factor,
+      R-matrix evaluation each data set may be given a normalization factor,
       allowed to move only within its quoted scale uncertainty.
     text_it: >-
       Ogni insieme di dati misurati porta con sé un'incertezza di scala
@@ -963,7 +963,7 @@ terms:
       passes the Coulomb barrier easily. Selecting the events in which the
       rest of the carrier is only a spectator gives the energy dependence of
       the low-energy reaction, without Coulomb suppression or electron
-      screening. The result is normalised to direct data at higher energy.
+      screening. The result is normalized to direct data at higher energy.
     text_it: >-
       Un metodo indiretto. La reazione che interessa è nascosta dentro un'altra
       a energia più alta: il proiettile viene portato dentro da un nucleo più

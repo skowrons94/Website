@@ -35,11 +35,11 @@ details: >-
   states of ¹⁴N, so the total S-factor at low energy rests on R-matrix fits of
   the individual transitions. For a long time a single data set reported all
   transitions. The LUNA measurement extended the data down to E = 60 keV and,
-  together with the later Felsenkeller data, gives S-factors 20–30 % lower than
+  together with the later Felsenkeller data, gives S-factors 20–30% lower than
   the earlier literature.
 status: improving
 status_note: >-
-  Underground data now reach 60 keV with 7–8 % systematic uncertainty; the
+  Underground data now reach 60 keV with 7–8% systematic uncertainty; the
   rate is lower than in the compilations based on the 1994 data, and the
   resonance parameters have been revised.
 status_note_it: >-
@@ -47,7 +47,7 @@ status_note_it: >-
   %; il tasso è più basso che nelle compilazioni basate sui dati del 1994, e i
   parametri delle risonanze sono stati rivisti.
 status_plain: >-
-  Measured underground down to low energies with an uncertainty under 10 %;
+  Measured underground down to low energies with an uncertainty under 10%;
   the rate came out lower than in the older tables.
 status_plain_it: >-
   Misurata sotto terra fino a basse energie con un'incertezza sotto il 10 %;
@@ -69,8 +69,8 @@ measurements:
     energy: "down to 60 keV"
     energy_it: "fino a 60 keV"
     note: >-
-      Prompt γ-ray detection with overall systematic uncertainties of 7–8 %;
-      the S-factor is about 30 % lower than most earlier data.
+      Prompt γ-ray detection with overall systematic uncertainties of 7–8%;
+      the S-factor is about 30% lower than most earlier data.
     refs: [skowronski2023]
   - year: 2025
     facility: felsenkeller
@@ -78,14 +78,14 @@ measurements:
     energy: "310–680 keV (Ep = 330–740 keV)"
     note: >-
       Shallow-underground measurement in direct kinematics. The S-factor
-      agrees with LUNA at low energy and is about 20 % below the earlier
+      agrees with LUNA at low energy and is about 20% below the earlier
       literature over the whole range; new parameters for the two resonances
       and S_tot(0) = 6.4(4) keV b.
     refs: [skowronski2025]
 evaluations: [acharya2025]
 open_questions:
   - The branching of the capture to the excited states of ¹⁴N below 300 keV, where only the LUNA data exist.
-  - The cause of the 20–30 % difference between the recent data and the 1994 data set.
+  - The cause of the 20–30% difference between the recent data and the 1994 data set.
 open_questions_it:
   - "La diramazione della cattura verso gli stati eccitati del ¹⁴N sotto 300 keV, dove esistono solo i dati di LUNA."
   - "La causa della differenza del 20–30 % tra i dati recenti e l'insieme di dati del 1994."

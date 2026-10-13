@@ -99,7 +99,7 @@ measurements:
     energy_it: "risonanze a 65 e 183 keV"
     note: >-
       Improved Trojan-Horse analysis of narrow-resonance strengths; the 65 keV
-      strength was used to renormalise the same resonance in the (p,γ)
+      strength was used to renormalize the same resonance in the (p,γ)
       channel.
     refs: [sergi2015]
   - year: 2016

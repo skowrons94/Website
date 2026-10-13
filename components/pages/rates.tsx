@@ -22,7 +22,7 @@ import { curiosityCards } from "@/lib/rates/curiosity-data"
 const TEXT = {
   en: {
     eyebrow: "Reaction atlas",
-    title: "Reaction rates: how fast, and what if",
+    title: "Reaction rates: how fast, and what if?",
     description:
       "The rates of the pp chains and the CNO, NeNa and MgAl cycles from REACLIB, how long each step takes inside a star, and which nuclei change when a rate does. Calculated in your browser.",
     back: "Reaction atlas",
@@ -56,7 +56,7 @@ function Lead({ lang }: { lang: Lang }) {
   ) : (
     <>
       Every reaction in a star has its own {term("rate", "rate")}, climbing steeply with{" "}
-      {term("temperature", "temperature")}. Pick a site, find the slowest step, then change a rate and see what comes
+      {term("temperature", "temperature")}. Choose a site, find the slowest step, then change a rate and see what comes
       out.
     </>
   )
@@ -111,11 +111,11 @@ function How({ lang }: { lang: Lang }) {
         part, and a hotter gas has many more of them.
       </P>
       <P>
-        A nucleus' waiting time is one over the chance per second that a reaction transforms it: it depends on the rate,
+        A nucleus's waiting time is one over the chance per second that a reaction transforms it: it depends on the rate,
         on the density and on how many partners are around (protons, nearly always). For a decay it is the mean life,
         the {term("half-life", "half-life")} divided by ln 2. In a cycle the slowest step rules:{" "}
         <Sci>{"¹⁴N(p,γ)¹⁵O"}</Sci> in the CNO cycle, the fusion of two protons in the pp chain. Where a nucleus can go
-        two ways the faster one wins, so the slowest step is taken along the path the flow actually follows: in a nova,{" "}
+        two ways the faster one wins, so the slowest step is taken along the path the flow follows: in a nova,{" "}
         <Sci>{"¹³N"}</Sci> captures a proton long before it decays.
       </P>
       <P>

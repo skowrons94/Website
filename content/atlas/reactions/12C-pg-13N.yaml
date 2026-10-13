@@ -34,22 +34,22 @@ details: >-
   At low energy the capture proceeds by direct E1 capture to the ¹³N ground
   state, which interferes with the broad resonance at E = 422 keV formed by the
   first excited state of ¹³N. The S-factor at stellar energies is obtained from
-  R-matrix fits, so the result depends on the normalisation of the data and on
+  R-matrix fits, so the result depends on the normalization of the data and on
   the width of that resonance. Measurements since 2023, prompt-γ and
-  activation, give S-factors about 25 % lower than most of the earlier
+  activation, give S-factors about 25% lower than most of the earlier
   literature. The LUNA data reach E = 60 keV, where the cross section enters the
   energy range of hydrogen burning in the shells of giant stars.
 status: improving
 status_note: >-
-  Direct data now reach 60 keV with systematic uncertainties of 7–8 %; the
-  remaining question is the normalisation difference of about 25 % with
+  Direct data now reach 60 keV with systematic uncertainties of 7–8%; the
+  remaining question is the normalization difference of about 25% with
   respect to the older data sets.
 status_note_it: >-
   I dati diretti arrivano ora a 60 keV con incertezze sistematiche del 7–8 %; la
   questione aperta è la differenza di normalizzazione di circa il 25 % rispetto
   agli insiemi di dati più vecchi.
 status_plain: >-
-  Measured underground down to low energies with an uncertainty under 10 %;
+  Measured underground down to low energies with an uncertainty under 10%;
   the older measurements differ from the new ones by about a quarter
   overall, and why is still an open question.
 status_plain_it: >-
@@ -84,7 +84,7 @@ measurements:
     energy: "320–620 keV"
     note: >-
       Shallow-underground measurement across the 422 keV resonance; S-factor
-      about 25 % below the literature. The R-matrix fit gives the first excited
+      about 25% below the literature. The R-matrix fit gives the first excited
       state of ¹³N at 2369.6(4) keV with Γγ = 0.49(3) eV and Γp = 34.9(2) keV.
     refs: [skowronski2023b]
   - year: 2023
@@ -94,7 +94,7 @@ measurements:
     energy_it: "1,0–2,5 MeV (energia del protone)"
     note: >-
       Absolute cross section over a wide energy range to fix the overall
-      normalisation and the interference between overlapping resonances; the
+      normalization and the interference between overlapping resonances; the
       extrapolation to low energy uses a Bayesian uncertainty analysis.
     refs: [kettner2023]
   - year: 2023
@@ -104,12 +104,12 @@ measurements:
     energy_it: "fino a 60 keV"
     note: >-
       Prompt γ-ray detection and activation, with overall systematic
-      uncertainties of 7–8 %; the S-factor is about 25 % lower than most
+      uncertainties of 7–8%; the S-factor is about 25% lower than most
       earlier data.
     refs: [skowronski2023]
 evaluations: [acharya2025]
 open_questions:
-  - The 25 % normalisation difference between the measurements since 2023 and the older data sets.
+  - The 25% normalization difference between the measurements since 2023 and the older data sets.
   - The radiative width of the 422 keV resonance, which dominates the rate at higher temperatures.
 open_questions_it:
   - "La differenza di normalizzazione del 25 % tra le misure dal 2023 in poi e gli insiemi di dati più vecchi."

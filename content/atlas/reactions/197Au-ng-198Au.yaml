@@ -41,7 +41,7 @@ details: >-
   higher value: at n_TOF, 5–400 keV with C₆D₆ detectors and a total
   uncertainty of 3.9–6.7%, the MACS at 30 keV agrees with ENDF/B-VII.0 and is
   4.7% above the activation value (Lederer et al. 2011); at GELINA, 3.5–84 keV
-  normalised to the saturated 4.9 eV resonance, the results differ by more
+  normalized to the saturated 4.9 eV resonance, the results differ by more
   than 5% from the astrophysical reference (Massimi et al. 2014). The 2017
   evaluation of the IAEA neutron data standards then adopted the
   Maxwellian-averaged cross section at kT = 30 keV as a standard in its own
@@ -88,7 +88,7 @@ measurements:
     energy: "3.5–84 keV (neutron energy)"
     energy_it: "3,5–84 keV (energia del neutrone)"
     note: >-
-      Two C₆D₆ detectors at about 13 m, total energy method, normalised to
+      Two C₆D₆ detectors at about 13 m, total energy method, normalized to
       the 4.9 eV resonance; more than 5% from the astrophysical reference.
     refs: [massimi2014]
 evaluations: [carlson2018, bao2000, dillmann2014, dillmann2008]

@@ -30,8 +30,8 @@ details: >-
   The Maxwellian-averaged cross section of ²²Ne is tiny, but its abundance in
   helium-burning matter makes it a significant poison. It was measured by
   activation together with other noble-gas isotopes in the keV region
-  (Beer et al. 2002) and with the prompt capture γ rays at the Tokyo
-  Institute of Technology, where the discrete γ rays from the capture states
+  (Beer et al. 2002) and with the prompt capture γ-rays at the Tokyo
+  Institute of Technology, where the discrete γ-rays from the capture states
   were observed for the first time and the direct p-wave capture was
   identified (Tomyo et al. 2003). Heil et al. (2014)
   re-analysed the keV resonance data of the three stable neon isotopes with
@@ -65,10 +65,10 @@ measurements:
   - year: 2003
     lab: Tokyo Institute of Technology, 3.2 MV Pelletron
     method: neutron-beams
-    energy: "keV neutrons, prompt capture γ rays"
+    energy: "keV neutrons, prompt capture γ-rays"
     energy_it: "neutroni di qualche keV, raggi γ prompt di cattura"
     note: >-
-      Discrete γ rays from the capture states of ²⁰Ne and ²²Ne observed for
+      Discrete γ-rays from the capture states of ²⁰Ne and ²²Ne observed for
       the first time; non-resonant direct p-wave capture identified; MACS
       larger than earlier values.
     refs: [tomyo2003]

@@ -131,7 +131,7 @@ measurements:
 evaluations: [angulo1999, xu2013, deboer2020]
 open_questions:
   - The ANC and the exact energy of the 1/2⁺ state at 6.356 MeV in ¹⁷O, which control the extrapolation below 230 keV.
-  - Absolute normalisation of the direct data, which depends on target stoichiometry under beam and on the neutron-detection efficiency as a function of neutron energy and angle.
+  - Absolute normalization of the direct data, which depends on target stoichiometry under beam and on the neutron-detection efficiency as a function of neutron energy and angle.
   - Consistent data over a wide energy range, overlapping the underground and surface measurements, to constrain the R-matrix fit.
 open_questions_it:
   - "L'ANC e l'energia esatta dello stato 1/2⁺ a 6,356 MeV nel ¹⁷O, che controllano l'estrapolazione sotto 230 keV."

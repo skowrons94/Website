@@ -31,7 +31,7 @@ details: >-
   charged products can be detected with silicon detectors at the same time as
   the ³He from the mirror channel. Below 10 keV the data show an
   electron-screening enhancement larger than atomic-physics models predict.
-  At BBN energies the TUNL measurement of 2006 gave rates about 7 % above the
+  At BBN energies the TUNL measurement of 2006 gave rates about 7% above the
   NACRE compilation, and a Trojan Horse experiment determined the bare
   S-factor. As for ²H(d,n)³He, the normalization of the data sets at BBN
   energies and the choice of evaluation are the main open issues for
@@ -63,8 +63,8 @@ measurements:
     energy_it: "110–650 keV (laboratorio)"
     note: >-
       Total cross sections of both channels from a simultaneous fit of angular
-      distributions and normalization data, with about 2 % uncertainty and a
-      1 % scale error; the resulting rates are about 7 % above NACRE.
+      distributions and normalization data, with about 2% uncertainty and a
+      1% scale error; the resulting rates are about 7% above NACRE.
     refs: [leonard2006]
   - year: 2014
     method: thm

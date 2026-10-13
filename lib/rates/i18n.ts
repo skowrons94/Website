@@ -44,7 +44,7 @@ const en = {
   million: "million",
   validity: (t: string) =>
     `${t} is outside the temperature range REACLIB fits are made for (0.01–10 GK): treat the rates with care.`,
-  howTo: "Pick a network and a site; drag the temperature; then change a rate and see what changes.",
+  howTo: "Choose a network and a site, drag the temperature, then change a rate and see what follows.",
 
   // the page's story
   step1: "How fast",
@@ -83,9 +83,9 @@ const en = {
   tAxisMK: "million K",
   decaysNote:
     "Not plotted: decays, which hardly depend on temperature (laboratory half-lives), with two exceptions: ²⁶Al, whose short-lived isomer, populated by the heat, speeds up its decay above about 0.1 GK, and ⁷Be's electron capture, which depends on the electron density. All are in the next chart.",
-  pickHint: "Pick up to three reactions to colour (a fourth waits until you free a colour); the others stay grey.",
+  pickHint: "Choose up to three reactions to colour; the others stay grey.",
   scrubHint: "Drag across the chart, or use the slider below it, to change the temperature.",
-  pickFull: "Up to three reactions can be coloured: unpick one to colour another.",
+  pickFull: "Three reactions are already coloured: clear one to colour another.",
   highlight: "Colour",
   now: "now",
   sites: "Sites",
@@ -104,7 +104,7 @@ const en = {
   gamowMB: "how many nuclei",
   gamowTunnel: "chance to tunnel",
   gamowProduct: "reactions",
-  gamowNone: "Pick a reaction between two charged nuclei to see its Gamow peak.",
+  gamowNone: "Choose a reaction between two charged nuclei to see its Gamow peak.",
   gamowLabel: (reaction: string, T: string) =>
     `The Gamow peak of ${reaction} at ${T}: the Maxwell–Boltzmann distribution, the tunnelling probability and their product against energy.`,
 
@@ -129,7 +129,7 @@ const en = {
   burnRef: "burn time",
   sunRef: "age of the Sun",
   unscaled: "unchanged",
-  cycleOnly: "Bottleneck taken along the path the flow actually takes.",
+  cycleOnly: "Bottleneck taken along the path the flow takes.",
   pathNote: (path: string) => `The flow goes ${path}.`,
 
   // the flow ring
@@ -143,7 +143,7 @@ const en = {
   // what if
   whatIfTitle: "What if a rate were different?",
   whatIfLead:
-    "Every rate is known only within an uncertainty, from a few percent to a factor of ten. Choose one, change it, and see which nuclei come out different at the end of the burn.",
+    "Every rate is known only within an uncertainty, from a few per cent to a factor of ten. Choose one, change it, and see which nuclei come out different at the end of the burn.",
   pickReaction: "Choose a reaction to change",
   moreReactionsPick: "Any reaction of the network…",
   yourChanges: "Your changes",
@@ -268,7 +268,7 @@ const en = {
     "Rates are the REACLIB fits themselves, evaluated in your browser. Reverse rates are left out (negligible at these temperatures); nuclei outside the network are inert. Decays of nuclei that NUBASE2020 gives as stable or longer-lived than 10⁸ years are dropped.",
   newerTitle: "Rates with newer data",
   gamowResonances:
-    "The window is where a smooth (non-resonant) cross section reacts most. A narrow resonance inside it dominates instead (²⁴Mg(p,γ) at 300 million K through its 214 keV resonance, ²⁵Mg(p,γ) at 80 million K): the rate then follows the resonance's energy, not the window.",
+    "The window is where a smooth (non-resonant) cross section reacts most. A narrow resonance inside it dominates instead (²⁴Mg(p,γ) at 300 million kelvin through its 214 keV resonance, ²⁵Mg(p,γ) at 80 million kelvin): the rate then follows the resonance's energy, not the window.",
   nowFactor: (f: string) => `now ${f}`,
   luna: {
     title: "Rates from LUNA measurements",
@@ -307,7 +307,7 @@ const en = {
     copied: "Copied",
     all: (n: number) => `All ${n} curiosities`,
     more: "Show three more",
-    whatIf: "×2 is a what-if, not the rate's real uncertainty.",
+    whatIf: "Doubling is a what-if, not the rate's actual uncertainty.",
     status: (label: string) => `How well this rate is known: ${label.toLowerCase()}.`,
     noStatus: "This rate has no atlas page yet: see its source.",
     today: "with today's rate",
@@ -318,7 +318,7 @@ const en = {
     model: "Model",
     indexTitle: "Rate curiosities",
     indexLead:
-      "What a reaction twice as fast would change, in sixteen sentences. Each one comes from a one-zone burn of the rates explorer (a simplified model: one parcel of gas at a set temperature and density, with no mixing), says what it leaves out, and opens the exact calculation with “Try it”.",
+      "What a reaction twice as fast would change, one sentence at a time. Each one comes from a one-zone burn of the rate explorer (a simplified model: one parcel of gas at a set temperature and density, with no mixing), says what it leaves out, and opens the exact calculation with “Try it”.",
     indexHow:
       "The numbers are read from the explorer's precomputed tables (every rate ×2 at each site's own conditions) and checked against a fresh run of the same solver. They are rounded to two significant figures. ×2 is a what-if: how well each rate is really known is given beside it, from the reaction atlas.",
     back: "Reaction rates",
@@ -327,7 +327,7 @@ const en = {
   // -- the s-process explorer --------------------------------------------------
   sp: {
     lightTab: "Light-element networks",
-    lead: "Pick a site, then change a neutron source, a poison or the seed and watch the heavy isotopes move.",
+    lead: "Choose a site, then change a neutron source, a poison or the seed and see how the heavy isotopes change.",
     whatIfLead: "Double or halve a reaction and see which heavy isotopes follow.",
     headline: (site: string, nc: string) => `${site}: about ${nc} neutrons captured by every iron seed.`,
     groups: {

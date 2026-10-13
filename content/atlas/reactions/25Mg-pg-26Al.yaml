@@ -50,7 +50,7 @@ details: >-
   observed the 92 keV resonance directly for the first time with a 4π BGO
   summing detector, ωγ = (2.9 ± 0.6) × 10⁻¹⁰ eV, and studied the γ-ray branchings
   and strength of the 189 keV resonance with an HPGe detector, finding a strength
-  20 % larger than earlier works. The rate derived from these data (Straniero et
+  20% larger than earlier works. The rate derived from these data (Straniero et
   al. 2013) increases the production of the isomer by up to a factor of 5 between
   50 and 150 MK and doubles the total rate at 100 MK, so less ²⁶Al is made in the
   ground state. The JUNA collaboration chose the 92 keV resonance for the first
@@ -99,7 +99,7 @@ measurements:
     energy_it: "risonanza a E_cm = 304 keV"
     note: >-
       Strength of the 304 keV resonance with higher accuracy than before, to
-      serve as a normalisation for the low-energy resonances.
+      serve as a normalization for the low-energy resonances.
     refs: [limata2010]
   - year: 2012
     facility: luna-400
@@ -109,7 +109,7 @@ measurements:
     note: >-
       First direct observation of the 92 keV resonance with a 4π BGO summing
       detector, ωγ = (2.9 ± 0.6) × 10⁻¹⁰ eV. γ-ray branchings and strength of the
-      189 keV resonance with an HPGe detector, 20 % higher than previous values.
+      189 keV resonance with an HPGe detector, 20% higher than previous values.
     refs: [strieder2012]
   - year: 2022
     facility: juna

@@ -31,7 +31,7 @@ export function kev(keV: number | null | undefined, lang: Lang, n = 3): string {
   return dec(sig(keV, n), lang)
 }
 
-/** A share 0–1 as a percentage with sensible precision: 99.97 %, 42 %, 0.3 %, < 0.01 %. */
+/** A share 0–1 as a percentage with sensible precision: 99.97%, 42%, 0.3%, < 0.01% (Italian: 42 %). */
 export function percent(x: number, lang: Lang): string {
   const p = x * 100
   let s: string
@@ -42,7 +42,7 @@ export function percent(x: number, lang: Lang): string {
   else if (p >= 0.01) s = p.toPrecision(1)
   else if (p > 0) s = "< 0.01"
   else s = "0"
-  return `${dec(s, lang)} %`
+  return `${dec(s, lang)}${lang === "it" ? " " : ""}%`
 }
 
 /** T₉ = 0.015 as "T₉ = 0.015 (15 MK)". */

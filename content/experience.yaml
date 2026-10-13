@@ -3,47 +3,47 @@
 # A field ending in `_it` is the Italian version of the field before it (/it/cv).
 
 employment:
-  - period: May 2025 — present
+  - period: May 2025 – present
     period_it: mag 2025 — oggi
     title: Postdoctoral Researcher (research contract)
     title_it: Ricercatore postdoc (contratto di ricerca)
     detail: Università degli Studi di Padova
-  - period: Oct 2023 — May 2025
+  - period: Oct 2023 – May 2025
     period_it: ott 2023 — mag 2025
     title: Postdoctoral Researcher
     title_it: Ricercatore postdoc
     detail: Università degli Studi di Padova
 
 education:
-  - period: Oct 2020 — Dec 2023
+  - period: Oct 2020 – Dec 2023
     period_it: ott 2020 — dic 2023
-    title: Ph.D. in Physics
+    title: PhD in Physics
     title_it: Dottorato di ricerca in Fisica
-    detail: "Università degli Studi di Padova — Advisor: Prof. Antonio Caciolli · Defended 13 December 2023"
+    detail: "Università degli Studi di Padova — Supervisor: Prof. Antonio Caciolli · Defended 13 December 2023"
     detail_it: "Università degli Studi di Padova — Supervisore: Prof. Antonio Caciolli · Discussa il 13 dicembre 2023"
-  - period: Sep 2018 — Sep 2020
+  - period: Sep 2018 – Sep 2020
     period_it: set 2018 — set 2020
-    title: M.Sc. in Physics
+    title: MSc in Physics
     title_it: Laurea magistrale in Fisica
     detail: Università degli Studi di Padova — 110/110
-  - period: Sep 2015 — Dec 2018
+  - period: Sep 2015 – Dec 2018
     period_it: set 2015 — dic 2018
-    title: B.Sc. in Physics
+    title: BSc in Physics
     title_it: Laurea triennale in Fisica
     detail: Università degli Studi di Padova
 
 research:
-  - period: Feb 2020 — present
+  - period: Feb 2020 – present
     period_it: feb 2020 — oggi
-    title: LUNA Experiment
+    title: LUNA experiment
     title_it: Esperimento LUNA
     detail: Laboratori Nazionali del Gran Sasso, INFN, Italy
     detail_it: Laboratori Nazionali del Gran Sasso, INFN, Italia
     bullets:
       - Working Group Leader for the ¹⁹F + p measurement (since 2024); analysis of the ¹²C + p and ¹³C + p experiments
-      - DAQ Coordinator (since 2024) — design, deployment and operation of the data acquisition and slow-control systems across all LUNA campaigns and the new Bellotti IBF facility
+      - DAQ Coordinator (since 2024) — design, deployment and operation of the data acquisition and slow-control systems across all LUNA campaigns and the new Bellotti Ion Beam Facility
       - Calibration of the 3.5 MV Singletron accelerator of the Bellotti Ion Beam Facility
-      - Fine-tuning of the Geant4 simulation for BGO and HPGe setups
+      - Fine-tuning of the Geant4 simulation for BGO and HPGe set-ups
       - R-matrix evaluation for ¹²C + p, ¹³C + p, ²⁰Ne + p and ²²Ne + p reactions
     bullets_it:
       - Coordinatore del gruppo di lavoro per la misura ¹⁹F + p (dal 2024); analisi degli esperimenti ¹²C + p e ¹³C + p
@@ -52,22 +52,22 @@ research:
       - Messa a punto della simulazione Geant4 per gli apparati BGO e HPGe
       - Valutazione R-matrix delle reazioni ¹²C + p, ¹³C + p, ²⁰Ne + p e ²²Ne + p
 
-  - period: Jun 2025 — present
+  - period: Jun 2025 – present
     period_it: giu 2025 — oggi
-    title: AZURE2 R-matrix Code
+    title: AZURE2 R-matrix code
     title_it: Codice R-matrix AZURE2
     detail: Maintainer and Lead Developer
     detail_it: Responsabile e sviluppatore principale
     bullets:
-      - Maintainer of the reference R-matrix code used worldwide by the nuclear astrophysics, IAEA nuclear-data evaluation, and materials-analysis communities
-      - Design and implementation of new features, GUI, and documentation
-      - Support and training for the international user community across academia, national laboratories, and the IAEA
+      - Maintainer of the R-matrix code used worldwide by the nuclear astrophysics, IAEA nuclear-data evaluation and materials-analysis communities
+      - Design and implementation of new features, the GUI and the documentation
+      - Support and training for the international user community across academia, national laboratories and the IAEA
     bullets_it:
       - Responsabile del codice R-matrix di riferimento usato in tutto il mondo dalle comunità dell'astrofisica nucleare, della valutazione dei dati nucleari della IAEA e dell'analisi dei materiali
       - Progettazione e realizzazione di nuove funzionalità, dell'interfaccia grafica e della documentazione
       - Supporto e formazione per la comunità internazionale degli utenti, in università, laboratori nazionali e alla IAEA
 
-  - period: Jun 2024 — present
+  - period: Jun 2024 – present
     period_it: giu 2024 — oggi
     title: CRYRING
     detail: GSI Helmholtzzentrum für Schwerionenforschung, Darmstadt, Germany
@@ -77,20 +77,20 @@ research:
     bullets_it:
       - Studio dell'effetto di schermaggio elettronico con la reazione ¹⁵N + p in cinematica inversa
 
-  - period: Nov 2023 — present
+  - period: Nov 2023 – present
     period_it: nov 2023 — oggi
-    title: AGATA Setup
+    title: AGATA set-up
     title_it: Apparato AGATA
     detail: Laboratori Nazionali di Legnaro, INFN, Italy
     detail_it: Laboratori Nazionali di Legnaro, INFN, Italia
     bullets:
-      - Spokesperson of the sub-femtosecond lifetime measurement of the 6.79 MeV state in ¹⁵O with the AGATA γ-ray tracking array
+      - Spokesperson for the sub-femtosecond lifetime measurement of the 6.79 MeV state in ¹⁵O with the AGATA γ-ray tracking array
       - Led the complete data analysis pipeline (Doppler correction, kinematic reconstruction, Geant4 simulation, Bayesian extraction of the lifetime); manuscript under review at Nature Physics
     bullets_it:
       - Portavoce della misura della vita media, inferiore al femtosecondo, dello stato a 6,79 MeV dell'¹⁵O con il rivelatore a tracciamento di raggi γ AGATA
       - Guida dell'intera catena di analisi dei dati (correzione Doppler, ricostruzione cinematica, simulazione Geant4, estrazione bayesiana della vita media); manoscritto in revisione presso Nature Physics
 
-  - period: Feb 2024 — Mar 2024
+  - period: Feb 2024 – Mar 2024
     period_it: feb 2024 — mar 2024
     title: Dalton Cumbrian Facility
     detail: Westlakes Science Park, Moor Row, UK
@@ -100,30 +100,30 @@ research:
     bullets_it:
       - Calibrazione in energia dell'acceleratore Pelletron da 2,5 MV
 
-  - period: Oct 2020 — May 2023
+  - period: Oct 2020 – May 2023
     period_it: ott 2020 — mag 2023
-    title: HEAT Experiment
+    title: HEAT experiment
     title_it: Esperimento HEAT
     detail: Laboratori Nazionali di Legnaro, INFN, Italy
     detail_it: Laboratori Nazionali di Legnaro, INFN, Italia
     bullets:
-      - Studies of hydrogen desorption in carbon targets through Ion Beam Analysis
+      - Study of hydrogen desorption from carbon targets by ion-beam analysis
     bullets_it:
       - Studi del desorbimento dell'idrogeno nei bersagli di carbonio con tecniche di analisi con fasci di ioni (IBA)
 
-  - period: Feb 2019 — Feb 2020
+  - period: Feb 2019 – Feb 2020
     period_it: feb 2019 — feb 2020
-    title: GALILEO Setup
+    title: GALILEO set-up
     title_it: Apparato GALILEO
     detail: Laboratori Nazionali di Legnaro, INFN, Italy
     detail_it: Laboratori Nazionali di Legnaro, INFN, Italia
     bullets:
-      - Characterization of the GALTRACE silicon detector with Neural Network techniques
+      - Characterization of the GALTRACE silicon detector with neural networks
     bullets_it:
       - Caratterizzazione del rivelatore al silicio GALTRACE con tecniche a reti neurali
 
 projects:
-  - period: May 2026 — May 2031
+  - period: May 2026 – May 2031
     period_it: mag 2026 — mag 2031
     title: GENESIS
     detail: >-
@@ -138,26 +138,25 @@ awards:
     period_it: feb 2026
     title: Villi Prize, INFN
     title_it: Premio Villi, INFN
-    detail: Italy — INFN prize for the best Ph.D. thesis
+    detail: Italy — INFN prize for the best PhD thesis
     detail_it: Italia — premio INFN per la migliore tesi di dottorato
-  - period: Feb 2025 — present
+  - period: Feb 2025 – present
     period_it: feb 2025 — oggi
     title: Honorary Fellow
     detail: >-
       School of Physics and Astronomy, University of Edinburgh, UK — in
-      recognition of supervisory and research contribution
+      recognition of contributions to supervision and research
     detail_it: >-
       School of Physics and Astronomy, University of Edinburgh, Regno Unito — in
       riconoscimento del contributo alla supervisione e alla ricerca
-  - period: Oct 2024 — present
+  - period: Oct 2024 – present
     period_it: ott 2024 — oggi
     title: IAEA INDEN-LE Committee
     title_it: Comitato INDEN-LE della IAEA
     detail: >-
-      International Atomic Energy Agency, Vienna — invited member of the IAEA
+      International Atomic Energy Agency, Vienna — invited member of the
       committee of R-matrix experts that evaluates and extrapolates
-      light-element nuclear cross sections for research and industrial
-      applications
+      light-element nuclear cross sections for research and industry
     detail_it: >-
       Agenzia Internazionale per l'Energia Atomica, Vienna — membro su invito
       del comitato IAEA di esperti R-matrix che valuta ed estrapola le sezioni
@@ -168,28 +167,28 @@ teaching:
   - period: 2024, 2026
     title: Joint Lecturer
     title_it: Co-docente
-    detail: Nuclear Astrophysics Ph.D. course, Università degli Studi di Padova
+    detail: Nuclear Astrophysics PhD course, Università degli Studi di Padova
     detail_it: Corso di dottorato di Astrofisica nucleare, Università degli Studi di Padova
-  - period: 2020 — 2025
+  - period: 2020–2025
     title: Teaching Assistant
     title_it: Assistente alla didattica
     detail: Physics Laboratory, Università degli Studi di Padova (five academic years)
     detail_it: Laboratorio di Fisica, Università degli Studi di Padova (cinque anni accademici)
 
 supervision:
-  - period: 2022 — present
+  - period: 2022–present
     period_it: 2022 — oggi
-    title: Ph.D. theses
+    title: PhD theses
     title_it: Tesi di dottorato
     detail: Co-supervision of R. Biassisi (from 2024) and E. Pilotto (from 2022), Università degli Studi di Padova
     detail_it: Co-supervisione di R. Biassisi (dal 2024) ed E. Pilotto (dal 2022), Università degli Studi di Padova
-  - period: 2023 — 2025
-    title: Master theses
+  - period: 2023–2025
+    title: Master's theses
     title_it: Tesi magistrali
     detail: Co-supervision of T. Tasnim (2025), M. M. S. Nusir (2024), A. Vigolo (2023), Università degli Studi di Padova
     detail_it: Co-supervisione di T. Tasnim (2025), M. M. S. Nusir (2024), A. Vigolo (2023), Università degli Studi di Padova
-  - period: 2023 — 2025
-    title: Bachelor theses
+  - period: 2023–2025
+    title: Bachelor's theses
     title_it: Tesi triennali
     detail: Co-supervision of A. Lorenzetto, T. Prins (2025), M. Ponchio, E. D'Amore (2024), L. Cavezza (2023), Università degli Studi di Padova
     detail_it: Co-supervisione di A. Lorenzetto, T. Prins (2025), M. Ponchio, E. D'Amore (2024), L. Cavezza (2023), Università degli Studi di Padova
@@ -202,20 +201,20 @@ outreach:
   - period: 2023
     title: Project Asimov · Project RadioLab · Science4All
     detail: >-
-      Scientific essays for high school (INFN); communication on environmental
+      Scientific essays for high-school students (INFN); communication on environmental
       radioactivity (INFN); nuclear astrophysics stand (UniPD)
     detail_it: >-
       Saggi scientifici per le scuole superiori (INFN); comunicazione sulla
       radioattività ambientale (INFN); stand di astrofisica nucleare (UniPD)
-  - period: 2021 — 2022
+  - period: 2021–2022
     title: Astrofisica Nucleare
-    detail: High school transversal skills and career guidance, UniPD
+    detail: Transversal skills and career guidance for high-school students (PCTO), UniPD
     detail_it: Percorsi per le competenze trasversali e l'orientamento (PCTO) per le scuole superiori, UniPD
 
 skills:
   - label: Languages
     label_it: Lingue
-    items: Native Polish · Fluent Italian · Advanced English
+    items: Polish (native) · Italian (fluent) · English (advanced)
     items_it: Polacco madrelingua · Italiano fluente · Inglese avanzato
   - label: Coding
     label_it: Programmazione

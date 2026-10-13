@@ -43,7 +43,7 @@ details: >-
 status: well-known
 status_note: >-
   Direct measurements and the indirect Trojan Horse method agree, with
-  uncertainties of 7 % and 19 %. The reaction is fast, and its remaining
+  uncertainties of 7% and 19%. The reaction is fast, and its remaining
   uncertainty does not limit models of the CN cycle.
 status_note_it: >-
   Le misure dirette e il metodo indiretto del cavallo di Troia concordano, con
@@ -57,7 +57,7 @@ measurements:
     energy_it: "80–810 keV (energia del protone)"
     note: >-
       Cross section of the α₀ channel measured with a 350 kV implanter and a
-      1 MV accelerator, normalised at Ep = 353.4 keV. For decades this was the
+      1 MV accelerator, normalized at Ep = 353.4 keV. For decades this was the
       main direct data set at low energy and the basis of the recommended
       S(0).
     refs: [redder1982]

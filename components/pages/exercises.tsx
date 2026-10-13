@@ -32,8 +32,11 @@ function fmt(lang: Lang) {
   const comma = (s: string) => (lang === "it" ? s.replace(".", ",") : s)
   /** Fixed decimals. */
   const f = (x: number, d: number) => comma(x.toFixed(d))
-  /** Whole number with a thin space between thousands (SI style, both languages). */
-  const n = (x: number) => Math.round(x).toString().replace(/\B(?=(\d{3})+(?!\d))/g, "\u202f")
+  /** Whole number with a thin space between thousands (SI style); English leaves four digits whole (docs/STYLE.md). */
+  const n = (x: number) => {
+    const r = Math.round(x)
+    return lang === "en" && Math.abs(r) < 10000 ? String(r) : r.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "\u202f")
+  }
   /** a × 10ⁿ with `d` decimals in the mantissa. */
   const e = (x: number, d = 1) => {
     const exp = Math.floor(Math.log10(Math.abs(x)))
@@ -43,7 +46,7 @@ function fmt(lang: Lang) {
   /** A percentage change, signed. */
   const pct = (before: number, after: number) => {
     const p = ((after - before) / before) * 100
-    return `${p >= 0 ? "+" : "−"}${comma(Math.abs(p).toFixed(0))} %`
+    return `${p >= 0 ? "+" : "−"}${comma(Math.abs(p).toFixed(0))}${lang === "it" ? " " : ""}%`
   }
   return { f, n, e, pct }
 }
@@ -167,9 +170,9 @@ Il picco e la larghezza fanno quello che dice la formula a un livello. Il χ²/N
     description:
       "Three nuclear-astrophysics exercises with worked solutions: the Gamow peak of ¹⁴N + p, why LUNA is underground, and an R-matrix level of ¹³N to change.",
     lead:
-      "Three short problems for students, from a first course in nuclear physics to a Ph.D. course in nuclear astrophysics. Each is solved with pen, paper and the tools of this site, and has a worked solution to open at the end.",
+      "Three short problems for students, from a first course in nuclear physics to a PhD course in nuclear astrophysics. Each is solved with pen, paper and the tools of this site, and has a worked solution to open at the end.",
     howTo:
-      "The numbers in the solutions are not typed in: they are computed when the site is built, from the AME2020 masses and the formulas the atlas and the rates explorer use, or they are AZURE2 results on the ¹³N evaluation, or they are cited. Round them as you like: the reasoning is what counts.",
+      "The numbers in the solutions are not typed in: they are computed when the site is built, from the AME2020 masses and the formulas the atlas and the rate explorer use, or they are AZURE2 results on the ¹³N evaluation, or they are cited. Round them as you like: the reasoning is what counts.",
     contents: "The exercises",
     solution: "Worked solution",
     needsLabel: "You need:",
@@ -179,18 +182,18 @@ Il picco e la larghezza fanno quello che dice la formula a un livello. Il χ²/N
       {
         id: "gamow",
         title: "The Gamow peak of ¹⁴N + p at 15 million kelvin",
-        needs: "a calculator; to check, the atlas or the rates explorer.",
-        problem: `The slowest step of the CNO cycle is ¹⁴N(p,γ)¹⁵O. At what energy do protons and ¹⁴N nuclei actually react in a star at $T = 15$ MK, and over what range?
+        needs: "a calculator; to check, the atlas or the rate explorer.",
+        problem: `The slowest step of the CNO cycle is ¹⁴N(p,γ)¹⁵O. At what energy do protons and ¹⁴N nuclei react in a star at $T = 15$ MK, and over what range?
 
 1. Compute $kT$ at 15 MK ($k = 8.617 \\times 10^{-5}$ eV/K).
 2. Compute the Gamow energy $E_G = 2\\mu c^2 (\\pi \\alpha Z_1 Z_2)^2$, with the reduced mass $\\mu$ of p + ¹⁴N (atomic masses 1.007825 u and 14.003074 u; 1 u = 931.494 MeV/c²; $\\alpha = 1/137.036$).
 3. The product of the Maxwell–Boltzmann factor $e^{-E/kT}$ and the tunnelling probability $e^{-\\sqrt{E_G/E}}$ peaks at $E_0 = \\left(E_G (kT)^2/4\\right)^{1/3}$; approximated by a Gaussian, its full width at $1/e$ is $\\Delta = 4\\sqrt{E_0 kT/3}$. Compute both.
-4. Check. The atlas entry for [¹⁴N(p,γ)¹⁵O](${to("/atlas/14N-pg-15O")}) gives the window at the centre of the Sun, $T_9 = 0.0157$: scale it to 15 MK, knowing that $E_0 \\propto T^{2/3}$ and $\\Delta \\propto T^{5/6}$. Or open the [rates explorer](${to("/atlas/rates")}) on the CNO cycle, pick ¹⁴N(p,γ) and bring the temperature to 15 MK: the Gamow-peak panel shows $E_0 \\pm \\Delta/2$.
+4. Check. The atlas entry for [¹⁴N(p,γ)¹⁵O](${to("/atlas/14N-pg-15O")}) gives the window at the centre of the Sun, $T_9 = 0.0157$: scale it to 15 MK, knowing that $E_0 \\propto T^{2/3}$ and $\\Delta \\propto T^{5/6}$. Or open the [rate explorer](${to("/atlas/rates")}) on the CNO cycle, choose ¹⁴N(p,γ) and bring the temperature to 15 MK: the Gamow-peak panel shows $E_0 \\pm \\Delta/2$.
 5. LUNA measured this reaction down to 70 keV. Taking the $S$-factor as constant, how much smaller is the cross section at $E_0$ than at 70 keV?`,
         solution: `1. $kT = 8.617 \\times 10^{-5}\\ \\text{eV/K} \\times 1.5 \\times 10^{7}\\ \\text{K}$ = **${f(x1.kT, 3)} keV**.
 2. $\\mu$ = ${f(x1.mu, 5)} u, so $\\mu c^2$ = ${muc2} MeV, and $E_G$ = **${f(x1.EG / 1000, 1)} MeV** (${n(x1.EG)} keV).
 3. $E_0$ = **${f(x1.E0, 1)} keV** and $\\Delta$ = **${f(x1.width, 1)} keV**: the window runs from about ${f(lowE, 0)} to ${f(highE, 0)} keV. $E_0$ is about ${f(x1.E0 / x1.kT, 0)} times $kT$: the reactions come from the far tail of the thermal distribution, where protons are few but the barrier is a little thinner.
-4. The atlas gives ${f(x1.atlasE0, 1)} keV and ${f(x1.atlasWidth, 1)} keV at 15.7 MK; scaled to 15 MK they become ${f(x1.scaledE0, 1)} keV and ${f(x1.scaledWidth, 1)} keV, as above. The rates explorer shows ${f(x1.explorerE0, 1)} ± ${f(x1.explorerHalf, 1)} keV: it takes the mass numbers (14 and 1) for the reduced mass, and a $\\mu$ 0.7 % smaller moves $E_0$ by 0.2 % ($E_0 \\propto \\mu^{1/3}$).
+4. The atlas gives ${f(x1.atlasE0, 1)} keV and ${f(x1.atlasWidth, 1)} keV at 15.7 MK; scaled to 15 MK they become ${f(x1.scaledE0, 1)} keV and ${f(x1.scaledWidth, 1)} keV, as above. The rate explorer shows ${f(x1.explorerE0, 1)} ± ${f(x1.explorerHalf, 1)} keV: it takes the mass numbers (14 and 1) for the reduced mass, and a $\\mu$ 0.7% smaller moves $E_0$ by 0.2% ($E_0 \\propto \\mu^{1/3}$).
 5. $\\sigma(E) = \\dfrac{S}{E}\\, e^{-\\sqrt{E_G/E}}$, so $\\dfrac{\\sigma(E_0)}{\\sigma(70\\ \\text{keV})} = \\dfrac{70}{E_0}\\, e^{\\sqrt{E_G/70} - \\sqrt{E_G/E_0}}$ ≈ **${e(ratio)}**: about ${f(1 / ratio / 1e6, 1)} million times smaller. That is why, at the Sun's energies, the cross section is extrapolated (exercise 3) rather than measured.`,
       },
       {
@@ -201,9 +204,9 @@ Il picco e la larghezza fanno quello che dice la formula a un livello. Il χ²/N
 
 Take:
 - $S \\approx 1.7$ keV b, LUNA's total $S$-factor ([atlas](${to("/atlas/14N-pg-15O")}); Formicola et al. 2004), constant at these energies, and $E_G$ from exercise 1;
-- a proton beam of 200 µA, a target with 10¹⁸ ¹⁴N nuclei per cm², and a detection efficiency between 1 % (a germanium detector) and 50 % (a summing crystal around the target). These are round assumptions of the right order of magnitude, not the parameters of a particular experiment;
+- a proton beam of 200 µA, a target with 10¹⁸ ¹⁴N nuclei per cm², and a detection efficiency between 1% (a germanium detector) and 50% (a summing crystal around the target). These are round assumptions of the right order of magnitude, not the parameters of a particular experiment;
 - a detector that presents 100 cm² to the sky, and at the surface about one cosmic-ray muon per cm² per minute (Particle Data Group);
-- the rock above LUNA, about 1400 m of it, reduces the muons by about a factor of a million ([glossary](${to("/glossary#luna")})).
+- the rock above LUNA, about 1.4 km of it, reduces the muons about a millionfold ([glossary](${to("/glossary#luna")})).
 
 1. What is $\\sigma$(70 keV)?
 2. How many reactions a day do you detect?
@@ -211,10 +214,10 @@ Take:
 4. What fraction of the muons would have to land in the signal's energy window (around 7.3 MeV) for the background at the surface to equal the signal? Is that plausible?
 5. Finally: how many reactions a year would you see at the Gamow peak of exercise 1?`,
         solution: `1. $\\sigma = \\dfrac{1.7\\ \\text{keV b}}{70\\ \\text{keV}}\\, e^{-\\sqrt{E_G/70\\ \\text{keV}}}$ = **${e(x2.sigma_b, 1)} b**, that is ${f(x2.sigma_b * 1e12, 2)} pb (1 pb = 10⁻³⁶ cm²).
-2. 200 µA is ${e(x2.protonsPerSecond, 2)} protons per second. Reactions per second: $\\sigma\\, n_t\\, N_p$ = ${e(x2.sigma_b * 1e-24, 1)} cm² × 10¹⁸ cm⁻² × ${e(x2.protonsPerSecond, 2)} s⁻¹ = ${e(perSecond, 1)} s⁻¹, or ${f(perSecond * 86400, 0)} a day. Detected: **${f(effLo.rate, 2)} a day** at 1 % efficiency, **about ${f(effHi.rate, 0)} a day** at 50 %. This is what the atlas means by reactions that happen "only a few times per day".
+2. 200 µA is ${e(x2.protonsPerSecond, 2)} protons per second. Reactions per second: $\\sigma\\, n_t\\, N_p$ = ${e(x2.sigma_b * 1e-24, 1)} cm² × 10¹⁸ cm⁻² × ${e(x2.protonsPerSecond, 2)} s⁻¹ = ${e(perSecond, 1)} s⁻¹, or ${f(perSecond * 86400, 0)} a day. Detected: **${f(effLo.rate, 2)} a day** at 1% efficiency, **about ${f(effHi.rate, 0)} a day** at 50%. This is what the atlas means by reactions that happen "only a few times per day".
 3. At the surface: 1 cm⁻² min⁻¹ × 100 cm² × 1440 min = **${n(x2.muonsSurface)} muons a day**. Underground, a million times fewer: **${f(x2.muonsUnderground, 2)} a day**, about one a week.
-4. With ${f(effHi.rate, 0)} signal events a day, the muon background equals it as soon as one muon in ${n(oneIn)} (${e(x2.fractionMax, 0)}) lands in the window. A muon that crosses the whole crystal leaves tens of MeV in it, above the window; but those that clip a corner, and the electrons, photons and neutrons the muons make in the shielding and the walls, spread energy over the whole spectrum. Keeping fewer than one in ten thousand in a window a few hundred keV wide is not realistic at the surface: that is why the muon background "limits the sensitivity for γ-ray energies up to several MeV" ([methods](${to("/atlas/methods")})). Underground the problem disappears: even if every muon landed in the window, it would be ${f(x2.muonsUnderground, 2)} events a day against ${f(effHi.rate, 0)}. The background that remains comes from the radioactivity of the rock and of the set-up, nearly all of it below 2.6 MeV (the most energetic γ-ray line of natural radioactivity, from ²⁰⁸Tl), and from beam-induced reactions on target contaminants. Felsenkeller in Dresden is the middle way: 45 m of rock reduce the muons by a factor of 40, and with an active veto the background is about twice that of a deep laboratory ([timeline](${to("/atlas/timeline")})).
-5. At the Gamow peak, $E_0$ = ${f(x2.E0, 1)} keV, $\\sigma$ ≈ ${e(x2.sigmaPeak_b, 0)} b: with the same beam, target and 50 % efficiency, **${e(x2.peakPerYear, 0)} reactions a year**, one every ${n(years)} years or so. No laboratory measures there: the Sun's energies are reached by extrapolating the data with R-matrix theory, which is what exercise 3 is about.`,
+4. With ${f(effHi.rate, 0)} signal events a day, the muon background equals it as soon as one muon in ${n(oneIn)} (${e(x2.fractionMax, 0)}) lands in the window. A muon that crosses the whole crystal leaves tens of MeV in it, above the window; but those that clip a corner, and the electrons, photons and neutrons the muons make in the shielding and the walls, spread energy over the whole spectrum. Keeping fewer than one in ten thousand in a window a few hundred keV wide is not realistic at the surface: that is why the muon background "limits the sensitivity for γ-ray energies up to several MeV" ([methods](${to("/atlas/methods")})). Underground the problem disappears: even if every muon landed in the window, it would be ${f(x2.muonsUnderground, 2)} events a day against ${f(effHi.rate, 0)}. The background that remains comes from the radioactivity of the rock and of the set-up, nearly all of it below 2.6 MeV (the most energetic γ-ray line of natural radioactivity, from ²⁰⁸Tl), and from beam-induced reactions on target contaminants. Felsenkeller in Dresden is the middle way: 45 m of rock reduces the muons by a factor of 40, and with an active veto the background is about twice that of a deep laboratory ([timeline](${to("/atlas/timeline")})).
+5. At the Gamow peak, $E_0$ = ${f(x2.E0, 1)} keV, $\\sigma$ ≈ ${e(x2.sigmaPeak_b, 0)} b: with the same beam, target and 50% efficiency, **${e(x2.peakPerYear, 0)} reactions a year**, one every ${n(years)} years or so. No laboratory measures there: the Sun's energies are reached by extrapolating the data with R-matrix theory, which is what exercise 3 is about.`,
       },
       {
         id: "rmatrix",
@@ -224,10 +227,10 @@ Take:
 
 1. Before touching anything, predict. In a single-level Breit–Wigner approximation, $\\sigma(E) \\propto \\dfrac{\\Gamma_p \\Gamma_\\gamma}{(E-E_R)^2 + \\Gamma^2/4}$ with $\\Gamma \\approx \\Gamma_p$ (because $\\Gamma_\\gamma \\ll \\Gamma_p$). If $\\Gamma_p$ goes from ${t.level.gammaP_keV} to ${t.level.changedTo_keV} keV, what happens to (a) the $S$-factor at the peak, (b) the width of the peak, (c) the $S$-factor far below the resonance, at stellar energies?
 2. Note the χ² at the published parameters: for all the data ("χ² for all the data in the fit") and for the LUNA (HPGe) data in the table of all datasets.
-3. In the "Level scheme", pick the 1/2⁺ level at ${f(t.level.Ex_MeV, 4)} MeV and set the width of its proton channel to ${t.level.changedTo_keV} keV. Wait for the recalculation and compare with your predictions: the peak in the plot, the $S$-factor at about 25 keV in the "Extrapolations" tab, the two χ².
+3. In the "Level scheme", choose the 1/2⁺ level at ${f(t.level.Ex_MeV, 4)} MeV and set the width of its proton channel to ${t.level.changedTo_keV} keV. Wait for the recalculation and compare with your predictions: the peak in the plot, the $S$-factor at about 25 keV in the "Extrapolations" tab, the two χ².
 4. Why do the LUNA data, all of them below the resonance (68 to 362 keV), react so strongly? And why does the $S$-factor at stellar energies grow by less than $\\Gamma_p$ does?
 5. Go back to the published values ("Reset all") and move the level's energy up by 5 keV instead. What happens to the χ²?`,
-        solution: `1. At the peak, $E = E_R$: $\\sigma \\propto 4\\Gamma_\\gamma/\\Gamma_p$, so it falls by ${t.level.gammaP_keV}/${t.level.changedTo_keV} = ${f(t.level.gammaP_keV / t.level.changedTo_keV, 2)}, **−15 %**. The width of the peak is $\\Gamma \\approx \\Gamma_p$: **+18 %**. Far from the resonance, $(E-E_R)^2 \\gg \\Gamma^2/4$ and $\\sigma \\propto \\Gamma_p \\Gamma_\\gamma/(E-E_R)^2$: the tail **rises by 18 %**. A wider, lower peak with higher wings.
+        solution: `1. At the peak, $E = E_R$: $\\sigma \\propto 4\\Gamma_\\gamma/\\Gamma_p$, so it falls by ${t.level.gammaP_keV}/${t.level.changedTo_keV} = ${f(t.level.gammaP_keV / t.level.changedTo_keV, 2)}, **−15%**. The width of the peak is $\\Gamma \\approx \\Gamma_p$: **+18%**. Far from the resonance, $(E-E_R)^2 \\gg \\Gamma^2/4$ and $\\sigma \\propto \\Gamma_p \\Gamma_\\gamma/(E-E_R)^2$: the tail **rises by 18%**. A wider, lower peak with higher wings.
 2. and 3. With AZURE2 on this evaluation (computed on 13 October 2026; only $\\Gamma_p$ changed, everything else as published):
 
 | | published | $\\Gamma_p$ = ${t.level.changedTo_keV}\u00a0keV | |
@@ -239,8 +242,8 @@ Take:
 | χ², all data (${t.chi2.all.points} points) | ${n(t.chi2.all.before)} | ${n(t.chi2.all.after)} | |
 | χ², LUNA HPGe (${t.chi2.lunaHpge.points} points) | ${n(t.chi2.lunaHpge.before)} | ${n(t.chi2.lunaHpge.after)} | |
 
-The peak and the width do what the one-level formula says. The published fit's χ²/N is already far above 1 on this page, which does not refit the data's normalisations (the page explains why): what counts is the change, not the absolute value. And the change is huge: the data fix $\\Gamma_p$ far more tightly than the 6 keV you moved it by.
-4. The LUNA data sit on the low-energy flank of the resonance, where the $S$-factor rises by some 10–14 % (at 300 keV from 6.72 to 7.64 keV b), and their uncertainties are around 1 %: every point moves by about ten standard deviations, and the χ² grows with the square of the shift. At stellar energies, though, the $S$-factor grows by only ${pct(t.sfactor.at24keV.before, t.sfactor.at24keV.after).replace(/[+ %]/g, "")} %, not 18 %: there it is not only the resonance's tail but also direct capture, which does not depend on $\\Gamma_p$, and the two amplitudes add (interfere) before they are squared. Only the resonant part grows.
+The peak and the width do what the one-level formula says. The published fit's χ²/N is already far above 1 on this page, which does not refit the data's normalizations (the page explains why): what counts is the change, not the absolute value. And the change is huge: the data fix $\\Gamma_p$ far more tightly than the 6 keV you moved it by.
+4. The LUNA data sit on the low-energy flank of the resonance, where the $S$-factor rises by some 10–14% (at 300 keV from 6.72 to 7.64 keV b), and their uncertainties are around 1%: every point moves by about ten standard deviations, and the χ² grows with the square of the shift. At stellar energies, though, the $S$-factor grows by only ${pct(t.sfactor.at24keV.before, t.sfactor.at24keV.after).replace(/[+ %]/g, "")}%, not 18%: there it is not only the resonance's tail but also direct capture, which does not depend on $\\Gamma_p$, and the two amplitudes add (interfere) before they are squared. Only the resonant part grows.
 5. With the energy moved by 5 keV the χ² of all the data reaches ${n(t.energyShift.chi2All)}, more than for the change of width: on the steep flanks of a resonance ${t.level.gammaP_keV} keV wide, moving it by 5 keV changes the $S$-factor by many times the uncertainty of the data measured there. That is why the energy of a well-measured resonance is the most tightly constrained parameter of an R-matrix fit.`,
       },
     ] satisfies Section[],
