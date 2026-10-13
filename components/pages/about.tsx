@@ -199,8 +199,9 @@ function BodyEn({ to, n }: { to: (p: string) => string; n: Counts }) {
             files can be downloaded and run locally.
           </li>
           <li>
-            <span className="font-medium text-foreground">Planned:</span> links to EXFOR, the international database of
-            experimental nuclear reaction data, for the measurements the atlas cites.
+            <span className="font-medium text-foreground">The data explorer:</span> measurements from EXFOR, the
+            international database of experimental nuclear reaction data (IAEA/NRDC, CC BY 4.0), and nuclear levels
+            from ENSDF, read from a dated snapshot and linked back to every entry (<L href="/data">/data</L>).
           </li>
         </ul>
         <div className={prose}>
@@ -350,8 +351,9 @@ function BodyIt({ to, n }: { to: (p: string) => string; n: Counts }) {
             file di input si possono scaricare ed eseguire in locale.
           </li>
           <li>
-            <span className="font-medium text-foreground">In seguito:</span> collegamenti a EXFOR, la banca dati
-            internazionale dei dati sperimentali sulle reazioni nucleari, per le misure citate nell&apos;atlante.
+            <span className="font-medium text-foreground">L&apos;esploratore dei dati:</span> le misure di EXFOR, la
+            banca dati internazionale dei dati sperimentali sulle reazioni nucleari (IAEA/NRDC, CC BY 4.0), e i livelli
+            nucleari di ENSDF, letti da un&apos;istantanea datata e collegati a ogni voce (<L href="/data">/data</L>).
           </li>
         </ul>
         <div className={prose}>
