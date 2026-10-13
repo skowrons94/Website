@@ -14,6 +14,8 @@ export const LANGS: Lang[] = ["en", "it"]
 /** The path of `path` (an English, root-relative path) in `lang`. */
 export function localePath(lang: Lang, path: string): string {
   if (lang === "en" || !path.startsWith("/") || path.startsWith("//")) return path
+  // Already an Italian path (a news item linking to /it): not /it/it.
+  if (/^\/it(?=$|[/#?])/.test(path)) return path
   if (path === "/" || path.startsWith("/#") || path.startsWith("/?")) return `/it${path.slice(1)}`
   return `/it${path}`
 }
