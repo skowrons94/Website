@@ -85,7 +85,7 @@ export default function digitizer(r: Router, d: Daq) {
     if (!Object.keys(c).length) return fail(400, { message: 'Invalid configuration' })
     if (!b) return fail(500, { message: 'Failed to update configuration' })
     d.configs[d.boardKey(b)] = c as any
-    d.noteRegisterWrite(b, '*', 'config')
+    d.noteRegisterWrite(b, '*')
     return ok({ message: 'Configuration updated successfully' })
   })
   r.get('/digitizer/<id>/registers', (_q, p) => {

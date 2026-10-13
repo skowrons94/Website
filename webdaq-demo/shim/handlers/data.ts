@@ -3,6 +3,8 @@ import type { RunSummary, RunDetail, ConversionStatus } from '@webdaq/lib/api'
 import { ok, fail, type Router } from '../router'
 import type { Daq, RunRecord } from '../../sim/state/daq'
 import { listFiles, readCurrent, readStats } from '../../sim/state/runfiles'
+// The run-file writers register the real sizes; they ride in this lazy chunk.
+import '../../sim/files'
 
 const NO_RUREADER = 'RUReader is not available in the in-browser demo. Download the run\'s .caendat from Run files and convert it yourself: RUReader -i <run directory> -o run.root'
 

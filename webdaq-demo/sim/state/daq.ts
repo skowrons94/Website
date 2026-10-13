@@ -355,6 +355,9 @@ export class Daq {
       return { ok: false, message: String((e as Error)?.message ?? e) }
     }
     this.seedBeamRule()
+    // A scenario change mid-run (the beam switched on) is part of the run's timeline.
+    const rec = this.running && this.save ? this.runs.find(r => r.run_number === this.runNumber) : undefined
+    if (rec && rec.demo.timeline.length < 5000) rec.demo.timeline.push([r6(this.simT - this.runSimStart), 'scenario', JSON.stringify(this.scenario)])
     return { ok: true, message: 'Scenario updated' }
   }
 
@@ -377,7 +380,10 @@ export class Daq {
       setRegValue(regs, algo, (regValue(regs, algo) & ~0x3f) | (on ? 6 : 4))
       setRegValue(regs, 0x1098 + c * 0x100, on ? 0x1999 : 0x8000)
     }
-    this.noteRegisterWrite(b, 'reg_1080', 'in-beam seeds')
+    for (let c = 0; c < b.chan; c++) {
+      this.noteRegisterWrite(b, `reg_${hex4(0x1080 + c * 0x100)}`)
+      this.noteRegisterWrite(b, `reg_${hex4(0x1098 + c * 0x100)}`)
+    }
     // The demo moved the gain, not the visitor: keep the spectra in keV.
     if (this.reconfigure() === null) this.calib[this.boardKey(b)] = calibRows(Array.from({ length: b.chan }, (_, c) => this.physics.calibration(c)))
   }
@@ -736,12 +742,20 @@ export class Daq {
   }
 
   /** Online write (daq_manager.write_board_register) — the safe list is checked by the caller. */
-  noteRegisterWrite(b: BoardCfg, key: string, value: string) {
+  noteRegisterWrite(b: BoardCfg, key: string, value?: string) {
+    // The run's register timeline lets the run's data file be regenerated (P3):
+    // [run time, register key, new value]; '*' records every register's value.
     const rec = this.running && this.save ? this.runs.find(r => r.run_number === this.runNumber) : undefined
-    if (rec && rec.demo.timeline.length < 5000) rec.demo.timeline.push([r6(this.simT - this.runSimStart), key, value])
+    if (rec && rec.demo.timeline.length < 5000) {
+      const regs = this.regs(b)
+      const t = r6(this.simT - this.runSimStart)
+      if (key === '*') for (const [k, e] of Object.entries(regs)) rec.demo.timeline.push([t, k, e.value])
+      else rec.demo.timeline.push([t, key, value ?? regs[key]?.value ?? ''])
+    }
     if (b === this.boards[0]) this.reconfigure()
     this.lastTraces = {}
   }
+
 
   // ─────────────────────────────────────────────────────────── run
 

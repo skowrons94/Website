@@ -133,12 +133,21 @@ export interface PhysicsExtras {
   /** Detected decays per second, all emitters, at scale 1 (beam: per µA). */
   detectedRate(): number
   readonly kind: DetectorKind | null
+  /**
+   * P3 (run files): when set, called for every event the board writes (not the
+   * lost ones), per channel in time order: t_s in run time; for PHA `a` is the
+   * 15-bit energy word value (0 for pile-up and saturated events), for PSD `a` is
+   * Q_short and `b` Q_long. Used only by a replay engine regenerating a run's data
+   * file, never by the live one.
+   */
+  eventSink: ((ch: number, t_s: number, a: number, b: number, pu: boolean, satu: boolean) => void) | null
 }
 
 class Engine implements PhysicsEngine, PhysicsExtras {
   private scenario: Scenario | null = null
   private board: BoardView | null = null
   kind: DetectorKind | null = null
+  eventSink: PhysicsExtras['eventSink'] = null
   private L: LinesJson | null = null
   private resp: Response | null = null
   private hk: HpgeConst | null = null
@@ -409,9 +418,9 @@ class Engine implements PhysicsEngine, PhysicsExtras {
         res[c].events++
         written += perEv
         if (ev.pu) res[c].pileup++
-        if (ev.satu) { res[c].saturated++; continue }
-        if (isPha) this.fillPha(c, ev)
-        else this.fillPsd(c, ev)
+        if (ev.satu) { res[c].saturated++; this.eventSink?.(c, ev.t, 0, 0, ev.pu, true); continue }
+        if (isPha) { const a = this.fillPha(c, ev); this.eventSink?.(c, ev.t, a, 0, ev.pu, false) }
+        else { const [a, b] = this.fillPsd(c, ev); this.eventSink?.(c, ev.t, a, b, ev.pu, false) }
       }
     }
     const perAgg = Math.max(1, board.chReg(0x1034, 0) || 1)
@@ -421,8 +430,8 @@ class Engine implements PhysicsEngine, PhysicsExtras {
     return { channels: res, bytes: written, blocksDropped: blocks }
   }
 
-  private fillPha(c: number, ev: Pending): void {
-    if (ev.pu) return // pile-up energies are not histogrammed (design §3.4, to confirm)
+  private fillPha(c: number, ev: Pending): number {
+    if (ev.pu) return 0 // pile-up energies are not histogrammed (design §3.4, to confirm)
     const p = this.pha[c], r = this.rCh[c], s = this.chans[c]
     let Em: number
     if (ev.noise) {
@@ -434,10 +443,11 @@ class Engine implements PhysicsEngine, PhysicsExtras {
       Em = E * (1 - delta) + (Math.sqrt(f2) / 2.355) * r.normal()
     }
     const ch = Math.floor(Em * p.gain)
-    if (ch > 0 && ch < ENERGY_BINS) this.spectra[c][ch]++
+    if (ch > 0 && ch < ENERGY_BINS) { this.spectra[c][ch]++; return ch }
+    return 0
   }
 
-  private fillPsd(c: number, ev: Pending): void {
+  private fillPsd(c: number, ev: Pending): [number, number] {
     const p = this.psdp[c], r = this.rCh[c]
     const E = ev.noise ? 0 : ev.E + ev.extra
     let qs: number, ql: number
@@ -460,6 +470,7 @@ class Engine implements PhysicsEngine, PhysicsExtras {
       const yb = Math.min(PSD_YBINS - 1, Math.floor(ratio * PSD_YBINS))
       psd[yb * PSD_XBINS + xb]++
     }
+    return [Math.max(0, Math.min(0x7fff, qS)), Math.max(0, qL)]
   }
 
   /** Long gaps (hidden tab): simulate 0.5 s, then scale the increments as Poisson draws (O(bins)). */

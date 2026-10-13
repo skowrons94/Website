@@ -8,11 +8,12 @@
   "scripts": {
     "build": "node build.mjs",
     "size": "node scripts/size.mjs",
-    "test": "vitest run -c tests/contract/vitest.config.ts && vitest run -c tests/physics/vitest.config.ts",
+    "test": "vitest run -c tests/contract/vitest.config.ts && vitest run -c tests/files/vitest.config.ts && vitest run -c tests/physics/vitest.config.ts",
     "test:contract": "vitest run -c tests/contract/vitest.config.ts",
     "test:physics": "vitest run -c tests/physics/vitest.config.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "surface": "WRITE_SURFACE=1 vitest run -c tests/contract/vitest.config.ts contract"
+    "surface": "WRITE_SURFACE=1 vitest run -c tests/contract/vitest.config.ts contract",
+    "test:files": "vitest run -c tests/files/vitest.config.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "6.3.1",
