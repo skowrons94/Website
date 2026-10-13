@@ -1,0 +1,7 @@
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "comment": "WebDAQ demo overlay #7: dependencies live in webdaq-demo/package.json (pruned, exact).",
+  "scripts": { "build": "next build" }
+}

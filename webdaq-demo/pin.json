@@ -1,0 +1,20 @@
+{
+  "repo": "https://github.com/skowrons94/webdaq",
+  "commit": "a1cc18f86daee0345b2001e663086555105202a3",
+  "frontend": "frontend",
+  "jsroot": {
+    "version": "7.11.2",
+    "integrity": "sha512-Pria+SspD6+BmGNg4C8UOtP5y7GiODS/FXgQMiCSgGxpbm9icezifQLcVTJF7RaMnCot6ko7CoZozudM1a204g=="
+  },
+  "overrides": {
+    "next.config.mjs": "1e3206cb200e264fdddb4dbb2e4772daebc839fdbc94b78316d74892a0de6fa2",
+    "package.json": "4b5c81353734e4e9dae6aa7ff45437b91bf1e53eb63aacdbcebbb6f246cb9333",
+    "src/app/layout.tsx": "da249a7221544f9ed68369e2021bfe0834d08c5ae080a71c1e03e558d520a5df",
+    "src/app/page.tsx": "e7811960814bab5fb2b9cc33e3964f9bc1ea8270abcfaa2830905bede70d512e",
+    "src/app/api": "c72a6584abe3aa1b7f09312db0280ed9c8e8a200fcf16ebc4ccb179acc0996e0",
+    "src/api": "8ad80ca1ee19f6f540b90d110337a73453f50c4dae890d2cb0e63124e5b786bf",
+    "src/lib/load-jsroot.ts": "b8f867afb8b39d67512c8774949aa9aaf2bc5c3500d66f379c65f77d0bb137db",
+    "src/app/logbook/[run_number]/layout.tsx": "absent"
+  },
+  "apiSurfaceHash": ""
+}
