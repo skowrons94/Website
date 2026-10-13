@@ -86,7 +86,11 @@ details: >-
   rise is an artefact of the plane-wave approximation used in the analysis
   and disappears when Coulomb–nuclear distortions are included; the direct
   coincidence data of Tan et al. (2020) disagree strongly with the Trojan
-  Horse result. LUNA is preparing a direct measurement of the γ-rays from
+  Horse result. A possible physical origin for low-energy resonances is a
+  set of 0⁺ states of ²⁴Mg near the ¹²C + ¹²C threshold, found in
+  ²⁴Mg(α,α′) and decaying mostly to ²⁰Ne + α, which may be ¹²C + ¹²C cluster
+  states playing a role like the Hoyle state's in helium burning (Adsley et al.
+  2022). LUNA is preparing a direct measurement of the γ-rays from
   the α and p channels at the underground Bellotti Ion Beam Facility, with an
   HPGe detector inside an active NaI(Tl) veto (Gesuè et al. 2025).
 status: uncertain
@@ -200,7 +204,7 @@ measurements:
       at deep sub-barrier energies.
     refs: [nippert2025]
 evaluations: [caughlan1988, jiang2018, monpribat2022]
-refs: [jiang2007, uzawa2025, gesue2025, cooper2009]
+refs: [jiang2007, uzawa2025, gesue2025, cooper2009, adsley2022]
 open_questions:
   - Whether the S-factor falls at deep sub-barrier energies (fusion hindrance) or keeps rising; the answer depends on fitting choices and on which of the many data sets are used.
   - Whether resonances below 2 MeV exist and how strong they are, as the Trojan Horse analysis suggests and its critics dispute.

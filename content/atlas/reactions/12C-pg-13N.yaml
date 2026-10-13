@@ -107,7 +107,7 @@ measurements:
       uncertainties of 7–8%; the S-factor is about 25% lower than most
       earlier data.
     refs: [skowronski2023]
-evaluations: [acharya2025]
+evaluations: [xu2013, acharya2025]
 open_questions:
   - The 25% normalization difference between the measurements since 2023 and the older data sets.
   - The radiative width of the 422 keV resonance, which dominates the rate at higher temperatures.

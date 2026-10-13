@@ -172,7 +172,7 @@ measurements:
       excited states.
     refs: [nippert2025]
 evaluations: [caughlan1988, jiang2018, monpribat2022]
-refs: [jiang2007, uzawa2025, gesue2025, cooper2009]
+refs: [jiang2007, uzawa2025, gesue2025, cooper2009, adsley2022]
 open_questions:
   - The ground-state proton branch, which γ-ray and coincidence measurements do not see directly.
   - The p/α branching at the energies of carbon burning, which decides the sodium yield.

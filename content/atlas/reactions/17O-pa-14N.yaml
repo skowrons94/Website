@@ -113,7 +113,7 @@ measurements:
       earlier values, which doubles the rate at red-giant and AGB
       temperatures and lowers the predicted ¹⁷O/¹⁶O ratio.
     refs: [bruno2016]
-evaluations: [adelberger2011]
+evaluations: [adelberger2011, acharya2025]
 open_questions:
   - The difference of about a factor of 3 between the LUNA and Trojan-Horse strengths of the 64.5 keV resonance.
   - The subthreshold state of ¹⁸F, whose contribution at solar energies Solar Fusion II discusses together with the 65 keV resonance.

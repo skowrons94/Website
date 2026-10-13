@@ -69,7 +69,7 @@ measurements:
       approximation analysis: S_b(0) = 55 ± 3 keV b and a screening potential
       Uₑ = 330 ± 40 eV, above the adiabatic limit of 175 eV.
     refs: [lattuada2001]
-evaluations: [descouvemont2004]
+evaluations: [descouvemont2004, xu2013]
 open_questions:
   - The electron-screening potential extracted from low-energy data, which exceeds the atomic-physics estimate.
 open_questions_it:
