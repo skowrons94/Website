@@ -158,7 +158,7 @@ const FLAG_TEXT: Record<Lang, Record<Flag, [string, string]>> = {
     ],
     corrected: [
       "corrected",
-      "A frame, unit or scale error of the EXFOR file is corrected here (scripts/data/corrections.yaml); the change is listed with the dataset.",
+      "A frame, unit or scale error of the EXFOR file is corrected here, or values the literature shows to be upper limits are read as such (scripts/data/corrections.yaml); the change is listed with the dataset.",
     ],
   },
   it: {
@@ -188,7 +188,7 @@ const FLAG_TEXT: Record<Lang, Record<Flag, [string, string]>> = {
     ],
     corrected: [
       "corretto",
-      "Qui è corretto un errore di sistema di riferimento, di unità o di scala del file EXFOR (scripts/data/corrections.yaml); la modifica è riportata con la serie di dati.",
+      "Qui è corretto un errore di sistema di riferimento, di unità o di scala del file EXFOR, oppure valori che la letteratura indica come limiti superiori sono letti come tali (scripts/data/corrections.yaml); la modifica è riportata con la serie di dati.",
     ],
   },
 }

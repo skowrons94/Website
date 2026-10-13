@@ -332,7 +332,8 @@ def meta_document(src_all: dict, counts: dict, generated: str) -> dict:
                         "b/sr, MeV b, deg), lab and c.m. energies both computed with AME2020 masses, "
                         "rows flagged as extrapolated removed from the points and listed separately, "
                         "large datasets decimated for display with the full set beside, and the frame, unit and "
-                        "scale errors listed in scripts/data/corrections.yaml corrected (each such dataset is "
+                        "scale errors listed in scripts/data/corrections.yaml corrected, and the values it lists as "
+                        "upper limits read as such (each such dataset is "
                         "flagged 'corrected' and says what was changed)."),
             "citation": ("N. Otuka et al., \"Towards a More Complete and Accurate Experimental Nuclear "
                          "Reaction Data Library (EXFOR): International Collaboration Between Nuclear "

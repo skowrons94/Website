@@ -25,7 +25,7 @@ def test_table_is_complete_and_unreported():
     for c in items:
         assert c["evidence"] and c["paper"] and c["reaction"]
         assert corrections.yes_no(c["reported_to_nrdc"]) == "no"
-        assert "owner to" in c["status"] or "not applied" in c["status"]
+        assert "owner to" in c["status"] or "not applied" in c["status"] or "confirmed by the owner" in c["status"]
     # the R-matrix and expert reviews' items are all there
     for want in ("F0580.002", "O2548.002", "O2313.002", "C2168.002", "C1825.002", "D0468.004", "O2207.006",
                  "A1205.004", "O2597.002", "O1381.003"):
@@ -103,6 +103,8 @@ def test_corrected_datasets_in_the_committed_index():
         "O2207.006": 0.7496, "A1205.004": 0.1072, "A1205.005": 0.1072, "O2597.002": 0.3256,
         "O1420.008": 1.31, "C2375.002": 0.277, "C2254.003": 0.151,
         "D0710.027": 0.8794,
+        # 22Ne(a,n): plain values below the 830 keV resonance read as upper limits (rows kept)
+        "O0967.002": 0.4796, "O1082.002": 0.6703, "O1082.003": 0.5234,
     }
     flagged = {D["id"][k] for k in range(len(D["id"])) if D["f"][k] & bit}
     assert flagged == set(lowest)
@@ -111,6 +113,57 @@ def test_corrected_datasets_in_the_committed_index():
         assert D["e0"][k] == pytest.approx(e, rel=2e-3), sid
     applied = {c["id"] for c in corrections.load() if c.get("apply", True)}
     assert applied == {".".join(s.split(".")[:2]) for s in lowest}
+
+
+def test_22ne_an_below_the_830_kev_resonance_upper_limits():
+    """Drotleff 1991 and Harms 1991 give plain values below the 830 keV
+    resonance; read as upper limits (DATA -> DATA-MAX on those rows only),
+    the lowest measured point of each is on the resonance, where Drotleff
+    1993 (A0613.002, unchanged) has its lowest value too."""
+    d91 = sets("O0967")["O0967.002"]
+    p = d91.points
+    assert "corrected" in d91.meta["flags"] and "upper-limits" in d91.meta["flags"]
+    assert "(21 rows)" in d91.meta["corrections"][0]["change"]
+    i = p["E_lab"].index(0.6171)                            # the 'new resonance' near 620 keV
+    assert p["limit"][i] == "<" and p["value"][i] == pytest.approx(8e-11)
+    assert p["limit"][p["E_lab"].index(0.8191)] is None      # from 819 keV on: values, as given
+    assert min(p["E_cm"]) == pytest.approx(0.4796, abs=2e-4)  # the limit rows stay
+    harms = sets("O1082")
+    for sid in ("O1082.002", "O1082.003"):
+        assert "corrected" in harms[sid].meta["flags"]
+    d93 = sets("A0613")["A0613.002"]
+    assert "corrected" not in d93.meta["flags"]
+    for d in (d91, harms["O1082.002"], harms["O1082.003"], d93):
+        for k in (1, 2):
+            e = d.meta["measured_min_cm"][f"{k}sigma"]
+            assert 0.69 < e < 0.71, (d.meta["id"], k, e)    # E_lab 819-840 keV: the resonance
+    # the corrections module alone: only the selected rows move, into an existing or a new column
+    cols = {"EN": dataset.Column("EN", "KEV", [600.0, 700.0, 900.0], False, ["600.", "700.", "900."]),
+            "DATA": dataset.Column("DATA", "B", [1.0, None, 3.0], False, ["1.", "", "3."])}
+    done = corrections.apply(cols, [{"id": "X", "problem": "", "status": "", "reported_to_nrdc": "no",
+                                     "correct": [{"column": "DATA", "heading": "DATA-MAX",
+                                                  "where": {"column": "EN", "below": 800}}]}])
+    assert cols["DATA"].values == [None, None, 3.0] and cols["DATA-MAX"].values == [1.0, None, None]
+    assert "(1 rows)" in done[0]["change"]
+
+
+def test_22ne_an_lowest_in_the_committed_index():
+    """The atlas says it: seen directly only down to the 830 keV resonance."""
+    with open(os.path.join(PUBLIC_DATA, "exfor", "index.json")) as f:
+        idx = json.load(f)
+    r = idx["reactions"]["key"].index("22Ne(a,n)")
+    D = idx["datasets"]
+    excluded = {"not-experimental", "derived", "superseded", "deleted", "preliminary", "complex", "indirect"}
+    mask = sum(1 << build_exfor.FLAG_BITS.index(f) for f in excluded)
+    classes = {build_exfor.QCLASSES.index(q) for q in measured.RULE["classes"]}
+    lows = []
+    for k in range(len(D["id"])):
+        if D["r"][k] != r or D["f"][k] & mask or D["q"][k] not in classes:
+            continue
+        m2 = D["e0"][k] if D["m2"][k] == 0 else D["m2"][k]     # 0: the same as e0
+        m1 = m2 if D["m1"][k] == 0 else D["m1"][k]             # 0: the same as m2
+        lows += [v for v in (m1, m2) if v]
+    assert lows and min(lows) > 0.69                 # E_cm, MeV: E_lab > 816 keV
 
 
 # -- indirect methods -------------------------------------------------------------

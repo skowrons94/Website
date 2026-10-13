@@ -40,13 +40,15 @@ research:
     detail: Laboratori Nazionali del Gran Sasso, INFN, Italy
     detail_it: Laboratori Nazionali del Gran Sasso, INFN, Italia
     bullets:
-      - Working Group Leader for the ¹⁹F + p measurement (since 2024); analysis of the ¹²C + p and ¹³C + p experiments
+      - Working Group Leader for the ¹⁹F + p measurement (since 2024)
+      - ¹²C + p and ¹³C + p experiments: led the analysis and half of the measurement campaign
       - DAQ Coordinator (since 2024) — design, deployment and operation of the data acquisition and slow-control systems across LUNA's campaigns since 2024 and the new Bellotti Ion Beam Facility
       - Calibration of the 3.5 MV Singletron accelerator of the Bellotti Ion Beam Facility
       - Fine-tuning of the Geant4 simulation for BGO and HPGe set-ups
       - R-matrix evaluation for ¹²C + p, ¹³C + p, ²⁰Ne + p and ²²Ne + p reactions
     bullets_it:
-      - Coordinatore del gruppo di lavoro per la misura ¹⁹F + p (dal 2024); analisi degli esperimenti ¹²C + p e ¹³C + p
+      - Coordinatore del gruppo di lavoro per la misura ¹⁹F + p (dal 2024)
+      - Esperimenti ¹²C + p e ¹³C + p: ho guidato l'analisi e metà della campagna di misure
       - Coordinatore DAQ (dal 2024) — progettazione, installazione e gestione dei sistemi di acquisizione dati e di slow control nelle campagne di LUNA dal 2024 e nel nuovo Bellotti IBF
       - Calibrazione dell'acceleratore Singletron da 3,5 MV della Bellotti Ion Beam Facility
       - Messa a punto della simulazione Geant4 per gli apparati BGO e HPGe

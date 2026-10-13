@@ -15,17 +15,23 @@
 #                        error: EN holds c.m. energies -> EN-CM)
 #               unit     read the column in this EXFOR unit instead
 #               factor   multiply the column by this number
+#               where    only on the rows whose value in another column is
+#                        below a number ({column: EN, below: 819}, in that
+#                        column's own unit); with heading DATA-MAX it reads
+#                        plain values as upper limits
 #   evidence  why, from the EXFOR file itself (lines of the pinned commit,
 #             sources.json) and from the paper
 #   verified  who checked it against the EXFOR file, and how
 #   status    what is still open
 #   reported_to_nrdc  no | yes (date)
 #   apply     false keeps an entry on record without applying it
+#   nrdc      false: not a compilation error (the file gives what the paper
+#             gives), but a reading the site makes; listed apart in the report
 #
 # scripts/data/nrdc-report.md is the draft report to the NRDC built from this
-# list (`python scripts/data/dx.py nrdc-report`). Every entry here was checked
-# against the .x4 file at the pinned commit; each still needs the owner to
-# confirm it from the paper.
+# list (`python scripts/data/dx.py nrdc-report`); the owner has decided not to
+# send it. Every entry here was checked against the .x4 file at the pinned
+# commit; its status says whether the owner has also confirmed it.
 
 - id: F0580.002
   reaction: 12C(a,g)16O, partial S-factor to the ground state
@@ -62,8 +68,10 @@
     - "O2548.002 DATA: EN 233 ... 306 KEV."
     - "Read as E_lab, the rows would span E_cm = 178-234 keV; the expert review (r15) reads the PRL as E_cm = 230-300 keV, which is the column as given."
     - "O2548.001: EN-ERR 300 EV, the beam-energy uncertainty of the LUNA 400 kV machine, says nothing about the frame."
-  verified: "EXFOR file at the pinned commit"
-  status: owner to confirm from the paper
+    - "LUNA's PANIC2021 proceedings (https://pos.sissa.it/380/318) give the range of the measurement as 230 < E_cm < 305 keV: the column as given."
+    - "The LUNA neutron-array paper (arXiv:2411.05053) gives E_alpha,lab = 300-400 keV, i.e. E_cm = 229-306 keV: the column as given, not E_lab."
+  verified: "EXFOR file at the pinned commit; LUNA's PANIC2021 proceedings (PoS 380, 318) and arXiv:2411.05053, both giving E_cm = 230-305 keV (sources supplied by the owner)"
+  status: confirmed by the owner (2026-10-13)
   reported_to_nrdc: no
 
 - id: O2313.002
@@ -273,3 +281,55 @@
   status: not applied; owner to decide from the paper (Fig. 1 of PLB 547, 193)
   reported_to_nrdc: no
   apply: false
+
+# 22Ne(a,n): the owner's decision (2026-10-13) that below the 830 keV
+# resonance (E_alpha,lab) the direct data are upper limits. Drotleff 1991 and
+# Harms 1991 give plain values there; the later direct measurements give only
+# limits at the same energies. Not compilation errors (nrdc: false). The
+# boundary, E_lab = 819 keV, is the lowest energy at which Drotleff 1993
+# (A0613.002) gives a value (E_cm 0.693 MeV = E_lab 819 keV), on the
+# low-energy edge of the 830 keV resonance.
+
+- id: O0967.002
+  reaction: 22Ne(a,n)25Mg, cross section
+  paper: H. W. Drotleff et al., Z. Phys. A 338, 367 (1991)
+  problem: "Below the 830 keV resonance, the rows that are not DATA-MAX are given as plain values (DATA, 8-70% errors), including the bump at E_lab = 617-650 keV (the entry's title: 'New Ne-22(A,N)Mg-25 resonances at very low energies'); the same group's later measurement ascribes a resonance near 620 keV to background and gives only upper limits at these energies."
+  correct:
+    - {column: DATA, heading: DATA-MAX, where: {column: EN, below: 819}}
+  evidence:
+    - "O0967.002 DATA: EN 566.9-607.4 KEV already DATA-MAX (upper limits); 617.1-649.4, 687.7, 726.8, 775.9 and 806.6 KEV given as DATA (8.E-05 MICRO-B, 60% at 617.1, and so on); the 830 keV resonance from 829.4 KEV; O0967.001 TITLE: 'New Ne-22(A,N)Mg-25 resonances at very low energies'."
+    - "A0613.001 (Drotleff et al., ApJ 414, 735 (1993), same group and set-up, REL-REF of O0967.001: 'More detailed experiment'), abstract: 'A Resonance at About E=620 KeV Could Clearly be Ascribed to the Background Reaction 11-B(A,N)14-N'; A0613.002 gives only DATA-MAX below EN-CM 0.693 MEV (E_lab 819 keV)."
+    - "A0444.002 (Jaeger et al., PRL 87, 202501 (2001)) gives only DATA-MAX below EN 821.17 KEV, at 578.79-816.1 KEV."
+    - "A measured yield that includes background is an upper bound on the 22Ne(a,n) cross section: read as DATA-MAX, the rows keep their numbers."
+  verified: "EXFOR files O0967, A0613 and A0444 at the pinned commit"
+  status: confirmed by the owner (2026-10-13), from the literature on 22Ne(a,n)
+  reported_to_nrdc: no
+  nrdc: false
+
+- id: O1082.002
+  reaction: 22Ne(a,n)25Mg, partial cross section to the 25Mg ground state (relative)
+  paper: V. Harms et al., Phys. Rev. C 43, 2849 (1991), Figs. 4-6
+  problem: "Below the 830 keV resonance, the rows at E_lab = 792.3 and 818.5 keV are given as plain values (DATA, 40% and 30% errors), where the later direct measurements give only upper limits."
+  correct:
+    - {column: DATA, heading: DATA-MAX, where: {column: EN, below: 0.819}}
+  evidence:
+    - "O1082.002 DATA: EN 0.7923 MEV, DATA 2.2 ARB-UNITS +- 40%; 0.8185 MEV, 2.2 +- 30%; the 830 keV resonance from 0.831 MEV."
+    - "A0613.002 (Drotleff 1993) and A0444.002 (Jaeger 2001) give only DATA-MAX at these energies (as for O0967.002)."
+  verified: "EXFOR files O1082, A0613 and A0444 at the pinned commit"
+  status: confirmed by the owner (2026-10-13), from the literature on 22Ne(a,n)
+  reported_to_nrdc: no
+  nrdc: false
+
+- id: O1082.003
+  reaction: 22Ne(a,n)25Mg, cross section (relative)
+  paper: V. Harms et al., Phys. Rev. C 43, 2849 (1991), Fig. 7
+  problem: "Below the 830 keV resonance, the rows at E_lab = 618.7-813 keV are given as plain values (DATA, 40-550% errors), including the bump near 620 keV, where the later direct measurements give only upper limits."
+  correct:
+    - {column: DATA, heading: DATA-MAX, where: {column: EN, below: 819}}
+  evidence:
+    - "O1082.003 DATA: EN 618.7 and 623.7 KEV (1.2 +- 550%, 9 +- 80% ARB-UNITS), 790.7, 801.5 and 813 KEV (40-70%); the resonance from 821.7 KEV."
+    - "A0613.001: the resonance near 620 keV is ascribed to 11B(a,n)14N; A0613.002 and A0444.002 give only DATA-MAX below E_lab 819-821 keV (as for O0967.002)."
+  verified: "EXFOR files O1082, A0613 and A0444 at the pinned commit"
+  status: confirmed by the owner (2026-10-13), from the literature on 22Ne(a,n)
+  reported_to_nrdc: no
+  nrdc: false

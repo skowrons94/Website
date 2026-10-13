@@ -66,11 +66,13 @@ status: uncertain
 status_note: >-
   Below the 830 keV resonance only upper limits exist from direct experiments,
   and the indirect constraints on the near-threshold ²⁶Mg states do not yet
-  agree.
+  agree. A new direct measurement is under way at LUNA within the SHADES
+  project.
 status_note_it: >-
   Sotto la risonanza a 830 keV esistono solo limiti superiori da esperimenti
   diretti, e i vincoli indiretti sugli stati del ²⁶Mg vicini alla soglia non
-  sono ancora in accordo.
+  sono ancora in accordo. Una nuova misura diretta è in corso a LUNA
+  nell'ambito del progetto SHADES.
 status_plain: >-
   At the energies that matter in stars, direct experiments give only upper
   limits, and the indirect methods do not yet agree.

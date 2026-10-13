@@ -77,8 +77,14 @@ Total 89,804 datasets from 14,422 entries, 10.06 M points, 7,668 reactions
   and the plots are all corrected; the dataset gets the flag `corrected` and
   `meta.corrections` (what, why, status), and its export headers say so. An
   entry with `apply: false` stays on record only (Raiola 2002: the file does
-  not say which frame). `dx.py nrdc-report` writes the draft report to the
-  NRDC, `nrdc-report.md`. Every entry still needs confirming from its paper.
+  not say which frame). A change limited to some rows (`where`) reads plain
+  values as upper limits (`DATA` -> `DATA-MAX`) where the literature says
+  that is what they are: ²²Ne(α,n) below the 830 keV resonance (Drotleff
+  1991, Harms 1991), where the later direct measurements give only limits;
+  such entries are not compilation errors (`nrdc: false`). `dx.py
+  nrdc-report` writes the draft report to the NRDC, `nrdc-report.md`, which
+  the owner has decided not to send. Each entry's `status` says whether the
+  owner has confirmed it.
 - **Indirect methods are flagged** `indirect`: an `ANALYSIS` code `TROJA`,
   `ANC` or `SURGT` (the entry's or the subentry's), the free text of `METHOD`
   and `ANALYSIS` naming the Trojan-horse method, Coulomb dissociation or
@@ -274,8 +280,8 @@ reaction). The rule is `lib/data/lowest.mjs`; its settings (the JSON between
    their absolute value); and when its energy is physical: at least 1 keV
    (centre of mass) for a charged projectile on a charged target, and not
    below the threshold −Q of an endothermic reaction (AME2020).
-   `sigma` is 2; the owner may set it to 1 in `lowest.mjs` without rebuilding
-   the data (the index carries both).
+   `sigma` is 1, the owner's choice; setting it to 2 in `lowest.mjs` needs no
+   rebuild of the data (the index carries both).
 2. **Per dataset** (`lowest.mjs`): it measures the reaction at an energy
    (quantity class `sigma`, `S`, `dsigma`, `legendre`, `yield` or
    `strength`); it is not flagged `not-experimental` (calculated, evaluated,

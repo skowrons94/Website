@@ -1,9 +1,11 @@
+**Draft, not sent (owner's decision).**
+
 # Draft: compilation errors in EXFOR, for the NRDC
 
 Generated from `scripts/data/corrections.yaml` by `python scripts/data/dx.py nrdc-report`;
-do not edit by hand. **Draft: not sent.** Every item was checked against the
+do not edit by hand. Every item was checked against the
 EXFOR file of exfor_master commit `d2af85eca4ce9b76529f096e7f9603da60654732` (2026-09-28);
-each still needs confirming from the paper before it is reported.
+its status says whether it has also been confirmed from the paper.
 
 To: the NRDC network, via the IAEA Nuclear Data Section (address to fill in)
 
@@ -70,8 +72,10 @@ Evidence:
 - O2548.002 DATA: EN 233 ... 306 KEV.
 - Read as E_lab, the rows would span E_cm = 178-234 keV; the expert review (r15) reads the PRL as E_cm = 230-300 keV, which is the column as given.
 - O2548.001: EN-ERR 300 EV, the beam-energy uncertainty of the LUNA 400 kV machine, says nothing about the frame.
+- LUNA's PANIC2021 proceedings (https://pos.sissa.it/380/318) give the range of the measurement as 230 < E_cm < 305 keV: the column as given.
+- The LUNA neutron-array paper (arXiv:2411.05053) gives E_alpha,lab = 300-400 keV, i.e. E_cm = 229-306 keV: the column as given, not E_lab.
 
-Status: owner to confirm from the paper.
+Status: confirmed by the owner (2026-10-13).
 
 ## O2313.002: 17O(p,a)14N, strength of the 64.5 keV resonance
 
@@ -264,6 +268,12 @@ Evidence:
 - D0710.012, the a1 coefficients of the same paper, gives EN 898 ... KEV: in keV, as its unit says.
 
 Status: owner to confirm from the paper.
+
+## Not reported (read differently on the site, not compilation errors)
+
+- O0967.002 (22Ne(a,n)25Mg, cross section): Below the 830 keV resonance, the rows that are not DATA-MAX are given as plain values (DATA, 8-70% errors), including the bump at E_lab = 617-650 keV (the entry's title: 'New Ne-22(A,N)Mg-25 resonances at very low energies'); the same group's later measurement ascribes a resonance near 620 keV to background and gives only upper limits at these energies. On the site: DATA is DATA-MAX where EN < 819. confirmed by the owner (2026-10-13), from the literature on 22Ne(a,n).
+- O1082.002 (22Ne(a,n)25Mg, partial cross section to the 25Mg ground state (relative)): Below the 830 keV resonance, the rows at E_lab = 792.3 and 818.5 keV are given as plain values (DATA, 40% and 30% errors), where the later direct measurements give only upper limits. On the site: DATA is DATA-MAX where EN < 0.819. confirmed by the owner (2026-10-13), from the literature on 22Ne(a,n).
+- O1082.003 (22Ne(a,n)25Mg, cross section (relative)): Below the 830 keV resonance, the rows at E_lab = 618.7-813 keV are given as plain values (DATA, 40-550% errors), including the bump near 620 keV, where the later direct measurements give only upper limits. On the site: DATA is DATA-MAX where EN < 819. confirmed by the owner (2026-10-13), from the literature on 22Ne(a,n).
 
 ## Not reported (not verifiable from the EXFOR file)
 

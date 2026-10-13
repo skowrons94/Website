@@ -3,12 +3,18 @@
 A correction names a subentry (every pointer) or a subentry and pointer, and
 changes columns of its tables before anything reads them: a frame error is a
 heading read as another (EN holds c.m. energies -> EN-CM), a unit error a
-unit read as another (KEV holds MeV -> MEV), a scale error a factor. The
+unit read as another (KEV holds MeV -> MEV), a scale error a factor. A
+heading change may be limited to some rows (`where`: the rows whose value
+in another column is below a number), which is how plain values are read as
+upper limits (DATA -> DATA-MAX) where the literature says that is what they
+are; such an entry carries `nrdc: false` and is listed apart in the report,
+since the EXFOR file is not wrong as a compilation. The
 dataset then carries the flag `corrected` and `meta.corrections`, so the
 pages and exports say what was changed. Entries with `apply: false` stay on
 record only.
 """
 
+import copy
 import os
 from typing import Dict, List, Optional
 
@@ -33,6 +39,8 @@ def load(path: str = FILE) -> List[dict]:
         for ch in c["correct"]:
             if "column" not in ch or not ({"heading", "unit", "factor"} & set(ch)):
                 raise ValueError(f"corrections.yaml: {c['id']}: a change needs a column and a heading, unit or factor")
+            if "where" in ch and ("heading" not in ch or not {"column", "below"} <= set(ch["where"])):
+                raise ValueError(f"corrections.yaml: {c['id']}: `where` needs a heading, and a column and a `below`")
     if path == FILE:
         _CACHE = items
     return items
@@ -67,7 +75,9 @@ def apply(cols: Dict[str, "object"], corrections: List[dict]) -> List[dict]:
             if "unit" in ch:
                 changes.append(f"{name} unit {col.unit.strip()} -> {ch['unit']}")
                 col.unit = ch["unit"]
-            if "heading" in ch:
+            if "heading" in ch and "where" in ch:
+                changes.append(_move_rows(cols, col, ch))
+            elif "heading" in ch:
                 new = ch["heading"]
                 del cols[name]
                 col.name = new
@@ -79,6 +89,38 @@ def apply(cols: Dict[str, "object"], corrections: List[dict]) -> List[dict]:
     return done
 
 
+def _rows_below(cols: Dict[str, "object"], where: dict) -> List[int]:
+    ref = cols.get(where["column"])
+    if ref is None:
+        raise ValueError(f"correction: no column {where['column']} for `where`")
+    lim = float(where["below"])
+    return [i for i, v in enumerate(ref.values) if v is not None and v < lim]
+
+
+def _move_rows(cols: Dict[str, "object"], col, ch: dict) -> str:
+    """Read `column` as `heading` on the rows `where` selects (DATA -> DATA-MAX:
+    plain values read as upper limits); the other rows keep their heading."""
+    new, where = ch["heading"], ch["where"]
+    rows = _rows_below(cols, where)
+    dest = cols.get(new)
+    if dest is None:
+        dest = copy.copy(col)
+        dest.name, dest.common = new, False
+        dest.values = [None] * len(col.values)
+        dest.raw = [""] * len(col.values)
+        cols[new] = dest
+    moved = 0
+    raw_ok = len(col.raw) == len(col.values) and len(dest.raw) == len(dest.values)
+    for i in rows:
+        if col.values[i] is None or dest.values[i] is not None:
+            continue
+        dest.values[i], col.values[i] = col.values[i], None
+        if raw_ok:
+            dest.raw[i], col.raw[i] = col.raw[i], ""
+        moved += 1
+    return f"{ch['column']} read as {new} where {where['column']} < {where['below']} ({moved} rows)"
+
+
 REPORT = os.path.join(config.DATA_DIR, "nrdc-report.md")
 
 
@@ -86,15 +128,18 @@ def report(path: str = FILE) -> str:
     """The draft report to the NRDC (scripts/data/nrdc-report.md), from the table."""
     src = config.sources()["exfor_master"]
     items = load(path)
-    applied = [c for c in items if c.get("apply", True)]
+    applied = [c for c in items if c.get("apply", True) and c.get("nrdc", True)]
+    readings = [c for c in items if c.get("apply", True) and not c.get("nrdc", True)]
     held = [c for c in items if not c.get("apply", True)]
     lines = [
+        "**Draft, not sent (owner's decision).**",
+        "",
         "# Draft: compilation errors in EXFOR, for the NRDC",
         "",
         "Generated from `scripts/data/corrections.yaml` by `python scripts/data/dx.py nrdc-report`;",
-        "do not edit by hand. **Draft: not sent.** Every item was checked against the",
+        "do not edit by hand. Every item was checked against the",
         f"EXFOR file of exfor_master commit `{src['commit']}` ({src['snapshot_date']});",
-        "each still needs confirming from the paper before it is reported.",
+        "its status says whether it has also been confirmed from the paper.",
         "",
         "To: the NRDC network, via the IAEA Nuclear Data Section (address to fill in)",
         "",
@@ -116,6 +161,12 @@ def report(path: str = FILE) -> str:
                   "Evidence:", ""]
         lines += [f"- {e}" for e in c["evidence"]]
         lines += ["", f"Status: {c['status']}.", ""]
+    if readings:
+        lines += ["## Not reported (read differently on the site, not compilation errors)", ""]
+        for c in readings:
+            change = "; ".join(_describe(ch) for ch in c["correct"])
+            lines += [f"- {c['id']} ({c['reaction']}): {c['problem']} On the site: {change}. {c['status']}."]
+        lines.append("")
     if held:
         lines += ["## Not reported (not verifiable from the EXFOR file)", ""]
         for c in held:
@@ -127,7 +178,10 @@ def report(path: str = FILE) -> str:
 
 def _describe(ch: dict) -> str:
     out = []
-    if "heading" in ch:
+    if "heading" in ch and "where" in ch:
+        w = ch["where"]
+        out.append(f"{ch['column']} is {ch['heading']} where {w['column']} < {w['below']}")
+    elif "heading" in ch:
         out.append(f"{ch['column']} is {ch['heading']}")
     if "unit" in ch:
         out.append(f"{ch['column']} unit is {ch['unit']}")
