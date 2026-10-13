@@ -1046,11 +1046,14 @@ export class Daq {
     if (idx === null || !b) return emptyTH1F('This board is not part of the current run')
     const raw = (b.dpp === 'DPP-PSD' && Number.isFinite(ch) ? this.physics.psd(ch) : null) ?? new Uint32Array(PSD_XBINS * PSD_YBINS)
     const [off, slope] = this.calibration(b, ch)
-    // spy_manager applies the calibration to the TH2 x axis as well (Appendix B, finding 6).
+    // The x axis spans Q_long 0…QLONG_MAX in PSD_XBINS bins, so the calibrated axis is
+    // off + slope·QLONG_MAX, the same keV range as the 1-D Q_long spectrum. (WebDAQ's
+    // spy_manager at the pin uses slope·NbinsX = slope·2048 here, design Appendix B,
+    // finding 6; the demo draws the axis the data have.)
     const cal = off !== 0 || slope !== 1
     return th2f(raw, PSD_XBINS, PSD_YBINS, {
       name: `psd_b${idx}_ch${ch}`, title: this.spectrumTitle('psd', b, ch),
-      xmin: cal ? off : 0, xmax: cal ? off + slope * PSD_XBINS : QLONG_MAX, ymin: 0, ymax: 1, rebinX: 16,
+      xmin: cal ? off : 0, xmax: cal ? off + slope * QLONG_MAX : QLONG_MAX, ymin: 0, ymax: 1, rebinX: 16,
     })
   }
 
