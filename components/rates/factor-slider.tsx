@@ -81,7 +81,7 @@ export function FactorSlider({
             </span>
           )}
         </span>
-        <span className="flex items-center gap-1">
+        <span className="flex flex-wrap items-center gap-1">
           <button
             type="button"
             onClick={() => set(value / 2)}

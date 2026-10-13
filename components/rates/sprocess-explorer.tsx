@@ -502,7 +502,7 @@ export function SProcessExplorer({
       )}
 
       <Figure id="what-if" step={{ n: 2, label: t.step3 }} title={t.whatIfTitle} lead={sp.whatIfLead}>
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,24rem)_minmax(0,1fr)] lg:gap-10">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,24rem)_minmax(0,1fr)] lg:gap-10">
           <div className="lg:sticky lg:top-20 lg:self-start">
             <ReactionPicker
               groups={pickGroups}

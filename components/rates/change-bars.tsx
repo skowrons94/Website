@@ -176,7 +176,7 @@ export function ChangeResult({
           )}
         </div>
       ) : (
-        <p className="text-pretty rounded-md border border-dashed border-border px-4 py-4 text-sm leading-relaxed" data-quiet>
+        <p className="text-pretty rounded-md border border-dashed border-border px-3 py-3 text-sm leading-relaxed sm:px-4 sm:py-4" data-quiet>
           <Sci>
             {state === "self"
               ? t.quietSelf(moved.map((r) => r.label).join(lang === "it" ? " e " : " and "), cycle)
@@ -186,15 +186,19 @@ export function ChangeResult({
             <>
               {" "}
               {before}
-              <button
-                type="button"
-                onClick={suggestion.onTry}
-                title={t.trySuggestTitle}
-                className="font-medium text-link underline underline-offset-4 hover:decoration-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                <Sci>{suggestion.label}</Sci> <span className="tabular">{suggestion.factor}</span>
-              </button>
-              {after}
+              {/* the comma stays with the button: a button never shares a line break with the text after it */}
+              <span className="whitespace-nowrap">
+                <button
+                  type="button"
+                  onClick={suggestion.onTry}
+                  title={t.trySuggestTitle}
+                  className="font-medium text-link underline underline-offset-4 hover:decoration-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <Sci>{suggestion.label}</Sci> <span className="tabular">{suggestion.factor}</span>
+                </button>
+                {after.match(/^[,.;:]?/)![0]}
+              </span>
+              {after.replace(/^[,.;:]?/, "")}
             </>
           )}
         </p>

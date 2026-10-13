@@ -303,11 +303,11 @@ export function ResultStrip({
   if (!active || covered) return null
   return (
     <div className="sticky bottom-0 z-20 -mx-5 mt-6 border-t border-border bg-background/95 px-5 py-2.5 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:-mx-8 sm:px-8 lg:hidden">
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <span className="shrink-0 text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
           {t.stripTitle}
         </span>
-        <div className="min-w-0 flex-1 text-sm">
+        <div className="min-w-[10rem] flex-1 text-sm">
           {busy ? (
             <span className="inline-flex items-center gap-1.5 text-muted-foreground">
               <Loader2 className="h-3.5 w-3.5 animate-spin motion-reduce:animate-none" aria-hidden />
@@ -329,7 +329,7 @@ export function ResultStrip({
                   </span>
                 </li>
               ))}
-              {!rows.length && <li className="text-muted-foreground">{t.stripOthers}</li>}
+              {!rows.length && <li className="whitespace-nowrap text-muted-foreground">{t.stripOthers}</li>}
             </ul>
           ) : (
             <span className="text-muted-foreground">{t.stripQuiet}</span>

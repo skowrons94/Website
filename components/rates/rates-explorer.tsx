@@ -945,7 +945,7 @@ export function RatesExplorer({
 
       {/* -- 3. what if -------------------------------------------------------------- */}
       <Figure id="what-if" step={{ n: 3, label: t.step3 }} title={t.whatIfTitle} lead={t.whatIfLead}>
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-10">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-10">
           <div className="lg:sticky lg:top-20 lg:self-start">
             <ReactionPicker
               groups={[{ id: "key", reactions: keyReactions }]}
