@@ -26,6 +26,7 @@ import {
 import { dict } from "@/lib/i18n"
 import { localePath, type Lang } from "@/lib/locale"
 import { pageMetadata } from "@/lib/metadata"
+import { prefetchFor } from "@/lib/prefetch"
 import { REPO } from "@/lib/repo"
 
 /**
@@ -241,7 +242,7 @@ export function DataExplorerPage({ lang }: { lang: Lang }) {
         <span id="stories" className="scroll-mt-[calc(var(--header-h,0px)+1.5rem)]" />
         <span id="paths" className="scroll-mt-[calc(var(--header-h,0px)+1.5rem)]" />
         {t.movedToAtlas}{" "}
-        <Link href={to("/atlas#stories")} className="text-link underline-offset-4 hover:underline">
+        <Link href={to("/atlas#stories")} prefetch={prefetchFor("/atlas")} className="text-link underline-offset-4 hover:underline">
           {t.movedToAtlasLink}
         </Link>
       </p>
