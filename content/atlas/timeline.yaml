@@ -115,7 +115,7 @@ events:
 
   - year: 1939
     month: 3
-    title: Bethe’s “Energy production in stars”
+    title: Bethe works out the CN cycle in “Energy production in stars”
     highlight: true
     title_it: >-
       “Energy production in stars” di Bethe
@@ -155,7 +155,7 @@ events:
     reactions: [1H-ng-2H]
 
   - year: 1952
-    title: Salpeter's triple-alpha process
+    title: Salpeter shows how helium burns to carbon
     title_it: Il processo tre alfa di Salpeter
     category: theory
     text: >-
@@ -180,7 +180,7 @@ events:
       Paul Merrill found lines of technetium in the spectra of red giants of
       class S. Technetium has no stable isotope, and even its longest-lived
       ones last only a few million years, far less than the age of these
-      stars. It must have been made inside them: the first direct proof that
+      stars. It must have been made inside them: the first direct evidence that
       stars build elements, by the slow neutron captures of the s-process.
     text_it: >-
       Paul Merrill trovò le righe del tecnezio negli spettri delle giganti
@@ -272,8 +272,8 @@ events:
       Margaret Burbidge, Geoffrey Burbidge, William Fowler and Fred Hoyle
       published a 104-page review of how the elements are made in stars. It
       sorted the processes by the nuclear reactions involved, including slow
-      and rapid neutron capture, and compared them with the measured solar
-      system abundances. It is known by the authors' initials, B²FH.
+      and rapid neutron capture, and compared them with the measured Solar
+      System abundances. It is known by the authors' initials, B²FH.
     text_it: >-
       Margaret Burbidge, Geoffrey Burbidge, William Fowler e Fred Hoyle
       pubblicarono una rassegna di 104 pagine su come gli elementi vengono
@@ -629,7 +629,7 @@ events:
     url: https://www.nobelprize.org/prizes/physics/2002/davis/lecture/
 
   - year: 2003
-    title: The LUNA 400 kV accelerator
+    title: LUNA's 400 kV accelerator is installed
     title_it: L'acceleratore LUNA da 400 kV
     category: luna
     text: >-
@@ -945,7 +945,7 @@ events:
 
   - year: 2023
     month: 10
-    title: Inauguration of the Bellotti Ion Beam Facility
+    title: The Bellotti Ion Beam Facility is inaugurated
     title_it: Inaugurazione del Bellotti Ion Beam Facility
     category: luna
     text: >-
