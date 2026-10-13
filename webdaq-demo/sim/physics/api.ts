@@ -22,16 +22,28 @@
 
 // ─────────────────────────────────────────────────────────────── scenario
 
-export type DetectorKind = 'hpge' | 'bgo'
-export type SourceId = 'co60' | 'cs137' | 'background' | 'n14pg'
 export type Dpp = 'DPP-PHA' | 'DPP-PSD'
+
+/**
+ * hpge → DPP-PHA; bgo, ej309 (liquid scintillator, n/γ PSD) and he3 → DPP-PSD.
+ * The physics engine may refuse a kind it does not model yet by throwing in
+ * configure(); the state machine then keeps the previous scenario.
+ */
+export type DetectorKind = 'hpge' | 'bgo' | 'ej309' | 'he3'
+/** Neutron sources (ambe, cf252) are meant for the ej309/he3 detectors. */
+export type SourceId = 'co60' | 'cs137' | 'background' | 'n14pg' | 'ambe' | 'cf252'
+
+/** The firmware each detector kind runs on the simulated V1730 (Jakub: V1730 for both). */
+export function dppFor(kind: DetectorKind): Dpp {
+  return kind === 'hpge' ? 'DPP-PHA' : 'DPP-PSD'
+}
 
 /** What the visitor chose on the start page / scenario panel (design §3.2). */
 export interface Scenario {
   detectors: DetectorKind
   source: SourceId
-  /** Source–detector distance, cm. */
-  distance_cm: 5 | 10 | 25
+  /** Source–detector distance (front face), cm; user-adjustable, 1–50. */
+  distance_cm: number
   /** Calibration-source activity, Bq (default 20e3, range 1e3–1e6). */
   activity_Bq: number
   /** Room background level (design §3.3). */
@@ -41,6 +53,9 @@ export interface Scenario {
   /** Beam current I0 for the in-beam source, µA (default 100; 0 for sources). */
   beam_I0_uA: number
 }
+
+export const DISTANCE_MIN_CM = 1
+export const DISTANCE_MAX_CM = 50
 
 export const DEFAULT_SCENARIO: Scenario = {
   detectors: 'hpge',

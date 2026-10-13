@@ -79,8 +79,13 @@ in **`sim/physics/api.ts`**. It declares the types and exports:
 
 `BoardView` is a read-only view of the register file (`chReg(0x10XX, ch)`,
 `reg(0x8000)`, `channelEnabled`, `waveformsEnabled`, `dpp`, `nChannels`,
-`nsPerSample`). `Scenario` is the visitor's choice (detectors, source,
-distance, activity, background level, yield factor, beam I0).
+`nsPerSample`). `Scenario` is the visitor's choice: detectors
+(`hpge` → DPP-PHA; `bgo`, `ej309` liquid scintillator with n/γ PSD, `he3` →
+DPP-PSD, see `dppFor`), source (`co60`, `cs137`, `background`, `n14pg`,
+`ambe`, `cf252`), source–detector distance in cm (free, 1–50), activity,
+background level, yield factor, beam I0. The state machine stores it, puts it
+in `metadata.json → Demo.scenario`, re-creates the board with the right DPP
+when the detector kind changes, and passes it to `configure()` unchanged.
 
 What stays in the state machine: rebinning (`POST /histograms/rebin`), the
 calibration's axis limits, the "SIMULATED — …" titles, the "why is it empty"
