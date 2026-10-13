@@ -1,7 +1,7 @@
 {
   "title": "Nuclear astrophysics: reaction atlas, R-matrix evaluations and reaction rates",
   "upload_type": "software",
-  "description": "<p>Source code and content of Jakub Skowronski's research website: a reaction atlas of the nuclear reactions that power stars, with references and plain-language explanations in English and Italian; interactive R-matrix evaluations run with AZURE2, natively or in the browser; a reaction-rate explorer built on JINA REACLIB and pynucastro; and notes on R-matrix theory.</p><p>The site was built with AI assistance (Claude, by Anthropic) under the author's direction and scientific responsibility; see the site's About page.</p>",
+  "description": "<p>Source code and content of Jakub Skowronski's research website: a reaction atlas of the nuclear reactions that power stars, with references and plain-language explanations in English and Italian; interactive R-matrix evaluations run with AZURE2, natively or in the browser; a reaction-rate explorer built on JINA REACLIB and pynucastro; a nuclear data explorer of EXFOR and ENSDF; a browser demo of WebDAQ, the data acquisition developed for LUNA; and notes on R-matrix theory.</p><p>The site was built with AI assistance (Claude, by Anthropic) under the author's direction and scientific responsibility; see the site's About page.</p>",
   "creators": [
     {
       "name": "Skowronski, Jakub",

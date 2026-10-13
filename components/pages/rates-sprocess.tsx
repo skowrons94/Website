@@ -22,7 +22,7 @@ import { curiosityCards } from "@/lib/rates/curiosity-data"
 const TEXT = {
   en: {
     eyebrow: "Reaction rates",
-    title: "The s-process: what if?",
+    title: "s-process: what if?",
     description:
       "Change the neutron sources, the poisons and the seeds of the s-process and see the neutron exposure and the heavy isotopes from iron to bismuth change. A network of some 500 nuclei, calculated in your browser.",
     back: "Reaction rates",
@@ -31,7 +31,7 @@ const TEXT = {
   },
   it: {
     eyebrow: "Tassi di reazione",
-    title: "Il processo s, e se…",
+    title: "Processo s: e se…?",
     description:
       "Cambia le sorgenti di neutroni, i veleni e i semi del processo s e guarda come cambiano l'esposizione ai neutroni e gli isotopi pesanti dal ferro al bismuto. Una rete di circa 500 nuclei, calcolata nel tuo browser.",
     back: "Tassi di reazione",

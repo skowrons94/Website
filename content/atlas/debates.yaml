@@ -432,17 +432,20 @@ questions:
     status: open
     reactions: [14N-pg-15O]
     summary: >-
-      Much of the proton capture on nitrogen-14 in the Sun goes through an
-      excited state of oxygen-15 that lies just below the energy the two bring in. How much
-      it contributes at solar energies depends on how quickly the state
-      decays: its lifetime is a few tenths of a femtosecond, and published
+      In the Sun, most proton captures on nitrogen-14 end in an excited state
+      of oxygen-15 that lies just below the energy the two bring in. The same
+      state also adds to the captures that go straight to the ground state,
+      and that share grows the faster the state decays, i.e. the shorter its
+      lifetime. The lifetime is a few tenths of a femtosecond, and published
       measurements disagree.
     summary_it: >-
-      Nel Sole buona parte delle catture di protoni sull'azoto-14 passa per uno
-      stato eccitato dell'ossigeno-15 che si trova appena sotto l'energia portata
-      dai due nuclei. Quanto contribuisca alle energie solari dipende da
-      quanto velocemente lo stato decade: la sua vita media è di pochi decimi
-      di femtosecondo, e le misure pubblicate non concordano.
+      Nel Sole la maggior parte delle catture di protoni sull'azoto-14 finisce
+      in uno stato eccitato dell'ossigeno-15 che si trova appena sotto
+      l'energia portata dai due nuclei. Lo stesso stato contribuisce anche
+      alle catture che portano direttamente allo stato fondamentale, e questo
+      contributo cresce quanto più velocemente lo stato decade, cioè quanto
+      più breve è la sua vita media. La vita media è di pochi decimi di
+      femtosecondo, e le misure pubblicate non concordano.
     positions:
       - who: Doppler-shift lifetimes
         who_it: Vite medie dallo spostamento Doppler

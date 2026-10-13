@@ -116,7 +116,9 @@ function BodyEn({ email, name, to }: { email: string; name: string; to: (p: stri
               The log is deleted automatically after <strong>{RETENTION_DAYS} days</strong>. The calculation server (the
               R-matrix evaluations) logs the method and address of each request, without anything after the “?”, with
               the same shortened IP address and the time; its log is overwritten as it grows
-              and cleared whenever the server is updated. Nobody else has access to either log, and they are not used to
+              and cleared whenever the server is updated. When the web server cannot answer a request (for example
+              while the calculation server restarts), it logs the error with the same details as the access log, the
+              IP address shortened in the same way, in its console log, which is also overwritten as it grows. Nobody else has access to either log, and they are not used to
               identify visitors or to build profiles. The legal basis is my legitimate interest in running the site
               securely (Art. 6(1)(f) GDPR).
             </p>
@@ -149,7 +151,9 @@ function BodyEn({ email, name, to }: { email: string; name: string; to: (p: stri
         <li>
           for the open tab only, the WebDAQ demo&apos;s simulated state, the progress of its guided tour, its language and
           the notes you closed (keys starting with <Code>webdaq-demo:v1:</Code>, session storage; the demo&apos;s “Reset demo”
-          clears them);
+          clears them). In Safari and other WebKit browsers that do not let the demo redirect WebDAQ&apos;s own keys
+          (such as <Code>authToken</Code>, set to <Code>demo</Code>), those keys stay in local storage instead, beyond
+          the open tab, until you clear this site&apos;s data in the browser (“Reset demo” does not remove them);
         </li>
         {STATIC_BUILD && (
           <li>
@@ -241,7 +245,10 @@ function BodyIt({ email, name, to }: { email: string; name: string; to: (p: stri
               Il registro viene cancellato automaticamente dopo <strong>{RETENTION_DAYS} giorni</strong>. Il server di
               calcolo (le valutazioni R-matrix) registra il metodo e l&apos;indirizzo di ogni richiesta, senza quanto segue
               il «?», con lo stesso indirizzo IP abbreviato e l&apos;ora; il suo registro
-              viene sovrascritto man mano che cresce e azzerato a ogni aggiornamento del server. Nessun altro ha accesso ai
+              viene sovrascritto man mano che cresce e azzerato a ogni aggiornamento del server. Quando il server web non
+              riesce a rispondere a una richiesta (per esempio mentre il server di calcolo si riavvia), registra
+              l&apos;errore con gli stessi dati del registro degli accessi, con l&apos;indirizzo IP abbreviato allo stesso
+              modo, nel suo registro di console, anch&apos;esso sovrascritto man mano che cresce. Nessun altro ha accesso ai
               registri, che non servono a identificare i visitatori né a profilarli. La base giuridica è il mio legittimo
               interesse a gestire il sito in sicurezza (art. 6, par. 1, lett. f, GDPR).
             </p>
@@ -274,7 +281,10 @@ function BodyIt({ email, name, to }: { email: string; name: string; to: (p: stri
         <li>
           solo per la scheda aperta, lo stato simulato della demo di WebDAQ, il punto della visita guidata, la lingua e
           gli avvisi che hai chiuso (chiavi che iniziano con <Code>webdaq-demo:v1:</Code>, archiviazione di sessione; il
-          pulsante «Ricomincia» della demo le cancella);
+          pulsante «Ricomincia» della demo le cancella). In Safari e negli altri browser basati su WebKit che non
+          permettono alla demo di reindirizzare le chiavi di WebDAQ (come <Code>authToken</Code>, impostata a{" "}
+          <Code>demo</Code>), queste restano invece nell&apos;archiviazione locale, anche dopo la chiusura della scheda,
+          finché non cancelli i dati di questo sito dalle impostazioni del browser («Ricomincia» non le rimuove);
         </li>
         {STATIC_BUILD && (
           <li>i file del motore di calcolo, scaricati una volta sola anziché a ogni visita (Cache Storage).</li>

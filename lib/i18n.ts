@@ -776,6 +776,10 @@ const en = {
     // --- lit ---
     openQuestions: "Open questions",
     openQuestionsDescription: "What the field still argues about, and what would settle it",
+    // --- r18 --- the stories and guided paths, now part of the atlas
+    stories: "Stories and guided paths",
+    storiesDescription: "From a question to what we still don't know, a few steps at a time",
+    sProcessWhatIf: "s-process: what if?",
   },
   footer: {
     work: "Work",
@@ -952,7 +956,7 @@ const en = {
     resourcesTitle: "Resources for the community",
     resourcesLead: "Open, versioned and citable resources for anyone working on these reactions.",
     resourceAtlas: "Reaction atlas",
-    resourceAtlasText: (n: number) => `${n} reactions of stellar burning and the Big Bang, every measurement referenced, and the whole atlas downloadable as one JSON file.`,
+    resourceAtlasText: (n: number) => `${n} reactions of stellar burning and the Big Bang, the main measurements listed with their references, and the whole atlas downloadable as one JSON file.`,
     resourceSProcess: "The s-process",
     resourceSProcessText: "How stars make about half the nuclei heavier than iron, on the chart from iron to bismuth.",
     resourceSProcessMeta: "Part of the atlas, cited as the atlas",
@@ -1308,6 +1312,11 @@ const en = {
     citeTitle: "How to cite this atlas",
     citeVersion: "version",
     citeAccessed: "Cite the version you used; the date is the last change to the content.",
+    citePageTitle: "How to cite this page",
+    citeIn: "in",
+    citePageNote: "Cite the date you used; it is the last change to this page.",
+    bibtex: "BibTeX",
+    bibtexHint: (n: number) => `this page and its ${n} ${n === 1 ? "reference" : "references"}`,
     licence: (name: string) =>
       `The text and the data, including data.json, are released under the ${name} licence: you may reuse them, with credit.`,
     licenceLink: "Licence",
@@ -1459,6 +1468,10 @@ const it: Dictionary = {
     // --- lit ---
     openQuestions: "Questioni aperte",
     openQuestionsDescription: "Su che cosa si discute ancora, e che cosa lo risolverebbe",
+    // --- r18 --- le storie e i percorsi guidati, ora parte dell'atlante
+    stories: "Storie e percorsi guidati",
+    storiesDescription: "Da una domanda a ciò che ancora non sappiamo, pochi passi alla volta",
+    sProcessWhatIf: "Processo s: e se…?",
   },
   footer: {
     work: "Lavoro",
@@ -1986,6 +1999,11 @@ const it: Dictionary = {
     citeTitle: "Come citare questo atlante",
     citeVersion: "versione",
     citeAccessed: "Cita la versione che hai usato; la data è quella dell'ultima modifica dei contenuti.",
+    citePageTitle: "Come citare questa pagina",
+    citeIn: "in",
+    citePageNote: "Cita la data che hai usato: è quella dell'ultima modifica di questa pagina.",
+    bibtex: "BibTeX",
+    bibtexHint: (n: number) => `questa pagina e ${n === 1 ? "il suo riferimento" : `i suoi ${n} riferimenti`}`,
     licence: (name: string) =>
       `I testi e i dati, compreso data.json, sono distribuiti con licenza ${name}: puoi riutilizzarli citando la fonte.`,
     licenceLink: "Licenza",

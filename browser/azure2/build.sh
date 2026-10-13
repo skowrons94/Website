@@ -18,18 +18,35 @@ WORK=$(mkdir -p "$1" && cd "$1" && pwd)
 HERE=$(cd "$(dirname "$0")" && pwd)
 REPO=$(cd "$HERE/../.." && pwd)
 REF=$(sed -n 's/^ARG AZURE2_REF=//p' "$REPO/deploy/Dockerfile.azure2")
-GSL_REF=${GSL_REF:-v2.7.0}          # ampl/gsl: GSL with a CMake build
+# ampl/gsl (GSL with a CMake build) by commit, not by its mutable tag: this is
+# what the tag v2.7.0 pointed at when it was pinned (git ls-remote, 2026-10-13).
+GSL_COMMIT=55c260c1eb103e960998a290d84558ae7d8062c4
 PYODIDE=${PYODIDE:-0.28.3}
+# SHA-256 of xbuildenv-0.28.3.tar.bz2 from the Pyodide release, recorded
+# 2026-10-13 (the same download gave pyodide-core-0.28.3's recorded hash in
+# pages.yml). Another Pyodide version needs its own hash here.
+XBUILDENV_SHA256=7c1229a3d634e07a440fc916d56738ac4db61410dc6f50eb59a11e4a30f1b56a
 JOBS=${JOBS:-$(nproc)}
 
 cd "$WORK"
 [ -d AZURE2 ] || git clone --quiet https://github.com/rdeboer1/AZURE2.git
 git -C AZURE2 checkout --quiet --detach "$REF"
-[ -d gsl ] || git clone --quiet --depth 1 --branch "$GSL_REF" https://github.com/ampl/gsl.git
+if [ ! -d gsl ]; then
+  git init --quiet gsl
+  git -C gsl fetch --quiet --depth 1 https://github.com/ampl/gsl.git "$GSL_COMMIT"
+  git -C gsl checkout --quiet --detach FETCH_HEAD
+fi
+test "$(git -C gsl rev-parse HEAD)" = "$GSL_COMMIT"
 
 # Python headers of the Pyodide build, from its cross-build environment.
+# Downloaded to a file and checked before tar sees a byte of it.
 if [ ! -d xbuildenv ]; then
-  curl -sSL "https://github.com/pyodide/pyodide/releases/download/$PYODIDE/xbuildenv-$PYODIDE.tar.bz2" | tar -xj
+  [ "$PYODIDE" = 0.28.3 ] || { echo "no recorded SHA-256 for xbuildenv-$PYODIDE" >&2; exit 1; }
+  curl -sSfL -o "xbuildenv-$PYODIDE.tar.bz2" \
+    "https://github.com/pyodide/pyodide/releases/download/$PYODIDE/xbuildenv-$PYODIDE.tar.bz2"
+  echo "$XBUILDENV_SHA256  xbuildenv-$PYODIDE.tar.bz2" | sha256sum -c - > /dev/null
+  tar -xjf "xbuildenv-$PYODIDE.tar.bz2"
+  rm "xbuildenv-$PYODIDE.tar.bz2"
 fi
 PYINC=$(ls -d "$WORK"/xbuildenv/pyodide-root/cpython/installs/python-*/include/python3.*)
 

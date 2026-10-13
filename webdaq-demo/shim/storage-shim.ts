@@ -39,7 +39,8 @@
   try {
     Object.defineProperty(window, 'localStorage', { configurable: true, get: () => shim })
   } catch {
-    // WebKit may refuse; WebDAQ's own keys then stay in localStorage and Reset clears that fixed list.
+    // WebKit may refuse; WebDAQ's own keys (authToken and the rest) then stay in the real
+    // localStorage, which Reset does not clear (resetDemo clears sessionStorage only); /privacy says so.
     ;(window as any).__webdaqStorageFallback = true
   }
   try { if (!window.localStorage.getItem('authToken')) window.localStorage.setItem('authToken', 'demo') } catch { /* ignore */ }

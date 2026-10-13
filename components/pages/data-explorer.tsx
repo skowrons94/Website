@@ -7,40 +7,33 @@ import { ElementSearch } from "@/components/data/element-search"
 import { GapMap } from "@/components/data/gap-overview"
 import { NucleusTeaser } from "@/components/data/nucleus-teaser"
 import { StatusChart } from "@/components/data/status-chart"
-import { Sci } from "@/components/sci"
 import { getAtlas } from "@/lib/atlas"
 import { particleName } from "@/lib/atlas-core.mjs"
 import { formatDate } from "@/lib/atlas-format"
 import { dataPublicDict } from "@/lib/data/i18n-public"
-import { guidedPath, PATH_IDS } from "@/lib/data/paths"
 import {
   elementIndex,
   energy,
   ensdfNuclides,
-  gapRowOf,
   gapRows,
   getSummary,
   group,
   levelTeaser,
   nuclideLabel,
   nucleusPath,
-  reactionDataPath,
   statusChart,
-  undergroundCounts,
-  waiting,
-  waitingTime,
 } from "@/lib/data/public"
 import { dict } from "@/lib/i18n"
 import { localePath, type Lang } from "@/lib/locale"
 import { pageMetadata } from "@/lib/metadata"
-import { curiosityPath } from "@/lib/rates/curiosities"
 import { REPO } from "@/lib/repo"
 
 /**
  * /data and /it/data: the public entry to the nuclear data explorer. A
- * promise, four words in plain language, and five ways in (the chart of how
- * well each reaction is known, the gap map, three stories, a nucleus from
- * inside, the element search) plus three guided paths. Everything is drawn on
+ * promise, four words in plain language, and the ways into the data (the
+ * chart of how well each reaction is known, the gap map, a nucleus from
+ * inside, the element search). The stories and the guided paths are part of
+ * the atlas (components/atlas/stories-paths.tsx). Everything is drawn on
  * the server from a summary of a few kB (lib/data/public.ts); the only
  * JavaScript of its own is the element search. The expert pages
  * (/data/reaction/*, /data/nucleus/*) are linked by address.
@@ -65,11 +58,6 @@ export function DataExplorerPage({ lang }: { lang: Lang }) {
   const gaps = gapRows(lang)
   const elements = elementIndex(lang)
   const teaser = levelTeaser("15O", "14N-pg-15O")
-  const under = undergroundCounts()
-  const ppWait = waitingTime("pp", "sun-core", "1H-pp-2H")
-  const cnoWait = waitingTime("cno", "massive-15", "14N-pg-15O")
-  const n14 = gapRowOf("14N-pg-15O", lang)
-  const paths = PATH_IDS.map((id) => guidedPath(id, lang))
   const withStatus = chart.arrows.length + chart.offChart.length
   const snapshot = summary.snapshot.date ? formatDate(summary.snapshot.date, lang) : ""
   const ensdfDate = summary.ensdf.archive_date ? formatDate(summary.ensdf.archive_date, lang) : ""
@@ -87,47 +75,7 @@ export function DataExplorerPage({ lang }: { lang: Lang }) {
   const cards = [
     { href: "#known", title: t.jumps.known, text: t.cards.known(String(withStatus)) },
     { href: "#gap", title: t.jumps.gap, text: t.cards.gap(String(gaps.length)) },
-    { href: "#stories", title: t.jumps.stories, text: t.cards.stories },
     { href: "#nucleus", title: t.jumps.nucleus, text: t.cards.nucleus },
-    { href: "#paths", title: t.jumps.paths, text: t.cards.paths },
-  ]
-
-  const stories = [
-    {
-      id: "pp",
-      title: t.stories.pp.title,
-      text: t.stories.pp.text(ppWait ? waiting(ppWait.tau, lang) : ""),
-      links: [
-        { href: "/atlas/1H-pp-2H", label: t.stories.atlas },
-        { href: "/atlas/rates#pp", label: t.stories.rates },
-        { href: curiosityPath("pp-sun-hydrogen"), label: t.stories.curiosity },
-      ],
-    },
-    {
-      id: "cno",
-      title: t.stories.cno.title,
-      text: t.stories.cno.text(
-        cnoWait ? waiting(cnoWait.tau, lang) : "",
-        n14?.low ? energy(n14.low.keV, lang) : "",
-        n14 ? energy(n14.E0, lang) : "",
-      ),
-      links: [
-        { href: "/atlas/14N-pg-15O", label: t.stories.atlas },
-        ...(summary.reactions["14N-pg-15O"] ? [{ href: reactionDataPath(summary.reactions["14N-pg-15O"].slug), label: t.stories.data }] : []),
-        { href: "/atlas/rates#cno", label: t.stories.rates },
-        { href: curiosityPath("cno-sun-oxygen-15"), label: t.stories.curiosity },
-      ],
-    },
-    {
-      id: "underground",
-      title: t.stories.underground.title,
-      text: t.stories.underground.text(group(under.datasets, lang), String(under.reactions), String(under.lowest)),
-      links: [
-        { href: "/atlas#luna-heading", label: t.stories.luna },
-        { href: "/atlas/methods", label: dict(lang).footer.methods },
-        { href: "/evaluations", label: dict(lang).footer.evaluations },
-      ],
-    },
   ]
 
   return (
@@ -181,7 +129,7 @@ export function DataExplorerPage({ lang }: { lang: Lang }) {
 
       {/* -- the ways in ------------------------------------------------- */}
       <nav aria-label={t.jump} className="mt-10">
-        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <ul className="grid gap-3 sm:grid-cols-3">
           {cards.map((c) => (
             <li key={c.href}>
               <a
@@ -232,33 +180,6 @@ export function DataExplorerPage({ lang }: { lang: Lang }) {
         <div className="mt-8">
           <GapMap rows={gaps} lang={lang} />
         </div>
-      </section>
-
-      {/* -- three stories ------------------------------------------------ */}
-      <section id="stories" aria-labelledby="stories-heading" className={SECTION}>
-        <h2 id="stories-heading" className={H2}>
-          {t.storiesTitle}
-        </h2>
-        <ul className="mt-8 grid gap-6 md:grid-cols-3">
-          {stories.map((s, k) => (
-            <li key={s.id} className="flex flex-col rounded-xl border border-border bg-card p-6">
-              <p className="tabular text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">{k + 1}</p>
-              <h3 className="mt-2 text-balance font-serif text-xl font-semibold leading-snug tracking-tight">{s.title}</h3>
-              <p className="mt-3 flex-1 text-pretty leading-relaxed text-muted-foreground">
-                <Sci>{s.text}</Sci>
-              </p>
-              <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-0 border-t border-border/70 pt-3">
-                {s.links.map((l) => (
-                  <li key={l.href}>
-                    <Link href={to(l.href)} className={LINK}>
-                      {l.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </li>
-          ))}
-        </ul>
       </section>
 
       {/* -- inside the nucleus ------------------------------------------- */}
@@ -312,32 +233,17 @@ export function DataExplorerPage({ lang }: { lang: Lang }) {
         </section>
       )}
 
-      {/* -- guided paths ------------------------------------------------- */}
-      <section id="paths" aria-labelledby="paths-heading" className={SECTION}>
-        <h2 id="paths-heading" className={H2}>
-          {t.pathsTitle}
-        </h2>
-        <p className={LEAD}>{t.pathsLead}</p>
-        <ul className="mt-8 grid gap-6 md:grid-cols-3">
-          {paths.map((p) => (
-            <li key={p.id}>
-              <Link
-                href={to(`/data/path/${p.id}`)}
-                className="group flex h-full flex-col rounded-xl border border-border bg-card p-6 transition-colors hover:border-foreground/30"
-              >
-                <span className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">{t.pathSteps(p.steps.length + 1)}</span>
-                <span className="mt-2 text-balance font-serif text-xl font-semibold leading-snug tracking-tight group-hover:text-link">{p.title}</span>
-                <span className="mt-2 flex-1 text-pretty leading-relaxed text-muted-foreground">{p.teaser}</span>
-                <span className="mt-4 flex gap-1.5" aria-hidden>
-                  {Array.from({ length: p.steps.length + 1 }, (_, k) => (
-                    <span key={k} className={k === 0 ? "h-2.5 w-5 rounded-full bg-foreground" : "h-2.5 w-2.5 rounded-full border-2 border-foreground/40"} />
-                  ))}
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
+      {/* -- the stories and the guided paths moved to the atlas (r18); the
+          anchors stay so that old links to /data#stories and /data#paths land
+          on a pointer. */}
+      <p className="mt-16 border-t border-border/70 pt-8 text-sm text-muted-foreground">
+        <span id="stories" className="scroll-mt-[calc(var(--header-h,0px)+1.5rem)]" />
+        <span id="paths" className="scroll-mt-[calc(var(--header-h,0px)+1.5rem)]" />
+        {t.movedToAtlas}{" "}
+        <Link href={to("/atlas#stories")} className="text-link underline-offset-4 hover:underline">
+          {t.movedToAtlasLink}
+        </Link>
+      </p>
 
       {/* -- where the data come from ------------------------------------- */}
       <section id="sources" aria-labelledby="sources-heading" className="mt-16 scroll-mt-24 rounded-lg border border-border p-5 sm:p-6">

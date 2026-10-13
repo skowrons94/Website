@@ -194,7 +194,7 @@ const PAGES = [
   // --- r11 sec ---
   { href: "/privacy", en: ["Privacy", "What is logged and for how long; no cookies or trackers"], it: ["Privacy", "Che cosa viene registrato e per quanto; niente cookie né tracciamento"], k: "privacy GDPR RGPD cookie cookies tracking tracciamento analytics statistiche log registro dati personali personal data IP" },
   // --- rates ---
-  { href: "/atlas/rates/s-process", en: ["The s-process: what if?", "Neutron sources, poisons and seeds, from iron to bismuth"], it: ["Il processo s, e se…", "Sorgenti di neutroni, veleni e semi, dal ferro al bismuto"], k: "s-process processo s lead piombo bismuth bismuto iron ferro seed seme neutron poison veleno neutronico neutron source sorgente di neutroni 13C(a,n) 22Ne(a,n) 14N(n,p) exposure esposizione what if" },
+  { href: "/atlas/rates/s-process", en: ["s-process: what if?", "Neutron sources, poisons and seeds, from iron to bismuth"], it: ["Processo s: e se…?", "Sorgenti di neutroni, veleni e semi, dal ferro al bismuto"], k: "s-process processo s lead piombo bismuth bismuto iron ferro seed seme neutron poison veleno neutronico neutron source sorgente di neutroni 13C(a,n) 22Ne(a,n) 14N(n,p) exposure esposizione what if" },
   // --- r13 final ---
   { href: "/atlas/rates/curiosities", en: ["Rate curiosities", "What a reaction twice as fast would change, one sentence at a time"], it: ["Curiosità sui tassi", "Che cosa cambierebbe una reazione due volte più veloce, una frase alla volta"], k: "curiosities curiosity curiosità what if e se twice as fast due volte più veloce ×2 neutrinos neutrini energy energia knock-on effetto a catena" },
   // --- data public ---

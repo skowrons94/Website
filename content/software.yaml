@@ -118,8 +118,8 @@ software:
 
   - id: lunasrim
     name: LunaSRIM
-    tagline: SRIM-2013 in pure Python, identical to the original
-    tagline_it: SRIM-2013 in puro Python, identico all'originale
+    tagline: SRIM-2013 in pure Python, validated against SRIM-2013 output
+    tagline_it: SRIM-2013 in puro Python, convalidato sull'output di SRIM-2013
     version: 1.0.0
     license: MIT
     summary:
@@ -128,9 +128,9 @@ software:
         SRIM-2013 in Python 3: TRIM, the Monte
         Carlo transport of ions in matter, and the SR module, which tabulates
         stopping powers, ranges and straggling. Both were reverse engineered from
-        TRIM.exe and SRModule.exe, and LunaSRIM reproduces them digit for digit,
-        with the same random numbers, the same arithmetic and the same output
-        files.
+        TRIM.exe and SRModule.exe, with the same random numbers, the same
+        arithmetic and the same output files; on the project's test cases the
+        output is bit-for-bit identical to SRIM-2013's.
       - >-
         It needs no Windows, Wine or Docker and has no required dependencies; a
         web application runs it in the browser.
@@ -139,9 +139,10 @@ software:
         lunasrim è una reimplementazione di SRIM-2013 in Python 3: TRIM, il
         trasporto Monte Carlo degli ioni nella materia, e il modulo SR, che
         tabula poteri frenanti, percorsi (range) e dispersione in energia
-        (straggling). Entrambi sono stati ricostruiti per ingegneria inversa da TRIM.exe e SRModule.exe, e lunasrim li
-        riproduce cifra per cifra, con gli stessi numeri casuali, la stessa
-        aritmetica e gli stessi file di output.
+        (straggling). Entrambi sono stati ricostruiti per ingegneria inversa da
+        TRIM.exe e SRModule.exe, con gli stessi numeri casuali, la stessa
+        aritmetica e gli stessi file di output; sui casi di prova del progetto
+        l'output coincide bit per bit con quello di SRIM-2013.
       - >-
         Non richiede Windows, Wine o Docker, e non ha dipendenze obbligatorie.
         Un'applicazione web lo esegue nel browser.
@@ -160,6 +161,21 @@ software:
       - { label: PyPI, href: "https://pypi.org/project/lunasrim/" }
       - { label: Source on GitHub, label_it: Codice sorgente su GitHub, href: "https://github.com/skowrons94/LunaSRIM" }
       - { label: Documentation, label_it: Documentazione, href: "https://github.com/skowrons94/LunaSRIM/tree/main/docs" }
+    # SRIM itself, which LunaSRIM reproduces (checked: DOE PAGES and arXiv
+    # 2307.12867 reference lists, by web search, 2026-10-13).
+    cite:
+      text: "J. F. Ziegler, M. D. Ziegler and J. P. Biersack, SRIM – The stopping and range of ions in matter (2010), Nucl. Instrum. Methods Phys. Res. B 268, 1818 (2010)"
+      doi: 10.1016/j.nimb.2010.02.091
+    note: >-
+      Please cite SRIM too when you use LunaSRIM. LunaSRIM ships SRIM-2013's
+      data files, which SRIM's authors distribute for non-commercial use, so
+      LunaSRIM is for non-commercial research and teaching; its own code is
+      MIT-licensed.
+    note_it: >-
+      Se usi LunaSRIM, cita anche SRIM. LunaSRIM include i file di dati di
+      SRIM-2013, che gli autori di SRIM distribuiscono per uso non commerciale:
+      LunaSRIM è quindi destinato alla ricerca e alla didattica non
+      commerciali; il suo codice è distribuito con licenza MIT.
     snippets:
       - caption: Install (Python 3.9 or later)
         caption_it: Installazione (Python 3.9 o successivo)

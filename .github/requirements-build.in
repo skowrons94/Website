@@ -3,3 +3,10 @@
 -r ../server/requirements.txt
 pybind11
 mpmath
+# The build backend of AZURE2's pyproject.toml: pages.yml installs AZURE2 with
+# --no-build-isolation, so pip uses this pinned copy instead of fetching the
+# latest one (setuptools 70.1 and later build wheels without `wheel`).
+setuptools
+# AZURE2's runtime dependency (pyazr's width transformation), pinned here so
+# the AZURE2 install itself can run with --no-deps.
+scipy

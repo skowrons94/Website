@@ -14,7 +14,9 @@ abstract: >-
   atlas of the nuclear reactions that power stars, with references and
   plain-language explanations (English and Italian); interactive R-matrix
   evaluations run with AZURE2, natively or in the browser; a reaction-rate
-  explorer built on JINA REACLIB and pynucastro; and notes on R-matrix theory.
+  explorer built on JINA REACLIB and pynucastro; a nuclear data explorer of
+  EXFOR and ENSDF; a browser demo of WebDAQ, the data acquisition developed
+  for LUNA; and notes on R-matrix theory.
 authors:
   - family-names: Skowronski
     given-names: Jakub
@@ -22,7 +24,7 @@ authors:
     affiliation: "Università degli Studi di Padova"
     email: jakub.skowronski@unipd.it
 version: 1.0.0
-date-released: "2026-10-12"
+date-released: "2026-10-13"
 repository-code: "https://github.com/skowrons94/Website"
 keywords:
   - nuclear astrophysics

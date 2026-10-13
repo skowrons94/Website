@@ -511,12 +511,39 @@ function rehypeUnicodeScripts() {
   return (tree: any) => walk(tree)
 }
 
+/**
+ * Keeps only link and image addresses that are relative or use http(s) (and,
+ * for links, mailto): `[x](javascript:…)`, `data:` and any other scheme lose
+ * their href or src, so authored Markdown cannot carry a live script link.
+ * The scheme is read as a browser reads it, after removing the control
+ * characters and spaces it ignores ("java\tscript:").
+ */
+export function safeUrl(value: string, allowed: readonly string[]): boolean {
+  // eslint-disable-next-line no-control-regex
+  const v = value.replace(/[\u0000-\u0020\u007f]/g, "")
+  const scheme = v.match(/^([a-z][a-z0-9+.-]*):/i)
+  return !scheme || allowed.includes(scheme[1].toLowerCase())
+}
+
+function rehypeSafeUrls() {
+  const walk = (node: any) => {
+    if (node.type === "element") {
+      const p = node.properties ?? {}
+      if (node.tagName === "a" && typeof p.href === "string" && !safeUrl(p.href, ["http", "https", "mailto"])) delete p.href
+      if (node.tagName === "img" && typeof p.src === "string" && !safeUrl(p.src, ["http", "https"])) delete p.src
+    }
+    for (const child of node.children ?? []) walk(child)
+  }
+  return (tree: any) => walk(tree)
+}
+
 export async function renderMarkdown(markdown: string): Promise<string> {
   const file = await unified()
     .use(remarkParse)
     .use(remarkGfm)
     .use(remarkMath)
     .use(remarkRehype)
+    .use(rehypeSafeUrls)
     .use(rehypeSlug)
     .use(rehypeAutolinkHeadings, {
       behavior: "append",

@@ -11,7 +11,8 @@
  *   WEBDAQ_SRC=/path/to/webdaq           → take the commit from a local clone instead of GitHub
  *
  * Steps: fetch the pinned frontend (and server routes, for the contract tests)
- * into .work/upstream/<commit>/; check that every upstream file the overlay
+ * into .work/upstream/<commit>/, or take it from a cache, and check the whole
+ * tree against pin.json's treeHash; check that every upstream file the overlay
  * replaces still has the sha256 recorded in pin.json; copy the frontend into
  * .work/app, delete the route handlers, copy overlay/ and the main-thread shims;
  * bundle the worker and the trimmed JSROOT with esbuild; next build; check the
@@ -60,9 +61,30 @@ function linkCurrent() {
   fs.symlinkSync(path.relative(WORK, UPSTREAM), link)
 }
 
+/**
+ * sha256 of the whole fetched tree (frontend and server routes): "path sha"
+ * lines of every file, as overrideHash does for a directory, without the
+ * .complete marker. pin.json's `treeHash`; checked on every build, whether the
+ * tree was just fetched or restored from a cache.
+ */
+export function treeHash(root) {
+  return sha256(walk(root).filter(f => f !== '.complete')
+    .map(f => `${f} ${sha256(fs.readFileSync(path.join(root, f)))}`).join('\n'))
+}
+
+function checkTree(root) {
+  const got = treeHash(root)
+  if (got !== pin.treeHash) {
+    fail(`the fetched WebDAQ source does not match pin.json's treeHash:\n  pinned ${pin.treeHash}\n  now    ${got}\n` +
+      'After changing `commit` in pin.json, review the new source and set `treeHash` to the value above. ' +
+      'Otherwise delete .work/upstream and build again; if it still differs, the source is not what was reviewed.')
+  }
+  log(`source tree hash matches (${pin.commit.slice(0, 12)})`)
+}
+
 export function fetchUpstream() {
   const marker = path.join(UPSTREAM, '.complete')
-  if (fs.existsSync(marker)) { linkCurrent(); return UPSTREAM }
+  if (fs.existsSync(marker)) { checkTree(UPSTREAM); linkCurrent(); return UPSTREAM }
   fs.rmSync(UPSTREAM, { recursive: true, force: true })
   fs.mkdirSync(UPSTREAM, { recursive: true })
   const paths = [pin.frontend, 'server/app']
@@ -78,6 +100,7 @@ export function fetchUpstream() {
   }
   const tar = run('git', ['-C', gitDir, 'archive', '--format=tar', pin.commit, ...paths])
   execFileSync('tar', ['-x', '-C', UPSTREAM], { input: tar })
+  checkTree(UPSTREAM)
   fs.writeFileSync(marker, pin.commit + '\n')
   linkCurrent()
   if (!process.env.WEBDAQ_SRC) fs.rmSync(gitDir, { recursive: true, force: true })

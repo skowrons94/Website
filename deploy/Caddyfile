@@ -2,6 +2,31 @@
 # HTTPS beyond pointing the domain's A/AAAA records at the VPS.
 {
 	email {$ACME_EMAIL}
+
+	# The error log (a 502 while the API restarts, an upstream timeout: the
+	# loggers http.log.error and http.handlers.*) carries the request, with
+	# the visitor's address, its port and the headers. It goes to stderr (and
+	# so to Docker's log, rotated at 3 x 10 MB, docker-compose.yml), with the
+	# address cut as in the access log below and cookies and credentials
+	# dropped. Go's own server messages (http.stdlib, e.g. "TLS handshake
+	# error from <address>:<port>") put the full address inside the message
+	# text, where no filter can reach it, so they are not logged at all. The
+	# access log (http.log.access) goes only to its own file, below.
+	log default {
+		output stderr
+		exclude http.log.access http.log.error http.handlers http.stdlib
+	}
+	log errors {
+		output stderr
+		include http.log.error http.handlers
+		format filter {
+			request>remote_ip ip_mask 24 48
+			request>client_ip ip_mask 24 48
+			request>headers>Cookie delete
+			request>headers>Authorization delete
+			request>headers>X-Forwarded-For delete
+		}
+	}
 }
 
 # One canonical host. Caddy asks for a certificate per name it is configured to
