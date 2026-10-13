@@ -32,7 +32,7 @@ $$
 \int_0^\infty \sigma(E)\,E\,\exp\!\left(-\frac{E}{kT}\right)\mathrm{d}E ,
 $$
 
-with $\mu$ the reduced mass. Two things about this expression organise everything
+with $\mu$ the reduced mass. Two things about this expression organize everything
 that follows.
 
 First, **$\sigma(E)$ does not depend on temperature**. Only the weight does. The
@@ -149,7 +149,7 @@ The over-count factor for a single resonance there is $\Gamma_{\text{total}}/\Ga
 \approx 18.5$, and the effect on the total rate at high temperature, where narrow
 resonances dominate, reaches two orders of magnitude.
 
-### How to recognise it without knowing the answer
+### How to recognize it without knowing the answer
 
 Two diagnostics settle it immediately.
 
