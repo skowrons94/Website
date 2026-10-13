@@ -1,0 +1,7 @@
+# CI tooling for ci.yml and pages.yml: the tests, the data explorer, and the
+# server's own packages (its tests import flask). Regenerate the .txt with the
+# command at its top, then check it with pip-audit -r.
+-r ../server/requirements.txt
+pytest
+pyyaml
+jsonschema

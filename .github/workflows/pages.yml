@@ -93,7 +93,8 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq libgsl-dev libreadline-dev libncurses-dev
-          pip install --quiet pybind11 numpy mpmath flask flask-cors
+          # Hash-pinned (.github/requirements-build.in says how to refresh it).
+          pip install --quiet --require-hashes -r .github/requirements-build.txt
           git clone --quiet https://github.com/rdeboer1/AZURE2.git /tmp/AZURE2
           git -C /tmp/AZURE2 checkout --quiet --detach ${{ steps.azure2.outputs.ref }}
           cmake -S /tmp/AZURE2 -B /tmp/AZURE2-build -DCMAKE_BUILD_TYPE=Release \
@@ -107,7 +108,7 @@ jobs:
         # Before the slow steps: a broken info.json or .azr stops the build
         # here, with what to fix (docs/ADDING-AN-EVALUATION.md).
         run: |
-          pip install --quiet pytest
+          pip install --quiet --require-hashes -r .github/requirements-ci.txt
           (cd server && python -m app.check)
           (cd server && python -m pytest -q tests)
 
@@ -213,7 +214,7 @@ jobs:
       - name: Data explorer (EXFOR shards, ENSDF summaries)
         if: steps.dx.outputs.cache-hit != 'true'
         run: |
-          pip install --quiet pyyaml
+          pip install --quiet --require-hashes -r .github/requirements-ci.txt
           python scripts/data/dx.py fetch-exfor
           python scripts/data/dx.py build-exfor --shards all
           source=$(python -c "import json; s=json.load(open('scripts/data/sources.json'))['ensdf']; print('nndc' if len(s.get('nndc_sha256') or {}) == len(s['nndc_urls']) else 'mirror')")
@@ -238,7 +239,7 @@ jobs:
 
       - name: Data explorer checks
         run: |
-          pip install --quiet pyyaml pytest jsonschema
+          pip install --quiet --require-hashes -r .github/requirements-ci.txt
           python scripts/data/dx.py check --shards 500
           python -m pytest -q scripts/data/tests
 

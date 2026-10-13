@@ -39,7 +39,8 @@ jobs:
           python-version: "3.12"
 
       - run: npm ci --ignore-scripts
-      - run: pip install --quiet -r server/requirements.txt pytest pyyaml jsonschema
+      # Hash-pinned: the server's packages (server/requirements.txt) and the test tools.
+      - run: pip install --quiet --require-hashes -r .github/requirements-ci.txt
 
       - name: Evaluations (info.json, .azr paths, data labels, atlas links)
         run: |
