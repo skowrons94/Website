@@ -102,7 +102,7 @@ function card(spec: CuriositySpec, lang: Lang): CuriosityCardData {
     rateSource: src
       ? `${src.author || src.title}${src.year ? ` (${src.year})` : ""}${src.ref && src.author ? `, ${src.ref}` : ""}${src.note ? `, ${it ? (src.note_it ?? src.note) : src.note}` : ""}; REACLIB ${src.set}`
       : "",
-    model: `${it ? "modello a una zona" : "one-zone model"}; ${network.provenance.library} ${network.provenance.snapshot}, ${network.provenance.tool}; ${network.provenance.generated}`,
+    model: `${it ? "modello a zona singola" : "one-zone model"}; ${network.provenance.library} ${network.provenance.snapshot}, ${network.provenance.tool}; ${network.provenance.generated}`,
     image: fs.existsSync(path.join(process.cwd(), "public", img)) ? img : null,
   }
 }

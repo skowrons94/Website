@@ -448,7 +448,7 @@ const it: typeof en = {
     share: "Condividi",
     copy: "Copia il link",
     copied: "Link copiato",
-    caveat: "Modello a una zona del centro di una stella, a temperatura e densità costanti. Le stelle vere si adattano.",
+    caveat: "Modello a zona singola del centro di una stella, a temperatura e densità costanti. Una stella vera si riassesta.",
 
     sourcesTitle: "Da dove vengono i dati",
     ensdfLine: (date: string) => `Livelli: ENSDF (NNDC e la rete NSDD), archivio del ${date}.`,

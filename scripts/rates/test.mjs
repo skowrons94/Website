@@ -451,10 +451,10 @@ for (const id of ["pp", "cno", "nena", "mgal", "sprocess"]) {
       const a = cur.curiosityText(spec, shipped, lang, ctx)
       const b = cur.curiosityText(spec, solved, lang, ctx)
       if (a.sentence !== b.sentence) fail(`curiosity ${spec.id} (${lang}): table says "${a.amount} (${a.percent})", the solver "${b.amount} (${b.percent})"`)
-      if (!/One-zone model|Modello a una zona/.test(a.caveat) || !/Real stars adjust|Le stelle vere si adattano/.test(a.caveat)) fail(`curiosity ${spec.id}: caveat`)
+      if (!/One-zone model|Modello a zona singola/.test(a.caveat) || !/Real stars adjust|Una stella vera si riassesta/.test(a.caveat)) fail(`curiosity ${spec.id}: caveat`)
       if (cards && cards[`${spec.id}.${lang}`] !== a.sentence)
         fail(`curiosity ${spec.id} (${lang}): its social card is stale (node scripts/rates/curiosity-cards.mjs)`)
-      if (lang === "en" && a.hook.split(/\s+/).length > 15) fail(`curiosity ${spec.id}: hook longer than 15 words`)
+      if (a.hook.split(/\s+/).length > 15) fail(`curiosity ${spec.id} (${lang}): hook longer than 15 words`)
       if (/[0-9]\.[0-9]{2,}%|[0-9]{3,}%/.test(a.percent)) fail(`curiosity ${spec.id}: ${a.percent} is more than two figures`)
     }
     if (Math.abs(solved / shipped - 1) > 0.01) fail(`curiosity ${spec.id}: solver ${solved} vs table ${shipped}`)

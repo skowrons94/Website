@@ -91,7 +91,7 @@ function How({ lang }: { lang: Lang }) {
           decide direttamente quanti neutroni ci sono.
         </P>
         <P>
-          Il modello è a una zona: temperatura e densità fisse, una composizione iniziale per ogni ambiente, la rete
+          Il modello è a zona singola: temperatura e densità fisse, una composizione iniziale per ogni ambiente, la rete
           integrata nel tuo browser con lo stesso metodo implicito della pagina dei tassi e verificata con pynucastro.
           Mostra come le sorgenti, i veleni e i semi spostano la distribuzione, non le rese di una stella.
         </P>
