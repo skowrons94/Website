@@ -106,7 +106,7 @@ const en = {
     gapFactor: (x: string) => `${x} × the peak energy (above the window)`,
     gapReached: "Window reached",
     gapEdge: (low: string, site: string, e0: string) =>
-      `Data down to ${low}: only the upper edge of the window (about ${e0}, ${site}); below it, extrapolation.`,
+      `Data down to ${low}: only the upper edge of the window (about ${e0}, ${site}); below it, extrapolation or indirect data.`,
     gapEdgeOnly: "Upper edge only",
     gapNewer: (text: string) => `A lower measurement is not yet in EXFOR: ${text}.`,
     gapNone: "No direct data",
@@ -380,7 +380,7 @@ const it: typeof en = {
     gapFactor: (x: string) => `${x} volte l'energia del picco (sopra la finestra)`,
     gapReached: "Finestra raggiunta",
     gapEdge: (low: string, site: string, e0: string) =>
-      `Dati fino a ${low}: solo il bordo superiore della finestra (circa ${e0}, ${site}); più in basso, estrapolazione.`,
+      `Dati fino a ${low}: solo il bordo superiore della finestra (circa ${e0}, ${site}); più in basso, estrapolazione o dati indiretti.`,
     gapEdgeOnly: "Solo il bordo superiore",
     gapNewer: (text: string) => `Una misura più bassa non è ancora in EXFOR: ${text}.`,
     gapNone: "Nessun dato diretto",
