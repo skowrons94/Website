@@ -9,7 +9,8 @@ python scripts/data/dx.py fetch-exfor            # bare clone of exfor_master at
 python scripts/data/dx.py build-exfor            # index + every shard (~6 min on 4 cores)
 python scripts/data/dx.py fetch-ensdf            # NNDC archive, else the pinned mirror
 python scripts/data/dx.py build-ensdf            # ENSDF summaries of the scope's nuclei
-python scripts/data/dx.py check                  # schemas and size budgets
+python scripts/data/dx.py check                  # schemas, size budgets, points below threshold
+python scripts/data/dx.py nrdc-report            # scripts/data/nrdc-report.md from corrections.yaml
 python -m pytest -q scripts/data/tests           # == npm run test:data
 python scripts/data/dx.py export O1195.002 --format azure2 --out /tmp/az   # also csv, json, bibtex
 ```
@@ -67,12 +68,29 @@ Total 89,804 datasets from 14,422 entries, 10.06 M points, 7,668 reactions
   "extrapolated", or whose incident energy is exactly 0, goes to `excluded`
   with its reason (O1195.002: five S(0) rows). The dataset gets the flag
   `has-extrapolated-rows`; `npts` and `emin_cm` count the remaining points.
+- **EXFOR's own errors are corrected, from a list.** `corrections.yaml` names
+  each subentry whose energies or values EXFOR gives in the wrong frame (c.m.
+  energies under a laboratory heading such as `EN` or `EN-RES`), unit (MeV
+  under `KEV`) or scale (×1000), with the evidence from the `.x4` file and the
+  paper, and `reported_to_nrdc`. `nucdata/corrections.py` applies it to the
+  columns before anything reads them, so the index, the shards, the exports
+  and the plots are all corrected; the dataset gets the flag `corrected` and
+  `meta.corrections` (what, why, status), and its export headers say so. An
+  entry with `apply: false` stays on record only (Raiola 2002: the file does
+  not say which frame). `dx.py nrdc-report` writes the draft report to the
+  NRDC, `nrdc-report.md`. Every entry still needs confirming from its paper.
+- **Indirect methods are flagged** `indirect`: an `ANALYSIS` code `TROJA`,
+  `ANC` or `SURGT` (the entry's or the subentry's), the free text of `METHOD`
+  and `ANALYSIS` naming the Trojan-horse method, Coulomb dissociation or
+  break-up, an ANC or a surrogate reaction, or a title naming the Trojan
+  horse, Coulomb dissociation or an indirect method (a title that only
+  mentions an ANC is not enough: Burtebaev 2008, A0819, is direct).
 - **Flags** (`meta.flags`, index bits): `digitised` (STATUS CURVE or an ERR-DIG
   column), `superseded` (STATUS SPSDD, `superseded_by`), `deleted` (HISTORY D),
   `preliminary`, `relative` (SF8 REL/RTH), `not-experimental` (SF9
   CALC/EVAL/RECOM), `derived` (SF9 DERIV, e.g. an S-factor from ANCs),
   `outdated-normalisation`, `renormalised-by-compiler`, `dependent`,
-  `upper-limits` (DATA-MAX/MIN rows, `points.limit`).
+  `upper-limits` (DATA-MAX/MIN rows, `points.limit`), `indirect`, `corrected`.
 - **Error components stay apart.** `meta.err_components` lists every
   uncertainty heading (ERR-S, ERR-SYS, ERR-T, ERR-1…n, DATA-ERR, ERR-DIG) with
   its kind (stat / sys / total / digitising, from the heading and the
@@ -122,6 +140,8 @@ columns [...]; datasets {column: [...]}        one array per column, same order
   n    points        y year      a first author (+ = more)   i first institute code   fa facility
   f    flag bits (meta.flags.bits)    er error bits (stat, sys, total-given, total-combined, normalisation)
   lv   number of distinct final levels   s slice bits (A, B, M, N)   u entry revision YYYYMMDD
+  m1 m2  lowest E_cm (MeV) of a measured point at 1 and 2 standard deviations
+       (below): null none, 0 the same as e0 (m2) or as m2 (m1), else the energy
 ```
 
 ### Shard (`dx-exfor-shard`, schema_version 1)
@@ -140,9 +160,10 @@ pages [...]                                     only when paged: points then liv
 projectile process product compound quantity quantity_class quantity_text
 E_frame E_source ang_frame value_frame value_unit cm_approx emin_cm emax_cm
 emin_lab emax_lab kt_min kt_max npts nexcluded final_levels level_heading
-err_components d_tot_source err_columns monitor flags flag_texts status
-superseded_by history subentry_date slices`, plus any entry field in which the
-subentry differs from its entry. `points`: `E_lab E_cm [dE kT ang E_level
+err_components d_tot_source err_columns monitor flags corrections analysis
+threshold_cm measured_min_cm flag_texts status superseded_by history
+subentry_date slices`, plus any entry field in which the subentry differs
+from its entry. `points`: `E_lab E_cm [dE kT ang E_level
 level_number] value [limit d_stat d_sys d_tot flag err{}]`, parallel arrays.
 `decimated {total, kept, full}`: the shard holds `kept` points spread over the
 energy range; `full` is the gzipped set. `nucdata/store.py` reads all of this
@@ -192,6 +213,16 @@ numbers per line and no comments (`DataLine.h`), so a dataset becomes:
   replace by the `.azr` pair keys (`-1` already for a total capture), the
   energy and angle ranges, the data type and the common systematic
   uncertainty as the normalisation uncertainty (%). `README.txt` lists them.
+  E_min and E_max bracket the energies as the `.dat` file writes them by a
+  relative 1e-5 (angles by 0.001°), because AZURE2 keeps a point only if
+  E_min ≤ E ≤ E_max. The normalisation is varied only where EXFOR gives a
+  common systematic uncertainty; without one it is fixed (`vary norm 0`), as
+  a free normalisation with a 0% uncertainty would float. Rows without an
+  uncertainty are left out of the `.dat` (AZURE2 gives them no weight in χ²)
+  and kept in the `.csv`, which says how many; a file with none is skipped.
+  The page's default selection is the counted angle-integrated totals, one
+  dataset per EXFOR subentry (σ before S, so pointer twins are not fitted
+  twice); partials, dσ/dΩ and the twins are opt-in.
 
 Cross-check (`tests/test_export.py`): the pipeline reproduces the ⁷Be
 evaluation's files `Costantini-O1709001`, `Szucs-D4400001`, `Toth-D4430001`,
@@ -201,8 +232,9 @@ match in energy and value, with uncertainties the evaluator chose.
 
 ## Attribution (in `meta.json`, for the pages)
 
-- `exfor.line`: "Data: EXFOR (IAEA/NRDC), snapshot 2026-09-28, CC BY 4.0" (and
-  `line_it`); `exfor.entry_url` (`https://nds.iaea.org/EXFOR/<entry>`) and
+- `exfor.line`: "Data: EXFOR (IAEA/NRDC), snapshot of 28 September 2026, CC BY
+  4.0" (and `line_it`, "versione del 28 settembre 2026": the house style of
+  dates, docs/STYLE.md); `exfor.entry_url` (`https://nds.iaea.org/EXFOR/<entry>`) and
   `exfor.master_url` (the `.x4` file at the pinned commit); every shard entry
   has both links; `exfor.changes` states what was changed (CC BY 4.0 asks).
 - `exfor.citation`: N. Otuka et al., Nucl. Data Sheets 120, 272 (2014); cite
@@ -223,23 +255,51 @@ and the cross-check, and on the committed outputs: regression counts
 attribution fields. The EXFOR fixtures (`tests/fixtures/exfor/*.x4`) are
 unmodified master files (CC BY 4.0), except `T0001.x4`, which is synthetic.
 
+## Lowest measured energy: one rule
+
+Every page of the explorer gives the same "lowest measured energy" for a
+reaction: /data and its guided paths, the reaction pages, the atlas panel
+and search (`npm run test:data-ui` checks that they agree on every atlas
+reaction). The rule is `lib/data/lowest.mjs`; its settings (the JSON between
+`rule:begin` and `rule:end`) are read by the pipeline too
+(`nucdata/measured.py`).
+
+1. **Per point** (pipeline, `nucdata/measured.py`, written to the index as
+   `m1` and `m2`): a point is measured when it is a value, not an upper or
+   lower limit (limits are judged row by row: a dataset with one DATA-MAX row
+   still counts by its other rows, as Bonetti 1999 does); when its value is at
+   least `sigma` standard deviations above zero (the point's total
+   uncertainty, else statistical and systematic in quadrature; a point
+   without any uncertainty counts when above zero; Legendre coefficients by
+   their absolute value); and when its energy is physical: at least 1 keV
+   (centre of mass) for a charged projectile on a charged target, and not
+   below the threshold −Q of an endothermic reaction (AME2020).
+   `sigma` is 2; the owner may set it to 1 in `lowest.mjs` without rebuilding
+   the data (the index carries both).
+2. **Per dataset** (`lowest.mjs`): it measures the reaction at an energy
+   (quantity class `sigma`, `S`, `dsigma`, `legendre`, `yield` or
+   `strength`); it is not flagged `not-experimental` (calculated, evaluated,
+   recommended), `derived`, `superseded`, `deleted`, `preliminary`, `complex`
+   (a ratio) or `indirect`; it is not a single S-factor value (in EXFOR a fit
+   result such as S(25 keV), not a measurement at that energy). Extrapolated
+   rows never reach the points, and `corrections.yaml` has been applied.
+3. **The lowest** of those is credited to every dataset that reaches it
+   within 0.5% or 0.1 keV, one per EXFOR entry, earliest first (the
+   ²²Ne(p,γ) resonance at 149 keV: Cavanna 2015, Depalo 2016, Ferraro 2018,
+   Lennarz 2020, Williams 2020).
+
+The measured ranges behind "rate from unmeasured energies" use the same
+datasets, from their lowest measured point to their highest. The words on
+the pages are `lib/data/rule-text.ts` (EN and IT), shown on /data and in the
+"How these numbers are made" fold of the reaction pages and the atlas panel.
+
 ## The public page's summary (`/data`)
 
 The public entry page (`components/pages/data-explorer.tsx`) never loads the
 index. `node scripts/data-summary.mjs` (run by `npm run prebuild` and
 `predev`; also `npm run data:summary`) writes `public/data/summary.json`
-(about 15 kB, not committed) from the committed index: per atlas reaction the
-number of datasets and entries, the years, the LUNA datasets (institute or
-facility `2ITYLGS`) and the **lowest centre-of-mass energy measured**. That
-counts σ, S, dσ/dΩ, yields and resonance strengths, and leaves out datasets
-flagged `not-experimental`, `derived`, `superseded`, `deleted`,
-`preliminary` or `upper-limits`, single S-factor values, indirect entries,
-and charged-particle energies under 1 keV (rules and reasons in
-`lib/data/public-summary.mjs`). The indirect entries (Trojan horse, Coulomb
-dissociation, ANC) are `lib/data/indirect-entries.json`, committed and
-regenerated from the atlas shards with `node scripts/data-summary.mjs
---indirect` after `dx.py build-exfor --shards atlas`.
-
-Three subentries give MeV values under a `KEV` heading in EXFOR itself
-(C1825.002, D0468.004, O2207.006: 15N(p,γ), 17O(p,γ), 19F(p,α)); the 1 keV
-floor keeps them out of the summary, and they are worth reporting to the NRDC.
+(about 25 kB, not committed) from the committed index
+(`lib/data/public-summary.mjs`): per atlas reaction the number of datasets
+and entries, the years, the LUNA datasets (institute or facility `2ITYLGS`)
+and the lowest measured energy by the rule above, with every dataset that
+reaches it.

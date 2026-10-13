@@ -1,5 +1,7 @@
 import { readMeta } from "@/lib/data/build"
 import { fill } from "@/lib/data/fill"
+import { ensdfDate, itDate } from "@/lib/data/format"
+import { formatDate } from "@/lib/atlas-format"
 import { dict, type Lang } from "@/lib/i18n"
 
 /**
@@ -19,6 +21,11 @@ export function Attribution({
   className?: string
 }) {
   const meta = readMeta()
+  // one date format (docs/STYLE.md): 28 September 2026 / del 28 settembre 2026
+  const when = (iso: string, prep: "di" | "a") => {
+    const d = /^\d{4}-\d{2}-\d{2}$/.test(iso) ? formatDate(iso, lang) : iso
+    return lang === "it" ? itDate(prep, d) : d
+  }
   const t = dict(lang).dataExpert.attribution
   const ex = meta.exfor
   const sorted = [...new Set(entries)].sort()
@@ -27,7 +34,7 @@ export function Attribution({
     <footer className={`border-t border-border/70 pt-4 text-xs leading-relaxed text-muted-foreground ${className}`}>
       <p>
         <a href="https://nds.iaea.org/exfor/" className="underline-offset-2 hover:text-foreground hover:underline">
-          {fill(t.exfor, { date: ex.snapshot_date }).split(", CC BY")[0]}
+          {fill(t.exfor, { date: when(ex.snapshot_date, "di") }).split(", CC BY")[0]}
         </a>
         {", "}
         <a href={ex.license_url} className="underline-offset-2 hover:text-foreground hover:underline" rel="license">
@@ -46,7 +53,7 @@ export function Attribution({
       {ensdf && (
         <p className="mt-1">
           <a href="https://www.nndc.bnl.gov/ensdf/" className="underline-offset-2 hover:text-foreground hover:underline">
-            {fill(t.ensdf, { date: meta.ensdf.archive_date, nuclide: ensdf.nuclide, citation: ensdf.citation, cutoff: ensdf.cutoff })}
+            {fill(t.ensdf, { date: when(meta.ensdf.archive_date, "di"), nuclide: ensdf.nuclide, citation: ensdf.citation, cutoff: when(ensdfDate(ensdf.cutoff), "a") })}
           </a>
         </p>
       )}

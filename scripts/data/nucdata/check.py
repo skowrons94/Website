@@ -24,6 +24,36 @@ def _schema(name):
         return json.load(f)
 
 
+MEASURED_CLASSES = ("sigma", "S", "dsigma", "legendre", "yield", "strength")
+
+
+def below_threshold(shard: dict) -> list:
+    """Datasets of an atlas reaction with measured points below the threshold
+    of an endothermic reaction: a frame or unit error of EXFOR, to correct in
+    scripts/data/corrections.yaml (spectrum and Maxwellian averages, which may
+    lie below it, are not checked)."""
+    out = []
+    if not shard.get("reaction", {}).get("atlas"):
+        return out
+    pages = {}
+    for d in shard["datasets"]:
+        m = d["meta"]
+        thr = m.get("threshold_cm") or 0
+        if thr <= 0 or m["quantity_class"] not in MEASURED_CLASSES or "not-experimental" in m["flags"] \
+                or "derived" in m["flags"]:
+            continue
+        pts = d.get("points")
+        if pts is None:
+            continue
+        lim = pts.get("limit") or [None] * len(pts["value"])
+        low = [e for e, l in zip(pts["E_cm"], lim) if e is not None and l is None and e < thr * (1 - 1e-3)]
+        if low:
+            out.append(f"{m['id']} ({shard['reaction']['key']}): {len(low)} points below the threshold "
+                       f"{thr * 1000:.0f} keV (lowest {min(low) * 1000:.0f} keV, E given as {m['E_source']}): "
+                       "a frame or unit error? (scripts/data/corrections.yaml)")
+    return out
+
+
 def run(argv=None):
     import argparse
     ap = argparse.ArgumentParser(prog="dx.py check")
@@ -77,6 +107,7 @@ def run(argv=None):
         if g > config.BUDGET["shard_gz"] and "pages" not in doc:
             errors.append(f"{os.path.relpath(p, d)}: {g} bytes gzipped (budget {config.BUDGET['shard_gz']})")
         validate(p, "shard", doc)
+        errors.extend(below_threshold(doc))
     total = 0
     for root, _, files in os.walk(d):
         for fn in files:

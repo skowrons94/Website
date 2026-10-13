@@ -108,12 +108,12 @@ export function StatusChart({ data, lang }: { data: ChartData; lang: Lang }) {
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,17rem)] lg:items-start">
         <figure className="min-w-0">
           {/* on a phone the chart keeps a legible size and scrolls sideways in its frame */}
-          <div className="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
+          {/* the list beside the chart says the same in text: the drawing is hidden from screen readers, its frame is a named, focusable region (it scrolls on a phone) */}
+          <div className="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0" tabIndex={0} role="region" aria-label={t.chartLabel(String(arrows.length))}>
             <svg
               viewBox={`${vb.x} ${vb.y} ${vb.w} ${vb.h}`}
               className="h-auto w-full min-w-[36rem] max-w-[44rem] select-none sm:min-w-0"
-              role="img"
-              aria-label={t.chartLabel(String(arrows.length))}
+              aria-hidden
             >
               {/* the cells */}
               {shown.map((c) => {

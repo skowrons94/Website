@@ -4,7 +4,7 @@ import { ChevronRight } from "lucide-react"
 import { StatusBadge } from "@/components/atlas/status-badge"
 import { Said } from "@/components/data/said"
 import { dataPublicDict } from "@/lib/data/i18n-public"
-import { energy, type GapRow } from "@/lib/data/public"
+import { credit, energy, type GapRow } from "@/lib/data/public"
 import { localePath, type Lang } from "@/lib/locale"
 import { cn } from "@/lib/utils"
 
@@ -120,8 +120,7 @@ export function GapRowView({ row, lang, compact = false }: { row: GapRow; lang: 
         {!compact && row.low && (
           <>
             {" "}
-            {t.gapBy(row.low.author, String(row.low.year ?? ""))}
-            {row.low.luna ? `, ${t.gapUnderground}` : ""}.
+            {t.gapBy(credit(row.low, lang))}.
           </>
         )}
       </p>

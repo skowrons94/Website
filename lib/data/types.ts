@@ -55,6 +55,9 @@ export interface DxIndex {
     lv: number[]
     s: number[]
     u: string[]
+    /** lowest E_cm (MeV) of a measured point at 1 and 2 standard deviations (lib/data/lowest.mjs) */
+    m1?: (number | null)[]
+    m2?: (number | null)[]
   }
 }
 
@@ -124,6 +127,10 @@ export interface DatasetMeta {
   err_columns: Record<string, string>
   monitor: { code: string; text: string }[]
   flags: string[]
+  /** curated corrections applied (scripts/data/corrections.yaml) */
+  corrections?: { id: string; problem: string; change: string; status: string; reported_to_nrdc: string }[]
+  threshold_cm?: number
+  measured_min_cm?: Record<string, number | null>
   flag_texts: Record<string, string>
   status: { code: string; ref: string; text: string }[]
   superseded_by: string | null

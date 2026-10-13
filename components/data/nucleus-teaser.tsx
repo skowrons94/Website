@@ -78,7 +78,12 @@ export function NucleusTeaser({ data, lang }: { data: LevelTeaser; lang: Lang })
       </text>
       {data.sub !== null && (
         <text x={left} y={Math.max(y(data.sub) + 4, ys + 46)} textAnchor="end" fontSize={11} fill="var(--viz-series-2)" className="font-sans font-semibold">
-          {t.nucleusSub}
+          {/* two lines, so the label fits left of the levels at any width */}
+          {t.nucleusSub.split(/(?<=:)\s+/).map((part, k) => (
+            <tspan key={k} x={left} dy={k ? 13 : 0}>
+              {part}
+            </tspan>
+          ))}
         </text>
       )}
       {data.res !== null && (

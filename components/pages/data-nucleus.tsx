@@ -109,11 +109,11 @@ export function DataNucleusPage({ nuclide, lang }: { nuclide: string; lang: Lang
     }
   })
 
-  function MatrixTable({ rows }: { rows: typeof matrix }) {
+  function MatrixTable({ rows, caption }: { rows: typeof matrix; caption: string }) {
     return (
-      <div className="mt-5 overflow-x-auto rounded-lg border border-border" tabIndex={0} role="region" aria-labelledby="channels">
+      <div className="relative mt-5 overflow-x-auto rounded-lg border border-border" tabIndex={0} role="region" aria-label={caption}>
         <table className="w-full border-collapse text-sm">
-          <caption className="sr-only">{fill(dx.nucleus.channelsIntro, { cn })}</caption>
+          <caption className="sr-only">{caption}</caption>
           <thead className="bg-card text-left text-xs text-muted-foreground">
             <tr>
               <th scope="col" className="px-3 py-2 font-medium">
@@ -151,13 +151,14 @@ export function DataNucleusPage({ nuclide, lang }: { nuclide: string; lang: Lang
                           {Number.isFinite(c.lo) && (
                             <span className="block whitespace-nowrap text-xs text-muted-foreground tabular">
                               {energy(c.lo, lang, 2)}
-                              {energy(c.hi, lang, 2) !== energy(c.lo, lang, 2) ? `–${energy(c.hi, lang, 2)}` : ""}
+                              {energy(c.hi, lang, 2) !== energy(c.lo, lang, 2) ? ` – ${energy(c.hi, lang, 2)}` : ""}
                             </span>
                           )}
                         </span>
                       ) : (
-                        <span className="text-muted-foreground/60" aria-label="0">
+                        <span className="text-muted-foreground/60">
                           {dx.nucleus.noData}
+                          <span className="sr-only"> (0)</span>
                         </span>
                       )}
                     </td>
@@ -225,13 +226,13 @@ export function DataNucleusPage({ nuclide, lang }: { nuclide: string; lang: Lang
         <p className="mt-3 max-w-prose text-pretty text-[0.95rem] leading-relaxed text-muted-foreground">
           <Sci>{fill(dx.nucleus.channelsIntro, { cn })}</Sci>
         </p>
-        <MatrixTable rows={light} />
+        <MatrixTable rows={light} caption={fill(dx.nucleus.channelsIntro, { cn })} />
         {heavy.length > 0 && (
           <details className="mt-3">
             <summary className="inline-flex min-h-9 cursor-pointer items-center text-sm text-link">
               {fill(dx.nucleus.heavy, { n: heavy.length })}
             </summary>
-            <MatrixTable rows={heavy} />
+            <MatrixTable rows={heavy} caption={fill(dx.nucleus.heavy, { n: heavy.length })} />
           </details>
         )}
       </section>

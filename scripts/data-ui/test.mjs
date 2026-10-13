@@ -11,7 +11,10 @@
  *   2. Python's number formatting (lib/data/pyfmt.ts) on awkward values.
  *   3. The ZIP the AZURE2 export downloads opens with Python's zipfile.
  *   4. The gap metrics (lib/data/gap.ts): limits, a hand-checked case, and
- *      the committed index for ¹⁴N(p,γ).
+ *      the committed index for ¹⁴N(p,γ); every AZURE2 row inside its segment.
+ *   5. The rule for "lowest measured" (lib/data/lowest.mjs): σ, limits,
+ *      flags, ties, and /data, the atlas panel, the reaction page and search
+ *      agreeing on every atlas reaction.
  */
 
 import { execFileSync } from "node:child_process"
@@ -37,6 +40,9 @@ import {
   unmeasuredShare,
 } from "../../lib/data/gap.ts"
 import { gapRows } from "../../lib/data/index-rows.ts"
+import * as L from "../../lib/data/lowest.mjs"
+import { buildPublicSummary } from "../../lib/data/public-summary.mjs"
+import { summarise } from "../../lib/data/search-index.ts"
 
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../..")
 const FIX = path.join(ROOT, "scripts/data-ui/fixtures/exfor")
@@ -166,6 +172,29 @@ near(gamowWidths(70, 27, 13), 43 / 13, 1e-12, "Gamow widths")
 const lanes = packLanes([[0, 1], [1.5, 2], [0.5, 1.7], [2.1, 3]], 0.2)
 check(JSON.stringify(lanes) === JSON.stringify([0, 0, 1, 1]), `lane packing ${lanes}`)
 
+/* -- 4b. the AZURE2 segments keep every point ------------------------------------ */
+// AZURE2 keeps a point only if E_min <= E <= E_max (ESegment::IsInSegment) and gives
+// an uncertainty of 0 no weight: every .dat row must sit inside its segment's limits
+// and carry an uncertainty; a segment without a common systematic is not varied.
+let rowsChecked = 0
+for (const o of OPTIONS)
+  for (const full of all.values())
+    for (const f of azure2(full, SNAP, table, o)) {
+      if ("skip" in f) continue
+      const seg = f.segment.split(" ")
+      const [eLo, eHi, aLo, aHi] = [Number(seg[3]), Number(seg[4]), Number(seg[5]), Number(seg[6])]
+      for (const line of f.dat.trim().split("\n")) {
+        const [E, ang, , d] = line.split(" ").map(Number)
+        rowsChecked++
+        check(E >= eLo && E <= eHi, `${f.stem}: E ${E} inside [${eLo}, ${eHi}]`)
+        check(!f.is_diff || (ang >= aLo && ang <= aHi), `${f.stem}: angle ${ang} inside [${aLo}, ${aHi}]`)
+        check(d > 0, `${f.stem}: uncertainty ${d} > 0 in the .dat`)
+      }
+      const norm = Number(seg[10])
+      check(seg[9] === (norm > 0 ? "1" : "0"), `${f.stem}: vary norm ${seg[9]} with ${norm} %`)
+    }
+check(rowsChecked > 100, `segment rows checked: ${rowsChecked}`)
+
 const index = JSON.parse(fs.readFileSync(path.join(ROOT, "public/data/exfor/index.json"), "utf8"))
 // a single S value (S(300 keV) of ¹²C(α,γ)) is shown but never counted
 const c12 = gapRows(index, [index.reactions.key.indexOf("12C(a,g)")])
@@ -181,6 +210,78 @@ check(low && low.E > 60 && low.E < 75, `14N(p,g) lowest measured E_cm ${low?.E} 
 check(rows.every((x) => !countsForRate(x) || !(x.f & 64)), "calculated sets never count")
 const share = unmeasuredShare(sun, measuredRanges(rows))
 check(share > 0.95, `14N(p,g) in the Sun: almost all of the rate integrand unmeasured (${share})`)
+
+/* -- 5. one rule for "lowest measured" (lib/data/lowest.mjs) ------------------------ */
+
+const base = { id: "X0001.002", q: "sigma", qs: "", e0: 0.05, e1: 1, k0: null, k1: null, n: 5, y: 2000, a: "A+", i: "", fa: "", f: 0, lv: 0, fr: 0 }
+// the significance: a dataset whose lowest point is 1σ but not 2σ above zero
+const weak = { ...base, m1: 0.05, m2: 0.08 }
+check(L.measuredMin(weak, 2) === 0.08 && L.measuredMin(weak, 1) === 0.05, "m2 at 2σ, m1 at 1σ")
+check(L.lowestMeasured([weak], 2).E === 80 && L.lowestMeasured([weak], 1).E === 50, "the rule's σ picks the column")
+check(L.RULE.sigma === 2, "default: 2σ above zero")
+// per-point limits: a dataset with limits still counts by its other points (m2 set by the pipeline)
+check(L.countsAsMeasured({ ...base, f: L.flagBit("upper-limits"), m1: 0.1, m2: 0.1 }), "a dataset with some limits still counts")
+check(!L.countsAsMeasured({ ...base, f: L.flagBit("upper-limits"), m1: null, m2: null }), "a dataset of limits only does not")
+for (const fl of ["not-experimental", "derived", "superseded", "indirect", "deleted"])
+  check(!L.countsAsMeasured({ ...base, f: L.flagBit(fl), m1: 0.05, m2: 0.05 }), `${fl} never counts`)
+check(L.countsAsMeasured({ ...base, f: L.flagBit("corrected"), m1: 0.05, m2: 0.05 }), "a corrected dataset counts")
+check(!L.countsAsMeasured({ ...base, q: "S", n: 1, m1: 0.05, m2: 0.05 }), "a single S value never counts")
+check(!L.countsAsMeasured({ ...base, q: "ratio", m1: 0.05, m2: 0.05 }), "a ratio never counts")
+// ties: within 0.5 %, earliest first, one per entry
+const tie = L.lowestMeasured([
+  { ...base, id: "C2582.002", y: 2020, q: "strength", m1: 0.149, m2: 0.149 },
+  { ...base, id: "D4330.002", y: 2015, q: "strength", m1: 0.1494, m2: 0.1494, i: "2ITYLGS" },
+  { ...base, id: "D4330.003", y: 2015, q: "strength", m1: 0.1494, m2: 0.1494 },
+  { ...base, id: "O9999.002", y: 2010, q: "strength", m1: 0.16, m2: 0.16 },
+])
+check(tie.E === 149 && tie.id === "D4330.002" && tie.ties.map((t) => t.id).join() === "D4330.002,C2582.002" && tie.luna, `ties: ${JSON.stringify(tie)}`)
+// the pipeline and the pages read the same settings and flag names
+const meta = JSON.parse(fs.readFileSync(path.join(ROOT, "public/data/meta.json"), "utf8"))
+check(JSON.stringify(meta.flags.bits) === JSON.stringify(L.FLAG_BITS), "flag bits: lowest.mjs = meta.json")
+check(JSON.stringify(Object.keys(meta.flags.quantity_classes)) === JSON.stringify(L.QUANTITY_CLASSES), "quantity classes: lowest.mjs = meta.json")
+const pyRule = JSON.parse(py(["-c", "import json,sys; sys.path.insert(0,'scripts/data'); from nucdata import measured; print(json.dumps(measured.RULE))"]))
+check(JSON.stringify(pyRule) === JSON.stringify(L.RULE), "the pipeline reads lowest.mjs's settings")
+
+// /data (summary), the atlas panel, the reaction page and search agree, for every atlas reaction
+const summary = buildPublicSummary(path.join(ROOT, "public/data"))
+const search = summarise(index)
+let agreed = 0
+for (const [id, s] of Object.entries(summary.reactions)) {
+  const rs = index.reactions.atlas.map((a, r) => (a.includes(id) ? r : -1)).filter((r) => r >= 0)
+  const atlasLow = lowestMeasured(gapRows(index, rs)) // lib/data/panel.ts atlasPanel
+  const slug = index.reactions.slug.indexOf(s.slug)
+  const pageLow = lowestMeasured(gapRows(index, [slug])) // lib/data/panel.ts slugPanel (/data/reaction/<slug>)
+  const searchLow = search[slug].lowest
+  const keV = (x) => (x === null || x === undefined ? null : Number(x.toPrecision(4)))
+  const want = s.lowest ? s.lowest.keV : null
+  const ok =
+    keV(atlasLow?.E) === want && keV(pageLow?.E) === want && keV(searchLow) === want && (atlasLow?.id ?? null) === (s.lowest?.id ?? null)
+  check(ok, `${id}: /data ${want}, atlas panel ${keV(atlasLow?.E)}, reaction page ${keV(pageLow?.E)}, search ${keV(searchLow)}`)
+  if (ok) agreed++
+}
+check(agreed >= 60, `atlas reactions that agree: ${agreed}`)
+// the pages compute it with these functions only (no second copy of the rule)
+for (const f of ["lib/data/panel.ts", "lib/data/build.ts", "components/data/generic-reaction.tsx"]) {
+  const src = fs.readFileSync(path.join(ROOT, f), "utf8")
+  check(/lowestMeasured\(/.test(src) && !/function lowestMeasured|countsForRate\(r: GapRow\): boolean \{/.test(src), `${f} uses the shared rule`)
+}
+// before→after of the expert review (r15): what the rule gives on the committed index
+const expect = {
+  "15N(p,g)": [72.8, "O2205.002"], // not 123 eV (C1825.002, KEV/MEV)
+  "19F(p,a)": [170, "O2278.007"], // not 749 eV (O2207.006)
+  "3He(d,p)": [5.01, "A0228.002"], // not 3.0 keV (Trojan horse)
+  "17O(p,a)": [64.5, "O2313.002"], // c.m.
+  "7Li(p,a)": [10.14, "A1291.005"], // not 8.8 keV (Trojan horse, O2211)
+  "13C(a,n)": [233, "O2548.002.1"], // c.m.
+  "12C(12C,n)": [3100, "C2168.002"], // above the 2.6 MeV threshold
+  "3He(3He,2p)": [16.99, "A0379.002"], // Bonetti 1999 counts (one row is a limit)
+  "22Ne(p,g)": [149, "D4330.002"], // credited to the earliest
+  "14N(p,g)": [70.08, "O1458.002.A"],
+}
+for (const [key, [E, id]] of Object.entries(expect)) {
+  const s = Object.values(summary.reactions).find((x) => x.key === key)
+  check(s?.lowest?.keV === E && s.lowest.id === id, `${key}: lowest ${s?.lowest?.keV} ${s?.lowest?.id}, expected ${E} ${id}`)
+}
 
 console.log(`test:data-ui: ${checks - failures}/${checks} checks passed`)
 if (failures) process.exit(1)

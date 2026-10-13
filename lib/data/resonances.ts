@@ -32,6 +32,8 @@ export function strengthsOf(shard: Shard): Strength[] {
     if (flagBits(m.flags, m.complex, m.cm_approx) & (NOT_DATA | REPLACED)) continue
     const e = shard.entries[m.entry]
     const p = ds.points
+    // a paged shard keeps the points in its pages: not read at build time
+    if (!p?.value) continue
     for (let i = 0; i < p.value.length; i++) {
       const E = p.E_cm[i]
       const v = p.value[i]

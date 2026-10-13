@@ -10,9 +10,10 @@
  */
 
 import type { Lang } from "../locale.ts"
+import { FLAG_BITS as FB, QUANTITY_CLASSES as QC } from "./lowest.mjs"
 
 /** The pipeline's quantity classes, in index order (`q`). */
-export const QUANTITY_CLASSES = [
+export const QUANTITY_CLASSES = QC as unknown as readonly [
   "sigma",
   "S",
   "dsigma",
@@ -28,7 +29,7 @@ export const QUANTITY_CLASSES = [
   "ratio",
   "integral",
   "other",
-] as const
+]
 export type QuantityClass = (typeof QUANTITY_CLASSES)[number]
 
 export const GROUPS = ["sigma", "S", "partial", "dsigma", "pol", "yield", "strength", "macs", "other"] as const
@@ -101,7 +102,7 @@ export function groupName(g: Group, lang: Lang): string {
 }
 
 /** The pipeline's flag bits (meta.json flags.bits), in index order (`f`). */
-export const FLAG_BITS = [
+export const FLAG_BITS = FB as unknown as readonly [
   "has-extrapolated-rows",
   "digitised",
   "superseded",
@@ -116,7 +117,9 @@ export const FLAG_BITS = [
   "renormalised-by-compiler",
   "dependent",
   "upper-limits",
-] as const
+  "indirect",
+  "corrected",
+]
 export type Flag = (typeof FLAG_BITS)[number]
 
 export function flagsOf(bits: number): Flag[] {
@@ -149,6 +152,14 @@ const FLAG_TEXT: Record<Lang, Record<Flag, [string, string]>> = {
     "renormalised-by-compiler": ["renormalized by compiler", "Renormalized by the EXFOR compiler, not by the authors."],
     dependent: ["dependent", "Depends on another dataset (e.g. shares its normalization)."],
     "upper-limits": ["limits", "Contains upper or lower limits (DATA-MAX/MIN), which are not data points."],
+    indirect: [
+      "indirect",
+      "An indirect method (Trojan horse, Coulomb dissociation, ANC, surrogate): shown, not counted as a measurement of the reaction.",
+    ],
+    corrected: [
+      "corrected",
+      "A frame, unit or scale error of the EXFOR file is corrected here (scripts/data/corrections.yaml); the change is listed with the dataset.",
+    ],
   },
   it: {
     "has-extrapolated-rows": [
@@ -171,6 +182,14 @@ const FLAG_TEXT: Record<Lang, Record<Flag, [string, string]>> = {
     "renormalised-by-compiler": ["rinormalizzato dal compilatore", "Rinormalizzato dal compilatore di EXFOR, non dagli autori."],
     dependent: ["dipendente", "Dipende da un'altra serie di dati (es. ne condivide la normalizzazione)."],
     "upper-limits": ["limiti", "Contiene limiti superiori o inferiori (DATA-MAX/MIN), che non sono punti sperimentali."],
+    indirect: [
+      "indiretto",
+      "Un metodo indiretto (cavallo di Troia, dissociazione coulombiana, ANC, reazione surrogata): mostrato, non contato come misura della reazione.",
+    ],
+    corrected: [
+      "corretto",
+      "Qui è corretto un errore di sistema di riferimento, di unità o di scala del file EXFOR (scripts/data/corrections.yaml); la modifica è riportata con la serie di dati.",
+    ],
   },
 }
 

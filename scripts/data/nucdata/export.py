@@ -131,6 +131,10 @@ def normalisation_percent(meta: dict) -> (float, str):
     return (math.sqrt(sum(x * x for x in parts)) if parts else 0.0), ", ".join(names)
 
 
+# Relative margin of a segment's energy limits beyond the energies written.
+SEGMENT_MARGIN = 1e-5
+
+
 def _fmt(v: Optional[float]) -> str:
     return "" if v is None else f"{v:.6e}"
 
@@ -152,12 +156,14 @@ def header(meta: dict, extra: List[str], snapshot: dict) -> List[str]:
         f"Reaction code: ({meta['code']})",
         f"Quantity: {meta['quantity_class']} ({meta['quantity_text'] or meta['quantity']}), unit {meta['value_unit']}",
         f"Frame: energy given as {meta['E_source']} ({meta['E_frame']}); angle {meta['ang_frame'] or 'n/a'}; "
-        f"value {meta['value_frame']}",
+        f"value {meta['value_frame'] or 'n/a'}",
         f"Final levels (MeV): {', '.join(f'{x:g}' for x in meta['final_levels']) or 'not specified'}",
         f"Normalisation/monitor: {mon}",
         f"Systematic (common) uncertainty: {norm:.3g} % ({norm_names or 'none given'})",
         f"Uncertainty components: {comps or 'none'}",
         f"Flags: {', '.join(meta['flags']) or 'none'}",
+        *[f"Corrected here: {c['change']} ({c['problem']} scripts/data/corrections.yaml)"
+          for c in meta.get("corrections") or []],
         f"Excluded rows: {meta['nexcluded']}",
         f"Authors: {', '.join(meta['authors'])}",
         f"Title: {meta['title']}",
@@ -228,28 +234,45 @@ def azure2(ds: dict, snapshot: dict, lab_particle: str = "projectile", mass_mode
     out = []
     for lv, rows in sorted(groups.items(), key=lambda kv: (kv[0] is None, kv[0] or 0)):
         stem = base + (f"-{round(lv * 1000):d}" if lv is not None else "")
-        dat, table = [], []
+        dat, table, written, no_err = [], [], [], 0
         for i in rows:
             f = factor[i]
             if f is None:
                 continue
             v = value[i] * f
             d = None if err[i] is None else err[i] * f
-            dat.append(f"{e_lab[i]:.6e} {(ang[i] or 0.0) if is_diff else 0:.4f} {v:.6e} "
-                       f"{(d if d is not None else 0.0):.6e}")
+            if d is not None and d > 0:
+                # AZURE2 gives a point of uncertainty 0 no weight in chi2: such rows
+                # stay in the CSV only.
+                dat.append(f"{e_lab[i]:.6e} {(ang[i] or 0.0) if is_diff else 0:.4f} {v:.6e} {d:.6e}")
+                written.append(i)
+            else:
+                no_err += 1
             table.append([_fmt(e_lab[i]), _fmt(ecm[i]), _fmt(pts["E_lab"][i]), "" if ang[i] is None else f"{ang[i]:g}",
                           _fmt(pts["value"][i]), _fmt(v) if q == "S" else "",
                           _fmt((pts.get("d_stat") or [None] * n)[i]), _fmt((pts.get("d_sys") or [None] * n)[i]),
-                          _fmt((pts.get("d_tot") or [None] * n)[i]), _fmt(d),
+                          _fmt((pts.get("d_tot") or [None] * n)[i]), _fmt(d) if d else "",
                           "" if lvl[i] is None else f"{lvl[i]:g}",
                           "" if not pts.get("flag") or pts["flag"][i] is None else f"{pts['flag'][i]:g}"])
-        es = [e_lab[i] for i in rows]
-        angs = [ang[i] for i in rows if ang[i] is not None]
-        amin, amax = (min(angs), max(angs)) if is_diff and angs else (0, 180)
+        if not written:
+            out.append({"skip": f"{meta['id']}"
+                        + (f" (E_x = {lv:g} MeV)" if lv is not None else "")
+                        + ": no point has an uncertainty, and AZURE2 would give them no weight; use the CSV/JSON"})
+            continue
+        # The segment's limits bracket the energies (and angles) as the .dat file
+        # writes them: AZURE2 keeps a point only if E_min <= E <= E_max.
+        es = [float(f"{e_lab[i]:.6e}") for i in written]
+        e_lo, e_hi = min(es) * (1 - SEGMENT_MARGIN), max(es) * (1 + SEGMENT_MARGIN)
+        angs = [float(f"{ang[i]:.4f}") for i in written if ang[i] is not None]
+        if is_diff and angs:
+            a_lo, a_hi = f"{max(0.0, min(angs) - 0.001):.4f}", f"{min(180.0, max(angs) + 0.001):.4f}"
+        else:
+            a_lo, a_hi = "0", "180"
+        vary = 1 if norm > 0 else 0
         exit_key = "-1" if (q in ("sigma", "S") and lv is None and "PAR" not in meta["quantity"]
                             and meta["process"] == "g") else "EXIT"
-        seg = (f"1 ENTR {exit_key} {min(es):.6g} {max(es):.6g} {amin:g} {amax:g} "
-               f"{3 if exit_key == '-1' else is_diff} 1 1 {norm:.3g} 0 0 0 data/{stem}.dat 0 0")
+        seg = (f"1 ENTR {exit_key} {e_lo:.6e} {e_hi:.6e} {a_lo} {a_hi} "
+               f"{3 if exit_key == '-1' else is_diff} 1 {vary} {norm:.3g} 0 0 0 data/{stem}.dat 0 0")
         extra = [
             f"AZURE2 file: data/{stem}.dat (columns E_lab MeV, angle deg, value, uncertainty; no header)",
             f"AZURE2 E_lab: lab energy of the {'EXFOR target' if lab_particle == 'target' else 'EXFOR projectile'} "
@@ -258,7 +281,12 @@ def azure2(ds: dict, snapshot: dict, lab_particle: str = "projectile", mass_mode
             f"segment type isDiff {3 if exit_key == '-1' else is_diff}",
             f"AZURE2 uncertainty (column 4): {err_what}",
             f"AZURE2 normalisation uncertainty (segment column 11): {norm:.3g} %",
-        ] + [f"Note: {c}" for c in conv_note]
+            (f"AZURE2 normalisation: varied (segment column 10 = 1) within the {norm:.3g} % above" if vary else
+             "AZURE2 normalisation: fixed at 1 (segment column 10 = 0): EXFOR gives no common systematic "
+             "uncertainty, and a varied normalisation without one would float freely; set it yourself"),
+        ] + ([f"AZURE2 rows left out of the .dat: {no_err} without an uncertainty (AZURE2 would give them "
+              "no weight in chi2); they are below with an empty d_azure2"] if no_err else []) \
+          + [f"Note: {c}" for c in conv_note]
         if lv is not None:
             extra.append(f"This file: final level E_x = {lv:g} MeV")
         cols = ["E_lab_azure2_MeV", "E_cm_MeV", "E_lab_projectile_MeV", "angle_deg", f"value_{meta['value_unit'] or 'nodim'}",
@@ -270,7 +298,7 @@ def azure2(ds: dict, snapshot: dict, lab_particle: str = "projectile", mass_mode
         w.writerow(cols)
         w.writerows(table)
         out.append({"stem": stem, "dat": "\n".join(dat) + "\n", "csv": buf.getvalue(), "segment": seg,
-                    "id": meta["id"], "level": lv, "is_diff": is_diff})
+                    "id": meta["id"], "level": lv, "is_diff": is_diff, "no_err": no_err, "vary": vary})
     return out
 
 
@@ -348,7 +376,9 @@ def write_azure2(datasets: List[dict], out_dir: str, snapshot: dict, **kw) -> Li
                 fh.write(f["csv"])
             segs.append(f["segment"])
             readme.append(f"segment {len(segs)}: data/{f['stem']}.dat  ({f['id']}"
-                          + (f", E_x = {f['level']:g} MeV" if f["level"] is not None else "") + ")")
+                          + (f", E_x = {f['level']:g} MeV" if f["level"] is not None else "") + ")"
+                          + ("" if f["vary"] else "  normalisation fixed")
+                          + (f"  {f['no_err']} rows without uncertainty left out" if f["no_err"] else ""))
             files.append(f)
     with open(os.path.join(out_dir, "segments.txt"), "w") as fh:
         fh.write("\n".join(segs) + "\n")
@@ -360,7 +390,12 @@ def write_azure2(datasets: List[dict], out_dir: str, snapshot: dict, **kw) -> Li
                  "(lab, as in the file), angle min, max, data type (0 angle-integrated, 1 dσ/dΩ lab,\n"
                  "3 total capture, 4 dσ/dΩ c.m., 7 analysing power), norm, vary norm,\n"
                  "normalisation uncertainty (%), energy shift, its uncertainty, vary shift, file, 0 0.\n"
-                 "Every data file has a .csv beside it with all columns and the EXFOR header.\n\n"
+                 "Every data file has a .csv beside it with all columns and the EXFOR header.\n"
+                 "E_min and E_max bracket the file's energies by a relative 1e-5 (and the angles by\n"
+                 "0.001 deg), so AZURE2 keeps every point. The normalisation varies only where EXFOR\n"
+                 "gives a common systematic uncertainty; without one it is fixed at 1 (vary 0).\n"
+                 "Rows without an uncertainty are left out of the .dat files (AZURE2 gives them no\n"
+                 "weight) and kept in the .csv files; a file with none is skipped.\n\n"
                  + "\n".join(readme) + "\n")
     return files
 

@@ -76,7 +76,10 @@ export function GenericReaction({
   useEffect(() => {
     const r = new URLSearchParams(window.location.search).get("r")
     if (!r) {
-      setError(strings.reaction.notFound)
+      // nothing to show without ?r=: the search lists every reaction
+      const base = process.env.BASE_PATH ?? ""
+      const slash = process.env.TRAILING_SLASH ? "/" : ""
+      window.location.replace(`${base}${localePath(lang, "/data/search")}${slash}`)
       return
     }
     if (prerendered.includes(r)) {
@@ -123,12 +126,18 @@ export function GenericReaction({
     }
   }, [shard, masses, evaluations, strings])
 
-  if (error) return <p className="mt-10 rounded-lg border border-dashed border-border p-5 text-muted-foreground">{error}</p>
-  if (!shard || !panel || !slug)
+  if (error || !shard || !panel || !slug)
     return (
-      <p className="mt-10 animate-pulse text-sm text-muted-foreground" role="status">
-        {strings.table.loading}
-      </p>
+      <>
+        <h1 className="mt-8 font-serif text-3xl font-semibold tracking-tight">{strings.reaction.anyTitle}</h1>
+        {error ? (
+          <p className="mt-6 rounded-lg border border-dashed border-border p-5 text-muted-foreground">{error}</p>
+        ) : (
+          <p className="mt-6 animate-pulse text-sm text-muted-foreground" role="status">
+            {strings.table.loading}
+          </p>
+        )}
+      </>
     )
   const label = reactionLabel(shard.reaction.key)
   const w0 = panel.windows[0]

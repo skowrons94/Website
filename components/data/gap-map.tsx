@@ -315,7 +315,7 @@ export function GapMap({
           </p>
           <p className="text-muted-foreground">
             {strings.quantityShort[hover.row.g]} · {energy(hover.row.e0, lang)}
-            {hover.row.e1 > hover.row.e0 * 1.001 ? `–${energy(hover.row.e1, lang)}` : ""} · {hover.row.n} pt
+            {hover.row.e1 > hover.row.e0 * 1.001 ? ` – ${energy(hover.row.e1, lang)}` : ""} · {hover.row.n} pt
           </p>
         </div>
       )}

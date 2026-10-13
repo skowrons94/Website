@@ -17,11 +17,18 @@
  * All energies here are centre-of-mass, keV.
  */
 
-import { NOT_DATA, REPLACED, groupOf, type Group } from "./quantity.ts"
+import {
+  countsAsMeasured,
+  lowestMeasured as lowestOf,
+  measuredRanges as rangesOf,
+  singleS as singleSOf,
+  union as unionOf,
+} from "./lowest.mjs"
+import { groupOf, type Group } from "./quantity.ts"
 
 export const K_T9_KEV = 86.17333
 
-/** A dataset as the gap map needs it (one index row). */
+/** A dataset as the gap map needs it (one index row; lib/data/lowest.mjs indexRows). */
 export interface GapRow {
   id: string
   /** quantity class (meta.json) and its SF5–SF8 string */
@@ -33,12 +40,17 @@ export interface GapRow {
   /** kT range (MeV) of a Maxwellian average */
   k0: number | null
   k1: number | null
+  /** lowest E_cm (MeV) of a measured point at 1 and 2 standard deviations (scripts/data/nucdata/measured.py) */
+  m1?: number | null
+  m2?: number | null
   n: number
   y: number | null
   /** first author (+ when more) */
   a: string
   /** first institute code */
   i: string
+  /** facility code and institute */
+  fa?: string
   /** flag bits */
   f: number
   /** number of distinct final levels */
@@ -51,58 +63,45 @@ export function rowGroup(r: GapRow): Group {
   return groupOf(r.q, r.lv, r.qs)
 }
 
-/**
- * Whether a dataset counts as measured cross-section data for the rate: an
- * angle-integrated σ or S (total or partial) of a measurement, not a
- * calculation, derivation, ratio, deleted or superseded set, nor a single
- * S value (singleS), with a positive energy (resonance-energy frames
- * excluded).
- */
-export function countsForRate(r: GapRow): boolean {
-  const g = rowGroup(r)
-  if (g !== "sigma" && g !== "S" && g !== "partial") return false
-  if (singleS(r)) return false
-  if (r.f & (NOT_DATA | REPLACED)) return false
-  if (r.fr === 2 || r.fr === 3) return false
-  return r.e0 !== null && r.e1 !== null && r.e0 > 0
+/** One who reached the lowest measured energy. */
+export interface LowestTie {
+  id: string
+  a: string
+  y: number | null
+  q: string
+  luna: boolean
+  /** keV */
+  E: number
+}
+
+/** The lowest measured E_cm (keV), credited to the earliest dataset that reaches it, and all that do. */
+export interface Lowest {
+  E: number
+  id: string
+  y: number | null
+  a: string
+  q: string
+  luna: boolean
+  ties: LowestTie[]
 }
 
 /**
- * A single S-factor value: in EXFOR almost always the result of a fit
- * (S(300 keV) of ¹²C(α,γ), S(0) of a capture) rather than a measurement at
- * that energy, even where no flag says so. Shown, never counted as data.
+ * Whether a dataset counts as measured (lib/data/lowest.mjs: the one rule
+ * for every page). The name is kept from when only σ and S counted.
  */
-export function singleS(r: GapRow): boolean {
-  return r.q === "S" && r.n <= 1
-}
+export const countsForRate = (r: GapRow): boolean => countsAsMeasured(r)
 
-/** The lowest measured E_cm (keV) among the datasets that count, and the dataset. */
-export function lowestMeasured(rows: GapRow[]): { E: number; id: string; y: number | null; a: string } | null {
-  let best: { E: number; id: string; y: number | null; a: string } | null = null
-  for (const r of rows) {
-    if (!countsForRate(r)) continue
-    const E = (r.e0 as number) * 1000
-    if (!best || E < best.E) best = { E, id: r.id, y: r.y, a: r.a }
-  }
-  return best
-}
+/** A single S-factor value: a fit result in EXFOR, shown, never counted. */
+export const singleS = (r: GapRow): boolean => singleSOf(r)
+
+/** The lowest measured E_cm (keV) and who reached it (lib/data/lowest.mjs). */
+export const lowestMeasured = (rows: GapRow[]): Lowest | null => lowestOf(rows) as Lowest | null
 
 /** Union of closed intervals, sorted and merged. */
-export function union(intervals: [number, number][]): [number, number][] {
-  const sorted = intervals.filter(([a, b]) => Number.isFinite(a) && Number.isFinite(b) && b >= a).sort((x, y) => x[0] - y[0])
-  const out: [number, number][] = []
-  for (const [a, b] of sorted) {
-    const last = out[out.length - 1]
-    if (last && a <= last[1]) last[1] = Math.max(last[1], b)
-    else out.push([a, b])
-  }
-  return out
-}
+export const union = (intervals: [number, number][]): [number, number][] => unionOf(intervals) as [number, number][]
 
 /** The measured E_cm ranges (keV) of the datasets that count. */
-export function measuredRanges(rows: GapRow[]): [number, number][] {
-  return union(rows.filter(countsForRate).map((r) => [(r.e0 as number) * 1000, (r.e1 as number) * 1000]))
-}
+export const measuredRanges = (rows: GapRow[]): [number, number][] => rangesOf(rows) as [number, number][]
 
 export interface Integrand {
   /** GK */

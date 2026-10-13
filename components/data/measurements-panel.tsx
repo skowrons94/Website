@@ -7,7 +7,8 @@ import { ArrowRight, ChevronDown } from "lucide-react"
 import { GapMap, type MapRow, type MapWindow } from "@/components/data/gap-map"
 import { dec, energy, kev, percent, temperature } from "@/lib/data/format"
 import { fill } from "@/lib/data/fill"
-import { GROUPS, GROUP_SYMBOL } from "@/lib/data/quantity"
+import type { Lowest } from "@/lib/data/gap"
+import { GROUPS, GROUP_SYMBOL, groupOf } from "@/lib/data/quantity"
 import type { DataExpertStrings } from "@/lib/i18n"
 import type { Lang } from "@/lib/locale"
 
@@ -24,7 +25,7 @@ export interface PanelProps {
   lang: Lang
   rows: MapRow[]
   windows: PanelWindow[]
-  lowest: { E: number; id: string; y: number | null; a: string } | null
+  lowest: Lowest | null
   counts: string
   macs: { n: number; lo: number; hi: number } | null
   threshold: number | null
@@ -46,6 +47,15 @@ export interface PanelProps {
  * reaction's temperatures. Everything is computed at build time from the
  * committed index (lib/data/build.ts); the page only switches temperature.
  */
+/**
+ * Who reached the lowest measured energy, earliest first, with the quantity
+ * and the first dataset: "Cavanna et al., 2015; Williams et al., 2020 · ωγ · D4330.002".
+ */
+export function lowestCredit(low: Lowest, template: string): string {
+  const who = (low.ties.length ? low.ties : [low]).map((x) => fill(template, { who: x.a.replace(/\+$/, " et al."), year: x.y ?? "" }))
+  return `${who.join("; ")} · ${GROUP_SYMBOL[groupOf(low.q, 0, "")]} · ${low.id}`
+}
+
 export function MeasurementsPanel(p: PanelProps) {
   const { strings, lang, rows, windows, lowest, neutron } = p
   const t = strings.panel
@@ -92,11 +102,7 @@ export function MeasurementsPanel(p: PanelProps) {
         <Tile
           label={t.lowest}
           value={lowest ? energy(lowest.E, lang) : t.noLowest}
-          sub={
-            lowest
-              ? `${fill(t.lowestSub, { who: lowest.a.replace(/\+$/, " et al."), year: lowest.y ?? "" })} · ${lowest.id}`
-              : t.noLowestSub
-          }
+          sub={lowest ? lowestCredit(lowest, t.lowestSub) : t.noLowestSub}
         />
         {!neutron ? (
           <Tile
@@ -255,7 +261,7 @@ export function PanelLink({ href, children }: { href: string; children: React.Re
   return (
     <Link
       href={href}
-      className="group inline-flex min-h-10 items-center gap-2 rounded-md border border-border bg-card px-3.5 py-2 text-[0.95rem] font-medium text-link transition-colors hover:border-foreground/30"
+      className="group inline-flex min-h-10 max-w-full flex-wrap items-center gap-2 whitespace-normal rounded-md border border-border bg-card px-3.5 py-2 text-[0.95rem] font-medium text-link transition-colors hover:border-foreground/30"
     >
       {children}
       <ArrowRight className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-0.5" aria-hidden />

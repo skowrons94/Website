@@ -1,0 +1,275 @@
+# Curated corrections to EXFOR, applied by the pipeline (nucdata/corrections.py)
+# before anything else reads the numbers: shards, index, exports and plots all
+# carry the corrected values, and each corrected dataset says so (flag
+# `corrected`, `meta.corrections`). Nothing else in EXFOR is changed.
+#
+# Each entry:
+#   id        EXFOR subentry ("F0580.002", every reaction pointer of it) or
+#             subentry and pointer ("O2548.002.1")
+#   reaction  what it measures (site notation), for the reader
+#   paper     the publication the subentry compiles
+#   problem   what is wrong in the EXFOR file
+#   correct   the change, one item per column of the DATA/COMMON tables:
+#               column   the EXFOR heading as written
+#               heading  read the column under this heading instead (a frame
+#                        error: EN holds c.m. energies -> EN-CM)
+#               unit     read the column in this EXFOR unit instead
+#               factor   multiply the column by this number
+#   evidence  why, from the EXFOR file itself (lines of the pinned commit,
+#             sources.json) and from the paper
+#   verified  who checked it against the EXFOR file, and how
+#   status    what is still open
+#   reported_to_nrdc  no | yes (date)
+#   apply     false keeps an entry on record without applying it
+#
+# scripts/data/nrdc-report.md is the draft report to the NRDC built from this
+# list (`python scripts/data/dx.py nrdc-report`). Every entry here was checked
+# against the .x4 file at the pinned commit; each still needs the owner to
+# confirm it from the paper.
+
+- id: F0580.002
+  reaction: 12C(a,g)16O, partial S-factor to the ground state
+  paper: A. Redder et al., Nucl. Phys. A 462, 385 (1987), Table 1
+  problem: EN (a laboratory heading) holds centre-of-mass energies.
+  correct:
+    - {column: EN, heading: EN-CM}
+  evidence:
+    - "F0580.002 DATA: EN 0.94 ... 2.84 MEV; S peaks at EN = 2.33-2.36 MEV, the 1- level of 16O at E_x = 9.585 MeV, i.e. E_cm = 2.43 MeV, E_lab = 3.24 MeV: the column is c.m."
+    - "F0580.001 COMMON: EN-NRM 2.36 MEV, the normalization point at the same 1- peak, in the same frame."
+  verified: "EXFOR file at the pinned commit"
+  status: owner to confirm from the paper
+  reported_to_nrdc: no
+
+- id: F0580.003
+  reaction: 12C(a,g)16O, partial S-factor of the cascade through 6.92 MeV
+  paper: A. Redder et al., Nucl. Phys. A 462, 385 (1987), Table 3
+  problem: EN (a laboratory heading) holds centre-of-mass energies, as in F0580.002.
+  correct:
+    - {column: EN, heading: EN-CM}
+  evidence:
+    - "F0580.003 DATA: EN 1.40 ... 2.84 MEV, the energies of F0580.002's table (same experiment, same runs)."
+  verified: "EXFOR file at the pinned commit"
+  status: owner to confirm from the paper
+  reported_to_nrdc: no
+
+- id: O2548.002
+  reaction: 13C(a,n)16O, S-factor (bare and screening-corrected)
+  paper: G. F. Ciani et al., Phys. Rev. Lett. 127, 152701 (2021), Table I
+  problem: EN (a laboratory heading) holds centre-of-mass energies.
+  correct:
+    - {column: EN, heading: EN-CM}
+  evidence:
+    - "O2548.002 DATA: EN 233 ... 306 KEV."
+    - "Read as E_lab, the rows would span E_cm = 178-234 keV; the expert review (r15) reads the PRL as E_cm = 230-300 keV, which is the column as given."
+    - "O2548.001: EN-ERR 300 EV, the beam-energy uncertainty of the LUNA 400 kV machine, says nothing about the frame."
+  verified: "EXFOR file at the pinned commit"
+  status: owner to confirm from the paper
+  reported_to_nrdc: no
+
+- id: O2313.002
+  reaction: 17O(p,a)14N, strength of the 64.5 keV resonance
+  paper: C. G. Bruno et al., Phys. Rev. Lett. 117, 142502 (2016)
+  problem: EN-RES (a laboratory heading) holds the centre-of-mass resonance energy.
+  correct:
+    - {column: EN-RES, heading: EN-RES-CM}
+  evidence:
+    - "O2313.002 DATA: EN-RES 64.5 KEV; O2313.001 TITLE: 'the 64.5 keV resonance strength'."
+    - "The resonance is the 5672.6 keV level of 18F (ENSDF); S_p(18F) = 5607.1 keV (AME2020), so E_cm = 65.5 keV and E_lab = 69.3 keV: 64.5 keV is a c.m. energy."
+  verified: "EXFOR file at the pinned commit; ENSDF 18F (public/data/ensdf/18F.json)"
+  status: owner to confirm from the paper
+  reported_to_nrdc: no
+
+- id: O2313.003
+  reaction: 17O(p,g)18F, width of the 64.5 keV resonance
+  paper: C. G. Bruno et al., Phys. Rev. Lett. 117, 142502 (2016)
+  problem: EN-RES (a laboratory heading) holds the centre-of-mass resonance energy, as in O2313.002.
+  correct:
+    - {column: EN-RES, heading: EN-RES-CM}
+  evidence:
+    - "O2313.003 DATA: EN-RES 64.5 KEV, the same resonance as O2313.002."
+  verified: "EXFOR file at the pinned commit"
+  status: owner to confirm from the paper
+  reported_to_nrdc: no
+
+- id: C2168.002
+  reaction: 12C(12C,n)23Mg, modified S-factor
+  paper: B. Bucher et al., Phys. Rev. Lett. 114, 251102 (2015), Fig. 1
+  problem: EN (a laboratory heading) holds centre-of-mass energies.
+  correct:
+    - {column: EN, heading: EN-CM}
+  evidence:
+    - "C2168.002 DATA: EN 3.1 ... MEV."
+    - "The reaction is endothermic, Q = -2.60 MeV (AME2020): read as E_lab, the lowest rows (3.1-5.1 MeV) are E_cm = 1.55-2.55 MeV, below threshold, where no neutron can be emitted. Read as E_cm they start 0.5 MeV above it, as the PRL's Fig. 1 shows."
+  verified: "EXFOR file at the pinned commit; Q from AME2020"
+  status: owner to confirm from the paper
+  reported_to_nrdc: no
+
+- id: C1825.002
+  reaction: 15N(p,g)16O, partial cross section to the ground state
+  paper: P. J. LeBlanc et al., Phys. Rev. C 82, 055804 (2010)
+  problem: EN-CM is given in MeV under a KEV unit.
+  correct:
+    - {column: EN-CM, unit: MEV}
+  evidence:
+    - "C1825.002 DATA: EN-CM, unit KEV, values 0.1232 ... 1.8: read as keV the lowest energy would be 123 eV, which no beam has reached."
+    - "C1825.003 gives the same energies (0.1232 ...) under MEV, and C1825.008 the same rows in the laboratory as 0.1315 = 0.1232 x 16/15."
+  verified: "EXFOR file at the pinned commit"
+  status: owner to confirm from the paper
+  reported_to_nrdc: no
+
+- id: C1825.003
+  reaction: 15N(p,g)16O, partial S-factor to the ground state
+  paper: P. J. LeBlanc et al., Phys. Rev. C 82, 055804 (2010)
+  problem: EN (a laboratory heading) holds centre-of-mass energies.
+  correct:
+    - {column: EN, heading: EN-CM}
+  evidence:
+    - "C1825.003 DATA: EN 0.1232 MEV, the same energies as C1825.002's EN-CM (c.m.) row by row."
+    - "S = sigma E exp(2 pi eta) from C1825.002's lowest row (2.17E-09 b) gives 0.0567 MeV b with E_cm = 0.1232 MeV, against 0.0569 in C1825.003; taken as E_lab (E_cm = 0.1154 MeV) it would give 0.100 MeV b."
+  verified: "EXFOR file at the pinned commit"
+  status: owner to confirm from the paper
+  reported_to_nrdc: no
+
+- id: C1825.008
+  reaction: 15N(p,g)16O, partial cross section to the ground state (laboratory energies)
+  paper: P. J. LeBlanc et al., Phys. Rev. C 82, 055804 (2010)
+  problem: EN is given in MeV under a KEV unit.
+  correct:
+    - {column: EN, unit: MEV}
+  evidence:
+    - "C1825.008 DATA: EN, unit KEV, lowest value 0.1315 = 0.1232 MeV (C1825.002, c.m.) x 16/15: laboratory MeV."
+  verified: "EXFOR file at the pinned commit"
+  status: owner to confirm from the paper
+  reported_to_nrdc: no
+
+- id: D0468.004
+  reaction: 17O(p,a)/17O(p,g) strength ratio and 17O(p,g) strength of the 183 keV resonance
+  paper: A. Chafa et al., Phys. Rev. C 75, 035810 (2007)
+  problem: EN-RES and EN-RES-ERR are given in keV under an EV unit.
+  correct:
+    - {column: EN-RES, unit: KEV}
+    - {column: EN-RES-ERR, unit: KEV}
+  evidence:
+    - "D0468.004 DATA: EN-RES 194.1, EN-RES-ERR 0.6, unit EV: read as eV the resonance would sit at 194 eV."
+    - "D0468.005 COMMON gives the same resonance as EN-RES-CM 183.3 KEV, EN-RES-ERR 0.6 KEV; 183.3 x 18/17 = 194.1: laboratory keV."
+  verified: "EXFOR file at the pinned commit"
+  status: owner to confirm from the paper
+  reported_to_nrdc: no
+
+- id: O2207.006
+  reaction: 19F(p,a)16O, partial cross sections (a0, a1)
+  paper: R. Caracciolo et al., Lett. Nuovo Cim. 11, 33 (1974), Fig. 3
+  problem: EN is given in MeV under a KEV unit.
+  correct:
+    - {column: EN, unit: MEV}
+  evidence:
+    - "O2207.006 DATA: EN, unit KEV, values 0.789 ... 0.865: read as keV the lowest energy would be 0.75 keV (c.m.)."
+    - "O2207.002-.005 give the resonance energies of the same scan as EN-RES 0.835 ... 0.865 MEV; the title's 13.645 MeV state of 20Ne is E_cm = 0.80 MeV, E_lab = 0.84 MeV, where the cross section peaks."
+  verified: "EXFOR file at the pinned commit"
+  status: owner to confirm from the paper
+  reported_to_nrdc: no
+
+- id: A1205.004
+  reaction: 3He(a,g)7Be, partial S-factors (to the ground and first excited states)
+  paper: H. Krawinkel et al., Z. Phys. A 304, 307 (1982), Table 4
+  problem: DATA and ERR-T are 1000 times too large for their MB*MEV unit (they are eV b).
+  correct:
+    - {column: DATA, factor: 0.001}
+    - {column: ERR-T, factor: 0.001}
+  evidence:
+    - "A1205.004 DATA at EN-CM 107.2 KEV: 254 (ground state) and 96 (429 keV state), unit MB*MEV."
+    - "A1205.002, the total S-factor of the same table, gives 0.350 MB*MEV at 0.1072 MEV: 254 + 96 = 350, so the partials are in micro-b MeV (eV b), not mb MeV."
+  verified: "EXFOR file at the pinned commit"
+  status: owner to confirm from the paper
+  reported_to_nrdc: no
+
+- id: A1205.005
+  reaction: 3He(a,g)7Be, ratio of the partial S-factors
+  paper: H. Krawinkel et al., Z. Phys. A 304, 307 (1982), Table 4
+  problem: EN-CM is given in keV under a MEV unit.
+  correct:
+    - {column: EN-CM, unit: KEV}
+  evidence:
+    - "A1205.005 DATA: EN-CM 107.2 ... unit MEV, the energies A1205.002 gives as 0.1072 ... MEV and A1205.004 as 107.2 ... KEV."
+  verified: "EXFOR file at the pinned commit (found while checking A1205.004)"
+  status: owner to confirm from the paper
+  reported_to_nrdc: no
+
+- id: O2597.002
+  reaction: 12C(p,g)13N, S-factor
+  paper: J. Skowronski et al., Phys. Rev. C 107, L062801 (2023)
+  problem: EN-CM is given in keV under a MEV unit.
+  correct:
+    - {column: EN-CM, unit: KEV}
+  evidence:
+    - "O2597.002 DATA: EN-CM, unit MEV, values 620.6 ... 325.6 (and lower): read as MeV the 422 keV resonance would sit at 421 MeV."
+    - "The S-factor peaks (222 b keV) at EN-CM 421.4: the 2369 keV level of 13N, E_cm = 2369 - 1943 = 421-426 keV (ENSDF, AME2020): keV."
+  verified: "EXFOR file at the pinned commit (R-matrix review r15, finding 5)"
+  status: owner to confirm from the paper (his own; the erratum to the NRDC is his to send)
+  reported_to_nrdc: no
+
+- id: O1420.008
+  reaction: 12C(a,g0)16O, E1 S-factor
+  paper: M. Assuncao et al., Phys. Rev. C 73, 055801 (2006)
+  problem: EN (a laboratory heading) holds centre-of-mass energies.
+  correct:
+    - {column: EN, heading: EN-CM}
+  evidence:
+    - "O1420.008 COMMENT: 'En-cm is effective c.m. energy'; its siblings O1420.007, .009 and .010 give the same energies (1.31 ... 2.78 MEV) as EN-CM."
+    - "The E1 S-factor peaks at EN = 2.27-2.34 MEV, the 1- level of 16O at E_cm = 2.42 MeV (E_lab 3.23 MeV)."
+  verified: "EXFOR file at the pinned commit"
+  status: owner to confirm from the paper
+  reported_to_nrdc: no
+
+- id: C2375.002
+  reaction: 13C(a,n)16O, S-factor (digitized from Fig. 2)
+  paper: M. Heil et al., Nucl. Phys. A 688, 499 (2001), Fig. 2
+  problem: EN (a laboratory heading) holds centre-of-mass energies; the points appear to be Drotleff et al. (1993, A0613.003) re-digitized, not a measurement of Heil et al.
+  correct:
+    - {column: EN, heading: EN-CM}
+  evidence:
+    - "C2375.002 DATA: EN 0.277 MEV, S = 2.12E+06 MEV*B; A0613.003 (Drotleff 1993) gives EN-CM 0.279 MEV, sigma = 6.1E-11 B, i.e. S = 2.03E+06 MeV b; at 0.291/0.297 MeV: 1.52E+06 against 1.48E+06. The rows match Drotleff's c.m. energies, not E_lab (0.277 MeV E_lab would be E_cm = 0.213 MeV)."
+    - "C2375.002 STATUS: (CURVE) fig. 2; ANALYSIS: multilevel R-matrix fit of several channels."
+  verified: "EXFOR file at the pinned commit"
+  status: owner to confirm from the paper, and whether the set is a duplicate of A0613.003 (then it should not count at all)
+  reported_to_nrdc: no
+
+- id: C2254.003
+  reaction: 22Ne(p,g)23Na, resonance strengths
+  paper: K. J. Kelly et al., Phys. Rev. C 95, 015806 (2017)
+  problem: EN-RES (a laboratory heading) holds centre-of-mass resonance energies.
+  correct:
+    - {column: EN-RES, heading: EN-RES-CM}
+  evidence:
+    - "C2254.003 DATA: EN-RES 417 KEV with 8.8E-2 EV: the 436 keV (E_lab) resonance, whose strength 0.088 eV is the usual reference; 436 x 22/23 = 417, the c.m. energy. 151 and 178 likewise are the 156 and 186-190 keV (E_lab) resonances in c.m."
+    - "C2254.001 FACILITY: 'Measurements at Elab < 200 keV' for the low resonances, and COMMON EN-NRM 458 KEV, the 479 keV (E_lab) resonance in c.m."
+  verified: "EXFOR file at the pinned commit"
+  status: owner to confirm from the paper
+  reported_to_nrdc: no
+
+- id: D0710.027
+  reaction: 15N(p,a0)12C, Legendre coefficients
+  paper: K. H. Bray et al., Nucl. Phys. A 288, 334 (1977), Fig. 5
+  problem: EN is given in MeV under a KEV unit.
+  correct:
+    - {column: EN, unit: MEV}
+  evidence:
+    - "D0710.027 DATA: EN, unit KEV, values 0.938 ... 1.264; D0710.015 gives the angular distribution at EN 0.938 MEV, D0710.016 at 0.988 MEV, and so on; TITLE: 'Levels of 16O near 13 MeV excitation from 15N+p' (S_p(16O) = 12.13 MeV: E_p about 1 MeV)."
+    - "D0710.012, the a1 coefficients of the same paper, gives EN 898 ... KEV: in keV, as its unit says."
+  verified: "EXFOR file at the pinned commit"
+  status: owner to confirm from the paper
+  reported_to_nrdc: no
+
+- id: O1381.003
+  reaction: 2H(d,p)3H, S-factor with a deuterated Al target
+  paper: F. Raiola et al., Phys. Lett. B 547, 193 (2002)
+  problem: "Possibly: EN (a laboratory heading) may hold centre-of-mass energies (expert review r15, finding 10). Not applied: the file does not say."
+  correct:
+    - {column: EN, heading: EN-CM}
+  evidence:
+    - "O1381.002-.005 DATA: EN 2.387 ... 14.67 KEV, digitized (ERR-DIG); no frame is stated in the entry."
+    - "The same group's O1073.002 (Raiola et al., Eur. Phys. J. A 13, 377 (2002), the companion paper on the same set-up) gives its energies as EN-CM 2.1 ... KEV, the same range: suggestive, not proof."
+  verified: "EXFOR file at the pinned commit: not verifiable from the file"
+  status: not applied; owner to decide from the paper (Fig. 1 of PLB 547, 193)
+  reported_to_nrdc: no
+  apply: false

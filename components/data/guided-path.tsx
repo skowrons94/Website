@@ -96,8 +96,8 @@ export function GuidedPath({
   return (
     <div ref={top} className="scroll-mt-[calc(var(--header-h,0px)+1rem)]">
       {/* progress */}
-      <nav aria-label={t.progress} className="flex items-center gap-3">
-        <ol className="flex items-center gap-1">
+      <nav aria-label={t.progress} className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
+        <ol className="flex min-w-0 flex-wrap items-center gap-1">
           {steps.map((s, k) => (
             <li key={k}>
               <button
@@ -140,12 +140,12 @@ export function GuidedPath({
 
       {/* back and next: sticky at the bottom of a small screen */}
       <div className="sticky bottom-0 z-20 -mx-5 mt-6 border-t border-border/70 bg-background/95 px-5 py-3 backdrop-blur [padding-bottom:max(0.75rem,env(safe-area-inset-bottom))] sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:px-0 sm:backdrop-blur-none">
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <button
             type="button"
             onClick={() => go(i - 1)}
             disabled={i === 0}
-            className="inline-flex min-h-11 items-center gap-2 rounded-md border border-border px-4 text-sm font-medium transition-colors hover:bg-accent disabled:invisible focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="inline-flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-md [overflow-wrap:normal] border border-border px-4 text-sm font-medium transition-colors hover:bg-accent disabled:invisible focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden />
             {t.back}
@@ -154,7 +154,7 @@ export function GuidedPath({
             <button
               type="button"
               onClick={() => go(0)}
-              className="inline-flex min-h-11 items-center gap-2 rounded-md bg-primary px-5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="inline-flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-md [overflow-wrap:normal] bg-primary px-5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               <RotateCcw className="h-4 w-4" aria-hidden />
               {t.restart}
@@ -163,7 +163,7 @@ export function GuidedPath({
             <button
               type="button"
               onClick={() => go(i + 1)}
-              className="inline-flex min-h-11 items-center gap-2 rounded-md bg-primary px-5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="inline-flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-md [overflow-wrap:normal] bg-primary px-5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               {t.next}
               <span className="sr-only">: {steps[i + 1].title}</span>
@@ -203,7 +203,7 @@ function ShareButtons({ title, text, strings: t }: { title: string; text: string
         <button
           type="button"
           onClick={share}
-          className="inline-flex min-h-11 items-center gap-2 rounded-md border border-border px-4 text-sm font-medium transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="inline-flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-md [overflow-wrap:normal] border border-border px-4 text-sm font-medium transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <Share2 className="h-4 w-4" aria-hidden />
           {t.share}
@@ -212,7 +212,7 @@ function ShareButtons({ title, text, strings: t }: { title: string; text: string
       <button
         type="button"
         onClick={copy}
-        className="inline-flex min-h-11 items-center gap-2 rounded-md border border-border px-4 text-sm font-medium transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="inline-flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-md [overflow-wrap:normal] border border-border px-4 text-sm font-medium transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         {copied ? <Check className="h-4 w-4" aria-hidden /> : <Link2 className="h-4 w-4" aria-hidden />}
         {copied ? t.copied : t.copy}

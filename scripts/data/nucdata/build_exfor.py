@@ -33,7 +33,8 @@ from .source import open_source, update_dates
 
 FLAG_BITS = ["has-extrapolated-rows", "digitised", "superseded", "deleted", "preliminary",
              "relative", "not-experimental", "derived", "complex", "cm_approx",
-             "outdated-normalisation", "renormalised-by-compiler", "dependent", "upper-limits"]
+             "outdated-normalisation", "renormalised-by-compiler", "dependent", "upper-limits",
+             "indirect", "corrected"]
 ERR_BITS = ["stat", "sys", "total-given", "total-combined", "normalisation"]
 QCLASSES = list(dataset.QUANTITY_CLASSES)
 SLICE_BITS = list(SLICES)
@@ -134,7 +135,19 @@ def index_row(meta: dict, strings: Dict[str, Dict[str, int]]) -> dict:
         "lv": len(meta["final_levels"]),
         "s": sl,
         "u": (meta["entry_updated"] or "").replace("-", ""),
+        # lowest E_cm (MeV) of a measured point at 1 and 2 standard deviations
+        # (nucdata/measured.py), compactly: 0 = the same as e0 (m2) or m2 (m1)
+        **measured_columns(r6(meta["emin_cm"]), r6(meta["measured_min_cm"]["1sigma"]),
+                           r6(meta["measured_min_cm"]["2sigma"])),
     }
+
+
+def measured_columns(e0, m1, m2) -> dict:
+    """Index columns m1, m2: null (no measured point), 0 (m2 = e0; m1 = m2) or the energy (MeV).
+    lib/data/lowest.mjs indexRows decodes them."""
+    c2 = None if m2 is None else (0 if m2 == e0 else m2)
+    c1 = None if m1 is None else (0 if m1 == m2 else m1)
+    return {"m1": c1, "m2": c2}
 
 
 def _decimate(points: dict, keep: int):
@@ -280,6 +293,23 @@ def build_shard(slug: str, key: str, lines: List[str], out_dir: str, src: dict, 
     return shard
 
 
+MONTHS = {"en": ["January", "February", "March", "April", "May", "June", "July", "August", "September",
+                  "October", "November", "December"],
+          "it": ["gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", "luglio", "agosto", "settembre",
+                 "ottobre", "novembre", "dicembre"]}
+
+
+def long_date(iso: str, lang: str) -> str:
+    """2026-09-28 -> 28 September 2026 / 28 settembre 2026 (docs/STYLE.md)."""
+    y, m, d = (int(x) for x in iso.split("-"))
+    return f"{d} {MONTHS[lang][m - 1]} {y}"
+
+
+def it_del(date: str) -> str:
+    """del 28 settembre, dell'1 / dell'8 / dell'11 settembre."""
+    return f"dell'{date}" if date.split(" ")[0] in ("1", "8", "11") else f"del {date}"
+
+
 def meta_document(src_all: dict, counts: dict, generated: str) -> dict:
     ex = src_all["exfor_master"]
     return {
@@ -296,12 +326,14 @@ def meta_document(src_all: dict, counts: dict, generated: str) -> dict:
             "license_url": "https://creativecommons.org/licenses/by/4.0/",
             "entry_url": ex["entry_url"],
             "master_url": ex["blob_url"],
-            "line": f"Data: EXFOR (IAEA/NRDC), snapshot {ex['snapshot_date']}, CC BY 4.0",
-            "line_it": f"Dati: EXFOR (IAEA/NRDC), versione del {ex['snapshot_date']}, CC BY 4.0",
+            "line": f"Data: EXFOR (IAEA/NRDC), snapshot of {long_date(ex['snapshot_date'], 'en')}, CC BY 4.0",
+            "line_it": f"Dati: EXFOR (IAEA/NRDC), versione {it_del(long_date(ex['snapshot_date'], 'it'))}, CC BY 4.0",
             "changes": ("Converted from the EXFOR exchange format to JSON: units normalised (MeV, b, "
                         "b/sr, MeV b, deg), lab and c.m. energies both computed with AME2020 masses, "
                         "rows flagged as extrapolated removed from the points and listed separately, "
-                        "large datasets decimated for display with the full set beside."),
+                        "large datasets decimated for display with the full set beside, and the frame, unit and "
+                        "scale errors listed in scripts/data/corrections.yaml corrected (each such dataset is "
+                        "flagged 'corrected' and says what was changed)."),
             "citation": ("N. Otuka et al., \"Towards a More Complete and Accurate Experimental Nuclear "
                          "Reaction Data Library (EXFOR): International Collaboration Between Nuclear "
                          "Reaction Data Centres (NRDC)\", Nucl. Data Sheets 120, 272 (2014), "
@@ -393,6 +425,12 @@ def run(argv: Optional[List[str]] = None):
             build_shard(slug, key, f.read().splitlines(), out_exfor, exsrc, atlas, stats)
         os.remove(path)   # keeps the peak disk use near the size of the output
     t2 = time.time()
+    if args.shards != "all":
+        # The committed meta.json describes the index, not a partial set of
+        # shards: the same index gives the same meta whichever shards were built.
+        print(f"shards (not recorded in meta.json): {len(stats['shard_gz'])} written, "
+              f"{stats['decimated']} decimated, {stats['paged']} paged, {stats['sets']} full sets", file=sys.stderr)
+        stats = {"shard_gz": [], "decimated": 0, "paged": 0, "sets": 0, "bytes": 0}
 
     # -- index ---------------------------------------------------------------
     rows.sort(key=lambda r: r["id"])

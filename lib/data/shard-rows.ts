@@ -62,6 +62,37 @@ export interface TableRow {
   gap: GapRow
 }
 
+/** The plot's views: never two of them on one axis. */
+export type PlotView = "total" | "partial" | "dsigma"
+
+export function viewOf(r: Pick<TableRow, "group">): PlotView | null {
+  if (r.group === "sigma" || r.group === "S") return "total"
+  if (r.group === "partial") return "partial"
+  if (r.group === "dsigma") return "dsigma"
+  return null
+}
+
+/**
+ * The default selection: the counted angle-integrated totals (σ or S), not
+ * relative data, and one dataset per EXFOR subentry (pointer twins: the same
+ * measurement as σ and as S, or bare and screened; σ is preferred, the others
+ * stay opt-in), so a fit or an export never counts a measurement twice.
+ */
+export function defaultSelection(rows: TableRow[]): Set<string> {
+  const relative = 1 << FLAG_BITS.indexOf("relative")
+  const pick = rows.filter((r) => r.counted && r.plottable && viewOf(r) === "total" && !(r.flagBits & relative))
+  const bySub = new Map<string, TableRow[]>()
+  for (const r of pick) {
+    const sub = r.id.split(".").slice(0, 2).join(".")
+    bySub.set(sub, [...(bySub.get(sub) ?? []), r])
+  }
+  const out = new Set<string>()
+  for (const list of bySub.values()) {
+    out.add((list.find((r) => r.qclass === "sigma") ?? list[0]).id)
+  }
+  return out
+}
+
 function shortName(name: string): string {
   return name
     .split(",")[0]
@@ -105,10 +136,13 @@ export function tableRows(shard: Shard, links: EvalLink[]): TableRow[] {
       e1: m.emax_cm,
       k0: m.kt_min,
       k1: m.kt_max,
+      m1: m.measured_min_cm?.["1sigma"] ?? null,
+      m2: m.measured_min_cm?.["2sigma"] ?? null,
       n: m.npts,
       y: (m.year as number | null | undefined) ?? e?.year ?? null,
       a: (e?.first_author ?? "") + ((e?.authors?.length ?? 0) > 1 ? "+" : ""),
       i: inst?.code ?? "",
+      fa: fac ? fac.code + (fac.institute ? `,${fac.institute}` : "") : "",
       f,
       lv: m.final_levels.length,
       fr: FRAMES.indexOf(m.E_frame),
@@ -144,7 +178,7 @@ export function tableRows(shard: Shard, links: EvalLink[]): TableRow[] {
       counted: countsForRate(gap),
       decimated: ds.decimated ? { kept: ds.decimated.kept, total: ds.decimated.total } : null,
       evaluations: evaluationsOf(links, key, ds, e),
-      plottable: (m.quantity_class === "sigma" || m.quantity_class === "S") && !m.complex && !(f & (1 << 6)),
+      plottable: ["sigma", "S", "dsigma"].includes(m.quantity_class) && !m.complex && !(f & (1 << 6)),
       gap,
     }
   })

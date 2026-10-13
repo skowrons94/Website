@@ -4,7 +4,6 @@
  */
 
 import type { MapRow } from "@/components/data/gap-map"
-export { mapRows }
 import type { PanelWindow } from "@/components/data/measurements-panel"
 import { getReaction } from "@/lib/atlas"
 import {
@@ -19,8 +18,9 @@ import {
 } from "@/lib/data/build"
 import { fill } from "@/lib/data/fill"
 import { years } from "@/lib/data/format"
-import { lowestMeasured, rowGroup, type GapRow } from "@/lib/data/gap"
+import { lowestMeasured, rowGroup, type GapRow, type Lowest } from "@/lib/data/gap"
 import { mapRows } from "@/lib/data/map-rows"
+export { mapRows }
 import { dict, type Lang } from "@/lib/i18n"
 
 const entryOf = (id: string) => id.split(".")[0]
@@ -29,7 +29,7 @@ export interface PanelData {
   slugs: { slug: string; key: string; n: number }[]
   rows: MapRow[]
   windows: PanelWindow[]
-  lowest: { E: number; id: string; y: number | null; a: string } | null
+  lowest: Lowest | null
   counts: string
   macs: { n: number; lo: number; hi: number } | null
   threshold: number | null
@@ -68,7 +68,7 @@ function summarise(rows: GapRow[], windows: WindowMetrics[], channel: Channel | 
     slugs,
     rows: drawn,
     windows: windows.map(toPanel),
-    lowest: lowest ? { ...lowest, a: lowest.a } : null,
+    lowest,
     counts,
     macs: macsRows.length
       ? {

@@ -51,6 +51,8 @@ export function SearchView({
   const [noRecent, setNoRecent] = useState(false)
   const [singleLab, setSingleLab] = useState(false)
   const [levels, setLevels] = useState(false)
+  // the atlas reactions first: 7700 reactions open on ¹H(¹¹Li,…) otherwise
+  const [atlasOnly, setAtlasOnly] = useState(true)
   const [limit, setLimit] = useState(PAGE)
   const pre = useMemo(() => new Set(prerendered), [prerendered])
 
@@ -67,9 +69,14 @@ export function SearchView({
   }, [])
 
   // filtering and re-rendering the list run as a deferred (interruptible) render, so a click never blocks the page
-  const filters = useDeferredValue({ projectile, process, quantity, zLo, zHi, T9, above, noPartials, noRecent, singleLab, levels })
+  // one object per change of the filters (not per render), so the deferred value and the page reset are stable
+  const current = useMemo(
+    () => ({ projectile, process, quantity, zLo, zHi, T9, above, noPartials, noRecent, singleLab, levels, atlasOnly }),
+    [projectile, process, quantity, zLo, zHi, T9, above, noPartials, noRecent, singleLab, levels, atlasOnly],
+  )
+  const filters = useDeferredValue(current)
   const results = useMemo(() => {
-    const { projectile, process, quantity, zLo, zHi, T9, above, noPartials, noRecent, singleLab, levels } = filters
+    const { projectile, process, quantity, zLo, zHi, T9, above, noPartials, noRecent, singleLab, levels, atlasOnly } = filters
     if (!data) return []
     const LIGHT = new Set(["p", "a", "d", "3He", "t", "n"])
     const qb = quantity === "any" ? 0 : 1 << GROUPS.indexOf(quantity)
@@ -87,6 +94,7 @@ export function SearchView({
         if (noPartials && s.groups & partialBit) return false
         if (noRecent && (s.y1 ?? 0) >= 2000) return false
         if (singleLab && s.labs !== 1) return false
+        if (atlasOnly && !s.atlas) return false
         if (levels && !(levelsNoWg[s.key] > 0)) return false
         if (above) {
           const E0 = gamowPeak(s, T9)
@@ -103,8 +111,8 @@ export function SearchView({
   const href = (slug: string) =>
     pre.has(slug) ? localePath(lang, `/data/reaction/${slug}`) : `${localePath(lang, "/data/reaction")}?r=${encodeURIComponent(slug)}`
   const sel =
-    "h-10 rounded-md border border-input bg-background px-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-  const lab = "flex flex-col gap-1 text-xs font-medium text-muted-foreground"
+    "h-10 w-full max-w-full truncate rounded-md border border-input bg-background px-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+  const lab = "flex min-w-0 max-w-full flex-col gap-1 text-xs font-medium text-muted-foreground"
 
   return (
     <div className="mt-10">
@@ -187,6 +195,7 @@ export function SearchView({
             <Check label={t.noPartials} checked={noPartials} onChange={setNoPartials} />
             <Check label={t.noRecent} checked={noRecent} onChange={setNoRecent} />
             <Check label={t.singleLab} checked={singleLab} onChange={setSingleLab} />
+            <Check label={t.atlasOnly} checked={atlasOnly} onChange={setAtlasOnly} />
             <Check label={t.levelsNoWg} checked={levels} onChange={setLevels} />
           </div>
         </fieldset>

@@ -13,6 +13,8 @@
  * atlas' `plain` field and `particleName`.
  */
 
+import { itDate } from "./format.ts"
+import { RULE_TEXT } from "./rule-text.ts"
 import type { Lang } from "@/lib/locale"
 import { elideItalian } from "../localize.mjs"
 
@@ -92,11 +94,11 @@ const en = {
     /* -- the gap --------------------------------------------------------- */
     gapTitle: "The gap: what EXFOR has no measurement of yet",
     gapLead:
-      "A star uses each reaction in a narrow band of energies, its Gamow window. Laboratories measure from high energies downwards, and the counting rate falls steeply as they go. For each reaction: the window a star needs and the lowest energy ever measured. The empty stretch between them is filled by extrapolation.",
+      "A star uses each reaction in a narrow band of energies, its Gamow window. Laboratories measure from high energies downwards, and the counting rate falls steeply as they go. For each reaction: the window a star needs and the lowest energy in EXFOR. The empty stretch between them is filled by extrapolation.",
     gapLegendWindow: "Energies the star uses (Gamow window)",
     gapLegendGap: "Never measured",
     gapLegendData: "Measured",
-    gapAxis: "Energy, centre-of-mass frame",
+    gapAxis: "Centre-of-mass energy",
     gapNever: (site: string, e0: string) => `Never measured directly. Needed: about ${e0} (${site}).`,
     gapAbove: (low: string, site: string, e0: string) => `Data down to ${low}. Needed: about ${e0} (${site}).`,
     gapInside: (low: string, site: string, e0: string) =>
@@ -104,12 +106,11 @@ const en = {
     gapFactor: (x: string) => `${x}× above the window`,
     gapReached: "Window reached",
     gapNone: "No direct data",
-    gapBy: (who: string, year: string) => `Lowest: ${who}, ${year}`,
+    gapBy: (who: string) => `Lowest: ${who}`,
     gapUnderground: "underground (LUNA)",
     gapShowAll: (n: number) => `Show all ${n} reactions`,
     gapHide: "Show fewer",
-    gapRule:
-      "Lowest energy measured: the lowest centre-of-mass energy of any dataset in EXFOR that measures the reaction itself (cross section, S-factor, angular distribution, yield or resonance strength). Not counted: extrapolated, calculated or derived values, superseded or preliminary data, upper limits, single S-factor values quoted at one energy, indirect data (Trojan horse, Coulomb dissociation, ANC), and energies under 1 keV, which no charged-particle beam has reached.",
+    gapRule: RULE_TEXT.en,
 
     /* -- stories --------------------------------------------------------- */
     storiesTitle: "Three stories",
@@ -186,7 +187,7 @@ const en = {
 
     /* -- attribution ----------------------------------------------------- */
     sourcesTitle: "Where the data come from",
-    ensdfLine: (date: string) => `Levels: ENSDF (NNDC and the NSDD network), archive of ${date}.`,
+    ensdfLine: (date: string) => `Levels: ENSDF (NNDC for the NSDD network), archive of ${date}.`,
     physicists: "For physicists",
     physicistsSnapshot: (commit: string) => `EXFOR master files at commit ${commit}.`,
     physicistsCite: "Cite",
@@ -206,7 +207,7 @@ const en = {
           },
           {
             title: "Nobody has ever measured it",
-            text: `The Sun runs this reaction at about ${c.e0}. No experiment has measured it at any energy: EXFOR, the world's logbook of nuclear experiments, has no dataset for it. Its rate comes from theory, and the neutrinos it gives off, counted on Earth, agree with it. The next fusion in the chain, helium-3 + helium-3, has been measured inside the Sun's window: the lowest energy in EXFOR is ${c.he3low} (${c.he3who}), and later LUNA data go down to 16.5 keV (Bonetti et al., 1999).`,
+            text: `The Sun runs this reaction at about ${c.e0}. No experiment has measured it at any energy: EXFOR, the world's logbook of nuclear experiments, has no dataset for it. Its rate comes from theory, and the neutrinos it gives off, counted on Earth, agree with it. Later in the chain, the fusion of two helium-3 nuclei has been measured down to ${c.he3low} (${c.he3who}), inside the Sun's window.`,
             link: "See the gap for every reaction",
           },
           {
@@ -363,11 +364,11 @@ const it: typeof en = {
 
     gapTitle: "Il vuoto: dove EXFOR non ha ancora misure",
     gapLead:
-      "Una stella usa ogni reazione in una stretta banda di energie, la sua finestra di Gamow. I laboratori misurano dalle energie alte verso il basso, e il numero di conteggi crolla man mano che scendono. Per ogni reazione: la finestra che serve alla stella e l'energia più bassa mai misurata. Il tratto vuoto in mezzo si riempie con un'estrapolazione.",
+      "Una stella usa ogni reazione in una stretta banda di energie, la sua finestra di Gamow. I laboratori misurano dalle energie alte verso il basso, e il numero di conteggi crolla man mano che scendono. Per ogni reazione: la finestra che serve alla stella e l'energia più bassa in EXFOR. Il tratto vuoto in mezzo si riempie con un'estrapolazione.",
     gapLegendWindow: "Energie che usa la stella (finestra di Gamow)",
     gapLegendGap: "Mai misurato",
     gapLegendData: "Misurato",
-    gapAxis: "Energia nel sistema del centro di massa",
+    gapAxis: "Energia nel centro di massa",
     gapNever: (site: string, e0: string) => `Mai misurata direttamente. Serve: circa ${e0} (${site}).`,
     gapAbove: (low: string, site: string, e0: string) => `Dati fino a ${low}. Serve: circa ${e0} (${site}).`,
     gapInside: (low: string, site: string, e0: string) =>
@@ -375,12 +376,11 @@ const it: typeof en = {
     gapFactor: (x: string) => `${x} volte sopra la finestra`,
     gapReached: "Finestra raggiunta",
     gapNone: "Nessun dato diretto",
-    gapBy: (who: string, year: string) => `La più bassa: ${who}, ${year}`,
+    gapBy: (who: string) => `La più bassa: ${who}`,
     gapUnderground: "sotto terra (LUNA)",
     gapShowAll: (n: number) => `Mostra tutte le ${n} reazioni`,
     gapHide: "Mostra meno",
-    gapRule:
-      "Energia più bassa misurata: la più bassa energia nel centro di massa di una serie di dati di EXFOR che misura la reazione stessa (sezione d'urto, fattore S, distribuzione angolare, resa o intensità di una risonanza). Non contano: valori estrapolati, calcolati o derivati, dati superati o preliminari, limiti superiori, singoli valori del fattore S citati a una sola energia, dati indiretti (cavallo di Troia, dissociazione coulombiana, ANC) ed energie sotto 1 keV, che nessun fascio di particelle cariche ha raggiunto.",
+    gapRule: RULE_TEXT.it,
 
     storiesTitle: "Tre storie",
     stories: {
@@ -413,7 +413,7 @@ const it: typeof en = {
       `Livelli di energia dell'ossigeno-15 da ENSDF. Il protone può entrare sopra ${sp}, l'energia che serve per strappare un protone al nucleo; la fascia indica le energie che usa il Sole (circa ${e0} più in alto).`,
     nucleusThreshold: "azoto-14 + protone",
     nucleusWindow: "finestra del Sole",
-    nucleusSub: "sotto la soglia: decisivo",
+    nucleusSub: "appena sotto: conta per il tasso",
     nucleusRes: "prima porta sopra",
     nucleusOpen: "Apri la scheda dell'ossigeno-15",
     nucleusOthers: "Altri nuclei",
@@ -452,7 +452,7 @@ const it: typeof en = {
     caveat: "Modello a zona singola del centro di una stella, a temperatura e densità costanti. Una stella vera si riassesta.",
 
     sourcesTitle: "Da dove vengono i dati",
-    ensdfLine: (date: string) => `Livelli: ENSDF (NNDC e la rete NSDD), archivio del ${date}.`,
+    ensdfLine: (date: string) => `Livelli: ENSDF (NNDC per la rete NSDD), archivio ${itDate("di", date)}.`,
     physicists: "Per i fisici",
     physicistsSnapshot: (commit: string) => `File master di EXFOR al commit ${commit}.`,
     physicistsCite: "Come citare",
@@ -471,7 +471,7 @@ const it: typeof en = {
           },
           {
             title: "Nessuno l'ha mai misurata",
-            text: `Il Sole fa avvenire questa reazione intorno a ${c.e0}. Nessun esperimento l'ha misurata, a nessuna energia: EXFOR, il registro mondiale degli esperimenti nucleari, non ne contiene nemmeno una serie di dati. Il suo tasso viene dalla teoria, e i neutrini che emette, contati sulla Terra, le danno ragione. La fusione successiva della catena, elio-3 + elio-3, è stata misurata dentro la finestra del Sole: l'energia più bassa in EXFOR è ${c.he3low} (${c.he3who}), e dati di LUNA successivi scendono fino a 16,5 keV (Bonetti et al., 1999).`,
+            text: `Il Sole fa avvenire questa reazione intorno a ${c.e0}. Nessun esperimento l'ha misurata, a nessuna energia: EXFOR, il registro mondiale degli esperimenti nucleari, non ne contiene nemmeno una serie di dati. Il suo tasso viene dalla teoria, e i neutrini che emette, contati sulla Terra, le danno ragione. Più avanti nella catena, la fusione di due nuclei di elio-3 è stata misurata fino a ${c.he3low} (${c.he3who}), dentro la finestra del Sole.`,
             link: "Guarda il vuoto per ogni reazione",
           },
           {

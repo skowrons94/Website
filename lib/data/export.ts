@@ -230,6 +230,9 @@ export function normalisationPercent(meta: DatasetMeta): [number, string] {
   return [parts.length ? Math.sqrt(parts.reduce((s, x) => s + x * x, 0)) : 0.0, names.join(", ")]
 }
 
+/** Relative margin of a segment's energy limits beyond the energies written (export.SEGMENT_MARGIN). */
+export const SEGMENT_MARGIN = 1e-5
+
 const fmt = (v: number | null | undefined) => (v === null || v === undefined ? "" : pyFormat(v, ".6e"))
 const s = pyStr
 
@@ -257,12 +260,13 @@ export function header(meta: Meta, extra: string[], snapshot: { date: string; co
     `Reaction code: (${meta.code})`,
     `Quantity: ${s(meta.quantity_class)} (${s(meta.quantity_text || meta.quantity)}), unit ${s(meta.value_unit)}`,
     `Frame: energy given as ${s(meta.E_source)} (${s(meta.E_frame)}); angle ${s(meta.ang_frame || "n/a")}; ` +
-      `value ${s(meta.value_frame)}`,
+      `value ${s(meta.value_frame || "n/a")}`,
     `Final levels (MeV): ${meta.final_levels.map((x) => pyFormat(x, "g")).join(", ") || "not specified"}`,
     `Normalisation/monitor: ${mon}`,
     `Systematic (common) uncertainty: ${pyFormat(norm, ".3g")} % (${normNames || "none given"})`,
     `Uncertainty components: ${comps || "none"}`,
     `Flags: ${meta.flags.join(", ") || "none"}`,
+    ...(meta.corrections ?? []).map((c) => `Corrected here: ${c.change} (${c.problem} scripts/data/corrections.yaml)`),
     `Excluded rows: ${s(meta.nexcluded)}`,
     `Authors: ${meta.authors.join(", ")}`,
     `Title: ${s(meta.title)}`,
@@ -281,6 +285,10 @@ export interface Azure2File {
   id: string
   level: number | null
   is_diff: number
+  /** rows left out of the .dat for want of an uncertainty */
+  no_err: number
+  /** segment column 10: 1 varied normalisation, 0 fixed */
+  vary: number
 }
 
 export type Azure2Result = Azure2File | { skip: string }
@@ -360,13 +368,15 @@ export function azure2(
     if (ka !== kb) return ka - kb
     return (a[0] || 0) - (b[0] || 0)
   })
-  const out: Azure2File[] = []
+  const out: Azure2Result[] = []
   const dStat: Col = orNone(pts.d_stat, n)
   const dSys: Col = orNone(pts.d_sys, n)
   const dTot: Col = orNone(pts.d_tot, n)
   for (const [lv, rows] of sorted) {
     const stem = base + (lv !== null ? `-${pyRound(lv * 1000)}` : "")
     const dat: string[] = []
+    const written: number[] = []
+    let noErr = 0
     let table2 = ""
     for (const i of rows) {
       const f = factor[i]
@@ -374,9 +384,11 @@ export function azure2(
       const v = (value[i] as number) * f
       const d = err[i] === null ? null : (err[i] as number) * f
       const angle = isDiff ? ang[i] || 0.0 : 0
-      dat.push(
-        `${pyFormat(eLab[i] as number, ".6e")} ${pyFormat(angle, ".4f")} ${pyFormat(v, ".6e")} ${pyFormat(d !== null ? d : 0.0, ".6e")}`,
-      )
+      if (d !== null && d > 0) {
+        // AZURE2 gives a point of uncertainty 0 no weight in chi2: such rows stay in the CSV only.
+        dat.push(`${pyFormat(eLab[i] as number, ".6e")} ${pyFormat(angle, ".4f")} ${pyFormat(v, ".6e")} ${pyFormat(d, ".6e")}`)
+        written.push(i)
+      } else noErr++
       table2 += csvRow([
         fmt(eLab[i]),
         fmt(ecm[i]),
@@ -387,18 +399,35 @@ export function azure2(
         fmt(dStat[i]),
         fmt(dSys[i]),
         fmt(dTot[i]),
-        fmt(d),
+        d ? fmt(d) : "",
         lvl[i] === null ? "" : pyFormat(lvl[i] as number, "g"),
         !pts.flag || !pts.flag.length || pts.flag[i] === null ? "" : pyFormat(pts.flag[i] as number, "g"),
       ])
     }
-    const es = rows.map((i) => eLab[i] as number)
-    const angs = rows.map((i) => ang[i]).filter((a): a is number => a !== null)
-    const [amin, amax] = isDiff && angs.length ? [Math.min(...angs), Math.max(...angs)] : [0, 180]
+    if (!written.length) {
+      out.push({
+        skip:
+          meta.id +
+          (lv !== null ? ` (E_x = ${pyFormat(lv, "g")} MeV)` : "") +
+          ": no point has an uncertainty, and AZURE2 would give them no weight; use the CSV/JSON",
+      })
+      continue
+    }
+    // The segment's limits bracket the energies (and angles) as the .dat file
+    // writes them: AZURE2 keeps a point only if E_min <= E <= E_max.
+    const es = written.map((i) => Number(pyFormat(eLab[i] as number, ".6e")))
+    const eLo = Math.min(...es) * (1 - SEGMENT_MARGIN)
+    const eHi = Math.max(...es) * (1 + SEGMENT_MARGIN)
+    const angs = written.map((i) => ang[i]).filter((a): a is number => a !== null).map((a) => Number(pyFormat(a, ".4f")))
+    const [aLo, aHi] =
+      isDiff && angs.length
+        ? [pyFormat(Math.max(0.0, Math.min(...angs) - 0.001), ".4f"), pyFormat(Math.min(180.0, Math.max(...angs) + 0.001), ".4f")]
+        : ["0", "180"]
+    const vary = norm > 0 ? 1 : 0
     const exitKey = ["sigma", "S"].includes(q) && lv === null && !meta.quantity.includes("PAR") && meta.process === "g" ? "-1" : "EXIT"
     const segment =
-      `1 ENTR ${exitKey} ${pyFormat(Math.min(...es), ".6g")} ${pyFormat(Math.max(...es), ".6g")} ${pyFormat(amin, "g")} ${pyFormat(amax, "g")} ` +
-      `${exitKey === "-1" ? 3 : isDiff} 1 1 ${pyFormat(norm, ".3g")} 0 0 0 data/${stem}.dat 0 0`
+      `1 ENTR ${exitKey} ${pyFormat(eLo, ".6e")} ${pyFormat(eHi, ".6e")} ${aLo} ${aHi} ` +
+      `${exitKey === "-1" ? 3 : isDiff} 1 ${vary} ${pyFormat(norm, ".3g")} 0 0 0 data/${stem}.dat 0 0`
     const extra = [
       `AZURE2 file: data/${stem}.dat (columns E_lab MeV, angle deg, value, uncertainty; no header)`,
       `AZURE2 E_lab: lab energy of the ${labParticle === "target" ? "EXFOR target" : "EXFOR projectile"} ` +
@@ -407,6 +436,16 @@ export function azure2(
         `segment type isDiff ${exitKey === "-1" ? 3 : isDiff}`,
       `AZURE2 uncertainty (column 4): ${errWhat}`,
       `AZURE2 normalisation uncertainty (segment column 11): ${pyFormat(norm, ".3g")} %`,
+      vary
+        ? `AZURE2 normalisation: varied (segment column 10 = 1) within the ${pyFormat(norm, ".3g")} % above`
+        : "AZURE2 normalisation: fixed at 1 (segment column 10 = 0): EXFOR gives no common systematic " +
+          "uncertainty, and a varied normalisation without one would float freely; set it yourself",
+      ...(noErr
+        ? [
+            `AZURE2 rows left out of the .dat: ${noErr} without an uncertainty (AZURE2 would give them ` +
+              "no weight in chi2); they are below with an empty d_azure2",
+          ]
+        : []),
       ...convNote.map((c) => `Note: ${c}`),
     ]
     if (lv !== null) extra.push(`This file: final level E_x = ${pyFormat(lv, "g")} MeV`)
@@ -427,7 +466,7 @@ export function azure2(
     let csv = ""
     for (const h of header(meta, extra, snapshot)) csv += "# " + h + "\n"
     csv += csvRow(cols) + table2
-    out.push({ stem, dat: dat.join("\n") + "\n", csv, segment, id: meta.id, level: lv, is_diff: isDiff })
+    out.push({ stem, dat: dat.join("\n") + "\n", csv, segment, id: meta.id, level: lv, is_diff: isDiff, no_err: noErr, vary })
   }
   return out
 }
@@ -541,7 +580,12 @@ export const AZURE2_README =
   "(lab, as in the file), angle min, max, data type (0 angle-integrated, 1 dσ/dΩ lab,\n" +
   "3 total capture, 4 dσ/dΩ c.m., 7 analysing power), norm, vary norm,\n" +
   "normalisation uncertainty (%), energy shift, its uncertainty, vary shift, file, 0 0.\n" +
-  "Every data file has a .csv beside it with all columns and the EXFOR header.\n\n"
+  "Every data file has a .csv beside it with all columns and the EXFOR header.\n" +
+  "E_min and E_max bracket the file's energies by a relative 1e-5 (and the angles by\n" +
+  "0.001 deg), so AZURE2 keeps every point. The normalisation varies only where EXFOR\n" +
+  "gives a common systematic uncertainty; without one it is fixed at 1 (vary 0).\n" +
+  "Rows without an uncertainty are left out of the .dat files (AZURE2 gives them no\n" +
+  "weight) and kept in the .csv files; a file with none is skipped.\n\n"
 
 /** The files write_azure2 writes, by path: data/<stem>.dat, data/<stem>.csv, segments.txt, README.txt. */
 export function azure2Files(
@@ -564,7 +608,11 @@ export function azure2Files(
       files.set(`data/${f.stem}.csv`, f.csv)
       segs.push(f.segment)
       readme.push(
-        `segment ${segs.length}: data/${f.stem}.dat  (${f.id}` + (f.level !== null ? `, E_x = ${pyFormat(f.level, "g")} MeV` : "") + ")",
+        `segment ${segs.length}: data/${f.stem}.dat  (${f.id}` +
+          (f.level !== null ? `, E_x = ${pyFormat(f.level, "g")} MeV` : "") +
+          ")" +
+          (f.vary ? "" : "  normalisation fixed") +
+          (f.no_err ? `  ${f.no_err} rows without uncertainty left out` : ""),
       )
       count++
     }
