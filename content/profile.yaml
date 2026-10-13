@@ -88,8 +88,8 @@ recognition:
   - source: cv/research/AZURE2
     label: Maintainer and Lead Developer
     label_it: Responsabile e sviluppatore principale
-    what: AZURE2, the R-matrix code
-    what_it: AZURE2, il codice R-matrix
+    what: AZURE2, an R-matrix code
+    what_it: AZURE2, un codice R-matrix
   - source: cv/awards/IAEA INDEN-LE
     label: Committee member
     label_it: Membro del comitato
@@ -122,14 +122,14 @@ recognition:
 # for specialists. The lead above already says where and why; this is the rest.
 intro:
   - >-
-    Underground, the cosmic-ray background drops a millionfold and cross
+    Underground, the flux of cosmic-ray muons drops a millionfold and cross
     sections of picobarns become measurable. A measurement, though, is only ever a handful of points in a
     narrow window of energy. Turning those points into the quantity astrophysics
     needs — a rate at stellar temperatures, often far below anything
     measurable — is R-matrix theory's job.
   - >-
-    Since June 2025 I have been the maintainer and lead developer of AZURE2, the
-    R-matrix code used across the field, and I sit on the IAEA INDEN-LE
+    Since June 2025 I have been the maintainer and lead developer of AZURE2, a
+    widely used R-matrix code, and I sit on the IAEA INDEN-LE
     committee that evaluates light-element cross sections. This site puts both
     to work: notes on the theory, and evaluations you can open, change and rerun
     in your browser.
@@ -144,8 +144,8 @@ intro_it:
     stellari, spesso molto al di sotto di qualunque energia misurabile, è il
     compito della teoria R-matrix.
   - >-
-    Da giugno 2025 sono il responsabile e lo sviluppatore principale di AZURE2, il
-    codice R-matrix di riferimento nel settore, e faccio parte del comitato
+    Da giugno 2025 sono il responsabile e lo sviluppatore principale di AZURE2, un
+    codice R-matrix molto usato nel settore, e faccio parte del comitato
     INDEN-LE dell'IAEA, che valuta le sezioni d'urto degli elementi leggeri.
     Questo sito tiene insieme le due cose: note sulla teoria e valutazioni che
     puoi aprire ed eseguire nel tuo browser.

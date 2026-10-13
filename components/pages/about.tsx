@@ -105,8 +105,8 @@ function BodyEn({ to, n }: { to: (p: string) => string; n: Counts }) {
         <H2 id="ai">{TEXT.en.sections.ai}</H2>
         <div className={prose}>
           <p>
-            I built this site with the help of an AI system, Claude, made by Anthropic. Much of the code and the first
-            drafts of many pages were written by Claude, following my direction. I chose what the site covers, decided
+            I built this site with the help of an AI system, Claude, made by Anthropic. Claude wrote much of the code and
+            the first drafts of many pages, following my direction. I chose what the site covers, decided
             how each thing should be explained, and checked the results; the scientific responsibility for every page is
             mine.
           </p>
@@ -118,7 +118,7 @@ function BodyEn({ to, n }: { to: (p: string) => string; n: Counts }) {
           <p>
             This is also how I think tools for our field can be kept alive: with an AI doing much of the routine work,
             one researcher can build and maintain resources for the community (an atlas of reactions, evaluations anyone
-            can rerun, a rate explorer) that would otherwise need a small team. It does not replace checking, which is
+            can rerun, a rate explorer) that would otherwise be hard to keep up. It does not replace checking, which is
             why the next section is the longest.
           </p>
         </div>
@@ -127,25 +127,7 @@ function BodyEn({ to, n }: { to: (p: string) => string; n: Counts }) {
       <section aria-labelledby="checks" className="mt-14">
         <H2 id="checks">{TEXT.en.sections.checks}</H2>
         <div className={prose}>
-          <p>
-            Every round of changes was reviewed independently, by separate AI reviewers (also Claude) that had not
-            written the work, each asked to read the site from one point of view:
-          </p>
-        </div>
-        <ul className={list}>
-          <li>a nuclear astrophysicist: the physics, the numbers and the references;</li>
-          <li>an R-matrix specialist: the evaluations and the notes;</li>
-          <li>a user-interface and accessibility reviewer: phones and desktops, 200% text, the keyboard alone;</li>
-          <li>two members of the public, one reading in English and one in Italian;</li>
-          <li>a senior referee, reading the whole site as a journal referee would.</li>
-        </ul>
-        <div className={prose}>
-          <p>
-            The reviews were repeated, and the problems they found fixed, until none reported an issue of high or medium
-            severity. These are points of view an AI was asked to take, not reviews by people, and no substitute for
-            them: if you find something wrong, please tell me (see below).
-          </p>
-          <p>Automated tests check the rest:</p>
+          <p>Automated tests check the site:</p>
         </div>
         <ul className={list}>
           <li>
@@ -169,6 +151,10 @@ function BodyEn({ to, n }: { to: (p: string) => string; n: Counts }) {
             Every number in the atlas and on the explanatory pages carries a citation to its source, and during the
             reviews the references were checked against the sources they cite. If you find one that is wrong, the report
             links below are the quickest way to tell me.
+          </p>
+          <p>
+            Each round of changes was also read by separate AI reviewers, prompted to take the view of a specialist, an
+            accessibility reviewer and a general reader. They are not people and no substitute for them.
           </p>
         </div>
       </section>
@@ -252,8 +238,8 @@ function BodyIt({ to, n }: { to: (p: string) => string; n: Counts }) {
         <div className={prose}>
           <p>
             Ho costruito questo sito con l&apos;aiuto di un sistema di intelligenza artificiale, Claude, sviluppato da
-            Anthropic. Buona parte del codice e le prime stesure di molte pagine sono state scritte da Claude, seguendo
-            le mie indicazioni. Ho scelto io che cosa il sito tratta e come spiegare ogni cosa, e ho controllato i
+            Anthropic. Claude ha scritto buona parte del codice e le prime stesure di molte pagine, seguendo le mie
+            indicazioni. Ho scelto io che cosa il sito tratta e come spiegare ogni cosa, e ho controllato i
             risultati; la responsabilità scientifica di ogni pagina è mia.
           </p>
           <p>
@@ -265,8 +251,8 @@ function BodyIt({ to, n }: { to: (p: string) => string; n: Counts }) {
             Penso che sia anche così che si possono tenere in vita gli strumenti del nostro settore: con
             un&apos;intelligenza artificiale che svolge gran parte del lavoro di routine, un solo ricercatore può
             costruire e mantenere risorse per la comunità (un atlante delle reazioni, valutazioni che chiunque può
-            rieseguire, un esploratore dei tassi) che altrimenti richiederebbero un piccolo gruppo. Questo non
-            sostituisce le verifiche, ed è per questo che la sezione seguente è la più lunga.
+            rieseguire, un esploratore dei tassi) che altrimenti sarebbe difficile mantenere. Questo non sostituisce le
+            verifiche: per questo la sezione seguente è la più lunga.
           </p>
         </div>
       </section>
@@ -274,28 +260,7 @@ function BodyIt({ to, n }: { to: (p: string) => string; n: Counts }) {
       <section aria-labelledby="checks" className="mt-14">
         <H2 id="checks">{TEXT.it.sections.checks}</H2>
         <div className={prose}>
-          <p>
-            Ogni serie di modifiche è stata esaminata da revisori IA indipendenti (anch&apos;essi Claude) che non
-            l&apos;avevano scritta; a ciascuno è stato affidato un ruolo e un solo punto di vista:
-          </p>
-        </div>
-        <ul className={list}>
-          <li>nel ruolo di un astrofisico nucleare: la fisica, i numeri e la bibliografia;</li>
-          <li>nel ruolo di uno specialista di R-matrix: le valutazioni e le note;</li>
-          <li>
-            nel ruolo di un revisore dell&apos;interfaccia e dell&apos;accessibilità: smartphone e computer, testo
-            ingrandito al 200%, navigazione con la sola tastiera;
-          </li>
-          <li>nel ruolo di lettori del grande pubblico, uno in inglese e uno in italiano;</li>
-          <li>nel ruolo di un revisore senior, che legge l&apos;intero sito come farebbe il referee di una rivista.</li>
-        </ul>
-        <div className={prose}>
-          <p>
-            Le revisioni sono state ripetute, correggendo ogni volta i problemi trovati, finché nessuna ha più segnalato
-            problemi di gravità alta o media. Sono punti di vista che un&apos;IA è stata incaricata di assumere, non revisioni di
-            persone, e non le sostituiscono: se trovi qualcosa di sbagliato, fammelo sapere (vedi sotto).
-          </p>
-          <p>Il resto è affidato a test automatici:</p>
+          <p>Il sito è verificato da test automatici:</p>
         </div>
         <ul className={list}>
           <li>
@@ -319,6 +284,11 @@ function BodyIt({ to, n }: { to: (p: string) => string; n: Counts }) {
             Ogni numero nell&apos;atlante e nelle pagine divulgative rimanda alla sua fonte, e durante le
             revisioni i riferimenti sono stati confrontati con le fonti che citano. Se ne trovi uno sbagliato, i
             collegamenti per le segnalazioni qui sotto sono il modo più rapido per dirmelo.
+          </p>
+          <p>
+            Ogni serie di modifiche è stata letta anche da revisori IA separati, istruiti ad assumere il punto di vista
+            di uno specialista, di un revisore dell&apos;accessibilità e di un lettore del grande pubblico. Non sono
+            persone e non le sostituiscono.
           </p>
         </div>
       </section>
@@ -379,7 +349,7 @@ function BodyIt({ to, n }: { to: (p: string) => string; n: Counts }) {
             </Ext>
             ; ogni reazione dell&apos;atlante, la pagina sul processo s e ogni voce del glossario hanno anche un
             collegamento &laquo;Segnala un errore&raquo; che compila la segnalazione al posto tuo, e uno &laquo;Proponi una
-            reazione&raquo; per ciò che manca. Puoi anche scrivermi per e-mail. Correzioni e contributi (una reazione,
+            reazione&raquo; per ciò che manca. Puoi anche scrivermi per email. Correzioni e contributi (una reazione,
             un riferimento, una traduzione) sono benvenuti come pull request.
           </p>
         </div>
