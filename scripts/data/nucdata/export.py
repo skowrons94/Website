@@ -345,6 +345,7 @@ def _bib_title(s: str) -> str:
     s = re.sub("[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻]+", lambda m: math("^{" + "".join(_SUP[c] for c in m.group(0)) + "}"), s)
     s = re.sub("[₀₁₂₃₄₅₆₇₈₉ₚₙₐₑₓ]+", lambda m: math("_{" + "".join(_SUB[c] for c in m.group(0)) + "}"), s)
     s = re.sub("[α-ωΓΔΘΛΞΠΣΦΨΩµ]", lambda m: math("\\" + _GREEK[m.group(0)]) if m.group(0) in _GREEK else m.group(0), s)
+    s = s.replace("→", math("\\rightarrow"))
     return s.replace("\x02\x01", "").replace("\x01", "$").replace("\x02", "$")
 
 

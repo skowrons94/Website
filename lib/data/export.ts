@@ -549,6 +549,7 @@ export function bibTitle(x: string): string {
     .replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻]+/g, (m) => math(`^{${run(SUP, m)}}`))
     .replace(/[₀₁₂₃₄₅₆₇₈₉ₚₙₐₑₓ]+/g, (m) => math(`_{${run(SUB, m)}}`))
     .replace(/[α-ωΓΔΘΛΞΠΣΦΨΩµ]/g, (c) => (GREEK[c] ? math(`\\${GREEK[c]}`) : c))
+    .replace(/→/g, () => math("\\rightarrow"))
     .replace(/\u0002\u0001/g, "")
     .replace(/[\u0001\u0002]/g, "$")
 }

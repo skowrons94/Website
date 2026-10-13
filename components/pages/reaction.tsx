@@ -114,7 +114,7 @@ function Facts({ reaction: r, lang }: { reaction: Reaction; lang: Lang }) {
             {r.rmatrix.length > 0 ? (
               r.rmatrix.map((ev) => (
                 <dd key={ev} className="mt-1">
-                  <Link href={localePath(lang, `/evaluations/${ev}?tab=plot`)} className="font-medium text-link underline-offset-4 hover:underline">
+                  <Link prefetch={false} href={localePath(lang, `/evaluations/${ev}?tab=plot`)} className="font-medium text-link underline-offset-4 hover:underline">
                     {otherReaction(ev, r.label) ? (
                       <Sci>{t.relatedEvaluation(otherReaction(ev, r.label)!, supCode(ev))}</Sci>
                     ) : (
@@ -132,7 +132,7 @@ function Facts({ reaction: r, lang }: { reaction: Reaction; lang: Lang }) {
               <dd className="mt-1 text-[0.8125rem] text-foreground/85">
                 {t.noLiveEvaluation}
                 {" · "}
-                <Link href={localePath(lang, "/evaluations")} className="text-link underline-offset-4 hover:underline">
+                <Link prefetch={false} href={localePath(lang, "/evaluations")} className="text-link underline-offset-4 hover:underline">
                   {dict(lang).nav.evaluations}
                 </Link>
               </dd>
@@ -145,7 +145,7 @@ function Facts({ reaction: r, lang }: { reaction: Reaction; lang: Lang }) {
           <div>
             <dt className="text-muted-foreground">{dict(lang).nav.rates}</dt>
             <dd className="mt-1">
-              <Link href={localePath(lang, ratesHrefFor(r.id)!)} className="font-medium text-link underline-offset-4 hover:underline">
+              <Link prefetch={false} href={localePath(lang, ratesHrefFor(r.id)!)} className="font-medium text-link underline-offset-4 hover:underline">
                 {t.exploreRates} →
               </Link>
             </dd>
@@ -480,7 +480,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
     <div className="mx-auto max-w-6xl px-5 py-14 [overflow-wrap:anywhere] sm:px-8 xl:max-w-7xl">
       {/* --- find --- */}
       <PageLd lang={lang} trail={[{ name: dict(lang).nav.atlas, path: "/atlas" }, { name: r.label, path: `/atlas/${r.id}` }]} />
-      <Link
+      <Link prefetch={false}
         href={to(family ? familyHref(family.id) : "/atlas")}
         className="-my-2.5 inline-flex py-2.5 items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
@@ -502,7 +502,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
           {eyebrow.map((item, i) => (
             <span key={item.key}>
               {i > 0 && ", "}
-              <Link href={to(item.href)} className="underline-offset-4 hover:text-foreground hover:underline">
+              <Link prefetch={false} href={to(item.href)} className="underline-offset-4 hover:text-foreground hover:underline">
                 <Sci>{withoutArticle(item.name)}</Sci>
               </Link>
             </span>
@@ -515,7 +515,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
           <p className="mt-3 text-pretty text-lg leading-snug text-muted-foreground">
             <span className="sr-only">: </span>
             {r.plain}
-            <Link
+            <Link prefetch={false}
               href={to("/glossary#notation")}
               className="ml-3 inline-block py-1 text-sm text-link underline-offset-4 hover:underline"
             >
@@ -530,7 +530,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
           {/* --- lit --- */}
           <OpenQuestionBadge debates={debates} lang={lang} />
           {r.rmatrix.map((ev) => (
-            <Link
+            <Link prefetch={false}
               key={ev}
               href={to(`/evaluations/${ev}?tab=plot`)}
               aria-label={
@@ -621,7 +621,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
             <ul className="mt-6 space-y-2">
               {familyPages.map((f) => (
                 <li key={f.page}>
-                  <Link
+                  <Link prefetch={false}
                     href={to(f.page!)}
                     className="group inline-flex min-h-10 items-center gap-2 rounded-md border border-border bg-card px-3.5 py-2 text-[0.95rem] font-medium text-link transition-colors hover:border-foreground/30"
                   >
@@ -649,7 +649,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
                       aria-hidden
                       className={`absolute -left-[1.6rem] top-1.5 h-2.5 w-2.5 rounded-full border-2 border-background ${e.luna ? "bg-foreground" : "bg-muted-foreground/50"}`}
                     />
-                    <Link href={to(`/atlas/timeline#${e.id}`)} className="group flex flex-wrap items-baseline gap-x-3">
+                    <Link prefetch={false} href={to(`/atlas/timeline#${e.id}`)} className="group flex flex-wrap items-baseline gap-x-3">
                       <span className="tabular text-sm font-medium">{e.year}</span>
                       <span className="text-[0.95rem] text-muted-foreground group-hover:text-link">
                         <Sci>{e.title}</Sci>
@@ -670,7 +670,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
                 <ul className="mt-5 flex flex-wrap gap-2">
                   {methods.map((m) => (
                     <li key={m.id}>
-                      <Link
+                      <Link prefetch={false}
                         href={to(`/atlas/methods#${m.id}`)}
                         className="inline-flex min-h-8 items-center gap-1 rounded-md border border-border px-2.5 py-1 text-sm text-link underline-offset-4 transition-colors hover:border-foreground/30 hover:underline"
                       >
@@ -705,7 +705,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
                               {(facility || m.lab || m.luna) && (
                                 <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
                                   {facility ? (
-                                    <Link
+                                    <Link prefetch={false}
                                       href={to(`/atlas/methods#${facility.id}`)}
                                       className="font-medium underline-offset-4 hover:text-link hover:underline"
                                     >
@@ -728,7 +728,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
                               )}
                               <p className={`${facility || m.lab || m.luna ? "mt-1" : ""} text-xs text-muted-foreground`}>
                                 {method && (
-                                  <Link href={to(`/atlas/methods#${method.id}`)} className="underline-offset-2 hover:text-link hover:underline">
+                                  <Link prefetch={false} href={to(`/atlas/methods#${method.id}`)} className="underline-offset-2 hover:text-link hover:underline">
                                     <Sci>{method.name}</Sci>
                                   </Link>
                                 )}
@@ -809,7 +809,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
                   <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-[0.95rem]">
                     {rmatrixEvaluations(r.rmatrix).map((ev) => (
                       <li key={ev.id} className="flex flex-wrap items-baseline gap-x-2">
-                        <Link href={to(`/evaluations/${ev.id}`)} className="font-medium text-link hover:underline">
+                        <Link prefetch={false} href={to(`/evaluations/${ev.id}`)} className="font-medium text-link hover:underline">
                           {(() => {
                             const nuclide = ev.id.replace(/^(\d+)/, (m) => m.split("").map((d) => "⁰¹²³⁴⁵⁶⁷⁸⁹"[+d]).join(""))
                             return (
@@ -920,7 +920,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
                   <ul className="mt-2 space-y-1">
                     {debates.map((d) => (
                       <li key={d.id}>
-                        <Link
+                        <Link prefetch={false}
                           href={to(`/atlas/open-questions#${d.id}`)}
                           className="group inline-flex min-h-9 items-center gap-1.5 text-[0.95rem] font-medium text-link underline-offset-4 hover:underline"
                         >
@@ -941,7 +941,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
               <ul className="flex flex-wrap gap-2">
                 {related.map((x) => (
                   <li key={x.id}>
-                    <Link
+                    <Link prefetch={false}
                       href={to(`/atlas/${x.id}`)}
                       className="inline-block rounded-md border border-border bg-card px-3 py-1.5 font-serif text-[0.95rem] font-semibold transition-colors hover:border-foreground/30 hover:text-link"
                     >
@@ -997,7 +997,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
               className="mt-16 grid gap-4 border-t border-border/70 pt-8 sm:grid-cols-2"
             >
               {prev ? (
-                <Link href={to(`/atlas/${prev.id}`)} className="group block rounded-lg border border-border p-4 transition-colors hover:border-foreground/30">
+                <Link prefetch={false} href={to(`/atlas/${prev.id}`)} className="group block rounded-lg border border-border p-4 transition-colors hover:border-foreground/30">
                   <span className="flex items-center gap-1.5 text-xs uppercase tracking-[0.12em] text-muted-foreground">
                     <ArrowLeft className="h-3.5 w-3.5" /> {t.previousIn} <Sci>{networks[0]?.name}</Sci>
                   </span>
@@ -1009,7 +1009,7 @@ export async function ReactionPage({ id, lang }: { id: string; lang: Lang }) {
                 <span className="hidden sm:block" />
               )}
               {next && (
-                <Link
+                <Link prefetch={false}
                   href={to(`/atlas/${next.id}`)}
                   className="group block rounded-lg border border-border p-4 text-right transition-colors hover:border-foreground/30"
                 >
