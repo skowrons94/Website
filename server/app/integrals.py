@@ -115,6 +115,12 @@ def _write(path, content):
     try:
         with os.fdopen(fd, "wb") as f:
             f.write(content)
+        # mkstemp creates 0600; keep the target's mode (0644 for a new file)
+        try:
+            mode = os.stat(path).st_mode & 0o777
+        except FileNotFoundError:
+            mode = 0o644
+        os.chmod(tmp, mode)
         os.replace(tmp, path)
     except BaseException:
         try:
