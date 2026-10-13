@@ -92,7 +92,7 @@ paulsen2025:
   year: 2025
   doi: 10.1103/2h2s-sbyx
   arxiv: "2406.00397"
-  checked: APS abstract page for the DOI (volume, article number, 2 July 2025) and arXiv 2406.00397 (v2 retitled "A saga on the γ-decay branching ratio of the Hoyle state"), 2026-10-11
+  checked: APS abstract page for the DOI (volume, article number, 2 July 2025) and arXiv 2406.00397 (v2 retitled "A saga on the γ-decay branching ratio of the Hoyle state"), 2026-10-11; results rechecked by web search (Γγ/Γ = 4.0(3) × 10⁻⁴, Γrad/Γ = 4.1(4) × 10⁻⁴; reanalysis of the Kibédi et al. data gives 4.6(6) × 10⁻⁴, no longer discrepant with the ENSDF average 4.16(11) × 10⁻⁴), 2026-10-13
 
 # --- 12C(α,γ)16O ---------------------------------------------------------------
 
@@ -362,7 +362,7 @@ rapagnani2022:
 rana2024:
   authors: T. K. Rana et al.
   title: New measurement of the Hoyle state radiative transition width
-  journal: Phys. Lett. B (2024)
+  journal: Phys. Lett. B 859, 139083 (2024)
   year: 2024
   arxiv: "2311.08781"
-  checked: arXiv 2311.08781 (abstract, Γrad/Γ = 4.01(30) × 10⁻⁴) and DOAJ listing (Phys. Lett. B, December 2024), by web search; volume, article number and DOI not seen, 2026-10-11
+  checked: arXiv 2311.08781 (abstract, Γrad/Γ = 4.01(30) × 10⁻⁴ and 4.04(30) × 10⁻⁴ from two experiments, Γrad = 3.75(40) × 10⁻³ eV) and DOAJ listing (Phys. Lett. B, December 2024), by web search, 2026-10-11; volume and article number from a web-search summary of the article and a citing reference list, 2026-10-13; the DOI (probably 10.1016/j.physletb.2024.139083) was searched and not found, so it is omitted
