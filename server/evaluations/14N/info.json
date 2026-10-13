@@ -145,8 +145,8 @@
   },
   "notes": [
     {
-      "text": "Total capture in this model: the total-capture curve (“¹³C(p,γ)¹⁴N, total”, all final states) gives S(0) ≈ 6.05 keV b, while the curves for the individual final states add up to S(0) ≈ 7.84 keV b. With the total-capture issue in AZURE2 corrected, the fit departs from the LUNA total-capture data; this is under investigation.",
-      "text_it": "Cattura totale in questo modello: la curva di cattura totale («¹³C(p,γ)¹⁴N, total», tutti gli stati finali) dà S(0) ≈ 6,05 keV b, mentre le curve dei singoli stati finali, sommate, danno S(0) ≈ 7,84 keV b. Con il problema della cattura totale di AZURE2 corretto, il fit si discosta dai dati di cattura totale di LUNA; la questione è in corso di verifica."
+      "text": "Total capture in this preliminary model: the “total” curve (“¹³C(p,γ)¹⁴N, total”, all final states) gives S(0) ≈ 6.05 keV b, while the curves for the individual final states add up to S(0) ≈ 7.84 keV b. This difference is being checked.",
+      "text_it": "Cattura totale in questo modello preliminare: la curva «total» («¹³C(p,γ)¹⁴N, total», tutti gli stati finali) dà S(0) ≈ 6,05 keV b, mentre le curve dei singoli stati finali, sommate, danno S(0) ≈ 7,84 keV b. La differenza è in corso di verifica."
     }
   ],
   "atlas": [
