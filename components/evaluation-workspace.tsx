@@ -570,6 +570,7 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [], preli
                 sessionId={sessionId}
                 calculating={extrapCalculating || extrapStale || extrapolations === null}
                 evaluationId={id}
+                preliminary={preliminary}
               />
             ),
           )}

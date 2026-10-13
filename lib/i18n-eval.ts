@@ -115,10 +115,15 @@ const en = {
       ". It does not yet reproduce the published best fit; the converged parameters will replace it. For the published results, see ",
       ".",
     ] as [string, string, string],
-    bands: (scattering: boolean): string =>
+    /** A preliminary model's curves are not a best fit: they are called model curves. */
+    bands: (scattering: boolean, preliminary = false): string =>
       scattering
-        ? "The model curves on this page are best-fit curves, without uncertainty bands."
-        : "The S-factor and extrapolation curves on this page are best-fit curves, without uncertainty bands.",
+        ? preliminary
+          ? "The curves on this page are model curves, without uncertainty bands."
+          : "The model curves on this page are best-fit curves, without uncertainty bands."
+        : preliminary
+          ? "The S-factor and extrapolation curves on this page are model curves, without uncertainty bands."
+          : "The S-factor and extrapolation curves on this page are best-fit curves, without uncertainty bands.",
     pinnedNorms: (names: string, n: number) =>
       n === 1
         ? `This scale is fixed: the normalization of ${names} enters the fit with an uncertainty of 0.1% or less.`
@@ -337,6 +342,7 @@ const en = {
       "For this evaluation, the model file is a preliminary version that does not yet reproduce the published best fit (see the note at the top of the page).",
     refPending: "Reference to be confirmed",
     noBands: "Best-fit curves only: no uncertainty band is drawn.",
+    noBandsPreliminary: "Model curves only: no uncertainty band is drawn.",
     chi2NormNote: (allOne: boolean) =>
       `This page does not refit the normalizations: they stay at the values stored in the file${allOne ? " (n = 1 for every dataset)" : ""}, and the χ² shown counts only each point's own uncertainty, not a dataset's overall scale uncertainty.`,
     chi2AllSummary: "χ² for all the data in the fit",
@@ -598,10 +604,14 @@ const it: EvalDictionary = {
       ". Non riproduce ancora il fit migliore pubblicato; i parametri a convergenza lo sostituiranno. Per i risultati pubblicati, vedi ",
       ".",
     ] as [string, string, string],
-    bands: (scattering: boolean): string =>
+    bands: (scattering: boolean, preliminary = false): string =>
       scattering
-        ? "Le curve del modello in questa pagina sono le curve del fit migliore, senza fasce d'incertezza."
-        : "Le curve del fattore S e delle estrapolazioni in questa pagina sono le curve del fit migliore, senza fasce d'incertezza.",
+        ? preliminary
+          ? "Le curve in questa pagina sono curve del modello, senza fasce d'incertezza."
+          : "Le curve del modello in questa pagina sono le curve del fit migliore, senza fasce d'incertezza."
+        : preliminary
+          ? "Le curve del fattore S e delle estrapolazioni in questa pagina sono curve del modello, senza fasce d'incertezza."
+          : "Le curve del fattore S e delle estrapolazioni in questa pagina sono le curve del fit migliore, senza fasce d'incertezza.",
     pinnedNorms: (names: string, n: number) =>
       n === 1
         ? `Questa scala è fissa: la normalizzazione di ${names} entra nel fit con un'incertezza dello 0,1% o meno.`
@@ -823,6 +833,7 @@ const it: EvalDictionary = {
       "Per questa valutazione il file del modello è una versione preliminare, che non riproduce ancora il fit migliore pubblicato (vedi la nota in cima alla pagina).",
     refPending: "Riferimento da confermare",
     noBands: "Solo le curve del fit migliore: non è tracciata alcuna fascia d'incertezza.",
+    noBandsPreliminary: "Solo le curve del modello: non è tracciata alcuna fascia d'incertezza.",
     chi2NormNote: (allOne: boolean) =>
       `Questa pagina non include le normalizzazioni nel fit: restano ai valori memorizzati nel file${allOne ? " (n = 1 per ogni serie di dati)" : ""}, e il χ² mostrato conta solo l'incertezza di ciascun punto, non quella sulla scala complessiva di una serie di dati.`,
     chi2AllSummary: "χ² per tutti i dati del fit",

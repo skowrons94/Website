@@ -168,7 +168,7 @@ function ModelNotes({ meta, lang, scattering }: { meta: EvaluationMeta; lang: La
   if (pinned.length) items.push(t.pinnedNorms(listOf(pinned, t.and), pinned.length))
   const fixed = [...new Set(meta.fixedNorms.map((f) => `${short(f.label)} (n = ${fmtN(f.n)})`))]
   if (fixed.length) items.push(t.fixedNorms(listOf(fixed, t.and)))
-  items.push(t.bands(scattering))
+  items.push(t.bands(scattering, meta.preliminary))
   return (
     <aside
       role="note"

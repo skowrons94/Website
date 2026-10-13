@@ -56,6 +56,8 @@ import { useEvalDict } from "@/components/eval-dict"
  */
 
 interface Props {
+  /** info.json `preliminary`: the curves are a preliminary model, not a best fit. */
+  preliminary?: boolean
   /** The evaluation's headline reaction ("³He(α,γ)⁷Be"): the curve to open on. */
   headline?: string | null
   extrapolations: ExtrapSegment[]
@@ -223,6 +225,7 @@ export function ExtrapPlot({
   activity = null,
   stage = "extrap",
   retryAt = null,
+  preliminary = false,
 }: Props) {
   const lang = useLang()
   const t = useEvalDict().workspace
@@ -932,7 +935,7 @@ export function ExtrapPlot({
             </ul>
             <p className="text-xs text-muted-foreground">{rich(t.sZeroNote)}</p>
             <p className="text-xs text-muted-foreground">{rich(t.rateNote)}</p>
-            <p className="text-xs text-muted-foreground">{t.noBands}</p>
+            <p className="text-xs text-muted-foreground">{preliminary ? t.noBandsPreliminary : t.noBands}</p>
           </CardContent>
         </Card>
       )}
