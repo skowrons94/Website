@@ -9,6 +9,7 @@
  */
 
 import type { Lang } from "@/lib/locale"
+import { elideItalian } from "@/lib/localize.mjs"
 
 /** `1.5` → `1,5` in Italian (lib/i18n's `decimal`, without the dictionaries). */
 export function decimal(text: string | number, lang: Lang): string {
@@ -499,9 +500,9 @@ const it: EvalDictionary = {
     noneText: "Aggiungi una cartella con un file .azr alla cartella delle valutazioni del server.",
     open: "Apri",
     download: (file: string) => `Scarica ${file}`,
-    // "dell'⁸Be": the article follows the spoken mass number (otto, undici, diciotto).
-    pageTitle: (nuclide: string) =>
-      `Valutazione R-matrix ${/^(⁸|¹¹|¹⁸)[A-Z]/.test(nuclide) ? "dell'" : "del "}${nuclide}`,
+    // "dell'⁸Be", "del ¹⁸F": the article follows the mass number as it is read
+    // aloud (otto, diciotto), via vowelMassNumber in lib/localize.mjs.
+    pageTitle: (nuclide: string) => elideItalian(`Valutazione R-matrix del ${nuclide}`),
     pageDescription: (nuclide: string) =>
       `Una valutazione R-matrix interattiva del sistema ${nuclide} con AZURE2: schema dei livelli, dati del fit ed estrapolazione alle energie stellari.`,
     inAtlas: "Nell'atlante delle reazioni",
