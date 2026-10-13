@@ -18,7 +18,7 @@ export function RouteLd({ lang, page, id }: { lang: Lang; page: "rates" | "rates
     case "rates":
       return <PageLd lang={lang} trail={[rates]} />
     case "rates-sprocess":
-      return <PageLd lang={lang} trail={[rates, { name: nav.sProcess, path: "/atlas/rates/s-process" }]} />
+      return <PageLd lang={lang} trail={[rates, { name: nav.sProcessWhatIf, path: "/atlas/rates/s-process" }]} />
     case "curiosities":
       return <PageLd lang={lang} trail={[rates, curiosities]} />
     case "curiosity": {

@@ -9,6 +9,7 @@ import { SiteUrl } from "@/components/atlas/site-url"
 import { LunaBadge } from "@/components/atlas/status-badge"
 import { Sci } from "@/components/sci"
 import { SiteDoiLine } from "@/components/site-doi"
+import { AtlasStoriesAndPaths } from "@/components/atlas/stories-paths"
 import { getAtlas, getMapData } from "@/lib/atlas"
 import { dict, localePath, type Lang } from "@/lib/i18n"
 import { pageMetadata } from "@/lib/metadata"
@@ -58,6 +59,9 @@ export function AtlasPage({ lang }: { lang: Lang }) {
   // phone, so the map starts within the first screen.
   const links = (className: string) => (
     <nav className={`flex-wrap gap-x-6 gap-y-1 text-sm ${className}`}>
+      <a href="#stories" className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
+        {dict(lang).nav.stories}
+      </a>
       <Link href={to("/atlas/s-process")} className="inline-flex min-h-8 items-center text-link underline-offset-4 hover:underline">
         {t.sProcessLink}
       </Link>
@@ -163,6 +167,9 @@ export function AtlasPage({ lang }: { lang: Lang }) {
       </section>
 
       {startHere("mt-10 lg:hidden")}
+
+      {/* -- stories and guided paths: the narrative ways in (r18) ---------- */}
+      <AtlasStoriesAndPaths lang={lang} />
 
       {/* -- the primer: why, and why underground ---------------------------- */}
       <section className="mt-16 border-t border-border/70 pt-10" aria-labelledby="primer-heading">

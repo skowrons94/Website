@@ -41,6 +41,7 @@ export function LanguageSwitch({
     return (
       <Link
         href={target}
+        prefetch={false}
         hrefLang={other}
         lang={other}
         onClick={onClick}
@@ -65,6 +66,7 @@ export function LanguageSwitch({
       </span>
       <Link
         href={target}
+        prefetch={false}
         hrefLang={other}
         lang={other}
         title={strings.otherSwitchTo}

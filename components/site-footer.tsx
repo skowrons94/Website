@@ -3,47 +3,27 @@ import Link from "next/link"
 import type { Profile } from "@/lib/content"
 import { dict, localePath, type Lang } from "@/lib/i18n"
 import { REPO } from "@/lib/repo"
+import { NAV_GROUPS, navLabel, type NavKey } from "@/lib/site-nav"
 
 /*
- * The footer is the site map, in the header's groups: the work (what someone
- * evaluating the researcher looks for), the tools to explore, the explanations
- * (what a curious reader looks for), and profiles elsewhere. Its strings are in
+ * The footer is the site map, in the header's groups and order (both come
+ * from lib/site-nav.ts): the work (what someone evaluating the researcher
+ * looks for), the tools to explore, the explanations (what a curious reader
+ * looks for), and profiles elsewhere. Where the footer has a longer name for a
+ * page ("Reaction atlas" for "Atlas") it uses it. Its strings are in
  * lib/i18n.ts.
  */
 function groups(lang: Lang): { title: string; links: { href: string; label: string }[] }[] {
   const t = dict(lang).footer
-  const local = (links: { href: string; label: string }[]) =>
-    links.map((link) => ({ ...link, href: localePath(lang, link.href) }))
-  return [
-    {
-      title: t.work,
-      links: local([
-        { href: "/research", label: t.research },
-        { href: "/publications", label: t.publications },
-        { href: "/software", label: t.software },
-        { href: "/cv", label: t.cv },
-      ]),
-    },
-    {
-      title: t.explore,
-      links: local([
-        { href: "/atlas", label: t.atlas },
-        { href: "/data", label: t.data },
-        { href: "/atlas/rates", label: t.rates },
-        { href: "/evaluations", label: t.evaluations },
-      ]),
-    },
-    {
-      title: t.learn,
-      links: local([
-        { href: "/notes", label: t.notes },
-        { href: "/glossary", label: t.glossary },
-        { href: "/learn/exercises", label: t.exercises },
-        { href: "/atlas/methods", label: t.methods },
-        { href: "/atlas/timeline", label: t.timeline },
-      ]),
-    },
-  ]
+  const nav = dict(lang).nav
+  const longer = t as unknown as Partial<Record<NavKey, string>>
+  return NAV_GROUPS.map((g) => ({
+    title: t[g.id],
+    links: g.items.map(({ key, path }) => ({
+      href: localePath(lang, path),
+      label: longer[key] ?? navLabel(nav, key).label,
+    })),
+  }))
 }
 
 // The columns are two from 20em (320 px at the default text size), so with
@@ -82,7 +62,7 @@ export function SiteFooter({ profile, lang }: { profile: Profile; lang: Lang }) 
             <ul>
               {group.links.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className={LINK}>
+                  <Link prefetch={false} href={link.href} className={LINK}>
                     {link.label}
                   </Link>
                 </li>
@@ -112,18 +92,18 @@ export function SiteFooter({ profile, lang }: { profile: Profile; lang: Lang }) 
             © {new Date().getFullYear()} {profile.name}
           </span>
           {/* --- r11 site --- */}
-          <Link href={localePath(lang, "/about")} className={LINK}>
+          <Link prefetch={false} href={localePath(lang, "/about")} className={LINK}>
             {t.about}
           </Link>
           <a href={REPO} target="_blank" rel="noreferrer" className={LINK}>
             {t.code}
           </a>
           {/* --- find --- */}
-          <Link href={localePath(lang, "/news")} className={LINK}>
+          <Link prefetch={false} href={localePath(lang, "/news")} className={LINK}>
             {t.news}
           </Link>
           {/* --- r11 sec --- */}
-          <Link href={localePath(lang, "/privacy")} className={LINK}>
+          <Link prefetch={false} href={localePath(lang, "/privacy")} className={LINK}>
             {t.privacy}
           </Link>
         </p>

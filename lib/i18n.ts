@@ -772,6 +772,10 @@ const en = {
     // --- lit ---
     openQuestions: "Open questions",
     openQuestionsDescription: "What the field still argues about, and what would settle it",
+    // --- r18 --- the stories and guided paths, now part of the atlas
+    stories: "Stories and guided paths",
+    storiesDescription: "From a question to what we still don't know, a few steps at a time",
+    sProcessWhatIf: "s-process: what if?",
   },
   footer: {
     work: "Work",
@@ -1460,6 +1464,10 @@ const it: Dictionary = {
     // --- lit ---
     openQuestions: "Questioni aperte",
     openQuestionsDescription: "Su che cosa si discute ancora, e che cosa lo risolverebbe",
+    // --- r18 --- le storie e i percorsi guidati, ora parte dell'atlante
+    stories: "Storie e percorsi guidati",
+    storiesDescription: "Da una domanda a ciò che ancora non sappiamo, pochi passi alla volta",
+    sProcessWhatIf: "Processo s: e se…?",
   },
   footer: {
     work: "Lavoro",

@@ -11,13 +11,16 @@ import { SearchButton } from "@/components/search/search-button"
 import { ThemeToggle } from "@/components/theme-toggle"
 import type { ChromeStrings } from "@/lib/chrome-strings"
 import { localePath, type Lang } from "@/lib/locale"
+import { NAV_GROUPS, navLabel } from "@/lib/site-nav"
 
 /*
  * The header.
  *
- * Six destinations in the bar (Research, Atlas, Evaluations, Publications,
- * Software, CV) and a "Learn" disclosure for the explanatory pages (Notes,
- * Glossary, Methods, Timeline, the s-process). Software is in the bar rather
+ * Four destinations in the bar (Research, Publications, Software, CV), an
+ * "Explore" disclosure for the tools (the atlas with its stories and guided
+ * paths, the data explorer, the rates, the evaluations) and a "Learn" one for
+ * the explanatory pages. The groups are lib/site-nav.ts, which the footer
+ * uses too, so the two always list the same pages. Software is in the bar rather
  * than under Learn because it is work, not an explanation, and it fits: the
  * bar only appears from 64em (1024 px at the default text size), where the
  * six links, Learn, search, EN/IT and the theme take about 900 px in either
@@ -157,32 +160,18 @@ export function SiteHeader({
   const pathname = usePathname() ?? "/"
   const [open, setOpen] = useState(false)
   const t = strings.nav
-  const d = t.descriptions
   const to = (path: string) => localePath(lang, path)
   const item = (path: string, label: string, description: string): Item => ({ href: to(path), label, description })
 
-  const research = item("/research", t.research, d.research)
-  const publications = item("/publications", t.publications, d.publications)
-  const cv = item("/cv", t.cv, d.cv)
-  const software = item("/software", t.software, d.software)
-  // The tools, in one menu, the same as the footer's "Explore" column.
-  const explore: Item[] = [
-    item("/atlas", t.atlas, d.atlas),
-    item("/data", t.data, t.dataDescription),
-    item("/atlas/rates", t.rates, t.ratesDescription),
-    item("/evaluations", t.evaluations, d.evaluations),
-  ]
-  const learn: Item[] = [
-    item("/notes", t.notes, d.notes),
-    item("/glossary", t.glossary, d.glossary),
-    item("/learn/exercises", t.exercises, t.exercisesDescription),
-    item("/atlas/methods", t.methods, d.methods),
-    item("/atlas/timeline", t.timeline, d.timeline),
-    item("/atlas/s-process", t.sProcess, d.sProcess),
-    item("/atlas/open-questions", t.openQuestions, t.openQuestionsDescription),
-    item("/atlas/rates/curiosities", t.curiosities, t.curiositiesDescription),
-  ]
-  const bar: Item[] = [research, publications, software, cv]
+  // The groups are lib/site-nav.ts, the same as the footer's columns.
+  const items = (id: string): Item[] =>
+    NAV_GROUPS.find((g) => g.id === id)!.items.map(({ key, path }) => {
+      const { label, description } = navLabel(t, key)
+      return item(path, label, description)
+    })
+  const bar: Item[] = items("work")
+  const explore: Item[] = items("explore")
+  const learn: Item[] = items("learn")
   const groups: { id: string; title: string; items: Item[] }[] = [
     { id: "work", title: t.groups.work, items: bar },
     { id: "explore", title: t.groups.explore, items: explore },

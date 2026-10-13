@@ -122,7 +122,8 @@ export function DataPathPage({ id, lang }: { id: PathId; lang: Lang }) {
         label={d.nav.breadcrumb}
         items={[
           { label: d.nav.home, href: localePath(lang, "/") },
-          { label: t.name, href: localePath(lang, "/data") },
+          { label: d.nav.atlas, href: localePath(lang, "/atlas") },
+          { label: d.nav.stories, href: localePath(lang, "/atlas#paths") },
           { label: path.title },
         ]}
       />
@@ -149,7 +150,7 @@ export function DataPathPage({ id, lang }: { id: PathId; lang: Lang }) {
         />
       </div>
       <p className="mt-10 text-sm">
-        <Link href={localePath(lang, "/data#paths")} className="inline-flex min-h-10 items-center text-link underline-offset-4 hover:underline">
+        <Link href={localePath(lang, "/atlas#paths")} className="inline-flex min-h-10 items-center text-link underline-offset-4 hover:underline">
           {t.allPaths}
         </Link>
       </p>
