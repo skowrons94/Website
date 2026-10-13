@@ -193,14 +193,12 @@ export function guidedPath(id: PathId, lang: Lang): GuidedPathData {
 
   // iron to lead
   const rid = "13C-an-16O"
-  const row = gapRowOf(rid, lang)
   const ne22 = gapRowOf("22Ne-an-25Mg", lang)
   const cur = curiosityCard("s-pocket-carbon-13", lang)
   const reaction = atlas.reactions.find((r) => r.id === rid)
   const c: Record<string, string> = {
     ...reactionContext(rid, lang),
     evaluations: String(reaction?.evaluations.length ?? 0),
-    ne22low: ne22?.low ? energy(ne22.low.keV, lang) : "",
     ne22e0: ne22 ? energy(ne22.E0, lang) : "",
     curiosity: curiosityText(cur),
     curiositySentence: cur?.sentence ?? "",
@@ -219,7 +217,8 @@ export function guidedPath(id: PathId, lang: Lang): GuidedPathData {
           ...(data ? [{ href: reactionDataPath(data), label: v.steps[1].link }] : []),
           { href: `/atlas/${rid}`, label: dataPublicDict(lang).stories.atlas },
         ],
-        gap: row ? [row] : [],
+        // no gap row here: EXFOR's lowest point for this reaction (Ciani 2021,
+        // its energies read as laboratory) disagrees with the atlas's 230 keV
       },
       { ...v.steps[2], links: [{ href: `/atlas/${rid}#evaluations`, label: v.steps[2].link }] },
       {
