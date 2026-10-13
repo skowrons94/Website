@@ -31,8 +31,8 @@ threads:
         I led the measurement and analysis of ¹²C + p and ¹³C + p radiative
         capture at LUNA and at Felsenkeller, which fixed the proton-capture rates
         on both carbon isotopes and with them the astrophysical ¹²C/¹³C ratio. I
-        now lead the ¹⁹F + p working group at the new Bellotti Ion Beam Facility,
-        the 3.5 MV accelerator installed underground at Gran Sasso.
+        now lead the ¹⁹F + p working group at LUNA's 400 kV accelerator,
+        underground at Gran Sasso.
       - >-
         In parallel I am the collaboration's DAQ Coordinator: I designed and run
         the acquisition and slow-control infrastructure of every campaign, and of
@@ -50,9 +50,9 @@ threads:
         Ho guidato la misura e l'analisi della cattura radiativa ¹²C + p e
         ¹³C + p a LUNA e al Felsenkeller, che ha fissato i tassi di cattura
         protonica su entrambi gli isotopi del carbonio e, con essi, il rapporto
-        astrofisico ¹²C/¹³C. Oggi coordino il gruppo di lavoro ¹⁹F + p al nuovo
-        Bellotti Ion Beam Facility, l'acceleratore da 3,5 MV installato nel
-        laboratorio sotterraneo del Gran Sasso.
+        astrofisico ¹²C/¹³C. Oggi coordino il gruppo di lavoro ¹⁹F + p
+        all'acceleratore da 400 kV di LUNA, nel laboratorio sotterraneo del Gran
+        Sasso.
       - >-
         In parallelo sono il coordinatore DAQ della collaborazione: ho progettato
         e gestisco l'infrastruttura di acquisizione e di slow control di ogni
@@ -61,12 +61,12 @@ threads:
         non è poco.
     highlights:
       - ¹²C(p,γ)¹³N and ¹³C(p,γ)¹⁴N cross sections and their impact on the ¹²C/¹³C ratio
-      - Working Group Leader for ¹⁹F + p at the Bellotti Ion Beam Facility
+      - Working Group Leader for ¹⁹F + p at the LUNA 400 kV accelerator
       - Calibration of the 3.5 MV Singletron; Geant4 tuning for the BGO and HPGe setups
       - R-matrix evaluations for ¹²C + p, ¹³C + p, ²⁰Ne + p and ²²Ne + p
     highlights_it:
       - Sezioni d'urto di ¹²C(p,γ)¹³N e ¹³C(p,γ)¹⁴N e loro impatto sul rapporto ¹²C/¹³C
-      - Coordinatore del gruppo di lavoro ¹⁹F + p al Bellotti Ion Beam Facility
+      - Coordinatore del gruppo di lavoro ¹⁹F + p all'acceleratore LUNA da 400 kV
       - Calibrazione del Singletron da 3,5 MV; messa a punto di Geant4 per i rivelatori BGO e HPGe
       - Valutazioni R-matrix per ¹²C + p, ¹³C + p, ²⁰Ne + p e ²²Ne + p
     link:
@@ -218,7 +218,7 @@ threads:
 
 # FOR JAKUB (not shown on the site): the referee asks for one or two concrete
 # 3–5-year objectives. Only you can supply them; candidates, to fill in or drop:
-#   - ¹⁹F + p at the Bellotti IBF: first beam / data taking / publication (dates?)
+#   - ¹⁹F + p at LUNA 400 kV: first beam / data taking / publication (dates?)
 #   - a target precision for a rate (which reaction, which uncertainty, by when?)
 #   - the R-matrix evaluation database: first public release (date, which nuclei?)
 #   - GENESIS: your concrete role and deliverables in the project (2026–2031)
@@ -300,16 +300,16 @@ outlook:
         kinds of information to them: a segmented, AGATA-like γ-ray detector
         deep underground, and polarization measurements, which give the
         R-matrix input independent of the cross section. The starting points are
-        the measurements I already lead: ¹⁹F + p at the Bellotti Ion Beam
-        Facility, and the lifetime of the 6.79 MeV state of ¹⁵O measured with
+        the measurements I already lead: ¹⁹F + p at the LUNA 400 kV
+        accelerator, and the lifetime of the 6.79 MeV state of ¹⁵O measured with
         AGATA, which constrains the CNO rate and its neutrino flux.
       text_it: >-
         Voglio continuare a contribuire alle misure di LUNA e portarvi
         informazioni di tipo nuovo: un rivelatore γ segmentato, simile ad
         AGATA, in laboratorio sotterraneo, e misure di polarizzazione, che
         danno alla R-matrix un'informazione indipendente dalla sezione d'urto.
-        I punti di partenza sono le misure che già guido: ¹⁹F + p al Bellotti
-        Ion Beam Facility e la vita media dello stato a 6,79 MeV dell'¹⁵O,
+        I punti di partenza sono le misure che già guido: ¹⁹F + p all'acceleratore
+        LUNA da 400 kV e la vita media dello stato a 6,79 MeV dell'¹⁵O,
         misurata con AGATA, che vincola il ritmo del ciclo CNO e il suo flusso di neutrini.
     - lead: Versatility.
       lead_it: Versatilità.
