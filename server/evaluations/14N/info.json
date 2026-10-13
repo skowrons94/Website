@@ -145,8 +145,8 @@
   },
   "notes": [
     {
-      "text": "Total capture in this preliminary model: the “total” curve (“¹³C(p,γ)¹⁴N, total”, all final states) gives S(0) ≈ 6.05 keV b, while the curves for the individual final states add up to S(0) ≈ 7.84 keV b. This difference is being checked.",
-      "text_it": "Cattura totale in questo modello preliminare: la curva «total» («¹³C(p,γ)¹⁴N, total», tutti gli stati finali) dà S(0) ≈ 6,05 keV b, mentre le curve dei singoli stati finali, sommate, danno S(0) ≈ 7,84 keV b. La differenza è in corso di verifica."
+      "text": "The curves for the individual γ transitions are not meant to be added up: some of the measured transitions are secondary γ rays, each collecting several cascades through the same level. The total capture is the “total” curve (“¹³C(p,γ)¹⁴N, total”, all final states).",
+      "text_it": "Le curve delle singole transizioni γ non vanno sommate: alcune transizioni misurate sono raggi γ secondari, ognuno dei quali raccoglie più cascate attraverso lo stesso livello. La cattura totale è la curva «total» («¹³C(p,γ)¹⁴N, total», tutti gli stati finali)."
     }
   ],
   "atlas": [
