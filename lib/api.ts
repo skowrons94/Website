@@ -135,7 +135,7 @@ export interface DataSegment {
   label?: string
   exfor?: string | null
   /** Where the measurement was published, when the evaluation's info.json says. */
-  source?: { ref: string | null; doi: string | null }
+  source?: { authors?: string | null; ref: string | null; doi: string | null; pending?: boolean }
   active: boolean
   entrance: string
   exit: string

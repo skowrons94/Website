@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import type { ReactNode } from "react"
 
 import { EvaluationHeader, PaperLine, nuclideOf as nuclide } from "@/components/evaluation-header"
 import EvaluationWorkspace from "@/components/evaluation-workspace"
@@ -73,7 +74,15 @@ export function EvaluationPage({ id, lang }: { id: string; lang: Lang }) {
       />
       <EvaluationHeader meta={meta} lang={lang} azure2Ref={azure2Ref()} licence={licence} />
       <EvaluationIntro reaction={headline} compound={id} lang={lang} scattering={scatteringOnly} meta={meta} />
-      <EvaluationWorkspace id={id} known={meta.known} scatteringOnly={scatteringOnly} temperatures={temperatures} typical={meta.timings} />
+      <ModelNotes meta={meta} lang={lang} scattering={scatteringOnly} />
+      <EvaluationWorkspace
+        id={id}
+        known={meta.known}
+        scatteringOnly={scatteringOnly}
+        temperatures={temperatures}
+        typical={meta.timings}
+        preliminary={meta.preliminary}
+      />
       <EvaluationHeader part="about" meta={meta} lang={lang} azure2Ref={azure2Ref()} licence={licence} />
       {reactions.length > 0 && (
         <aside className="mt-16 border-t border-border/70 pt-8 text-sm">
@@ -106,6 +115,79 @@ export function EvaluationPage({ id, lang }: { id: string; lang: Lang }) {
   )
 }
 
+
+/* -- what a reader must know about the model ---------------------------------- */
+
+/** "A, B and C" / "A, B e C". */
+function listOf(items: string[], and: string): string {
+  return items.length < 2 ? (items[0] ?? "") : `${items.slice(0, -1).join(", ")} ${and} ${items[items.length - 1]}`
+}
+
+/**
+ * The caveats, above the workspace so they are read before the plots: a
+ * preliminary model (info.json `preliminary`), the evaluation's own `notes`,
+ * the normalizations the fit cannot move (read from the .azr), and that the
+ * curves carry no uncertainty band.
+ */
+function ModelNotes({ meta, lang, scattering }: { meta: EvaluationMeta; lang: Lang; scattering: boolean }) {
+  const t = dict(lang).evaluations
+  const it = lang === "it"
+  const doiUrl = meta.doi ? `https://doi.org/${meta.doi}` : null
+  const paperText = meta.paper
+    ? `${meta.paper.authors}${meta.paper.journal ? `, ${meta.paper.journal}` : ""}${meta.paper.year ? ` (${meta.paper.year})` : ""}`
+    : meta.doi
+      ? `doi:${meta.doi}`
+      : null
+  const paper = paperText ? (
+    doiUrl ? (
+      <a href={doiUrl} className="text-link underline-offset-4 hover:underline">
+        {paperText}
+      </a>
+    ) : (
+      paperText
+    )
+  ) : null
+  const fmtN = (n: number) => (it ? String(Number(n.toFixed(3))).replace(".", ",") : String(Number(n.toFixed(3))))
+  const items: ReactNode[] = []
+  if (meta.preliminary && paper) {
+    const [a, b, c] = t.preliminary
+    items.push(
+      <>
+        {a}
+        {paper}
+        {b}
+        {paper}
+        {c}
+      </>,
+    )
+  }
+  for (const n of meta.notes) items.push(<Sci>{it ? n.text_it : n.text}</Sci>)
+  // "Piatti 2020, LUNA (EXFOR O2521.001)" → "Piatti 2020": the commas of a list stay unambiguous.
+  const short = (label: string) => label.replace(/\s*\(EXFOR[^)]*\)/, "").split(",")[0].trim()
+  const pinned = [...new Set(meta.pinnedNorms.map(short))]
+  if (pinned.length) items.push(t.pinnedNorms(listOf(pinned, t.and), pinned.length))
+  const fixed = [...new Set(meta.fixedNorms.map((f) => `${short(f.label)} (n = ${fmtN(f.n)})`))]
+  if (fixed.length) items.push(t.fixedNorms(listOf(fixed, t.and)))
+  items.push(t.bands(scattering))
+  return (
+    <aside
+      role="note"
+      aria-labelledby="model-notes"
+      className="mt-6 max-w-3xl rounded-md border border-border/70 bg-card/60 px-4 py-3 text-sm leading-relaxed [overflow-wrap:anywhere]"
+    >
+      <h2 id="model-notes" className="font-semibold">
+        {t.notesTitle}
+      </h2>
+      <ul className="mt-1.5 list-disc space-y-1.5 pl-5 text-pretty text-muted-foreground marker:text-muted-foreground">
+        {items.map((item, i) => (
+          <li key={i} className={i === 0 && meta.preliminary ? "text-foreground" : undefined}>
+            {item}
+          </li>
+        ))}
+      </ul>
+    </aside>
+  )
+}
 
 /* -- the plain-language introduction ------------------------------------------ */
 

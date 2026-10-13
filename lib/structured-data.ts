@@ -263,6 +263,19 @@ export function atlasDatasetLd(lang: Lang): Thing {
 }
 
 /**
+ * Everyone named in an evaluation's `analysis` ("J. Skowronski, R. J. deBoer",
+ * "A and B"), Jakub by reference; a note in brackets is not a name.
+ */
+export function analystsLd(analysis: string): Thing[] {
+  return analysis
+    .replace(/\([^)]*\)/g, "")
+    .split(/,|;|\s+and\s+|\s+&\s+/)
+    .map((s) => s.trim())
+    .filter((s) => s && !/^et al\.?$/i.test(s))
+    .map((name) => (IS_JAKUB.test(name) ? personRef() : { "@type": "Person", name }))
+}
+
+/**
  * One R-matrix evaluation as a dataset. The page states the site's content
  * licence for the page and the model file (components/evaluation-header.tsx),
  * so the licence is the atlas' one; the paper, when published, is cited.
@@ -270,7 +283,7 @@ export function atlasDatasetLd(lang: Lang): Thing {
 export function evaluationDatasetLd(meta: EvaluationMeta, title: string, description: string, lang: Lang): Thing {
   const atlas = getAtlas(lang)
   const doi = siteDoi()
-  const analyst = meta.analysis?.trim()
+  const analysts = meta.analysis ? analystsLd(meta.analysis) : []
   return clean({
     "@type": "Dataset",
     "@id": `${pageUrl(`/evaluations/${meta.id}`)}#dataset`,
@@ -278,7 +291,7 @@ export function evaluationDatasetLd(meta: EvaluationMeta, title: string, descrip
     description: meta.purpose ? `${description} ${meta.purpose}` : description,
     url: pageUrl(localePath(lang, `/evaluations/${meta.id}`)),
     inLanguage: IN_LANGUAGE[lang],
-    creator: analyst ? (IS_JAKUB.test(analyst) ? personRef() : { "@type": "Person", name: analyst }) : undefined,
+    creator: analysts.length > 1 ? analysts : analysts[0],
     license: atlas.meta.licence ? atlas.meta.licenceUrl || licenceUrl(atlas.meta.licence) : undefined,
     isAccessibleForFree: true,
     citation: meta.doi ? `https://doi.org/${meta.doi}` : undefined,

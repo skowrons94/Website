@@ -114,6 +114,8 @@ export interface WorkspaceProps {
   temperatures?: { T9: number; label: string }[]
   /** The evaluation's timings.json (python -m app.warm): the clock's first estimate. */
   typical?: TypicalTimings | null
+  /** info.json `preliminary`: the model file does not yet reproduce the published best fit. */
+  preliminary?: boolean
 }
 
 export default function EvaluationWorkspace(props: WorkspaceProps) {
@@ -124,7 +126,7 @@ export default function EvaluationWorkspace(props: WorkspaceProps) {
   )
 }
 
-function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: WorkspaceProps) {
+function Workspace({ id, known, scatteringOnly = false, temperatures = [], preliminary = false }: WorkspaceProps) {
   const defaultQuantity: Quantity = scatteringOnly ? "cross_section" : "sfactor"
   const lang = useLang()
   const t = useEvalDict().workspace
@@ -525,6 +527,7 @@ function Workspace({ id, known, scatteringOnly = false, temperatures = [] }: Wor
                 onRedo={redo}
                 tableOpen={tableOpen}
                 evaluationId={id}
+                preliminary={preliminary}
                 selectedLevel={selectedLevel}
                 onSelectLevel={setSelectedLevel}
                 deltaChi2={deltaChi2}
