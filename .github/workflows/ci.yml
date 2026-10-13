@@ -46,6 +46,8 @@ jobs:
         run: |
           npm run check:evaluations
           (cd server && python -m app.check)
+      - name: Site content (YAML)
+        run: npm run check:content
       - name: Atlas
         run: npm run check:atlas -- --quiet
       - name: Types
