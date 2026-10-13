@@ -67,6 +67,9 @@ const sup = (n: number) => String(n).replace(/\d/g, (d) => SUP[Number(d)])
 export function StatusChart({ data, lang }: { data: ChartData; lang: Lang }) {
   const t = dataPublicDict(lang)
   const to = (p: string) => localePath(lang, p)
+  // a plain <a> inside the SVG (not next/link): the base path and the static
+  // export's trailing slash by hand
+  const raw = (p: string) => `${process.env.BASE_PATH ?? ""}${to(p)}${process.env.TRAILING_SLASH ? "/" : ""}`
   const { arrows, cells, maxZ, maxN } = data
 
   // The chart shows the nuclides the arrows touch, with a margin.
@@ -106,100 +109,100 @@ export function StatusChart({ data, lang }: { data: ChartData; lang: Lang }) {
         <figure className="min-w-0">
           {/* on a phone the chart keeps a legible size and scrolls sideways in its frame */}
           <div className="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
-          <svg
-            viewBox={`${vb.x} ${vb.y} ${vb.w} ${vb.h}`}
-            className="h-auto w-full min-w-[36rem] max-w-[44rem] select-none sm:min-w-0"
-            role="img"
-            aria-label={t.chartLabel(String(arrows.length))}
-          >
-            {/* the cells */}
-            {shown.map((c) => {
-              const x = c.N
-              const y = maxZ - c.Z
-              return (
-                <g key={c.code}>
-                  <rect
-                    x={x - CELL / 2}
-                    y={y - CELL / 2}
-                    width={CELL}
-                    height={CELL}
-                    rx={0.08}
-                    fill={c.inNetwork ? "var(--viz-surface)" : "transparent"}
-                    stroke={c.inNetwork ? "var(--viz-axis)" : "var(--viz-grid)"}
-                    strokeWidth={c.stable ? 1.4 : 0.8}
-                    vectorEffect="non-scaling-stroke"
-                  />
-                  {c.inNetwork && (
-                    <text
-                      x={x}
-                      y={y + 0.1}
-                      textAnchor="middle"
-                      fontSize={0.27}
-                      fill="var(--viz-text-muted)"
-                      className="font-sans"
-                    >
-                      {sup(c.A)}
-                      {c.symbol}
-                    </text>
-                  )}
-                </g>
-              )
-            })}
-            {/* the axes: element symbols on the left, neutron numbers below */}
-            {[...symbols.entries()].map(([Z, sym]) => (
-              <text
-                key={`z${Z}`}
-                x={-0.5 - left / 2}
-                y={maxZ - Z + 0.1}
-                textAnchor="middle"
-                fontSize={0.32}
-                fill="var(--viz-text-muted)"
-                className="font-sans"
-              >
-                {sym}
-              </text>
-            ))}
-            {Array.from({ length: nMax + 1 }, (_, N) => N)
-              .filter((N) => N % 2 === 0)
-              .map((N) => (
+            <svg
+              viewBox={`${vb.x} ${vb.y} ${vb.w} ${vb.h}`}
+              className="h-auto w-full min-w-[36rem] max-w-[44rem] select-none sm:min-w-0"
+              role="img"
+              aria-label={t.chartLabel(String(arrows.length))}
+            >
+              {/* the cells */}
+              {shown.map((c) => {
+                const x = c.N
+                const y = maxZ - c.Z
+                return (
+                  <g key={c.code}>
+                    <rect
+                      x={x - CELL / 2}
+                      y={y - CELL / 2}
+                      width={CELL}
+                      height={CELL}
+                      rx={0.08}
+                      fill={c.inNetwork ? "var(--viz-surface)" : "transparent"}
+                      stroke={c.inNetwork ? "var(--viz-axis)" : "var(--viz-grid)"}
+                      strokeWidth={c.stable ? 1.4 : 0.8}
+                      vectorEffect="non-scaling-stroke"
+                    />
+                    {c.inNetwork && (
+                      <text
+                        x={x}
+                        y={y + 0.1}
+                        textAnchor="middle"
+                        fontSize={0.27}
+                        fill="var(--viz-text-muted)"
+                        className="font-sans"
+                      >
+                        {sup(c.A)}
+                        {c.symbol}
+                      </text>
+                    )}
+                  </g>
+                )
+              })}
+              {/* the axes: element symbols on the left, neutron numbers below */}
+              {[...symbols.entries()].map(([Z, sym]) => (
                 <text
-                  key={`n${N}`}
-                  x={N}
-                  y={maxZ + 0.5 + bottom * 0.62}
+                  key={`z${Z}`}
+                  x={-0.5 - left / 2}
+                  y={maxZ - Z + 0.1}
                   textAnchor="middle"
-                  fontSize={0.3}
+                  fontSize={0.32}
                   fill="var(--viz-text-muted)"
-                  className="tabular font-sans"
+                  className="font-sans"
                 >
-                  {N}
+                  {sym}
                 </text>
               ))}
-            {/* the reactions */}
-            {drawn.map((a) => {
-              const key = [a.from.N, a.from.Z, a.to.N, a.to.Z].join(",")
-              const group = pairs.get(key)!
-              const { d, head } = arrowPath(a, group.indexOf(a), group.length, maxZ)
-              const s = STATUS_STYLE[a.status]
-              const w = s.width * (a.importance === "key" ? 1.15 : a.importance === "minor" ? 0.8 : 1)
-              return (
-                <a key={a.id} href={to(`/atlas/${a.id}`)} tabIndex={-1} className="group cursor-pointer">
-                  <title>{`${a.label}: ${a.plain}`}</title>
-                  <path d={d} fill="none" stroke="transparent" strokeWidth={14} vectorEffect="non-scaling-stroke" />
-                  <path
-                    d={d}
-                    fill="none"
-                    stroke={s.color}
-                    strokeWidth={w}
-                    strokeDasharray={s.dash}
-                    strokeLinecap="round"
-                    vectorEffect="non-scaling-stroke"
-                    className="transition-[stroke-width] group-hover:[stroke-width:4.5px]"
-                  />
-                  <path d={head} fill={a.status === "unmeasured" ? "var(--viz-surface)" : s.color} stroke={s.color} strokeWidth={1.2} vectorEffect="non-scaling-stroke" />
-                </a>
-              )
-            })}
-          </svg>
+              {Array.from({ length: nMax + 1 }, (_, N) => N)
+                .filter((N) => N % 2 === 0)
+                .map((N) => (
+                  <text
+                    key={`n${N}`}
+                    x={N}
+                    y={maxZ + 0.5 + bottom * 0.62}
+                    textAnchor="middle"
+                    fontSize={0.3}
+                    fill="var(--viz-text-muted)"
+                    className="tabular font-sans"
+                  >
+                    {N}
+                  </text>
+                ))}
+              {/* the reactions */}
+              {drawn.map((a) => {
+                const key = [a.from.N, a.from.Z, a.to.N, a.to.Z].join(",")
+                const group = pairs.get(key)!
+                const { d, head } = arrowPath(a, group.indexOf(a), group.length, maxZ)
+                const s = STATUS_STYLE[a.status]
+                const w = s.width * (a.importance === "key" ? 1.15 : a.importance === "minor" ? 0.8 : 1)
+                return (
+                  <a key={a.id} href={raw(`/atlas/${a.id}`)} tabIndex={-1} className="group cursor-pointer">
+                    <title>{`${a.label}: ${a.plain}`}</title>
+                    <path d={d} fill="none" stroke="transparent" strokeWidth={14} vectorEffect="non-scaling-stroke" />
+                    <path
+                      d={d}
+                      fill="none"
+                      stroke={s.color}
+                      strokeWidth={w}
+                      strokeDasharray={s.dash}
+                      strokeLinecap="round"
+                      vectorEffect="non-scaling-stroke"
+                      className="transition-[stroke-width] motion-reduce:transition-none group-hover:[stroke-width:4.5px]"
+                    />
+                    <path d={head} fill={a.status === "unmeasured" ? "var(--viz-surface)" : s.color} stroke={s.color} strokeWidth={1.2} vectorEffect="non-scaling-stroke" />
+                  </a>
+                )
+              })}
+            </svg>
           </div>
           <figcaption className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-xs text-muted-foreground">
             <span>↑ {t.axisZ}</span>
@@ -228,41 +231,41 @@ export function StatusChart({ data, lang }: { data: ChartData; lang: Lang }) {
           <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-90" aria-hidden />
           <h3 className="font-serif text-lg font-semibold tracking-tight">{t.listTitle}</h3>
         </summary>
-      <div className="grid gap-6 px-4 pb-5 pt-2 md:grid-cols-2">
-        {STATUSES.map((s) => {
-          const list = byStatus(s)
-          if (list.length === 0) return null
-          return (
-            <section key={s} aria-label={statusLabel(s, lang)} className="min-w-0">
-              <h4 className="flex items-center gap-3">
-                <StatusLine status={s} />
-                <StatusBadge status={s} lang={lang} link />
-              </h4>
-              <ul className="mt-3 flex flex-wrap gap-2">
-                {list.map((a) => (
-                  <li key={a.id} className="inline-flex items-stretch overflow-hidden rounded-md border border-border bg-card text-sm">
-                    <Link
-                      href={to(`/atlas/${a.id}`)}
-                      className="inline-flex min-h-10 items-center px-2.5 font-serif font-semibold transition-colors hover:bg-accent hover:text-link"
-                    >
-                      <Said label={a.label} plain={a.plain} />
-                    </Link>
-                    {a.data && (
+        <div className="grid gap-6 px-4 pb-5 pt-2 md:grid-cols-2">
+          {STATUSES.map((s) => {
+            const list = byStatus(s)
+            if (list.length === 0) return null
+            return (
+              <section key={s} aria-label={statusLabel(s, lang)} className="min-w-0">
+                <h4 className="flex items-center gap-3">
+                  <StatusLine status={s} />
+                  <StatusBadge status={s} lang={lang} link />
+                </h4>
+                <ul className="mt-3 flex flex-wrap gap-2">
+                  {list.map((a) => (
+                    <li key={a.id} className="inline-flex items-stretch overflow-hidden rounded-md border border-border bg-card text-sm">
                       <Link
-                        href={to(`/data/reaction/${a.data}`)}
-                        aria-label={t.measurementsAria(a.plain)}
-                        className="inline-flex min-h-10 items-center border-l border-border px-2 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-link"
+                        href={to(`/atlas/${a.id}`)}
+                        className="inline-flex min-h-10 items-center px-2.5 font-serif font-semibold transition-colors hover:bg-accent hover:text-link"
                       >
-                        {t.measurements}
+                        <Said label={a.label} plain={a.plain} />
                       </Link>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )
-        })}
-      </div>
+                      {a.data && (
+                        <Link
+                          href={to(`/data/reaction/${a.data}`)}
+                          aria-label={t.measurementsAria(a.plain)}
+                          className="inline-flex min-h-10 items-center border-l border-border px-2 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-link"
+                        >
+                          {t.measurements}
+                        </Link>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )
+          })}
+        </div>
       </details>
     </div>
   )

@@ -85,8 +85,9 @@ export function ElementSearch({
   const to = (p: string) => localePath(lang, p)
   const none = (x: string) => t.none.replace("{q}", x)
   const found = (n: number) => (n === 1 ? t.resultsOne : t.results.replace("{n}", String(n)))
-  const name = (el: ElementEntry) => (lang === "it" ? el.it : el.en)
-  const other = (el: ElementEntry) => (lang === "it" ? el.en : el.it)
+  const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+  const name = (el: ElementEntry) => cap(lang === "it" ? el.it : el.en)
+  const other = (el: ElementEntry) => cap(lang === "it" ? el.en : el.it)
 
   return (
     <div>
