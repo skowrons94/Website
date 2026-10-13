@@ -98,7 +98,7 @@ export const CURIOSITIES: CuriositySpec[] = [
     name: nm("oxygen‑15", "ossigeno‑15"),
     where: W.sun,
     hook: {
-      en: "Oxygen‑15 decays giving off CNO neutrinos, first detected by Borexino in 2020.",
+      en: "Oxygen‑15 gives off CNO neutrinos as it decays; Borexino first detected them in 2020.",
       it: "L'ossigeno‑15 decade emettendo neutrini CNO, rivelati per la prima volta da Borexino nel 2020.",
     },
   },
@@ -128,7 +128,7 @@ export const CURIOSITIES: CuriositySpec[] = [
     perName: nm("oxygen‑16", "ossigeno‑16"),
     where: W.m15,
     hook: {
-      en: "Stardust grains in meteorites keep this oxygen ratio; LUNA measured this rate in 2016.",
+      en: "Stardust grains in meteorites preserve this oxygen ratio; LUNA measured this rate in 2016.",
       it: "I granelli di polvere di stelle nei meteoriti conservano questo rapporto; LUNA ha misurato il tasso nel 2016.",
     },
   },
@@ -197,7 +197,7 @@ export const CURIOSITIES: CuriositySpec[] = [
     name: nm("sodium‑22", "sodio‑22"),
     where: W.one,
     hook: {
-      en: "Sodium‑22's 1.275 MeV gamma-ray line has never yet been seen from a nova.",
+      en: "Sodium‑22's 1.275 MeV gamma-ray line has not yet been seen from a nova.",
       it: "La riga gamma a 1,275 MeV del sodio‑22 non è ancora mai stata vista in una nova.",
     },
   },
@@ -423,7 +423,7 @@ export function temperatureWords(T9: number, lang: CLang): string {
 /** A site's own limit, on every card of that site (from its note in scenarios.yaml). */
 const SITE_NOTES: Record<string, Words> = {
   "massive-he-core": {
-    en: "For this site the sizes are an upper end: read the direction.",
+    en: "For this site the sizes are upper limits: read the direction of the change.",
     it: "Per questo sito l'entità delle variazioni è un limite superiore: conta soprattutto la direzione.",
   },
 }
@@ -434,7 +434,7 @@ export interface CuriosityText {
   /** the same, plain: alt text, citation, screen readers */
   sentence: string
   hook: string
-  /** "One-zone model at 16 million K, 1 billion years. Real stars adjust.", then the site's and the card's own limits */
+  /** "One-zone model at 16 million K over 1 billion years. Real stars adjust.", then the site's and the card's own limits */
   caveat: string
   /** the caveat without those limits (one line on the social card) */
   shortCaveat: string
@@ -461,7 +461,7 @@ export function curiosityText(
   const extra = [SITE_NOTES[spec.site]?.[lang], spec.note?.[lang]].filter(Boolean).map((x) => ` ${x}`).join("")
   const shortCaveat = it
     ? `Modello a una zona${ctx.cooling ? ` che si raffredda da ${T}` : `, ${T}`}, ${d}. Le stelle vere si adattano.`
-    : `One-zone model ${ctx.cooling ? `cooling from ${T}` : `at ${T}`}, ${d}. Real stars adjust.`
+    : `One-zone model ${ctx.cooling ? `cooling from ${T}` : `at ${T}`} over ${d}. Real stars adjust.`
   const caveat = shortCaveat + extra
   return { parts, sentence: parts.map((p) => p.text).join(""), hook: spec.hook[lang], caveat, shortCaveat, amount, percent }
 }
