@@ -7,7 +7,6 @@ import signal
 import sys
 
 from flask import Flask
-from flask_cors import CORS
 
 from app.session import SessionManager
 from app.utils.logging_config import setup_logging
@@ -17,9 +16,9 @@ from config import Config
 def create_app(config=Config):
     app = Flask(__name__)
     app.config.from_object(config)
-    CORS(app)
 
     setup_logging(app.config["LOG_FILE"])
+    install_security(app)
 
     manager = SessionManager(
         ttl=app.config["SESSION_TTL"],
@@ -37,6 +36,7 @@ def create_app(config=Config):
         spare_delay=app.config.get("SPARE_DELAY", 3),
         spare_wait=app.config.get("SPARE_WAIT", 20),
         evict_after=app.config.get("EVICT_AFTER") or None,
+        max_per_owner=app.config.get("MAX_PER_IP", 0),
     )
     if app.config.get("GZIP"):
         install_gzip(app, app.config.get("GZIP_LEVEL", 5))
@@ -115,6 +115,34 @@ def create_app(config=Config):
             ".env).", root, os.getuid())
 
     return app
+
+
+def install_security(app):
+    """The client's address behind a proxy, the body size cap, CORS (for
+    development only) and the per-address limits (app/limits.py)."""
+    from app.limits import Limiter
+
+    trusted = int(app.config.get("TRUSTED_PROXIES") or 0)
+    if trusted > 0:
+        # X-Forwarded-For as written by exactly ``trusted`` proxies (Caddy
+        # replaces whatever the client sent); nothing else is believed.
+        from werkzeug.middleware.proxy_fix import ProxyFix
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=trusted, x_proto=0,
+                                x_host=0, x_port=0, x_prefix=0)
+
+    origins = app.config.get("CORS_ORIGINS") or []
+    if origins:
+        # Development only: the site on :3000 calling the API on :5001.
+        # Same-origin in production (Caddy routes /api), which needs none.
+        from flask_cors import CORS
+        CORS(app, origins=list(origins))
+        logging.getLogger(__name__).info("CORS allowed for %s", ", ".join(origins))
+
+    Limiter(open_rate=app.config.get("OPEN_RATE", "10/60"),
+            open_burst=app.config.get("OPEN_BURST", 0),
+            edit_rate=app.config.get("EDIT_RATE", "20/1"),
+            edit_burst=app.config.get("EDIT_BURST", 0),
+            max_inflight=app.config.get("MAX_INFLIGHT_PER_IP", 8)).install(app)
 
 
 COMPRESSIBLE = ("application/json", "text/csv", "text/plain")

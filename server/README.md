@@ -34,7 +34,9 @@ All under `/api`. JSON in and out; errors are `{"error": "...", "code": "..."}`.
 Status codes: **409** `code: "expired"` — the session is gone (reaped,
 evicted, worker died): reopen and re-apply the edits. **503** `code: "busy"`
 with `Retry-After` (seconds, also in the body as `retry_after`) — every slot
-is serving a visitor; retry after that long, do not reopen in a loop. **500**
+is serving a visitor; retry after that long, do not reopen in a loop. **429**
+`code: "busy"` with `Retry-After` — this client's address is over a limit
+(below); treat it like a 503. **413** — a body over `AZURE2_MAX_BODY` (64 KB). **500**
 `code: "worker"` — one derived worker failed; the session is fine and the next
 request starts it again (`code: "delegate"` is the in-browser build's own,
 see browser/README.md). 400 for a malformed request.
@@ -100,8 +102,24 @@ is ignored rather than overwriting newer values; `seq` is echoed back.
   are on disk). A new visitor evicts a spare of another evaluation (or stops
   one being built), then the session seen least recently -- never one seen
   (a request or a heartbeat) within `AZURE2_EVICT_AFTER` seconds (default
-  60: a visible page pings every 30 s); if there is none, 503. The reaper
-  rebuilds spares evicted this way once there is room.
+  60: a visible page pings every 30 s), taken first from the address
+  holding the most sessions. If there is none, and some address holds at
+  least two more sessions than the newcomer's, its least recently seen one
+  goes anyway (fairness: one client cannot keep the others out); otherwise
+  503. The reaper rebuilds spares evicted this way once there is room.
+- **Limits per client address** (`app/limits.py`; an IPv6 address counts by
+  its /64): at most `AZURE2_MAX_PER_IP` sessions (2; past it the address's
+  own session unseen longest gives way if it may, else 429),
+  `AZURE2_OPEN_RATE` opens (`10/60`, a token bucket, burst
+  `AZURE2_OPEN_BURST`), `AZURE2_EDIT_RATE` edits (`20/1`, burst
+  `AZURE2_EDIT_BURST`, 60) and `AZURE2_MAX_INFLIGHT_PER_IP` slow requests
+  at once (8). `0` turns each off. Behind Caddy, `AZURE2_TRUSTED_PROXIES=1`
+  (docker-compose.yml) makes the address the client's (Werkzeug ProxyFix,
+  one hop); never set it when clients reach the API directly. The log keeps
+  addresses cut to /24 (IPv4) or /48 (IPv6), as Caddy's access log does.
+- **CORS** is off: in production Caddy serves the site and `/api` on one
+  origin. For development (site on :3000, API on :5001) list the origins in
+  `AZURE2_CORS_ORIGINS` (`make dev-server` sets `http://localhost:3000`).
 
 ## Payloads
 

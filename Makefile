@@ -114,8 +114,12 @@ test-data:                  ## the pipeline's tests (pytest, jsonschema)
 
 AZURE2_SRC ?= ../AZURE2
 
+# The site on :3000 calls the API on :5001, another origin: CORS is allowed
+# for that one origin only (production is same-origin and sends none).
+DEV_ORIGINS ?= http://localhost:3000,http://127.0.0.1:3000
+
 dev-server:                 ## run the AZURE2 API locally on :5001
-	cd server && PYTHONPATH=$(AZURE2_SRC) python3 main.py
+	cd server && PYTHONPATH=$(AZURE2_SRC) AZURE2_CORS_ORIGINS=$(DEV_ORIGINS) python3 main.py
 
 dev-site:                   ## run the site locally on :3000, against that API
 	API_BASE=http://localhost:5001 npm run dev

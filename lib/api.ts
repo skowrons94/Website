@@ -389,7 +389,7 @@ export class ApiError extends Error {
   status: number
   /** The parsed JSON body, when there was one. */
   body: Record<string, unknown> | null
-  /** Seconds the server asked to wait (a 503's Retry-After). */
+  /** Seconds the server asked to wait (a 503's or 429's Retry-After). */
   retryAfter: number | null
   constructor(message: string, status: number, body: Record<string, unknown> | null = null, retryAfter: number | null = null) {
     super(message)
@@ -406,9 +406,13 @@ export class ApiError extends Error {
   get sessionExpired() {
     return this.status === 409 && !this.superseded
   }
-  /** The server is full (503): worth retrying after `retryAfter` seconds. */
+  /**
+   * The server is full (503), or this visitor is over a per-address limit
+   * (429: too many models open or opened at once): either way worth
+   * retrying after `retryAfter` seconds.
+   */
   get busy() {
-    return this.status === 503
+    return this.status === 503 || this.status === 429
   }
   /** The request was cancelled by the page (a newer one replaced it). */
   get aborted() {
@@ -507,7 +511,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
   if (!response.ok) {
     let message =
-      response.status === 502 || response.status === 503 || response.status === 504
+      response.status === 502 || response.status === 503 || response.status === 504 || response.status === 429
         ? "The evaluation server is not available right now. Please try again in a minute."
         : `Request failed (${response.status})`
     let body: Record<string, unknown> | null = null

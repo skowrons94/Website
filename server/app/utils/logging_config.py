@@ -3,6 +3,23 @@ import os
 import sys
 
 
+_CONTROL = {c: f"\\x{c:02x}" for c in range(32) if c != 9}
+_CONTROL[0x7f] = "\\x7f"
+
+
+class OneLine(logging.Filter):
+    """Escape control characters (newlines above all) in a record's message,
+    so text a client chose -- a path, a value -- cannot forge a log line.  A
+    traceback, added by the formatter afterwards, keeps its lines."""
+
+    def filter(self, record):
+        message = record.getMessage()
+        clean = message.translate(_CONTROL)
+        if clean != message:
+            record.msg, record.args = clean, None
+        return True
+
+
 def setup_logging(log_file: str = "access.log", level: int = logging.INFO) -> None:
     """Send application logs to the console, and to ``log_file`` if there is one.
 
@@ -27,6 +44,9 @@ def setup_logging(log_file: str = "access.log", level: int = logging.INFO) -> No
             handlers.append(logging.FileHandler(log_file))
         except OSError as err:
             problem = err
+
+    for handler in handlers:
+        handler.addFilter(OneLine())
 
     logging.basicConfig(
         level=level,
