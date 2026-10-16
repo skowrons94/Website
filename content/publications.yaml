@@ -36,19 +36,19 @@ publications:
     year: 2026
 
   - kind: article
-    authors: D. Robb, et al.
-    title: Experimental determination of the ²³Na(p,p)²³Na excitation function from 2.1 to 4.1 MeV
-    status: under review at Physical Review Letters
-    status_it: in revisione presso Physical Review Letters
-    year: 2026
-
-  - kind: article
     authors: L. Barbieri, et al.
     title: A new detection array for underground charged particle spectroscopy at LUNA-400
     journal: Nucl. Instrum. Methods Phys. Res. A 1092, 171767
     doi: 10.1016/j.nima.2026.171767
     year: 2026
     tags: [luna]
+
+  - kind: article
+    authors: J. Cruz, D. Neves, J. Skowronski, et al.
+    title: Experimental determination of the ²³Na(p,p)²³Na excitation function from 2.1 to 4.1 MeV
+    journal: Eur. Phys. J. A 62, 75
+    doi: 10.1140/epja/s10050-026-01847-y
+    year: 2026
 
   - kind: article
     authors: R. J. deBoer, et al.
