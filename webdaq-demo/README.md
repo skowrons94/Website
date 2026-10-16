@@ -240,13 +240,13 @@ sizes) and the shell's `control({type:'files', run})` returns the bytes.
 
 ## Sizes (gzip -9, this build)
 
-First-load JS at WebDAQ 0ab65e1 (LUNADAQ round 2): start page 116.9 kB
-(budget 120), `/dashboard` 251.2 kB (budget 400; the refreshed dashboard loads its
+First-load JS at WebDAQ 10e0049 (LUNADAQ round 3): start page 116.9 kB
+(budget 120), `/dashboard` 251.4 kB (budget 400; the refreshed dashboard loads its
 tabs lazily), other routes 117–267 kB; demo shell 8.0 kB (budget 25); worker first
 chunk 39.7 kB (budget 40), plus 15.3 kB of lazy chunks (Logbook and run files,
 ELOG and Grafana, notification settings, traces); response table + line data 39 kB per
 detector; JSROOT needed to draw 297 kB (budget 360); zip 4.6 kB (budget 10);
-tour 11.6 kB (budget 20).
+tour 11.7 kB (budget 20).
 `node scripts/size.mjs <export>` prints the table.
 
 ## Traces and probes (sim/physics/traces.ts)

@@ -58,7 +58,7 @@ export const en: TourCopy = {
     },
     board: {
       title: 'Find the board',
-      body: 'WebDAQ probes the optical and USB links and lists the boards that answer, as CAEN’s own program, CoMPASS, does. Press “Scan for boards”, then “Add this board” (or “Use these settings” and “Add Board”, to check the form first). WebDAQ then writes the register file, the list of every setting of the board: from now on it is the board’s configuration, the dashboard edits it, and every run copies it into its directory.',
+      body: 'WebDAQ probes the optical and USB links and lists the boards that answer, as CAEN’s own program, CoMPASS, does. Press “Scan for boards”, then “Add this board” (or “Use these settings” and “Add board”, to check the form first). WebDAQ then writes the register file, the list of every setting of the board: from now on it is the board’s configuration, the dashboard edits it, and every run copies it into its directory.',
     },
     config: {
       title: 'Look at the configuration',
@@ -70,7 +70,7 @@ export const en: TourCopy = {
     },
     run: {
       title: 'Start a run',
-      body: 'On the Dashboard, under “Run setup & control”, fill in the run name (the target), the run type and the terminal voltage: they become the run’s metadata. Keep “Save data” on (WebDAQ does not start a run silently with it off), then press “Start Run”. WebDAQ starts the beam-current log and stats.csv for the run as well. On a phone, “Start…” in the run bar at the bottom of the screen leads here.',
+      body: 'On the Dashboard, under “Run setup & control”, fill in the run name (the target), the run type and the terminal voltage: they become the run’s metadata. Keep “Save data” on (WebDAQ does not start a run silently with it off), then press “Start run”. WebDAQ starts the beam-current log and stats.csv for the run as well. On a phone, “Start…” in the run bar at the bottom of the screen leads here.',
     },
     fill: {
       title: 'Watch it fill',
@@ -106,7 +106,7 @@ export const en: TourCopy = {
     },
     files: {
       title: 'Stop, and see what was kept',
-      body: 'Press “Stop Run” and confirm: WebDAQ asks first, naming the run and saying whether its files are kept (on a phone, “Stop…” in the run bar). Recent runs on the Dashboard and the Logbook list the run; its page shows times, charge, boards, current and the files. “Run files” in the banner holds what a real run leaves on disk: the raw data (.caendat, readable by RUReader), the register file, current.txt, stats.csv, roi.json and metadata.json, plus the demo’s events.csv and README.txt. metadata.json describes the run and lists every file with its role and size, so a copied directory explains itself. That is a first step towards FAIR data (Findable, Accessible, Interoperable, Reusable): WebDAQ keeps the record FAIR-ready, and the Logbook keeps it searchable. A persistent identifier, a published schema and a licence field are next steps, not done.',
+      body: 'Press “Stop run” and confirm: WebDAQ asks first, naming the run and saying whether its files are kept (on a phone, “Stop…” in the run bar). Recent runs on the Dashboard and the Logbook list the run; its page shows times, charge, boards, current and the files. “Run files” in the banner holds what a real run leaves on disk: the raw data (.caendat, readable by RUReader), the register file, current.txt, stats.csv, roi.json and metadata.json, plus the demo’s events.csv and README.txt. metadata.json describes the run and lists every file with its role and size, so a copied directory explains itself. That is a first step towards FAIR data (Findable, Accessible, Interoperable, Reusable): WebDAQ keeps the record FAIR-ready, and the Logbook keeps it searchable. A persistent identifier, a published schema and a licence field are next steps, not done.',
     },
   },
 }
@@ -142,7 +142,7 @@ export const it: TourCopy = {
     },
     board: {
       title: 'Trova la scheda',
-      body: 'WebDAQ interroga i collegamenti ottici e USB ed elenca le schede che rispondono, come fa CoMPASS, il programma di CAEN. Premi «Scan for boards», poi «Add this board» (oppure «Use these settings» e «Add Board», per controllare prima il modulo). WebDAQ scrive allora il file dei registri, l’elenco di tutte le impostazioni della scheda: da ora è la sua configurazione, la dashboard lo modifica, e ogni run lo copia nella propria cartella.',
+      body: 'WebDAQ interroga i collegamenti ottici e USB ed elenca le schede che rispondono, come fa CoMPASS, il programma di CAEN. Premi «Scan for boards», poi «Add this board» (oppure «Use these settings» e «Add board», per controllare prima il modulo). WebDAQ scrive allora il file dei registri, l’elenco di tutte le impostazioni della scheda: da ora è la sua configurazione, la dashboard lo modifica, e ogni run lo copia nella propria cartella.',
     },
     config: {
       title: 'Guarda la configurazione',
@@ -154,7 +154,7 @@ export const it: TourCopy = {
     },
     run: {
       title: 'Avvia un run',
-      body: 'Nella Dashboard, in «Run setup & control», inserisci il nome del run (il bersaglio), il tipo di run e la tensione di terminale: diventano i metadati del run. Lascia attivo «Save data» (WebDAQ non avvia un run senza dirlo se è spento) e premi «Start Run». WebDAQ avvia anche il registro della corrente del fascio e stats.csv per il run. Sul telefono, «Start…» nella barra del run in fondo allo schermo porta qui.',
+      body: 'Nella Dashboard, in «Run setup & control», inserisci il nome del run (il bersaglio), il tipo di run e la tensione di terminale: diventano i metadati del run. Lascia attivo «Save data» (WebDAQ non avvia un run senza dirlo se è spento) e premi «Start run». WebDAQ avvia anche il registro della corrente del fascio e stats.csv per il run. Sul telefono, «Start…» nella barra del run in fondo allo schermo porta qui.',
     },
     fill: {
       title: 'Lo spettro si riempie',
@@ -190,7 +190,7 @@ export const it: TourCopy = {
     },
     files: {
       title: 'Ferma, e guarda cosa resta',
-      body: 'Premi «Stop Run» e conferma: WebDAQ chiede prima, indicando il run e se i suoi file vengono conservati (sul telefono, «Stop…» nella barra del run). Recent runs nella Dashboard e il Logbook elencano il run; la sua pagina mostra tempi, carica, schede, corrente e file. «File del run», nella barra in alto, contiene ciò che un run reale lascia su disco: i dati grezzi (.caendat, leggibili con RUReader), il file dei registri, current.txt, stats.csv, roi.json e metadata.json, più events.csv e README.txt della demo. metadata.json descrive il run ed elenca ogni file con il suo ruolo e la sua dimensione, così una cartella copiata si spiega da sola. È un primo passo verso dati FAIR (Findable, Accessible, Interoperable, Reusable: reperibili, accessibili, interoperabili, riutilizzabili): WebDAQ tiene la documentazione predisposta per i principi FAIR, e il Logbook la rende consultabile. Un identificativo persistente, uno schema pubblicato e un campo per la licenza sono passi futuri, non ancora fatti.',
+      body: 'Premi «Stop run» e conferma: WebDAQ chiede prima, indicando il run e se i suoi file vengono conservati (sul telefono, «Stop…» nella barra del run). Recent runs nella Dashboard e il Logbook elencano il run; la sua pagina mostra tempi, carica, schede, corrente e file. «File del run», nella barra in alto, contiene ciò che un run reale lascia su disco: i dati grezzi (.caendat, leggibili con RUReader), il file dei registri, current.txt, stats.csv, roi.json e metadata.json, più events.csv e README.txt della demo. metadata.json descrive il run ed elenca ogni file con il suo ruolo e la sua dimensione, così una cartella copiata si spiega da sola. È un primo passo verso dati FAIR (Findable, Accessible, Interoperable, Reusable: reperibili, accessibili, interoperabili, riutilizzabili): WebDAQ tiene la documentazione predisposta per i principi FAIR, e il Logbook la rende consultabile. Un identificativo persistente, uno schema pubblicato e un campo per la licenza sono passi futuri, non ancora fatti.',
     },
   },
 }

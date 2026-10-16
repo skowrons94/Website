@@ -81,7 +81,7 @@ const STEPS: Step[] = [
   },
   {
     id: 'board', route: '/board',
-    target: byRole('button', /Scan for boards|Add this board|Use these settings|Add Board/),
+    target: byRole('button', /Scan for boards|Add this board|Use these settings|Add board/),
     done: async c => c.s.boards.length > 0,
     doIt: async c => {
       await req('POST', '/digitizer/scan', { optical: { enabled: true, links: 1, nodes: 1 } })
@@ -98,7 +98,7 @@ const STEPS: Step[] = [
   },
   {
     id: 'run', route: '/dashboard',
-    target: byRole('button', /^Start Run$/),
+    target: byRole('button', /^Start run$/),
     done: async c => c.s.running,
     doIt: async c => { if (!c.s.running) await startRun() },
   },

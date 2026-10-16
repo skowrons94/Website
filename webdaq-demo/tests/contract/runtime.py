@@ -191,11 +191,11 @@ def flow(page, origin, base, a, seen, report, failures):
         page.goto_settled(origin + base + '/board/')
         page.get_by_role('button', name='Scan for boards').click()
         page.get_by_role('button', name='Use these settings').first.click(timeout=15000)
-        page.get_by_role('button', name='Add Board').click()
+        page.get_by_role('button', name='Add board', exact=True).click()
         page.wait_for_function('() => window.__webdaqDemo.state() && window.__webdaqDemo.state().boards.length === 1', timeout=10000)
         page.goto_settled(origin + base + '/dashboard/')
         page.wait_for_timeout(1500)
-        page.get_by_role('button', name='Start Run').click()
+        page.get_by_role('button', name='Start run', exact=True).click()
         page.wait_for_function('() => window.__webdaqDemo.state() && window.__webdaqDemo.state().running === true', timeout=10000)
         page.wait_for_timeout(4000)
         counts = page.evaluate("""async () => {
@@ -211,16 +211,16 @@ def flow(page, origin, base, a, seen, report, failures):
         page.wait_for_timeout(4000)
         page.goto_settled(origin + base + '/dashboard/?tab=overview')
         page.wait_for_timeout(2000)
-        # Stop Run asks first (WebDAQ's shared ConfirmAction). Cancel must leave
+        # Stop run asks first (WebDAQ's shared ConfirmAction). Cancel must leave
         # the run going; the dialog's own "Stop run N" button stops it.
-        page.get_by_role('button', name='Stop Run').click()
+        page.get_by_role('button', name='Stop run', exact=True).click()
         dialog = page.get_by_role('alertdialog')
         dialog.wait_for(timeout=5000)
         dialog.get_by_role('button', name='Cancel').click()
         page.wait_for_timeout(1000)
         if not page.evaluate('window.__webdaqDemo.state().running'):
-            failures.append('cancelling the Stop Run confirmation stopped the run')
-        page.get_by_role('button', name='Stop Run').click()
+            failures.append('cancelling the Stop run confirmation stopped the run')
+        page.get_by_role('button', name='Stop run', exact=True).click()
         page.get_by_role('alertdialog').get_by_role('button', name=re.compile(r'^Stop run')).click()
         page.wait_for_function('() => window.__webdaqDemo.state() && window.__webdaqDemo.state().running === false', timeout=10000)
         page.wait_for_timeout(1500)
