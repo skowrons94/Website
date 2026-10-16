@@ -597,7 +597,7 @@ demo:
     acquisition that runs in your browser. Choose the detectors: germanium
     (HPGe) for resolution, BGO scintillators for efficiency, or neutron
     detectors, liquid scintillators like EJ-309 that tell neutrons from γ-rays
-    by the shape of the pulse. Then pick a source, tune a channel while the run
+    by the shape of the pulse. Then choose a source, tune a channel while the run
     goes, mark a peak, and download the files a real run would leave,
     metadata.json included.
   text_it: >-
@@ -647,5 +647,5 @@ licence:
     Until there is a citable release with a DOI, cite the repository and the
     commit you used.
   pending_it: >-
-    Finché non ci sarà una versione citabile con un DOI, si citano il
-    repository e il commit usato.
+    Finché non ci sarà una versione citabile con un DOI, cita il repository
+    e il commit che hai usato.

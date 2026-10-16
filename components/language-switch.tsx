@@ -29,7 +29,9 @@ export function LanguageSwitch({
   const pathname = usePathname() ?? "/"
   const router = useRouter()
   const other: Lang = lang === "en" ? "it" : "en"
-  const target = localePath(other, englishPath(pathname))
+  const english = englishPath(pathname)
+  // the 404 page has no counterpart: send the other language to its home page
+  const target = localePath(other, english.includes("_not-found") ? "/" : english)
   const onClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
     const extra = `${window.location.search}${window.location.hash}`
     if (!extra || event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return

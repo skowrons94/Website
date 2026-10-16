@@ -112,7 +112,7 @@ const en = {
     /** Around the paper's citation, which the page inserts twice. */
     preliminary: [
       "The model file shown here is a preliminary version of the R-matrix model behind ",
-      ". It does not yet reproduce the published best fit; the converged parameters will replace it. For the published results, see ",
+      ". It does not yet reproduce the published best fit. For the published results, see ",
       ".",
     ] as [string, string, string],
     /** A preliminary model's curves are not a best fit: they are called model curves. */
@@ -601,7 +601,7 @@ const it: EvalDictionary = {
     notesTitle: "Note su questo modello",
     preliminary: [
       "Il file del modello mostrato qui è una versione preliminare del modello R-matrix alla base di ",
-      ". Non riproduce ancora il fit migliore pubblicato; i parametri a convergenza lo sostituiranno. Per i risultati pubblicati, vedi ",
+      ". Non riproduce ancora il fit migliore pubblicato. Per i risultati pubblicati, vedi ",
       ".",
     ] as [string, string, string],
     bands: (scattering: boolean, preliminary = false): string =>

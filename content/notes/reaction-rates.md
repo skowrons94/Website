@@ -179,7 +179,7 @@ as it must.
 
 This is not free. Reich–Moore eliminates the γ-channels as explicit channels, which
 sits awkwardly with the external-capture amplitude discussed in
-[Where radiative capture happens](/notes/external-capture) — the external
+[Where radiative capture happens](/notes/external-capture/) — the external
 amplitude is built in the same channel that Reich–Moore has absorbed. For neutron
 capture, where external capture is negligible, the combination is
 straightforward. For low-energy charged-particle capture, which is where

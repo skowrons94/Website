@@ -173,6 +173,6 @@ is not, and would simply be missing. Adding the external amplitude restores it. 
 division between “resonant” and “direct” capture is therefore not a physical
 distinction between two mechanisms so much as a consequence of where the
 bookkeeping surface was drawn — which is the same lesson as in
-[When a reduced width stops being measurable](/notes/channel-radius): move the
+[When a reduced width stops being measurable](/notes/channel-radius/): move the
 surface and the split between the two amplitudes moves with it, while their sum,
 if the model is complete, does not.

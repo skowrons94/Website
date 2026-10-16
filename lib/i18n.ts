@@ -1674,7 +1674,7 @@ const it: Dictionary = {
     // --- r9 rates ---
     resourceRates: "Esploratore dei tassi di reazione",
     resourceRatesText:
-      "Le catene pp, i cicli CNO, NeNa e MgAl e il processo s. Trova il passo più lento in un ambiente stellare, cambia un tasso e guarda come rispondono le abbondanze, calcolate nel tuo browser da JINA REACLIB.",
+      "Le catene pp, i cicli CNO, NeNa e MgAl e il processo s. Trova il passo più lento in un ambiente stellare, cambia un tasso e vedi come cambiano le abbondanze, calcolate nel tuo browser da JINA REACLIB.",
     resourceRatesSources: "Fonti",
     // --- r13 final ---
     resourceRatesCuriosities: (n: number) => `${n} curiosità`,

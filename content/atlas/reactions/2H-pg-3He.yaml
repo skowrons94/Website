@@ -135,7 +135,7 @@ measurements:
     refs: [stockel2024]
 evaluations: [adelberger2011, acharya2025, descouvemont2004, pisanti2021, fields2020]
 open_questions:
-  - The residual tension between the measured S-factor and ab initio calculations at a level of a few percent.
+  - The residual tension between the measured S-factor and ab initio calculations at a level of a few per cent.
   - The energy dependence above the BBN window, where the TiD-target data of 2021 lie above earlier fits.
 open_questions_it:
   - "La tensione residua, a livello di qualche per cento, tra il fattore S misurato e i calcoli ab initio."
