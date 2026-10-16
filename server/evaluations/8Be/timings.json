@@ -1,12 +1,16 @@
 {
   "server": {
-    "open": 0.5,
-    "prepare_data": 0.01,
-    "prepare_fine": 0.7,
-    "prepare_extrap": 0.4,
-    "edit": 0.03,
-    "extrap_edit": 0.01,
-    "measured": "2026-10"
+    "prepare_data": 0.016,
+    "prepare_fine": 1.4,
+    "prepare_extrap": 1.0,
+    "open": 1.2,
+    "edit": 0.029,
+    "extrap_edit": 0.031,
+    "source": "server",
+    "omp_threads": 1,
+    "prepare_threads": 2,
+    "cpus": 2,
+    "measured": "2026-10-16"
   },
   "browser": {
     "open": 6,
